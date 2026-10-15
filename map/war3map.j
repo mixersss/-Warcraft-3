@@ -41,7 +41,8 @@ globals
     trigger ShopTrigger = null
     trigger LeaveTrigger = null
     trigger ResearchTrigger = null
-    trigger SummonTrigger = null
+    trigger LevelTrigger = null
+    integer array SkillLevel
     unit EquipmentShop = null
 endglobals
 
@@ -55,7 +56,7 @@ endfunction
 
 function IsArmyUnit takes unit u returns boolean
     local integer id = GetUnitTypeId(u)
-    return (id >= 'fm00' and id <= 'fm34') or (id >= 'fr00' and id <= 'fr34')
+    return id >= 'fm00' and id <= 'fm34'
 endfunction
 
 function Tell takes integer p, string message returns nothing
@@ -269,10 +270,26 @@ function ResolvedSkill takes unit h, integer skill returns integer
     return skill
 endfunction
 
+function GrantHeroPoints takes integer p returns nothing
+    local integer level = GetHeroLevel(Hero[p])
+    if level > SkillLevel[p] then
+        call UnitModifySkillPoints(Hero[p], level-SkillLevel[p])
+        set SkillLevel[p] = level
+    endif
+endfunction
+
+function OnHeroLevel takes nothing returns nothing
+    local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+    if p < 12 and GetTriggerUnit() == Hero[p] then
+        call GrantHeroPoints(p)
+    endif
+endfunction
+
 function LearnHero takes integer p returns nothing
     local integer level = GetHeroLevel(Hero[p])
     local integer slot = 0
     local integer index = HeroKind[p]*4
+    call GrantHeroPoints(p)
     if level >= 6 then
         call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+3]))
     endif
@@ -288,6 +305,7 @@ endfunction
 
 function CreateHero takes integer p, integer kind returns nothing
     set HeroKind[p] = kind
+    set SkillLevel[p] = 1
     set Hero[p] = CreateUnit(Player(p), HeroType[kind], HomeX[p], HomeY[p]-240, 270)
     call SetHeroLevel(Hero[p], 1, false)
     call PauseUnit(Hero[p], Seconds < WARMUP_SECONDS)
@@ -434,33 +452,6 @@ function OnResearch takes nothing returns nothing
     endif
 endfunction
 
-function OnSummon takes nothing returns nothing
-    local unit u = GetSummonedUnit()
-    local integer p = GetPlayerId(GetOwningPlayer(u))
-    local integer rank = 3
-    local integer slot = 0
-    local integer current
-    if p < 12 and GetSummoningUnit() == Hero[p] then
-        loop
-            exitwhen slot == 3
-            set current = GetUnitAbilityLevel(Hero[p], ResolvedSkill(Hero[p], HeroSkill[HeroKind[p]*4+slot]))
-            if current > rank then
-                set rank = current
-            endif
-            set slot = slot+1
-        endloop
-        if rank > 3 then
-            call UnitAddAbility(u, 'FsHP')
-            call UnitAddAbility(u, 'FsDM')
-            call UnitAddAbility(u, 'FsAR')
-            call SetUnitAbilityLevel(u, 'FsHP', rank-2)
-            call SetUnitAbilityLevel(u, 'FsDM', rank-2)
-            call SetUnitAbilityLevel(u, 'FsAR', rank-2)
-        endif
-    endif
-    set u = null
-endfunction
-
 function SpawnWave takes integer p returns nothing
     local integer n = 0
     local integer count = CountUnitsInGroup(Army[p])
@@ -468,11 +459,7 @@ function SpawnWave takes integer p returns nothing
     local unit u
     loop
         exitwhen n >= SPAWN_UNITS or count >= ARMY_CAP
-        if n == SPAWN_UNITS-1 then
-            set id = RangedType[ArmyRace[p]*5+Tier[p]]
-        else
-            set id = MeleeType[ArmyRace[p]*5+Tier[p]]
-        endif
+        set id = ArmyType[ArmyRace[p]*5+Tier[p]]
         set u = CreateUnit(Player(p), id, HomeX[p] + I2R(n-1)*90, HomeY[p] + 220, 270)
         // 11..15: advancing through center; 1..5: reached the center.
         call SetUnitUserData(u, Tier[p]+11)
@@ -971,12 +958,12 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +1000 HP to the barracks. Waves: two melee plus one ranged every 16 seconds. Destroy all three barracks to eliminate a team. One ground gate per fortress. Bots use the same research queue and prices.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +3000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One walled tunnel per fortress. Bots use the same research queue and prices.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 100. Three normal skills: 20 ranks each, learned from level 1 every 2 hero levels. Ultimate: 7 ranks, from level 6 every 12 hero levels. Summoned troops receive extra stats at high skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -996,7 +983,7 @@ function InitGame takes nothing returns nothing
     set LeaveTrigger = CreateTrigger()
     set ShopTrigger = CreateTrigger()
     set ResearchTrigger = CreateTrigger()
-    set SummonTrigger = CreateTrigger()
+    set LevelTrigger = CreateTrigger()
     call InitBalance()
     call InitWalls()
     set EquipmentShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fshp', 0, 640, 270)
@@ -1043,7 +1030,7 @@ function InitGame takes nothing returns nothing
         set Shop[p] = DialogCreate()
         call TriggerRegisterDialogEvent(ShopTrigger, Shop[p])
         call TriggerRegisterPlayerUnitEvent(ResearchTrigger, Player(p), EVENT_PLAYER_UNIT_RESEARCH_FINISH, null)
-        call TriggerRegisterPlayerUnitEvent(SummonTrigger, Player(p), EVENT_PLAYER_UNIT_SUMMON, null)
+        call TriggerRegisterPlayerUnitEvent(LevelTrigger, Player(p), EVENT_PLAYER_HERO_LEVEL, null)
         set j = 0
         loop
             exitwhen j == 4
@@ -1066,7 +1053,7 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(ChatTrigger, function OnChat)
     call TriggerAddAction(ShopTrigger, function OnShop)
     call TriggerAddAction(ResearchTrigger, function OnResearch)
-    call TriggerAddAction(SummonTrigger, function OnSummon)
+    call TriggerAddAction(LevelTrigger, function OnHeroLevel)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0
     loop
@@ -1094,7 +1081,7 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 100, навыки до 20/7.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
     call TimerStart(clock, 1, true, function Tick)
     set clock = null
     set cell = null

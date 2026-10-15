@@ -2,7 +2,7 @@
   "AEah": {
     "name": "Thorns Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -103,12 +103,13 @@
         ],
         "label": "Damage is Percent Received"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEar": {
     "name": "Trueshot Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -231,12 +232,13 @@
         ],
         "label": "Flat Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEbl": {
     "name": "Blink",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -326,12 +328,13 @@
         ],
         "label": "Minimum Range"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEer": {
     "name": "Entangling Roots",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -432,12 +435,13 @@
         ],
         "label": "Damage per Second"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEev": {
     "name": "Evasion",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -494,12 +498,13 @@
         ],
         "label": "Chance to Evade"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEfk": {
     "name": "Fan of Knives",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -622,12 +627,13 @@
         ],
         "label": "Maximum Speed Adjustment"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEfn": {
     "name": "Force of Nature",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -750,12 +756,13 @@
         ],
         "label": "Summoned Unit Type"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEim": {
     "name": "Immolation",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -878,12 +885,13 @@
         ],
         "label": "Buffer Mana Required"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEmb": {
     "name": "Mana Burn",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -995,12 +1003,13 @@
         ],
         "label": "Bolt Lifetime"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEme": {
     "name": "Metamorphosis",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -1101,12 +1110,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AEsf": {
     "name": "Starfall",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -1216,12 +1226,13 @@
         ],
         "label": "Building Reduction"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AEsh": {
     "name": "Shadow Strike",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -1366,12 +1377,13 @@
         ],
         "label": "Initial Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEst": {
     "name": "Scout",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -1472,12 +1484,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AEsv": {
     "name": "Vengeance",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -1560,12 +1573,13 @@
         ],
         "label": "Summoned Unit Type"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AEtq": {
     "name": "Tranquility",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -1675,12 +1689,13 @@
         ],
         "label": "Building Reduction"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AHab": {
     "name": "Brilliance Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -1781,12 +1796,13 @@
         ],
         "label": "Percent Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHad": {
     "name": "Devotion Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -1898,12 +1914,13 @@
         ],
         "label": "Percent Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHav": {
     "name": "Avatar",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -1995,12 +2012,13 @@
         ],
         "label": "Magic Damage Reduction"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AHbh": {
     "name": "Bash",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2123,12 +2141,13 @@
         ],
         "label": "Chance to Miss"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHbn": {
     "name": "Banish",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2240,12 +2259,13 @@
         ],
         "label": "Attack Speed Reduction (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHbz": {
     "name": "Blizzard",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -2412,12 +2432,13 @@
         ],
         "label": "Maximum Damage per Wave"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHdr": {
     "name": "Siphon Mana",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2617,12 +2638,13 @@
         ],
         "label": "Bonus Mana Decay"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHds": {
     "name": "Divine Shield",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2712,12 +2734,13 @@
         ],
         "label": "Can Deactivate"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHfa": {
     "name": "Searing Arrows",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2807,12 +2830,13 @@
         ],
         "label": "Damage Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHfs": {
     "name": "Flame Strike",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -2990,12 +3014,13 @@
         ],
         "label": "Maximum Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHhb": {
     "name": "Holy Light",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -3085,12 +3110,13 @@
         ],
         "label": "Amount Healed/Damaged"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHmt": {
     "name": "Mass Teleport",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -3191,12 +3217,13 @@
         ],
         "label": "Use Teleport Clustering"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AHpx": {
     "name": "Phoenix",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -3270,12 +3297,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AHre": {
     "name": "Resurrection",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -3367,12 +3395,13 @@
         ],
         "label": "Raised Units Are Invulnerable"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AHtb": {
     "name": "Storm Bolt",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -3473,12 +3502,13 @@
         ],
         "label": "Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHtc": {
     "name": "Thunder Clap",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -3612,12 +3642,13 @@
         ],
         "label": "Attack Speed Reduction (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AHwe": {
     "name": "Summon Water Elemental",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -3718,12 +3749,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANab": {
     "name": "Acid Bomb",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -3890,12 +3922,13 @@
         ],
         "label": "Damage Interval"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANba": {
     "name": "Black Arrow",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4029,12 +4062,13 @@
         ],
         "label": "Summoned Unit Type"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANbf": {
     "name": "Breath of Fire",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4190,12 +4224,13 @@
         ],
         "label": "Damage Per Second"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANc1": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4373,12 +4408,13 @@
         ],
         "label": "Effect Duration"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANc2": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4556,12 +4592,13 @@
         ],
         "label": "Effect Duration"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANc3": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4739,12 +4776,13 @@
         ],
         "label": "Effect Duration"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANca": {
     "name": "Cleaving Attack",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -4834,12 +4872,13 @@
         ],
         "label": "Distributed Damage Factor"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANch": {
     "name": "Charm",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -4913,12 +4952,13 @@
         ],
         "label": "Maximum Creep Level"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANcr": {
     "name": "Chemical Rage",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -5063,12 +5103,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANcs": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -5246,12 +5287,13 @@
         ],
         "label": "Effect Duration"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANdb": {
     "name": "Drunken Brawler",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -5363,12 +5405,13 @@
         ],
         "label": "Never Miss"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANdh": {
     "name": "Drunken Haze",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -5513,12 +5556,13 @@
         ],
         "label": "Attack Speed Modifier"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANdo": {
     "name": "Doom",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -5628,12 +5672,13 @@
         ],
         "label": "Summoned Unit Type"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANdr": {
     "name": "Life Drain",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -5833,12 +5878,13 @@
         ],
         "label": "Bonus Mana Decay"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANef": {
     "name": "Storm, Earth, And Fire",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -5912,12 +5958,13 @@
         ],
         "label": "Summoned Unit Types"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANeg": {
     "name": "Engineering Upgrade",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -6051,12 +6098,13 @@
         ],
         "label": "Ability Upgrade 4"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANfa": {
     "name": "Frost Arrows",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -6190,12 +6238,13 @@
         ],
         "label": "Stack Flags"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANfl": {
     "name": "Forked Lightning",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -6329,12 +6378,13 @@
         ],
         "label": "Number of Targets Hit"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANg1": {
     "name": "Robo-Goblin",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -6435,12 +6485,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANg2": {
     "name": "Robo-Goblin",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -6541,12 +6592,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANg3": {
     "name": "Robo-Goblin",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -6647,12 +6699,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANhs": {
     "name": "Healing Spray",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -6830,12 +6883,13 @@
         ],
         "label": "Building Damage Factor"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANht": {
     "name": "Howl of Terror",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -7002,12 +7056,13 @@
         ],
         "label": "Max Units"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANia": {
     "name": "Incinerate",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -7097,12 +7152,13 @@
         ],
         "label": "Buffs"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANlm": {
     "name": "Summon Lava Spawn",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -7269,12 +7325,13 @@
         ],
         "label": "Generation Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANms": {
     "name": "Mana Shield",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -7386,12 +7443,13 @@
         ],
         "label": "Damage Absorbed (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANrf": {
     "name": "Rain of Fire",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -7558,12 +7616,13 @@
         ],
         "label": "Maximum Damage per Wave"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANrg": {
     "name": "Robo-Goblin",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -7664,12 +7723,13 @@
         ],
         "label": "Alternate Form Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANs1": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -7814,12 +7874,13 @@
         ],
         "label": "Factory Unit ID"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANs2": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -7964,12 +8025,13 @@
         ],
         "label": "Factory Unit ID"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANs3": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -8114,12 +8176,13 @@
         ],
         "label": "Factory Unit ID"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANsg": {
     "name": "Summon Bear",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -8220,12 +8283,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANsi": {
     "name": "Silence",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -8370,12 +8434,13 @@
         ],
         "label": "Attack Speed Modifier"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANso": {
     "name": "Soul Burn",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -8520,12 +8585,13 @@
         ],
         "label": "Attack Speed Reduction (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANsq": {
     "name": "Summon Quilbeast",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -8626,12 +8692,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANst": {
     "name": "Stampede",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -8759,12 +8826,13 @@
         ],
         "label": "Damage Delay"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANsw": {
     "name": "Summon Hawk",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -8865,12 +8933,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANsy": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -9015,12 +9084,13 @@
         ],
         "label": "Factory Unit ID"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "ANtm": {
     "name": "Transmute",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -9130,12 +9200,13 @@
         ],
         "label": "Allow Bounty"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANto": {
     "name": "Tornado",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -9209,12 +9280,13 @@
         ],
         "label": "Summoned Unit Type"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "ANvc": {
     "name": "Volcano",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -9369,12 +9441,13 @@
         ],
         "label": "Destructible ID"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AOae": {
     "name": "Endurance Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -9475,12 +9548,13 @@
         ],
         "label": "Attack Speed Increase (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOcl": {
     "name": "Chain Lightning",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -9603,12 +9677,13 @@
         ],
         "label": "Damage Reduction per Target"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOcr": {
     "name": "Critical Strike",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -9731,12 +9806,13 @@
         ],
         "label": "Never Miss"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOeq": {
     "name": "Earthquake",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -9864,12 +9940,13 @@
         ],
         "label": "Final Area"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AOfs": {
     "name": "Far Sight",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -9970,12 +10047,13 @@
         ],
         "label": "Detection Type"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOhw": {
     "name": "Healing Wave",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -10098,12 +10176,13 @@
         ],
         "label": "Damage Reduction per Target"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOhx": {
     "name": "Hex",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -10248,12 +10327,13 @@
         ],
         "label": "Morph Units - Water"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOmi": {
     "name": "Mirror Image",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -10387,12 +10467,13 @@
         ],
         "label": "Animation Delay"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOre": {
     "name": "Reincarnation",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "acas",
@@ -10448,12 +10529,13 @@
         ],
         "label": "Reincarnation Delay"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AOsf": {
     "name": "Feral Spirit",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -10565,12 +10647,13 @@
         ],
         "label": "Number of Summoned Units"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOsh": {
     "name": "Shockwave",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -10715,12 +10798,13 @@
         ],
         "label": "Final Area"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOsw": {
     "name": "Serpent Ward",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -10821,12 +10905,13 @@
         ],
         "label": "Summoned Unit Count"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOvd": {
     "name": "Big Bad Voodoo",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -10900,12 +10985,13 @@
         ],
         "label": "Buffs"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AOwk": {
     "name": "Wind Walk",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11028,12 +11114,13 @@
         ],
         "label": "Backstab Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOws": {
     "name": "War Stomp",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11134,12 +11221,13 @@
         ],
         "label": "Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AOww": {
     "name": "Bladestorm",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -11231,12 +11319,13 @@
         ],
         "label": "Magic Damage Reduction"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AUan": {
     "name": "Animate Dead",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -11346,12 +11435,13 @@
         ],
         "label": "Raised Units Are Invulnerable"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AUau": {
     "name": "Unholy Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11463,12 +11553,13 @@
         ],
         "label": "Percent Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUav": {
     "name": "Vampiric Aura",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11558,12 +11649,13 @@
         ],
         "label": "Attack Damage Stolen (%)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUcb": {
     "name": "Carrion Beetles",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11708,12 +11800,13 @@
         ],
         "label": "Max Units Summoned"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUcs": {
     "name": "Carrion Swarm",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11858,12 +11951,13 @@
         ],
         "label": "Final Area"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUdc": {
     "name": "Death Coil",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -11953,12 +12047,13 @@
         ],
         "label": "Amount Healed/Damaged"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUdd": {
     "name": "Death And Decay",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -12068,12 +12163,13 @@
         ],
         "label": "Building Reduction"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AUdp": {
     "name": "Death Pact",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -12207,12 +12303,13 @@
         ],
         "label": "Leave Target Alive"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUdr": {
     "name": "Dark Ritual",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -12346,12 +12443,13 @@
         ],
         "label": "Leave Target Alive"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUfn": {
     "name": "Frost Nova",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -12474,12 +12572,13 @@
         ],
         "label": "Specific Target Damage"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUfu": {
     "name": "Frost Armor",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -12591,12 +12690,13 @@
         ],
         "label": "Armor Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUim": {
     "name": "Impale",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -12741,12 +12841,13 @@
         ],
         "label": "Air Time (seconds)"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUin": {
     "name": "Inferno",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -12865,12 +12966,13 @@
         ],
         "label": "Summoned Unit"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AUls": {
     "name": "Locust Swarm",
     "levels": 1,
-    "cap": 7,
+    "cap": 50,
     "fields": [
       {
         "id": "atar",
@@ -12989,12 +13091,13 @@
         ],
         "label": "Swarm Unit Type"
       }
-    ]
+    ],
+    "ultimate": true
   },
   "AUsl": {
     "name": "Sleep",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "atar",
@@ -13095,12 +13198,13 @@
         ],
         "label": "Stun Duration"
       }
-    ]
+    ],
+    "ultimate": false
   },
   "AUts": {
     "name": "Spiked Carapace",
     "levels": 3,
-    "cap": 20,
+    "cap": 300,
     "fields": [
       {
         "id": "acas",
@@ -13190,6 +13294,7 @@
         ],
         "label": "Defense Bonus"
       }
-    ]
+    ],
+    "ultimate": false
   }
 }

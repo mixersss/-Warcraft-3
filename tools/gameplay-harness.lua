@@ -53,6 +53,7 @@ function GetSummonedUnit() return Summoned end
 function GetSummoningUnit() return Summoner end
 function PauseUnit(u,v) u.paused=v end
 function SetHeroLevel(u,level) u.points=u.points+level-u.level;u.level=level end
+function UnitModifySkillPoints(u,delta) u.points=u.points+delta;return true end
 function SelectHeroSkill(u,skill)
     if u.points<=0 then return end
     local kind=-1
@@ -165,7 +166,7 @@ function reset()
         Army[p]={}
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
-        Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0)
+        Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);SkillLevel[p]=1
     end
 end
 
@@ -198,7 +199,7 @@ for p=0,11 do
     for wave=1,100 do SpawnWave(p) end
     assert(#Army[p]==ARMY_CAP,'Wave cap applies to every player')
     assert(Army[p][1].data==11,'New troops route through center')
-    assert(Army[p][1].id==MeleeType[0] and Army[p][3].id==RangedType[0])
+    assert(Army[p][1].id==ArmyType[0] and Army[p][3].id==ArmyType[0])
 end
 -- Killing a unit frees one cap slot, produces one reward, and permits a partial wave.
 Dying,Killer=Army[3][1],Hero[0]
@@ -253,7 +254,7 @@ Tick();assert(Hero[0].revived and Hero[0].hp==Hero[0].max)
 Base[1].hp=0;Hero[1].hp=0;Respawn[1]=1
 Tick();Tick();assert(not Hero[1].revived)
 
--- All races retain upgrades, prices and the two-melee/one-ranged wave layout.
+-- All races retain upgrades, prices and the single-type wave layout.
 for race=0,3 do
     reset()
     assert(SelectArmyRace(0,race))
@@ -262,8 +263,8 @@ for race=0,3 do
     for tier=0,4 do
         GroupClear(Army[0]);SpawnWave(0)
         assert(#Army[0]==SPAWN_UNITS)
-        assert(Army[0][1].id==MeleeType[race*5+tier])
-        assert(Army[0][3].id==RangedType[race*5+tier])
+        assert(Army[0][1].id==ArmyType[race*5+tier])
+        assert(Army[0][3].id==ArmyType[race*5+tier])
         assert(IsArmyUnit(Army[0][1]) and IsArmyUnit(Army[0][3]))
         if tier<4 then assert(purchase(0,3)) end
     end
@@ -303,11 +304,11 @@ for kind=0,HERO_COUNT-1 do
     Bot[1]=true;RngQueue={kind%4,kind}
     AssignBotChoices(1)
     assert(ArmyRace[1]==kind%4 and HeroKind[1]==kind and Hero[1].id==HeroType[kind])
-    SetHeroLevel(Hero[1],100)
-    for i=1,25 do LearnHero(1) end
-    assert(Hero[1].points==33,'Hero level 100 spends 3x20 + 7 skill points')
+    SetHeroLevel(Hero[1],500)
+    for i=1,310 do LearnHero(1) end
+    assert(Hero[1].points==49,'500 levels grant 999 points; 3x300 + 50 are spent')
     for slot=0,3 do
-        assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 7 or 20))
+        assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 50 or 300))
     end
     Seconds=WARMUP_SECONDS+10
     Hero[1].paused=false
@@ -342,8 +343,9 @@ CommandArmy(0,true);CommandArmy(3,true)
 assert(#Army[0]==2 and IsUnitInGroup(charmed,Army[3]))
 
 reset()
-CreateHero(0,2);SetHeroLevel(Hero[0],100)
-for n=1,25 do LearnHero(0) end
-Summoner=Hero[0];Summoned=CreateUnit(0,0,0,0,0)
-OnSummon()
-assert(GetUnitAbilityLevel(Summoned,(string.byte("F")*16777216+string.byte("s")*65536+string.byte("H")*256+string.byte("P")))==18) -- FsHP, rank 18 for skill rank 20
+-- A level event grants exactly one additional point per gained level to humans.
+CreateHero(0,2)
+SetHeroLevel(Hero[0],500);Dying=Hero[0];OnHeroLevel()
+assert(Hero[0].points==999)
+OnHeroLevel();assert(Hero[0].points==999,'Repeated events cannot duplicate points')
+Dying=Hero[3];OnHeroLevel();assert(Hero[0].points==999)

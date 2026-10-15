@@ -11,16 +11,18 @@ import json
 import math
 from pathlib import Path
 import struct
-from progression import hero_abilities, summon_bonus_abilities
+import zlib
+from progression import hero_abilities, summoned_units
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 96
 HALF = SIZE * 64
 BOUNDS = HALF - 256
 MASK = 0xFFFFFFFF
-WALL_RADIUS = 1740
+WALL_RADIUS = 2300
 WALL_HALF_THICKNESS = 96
-GATE_HALF_WIDTH = 480
+GATE_HALF_WIDTH = 320
+TUNNEL_LENGTH = 900
 ENCLOSURES = [(-3904, -3904), (3904, -3904), (3904, 3904), (-3904, 3904)]
 
 
@@ -31,10 +33,12 @@ def catalog(name: str) -> list[dict]:
 def wall_at(x: float, y: float) -> bool:
     for cx, cy in ENCLOSURES:
         dx, dy = x-cx, y-cy
+        length = math.hypot(cx, cy)
+        inward = (-cx*dx-cy*dy)/length
+        sideways = (-cy*dx+cx*dy)/length
+        if WALL_RADIUS-160 <= inward <= WALL_RADIUS+TUNNEL_LENGTH and abs(abs(sideways)-GATE_HALF_WIDTH) <= WALL_HALF_THICKNESS:
+            return True
         if abs(math.hypot(dx, dy)-WALL_RADIUS) <= WALL_HALF_THICKNESS:
-            length = math.hypot(cx, cy)
-            inward = (-cx*dx-cy*dy)/length
-            sideways = (-cy*dx+cx*dy)/length
             if inward <= 0 or abs(sideways) >= GATE_HALF_WIDTH:
                 return True
     return False
@@ -43,11 +47,17 @@ def wall_at(x: float, y: float) -> bool:
 def wall_segments() -> list[tuple[float, float, float]]:
     result = []
     for cx, cy in ENCLOSURES:
-        for step in range(96):
-            angle = step*2*math.pi/96
+        for step in range(144):
+            angle = step*2*math.pi/144
             x, y = cx+WALL_RADIUS*math.cos(angle), cy+WALL_RADIUS*math.sin(angle)
             if wall_at(x, y):
                 result.append((x, y, math.degrees(angle)+90))
+        length = math.hypot(cx, cy)
+        for along in range(WALL_RADIUS-120, WALL_RADIUS+TUNNEL_LENGTH+1, 80):
+            for side in (-GATE_HALF_WIDTH, GATE_HALF_WIDTH):
+                result.append((cx-cx/length*along-cy/length*side,
+                               cy-cy/length*along+cx/length*side,
+                               math.degrees(math.atan2(-cy,-cx))))
     return result
 
 
@@ -87,7 +97,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = '4 teams x 3. 4 army races, 24 heroes. Barracks: attack, armor, health (200 ranks each), stronger army tiers. Waves every 16 seconds. Equipment shop in arena center. Hero level 100, normal skills 20, ultimates 7. Choose race and hero before 60 seconds. Classic TFT 1.26+.'
+    text = '4 teams x 3. One troop type per army tier, 4 races, 24 heroes. Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Stronger and larger summons; +1 summon every 10 skill ranks. One tunnel per fortress. Waves every 16 seconds. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (bots fill empty slots)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -141,7 +151,7 @@ def pathing() -> bytes:
 
 
 def object_table(entries: list, extended: bool) -> bytes:
-    data = i(len(entries))
+    data = bytearray(i(len(entries)))
     for original, custom, changes in entries:
         data += original.encode('ascii') + custom.encode('ascii') + i(len(changes))
         for change in changes:
@@ -151,7 +161,7 @@ def object_table(entries: list, extended: bool) -> bytes:
                 data += i(*change[3:]) if len(change) == 5 else i(0, 0)
             data += s(value) if kind == 3 else f(value) if kind in (1, 2) else i(value)
             data += custom.encode('ascii')
-    return data
+    return bytes(data)
 
 
 def objects(entries: list, extended: bool = False, original_entries: list | None = None) -> bytes:
@@ -161,32 +171,34 @@ def objects(entries: list, extended: bool = False, original_entries: list | None
 def units(b: dict) -> bytes:
     entries = []
     for race, faction in enumerate(catalog('races')):
-      for tier, row in enumerate(b['tiers']):
-        for ranged in (False, True):
-            rawcode = ('fr' if ranged else 'fm') + f'{race}{tier}'
+        for tier, row in enumerate(b['tiers']):
+            ranged = tier in faction['ranged_tiers']
+            rawcode = 'fm' + f'{race}{tier}'
             changes = [
-                ('unam', 3, faction['tier_names'][tier] + (' Ranged' if ranged else '')),
-                ('uhpm', 0, round(row['hp'] * (0.65 if ranged else 1))),
-                ('ua1b', 0, round(row['damage'] * (0.8 if ranged else 1))),
+                ('unam', 3, faction['tier_names'][tier]),
+                ('uhpm', 0, row['hp']),
+                ('ua1b', 0, row['damage']),
                 ('ua1d', 0, 1), ('ua1s', 0, 2), ('ua1c', 2, 1.5),
                 ('ua1r', 0, 550 if ranged else 100),
                 ('ua1t', 3, 'pierce' if ranged else 'normal'),
-                ('udef', 2, float(row['armor'])), ('udup', 2, 1.0),
-                ('udu1', 0, 3), ('ua1g', 3, 'ground,structure,debris,item,ward'),
+                ('uaen', 0, 1),
+                ('udef', 0, row['armor']), ('udup', 0, 1),
+                ('udu1', 0, 3), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
                 ('ucol', 2, 24.0),
                 ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
-            entries.append((faction['ranged'] if ranged else faction['melee'][tier], rawcode, changes))
+            entries.append((faction['units'][tier], rawcode, changes))
+    entries += summoned_units(ROOT)
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
-        ('udef', 2, 5.0), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti'),
+        ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti'),
         ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, 'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень казармы даёт более сильные волны и +1000 здоровья базе. Спавн раз в 16 секунд.'),
+        ('utub', 3, f'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в 16 секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, 1200),
@@ -203,7 +215,7 @@ def units(b: dict) -> bytes:
 
 
 def menu_ability() -> bytes:
-    return objects(summon_bonus_abilities(), extended=True, original_entries=hero_abilities(ROOT))
+    return objects([], extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -214,8 +226,9 @@ def items() -> bytes:
 
 
 def misc(b: dict) -> bytes:
-    return ('[Misc]\nMaxHeroLevel=100\nHeroAbilityLevelSkip=2\n'
-            'HeroFactorXP=100,100,100,100,100\n').encode('ascii')
+    return (f'[Misc]\nMaxHeroLevel={b["hero_max_level"]}\nHeroAbilityLevelSkip=1\n'
+            'HeroFactorXP=100,100,100,100,100\n'
+            'NeedHeroXP=200\nNeedHeroXPFormulaA=1.0\nNeedHeroXPFormulaB=100\nNeedHeroXPFormulaC=0\n').encode('ascii')
 
 
 def walls() -> bytes:
@@ -227,16 +240,16 @@ def walls() -> bytes:
 def upgrades(b: dict) -> bytes:
     entries = []
     rows = [
-        ('Rhme','Rfat','Атака армии','ratd',1.0,b['attack_cost'],b['attack_cost_step'],'BTNSteelMelee.blp','+3 к атаке всех существующих и новых бойцов.'),
+        ('Rhme','Rfat','Атака армии','ratx',3.0,b['attack_cost'],b['attack_cost_step'],'BTNSteelMelee.blp','+3 к атаке всех существующих и новых бойцов.'),
         ('Rhar','Rfar','Броня армии','rarm',1.0,b['armor_cost'],b['armor_cost_step'],'BTNHumanArmorUpOne.blp','+1 к броне всех существующих и новых бойцов.'),
-        ('Rhan','Rfhp','Здоровье армии','rhpx',b['health_percent'],b['health_cost'],b['health_cost_step'],'BTNPeriapt.blp','+10% базового максимального здоровья всех существующих и новых бойцов.'),
-        ('Rhac','Rfti','Развитие казармы','rhpo',1000.0,b['base_upgrade_cost'],b['base_upgrade_cost_step'],'BTNCastle.blp','Более сильные бойцы следующих волн. Казарме +1000 здоровья.'),
+        ('Rhan','Rfhp','Здоровье армии','rhpo',b['health_percent'],b['health_cost'],b['health_cost_step'],'BTNPeriapt.blp','+10% базового максимального здоровья всех существующих и новых бойцов.'),
+        ('Rhac','Rfti','Развитие казармы','rhpx',float(b['base_upgrade_hp']),b['base_upgrade_cost'],b['base_upgrade_cost_step'],'BTNCastle.blp',f'Новый тип бойца следующих волн. Казарме +{b["base_upgrade_hp"]} здоровья.'),
     ]
     for column,(base,rawcode,name,effect,amount,cost,step,art,description) in enumerate(rows):
         cap = 4 if column==3 else b['upgrade_max']
         changes = [('glvl',0,cap),('gbpx',0,column),('gbpy',0,0),
             ('gglb',0,cost),('gglm',0,step),('glmb',0,0),('glmm',0,0),('gtib',0,1),('gtim',0,0),
-            ('gef1',3,effect),('gba1',2,amount),('gmo1',2,0.0),
+            ('gef1',3,effect),('gba1',2,amount),('gmo1',2,amount),
             ('gef2',3,''),('gef3',3,''),('gef4',3,'')]
         for rank in range(1,cap+1):
             changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {rank}/{cap}]',rank,0),
@@ -253,7 +266,7 @@ def script(b: dict) -> str:
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}',
-        '    integer array MeleeType', '    integer array RangedType', '    integer array TierCost',
+        '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
@@ -273,7 +286,7 @@ def script(b: dict) -> str:
         init += [f'    set RaceName[{race}] = "{faction["name"]}"', f'    set RaceAlias[{race}] = "{faction["alias"]}"']
         for tier in range(5):
             idx = race*5+tier
-            init += [f"    set MeleeType[{idx}] = 'fm{race}{tier}'", f"    set RangedType[{idx}] = 'fr{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
+            init += [f"    set ArmyType[{idx}] = 'fm{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
     for idx, hero in enumerate(heroes):
         init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}']
         for slot, skill in enumerate(hero['skills']):
@@ -379,9 +392,12 @@ def archive(files: dict[str, bytes], name: str) -> bytes:
         while hashes[slot] != b'\xff'*16:
             slot = (slot+1) % table_size
         hashes[slot] = struct.pack('<IIHHI', mpq_hash(filename, 1), mpq_hash(filename, 2), 0, 0, block)
-        # Stored uncompressed, single-unit file, MPQ_FILE_EXISTS.
-        blocks += struct.pack('<IIII', 32+len(content), len(payload), len(payload), 0x81000000)
-        content += payload
+        # Classic Storm single-unit zlib compression (mask 0x02). Explicit
+        # original length lets readers distinguish stored from compressed data.
+        compressed = b'\x02'+zlib.compress(payload,9)
+        stored, flags = (compressed,0x81000200) if len(compressed)<len(payload) else (payload,0x81000000)
+        blocks += struct.pack('<IIII', 32+len(content), len(stored), len(payload), flags)
+        content += stored
     hash_pos = 32+len(content)
     block_pos = hash_pos+16*table_size
     hashes_bytes = encrypt_table(b''.join(hashes), mpq_hash('(hash table)', 3))

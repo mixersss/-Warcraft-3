@@ -1,0 +1,324 @@
+{
+  "efon": {
+    "hp": 300.0,
+    "damage": 14.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "espv": {
+    "hp": 1200.0,
+    "damage": 24.0,
+    "armor": 2.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "hphx": {
+    "hp": 1250.0,
+    "damage": 60.0,
+    "armor": 1.0,
+    "scale": 1.0,
+    "collision": 8.0
+  },
+  "hwat": {
+    "hp": 525.0,
+    "damage": 17.0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 32.0
+  },
+  "hwt2": {
+    "hp": 675.0,
+    "damage": 29.0,
+    "armor": 1.0,
+    "scale": 1.1,
+    "collision": 32.0
+  },
+  "hwt3": {
+    "hp": 900.0,
+    "damage": 39.0,
+    "armor": 2.0,
+    "scale": 1.3,
+    "collision": 48.0
+  },
+  "nba2": {
+    "hp": 1600.0,
+    "damage": 40.0,
+    "armor": 3.0,
+    "scale": 1.3,
+    "collision": 48.0
+  },
+  "ncg1": {
+    "hp": 80.0,
+    "damage": 11.0,
+    "armor": 1.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "ncg2": {
+    "hp": 80.0,
+    "damage": 11.0,
+    "armor": 1.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "ncgb": {
+    "hp": 80.0,
+    "damage": 11.0,
+    "armor": 1.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "ndr1": {
+    "hp": 215.0,
+    "damage": 8.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 31.0
+  },
+  "ndr2": {
+    "hp": 290.0,
+    "damage": 14.0,
+    "armor": 0.0,
+    "scale": 1.2,
+    "collision": 31.0
+  },
+  "ndr3": {
+    "hp": 405.0,
+    "damage": 15.0,
+    "armor": 0.0,
+    "scale": 1.4,
+    "collision": 31.0
+  },
+  "nfa1": {
+    "hp": 450.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 48.0
+  },
+  "nfa2": {
+    "hp": 600.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 48.0
+  },
+  "nfac": {
+    "hp": 300.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 48.0
+  },
+  "ngz1": {
+    "hp": 600.0,
+    "damage": 18.0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 32.0
+  },
+  "ngz2": {
+    "hp": 900.0,
+    "damage": 27.0,
+    "armor": 1.0,
+    "scale": 1.1,
+    "collision": 32.0
+  },
+  "ngz3": {
+    "hp": 1200.0,
+    "damage": 37.0,
+    "armor": 2.0,
+    "scale": 1.25,
+    "collision": 48.0
+  },
+  "ninf": {
+    "hp": 1500.0,
+    "damage": 48.0,
+    "armor": 6.0,
+    "scale": 1.0,
+    "collision": 48.0
+  },
+  "nlv1": {
+    "hp": 425.0,
+    "damage": 7.0,
+    "armor": 0.0,
+    "scale": 0.8,
+    "collision": 32.0
+  },
+  "nlv2": {
+    "hp": 550.0,
+    "damage": 15.0,
+    "armor": 1.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "nlv3": {
+    "hp": 700.0,
+    "damage": 26.0,
+    "armor": 2.0,
+    "scale": 1.2,
+    "collision": 32.0
+  },
+  "now2": {
+    "hp": 40.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 1.2,
+    "collision": 16.0
+  },
+  "now3": {
+    "hp": 40.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 1.2,
+    "collision": 16.0
+  },
+  "nowl": {
+    "hp": 40.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 1.2,
+    "collision": 16.0
+  },
+  "npn1": {
+    "hp": 1100.0,
+    "damage": 66.0,
+    "armor": 2.0,
+    "scale": 0.8,
+    "collision": 32.0
+  },
+  "npn2": {
+    "hp": 1200.0,
+    "damage": 47.0,
+    "armor": 2.0,
+    "scale": 0.8,
+    "collision": 32.0
+  },
+  "npn3": {
+    "hp": 1700.0,
+    "damage": 47.0,
+    "armor": 5.0,
+    "scale": 0.9,
+    "collision": 32.0
+  },
+  "nqb1": {
+    "hp": 425.0,
+    "damage": 12.0,
+    "armor": 0.0,
+    "scale": 1.2,
+    "collision": 16.0
+  },
+  "nqb2": {
+    "hp": 515.0,
+    "damage": 24.0,
+    "armor": 0.0,
+    "scale": 1.4,
+    "collision": 32.0
+  },
+  "nqb3": {
+    "hp": 600.0,
+    "damage": 36.0,
+    "armor": 0.0,
+    "scale": 1.6,
+    "collision": 48.0
+  },
+  "ntor": {
+    "hp": 500.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "nwe1": {
+    "hp": 300.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 8.0
+  },
+  "nwe2": {
+    "hp": 450.0,
+    "damage": 20.0,
+    "armor": 3.0,
+    "scale": 1.1,
+    "collision": 8.0
+  },
+  "nwe3": {
+    "hp": 650.0,
+    "damage": 45.0,
+    "armor": 5.0,
+    "scale": 1.3,
+    "collision": 8.0
+  },
+  "osp1": {
+    "hp": 75.0,
+    "damage": 10.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 16.0
+  },
+  "osp2": {
+    "hp": 135.0,
+    "damage": 22.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 16.0
+  },
+  "osp3": {
+    "hp": 135.0,
+    "damage": 40.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 16.0
+  },
+  "osw1": {
+    "hp": 200.0,
+    "damage": 10.0,
+    "armor": 0.0,
+    "scale": 0.9,
+    "collision": 16.0
+  },
+  "osw2": {
+    "hp": 300.0,
+    "damage": 15.0,
+    "armor": 0.0,
+    "scale": 1.1,
+    "collision": 32.0
+  },
+  "osw3": {
+    "hp": 500.0,
+    "damage": 20.0,
+    "armor": 0.0,
+    "scale": 1.3,
+    "collision": 48.0
+  },
+  "ucs1": {
+    "hp": 140.0,
+    "damage": 7.0,
+    "armor": 2.0,
+    "scale": 0.9,
+    "collision": 16.0
+  },
+  "ucs2": {
+    "hp": 275.0,
+    "damage": 14.0,
+    "armor": 2.0,
+    "scale": 1.1,
+    "collision": 16.0
+  },
+  "ucs3": {
+    "hp": 410.0,
+    "damage": 21.0,
+    "armor": 2.0,
+    "scale": 1.3,
+    "collision": 32.0
+  },
+  "uloc": {
+    "hp": 65.0,
+    "damage": 12.0,
+    "armor": 0.0,
+    "scale": 1.0,
+    "collision": 8.0
+  }
+}

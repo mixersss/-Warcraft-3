@@ -24,7 +24,7 @@ def slk(path):
                 value = part[1:]
                 rows.setdefault(y, {})[x] = value[1:-1].replace('""', '"') if value.startswith('"') else value
     header = rows.pop(1)
-    return [{header[k]: v for k,v in row.items()} for row in rows.values()]
+    return [{header[k]: v for k,v in row.items() if k in header} for row in rows.values()]
 
 
 def extract(source):
@@ -41,8 +41,8 @@ def extract(source):
             if line.startswith('['): section = line.strip('[]')
             elif line.startswith('Name='): names[section] = line[5:].strip('"')
     roster = json.loads((ROOT/'map/heroes.json').read_text())
-    caps = {skill: 7 if slot == 3 else 20 for hero in roster for slot, skill in enumerate(hero['skills'])}
-    for prefix, cap in [('ANs',20),('ANc',20),('ANg',7)]:
+    caps = {skill: 50 if slot == 3 else 300 for hero in roster for slot, skill in enumerate(hero['skills'])}
+    for prefix, cap in [('ANs',300),('ANc',300),('ANg',50)]:
         for n in range(1,4): caps[prefix+str(n)] = cap
     output = {}
     for rawcode, cap in sorted(caps.items()):
@@ -70,8 +70,27 @@ def extract(source):
                 normalized.append(last)
             label = labels.get(meta.get('displayName',''), meta['ID'])
             fields.append({'id':meta['ID'], 'kind':kind, 'column':column, 'values':normalized, 'label':label})
-        output[rawcode] = {'name':names.get(rawcode,names.get(row['code'],rawcode)), 'levels':levels, 'cap':cap, 'fields':fields}
+        output[rawcode] = {'name':names.get(rawcode,names.get(row['code'],rawcode)), 'levels':levels, 'cap':cap, 'ultimate':cap==50, 'fields':fields}
     return output
+
+
+def extract_summons(source, abilities):
+    from progression import SUMMON_FIELDS
+    units=source/'mpq/Units'
+    tables={name:{next(iter(row.values())):row for row in slk(units/f'{name}.slk')}
+            for name in ('unitbalance','unitweapons','unitui')}
+    ids={raw for seed in abilities.values() for field in seed['fields']
+         if field['id'] in SUMMON_FIELDS for value in field['values'] for raw in value.split(',')}
+    def number(row,key,default):
+        try: return float(row[key])
+        except (KeyError,ValueError): return default
+    result={}
+    for raw in sorted(ids):
+        balance=tables['unitbalance'][raw]; weapon=tables['unitweapons'][raw]; ui=tables['unitui'][raw]
+        result[raw]={'hp':number(balance,'HP',1),'damage':number(weapon,'dmgplus1',0),
+                     'armor':number(balance,'def',0),'scale':number(ui,'modelScale',1),
+                     'collision':number(balance,'collision',16)}
+    return result
 
 
 if __name__ == '__main__':
@@ -79,4 +98,6 @@ if __name__ == '__main__':
     output = extract(source)
     target = ROOT/'map/ability-seeds.json'
     target.write_text(json.dumps(output,ensure_ascii=False,indent=2)+'\n')
+    summons=extract_summons(source,output)
+    (ROOT/'map/summon-seeds.json').write_text(json.dumps(summons,ensure_ascii=False,indent=2)+'\n')
     print(f'Extracted {len(output)} hero/engineering-variant ability seeds to {target}')

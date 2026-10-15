@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.3.0-alpha",
+  "version": "0.4.0-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 16,
@@ -33,7 +33,7 @@
       "hp": 600,
       "damage": 22,
       "armor": 2,
-      "cost": 650
+      "cost": 1800
     },
     {
       "name": "Grunts",
@@ -41,7 +41,7 @@
       "hp": 850,
       "damage": 32,
       "armor": 3,
-      "cost": 1100
+      "cost": 3200
     },
     {
       "name": "Knights",
@@ -49,7 +49,7 @@
       "hp": 1150,
       "damage": 44,
       "armor": 4,
-      "cost": 1550
+      "cost": 4600
     },
     {
       "name": "Tauren",
@@ -57,15 +57,16 @@
       "hp": 1500,
       "damage": 58,
       "armor": 5,
-      "cost": 2000
+      "cost": 6000
     }
   ],
   "health_cost": 120,
   "health_cost_step": 80,
   "health_percent": 0.1,
-  "base_upgrade_cost": 650,
-  "base_upgrade_cost_step": 450,
-  "hero_max_level": 100,
-  "basic_skill_max": 20,
-  "ultimate_skill_max": 7
+  "base_upgrade_cost": 1800,
+  "base_upgrade_cost_step": 1400,
+  "hero_max_level": 500,
+  "basic_skill_max": 300,
+  "ultimate_skill_max": 50,
+  "base_upgrade_hp": 3000
 }

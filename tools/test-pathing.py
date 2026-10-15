@@ -43,7 +43,16 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
     # Closing only a 1200x1200 square around the intended gate must seal
     # that fortress. An extra exit anywhere else would fail this assertion.
     length = math.hypot(cx,cy)
-    gx,gy = cx-cx/length*1740, cy-cy/length*1740
+    gx,gy = cx-cx/length*2300, cy-cy/length*2300
+    # The 900-unit corridor has a clear center and solid side walls. Its exit
+    # is near the arena, rather than immediately beside the bases.
+    for along in range(2400,3101,100):
+        for side in (-320,0,320):
+            x=cx-cx/length*along-cy/length*side
+            y=cy-cy/length*along+cx/length*side
+            assert (cell(x,y) in blocked)==(side!=0), ('Tunnel side/center',team,along,side)
+    ex,ey=cx-cx/length*3300,cy-cy/length*3300
+    assert cell(ex,ey) in accessible and math.hypot(ex,ey)<2300
     closure = set(blocked)
     for py in range(height):
         wy=(py+0.5)*32-6144
