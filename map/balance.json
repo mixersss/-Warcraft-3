@@ -1,10 +1,10 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.6.0-alpha",
+  "version": "0.7.0-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
-  "spawn_seconds": 16,
-  "spawn_min_seconds": 16,
+  "spawn_seconds": 12,
+  "spawn_min_seconds": 12,
   "spawn_units": 3,
   "army_cap": 48,
   "warmup_seconds": 60,
@@ -70,7 +70,13 @@
   "ultimate_skill_max": 50,
   "base_upgrade_hp": 15000,
   "tower_hp": 6000,
-  "fountain_radius": 650,
-  "fountain_hp_percent": 0.01,
-  "fountain_mana_percent": 0.01
+  "fountain_radius": 1000,
+  "fountain_hp_percent": 0.02,
+  "fountain_mana_percent": 0.02,
+  "bastion_hp": 45000,
+  "bastion_damage": 450,
+  "bastion_armor": 18,
+  "bastion_range": 1000,
+  "bastion_cooldown": 1.2,
+  "experience_multiplier": 0.65
 }

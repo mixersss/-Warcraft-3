@@ -97,6 +97,15 @@ def shop_positions() -> list[tuple[int,int]]:
     return result
 
 
+def bastion_positions() -> list[tuple[int,int]]:
+    result=[]
+    for team in range(4):
+        for x,y in [(-4350,-3850),(-3900,-4450),(-3150,-3750)]:
+            for _ in range(team): x,y=-y,x
+            result.append((x,y))
+    return result
+
+
 def validate_balance(b: dict) -> None:
     assert len(b['tiers']) == 5
     assert 1 <= b['spawn_min_seconds'] <= b['spawn_seconds']
@@ -110,7 +119,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = '4 teams x 3. One troop type per army tier, 4 races, 24 heroes. Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Stronger and larger summons; +1 summon every 10 skill ranks. One tunnel per fortress. Waves every 16 seconds. Classic TFT 1.26+.'
+    text = f'4 teams x 3. One troop type per army tier, 4 races, 24 heroes. Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 65%. Hero-specific bot equipment. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (bots fill empty slots)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -211,13 +220,22 @@ def units(b: dict) -> bytes:
         ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, f'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в 16 секунд.'),
+        ('utub', 3, f'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, b['tower_hp']),
         ('ua1b', 0, 24), ('ua1c', 2, 1.0), ('ua1r', 0, 700),
         ('ureq', 3, ''), ('uupt', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, ''),
+    ]))
+    entries.append(('hgtw','fbst',[
+        ('unam',3,'Бастионная башня'),('uhpm',0,b['bastion_hp']),('udef',0,b['bastion_armor']),
+        ('uaen',0,1),('ua1b',0,b['bastion_damage']),('ua1d',0,1),('ua1s',0,2),
+        ('ua1c',2,b['bastion_cooldown']),('ua1r',0,b['bastion_range']),('uacq',2,float(b['bastion_range'])),
+        ('ua1g',3,'air,ground,structure,debris,item,ward'),('ureq',3,''),('uupt',3,''),
+        ('uabi',3,''),('upgr',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('uhpr',2,0.0),
+        ('utip',3,'Бастионная башня'),
+        ('utub',3,f'Защищает казарму. {b["bastion_hp"]} HP, {b["bastion_armor"]} брони, {b["bastion_damage"]} базового урона, дальность {b["bastion_range"]}. Можно уничтожить; не возрождается.'),
     ]))
     entries.append(('ngme', 'fshp', [
         ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
@@ -231,16 +249,30 @@ def units(b: dict) -> bytes:
             ('utub',3,'Сильная экипировка трёх ступеней. Для покупки подведи героя. Улучшенные предметы стоят дороже.'),
         ]))
     entries.append(('nfoh','ffnt',[
-        ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul'),
+        ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul,FfHP,FfMP'),
         ('upat',3,''),('ucol',2,64.0),('ureq',3,''),
         ('utip',3,'Общий фонтан жизни и маны'),
-        ('utub',3,'Восстанавливает 1% максимального HP и маны в секунду героям и отрядам всех команд в радиусе 650. Работает и во время боя.'),
+        ('utub',3,f'Штатные ауры фонтана восстанавливают {b["fountain_hp_percent"]*100:g}% максимального HP и {b["fountain_mana_percent"]*100:g}% маны в секунду всем героям в радиусе {b["fountain_radius"]}, включая врагов и Нежить. Работает во время боя.'),
     ]))
     return objects(entries)
 
 
-def menu_ability() -> bytes:
-    return objects(item_effects(ROOT)[0], extended=True, original_entries=hero_abilities(ROOT))
+def fountain_abilities(b: dict) -> list:
+    entries=[]
+    for base,raw,field,flag,rate,name in [
+        ('ACnr','FfHP','Oar1','Oar2',b['fountain_hp_percent'],'Восстановление здоровья'),
+        ('ANre','FfMP','Arm1','Arm2',b['fountain_mana_percent'],'Восстановление маны'),
+    ]:
+        entries.append((base,raw,[('alev',0,1),('aher',0,0),('aite',0,0),
+            ('anam',3,name),('aare',2,float(b['fountain_radius']),1,0),
+            ('atar',3,'ground,air,hero,vuln,invu',1,0),
+            (field,2,rate,1,1),(flag,0,1,1,2),
+            ('atp1',3,name,1,0),('aub1',3,f'{rate*100:g}% максимального запаса в секунду. Все герои, все команды, радиус {b["fountain_radius"]}.',1,0)]))
+    return entries
+
+
+def menu_ability(b: dict) -> bytes:
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -252,8 +284,12 @@ def items() -> bytes:
 
 
 def misc(b: dict) -> bytes:
+    rate=b['experience_multiplier']
+    factor=round(rate*100)
+    hero_grants=','.join(str(round(v*rate)) for v in [100,120,160,220,300])
     return (f'[Misc]\nMaxHeroLevel={b["hero_max_level"]}\nHeroAbilityLevelSkip=1\n'
-            'HeroFactorXP=100,100,100,100,100\n'
+            f'HeroFactorXP={factor},{factor},{factor},{factor},{factor}\n'
+            f'GrantHeroXP={hero_grants}\nGrantHeroXPFormulaA=1\nGrantHeroXPFormulaB=0\nGrantHeroXPFormulaC={factor}\n'
             'StrHitPointBonus=30\nIntManaBonus=18\n'
             'MaxUnitSpeed=480\n'
             'NeedHeroXP=200\nNeedHeroXPFormulaA=1.0\nNeedHeroXPFormulaB=100\nNeedHeroXPFormulaC=0\n').encode('ascii')
@@ -293,14 +329,14 @@ def script(b: dict) -> str:
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
-    generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}']
+    generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}']
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
         '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary',
-        '    integer array GearId', '    integer array GearCost', '    integer array GearShop',
+        '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', 'endglobals']
@@ -308,6 +344,8 @@ def script(b: dict) -> str:
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    for idx,(x,y) in enumerate(bastion_positions()):
+        init += [f'    set BastionX[{idx}] = {x}.0',f'    set BastionY[{idx}] = {y}.0']
     for team,(x,y) in enumerate(ENCLOSURES):
         init += [f'    set FortressX[{team}] = {x}.0',f'    set FortressY[{team}] = {y}.0']
     for idx,(x,y) in enumerate(shop_positions()):
@@ -325,6 +363,9 @@ def script(b: dict) -> str:
             idx = race*5+tier
             init += [f"    set ArmyType[{idx}] = 'fm{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
     for idx, hero in enumerate(heroes):
+        assert len(set(hero['gear_families']))==6 and all(0<=k<12 for k in hero['gear_families'])
+        for slot,family in enumerate(hero['gear_families']):
+            init += [f'    set HeroGear[{idx*6+slot}] = {family}']
         init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}', f'    set HeroPrimary[{idx}] = {hero["primary"]}']
         for slot, skill in enumerate(hero['skills']):
             init += [f"    set HeroSkill[{idx*4+slot}] = '{skill}'"]
@@ -472,7 +513,7 @@ def build() -> Path:
     files = {
         'war3map.w3i': info(b), 'war3map.w3e': terrain(), 'war3map.wpm': pathing(),
         'war3map.w3u': units(b), 'war3map.w3q': upgrades(b),
-        'war3map.w3a': menu_ability(), 'war3map.w3b': walls(),
+        'war3map.w3a': menu_ability(b), 'war3map.w3b': walls(),
         'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
         'war3map.j': script(b).encode('utf-8'),
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),

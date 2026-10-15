@@ -27,7 +27,16 @@
         0
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "frontline_support",
+    "gear_families": [
+      2,
+      1,
+      5,
+      6,
+      8,
+      7
+    ]
   },
   {
     "id": "Hmkg",
@@ -57,7 +66,16 @@
         1
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "spell_bruiser",
+    "gear_families": [
+      2,
+      1,
+      5,
+      6,
+      8,
+      0
+    ]
   },
   {
     "id": "Hamg",
@@ -77,7 +95,16 @@
         0
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "summoner",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Hblm",
@@ -108,7 +135,16 @@
         3
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "caster",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Obla",
@@ -139,7 +175,16 @@
         4
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "melee_attacker",
+    "gear_families": [
+      3,
+      0,
+      10,
+      1,
+      5,
+      8
+    ]
   },
   {
     "id": "Ofar",
@@ -164,7 +209,16 @@
         1
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "summoner",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Otch",
@@ -189,7 +243,16 @@
         2
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "aura_tank",
+    "gear_families": [
+      2,
+      1,
+      5,
+      10,
+      7,
+      0
+    ]
   },
   {
     "id": "Oshd",
@@ -225,7 +288,16 @@
         2
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "ranged_support",
+    "gear_families": [
+      3,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Udea",
@@ -255,7 +327,16 @@
         0
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "aura_support",
+    "gear_families": [
+      2,
+      1,
+      5,
+      6,
+      7,
+      0
+    ]
   },
   {
     "id": "Ulic",
@@ -280,7 +361,16 @@
         6
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "caster",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Udre",
@@ -310,7 +400,16 @@
         1
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "vampiric_bruiser",
+    "gear_families": [
+      2,
+      0,
+      1,
+      5,
+      8,
+      7
+    ]
   },
   {
     "id": "Ucrl",
@@ -340,7 +439,16 @@
         2
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "tank",
+    "gear_families": [
+      2,
+      1,
+      5,
+      9,
+      8,
+      7
+    ]
   },
   {
     "id": "Edem",
@@ -365,7 +473,16 @@
         1
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "melee_attacker",
+    "gear_families": [
+      3,
+      11,
+      10,
+      1,
+      5,
+      8
+    ]
   },
   {
     "id": "Ekee",
@@ -391,7 +508,16 @@
         1
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "caster",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ]
   },
   {
     "id": "Emoo",
@@ -416,7 +542,16 @@
         6
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "orb_archer",
+    "gear_families": [
+      3,
+      0,
+      5,
+      6,
+      8,
+      7
+    ]
   },
   {
     "id": "Ewar",
@@ -446,7 +581,16 @@
         1
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "spell_assassin",
+    "gear_families": [
+      3,
+      0,
+      5,
+      6,
+      8,
+      1
+    ]
   },
   {
     "id": "Nbst",
@@ -482,7 +626,16 @@
         5
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "summoner",
+    "gear_families": [
+      2,
+      6,
+      5,
+      1,
+      8,
+      7
+    ]
   },
   {
     "id": "Nbrn",
@@ -517,7 +670,16 @@
         3
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "orb_archer",
+    "gear_families": [
+      3,
+      0,
+      5,
+      6,
+      8,
+      1
+    ]
   },
   {
     "id": "Npbm",
@@ -547,7 +709,16 @@
         2
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "melee_attacker",
+    "gear_families": [
+      2,
+      0,
+      10,
+      1,
+      5,
+      8
+    ]
   },
   {
     "id": "Nfir",
@@ -578,7 +749,16 @@
         5
       ]
     ],
-    "primary": 1
+    "primary": 1,
+    "gear_role": "spell_attacker",
+    "gear_families": [
+      3,
+      4,
+      6,
+      5,
+      1,
+      8
+    ]
   },
   {
     "id": "Nplh",
@@ -603,7 +783,16 @@
         5
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "melee_bruiser",
+    "gear_families": [
+      2,
+      0,
+      10,
+      1,
+      5,
+      8
+    ]
   },
   {
     "id": "Nngs",
@@ -637,7 +826,16 @@
         2
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "mana_shield_caster",
+    "gear_families": [
+      4,
+      6,
+      5,
+      1,
+      8,
+      7
+    ]
   },
   {
     "id": "Ntin",
@@ -668,7 +866,16 @@
         3
       ]
     ],
-    "primary": 2
+    "primary": 2,
+    "gear_role": "hybrid",
+    "gear_families": [
+      4,
+      2,
+      1,
+      5,
+      6,
+      8
+    ]
   },
   {
     "id": "Nalc",
@@ -704,6 +911,15 @@
         3
       ]
     ],
-    "primary": 0
+    "primary": 0,
+    "gear_role": "spell_bruiser",
+    "gear_families": [
+      2,
+      4,
+      6,
+      5,
+      1,
+      8
+    ]
   }
 ]

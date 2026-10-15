@@ -3,6 +3,9 @@
 globals
     unit array Base
     unit array Hero
+    unit array Bastion
+    real array BastionX
+    real array BastionY
     unit array Tower
     group array Army
     boolean array Bot
@@ -523,25 +526,7 @@ function CommandArmy takes integer p, boolean forceOrder returns nothing
 endfunction
 
 function GearFamily takes integer p, integer slot returns integer
-    if slot == 0 then
-        if HeroPrimary[HeroKind[p]] == 1 then
-            return 11
-        endif
-        return 0
-    elseif slot == 1 then
-        return 1
-    elseif slot == 2 then
-        return 2+HeroPrimary[HeroKind[p]]
-    endif
-    if slot == 3 then
-        return 5
-    elseif slot == 4 then
-        if HeroPrimary[HeroKind[p]] == 2 then
-            return 9
-        endif
-        return 10
-    endif
-    return 8
+    return HeroGear[HeroKind[p]*6+slot]
 endfunction
 
 function DesiredGear takes integer p returns integer
@@ -879,6 +864,8 @@ function OnDeath takes nothing returns nothing
     elseif dead == Hero[p] then
         set reward = 100 + 15*GetHeroLevel(dead)
         set Respawn[p] = 15 + GetHeroLevel(dead)*3
+    elseif dead == Bastion[p] then
+        set reward = 250
     elseif dead == Tower[p] then
         set reward = 80
     elseif IsArmyUnit(dead) then
@@ -891,7 +878,7 @@ function OnDeath takes nothing returns nothing
         set Kills[k] = Kills[k]+1
         // Nearby hero receives additional deterministic experience even above melee level 5.
         if Alive(Hero[k]) and DistanceSq(GetUnitX(Hero[k]), GetUnitY(Hero[k]), GetUnitX(dead), GetUnitY(dead)) < 1440000 then
-            call AddHeroXP(Hero[k], reward*2, true)
+            call AddHeroXP(Hero[k], R2I(I2R(reward)*2.0*EXPERIENCE_MULTIPLIER), true)
         endif
     endif
     if dead == Base[p] then
@@ -933,7 +920,7 @@ function OnChat takes nothing returns nothing
     elseif command == "-hp" then
         call Buy(p, 2)
     elseif command == "-spawn" then
-        call Tell(p, "Подкрепления появляются раз в 16 секунд.")
+        call Tell(p, "Подкрепления появляются раз в 12 секунд.")
     elseif command == "-items" then
         call SelectUnitForPlayerSingle(EquipmentShop, Player(p))
         call PanCameraToTimedForPlayer(Player(p), 0, 640, 0.25)
@@ -1035,23 +1022,6 @@ function RegenerateFortresses takes nothing returns nothing
     set u = null
 endfunction
 
-function RegenerateFountain takes nothing returns nothing
-    local unit u
-    local integer p
-    call GroupEnumUnitsInRange(Scan, 0, 0, FOUNTAIN_RADIUS, null)
-    loop
-        set u = FirstOfGroup(Scan)
-        exitwhen u == null
-        call GroupRemoveUnit(Scan, u)
-        set p = GetPlayerId(GetOwningPlayer(u))
-        if p < 12 and Alive(u) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) then
-            call SetUnitState(u, UNIT_STATE_LIFE, GetWidgetLife(u)+GetUnitState(u, UNIT_STATE_MAX_LIFE)*FOUNTAIN_HP_PERCENT)
-            call SetUnitState(u, UNIT_STATE_MANA, GetUnitState(u, UNIT_STATE_MANA)+GetUnitState(u, UNIT_STATE_MAX_MANA)*FOUNTAIN_MANA_PERCENT)
-        endif
-    endloop
-    set u = null
-endfunction
-
 function Tick takes nothing returns nothing
     local integer p = 0
     local integer t = 0
@@ -1060,7 +1030,6 @@ function Tick takes nothing returns nothing
     endif
     set Seconds = Seconds+1
     call RegenerateFortresses()
-    call RegenerateFountain()
     if Seconds == 1 then
         loop
             exitwhen p == 12
@@ -1135,7 +1104,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Five equipment shops per fortress. Shared fountain at the arena center: 1% life/mana regeneration per second for all teams. Bots research and buy equipment at normal prices.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. Waves: three identical troops of the current army tier every 12 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Five equipment shops per fortress. Shared fountain: native health/mana auras restore 2% per second to all heroes of every team within 1000, including undead. Each barracks has a destructible 45000 HP bastion tower: 450 damage, 18 armor, range 1000. Experience rate: 65%. Bots buy hero-specific equipment.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
@@ -1216,6 +1185,7 @@ function InitGame takes nothing returns nothing
         set Army[p] = CreateGroup()
         set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
         set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
+        set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
         if Bot[p] then
             call AssignBotChoices(p)
         else

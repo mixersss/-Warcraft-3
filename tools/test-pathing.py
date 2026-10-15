@@ -40,6 +40,26 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
         homes.append((x,y))
         for sx,sy in [(x,y),(x-90,y+220),(x,y+220),(x+90,y+220),(x,y-240),(x*0.82,y*0.82)]:
             assert cell(sx,sy) in accessible, ('Unreachable base/spawn/hero/tower',team,sx,sy)
+    # Bastion footprint is away from the barracks, spawns, existing towers,
+    # heroes and shops. Include a conservative 192x192 footprint in flood fill.
+    bastions=[]
+    for bx,by in [(-4350,-3850),(-3900,-4450),(-3150,-3750)]:
+        for _ in range(team): bx,by=-by,bx
+        bastions.append((bx,by))
+        for dx in (-96,0,96):
+            for dy in (-96,0,96): assert cell(bx+dx,by+dy) in accessible
+    obstacles=set(blocked)
+    for bx,by in bastions:
+        for py in range(height):
+            wy=(py+0.5)*32-6144
+            if abs(wy-by)>96: continue
+            for px in range(width):
+                wx=(px+0.5)*32-6144
+                if abs(wx-bx)<=96: obstacles.add(py*width+px)
+    siege_routes=reached(center,obstacles)
+    for x,y in homes:
+        for sx,sy in [(x,y),(x-90,y+220),(x,y+220),(x+90,y+220),(x,y-240),(x*0.82,y*0.82)]:
+            assert cell(sx,sy) in siege_routes,('Bastion blocks base, spawn, hero or guard tower',team,sx,sy)
     # Closing only a 1800x1800 square around the intended gate must seal
     # that fortress. An extra exit anywhere else would fail this assertion.
     length = math.hypot(cx,cy)

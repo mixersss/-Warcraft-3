@@ -9,7 +9,7 @@
 - Keep balance constants in `map/balance.json`; edit source JASS in `map/war3map.j` rather than generated JASS.
 - Preserve classic binary versions and check object modification IDs and types against Warcraft metadata when adding fields.
 - Army upgrades use the native research queue for humans and bots. `Buy` issues a research order for bots/chat; command-card clicks use the same W3Q prices and finish event. Never deduct research gold again in `OnResearch`; never give bots free resources or instant research.
-- Preserve 200 ranks each for attack/armor/HP, four base upgrades, 16-second waves, hero level 500 and basic/ultimate ability caps 300/50. Award one extra skill point per gained level through the shared, idempotent hero-level handler. Keep explicit per-rank ability data and the Tinker engineering variants consistent.
+- Preserve 200 ranks each for attack/armor/HP, four base upgrades, 12-second waves, hero level 500 and basic/ultimate ability caps 300/50. Award one extra skill point per gained level through the shared, idempotent hero-level handler. Keep explicit per-rank ability data and the Tinker engineering variants consistent.
 - Keep all 24 roster heroes selectable and available to synchronized bot RNG. Races and hero choice lock after preparation; test menu callbacks and every race/tier combination when changing them.
 - Walls use static WPM collision and invulnerable destructables with no extra pathing texture. Preserve exactly one ground gate per team and run the WPM flood-fill check.
 - Hero spell use, pathfinding, loading and multiplayer sync require real in-game validation. Record those separately from automated checks.
@@ -24,6 +24,10 @@
 - Sanctuary regeneration is 0.15% HP / 0.1% mana per second inside radius 2200, only for the circle owner team, living non-buildings. Do not reintroduce the old fast personal fountain.
 - Each fortress has five shops. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
 
-- Combat structures have 30000 base HP and +15000 per tier; towers have 6000 HP. The central neutral fountain uses one shared trigger (1% max HP/mana per second, radius 650, every team, living non-buildings) and no inherited healing ability.
+- Combat structures have 30000 base HP and +15000 per tier; towers have 6000 HP. The central neutral fountain uses two native Classic regeneration auras: FfHP/ACnr and FfMP/ANre. Each restores 2% of max pool per second, radius 1000, heroes of every team, with no organic or alliance restriction. Do not reintroduce the removed trigger regeneration or double healing.
 - Floating gold uses the actual OnDeath reward; create synchronized texttags and change only visibility with GetLocalPlayer. Never award a second bounty or show allied kills.
 - Black Arrow targets include all enemy/neutral ground and air troop categories, including undead mechanical troops; do not reintroduce organic-only filtering. Preserve native skeleton data and test gameplay limits separately.
+
+- Each barracks has an additional vulnerable, non-regenerating 45000 HP bastion (450 base damage, 18 armor, 1000 range, 1.2-second attacks). Preserve existing guard towers and test bastion footprint clearance. Bastions never respawn.
+- Experience multiplier is 0.65: keep native creep factors, native hero grants/formula and supplemental OnDeath XP consistent. Waves are every 12 seconds.
+- Every roster hero has six unique gear_families chosen for its gear_role. Do not add redundant critical strike to native crit heroes, lifesteal masks to Dreadlord or orb-arrow users, or force the same primary-stat loadout on every hero. Verify real purchases/upgrades for all 24 profiles.

@@ -38,4 +38,4 @@ run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.
 const abilities = parseObjects('war3map.w3a').originalTable.objects;
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.oldId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
-console.log('PASS: JASS: shared native research queue/prices, 200-rank caps and bot progression, 16s waves, 4 races, 24 heroes with 300/50 skills, channels, summons, charm, elimination and revival (mock natives).');
+console.log('PASS: JASS: shared native research queue/prices, 200-rank caps and bot progression, 12s waves, 4 races, 24 heroes with 300/50 skills, channels, summons, charm, elimination and revival (mock natives).');

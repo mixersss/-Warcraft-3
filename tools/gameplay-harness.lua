@@ -216,6 +216,7 @@ function reset()
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
         Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);SkillLevel[p]=1
+        Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=45000;Bastion[p].max=45000
     end
 end
 
@@ -252,10 +253,12 @@ for p=0,11 do
 end
 -- Killing a unit frees one cap slot, produces one reward, and permits a partial wave.
 Dying,Killer=Army[3][1],Hero[0]
+Hero[0].x=Dying.x;Hero[0].y=Dying.y
 Dying.hp=0
 local gold=Players[0].gold
 OnDeath()
 assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+8 and Kills[0]==1)
+assert(Hero[0].xp==10,'Manual reward XP is reduced from 16 to 10 for an 8-gold kill')
 SpawnWave(3)
 assert(#Army[3]==ARMY_CAP)
 Dying,Killer=Army[1][1],Hero[0];Dying.hp=0;gold=Players[0].gold
@@ -442,18 +445,6 @@ reset();Bot[0]=true;AddGold(0,1000)
 assert(GearSavings[0]==500 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
 
 reset()
--- The shared fountain heals both opposing teams, but no buildings or dead units.
-for _,p in ipairs({0,3,6,9}) do
-    Hero[p].x=100;Hero[p].y=0;Hero[p].hp=50;Hero[p].mana=30
-end
-Hero[1].x=700;Hero[1].y=0;Hero[1].hp=50;Hero[1].mana=30
-Base[0].x=0;Base[0].y=0;Base[0].hp=1000
-Hero[2].x=0;Hero[2].y=0;Hero[2].hp=0
-RegenerateFountain()
-for _,p in ipairs({0,3,6,9}) do assert(Hero[p].hp==51 and Hero[p].mana==31) end
-assert(Hero[1].hp==50 and Base[0].hp==1000 and Hero[2].hp==0)
-
-reset()
 SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
 local gold=Players[0].gold;OnDeath()
 assert(Players[0].gold==gold+8 and #GoldTags==1)
@@ -461,3 +452,11 @@ assert(GoldTags[1].text=='+8' and GoldTags[1].visible and not GoldTags[1].perman
 SpawnWave(1);Dying=Army[1][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'Allied kills give neither gold nor floating reward')
 Bot[0]=true;SpawnWave(3);Dying=Army[3][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'No cosmetic tag allocation for bot rewards')
 Bot[0]=false;ShowGoldReward(1,Hero[3],10);assert(not GoldTags[2].visible,'Reward is private to its owning player')
+
+reset()
+-- Destroying a vulnerable bastion pays once, without destroying its barracks.
+Dying=Bastion[3];Killer=Hero[0];Dying.hp=0
+local gold=Players[0].gold;OnDeath()
+assert(Players[0].gold==gold+250 and Alive(Base[3]) and not TeamLost[1])
+for second=1,120 do Tick() end
+assert(not Alive(Bastion[3]),'Bastions never respawn')

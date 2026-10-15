@@ -109,7 +109,7 @@ for (let race = 0; race < 4; race++) {
 }
 const gear=require('../map/equipment.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,57,'Passive equipment effects');
+assert.equal(gearAbilities.length,59,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -182,7 +182,7 @@ assert.equal(value(abilityById.get('ANms'),'Nms2',300),1,'Mana Shield absorption
 assert.ok(value(abilityById.get('AOcl'),'Ocl3',300)<=value(abilityById.get('AOcl'),'Ocl3',3),'Chain lightning falloff improves');
 assert.ok(value(abilityById.get('AUts'),'Uts2',300)<=1,'Thorns must not increase damage received');
 assert.ok(value(abilityById.get('AOae'),'Oae2',300)>value(abilityById.get('AOae'),'Oae2',3),'Endurance Aura continues growing');
-assert.equal(balance.spawn_seconds,16);
+assert.equal(balance.spawn_seconds,12);
 const shopItems = require('../map/items.json');
 assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length);
 assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
@@ -211,8 +211,34 @@ for(const item of gear) {
 }
 assert.equal(value(barracks,'uhpm'),30000);
 assert.equal(value(custom.find(o=>o.newId==='ftow'),'uhpm'),6000);
-assert.equal(value(custom.find(o=>o.newId==='ffnt'),'uabi'),'Avul','Fountain healing is scripted once for every team');
+const bastion=custom.find(o=>o.newId==='fbst');
+assert.equal(value(bastion,'uhpm'),45000);
+assert.equal(value(bastion,'udef'),18);
+assert.equal(value(bastion,'ua1b'),450);
+assert.equal(value(bastion,'ua1r'),1000);
+assert.ok(Math.abs(value(bastion,'ua1c')-1.2)<1e-6);
+assert.equal(value(bastion,'uabi'),'','Bastions must remain vulnerable');
+assert.equal(value(bastion,'uhpr'),0,'No hidden tower healing');
+assert.match(misc,/HeroFactorXP=65,65,65,65,65/);
+assert.match(misc,/GrantHeroXP=65,78,104,143,195/);
+assert.match(misc,/GrantHeroXPFormulaC=65/);
+for(const h of heroes) {
+ assert.equal(new Set(h.gear_families).size,6,'Unique categories in each hero loadout');
+ assert.ok(h.gear_families.every(f=>f>=0 && f<12));
+ if(h.skills.includes('AOcr') || h.skills.includes('ANdb')) assert.ok(!h.gear_families.includes(11),'No redundant critical-strike item');
+ if(h.skills.includes('AUav')) assert.ok(!h.gear_families.includes(10),'Dreadlord already has vampirism');
+ if(h.autocast) assert.ok(!h.gear_families.includes(10),'No competing lifesteal orb on autocast arrow heroes');
+}
+assert.equal(value(custom.find(o=>o.newId==='ffnt'),'uabi'),'Avul,FfHP,FfMP','Both native regeneration auras are installed on the fountain');
 assert.equal(value(custom.find(o=>o.newId==='ffnt'),'upat'),'','Fountain has no large blocking footprint at the rally point');
+for(const [id,base,field,flag] of [['FfHP','ACnr','Oar1','Oar2'],['FfMP','ANre','Arm1','Arm2']]) {
+ const aura=gearAbilities.find(o=>o.newId===id);
+ assert.equal(aura.oldId,base,'Use proven native fountain aura prototypes');
+ assert.equal(value(aura,'atar',1),'ground,air,hero,vuln,invu','Every hero: no organic, allied or enemy-only restriction');
+ assert.equal(value(aura,'aare',1),1000);
+ assert.ok(Math.abs(value(aura,field,1)-0.02)<1e-6);
+ assert.equal(value(aura,flag,1),1,'Regeneration is a percentage of maximum pool');
+}
 assert.match(misc,/MaxUnitSpeed=480/);
 const arrow=abilityById.get('ANba');
 for(const rank of [1,10,300]) {
