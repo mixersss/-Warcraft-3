@@ -95,9 +95,9 @@ for(const unit of custom) for(const mod of unit.modifications) {
   if(expected!==undefined) assert.equal(mod.variableType,expected,`${unit.newId}: Classic ${mod.id} binary type`);
 }
 assert.equal(races.length, 4);
-assert.equal(heroes.length, 24);
-assert.equal(new Set(heroes.map(h => h.id)).size, 24);
-assert.deepEqual([0,1,2,3,4].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8]);
+assert.equal(heroes.length, 28);
+assert.equal(new Set(heroes.map(h => h.id)).size, 28);
+assert.deepEqual([0,1,2,3,4,5].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8,4]);
 assert.equal(custom.filter(o=>o.newId.startsWith('fm')).length,20,'Exactly one troop type per race/tier');
 assert.equal(new Set(custom.map(o => o.newId)).size,custom.length,'Unique custom rawcodes');
 for (let race = 0; race < 4; race++) {
@@ -109,7 +109,7 @@ for (let race = 0; race < 4; race++) {
 }
 const gear=require('../map/equipment.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,59,'Passive equipment effects');
+assert.equal(gearAbilities.length,79,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -124,7 +124,7 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   assert.equal(value(upgrade,'gbpx'),col);
   assert.equal(value(upgrade,'gbpy'),0);
   assert.equal(value(upgrade,'gef1'),effect);
-  const amount=[3,1,0.1,15000][col];
+  const amount=[6,2,0.2,15000][col];
   assert.ok(Math.abs(value(upgrade,'gba1')-amount)<1e-6);
   assert.ok(Math.abs(value(upgrade,'gmo1')-amount)<1e-6,'Every additional research rank must increase the effect');
   for (const rank of col===3 ? [1,2,4] : [1,2,10,200]) {
@@ -141,7 +141,7 @@ const abilities = parsed['war3map.w3a'].originalTable.objects;
 assert.equal(abilities.length,105,'96 hero skills plus 9 engineering variants');
 for (const hero of heroes) {
   for (const [slot,id] of hero.skills.entries()) {
-    const ability = abilities.find(o => o.oldId===id);
+    const ability = abilities.find(o => o.oldId===id) || gearAbilities.find(o=>o.newId===id);
     const cap = slot===3 ? 50 : 300;
     assert.equal(value(ability,'alev'),cap);
     assert.equal(value(ability,'arlv'),slot===3 ? 6 : 1);
@@ -212,16 +212,16 @@ for(const item of gear) {
 assert.equal(value(barracks,'uhpm'),30000);
 assert.equal(value(custom.find(o=>o.newId==='ftow'),'uhpm'),6000);
 const bastion=custom.find(o=>o.newId==='fbst');
-assert.equal(value(bastion,'uhpm'),45000);
-assert.equal(value(bastion,'udef'),18);
-assert.equal(value(bastion,'ua1b'),450);
+assert.equal(value(bastion,'uhpm'),60000);
+assert.equal(value(bastion,'udef'),24);
+assert.equal(value(bastion,'ua1b'),700);
 assert.equal(value(bastion,'ua1r'),1000);
-assert.ok(Math.abs(value(bastion,'ua1c')-1.2)<1e-6);
+assert.ok(Math.abs(value(bastion,'ua1c')-0.75)<1e-6);
 assert.equal(value(bastion,'uabi'),'','Bastions must remain vulnerable');
 assert.equal(value(bastion,'uhpr'),0,'No hidden tower healing');
-assert.match(misc,/HeroFactorXP=65,65,65,65,65/);
-assert.match(misc,/GrantHeroXP=65,78,104,143,195/);
-assert.match(misc,/GrantHeroXPFormulaC=65/);
+assert.match(misc,/HeroFactorXP=50,50,50,50,50/);
+assert.match(misc,/GrantHeroXP=50,60,80,110,150/);
+assert.match(misc,/GrantHeroXPFormulaC=50/);
 for(const h of heroes) {
  assert.equal(new Set(h.gear_families).size,6,'Unique categories in each hero loadout');
  assert.ok(h.gear_families.every(f=>f>=0 && f<12));
@@ -236,7 +236,7 @@ for(const [id,base,field,flag] of [['FfHP','ACnr','Oar1','Oar2'],['FfMP','ANre',
  assert.equal(aura.oldId,base,'Use proven native fountain aura prototypes');
  assert.equal(value(aura,'atar',1),'ground,air,hero,vuln,invu','Every hero: no organic, allied or enemy-only restriction');
  assert.equal(value(aura,'aare',1),1000);
- assert.ok(Math.abs(value(aura,field,1)-0.02)<1e-6);
+ assert.ok(Math.abs(value(aura,field,1)-0.015)<1e-6);
  assert.equal(value(aura,flag,1),1,'Regeneration is a percentage of maximum pool');
 }
 assert.match(misc,/MaxUnitSpeed=480/);
@@ -286,4 +286,31 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 46 shop items, 12 slots, 24 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 46 shop items, 12 slots, 28 heroes and 20 army variants and rank-specific summons.');
+
+// Native portrait picker: every card is free and appears on exactly one page.
+for(let page=0;page<4;page++) {
+ const picker=custom.find(o=>o.newId===`fpk${page}`);
+ assert.equal(picker.oldId,'hbar');
+ assert.equal(value(picker,'utra'),heroes.slice(page*8,page*8+8).map((h,i)=>`fp${String(page*8+i).padStart(2,'0')}`).join(','));
+ assert.equal(value(picker,'uabi'),'Fprv,Fnxt,Frnd,Fmod');
+ assert.equal(value(picker,'upat'),'');
+}
+for(const [idx,hero] of heroes.entries()) {
+ const card=custom.find(o=>o.newId===`fp${String(idx).padStart(2,'0')}`);
+ assert.equal(card.oldId,'hpea','No native hero training limit for selection cards');
+ assert.equal(value(card,'uico'),hero.icon);
+ assert.equal(value(card,'ugol'),0);assert.equal(value(card,'ufoo'),0);
+ assert.equal(value(card,'ubpx'),idx%4);assert.equal(value(card,'ubpy'),Math.floor(idx%8/4));
+ if(hero.base) {
+  const unit=custom.find(o=>o.newId===hero.id);
+  assert.equal(unit.oldId,hero.base);assert.equal(value(unit,'uhab'),hero.skills.join(','));
+  for(const [slot,id] of hero.skills.entries()) {
+   const skill=gearAbilities.find(o=>o.newId===id);
+   assert.equal(skill.oldId,hero.skill_sources[slot]);
+   assert.equal(value(skill,'arpx'),slot);assert.equal(value(skill,'arpy'),0);
+   assert.equal(value(skill,'abpx'),slot);assert.equal(value(skill,'abpy'),2);
+  }
+ }
+}
+for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),2);

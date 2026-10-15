@@ -1,6 +1,15 @@
 // Four Fronts Frenzy. Plain JASS: Warcraft III TFT 1.26+.
 // Balance globals and InitBalance are generated from balance.json.
 globals
+    unit array HeroPicker
+    integer array PickerPage
+    integer array BastionUntil
+    integer HostPlayer = -1
+    boolean ModeDialogOpen = false
+    boolean AllRandomMode = false
+    trigger PickerTrainTrigger = null
+    trigger PickerSpellTrigger = null
+    trigger BaseDefenseTrigger = null
     unit array Base
     unit array Hero
     unit array Bastion
@@ -8,6 +17,7 @@ globals
     real array BastionY
     unit array Tower
     group array Army
+    boolean array SlotActive
     boolean array Bot
     boolean array Lost
     boolean array TeamLost
@@ -87,7 +97,7 @@ endfunction
 function AddGold takes integer p, integer amount returns nothing
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) + amount)
     if Bot[p] and GearProgress[p] < 18 then
-        set GearSavings[p] = GearSavings[p]+amount/2
+        set GearSavings[p] = GearSavings[p]+amount/3
     endif
 endfunction
 
@@ -187,11 +197,11 @@ endfunction
 
 function UpgradeName takes integer kind returns string
     if kind == 0 then
-        return "Атака армии +3"
+        return "Атака армии +6"
     elseif kind == 1 then
-        return "Броня армии +1"
+        return "Броня армии +2"
     elseif kind == 2 then
-        return "Здоровье армии +10%"
+        return "Здоровье армии +20%"
     elseif kind == 3 then
         return "Развитие казармы"
     elseif kind == 4 then
@@ -334,7 +344,7 @@ function AssignBotChoices takes integer p returns nothing
 endfunction
 
 function SelectArmyRace takes integer p, integer choice returns boolean
-    if Seconds >= WARMUP_SECONDS or choice < 0 or choice > 3 or Lost[p] then
+    if AllRandomMode or Seconds >= WARMUP_SECONDS or choice < 0 or choice > 3 or Lost[p] then
         call Tell(p, "Расу армии можно выбрать только до первого спавна.")
         return false
     endif
@@ -344,7 +354,7 @@ function SelectArmyRace takes integer p, integer choice returns boolean
 endfunction
 
 function SelectRosterHero takes integer p, integer choice returns boolean
-    if Seconds >= WARMUP_SECONDS or Power[p] > 0 or choice < 0 or choice >= HERO_COUNT or Lost[p] then
+    if AllRandomMode or Seconds >= WARMUP_SECONDS or Power[p] > 0 or choice < 0 or choice >= HERO_COUNT or Lost[p] then
         call Tell(p, "Выбор героя закрыт после начала боя или покупки характеристик.")
         return false
     endif
@@ -356,9 +366,38 @@ function SelectRosterHero takes integer p, integer choice returns boolean
     return true
 endfunction
 
+function ShowHeroPicker takes integer p, integer page returns nothing
+    if AllRandomMode or Seconds >= WARMUP_SECONDS or Lost[p] or Bot[p] then
+        call ShowShop(p)
+        return
+    endif
+    call DialogDisplay(Player(p), Shop[p], false)
+    if HeroPicker[p] != null then
+        call RemoveUnit(HeroPicker[p])
+    endif
+    set PickerPage[p] = ModuloInteger(page+4, 4)
+    set HeroPicker[p] = CreateUnit(Player(p), 'fpk0'+PickerPage[p], HomeX[p]+350, HomeY[p]-350, 270)
+    call SetUnitInvulnerable(HeroPicker[p], true)
+    call SelectUnitForPlayerSingle(HeroPicker[p], Player(p))
+    call PanCameraToTimedForPlayer(Player(p), HomeX[p], HomeY[p], 0.25)
+    call Tell(p, "Выбери портрет героя. Внизу — страницы и случайный герой. 24 стандартных и 4 авторских героя.")
+endfunction
+
+function ShowModes takes integer p returns nothing
+    if p != HostPlayer or Seconds > 15 or AllRandomMode then
+        call Tell(p, "Режим выбирает первый игрок до 15-й секунды: -ar или -mode.")
+        return
+    endif
+    set ModeDialogOpen = true
+    call ClearMenu(p, "РЕЖИМ ИГРЫ — выбор до 15-й секунды")
+    call MenuButton(p, 0, "Обычный: выбрать расу и героя", 500)
+    call MenuButton(p, 1, "Всё наугад: расы и герои всем", 501)
+    call DialogDisplay(Player(p), Shop[p], true)
+endfunction
+
 function ShowRaces takes integer p returns nothing
     local integer k = 0
-    if Seconds >= WARMUP_SECONDS then
+    if AllRandomMode or Seconds >= WARMUP_SECONDS then
         call ShowShop(p)
         return
     endif
@@ -378,31 +417,34 @@ function HeroCategory takes integer category returns string
     if category < 4 then
         return RaceName[category]
     endif
+    if category == 5 then
+        return "Авторские герои"
+    endif
     return "Нейтральные герои"
 endfunction
 
 function ShowHeroGroups takes integer p returns nothing
     local integer k = 0
-    if Seconds >= WARMUP_SECONDS then
+    if AllRandomMode or Seconds >= WARMUP_SECONDS then
         call ShowShop(p)
         return
     endif
-    call ClearMenu(p, "ВЫБОР ГЕРОЯ: 24 стандартных героя")
+    call ClearMenu(p, "ВЫБОР ГЕРОЯ: 28 героев")
     loop
-        exitwhen k == 5
+        exitwhen k == 6
         call MenuButton(p, k, HeroCategory(k), 200+k)
         set k = k+1
     endloop
-    call MenuButton(p, 5, "Случайный герой", 399)
-    call MenuButton(p, 6, "Меню армии", 13)
-    call MenuButton(p, 7, "Закрыть", 12)
+    call MenuButton(p, 6, "Случайный герой", 399)
+    call MenuButton(p, 7, "Меню армии", 13)
+    call MenuButton(p, 8, "Закрыть", 12)
     call DialogDisplay(Player(p), Shop[p], true)
 endfunction
 
 function ShowHeroes takes integer p, integer category returns nothing
     local integer k = 0
     local integer slot = 0
-    if Seconds >= WARMUP_SECONDS then
+    if AllRandomMode or Seconds >= WARMUP_SECONDS then
         call ShowShop(p)
         return
     endif
@@ -421,6 +463,74 @@ function ShowHeroes takes integer p, integer category returns nothing
     call DialogDisplay(Player(p), Shop[p], true)
 endfunction
 
+function SetAllRandom takes integer requester returns nothing
+    local integer p = 0
+    if requester != HostPlayer or Seconds > 15 or AllRandomMode then
+        return
+    endif
+    loop
+        exitwhen p == 12
+        if Power[p] > 0 then
+            call Tell(requester, "Режим уже нельзя менять после покупки характеристик героя.")
+            return
+        endif
+        set p = p+1
+    endloop
+    set AllRandomMode = true
+    set p = 0
+    loop
+        exitwhen p == 12
+        if not Lost[p] then
+            call RemoveUnit(Hero[p])
+            call AssignBotChoices(p)
+            if HeroPicker[p] != null then
+                call RemoveUnit(HeroPicker[p])
+                set HeroPicker[p] = null
+            endif
+            call DialogDisplay(Player(p), Shop[p], false)
+            call Tell(p, "Всё наугад: " + RaceName[ArmyRace[p]] + " / " + HeroName[HeroKind[p]])
+        endif
+        set p = p+1
+    endloop
+    call Say("Режим ВСЁ НАУГАД: каждому случайная раса армии и герой, включая авторских.")
+endfunction
+
+function OnHeroPick takes nothing returns nothing
+    local unit token = GetTrainedUnit()
+    local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+    local integer k = 0
+    if p < 12 and GetTriggerUnit() == HeroPicker[p] then
+        loop
+            exitwhen k == HERO_COUNT or GetUnitTypeId(token) == PickToken[k]
+            set k = k+1
+        endloop
+        call RemoveUnit(token)
+        if k < HERO_COUNT then
+            call SelectRosterHero(p, k)
+            call ShowShop(p)
+        endif
+    endif
+    set token = null
+endfunction
+
+function OnPickerSpell takes nothing returns nothing
+    local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+    local integer spell = GetSpellAbilityId()
+    if p >= 12 or GetTriggerUnit() != HeroPicker[p] then
+        return
+    endif
+    if spell == 'Fprv' then
+        call ShowHeroPicker(p, PickerPage[p]-1)
+    elseif spell == 'Fnxt' then
+        call ShowHeroPicker(p, PickerPage[p]+1)
+    elseif spell == 'Frnd' then
+        call SelectRosterHero(p, GetRandomInt(0, HERO_COUNT-1))
+        call ShowShop(p)
+    elseif spell == 'Fmod' then
+        call ShowModes(p)
+    endif
+endfunction
+
 function OnShop takes nothing returns nothing
     local integer p = GetPlayerId(GetTriggerPlayer())
     local integer k = 0
@@ -435,10 +545,16 @@ function OnShop takes nothing returns nothing
         endif
         set k = k+1
     endloop
-    if action == 10 then
+    if action == 500 then
+        set ModeDialogOpen = false
+        call ShowRaces(p)
+    elseif action == 501 then
+        set ModeDialogOpen = false
+        call SetAllRandom(p)
+    elseif action == 10 then
         call ShowRaces(p)
     elseif action == 11 then
-        call ShowHeroGroups(p)
+        call ShowHeroPicker(p, 0)
     elseif action == 13 then
         call ShowShop(p)
     elseif action >= 100 and action <= 104 then
@@ -446,8 +562,8 @@ function OnShop takes nothing returns nothing
             set action = 100+GetRandomInt(0, 3)
         endif
         call SelectArmyRace(p, action-100)
-        call ShowHeroGroups(p)
-    elseif action >= 200 and action < 205 then
+        call ShowHeroPicker(p, 0)
+    elseif action >= 200 and action < 206 then
         call ShowHeroes(p, action-200)
     elseif action == 399 then
         call SelectRosterHero(p, GetRandomInt(0, HERO_COUNT-1))
@@ -608,6 +724,9 @@ function BotResearch takes integer p, integer kind returns nothing
     local integer reserve = 0
     if GearProgress[p] < 18 then
         set reserve = IMinBJ(GearSavings[p], GearCost[DesiredGear(p)])
+        if GearSavings[p] < GearCost[DesiredGear(p)] then
+            set reserve = IMinBJ(reserve, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)/4)
+        endif
     endif
     if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-UpgradeCost(p, kind) >= reserve then
         call Buy(p, kind)
@@ -615,10 +734,13 @@ function BotResearch takes integer p, integer kind returns nothing
 endfunction
 
 function BotBuy takes integer p returns nothing
+    if GetUnitCurrentOrder(Base[p]) != 0 then
+        return
+    endif
     call SyncArmyResearch(p)
     // Develop the barracks early; balance all three troop stats afterwards.
     // No free gold or instant upgrades: use the native research queue.
-    if Tier[p] < 4 and Attack[p] >= (Tier[p]+1)*2 and Armor[p] >= Tier[p]+1 and Vitality[p] >= Tier[p]+1 then
+    if Tier[p] < 4 and Attack[p] >= Tier[p]+1 and Armor[p] >= Tier[p]+1 and Vitality[p] >= Tier[p]+1 then
         call BotResearch(p, 3)
     elseif Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p]*2 and Attack[p] <= Vitality[p]*2 then
         call BotResearch(p, 0)
@@ -782,7 +904,7 @@ function FinishIfWon takes nothing returns nothing
         loop
             exitwhen p == 12
             call DialogDisplay(Player(p), Shop[p], false)
-            if not Bot[p] then
+            if SlotActive[p] and not Bot[p] then
                 if TeamOf(p) == winner then
                     call CustomVictoryBJ(Player(p), true, true)
                 else
@@ -910,7 +1032,13 @@ function OnChat takes nothing returns nothing
     elseif command == "-race" then
         call ShowRaces(p)
     elseif command == "-hero" then
+        call ShowHeroPicker(p, 0)
+    elseif command == "-herolist" then
         call ShowHeroGroups(p)
+    elseif command == "-ar" then
+        call SetAllRandom(p)
+    elseif command == "-mode" then
+        call ShowModes(p)
     elseif command == "-attack" then
         call Buy(p, 0)
     elseif command == "-armor" then
@@ -968,7 +1096,7 @@ function OnChat takes nothing returns nothing
             endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "Выдели казарму: 4 кнопки исследований. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 24 героя | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
+        call Tell(p, "Выдели казарму: 4 кнопки исследований. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 28 героев по портретам | -ar: всё наугад до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -985,7 +1113,9 @@ function UpdateBoard takes nothing returns nothing
     loop
         exitwhen p == 12
         call BoardCell(p+1, 0, "T" + I2S(TeamOf(p)+1) + " " + GetPlayerName(Player(p)))
-        if Lost[p] then
+        if not SlotActive[p] then
+            call BoardCell(p+1, 1, "EMPTY")
+        elseif Lost[p] then
             call BoardCell(p+1, 1, "OUT")
         elseif not Alive(Base[p]) then
             call BoardCell(p+1, 1, "NO BASE")
@@ -1030,11 +1160,19 @@ function Tick takes nothing returns nothing
     endif
     set Seconds = Seconds+1
     call RegenerateFortresses()
+    if Seconds == 16 and HostPlayer >= 0 and ModeDialogOpen then
+        set ModeDialogOpen = false
+        call ShowRaces(HostPlayer)
+    endif
     if Seconds == 1 then
         loop
             exitwhen p == 12
-            if not Bot[p] then
-                call ShowRaces(p)
+            if not Lost[p] and not Bot[p] then
+                if p == HostPlayer then
+                    call ShowModes(p)
+                else
+                    call ShowRaces(p)
+                endif
             endif
             set p = p+1
         endloop
@@ -1051,6 +1189,9 @@ function Tick takes nothing returns nothing
     endif
     loop
         exitwhen p == 12
+        if Alive(Bastion[p]) and Seconds >= BastionUntil[p] then
+            call PauseUnit(Bastion[p], true)
+        endif
         if not Lost[p] then
             if Alive(Base[p]) then
                 if Seconds > WARMUP_SECONDS then
@@ -1068,7 +1209,7 @@ function Tick takes nothing returns nothing
                         call SetUnitState(Hero[p], UNIT_STATE_MANA, GetUnitState(Hero[p], UNIT_STATE_MAX_MANA))
                     endif
                 endif
-                if Bot[p] and Seconds >= WARMUP_SECONDS and ModuloInteger(Seconds+p, 5) == 0 then
+                if Bot[p] and Seconds >= WARMUP_SECONDS then
                     call BotBuy(p)
                 endif
             endif
@@ -1090,6 +1231,10 @@ function Tick takes nothing returns nothing
             exitwhen p == 12
             if Alive(Base[p]) then
                 call PauseUnit(Hero[p], false)
+                if HeroPicker[p] != null then
+                    call RemoveUnit(HeroPicker[p])
+                    set HeroPicker[p] = null
+                endif
                 call DialogDisplay(Player(p), Shop[p], false)
                 call SpawnWave(p)
             endif
@@ -1104,23 +1249,118 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. Waves: three identical troops of the current army tier every 12 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Five equipment shops per fortress. Shared fountain: native health/mana auras restore 2% per second to all heroes of every team within 1000, including undead. Each barracks has a destructible 45000 HP bastion tower: 450 damage, 18 armor, range 1000. Experience rate: 65%. Bots buy hero-specific equipment.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 6 damage and armor adds 2 per rank. HP research adds 20% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. " + "Five equipment shops per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 60000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots buy hero-specific equipment.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Five fortress shops sell weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: portrait selection before 60 seconds. 28 heroes including four custom. -mode / -ar: first occupied human chooses mode before 15s. Open slots stay empty. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Five fortress shops sell weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
 endfunction
 
+function OnBaseDefense takes nothing returns nothing
+    local unit target = GetTriggerUnit()
+    local unit attacker = GetEventDamageSource()
+    local integer p = GetPlayerId(GetOwningPlayer(target))
+    if p < 12 and GetEventDamage() > 0 and Alive(attacker) and Alive(Bastion[p]) then
+        if IsUnitEnemy(attacker, Player(p)) then
+            if Seconds >= BastionUntil[p] then
+                call PauseUnit(Bastion[p], false)
+                call IssueTargetOrder(Bastion[p], "attack", attacker)
+            endif
+            set BastionUntil[p] = Seconds+6
+        endif
+    endif
+    set target = null
+    set attacker = null
+endfunction
+
+function InitSlot takes integer p returns nothing
+    local integer t
+    local integer j
+    local fogmodifier fog
+    set t = TeamOf(p)
+    set SlotActive[p] = GetPlayerSlotState(Player(p)) == PLAYER_SLOT_STATE_PLAYING
+    set Lost[p] = not SlotActive[p]
+    set Army[p] = CreateGroup()
+    set Shop[p] = DialogCreate()
+    if not SlotActive[p] then
+        set Bot[p] = false
+        return
+    endif
+    set Bot[p] = GetPlayerController(Player(p)) != MAP_CONTROL_USER
+    if not Bot[p] and HostPlayer == -1 then
+        set HostPlayer = p
+    endif
+    set AutoArmy[p] = true
+    if Bot[p] then
+        call SetPlayerController(Player(p), MAP_CONTROL_COMPUTER)
+        call SetPlayerName(Player(p), "Bot " + I2S(p+1))
+    endif
+    call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, STARTING_GOLD)
+    call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_LUMBER, 0)
+    call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_FOOD_CAP, 300)
+    call SetPlayerState(Player(p), PLAYER_STATE_GIVES_BOUNTY, 0)
+    call SetPlayerState(Player(p), PLAYER_STATE_FOOD_CAP_CEILING, 300)
+    set j = 0
+    loop
+        exitwhen j == 12
+        call SetPlayerAllianceStateAllyBJ(Player(p), Player(j), TeamOf(j) == t)
+        call SetPlayerAlliance(Player(p), Player(j), ALLIANCE_SHARED_VISION, TeamOf(j) == t)
+        set j = j+1
+    endloop
+    set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, HomeX[p], HomeY[p], 1200, true, false)
+    call FogModifierStart(fog)
+    set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, 0, 640, 700, true, false)
+    call FogModifierStart(fog)
+    set j = 0
+    loop
+        exitwhen j == 5
+        set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, ShopX[t*5+j], ShopY[t*5+j], 500, true, false)
+        call FogModifierStart(fog)
+        set j = j+1
+    endloop
+    set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
+    set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
+    set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
+    call PauseUnit(Bastion[p], true)
+    call TriggerRegisterUnitEvent(BaseDefenseTrigger, Base[p], EVENT_UNIT_DAMAGED)
+    call TriggerRegisterUnitEvent(BaseDefenseTrigger, Bastion[p], EVENT_UNIT_DAMAGED)
+    if Bot[p] then
+        call AssignBotChoices(p)
+    else
+        call CreateHero(p, 0)
+    endif
+    call TriggerRegisterDialogEvent(ShopTrigger, Shop[p])
+    call TriggerRegisterPlayerUnitEvent(ResearchTrigger, Player(p), EVENT_PLAYER_UNIT_RESEARCH_FINISH, null)
+    call TriggerRegisterPlayerUnitEvent(PickerTrainTrigger, Player(p), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
+    call TriggerRegisterPlayerUnitEvent(PickerSpellTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
+    call TriggerRegisterPlayerUnitEvent(LevelTrigger, Player(p), EVENT_PLAYER_HERO_LEVEL, null)
+    set j = 0
+    loop
+        exitwhen j == 4
+        if j == 3 then
+            call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], 4)
+        else
+            call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], UPGRADE_MAX)
+        endif
+        set j = j+1
+    endloop
+    call TriggerRegisterPlayerUnitEvent(DeathTrigger, Player(p), EVENT_PLAYER_UNIT_DEATH, null)
+    call TriggerRegisterPlayerChatEvent(ChatTrigger, Player(p), "-", false)
+    call TriggerRegisterPlayerEvent(LeaveTrigger, Player(p), EVENT_PLAYER_LEAVE)
+    if not Bot[p] then
+        call PanCameraToTimedForPlayer(Player(p), HomeX[p], HomeY[p], 0)
+    endif
+    set fog = null
+endfunction
+
 function InitGame takes nothing returns nothing
     local integer p = 0
-    local integer j
     local integer t
     local multiboarditem cell
-    local fogmodifier fog
     local timer clock = CreateTimer()
     set Scan = CreateGroup()
     set Work = CreateGroup()
@@ -1130,6 +1370,9 @@ function InitGame takes nothing returns nothing
     set ShopTrigger = CreateTrigger()
     set ResearchTrigger = CreateTrigger()
     set LevelTrigger = CreateTrigger()
+    set PickerTrainTrigger = CreateTrigger()
+    set PickerSpellTrigger = CreateTrigger()
+    set BaseDefenseTrigger = CreateTrigger()
     call InitBalance()
     call InitWalls()
     set Fountain = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'ffnt', 0, 0, 270)
@@ -1152,65 +1395,7 @@ function InitGame takes nothing returns nothing
     call FogEnable(true)
     loop
         exitwhen p == 12
-        set t = TeamOf(p)
-        set Bot[p] = GetPlayerController(Player(p)) != MAP_CONTROL_USER or GetPlayerSlotState(Player(p)) != PLAYER_SLOT_STATE_PLAYING
-        set AutoArmy[p] = true
-        if Bot[p] then
-            call SetPlayerController(Player(p), MAP_CONTROL_COMPUTER)
-            call SetPlayerName(Player(p), "Bot " + I2S(p+1))
-        endif
-        call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, STARTING_GOLD)
-        call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_LUMBER, 0)
-        call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_FOOD_CAP, 300)
-        call SetPlayerState(Player(p), PLAYER_STATE_GIVES_BOUNTY, 0)
-        call SetPlayerState(Player(p), PLAYER_STATE_FOOD_CAP_CEILING, 300)
-        set j = 0
-        loop
-            exitwhen j == 12
-            call SetPlayerAllianceStateAllyBJ(Player(p), Player(j), TeamOf(j) == t)
-            call SetPlayerAlliance(Player(p), Player(j), ALLIANCE_SHARED_VISION, TeamOf(j) == t)
-            set j = j+1
-        endloop
-        set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, HomeX[p], HomeY[p], 1200, true, false)
-        call FogModifierStart(fog)
-        set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, 0, 640, 700, true, false)
-        call FogModifierStart(fog)
-        set j = 0
-        loop
-            exitwhen j == 5
-            set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, ShopX[t*5+j], ShopY[t*5+j], 500, true, false)
-            call FogModifierStart(fog)
-            set j = j+1
-        endloop
-        set Army[p] = CreateGroup()
-        set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
-        set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
-        set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
-        if Bot[p] then
-            call AssignBotChoices(p)
-        else
-            call CreateHero(p, 0)
-        endif
-        set Shop[p] = DialogCreate()
-        call TriggerRegisterDialogEvent(ShopTrigger, Shop[p])
-        call TriggerRegisterPlayerUnitEvent(ResearchTrigger, Player(p), EVENT_PLAYER_UNIT_RESEARCH_FINISH, null)
-        call TriggerRegisterPlayerUnitEvent(LevelTrigger, Player(p), EVENT_PLAYER_HERO_LEVEL, null)
-        set j = 0
-        loop
-            exitwhen j == 4
-            if j == 3 then
-                call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], 4)
-            else
-                call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], UPGRADE_MAX)
-            endif
-            set j = j+1
-        endloop
-        call TriggerRegisterPlayerUnitEvent(DeathTrigger, Player(p), EVENT_PLAYER_UNIT_DEATH, null)
-        call TriggerRegisterPlayerChatEvent(ChatTrigger, Player(p), "-", false)
-        call TriggerRegisterPlayerEvent(LeaveTrigger, Player(p), EVENT_PLAYER_LEAVE)
-        if not Bot[p] then
-            call PanCameraToTimedForPlayer(Player(p), HomeX[p], HomeY[p], 0)
-        endif
+        call InitSlot(p)
         set p = p+1
     endloop
     call TriggerAddAction(DeathTrigger, function OnDeath)
@@ -1218,11 +1403,17 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(ShopTrigger, function OnShop)
     call TriggerAddAction(ResearchTrigger, function OnResearch)
     call TriggerAddAction(LevelTrigger, function OnHeroLevel)
+    call TriggerAddAction(PickerTrainTrigger, function OnHeroPick)
+    call TriggerAddAction(PickerSpellTrigger, function OnPickerSpell)
+    call TriggerAddAction(BaseDefenseTrigger, function OnBaseDefense)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0
     loop
         exitwhen t == 4
-        call UpdateRally(t)
+        set TeamLost[t] = not Alive(Base[t*3]) and not Alive(Base[t*3+1]) and not Alive(Base[t*3+2])
+        if not TeamLost[t] then
+            call UpdateRally(t)
+        endif
         set t = t+1
     endloop
     set Board = CreateMultiboard()
@@ -1245,11 +1436,10 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (28 героев). Первый игрок: -mode или -ar до 15-й секунды. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
     call TimerStart(clock, 1, true, function Tick)
     set clock = null
     set cell = null
-    set fog = null
 endfunction
 
 function main takes nothing returns nothing

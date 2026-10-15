@@ -122,3 +122,16 @@ def hero_abilities(root):
             changes += [('atp1',3,f'{seed["name"]} [уровень {rank}]',rank,0),('aub1',3,text,rank,0)]
         entries.append((rawcode,'\0'*4,changes))
     return entries
+
+
+def custom_hero_abilities(root):
+    # Isolate mixed hero buttons: shared stock spells have conflicting positions.
+    heroes=json.loads((Path(root)/'map/heroes.json').read_text())
+    source={raw:changes for raw,_,changes in hero_abilities(root)}
+    result=[]
+    for hero in heroes:
+        for slot,(raw,original) in enumerate(zip(hero['skills'],hero.get('skill_sources',[]))):
+            changes=list(source[original])
+            changes += [('aher',0,1),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
+            result.append((original,raw,changes))
+    return result

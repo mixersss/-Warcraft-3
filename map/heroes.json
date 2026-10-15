@@ -36,7 +36,8 @@
       6,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroPaladin.blp"
   },
   {
     "id": "Hmkg",
@@ -75,7 +76,8 @@
       6,
       8,
       0
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp"
   },
   {
     "id": "Hamg",
@@ -104,7 +106,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroArchMage.blp"
   },
   {
     "id": "Hblm",
@@ -144,7 +147,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBloodElfPrince.blp"
   },
   {
     "id": "Obla",
@@ -184,7 +188,8 @@
       1,
       5,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBlademaster.blp"
   },
   {
     "id": "Ofar",
@@ -218,7 +223,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroFarseer.blp"
   },
   {
     "id": "Otch",
@@ -252,7 +258,8 @@
       10,
       7,
       0
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTaurenChieftain.blp"
   },
   {
     "id": "Oshd",
@@ -297,7 +304,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowHunter.blp"
   },
   {
     "id": "Udea",
@@ -336,7 +344,8 @@
       6,
       7,
       0
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp"
   },
   {
     "id": "Ulic",
@@ -370,7 +379,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNLichVersion2.blp"
   },
   {
     "id": "Udre",
@@ -409,7 +419,8 @@
       5,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDreadLord.blp"
   },
   {
     "id": "Ucrl",
@@ -448,7 +459,8 @@
       9,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroCryptLord.blp"
   },
   {
     "id": "Edem",
@@ -482,7 +494,8 @@
       1,
       5,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDemonHunter.blp"
   },
   {
     "id": "Ekee",
@@ -517,7 +530,8 @@
       8,
       1,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNKeeperOfTheGrove.blp"
   },
   {
     "id": "Emoo",
@@ -551,7 +565,8 @@
       6,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPriestessOfTheMoon.blp"
   },
   {
     "id": "Ewar",
@@ -590,7 +605,8 @@
       6,
       8,
       1
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroWarden.blp"
   },
   {
     "id": "Nbst",
@@ -635,7 +651,8 @@
       1,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBeastMaster.blp"
   },
   {
     "id": "Nbrn",
@@ -679,7 +696,8 @@
       6,
       8,
       1
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBansheeRanger.blp"
   },
   {
     "id": "Npbm",
@@ -718,7 +736,8 @@
       1,
       5,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPandarenBrewmaster.blp"
   },
   {
     "id": "Nfir",
@@ -758,7 +777,8 @@
       5,
       1,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAvatarOfFlame.blp"
   },
   {
     "id": "Nplh",
@@ -792,7 +812,8 @@
       1,
       5,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPitLord.blp"
   },
   {
     "id": "Nngs",
@@ -835,7 +856,8 @@
       1,
       8,
       7
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNNagaSeaWitch.blp"
   },
   {
     "id": "Ntin",
@@ -875,7 +897,8 @@
       5,
       6,
       8
-    ]
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTinker.blp"
   },
   {
     "id": "Nalc",
@@ -920,6 +943,224 @@
       5,
       1,
       8
+    ],
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAlchemist.blp"
+  },
+  {
+    "id": "Fc00",
+    "base": "Ulic",
+    "name": "Ледяной архонт",
+    "alias": "frostarchon",
+    "group": 5,
+    "primary": 2,
+    "skills": [
+      "Fc00",
+      "Fc01",
+      "Fc02",
+      "Fc03"
+    ],
+    "spells": [
+      [
+        "Fc00",
+        "frostnova",
+        1
+      ],
+      [
+        "Fc01",
+        "blizzard",
+        2,
+        5
+      ],
+      [
+        "Fc03",
+        "tornado",
+        2
+      ]
+    ],
+    "gear_role": "frost_caster",
+    "gear_families": [
+      4,
+      6,
+      5,
+      8,
+      1,
+      7
+    ],
+    "proper_name": "Ниваль",
+    "tint": [
+      170,
+      210,
+      255
+    ],
+    "description": "Маг льда: ледяная звезда, снежная буря, аура маны и торнадо.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNLichVersion2.blp",
+    "skill_sources": [
+      "AUfn",
+      "AHbz",
+      "AHab",
+      "ANto"
+    ]
+  },
+  {
+    "id": "Fc01",
+    "base": "Hmkg",
+    "name": "Грозовой страж",
+    "alias": "stormwarden",
+    "group": 5,
+    "primary": 0,
+    "skills": [
+      "Fc10",
+      "Fc11",
+      "Fc12",
+      "Fc13"
+    ],
+    "spells": [
+      [
+        "Fc13",
+        "avatar",
+        0
+      ],
+      [
+        "Fc11",
+        "thunderbolt",
+        1
+      ],
+      [
+        "Fc10",
+        "chainlightning",
+        1
+      ]
+    ],
+    "gear_role": "storm_bruiser",
+    "gear_families": [
+      2,
+      6,
+      1,
+      5,
+      0,
+      7
+    ],
+    "proper_name": "Громир",
+    "tint": [
+      190,
+      210,
+      255
+    ],
+    "description": "Воин грозы: цепь молний, молот бури, аура выносливости и аватар.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp",
+    "skill_sources": [
+      "AOcl",
+      "AHtb",
+      "AOae",
+      "AHav"
+    ]
+  },
+  {
+    "id": "Fc02",
+    "base": "Udea",
+    "name": "Рыцарь чумы",
+    "alias": "plagueknight",
+    "group": 5,
+    "primary": 0,
+    "skills": [
+      "Fc20",
+      "Fc21",
+      "Fc22",
+      "Fc23"
+    ],
+    "spells": [
+      [
+        "Fc23",
+        "inferno",
+        2
+      ],
+      [
+        "Fc21",
+        "carrionscarabs",
+        0
+      ],
+      [
+        "Fc20",
+        "carrionswarm",
+        2
+      ]
+    ],
+    "gear_role": "plague_summoner",
+    "gear_families": [
+      2,
+      6,
+      5,
+      1,
+      8,
+      7
+    ],
+    "proper_name": "Мортар",
+    "tint": [
+      140,
+      210,
+      120
+    ],
+    "description": "Тёмный призыватель: тёмная стая, жуки, аура вампиризма и инфернал.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp",
+    "skill_sources": [
+      "AUcs",
+      "AUcb",
+      "AUav",
+      "AUin"
+    ]
+  },
+  {
+    "id": "Fc03",
+    "base": "Hpal",
+    "name": "Солнечный инквизитор",
+    "alias": "suninquisitor",
+    "group": 5,
+    "primary": 0,
+    "skills": [
+      "Fc30",
+      "Fc31",
+      "Fc32",
+      "Fc33"
+    ],
+    "spells": [
+      [
+        "Fc30",
+        "holybolt",
+        3
+      ],
+      [
+        "Fc31",
+        "flamestrike",
+        2
+      ],
+      [
+        "Fc33",
+        "summonphoenix",
+        0
+      ]
+    ],
+    "gear_role": "sun_support",
+    "gear_families": [
+      2,
+      4,
+      6,
+      5,
+      8,
+      1
+    ],
+    "proper_name": "Аурелион",
+    "tint": [
+      255,
+      220,
+      140
+    ],
+    "description": "Боевой жрец: святой свет, огненный столб, защитная аура и феникс.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroPaladin.blp",
+    "skill_sources": [
+      "AHhb",
+      "AHfs",
+      "AHad",
+      "AHpx"
     ]
   }
 ]

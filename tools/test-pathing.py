@@ -43,7 +43,7 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
     # Bastion footprint is away from the barracks, spawns, existing towers,
     # heroes and shops. Include a conservative 192x192 footprint in flood fill.
     bastions=[]
-    for bx,by in [(-4350,-3850),(-3900,-4450),(-3150,-3750)]:
+    for bx,by in [(-5100,-3900),(-4600,-5100),(-3400,-4600)]:
         for _ in range(team): bx,by=-by,bx
         bastions.append((bx,by))
         for dx in (-96,0,96):

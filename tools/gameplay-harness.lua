@@ -7,6 +7,7 @@ UNIT_TYPE_UNDEAD, UNIT_TYPE_HERO = 'undead', 'hero'
 UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
 PLAYER_STATE_RESOURCE_GOLD = 'gold'
 Players, World = {}, {}
+function FourCC(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
 function Player(p) return p end
 function I2R(n) return n end
 function R2I(n) return math.modf(n) end
@@ -137,7 +138,7 @@ function purchase(p,kind)
     if result and kind<4 then FinishResearch(p) end
     return result
 end
-function GetUnitCurrentOrder(u) return 0 end
+function GetUnitCurrentOrder(u) return u.pending or 0 end
 function CountUnitsInGroup(g) return #g end
 function GroupAddUnit(g,u)
     for _,v in ipairs(g) do if v==u then return end end
@@ -162,6 +163,12 @@ function GroupEnumUnitsInRange(g,x,y,r)
 end
 function RemoveUnit(u) u.removed=true; u.hp=0 end
 function GetTriggerUnit() return Dying end
+function GetTrainedUnit() return Trained end
+function GetEventDamageSource() return DamageSource end
+function GetEventDamage() return DamageAmount or 0 end
+function IsUnitEnemy(u,p) return TeamOf(u.owner)~=TeamOf(p) end
+function SetUnitInvulnerable(u,v) u.invulnerable=v end
+function PanCameraToTimedForPlayer() end
 function GetKillingUnit() return Killer end
 function AddHeroXP(u,xp) u.xp=(u.xp or 0)+xp end
 function ReviveHero(u,x,y) u.hp=u.max;u.x=x;u.y=y;u.revived=true; return true end
@@ -198,6 +205,7 @@ function BotHero() end
 function reset()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
+    HostPlayer,AllRandomMode,ModeDialogOpen=0,false,false
     GoldTags={}
     BlockStock,BlockSale=false,false
     InitBalance()
@@ -209,6 +217,8 @@ function reset()
     for p=0,11 do
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
+        HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
+        SlotActive[p]=true
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
@@ -216,7 +226,7 @@ function reset()
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
         Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);SkillLevel[p]=1
-        Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=45000;Bastion[p].max=45000
+        Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=60000;Bastion[p].max=60000;Bastion[p].paused=true
     end
 end
 
@@ -258,7 +268,7 @@ Dying.hp=0
 local gold=Players[0].gold
 OnDeath()
 assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+8 and Kills[0]==1)
-assert(Hero[0].xp==10,'Manual reward XP is reduced from 16 to 10 for an 8-gold kill')
+assert(Hero[0].xp==8,'Manual reward XP is reduced from 16 to 8 for an 8-gold kill')
 SpawnWave(3)
 assert(#Army[3]==ARMY_CAP)
 Dying,Killer=Army[1][1],Hero[0];Dying.hp=0;gold=Players[0].gold
@@ -334,6 +344,8 @@ local function click(action)
 end
 ShowRaces(0);assert(#Shop[0].buttons==7)
 click(102);assert(ArmyRace[0]==2)
+assert(Players[0].selection==HeroPicker[0],'Race choice opens native portrait gallery')
+ShowHeroGroups(0)
 click(204);assert(#Shop[0].buttons==11,'Eight neutral heroes plus navigation fit')
 click(323);assert(HeroKind[0]==23 and Hero[0].id==HeroType[23])
 assert(Players[0].selection==Base[0])
@@ -369,7 +381,7 @@ for kind=0,HERO_COUNT-1 do
     for slot=0,3 do AllowedOrders[SpellOrder[kind*4+slot]]=true end
     if AutoOrder[kind]~='' then AllowedOrders[AutoOrder[kind]]=true end
     realBotHero(1)
-    assert(Hero[1].order,'Each of the 24 bot hero classes issues combat orders')
+    assert(Hero[1].order,'Each of the 28 bot hero classes issues combat orders')
     if CastUntil[1]>Seconds then
         local order=Hero[1].order
         realBotHero(1)
@@ -442,7 +454,7 @@ BlockStock=false
 for slot=0,5 do Hero[0].inventory[slot]={id=0} end
 assert(not BotShop(0) and GearProgress[0]==0 and Players[0].gold==100000,'Full unrelated inventory is preserved')
 reset();Bot[0]=true;AddGold(0,1000)
-assert(GearSavings[0]==500 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
+assert(math.floor(GearSavings[0])==333 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
 
 reset()
 SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
@@ -460,3 +472,129 @@ local gold=Players[0].gold;OnDeath()
 assert(Players[0].gold==gold+250 and Alive(Base[3]) and not TeamLost[1])
 for second=1,120 do Tick() end
 assert(not Alive(Bastion[3]),'Bastions never respawn')
+
+
+-- Gallery callbacks and page controls, including every custom hero.
+for kind=0,HERO_COUNT-1 do
+ reset();ShowHeroPicker(0,math.floor(kind/8))
+ assert(PickerPage[0]==math.floor(kind/8) and Players[0].selection==HeroPicker[0])
+ local picker=HeroPicker[0];Dying=picker
+ Trained=CreateUnit(0,PickToken[kind],0,0,0);OnHeroPick()
+ assert(Trained.removed and HeroKind[0]==kind and Hero[0].id==HeroType[kind])
+ assert(Players[0].selection==Base[0],'Chosen hero returns focus to research barracks')
+end
+reset();ShowHeroPicker(0,0);local previous=HeroPicker[0]
+Dying=previous;SpellId=FourCC('Fprv');OnPickerSpell()
+assert(PickerPage[0]==3 and previous.removed,'Previous wraps to last page')
+Dying=HeroPicker[0];SpellId=FourCC('Fnxt');OnPickerSpell();assert(PickerPage[0]==0)
+Dying=HeroPicker[0];SpellId=FourCC('Frnd');RngQueue={27};OnPickerSpell();assert(HeroKind[0]==27)
+Seconds=WARMUP_SECONDS-1;Tick();assert(HeroPicker[0]==nil,'Remove gallery before combat')
+
+-- All Random is host-only, synchronized, available only in first 15 seconds.
+reset();ShowHeroPicker(0,0);local oldPicker=HeroPicker[0]
+SetAllRandom(1);assert(not AllRandomMode)
+RngQueue={};for p=0,11 do table.insert(RngQueue,p%4);table.insert(RngQueue,(p%2==0) and 0 or HERO_COUNT-1) end
+SetAllRandom(0);assert(AllRandomMode and oldPicker.removed)
+for p=0,11 do assert(ArmyRace[p]==p%4 and HeroKind[p]==((p%2==0) and 0 or HERO_COUNT-1)) end
+local chosen=Hero[0];assert(not SelectRosterHero(0,1) and Hero[0]==chosen);assert(not SelectArmyRace(0,1))
+reset();Seconds=16;SetAllRandom(0);assert(not AllRandomMode)
+reset();Power[5]=1;SetAllRandom(0);assert(not AllRandomMode,'Preserve paid hero stats')
+reset();ShowModes(0);assert(ModeDialogOpen and #Shop[0].buttons==2)
+Seconds=15;Tick();assert(not ModeDialogOpen and #Shop[0].buttons==7,'Unanswered mode defaults to normal')
+
+-- Bastions defend attacked bases (and themselves), without firing on passersby.
+reset();Seconds=70;Dying=Base[0];DamageSource=Hero[3];DamageAmount=1
+OnBaseDefense();assert(not Bastion[0].paused and BastionUntil[0]==76 and Bastion[0].order[2]==Hero[3])
+for n=1,6 do Tick() end
+assert(Bastion[0].paused,'Tower goes idle six seconds after last hostile damage')
+Dying=Bastion[0];OnBaseDefense();assert(not Bastion[0].paused,'Tower can defend itself')
+Bastion[0].paused=true;DamageSource=Hero[1];OnBaseDefense();assert(Bastion[0].paused,'Friendly damage cannot wake tower')
+DamageSource=Hero[3];DamageAmount=0;OnBaseDefense();assert(Bastion[0].paused)
+Bastion[0].hp=0;DamageAmount=10;OnBaseDefense();assert(Bastion[0].hp==0,'No resurrection')
+
+-- Bots prioritize affordable research despite an expensive desired item.
+reset();Bot[0]=true;GearSavings[0]=200;Players[0].gold=500
+BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==400)
+local budget=Players[0].gold;BotBuy(0);assert(Players[0].gold==budget,'No duplicate orders during research')
+FinishResearch(0);BotBuy(0);FinishResearch(0);BotBuy(0);FinishResearch(0)
+assert(Attack[0]==1 and Armor[0]==1 and Vitality[0]==1,'Bots develop all troop stats early')
+reset();Bot[0]=true;Seconds=60;Tick();assert(Base[0].pending~=nil,'Research starts on next second, without five-second idle delay')
+
+
+-- Execute the actual per-slot startup with human, computer, open and closed slots.
+MAP_CONTROL_USER,MAP_CONTROL_COMPUTER='user','computer'
+PLAYER_SLOT_STATE_PLAYING,PLAYER_SLOT_STATE_EMPTY,PLAYER_SLOT_STATE_LEFT='playing','empty','left'
+PLAYER_STATE_RESOURCE_LUMBER,PLAYER_STATE_RESOURCE_FOOD_CAP='lumber','food'
+PLAYER_STATE_GIVES_BOUNTY,PLAYER_STATE_FOOD_CAP_CEILING='bounty','ceiling'
+function GetPlayerController(p) return Players[p].controller or MAP_CONTROL_USER end
+function GetPlayerSlotState(p) return Players[p].slot or PLAYER_SLOT_STATE_PLAYING end
+function SetPlayerController(p,c) Players[p].controller=c end
+function SetPlayerName(p,n) Players[p].name=n end
+function CreateGroup() return {} end
+function DialogCreate() return {buttons={}} end
+function SetPlayerAllianceStateAllyBJ() end
+function SetPlayerAlliance() end
+function CreateFogModifierRadius() return {} end
+function FogModifierStart() end
+function TriggerRegisterDialogEvent() end
+function TriggerRegisterUnitEvent() end
+function TriggerRegisterPlayerUnitEvent() end
+function TriggerRegisterPlayerChatEvent() end
+function TriggerRegisterPlayerEvent() end
+function SetPlayerTechMaxAllowed() end
+reset();HostPlayer=-1;World={}
+for p=0,11 do
+ Base[p],Hero[p],Bastion[p],Tower[p]=nil,nil,nil,nil
+ Players[p].slot=PLAYER_SLOT_STATE_EMPTY
+end
+Players[2].slot=PLAYER_SLOT_STATE_PLAYING
+Players[3].slot=PLAYER_SLOT_STATE_PLAYING;Players[3].controller=MAP_CONTROL_COMPUTER
+Players[5].slot=PLAYER_SLOT_STATE_LEFT
+Players[7].slot=PLAYER_SLOT_STATE_PLAYING
+for p=0,11 do InitSlot(p) end
+assert(HostPlayer==2,'First occupied human slot controls mode, not always red')
+for p=0,11 do
+ if p==2 or p==3 or p==7 then
+  assert(SlotActive[p] and not Lost[p] and Alive(Base[p]) and Alive(Hero[p]) and Alive(Tower[p]) and Alive(Bastion[p]))
+ else
+  assert(not SlotActive[p] and Lost[p] and Base[p]==nil and Hero[p]==nil and Tower[p]==nil and Bastion[p]==nil)
+ end
+end
+assert(Bot[3] and not Bot[2] and not Bot[0],'Only explicitly selected computer becomes a bot')
+SetAllRandom(2);assert(AllRandomMode)
+for _,u in ipairs(World) do assert(u.owner==2 or u.owner==3 or u.owner==7,'Random mode never creates units for empty slots') end
+Seconds=WARMUP_SECONDS-1;Tick()
+for p=0,11 do if not SlotActive[p] then assert(Base[p]==nil and Hero[p]==nil and #Army[p]==0) end end
+
+reset();Dying=Base[0];DamageSource=Hero[3];DamageAmount=1;Seconds=70
+OnBaseDefense();local order=Bastion[0].order
+Seconds=71;DamageSource=Hero[4];OnBaseDefense()
+assert(Bastion[0].order==order and BastionUntil[0]==77,'Rapid hits extend defense without resetting tower attacks')
+reset();Seconds=0;Tick();assert(ModeDialogOpen and #Shop[0].buttons==2,'Host sees mode choice at match start')
+
+-- Full startup also excludes wholly empty teams from victory accounting.
+PLAYER_NEUTRAL_PASSIVE=15
+function CreateTrigger() return {events={},actions={}} end
+function TriggerAddAction(t,f) table.insert(t.actions,f) end
+function CreateTimer() return {} end
+function TimerStart(t,period,repeats,callback) t.callback=callback;Clock=t end
+function CreateDestructable() return {} end
+function CreateMultiboard() return {} end
+function MultiboardGetItem() return {} end
+function CreateQuest() return {} end
+for _,name in ipairs({'SetDestructableInvulnerable','SetTimeOfDay','SetTimeOfDayScale','SetMapFlag','FogMaskEnable','FogEnable','MultiboardSetRowCount','MultiboardSetColumnCount','MultiboardSetItemsStyle','MultiboardSetItemsWidth','MultiboardSetItemWidth','MultiboardReleaseItem','MultiboardSetItemValue','MultiboardDisplay','QuestSetTitle','QuestSetDescription','QuestSetRequired','QuestSetDiscovered'}) do _G[name]=function() end end
+reset();HostPlayer=-1;World={}
+for p=0,11 do
+ Base[p],Hero[p],Bastion[p],Tower[p]=nil,nil,nil,nil
+ Players[p].slot=PLAYER_SLOT_STATE_EMPTY
+end
+Players[2].slot=PLAYER_SLOT_STATE_PLAYING
+Players[3].slot=PLAYER_SLOT_STATE_PLAYING;Players[3].controller=MAP_CONTROL_COMPUTER
+Players[7].slot=PLAYER_SLOT_STATE_PLAYING
+InitGame()
+assert(HostPlayer==2 and TeamLost[3] and not TeamLost[0] and not TeamLost[1] and not TeamLost[2])
+assert(Clock.callback==Tick and #BaseDefenseTrigger.actions==1 and #PickerTrainTrigger.actions==1)
+for _,u in ipairs(World) do assert(u.owner==15 or u.owner==2 or u.owner==3 or u.owner==7,'No private buildings in free slots after actual InitGame') end
+Dying=Base[7];Killer=Hero[2];Dying.hp=0;OnDeath();assert(TeamLost[2] and not Finished)
+Dying=Base[3];Dying.hp=0;OnDeath();assert(TeamLost[1] and Finished and Players[2].victory)
+for p=0,11 do if not SlotActive[p] then assert(not Players[p].victory and not Players[p].defeat,'No outcome UI for unoccupied slots') end end

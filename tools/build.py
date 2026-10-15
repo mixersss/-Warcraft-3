@@ -12,8 +12,9 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units
+from progression import hero_abilities, summoned_units, custom_hero_abilities
 from equipment import item_effects
+from hero_picker import units as picker_units, controls as picker_controls
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 96
@@ -100,7 +101,7 @@ def shop_positions() -> list[tuple[int,int]]:
 def bastion_positions() -> list[tuple[int,int]]:
     result=[]
     for team in range(4):
-        for x,y in [(-4350,-3850),(-3900,-4450),(-3150,-3750)]:
+        for x,y in [(-5100,-3900),(-4600,-5100),(-3400,-4600)]:
             for _ in range(team): x,y=-y,x
             result.append((x,y))
     return result
@@ -119,8 +120,8 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = f'4 teams x 3. One troop type per army tier, 4 races, 24 heroes. Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 65%. Hero-specific bot equipment. Classic TFT 1.26+.'
-    data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (bots fill empty slots)')
+    text = f'4 teams x 3. One troop type per army tier, 4 races, 28 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
+    data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (open slots stay empty)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
     data += i(-1) + s('') + s(text) + s(b['name']) + s('Four teams. One survivor.')
@@ -204,8 +205,8 @@ def units(b: dict) -> bytes:
                 ('ua1r', 0, 550 if ranged else 100),
                 ('ua1t', 3, 'pierce' if ranged else 'normal'),
                 ('uaen', 0, 1),
-                ('udef', 0, row['armor']), ('udup', 0, 1),
-                ('udu1', 0, 3), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
+            ('udef', 0, row['armor']), ('udup', 0, b['armor_per_rank']),
+            ('udu1', 0, b['attack_per_rank']), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
                 ('ucol', 2, 24.0),
                 ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp'), ('ureq', 3, ''),
@@ -214,6 +215,7 @@ def units(b: dict) -> bytes:
             ]
             entries.append((faction['units'][tier], rawcode, changes))
     entries += summoned_units(ROOT)
+    entries += picker_units(catalog('heroes'))
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
         ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti'),
@@ -235,7 +237,7 @@ def units(b: dict) -> bytes:
         ('ua1g',3,'air,ground,structure,debris,item,ward'),('ureq',3,''),('uupt',3,''),
         ('uabi',3,''),('upgr',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('uhpr',2,0.0),
         ('utip',3,'Бастионная башня'),
-        ('utub',3,f'Защищает казарму. {b["bastion_hp"]} HP, {b["bastion_armor"]} брони, {b["bastion_damage"]} базового урона, дальность {b["bastion_range"]}. Можно уничтожить; не возрождается.'),
+        ('utub',3,f'Защищает казарму: включается на 6 секунд, когда враг бьёт базу или башню. {b["bastion_hp"]} HP, {b["bastion_armor"]} брони, {b["bastion_damage"]} базового урона, дальность {b["bastion_range"]}. Можно уничтожить; не возрождается.'),
     ]))
     entries.append(('ngme', 'fshp', [
         ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
@@ -272,7 +274,7 @@ def fountain_abilities(b: dict) -> list:
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -304,9 +306,9 @@ def walls() -> bytes:
 def upgrades(b: dict) -> bytes:
     entries = []
     rows = [
-        ('Rhme','Rfat','Атака армии','ratx',3.0,b['attack_cost'],b['attack_cost_step'],'BTNSteelMelee.blp','+3 к атаке всех существующих и новых бойцов.'),
-        ('Rhar','Rfar','Броня армии','rarm',1.0,b['armor_cost'],b['armor_cost_step'],'BTNHumanArmorUpOne.blp','+1 к броне всех существующих и новых бойцов.'),
-        ('Rhan','Rfhp','Здоровье армии','rhpo',b['health_percent'],b['health_cost'],b['health_cost_step'],'BTNPeriapt.blp','+10% базового максимального здоровья всех существующих и новых бойцов.'),
+        ('Rhme','Rfat','Атака армии','ratx',float(b['attack_per_rank']),b['attack_cost'],b['attack_cost_step'],'BTNSteelMelee.blp',f'+{b["attack_per_rank"]} к атаке всех существующих и новых бойцов.'),
+        ('Rhar','Rfar','Броня армии','rarm',float(b['armor_per_rank']),b['armor_cost'],b['armor_cost_step'],'BTNHumanArmorUpOne.blp',f'+{b["armor_per_rank"]} к броне всех существующих и новых бойцов.'),
+        ('Rhan','Rfhp','Здоровье армии','rhpo',b['health_percent'],b['health_cost'],b['health_cost_step'],'BTNPeriapt.blp',f'+{b["health_percent"]*100:g}% базового максимального здоровья всех существующих и новых бойцов.'),
         ('Rhac','Rfti','Развитие казармы','rhpx',float(b['base_upgrade_hp']),b['base_upgrade_cost'],b['base_upgrade_cost_step'],'BTNCastle.blp',f'Новый тип бойца следующих волн. Казарме +{b["base_upgrade_hp"]} здоровья.'),
     ]
     for column,(base,rawcode,name,effect,amount,cost,step,art,description) in enumerate(rows):
@@ -335,7 +337,7 @@ def script(b: dict) -> str:
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
-        '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary',
+        '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary', '    integer array PickToken',
         '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
@@ -363,6 +365,7 @@ def script(b: dict) -> str:
             idx = race*5+tier
             init += [f"    set ArmyType[{idx}] = 'fm{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
     for idx, hero in enumerate(heroes):
+        init += [f"    set PickToken[{idx}] = 'fp{idx:02d}'"]
         assert len(set(hero['gear_families']))==6 and all(0<=k<12 for k in hero['gear_families'])
         for slot,family in enumerate(hero['gear_families']):
             init += [f'    set HeroGear[{idx*6+slot}] = {family}']
@@ -389,7 +392,7 @@ def script(b: dict) -> str:
     source = source.replace('function TeamOf ', '\n'.join(init)+'\nfunction TeamOf ', 1)
     config = ['function config takes nothing returns nothing', f'    call SetMapName("{b["name"]} {b["version"]}")', '    call SetMapDescription("Four teams of three. Endless waves, upgrades, heroes and bots. Type -help.")', '    call SetPlayers(12)', '    call SetTeams(4)', '    call SetGamePlacement(MAP_PLACEMENT_FIXED)', '    call SetGameTypeSupported(GAME_TYPE_USE_MAP_SETTINGS, true)', '    call SetMapFlag(MAP_LOCK_ALLIANCE_CHANGES, true)']
     for p, (x, y) in enumerate(positions()):
-        # Keep all slots joinable for multiplayer. Runtime bots fill empty slots.
+        # Keep all slots joinable for multiplayer. Runtime bots only occupy selected computer slots.
         control = 'MAP_CONTROL_USER'
         config += [f'    call DefineStartLocation({p}, {x}.0, {y}.0)', f'    call SetPlayerStartLocation(Player({p}), {p})', f'    call ForcePlayerStartLocation(Player({p}), {p})', f'    call SetPlayerColor(Player({p}), ConvertPlayerColor({p}))', f'    call SetPlayerRacePreference(Player({p}), RACE_PREF_HUMAN)', f'    call SetPlayerRaceSelectable(Player({p}), false)', f'    call SetPlayerController(Player({p}), {control})', f'    call SetPlayerTeam(Player({p}), {p//3})']
     for p in range(12):
