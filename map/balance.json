@@ -1,0 +1,28 @@
+{
+  "name": "Four Fronts Frenzy",
+  "version": "0.1.0-alpha",
+  "starting_gold": 500,
+  "income_per_second": 4,
+  "spawn_seconds": 8,
+  "spawn_min_seconds": 4,
+  "spawn_units": 3,
+  "army_cap": 48,
+  "warmup_seconds": 30,
+  "upgrade_max": 10,
+  "attack_cost": 100,
+  "attack_cost_step": 75,
+  "armor_cost": 100,
+  "armor_cost_step": 75,
+  "spawn_cost": 300,
+  "spawn_cost_step": 200,
+  "hero_power_cost": 250,
+  "hero_power_cost_step": 150,
+  "base_hp": 6000,
+  "tiers": [
+    {"name": "Footmen", "melee_base": "hfoo", "hp": 420, "damage": 15, "armor": 1, "cost": 0},
+    {"name": "Veterans", "melee_base": "hfoo", "hp": 600, "damage": 22, "armor": 2, "cost": 650},
+    {"name": "Grunts", "melee_base": "ogru", "hp": 850, "damage": 32, "armor": 3, "cost": 1100},
+    {"name": "Knights", "melee_base": "hkni", "hp": 1150, "damage": 44, "armor": 4, "cost": 1700},
+    {"name": "Tauren", "melee_base": "otau", "hp": 1500, "damage": 58, "armor": 5, "cost": 2400}
+  ]
+}

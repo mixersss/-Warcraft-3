@@ -1,0 +1,170 @@
+-- Only the native API is substituted. All map functions come from shipped JASS.
+-- Lua's string __add represents JASS string concatenation in the translator.
+debug.setmetatable('', {__add=function(a,b) return tostring(a)..tostring(b) end})
+UNIT_TYPE_DEAD, UNIT_TYPE_STRUCTURE = 'dead', 'structure'
+UNIT_TYPE_SUMMONED = 'summoned'
+UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
+PLAYER_STATE_RESOURCE_GOLD = 'gold'
+Players, World = {}, {}
+function Player(p) return p end
+function I2R(n) return n end
+function R2I(n) return math.modf(n) end
+function I2S(n) return tostring(n) end
+function ModuloInteger(a,b) return a%b end
+function GetPlayerId(p) return p end
+function GetPlayerName(p) return 'Player '..p end
+function GetOwningPlayer(u) return u.owner end
+function GetUnitTypeId(u) return u.id end
+function GetWidgetLife(u) return u.hp end
+function GetUnitState(u,k) return u[k] end
+function SetUnitState(u,k,v) u[k]=math.min(v,u[k=='hp' and 'max' or 'maxmana']) end
+function IsUnitType(u,t) return (t=='dead' and u.hp<=0) or (t=='structure' and u.structure==true) end
+function GetPlayerState(p,k) return Players[p][k] end
+function SetPlayerState(p,k,v) Players[p][k]=v end
+function SetPlayerTechResearched(p,k,v) Players[p].tech[k]=v end
+function GetHeroStr(u) return u.str end
+function GetHeroAgi(u) return u.agi end
+function GetHeroInt(u) return u.int end
+function SetHeroStr(u,v) u.str=v end
+function SetHeroAgi(u,v) u.agi=v end
+function SetHeroInt(u,v) u.int=v end
+function GetHeroLevel(u) return u.level end
+function GetUnitX(u) return u.x end
+function GetUnitY(u) return u.y end
+function SetUnitUserData(u,v) u.data=v end
+function GetUnitUserData(u) return u.data or 0 end
+function CreateUnit(p,id,x,y,facing)
+    local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=0,maxmana=100,str=20,agi=20,int=20,level=1,data=0}
+    table.insert(World,u)
+    return u
+end
+function IssuePointOrder(u,order,x,y) u.order={order,x,y}; return true end
+function GetUnitCurrentOrder(u) return 0 end
+function CountUnitsInGroup(g) return #g end
+function GroupAddUnit(g,u)
+    for _,v in ipairs(g) do if v==u then return end end
+    table.insert(g,u)
+end
+function FirstOfGroup(g) return g[1] end
+function GroupRemoveUnit(g,u)
+    for i,v in ipairs(g) do if v==u then table.remove(g,i); return end end
+end
+function IsUnitInGroup(u,g) for _,v in ipairs(g) do if v==u then return true end end; return false end
+function GroupAddGroup(a,b) for _,u in ipairs(a) do table.insert(b,u) end end
+function GroupEnumUnitsOfPlayer(g,p)
+    for i=#g,1,-1 do g[i]=nil end
+    for _,u in ipairs(World) do if u.owner==p and not u.removed then table.insert(g,u) end end
+end
+function GroupEnumUnitsInRange(g,x,y,r)
+    for i=#g,1,-1 do g[i]=nil end
+    for _,u in ipairs(World) do
+        if not u.removed and (u.x-x)^2+(u.y-y)^2<=r*r then table.insert(g,u) end
+    end
+end
+function RemoveUnit(u) u.removed=true; u.hp=0 end
+function GetTriggerUnit() return Dying end
+function GetKillingUnit() return Killer end
+function AddHeroXP(u,xp) u.xp=(u.xp or 0)+xp end
+function ReviveHero(u,x,y) u.hp=u.max;u.x=x;u.y=y;u.revived=true; return true end
+function DisplayTimedTextToPlayer() end
+function DisplayTimedTextToForce() end
+function DialogDisplay() end
+function CustomVictoryBJ(p) Players[p].victory=true end
+function CustomDefeatBJ(p) Players[p].defeat=true end
+-- UI and hero combat are outside these trigger tests.
+function UpdateBoard() end
+function BotHero() end
+function reset()
+    Players,World,Work,Scan = {},{},{},{}
+    Seconds,Finished = 0,false
+    InitBalance()
+    for t=0,3 do TeamLost[t]=false; Defending[t]=false; RallyX[t]=0;RallyY[t]=0 end
+    for p=0,11 do
+        Players[p]={gold=STARTING_GOLD,tech={}}
+        Bot[p],Lost[p],AutoArmy[p]=false,false,true
+        Tier[p],Attack[p],Armor[p],Speed[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
+        Army[p]={}
+        Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
+        Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0)
+    end
+end
+
+reset()
+for p=0,11 do assert(TeamOf(p)==math.floor(p/3)) end
+assert(Buy(0,0)==true and Attack[0]==1 and Players[0].gold==STARTING_GOLD-ATTACK_COST)
+Players[0].gold=0
+assert(Buy(0,0)==false and Attack[0]==1 and Players[0].gold==0)
+Players[0].gold=100000
+while Attack[0]<UPGRADE_MAX do assert(Buy(0,0)) end
+local gold=Players[0].gold
+assert(not Buy(0,0) and Players[0].gold==gold)
+while Tier[0]<4 do assert(Buy(0,2)) end
+assert(not Buy(0,2) and Tier[0]==4)
+while SPAWN_SECONDS-Speed[0]>SPAWN_MIN_SECONDS do assert(Buy(0,3)) end
+assert(not Buy(0,3) and SPAWN_SECONDS-Speed[0]==SPAWN_MIN_SECONDS)
+local strength=Hero[0].str
+assert(Buy(0,4) and Hero[0].str==strength+3 and Power[0]==1)
+Hero[0].hp=30
+assert(Buy(0,5) and Hero[0].hp==Hero[0].max)
+assert(not Buy(0,5))
+Hero[0].hp=30;Hero[0].x=0;Hero[0].y=0
+assert(not Buy(0,5),'No remote fountain purchase')
+Base[0].hp=0;gold=Players[0].gold
+assert(not Buy(0,0) and Players[0].gold==gold,'No purchases after barracks loss')
+
+reset()
+for p=0,11 do
+    for wave=1,100 do SpawnWave(p) end
+    assert(#Army[p]==ARMY_CAP,'Wave cap applies to every player')
+    assert(Army[p][1].data==11,'New troops route through center')
+    assert(Army[p][1].id==MeleeType[0] and Army[p][3].id==RangedType[0])
+end
+-- Killing a unit frees one cap slot, produces one reward, and permits a partial wave.
+Dying,Killer=Army[3][1],Hero[0]
+Dying.hp=0
+local gold=Players[0].gold
+OnDeath()
+assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+8 and Kills[0]==1)
+SpawnWave(3)
+assert(#Army[3]==ARMY_CAP)
+Dying,Killer=Army[1][1],Hero[0];Dying.hp=0;gold=Players[0].gold
+OnDeath()
+assert(Players[0].gold==gold,'Allied kills give no gold')
+
+reset()
+-- Only passive income is supplied: no bonus money for bots.
+Bot[0]=true
+local income=0
+for second=1,18000 do
+    AddGold(0,INCOME_PER_SECOND);income=income+INCOME_PER_SECOND
+    if second%5==0 then BotBuy(0) end
+    assert(Players[0].gold>=0 and Players[0].gold<=STARTING_GOLD+income)
+end
+assert(Tier[0]==4 and Attack[0]==UPGRADE_MAX and Armor[0]==UPGRADE_MAX)
+assert(Speed[0]==SPAWN_SECONDS-SPAWN_MIN_SECONDS and Power[0]==10,'Bot progresses through all upgrade categories')
+
+reset()
+-- A lost personal base does not eliminate the two allied players.
+Base[0].hp=0;CheckTeam(0)
+assert(not TeamLost[0] and not Lost[0] and Alive(Hero[0]))
+Base[1].hp=0;Base[2].hp=0;CheckTeam(0)
+assert(TeamLost[0] and Lost[0] and Lost[1] and Lost[2])
+assert(Hero[0].removed and not Finished)
+for p=3,8 do Base[p].hp=0 end
+CheckTeam(1);CheckTeam(2)
+assert(Finished and Players[9].victory and Players[11].victory and Players[0].defeat)
+
+reset()
+-- Warmup is exact; subsequent waves keep the configured interval.
+for n=1,WARMUP_SECONDS-1 do Tick() end
+assert(#Army[0]==0)
+Tick();assert(#Army[0]==SPAWN_UNITS)
+for n=1,SPAWN_SECONDS-1 do Tick() end
+assert(#Army[0]==SPAWN_UNITS)
+Tick();assert(#Army[0]==SPAWN_UNITS*2)
+-- An owned living barracks revives heroes; destroyed ones never do.
+Hero[0].hp=0;Respawn[0]=2
+Tick();assert(Hero[0].hp==0)
+Tick();assert(Hero[0].revived and Hero[0].hp==Hero[0].max)
+Base[1].hp=0;Hero[1].hp=0;Respawn[1]=1
+Tick();Tick();assert(not Hero[1].revived)
