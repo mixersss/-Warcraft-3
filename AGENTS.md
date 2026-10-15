@@ -17,3 +17,5 @@
 - Waves contain one troop type per race/tier. Summon stats live in per-rank custom unit objects, not generic buffs based on the highest unrelated hero skill. Preserve rank 10/20/... summon count milestones.
 - Research effects are cumulative base + increment * (rank - 1): ratx +3 damage, rarm armor, rhpo +10% troop HP, rhpx +3000 barracks HP. Never swap percent and flat HP effects or zero the incremental effect.
 - Keep the 900-unit walled approach to each fortress; run tunnel side-wall and flood-fill tests. MPQ zlib compression must retain Classic format and independently round-trip every file.
+
+- The user reported an SFile.cpp:898 out-of-memory crash when opening 0.4.0 in Classic 1.26. Never emit compressed SINGLE_UNIT MPQ files. Use standard 4096-byte sectors with offset tables and zlib masks; verify all sectors and every archived file independently. A successful modern MPQ parse does not prove Classic loading.

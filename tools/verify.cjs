@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const zlib = require('node:zlib');
 const root = path.resolve(__dirname, '..');
 const prefix = 'mdx-m3-viewer/dist/cjs/parsers/';
 const War3Map = require(prefix + 'w3x/map').default;
@@ -16,6 +17,37 @@ const map = new War3Map();
 // Use a true Uint8Array: Node Buffer.slice() shares a larger backing allocation.
 map.load(new Uint8Array(data), true);
 assert.equal(map.maxPlayers, 12);
+// 0.4.0 used compressed SINGLE_UNIT files. Modern readers accepted them but
+// the user's Classic loader failed in SFile.cpp. Require ordinary 4 KiB
+// sector files and decode every sector independently of the MPQ reader.
+assert.equal(map.archive.sectorSize,4096);
+for(const file of map.archive.files) {
+  const block=file.block;
+  assert.equal(block.flags & 0x01000000,0,'No SINGLE_UNIT files in Classic releases');
+  const count=Math.ceil(block.normalSize/4096);
+  if(!count) continue;
+  assert.equal(block.flags>>>0,0x80000200,'Standard sector compression only');
+  const stored=data.subarray(map.archive.headerOffset+block.offset,map.archive.headerOffset+block.offset+block.compressedSize);
+  assert.equal(stored.readUInt32LE(0),(count+1)*4,'Exact sector offset table size');
+  assert.equal(stored.readUInt32LE(count*4),stored.length,'Last sector ends at the block boundary');
+  const decoded=[];
+  for(let n=0;n<count;n++) {
+    const start=stored.readUInt32LE(n*4),end=stored.readUInt32LE((n+1)*4);
+    const expected=Math.min(4096,block.normalSize-n*4096);
+    assert.ok(end>start && end-start<=expected,'Bounded compressed/stored sector');
+    const sector=stored.subarray(start,end);
+    let bytes=sector;
+    if(sector.length<expected) {
+      assert.equal(sector[0],2,'Classic zlib compression mask');
+      bytes=zlib.inflateSync(sector.subarray(1),{maxOutputLength:4096});
+    }
+    assert.equal(bytes.length,expected,'Each sector expands to at most 4096 bytes');
+    decoded.push(bytes);
+  }
+  const restored=Buffer.concat(decoded);
+  assert.deepEqual(restored,Buffer.from(file.bytes()),'Native zlib and MPQ reader agree');
+  if(file.name!=='(listfile)') assert.deepEqual(restored,fs.readFileSync(path.join(root,'build/map',file.name)),`Sector round trip: ${file.name}`);
+}
 const formats = {
   'war3map.w3i': 'w3i', 'war3map.w3e': 'w3e', 'war3map.wpm': 'wpm',
   'war3map.w3u': 'w3u', 'war3map.w3q': 'w3d',

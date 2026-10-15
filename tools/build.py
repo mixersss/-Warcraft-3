@@ -356,6 +356,8 @@ def crypt_table() -> list[int]:
 
 
 CRYPT = crypt_table()
+MPQ_SECTOR_SHIFT = 3
+MPQ_SECTOR_SIZE = 512 << MPQ_SECTOR_SHIFT
 
 
 def mpq_hash(name: str, kind: int) -> int:
@@ -377,6 +379,21 @@ def encrypt_table(data: bytes, key: int) -> bytes:
     return bytes(out)
 
 
+def sector_file(payload: bytes) -> bytes:
+    if not payload:
+        return b''
+    count = (len(payload)+MPQ_SECTOR_SIZE-1)//MPQ_SECTOR_SIZE
+    offsets = [(count+1)*4]
+    chunks = []
+    for start in range(0,len(payload),MPQ_SECTOR_SIZE):
+        raw = payload[start:start+MPQ_SECTOR_SIZE]
+        compressed = b'\x02'+zlib.compress(raw,9)
+        stored = compressed if len(compressed)<len(raw) else raw
+        chunks.append(stored)
+        offsets.append(offsets[-1]+len(stored))
+    return struct.pack('<'+'I'*len(offsets),*offsets)+b''.join(chunks)
+
+
 def archive(files: dict[str, bytes], name: str) -> bytes:
     files = dict(files)
     files['(listfile)'] = ('\r\n'.join(sorted(files))+'\r\n(listfile)\r\n').encode('ascii')
@@ -392,10 +409,12 @@ def archive(files: dict[str, bytes], name: str) -> bytes:
         while hashes[slot] != b'\xff'*16:
             slot = (slot+1) % table_size
         hashes[slot] = struct.pack('<IIHHI', mpq_hash(filename, 1), mpq_hash(filename, 2), 0, 0, block)
-        # Classic Storm single-unit zlib compression (mask 0x02). Explicit
-        # original length lets readers distinguish stored from compressed data.
-        compressed = b'\x02'+zlib.compress(payload,9)
-        stored, flags = (compressed,0x81000200) if len(compressed)<len(payload) else (payload,0x81000000)
+        # Use ordinary sector files, as Classic World Editor does. The 0.4.0
+        # compressed SINGLE_UNIT layout passed modern readers but the user's
+        # 1.26 Storm reader failed in SFile.cpp. Keep each inflate bounded to
+        # 4096 bytes and include an explicit sector-offset table.
+        stored = sector_file(payload)
+        flags = 0x80000200 if payload else 0x80000000
         blocks += struct.pack('<IIII', 32+len(content), len(stored), len(payload), flags)
         content += stored
     hash_pos = 32+len(content)
@@ -403,7 +422,7 @@ def archive(files: dict[str, bytes], name: str) -> bytes:
     hashes_bytes = encrypt_table(b''.join(hashes), mpq_hash('(hash table)', 3))
     blocks_bytes = encrypt_table(bytes(blocks), mpq_hash('(block table)', 3))
     length = block_pos+len(blocks_bytes)
-    header = struct.pack('<4sIIHHIIII', b'MPQ\x1a', 32, length, 0, 3, hash_pos, block_pos, table_size, len(files))
+    header = struct.pack('<4sIIHHIIII', b'MPQ\x1a', 32, length, 0, MPQ_SECTOR_SHIFT, hash_pos, block_pos, table_size, len(files))
     return wrapper+header+content+hashes_bytes+blocks_bytes
 
 
