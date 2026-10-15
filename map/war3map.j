@@ -324,7 +324,7 @@ function SpawnWave takes integer p returns nothing
     set u = null
 endfunction
 
-function CommandArmy takes integer p, boolean force returns nothing
+function CommandArmy takes integer p, boolean forceOrder returns nothing
     local unit u
     local integer t = TeamOf(p)
     // Reconcile resurrected troops as well as newly summoned elementals.
@@ -342,9 +342,9 @@ function CommandArmy takes integer p, boolean force returns nothing
                 call SetUnitUserData(u, GetUnitUserData(u)-10)
             endif
             // Humans can override orders; -auto resumes automatic commands.
-            if force or Bot[p] or AutoArmy[p] then
+            if forceOrder or Bot[p] or AutoArmy[p] then
                 // Do not reset a swing/cast when already fighting nearby.
-                if force or GetUnitCurrentOrder(u) == 0 or EnemyNear(p, GetUnitX(u), GetUnitY(u), 650) == null then
+                if forceOrder or GetUnitCurrentOrder(u) == 0 or EnemyNear(p, GetUnitX(u), GetUnitY(u), 650) == null then
                     if GetUnitUserData(u) > 10 and not Defending[t] then
                         call IssuePointOrder(u, "attack", 0, 0)
                     else

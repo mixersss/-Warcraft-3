@@ -63,4 +63,35 @@ for (const player of info.players) {
 const script = map.get('war3map.j').text();
 assert.equal(script, fs.readFileSync(path.join(root, 'build/map/war3map.j'), 'utf8'));
 assert.ok(!/\b(?:Blz\w+|Dz\w+|ExecuteFunc)\s*\(/.test(script), 'No modern or external API');
+// Legacy Warcraft's parser must not see type names reused as identifiers.
+// A permissive pjass invocation accepts e.g. "boolean force"; use +shadow too.
+const jassTypes = new Set(`integer real boolean string code handle nothing
+agent event player widget unit destructable item ability buff force group trigger
+triggercondition triggeraction timer location region rect boolexpr sound conditionfunc
+filterfunc unitpool itempool race alliancetype racepreference gamestate igamestate
+fgamestate playerstate playerscore playergameresult unitstate aidifficulty eventid
+gameevent playerevent playerunitevent unitevent limitop widgetevent dialogevent
+unittype gamespeed gamedifficulty gametype mapflag mapvisibility mapsetting mapdensity
+mapcontrol playerslotstate volumegroup camerafield camerasetup playercolor placement
+startlocprio raritycontrol blendmode texmapflags effect effecttype weathereffect
+terraindeformation fogstate fogmodifier dialog button quest questitem defeatcondition
+timerdialog leaderboard multiboard multiboarditem trackable gamecache version itemtype
+texttag attacktype damagetype weapontype soundtype lightning pathingtype image ubersplat
+hashtable`.split(/\s+/));
+function checkIdentifiers(source) {
+  for (const match of source.matchAll(/^function\s+(\w+)\s+takes\s+(.+?)\s+returns\s+\w+/gm)) {
+    assert.ok(!jassTypes.has(match[1]), `Function shadows JASS type: ${match[1]}`);
+    if (match[2] !== 'nothing') {
+      for (const argument of match[2].split(',')) {
+        const name = argument.trim().split(/\s+/)[1];
+        assert.ok(!jassTypes.has(name), `Parameter shadows JASS type: ${name}`);
+      }
+    }
+  }
+  for (const match of source.matchAll(/^\s*(?:local\s+|constant\s+)?\w+\s+(?:array\s+)?(\w+)\s*(?:=|$)/gm)) {
+    assert.ok(!jassTypes.has(match[1]), `Variable shadows JASS type: ${match[1]}`);
+  }
+}
+assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
+checkIdentifiers(script);
 console.log('PASS: MPQ extraction, 11 binary formats, Classic versions, 12 slots / 4 forces, terrain, pathing, object IDs and embedded JASS.');
