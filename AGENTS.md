@@ -9,4 +9,6 @@
 - Keep balance constants in `map/balance.json`; edit source JASS in `map/war3map.j` rather than generated JASS.
 - Preserve classic binary versions and check object modification IDs and types against Warcraft metadata when adding fields.
 - Human and bot purchases must use the same `Buy` function. Do not give bots hidden resources or bypass upgrade caps.
+- Keep all 24 roster heroes selectable and available to synchronized bot RNG. Races and hero choice lock after preparation; test menu callbacks and every race/tier combination when changing them.
+- Walls use static WPM collision and invulnerable destructables with no extra pathing texture. Preserve exactly one ground gate per team and run the WPM flood-fill check.
 - Hero spell use, pathfinding, loading and multiplayer sync require real in-game validation. Record those separately from automated checks.

@@ -21,4 +21,4 @@ for (const match of source.matchAll(/^\s*(integer|real|boolean) array (\w+)\s*$/
 }
 run(defaults.join('\n'));
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
-console.log('PASS: shipped JASS trigger logic: purchases, upgrade caps, bot economy, wave caps, bounties, team elimination and hero revival (mock natives).');
+console.log('PASS: shipped JASS: purchases/caps, 4 races x 5 tiers, menu callbacks, all 24 selectable/random bot heroes, skill learning/combat orders/channels, bounties, charm, team elimination and revival (mock natives).');

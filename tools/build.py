@@ -17,6 +17,37 @@ SIZE = 96
 HALF = SIZE * 64
 BOUNDS = HALF - 256
 MASK = 0xFFFFFFFF
+WALL_RADIUS = 1740
+WALL_HALF_THICKNESS = 96
+GATE_HALF_WIDTH = 480
+ENCLOSURES = [(-3904, -3904), (3904, -3904), (3904, 3904), (-3904, 3904)]
+
+
+def catalog(name: str) -> list[dict]:
+    return json.loads((ROOT / 'map' / f'{name}.json').read_text())
+
+
+def wall_at(x: float, y: float) -> bool:
+    for cx, cy in ENCLOSURES:
+        dx, dy = x-cx, y-cy
+        if abs(math.hypot(dx, dy)-WALL_RADIUS) <= WALL_HALF_THICKNESS:
+            length = math.hypot(cx, cy)
+            inward = (-cx*dx-cy*dy)/length
+            sideways = (-cy*dx+cx*dy)/length
+            if inward <= 0 or abs(sideways) >= GATE_HALF_WIDTH:
+                return True
+    return False
+
+
+def wall_segments() -> list[tuple[float, float, float]]:
+    result = []
+    for cx, cy in ENCLOSURES:
+        for step in range(96):
+            angle = step*2*math.pi/96
+            x, y = cx+WALL_RADIUS*math.cos(angle), cy+WALL_RADIUS*math.sin(angle)
+            if wall_at(x, y):
+                result.append((x, y, math.degrees(angle)+90))
+    return result
 
 
 def i(*values: int) -> bytes:
@@ -55,7 +86,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = '4 teams x 3 players. Endless army waves, five tiers, heroes and scripted bots. Destroy enemy barracks. Type -shop or -help. Classic TFT 1.26+; alpha, in-game validation pending.'
+    text = '4 teams x 3. Choose from 4 army races and 24 heroes. Bots get random heroes. Upgrade troops with Army Menu [U] on barracks or heroes. Each team fortress has one gate. Choose during the first 60 seconds. Destroy enemy barracks. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (bots fill empty slots)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -74,6 +105,8 @@ def info(b: dict) -> bytes:
 
 
 def texture(x: float, y: float) -> int:
+    if wall_at(x, y):
+        return 3
     if min((x-hx)**2+(y-hy)**2 for hx, hy in positions()) < 520**2:
         return 3
     radius = math.hypot(x, y)
@@ -100,7 +133,8 @@ def terrain() -> bytes:
 def pathing() -> bytes:
     width = SIZE*4
     return b'MP3W' + i(0, width, width) + bytes(
-        0x0E if x < 8 or y < 8 or x >= width-8 or y >= width-8 else 0x08
+        0x0E if x < 8 or y < 8 or x >= width-8 or y >= width-8
+        else 0x0A if wall_at((x+0.5)*32-HALF, (y+0.5)*32-HALF) else 0x08
         for y in range(width) for x in range(width)
     )
 
@@ -109,10 +143,11 @@ def objects(entries: list, extended: bool = False) -> bytes:
     data = i(2, 0, len(entries))
     for original, custom, changes in entries:
         data += original.encode('ascii') + custom.encode('ascii') + i(len(changes))
-        for field, kind, value in changes:
+        for change in changes:
+            field, kind, value = change[:3]
             data += field.encode('ascii') + i(kind)
             if extended:
-                data += i(0, 0)
+                data += i(*change[3:]) if len(change) == 5 else i(0, 0)
             data += s(value) if kind == 3 else f(value) if kind in (1, 2) else i(value)
             data += custom.encode('ascii')
     return data
@@ -120,11 +155,12 @@ def objects(entries: list, extended: bool = False) -> bytes:
 
 def units(b: dict) -> bytes:
     entries = []
-    for tier, row in enumerate(b['tiers']):
+    for race, faction in enumerate(catalog('races')):
+      for tier, row in enumerate(b['tiers']):
         for ranged in (False, True):
-            rawcode = ('fr' if ranged else 'fm') + f'{tier:02d}'
+            rawcode = ('fr' if ranged else 'fm') + f'{race}{tier}'
             changes = [
-                ('unam', 3, row['name'] + (' Rifleman' if ranged else ' Soldier')),
+                ('unam', 3, faction['tier_names'][tier] + (' Ranged' if ranged else '')),
                 ('uhpm', 0, round(row['hp'] * (0.65 if ranged else 1))),
                 ('ua1b', 0, round(row['damage'] * (0.8 if ranged else 1))),
                 ('ua1d', 0, 1), ('ua1s', 0, 2), ('ua1c', 2, 1.5),
@@ -133,18 +169,19 @@ def units(b: dict) -> bytes:
                 ('udef', 2, float(row['armor'])), ('udup', 2, 1.0),
                 ('udu1', 0, 3), ('ua1g', 3, 'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
+                ('ucol', 2, 24.0),
                 ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
-            entries.append(('hrif' if ranged else row['melee_base'], rawcode, changes))
+            entries.append((faction['ranged'] if ranged else faction['melee'][tier], rawcode, changes))
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
         ('udef', 2, 5.0), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, ''),
-        ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
+        ('uupt', 3, ''), ('uabi', 3, 'Fmen'), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, ''), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, 'Produces army waves automatically. Type -shop to buy upgrades. Keep this building alive to produce troops and revive your hero.'),
+        ('utub', 3, 'Produces army waves. Click Army Menu [U] to upgrade troops, or type -shop. Choose your army race and hero during the first 60 seconds.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, 1200),
@@ -155,6 +192,27 @@ def units(b: dict) -> bytes:
     return objects(entries)
 
 
+def menu_ability() -> bytes:
+    return objects([('ANcl', 'Fmen', [
+        ('anam', 3, 'Меню армии'), ('aher', 0, 0), ('aite', 0, 0), ('alev', 0, 1),
+        ('aart', 3, 'ReplaceableTextures\\CommandButtons\\BTNHumanBuild.blp'),
+        ('abpx', 0, 2), ('abpy', 0, 1), ('ahky', 3, 'U'),
+        ('atp1', 3, 'Меню армии [|cffffcc00U|r]', 1, 0),
+        ('aub1', 3, 'Улучшения атаки, брони, ступени армии и скорости спавна. До начала боя: выбор одной из 4 рас армии и одного из 24 героев.', 1, 0),
+        ('amcs', 0, 0, 1, 0), ('acdn', 2, 0.0, 1, 0),
+        ('acas', 2, 0.0, 1, 0), ('adur', 2, 0.0, 1, 0), ('ahdu', 2, 0.0, 1, 0),
+        ('Ncl1', 2, 0.0, 1, 1), ('Ncl2', 0, 0, 1, 2), ('Ncl3', 0, 1, 1, 3),
+        ('Ncl4', 2, 0.0, 1, 4), ('Ncl5', 0, 0, 1, 5), ('Ncl6', 3, 'channel', 1, 6),
+        ('acat', 3, ''), ('atat', 3, ''), ('aeat', 3, ''),
+    ])], extended=True)
+
+
+def walls() -> bytes:
+    # Static WPM contains the collision. Removing the stock pathing texture
+    # prevents rotated models from accidentally narrowing the only gate.
+    return objects([('LTw0', 'fwll', [('bnam', 3, 'Fortress Wall'), ('bptx', 3, '')])])
+
+
 def upgrades(b: dict) -> bytes:
     return objects([
         ('Rhme', 'Rfat', [('gnam', 3, 'Frenzy Weapons'), ('glvl', 0, b['upgrade_max']), ('gef1', 3, 'ratd'), ('gba1', 2, 1.0), ('gmo1', 2, 0.0), ('gef2', 3, ''), ('gef3', 3, ''), ('gef4', 3, ''), ('greq', 3, '')]),
@@ -163,22 +221,50 @@ def upgrades(b: dict) -> bytes:
 
 
 def script(b: dict) -> str:
+    heroes, races = catalog('heroes'), catalog('races')
     fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'spawn_cost', 'spawn_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
-    generated += ['    integer array MeleeType', '    integer array RangedType', '    integer array TierCost', '    string array TierName', '    boolean array AutoArmy', 'endglobals']
+    generated += [f'    constant integer HERO_COUNT = {len(heroes)}',
+        '    integer array MeleeType', '    integer array RangedType', '    integer array TierCost',
+        '    string array TierName', '    boolean array AutoArmy',
+        '    string array RaceName', '    string array RaceAlias',
+        '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
+        '    integer array HeroGroup', '    integer array HeroSkill',
+        '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
+        '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder', 'endglobals']
     source = (ROOT/'map/war3map.j').read_text()
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
     for n, row in enumerate(b['tiers']):
-        init += [f"    set MeleeType[{n}] = 'fm{n:02d}'", f"    set RangedType[{n}] = 'fr{n:02d}'", f'    set TierCost[{n}] = {row["cost"]}', f'    set TierName[{n}] = "{row["name"]}"']
+        init += [f'    set TierCost[{n}] = {row["cost"]}']
+    for race, faction in enumerate(races):
+        init += [f'    set RaceName[{race}] = "{faction["name"]}"', f'    set RaceAlias[{race}] = "{faction["alias"]}"']
+        for tier in range(5):
+            idx = race*5+tier
+            init += [f"    set MeleeType[{idx}] = 'fm{race}{tier}'", f"    set RangedType[{idx}] = 'fr{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
+    for idx, hero in enumerate(heroes):
+        init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}']
+        for slot, skill in enumerate(hero['skills']):
+            init += [f"    set HeroSkill[{idx*4+slot}] = '{skill}'"]
+        for slot in range(4):
+            if slot < len(hero['spells']):
+                ability, order, mode, *hold = hero['spells'][slot]
+                init += [f"    set SpellAbility[{idx*4+slot}] = '{ability}'", f'    set SpellOrder[{idx*4+slot}] = "{order}"', f'    set SpellMode[{idx*4+slot}] = {mode}', f'    set SpellHold[{idx*4+slot}] = {hold[0] if hold else 1}']
+            else:
+                init += [f'    set SpellAbility[{idx*4+slot}] = 0', f'    set SpellOrder[{idx*4+slot}] = ""']
+        auto = hero.get('autocast')
+        init += [f"    set AutoSkill[{idx}] = '{auto[0]}'" if auto else f'    set AutoSkill[{idx}] = 0', f'    set AutoOrder[{idx}] = "{auto[1] if auto else ""}"']
     for p, (x, y) in enumerate(positions()):
         init += [f'    set HomeX[{p}] = {x}.0', f'    set HomeY[{p}] = {y}.0']
     for t in range(4):
         homes = positions()[t*3:t*3+3]
         init += [f'    set TeamX[{t}] = {sum(x for x,y in homes)/3:.3f}', f'    set TeamY[{t}] = {sum(y for x,y in homes)/3:.3f}']
+    init += ['endfunction', '', 'function InitWalls takes nothing returns nothing']
+    for x, y, angle in wall_segments():
+        init += [f"    call SetDestructableInvulnerable(CreateDestructable('fwll', {x:.3f}, {y:.3f}, {angle:.3f}, 1.0, 0), true)"]
     init += ['endfunction', '']
     source = source.replace('function TeamOf ', '\n'.join(init)+'\nfunction TeamOf ', 1)
     config = ['function config takes nothing returns nothing', f'    call SetMapName("{b["name"]} {b["version"]}")', '    call SetMapDescription("Four teams of three. Endless waves, upgrades, heroes and bots. Type -help.")', '    call SetPlayers(12)', '    call SetTeams(4)', '    call SetGamePlacement(MAP_PLACEMENT_FIXED)', '    call SetGameTypeSupported(GAME_TYPE_USE_MAP_SETTINGS, true)', '    call SetMapFlag(MAP_LOCK_ALLIANCE_CHANGES, true)']
@@ -205,6 +291,8 @@ def minimap() -> bytes:
         for px in range(width):
             x, y = (px/width*2-1)*HALF, (py/width*2-1)*HALF
             color = palette[texture(x, y)]
+            if wall_at(x, y):
+                color = (185, 180, 165)
             for p, (hx, hy) in enumerate(positions()):
                 if (hx-x)**2+(hy-y)**2 < 240**2:
                     color = teams[p//3]
@@ -283,6 +371,7 @@ def build() -> Path:
     files = {
         'war3map.w3i': info(b), 'war3map.w3e': terrain(), 'war3map.wpm': pathing(),
         'war3map.w3u': units(b), 'war3map.w3q': upgrades(b),
+        'war3map.w3a': menu_ability(), 'war3map.w3b': walls(),
         'war3map.j': script(b).encode('utf-8'),
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),
         'war3mapUnits.doo': b'W3do'+i(8, 11, 0),

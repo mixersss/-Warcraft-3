@@ -1,0 +1,685 @@
+[
+  {
+    "id": "Hpal",
+    "name": "Паладин",
+    "alias": "paladin",
+    "group": 0,
+    "skills": [
+      "AHhb",
+      "AHad",
+      "AHds",
+      "AHre"
+    ],
+    "spells": [
+      [
+        "AHhb",
+        "holybolt",
+        3
+      ],
+      [
+        "AHds",
+        "divineshield",
+        4
+      ],
+      [
+        "AHre",
+        "resurrection",
+        0
+      ]
+    ]
+  },
+  {
+    "id": "Hmkg",
+    "name": "Горный король",
+    "alias": "king",
+    "group": 0,
+    "skills": [
+      "AHtb",
+      "AHtc",
+      "AHbh",
+      "AHav"
+    ],
+    "spells": [
+      [
+        "AHav",
+        "avatar",
+        0
+      ],
+      [
+        "AHtc",
+        "thunderclap",
+        5
+      ],
+      [
+        "AHtb",
+        "thunderbolt",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Hamg",
+    "name": "Архимаг",
+    "alias": "mage",
+    "group": 0,
+    "skills": [
+      "AHwe",
+      "AHab",
+      "AHbz",
+      "AHmt"
+    ],
+    "spells": [
+      [
+        "AHwe",
+        "waterelemental",
+        0
+      ]
+    ]
+  },
+  {
+    "id": "Hblm",
+    "name": "Маг крови",
+    "alias": "bloodmage",
+    "group": 0,
+    "skills": [
+      "AHbn",
+      "AHdr",
+      "AHfs",
+      "AHpx"
+    ],
+    "spells": [
+      [
+        "AHpx",
+        "summonphoenix",
+        0
+      ],
+      [
+        "AHbn",
+        "banish",
+        1
+      ],
+      [
+        "AHdr",
+        "drain",
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "id": "Obla",
+    "name": "Мастер клинка",
+    "alias": "blademaster",
+    "group": 1,
+    "skills": [
+      "AOcr",
+      "AOmi",
+      "AOwk",
+      "AOww"
+    ],
+    "spells": [
+      [
+        "AOww",
+        "whirlwind",
+        5,
+        5
+      ],
+      [
+        "AOmi",
+        "mirrorimage",
+        0
+      ],
+      [
+        "AOwk",
+        "windwalk",
+        4
+      ]
+    ]
+  },
+  {
+    "id": "Ofar",
+    "name": "Говорящий с духами",
+    "alias": "farseer",
+    "group": 1,
+    "skills": [
+      "AOsf",
+      "AOcl",
+      "AOfs",
+      "AOeq"
+    ],
+    "spells": [
+      [
+        "AOsf",
+        "spiritwolf",
+        0
+      ],
+      [
+        "AOcl",
+        "chainlightning",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Otch",
+    "name": "Вождь тауренов",
+    "alias": "chieftain",
+    "group": 1,
+    "skills": [
+      "AOws",
+      "AOae",
+      "AOsh",
+      "AOre"
+    ],
+    "spells": [
+      [
+        "AOws",
+        "stomp",
+        5
+      ],
+      [
+        "AOsh",
+        "shockwave",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "Oshd",
+    "name": "Ловец духов",
+    "alias": "shadowhunter",
+    "group": 1,
+    "skills": [
+      "AOhw",
+      "AOsw",
+      "AOhx",
+      "AOvd"
+    ],
+    "spells": [
+      [
+        "AOhw",
+        "healingwave",
+        6
+      ],
+      [
+        "AOvd",
+        "voodoo",
+        0,
+        6
+      ],
+      [
+        "AOhx",
+        "hex",
+        1
+      ],
+      [
+        "AOsw",
+        "ward",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "Udea",
+    "name": "Рыцарь смерти",
+    "alias": "deathknight",
+    "group": 2,
+    "skills": [
+      "AUdc",
+      "AUau",
+      "AUdp",
+      "AUan"
+    ],
+    "spells": [
+      [
+        "AUdc",
+        "deathcoil",
+        7
+      ],
+      [
+        "AUdc",
+        "deathcoil",
+        8
+      ],
+      [
+        "AUan",
+        "animatedead",
+        0
+      ]
+    ]
+  },
+  {
+    "id": "Ulic",
+    "name": "Лич",
+    "alias": "lich",
+    "group": 2,
+    "skills": [
+      "AUfn",
+      "AUfu",
+      "AUdr",
+      "AUdd"
+    ],
+    "spells": [
+      [
+        "AUfn",
+        "frostnova",
+        1
+      ],
+      [
+        "AUfu",
+        "frostarmor",
+        6
+      ]
+    ]
+  },
+  {
+    "id": "Udre",
+    "name": "Повелитель ужаса",
+    "alias": "dreadlord",
+    "group": 2,
+    "skills": [
+      "AUcs",
+      "AUav",
+      "AUsl",
+      "AUin"
+    ],
+    "spells": [
+      [
+        "AUin",
+        "inferno",
+        2
+      ],
+      [
+        "AUcs",
+        "carrionswarm",
+        2
+      ],
+      [
+        "AUsl",
+        "sleep",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Ucrl",
+    "name": "Повелитель могил",
+    "alias": "cryptlord",
+    "group": 2,
+    "skills": [
+      "AUim",
+      "AUts",
+      "AUcb",
+      "AUls"
+    ],
+    "spells": [
+      [
+        "AUls",
+        "locustswarm",
+        0
+      ],
+      [
+        "AUcb",
+        "carrionscarabs",
+        0
+      ],
+      [
+        "AUim",
+        "impale",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "Edem",
+    "name": "Охотник на демонов",
+    "alias": "demonhunter",
+    "group": 3,
+    "skills": [
+      "AEmb",
+      "AEev",
+      "AEim",
+      "AEme"
+    ],
+    "spells": [
+      [
+        "AEme",
+        "metamorphosis",
+        0
+      ],
+      [
+        "AEmb",
+        "manaburn",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Ekee",
+    "name": "Хранитель рощи",
+    "alias": "keeper",
+    "group": 3,
+    "skills": [
+      "AEer",
+      "AEah",
+      "AEfn",
+      "AEtq"
+    ],
+    "spells": [
+      [
+        "AEtq",
+        "tranquility",
+        4,
+        6
+      ],
+      [
+        "AEer",
+        "entanglingroots",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Emoo",
+    "name": "Жрица Луны",
+    "alias": "priestess",
+    "group": 3,
+    "skills": [
+      "AHfa",
+      "AEar",
+      "AEst",
+      "AEsf"
+    ],
+    "autocast": [
+      "AHfa",
+      "flamingarrowson"
+    ],
+    "spells": [
+      [
+        "AEsf",
+        "starfall",
+        0,
+        6
+      ]
+    ]
+  },
+  {
+    "id": "Ewar",
+    "name": "Смотрящая",
+    "alias": "warden",
+    "group": 3,
+    "skills": [
+      "AEsh",
+      "AEfk",
+      "AEbl",
+      "AEsv"
+    ],
+    "spells": [
+      [
+        "AEsv",
+        "spiritofvengeance",
+        0
+      ],
+      [
+        "AEfk",
+        "fanofknives",
+        5
+      ],
+      [
+        "AEsh",
+        "shadowstrike",
+        1
+      ]
+    ]
+  },
+  {
+    "id": "Nbst",
+    "name": "Повелитель зверей",
+    "alias": "beastmaster",
+    "group": 4,
+    "skills": [
+      "ANsg",
+      "ANsq",
+      "ANsw",
+      "ANst"
+    ],
+    "spells": [
+      [
+        "ANsg",
+        "summongrizzly",
+        0
+      ],
+      [
+        "ANsq",
+        "summonquillbeast",
+        0
+      ],
+      [
+        "ANsw",
+        "summonwareagle",
+        0
+      ],
+      [
+        "ANst",
+        "stampede",
+        2,
+        5
+      ]
+    ]
+  },
+  {
+    "id": "Nbrn",
+    "name": "Темная охотница",
+    "alias": "darkranger",
+    "group": 4,
+    "skills": [
+      "ANba",
+      "ANsi",
+      "ANdr",
+      "ANch"
+    ],
+    "autocast": [
+      "ANba",
+      "blackarrowon"
+    ],
+    "spells": [
+      [
+        "ANch",
+        "charm",
+        9
+      ],
+      [
+        "ANsi",
+        "silence",
+        2
+      ],
+      [
+        "ANdr",
+        "lifedrain",
+        1,
+        3
+      ]
+    ]
+  },
+  {
+    "id": "Npbm",
+    "name": "Пандарен-пивовар",
+    "alias": "pandaren",
+    "group": 4,
+    "skills": [
+      "ANbf",
+      "ANdb",
+      "ANdh",
+      "ANef"
+    ],
+    "spells": [
+      [
+        "ANef",
+        "elementalfury",
+        0
+      ],
+      [
+        "ANdh",
+        "drunkenhaze",
+        1
+      ],
+      [
+        "ANbf",
+        "breathoffire",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "Nfir",
+    "name": "Повелитель огня",
+    "alias": "firelord",
+    "group": 4,
+    "skills": [
+      "ANlm",
+      "ANso",
+      "ANia",
+      "ANvc"
+    ],
+    "spells": [
+      [
+        "ANlm",
+        "slimemonster",
+        0
+      ],
+      [
+        "ANso",
+        "soulburn",
+        1
+      ],
+      [
+        "ANvc",
+        "volcano",
+        2,
+        5
+      ]
+    ]
+  },
+  {
+    "id": "Nplh",
+    "name": "Владыка Преисподней",
+    "alias": "pitlord",
+    "group": 4,
+    "skills": [
+      "ANht",
+      "ANca",
+      "ANrf",
+      "ANdo"
+    ],
+    "spells": [
+      [
+        "ANdo",
+        "doom",
+        9
+      ],
+      [
+        "ANht",
+        "howlofterror",
+        5
+      ]
+    ]
+  },
+  {
+    "id": "Nngs",
+    "name": "Морская ведьма",
+    "alias": "naga",
+    "group": 4,
+    "skills": [
+      "ANfl",
+      "ANfa",
+      "ANms",
+      "ANto"
+    ],
+    "autocast": [
+      "ANfa",
+      "coldarrowson"
+    ],
+    "spells": [
+      [
+        "ANfl",
+        "forkedlightning",
+        1
+      ],
+      [
+        "ANms",
+        "manashieldon",
+        4
+      ],
+      [
+        "ANto",
+        "tornado",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "Ntin",
+    "name": "Гоблин-изобретатель",
+    "alias": "tinker",
+    "group": 4,
+    "skills": [
+      "ANsy",
+      "ANcs",
+      "ANeg",
+      "ANrg"
+    ],
+    "spells": [
+      [
+        "ANrg",
+        "robogoblin",
+        0
+      ],
+      [
+        "ANsy",
+        "summonfactory",
+        2
+      ],
+      [
+        "ANcs",
+        "clusterrockets",
+        2,
+        3
+      ]
+    ]
+  },
+  {
+    "id": "Nalc",
+    "name": "Гоблин-алхимик",
+    "alias": "alchemist",
+    "group": 4,
+    "skills": [
+      "ANab",
+      "ANcr",
+      "ANhs",
+      "ANtm"
+    ],
+    "spells": [
+      [
+        "ANtm",
+        "transmute",
+        9
+      ],
+      [
+        "ANcr",
+        "chemicalrage",
+        0
+      ],
+      [
+        "ANab",
+        "acidbomb",
+        1
+      ],
+      [
+        "ANhs",
+        "healingspray",
+        10,
+        3
+      ]
+    ]
+  }
+]

@@ -7,6 +7,8 @@ const root = path.resolve(__dirname, '..');
 const prefix = 'mdx-m3-viewer/dist/cjs/parsers/';
 const War3Map = require(prefix + 'w3x/map').default;
 const balance = require('../map/balance.json');
+const races = require('../map/races.json');
+const heroes = require('../map/heroes.json');
 const target = path.join(root, 'build', `FourFrontsFrenzy-${balance.version}.w3x`);
 const data = fs.readFileSync(target);
 const map = new War3Map();
@@ -16,6 +18,7 @@ assert.equal(map.maxPlayers, 12);
 const formats = {
   'war3map.w3i': 'w3i', 'war3map.w3e': 'w3e', 'war3map.wpm': 'wpm',
   'war3map.w3u': 'w3u', 'war3map.w3q': 'w3d',
+  'war3map.w3a': 'w3d', 'war3map.w3b': 'w3u',
   'war3map.doo': 'doo', 'war3mapUnits.doo': 'unitsdoo',
   'war3map.w3r': 'w3r', 'war3map.w3c': 'w3c', 'war3map.w3s': 'w3s',
   'war3map.imp': 'imp',
@@ -51,8 +54,19 @@ assert.deepEqual(Array.from(wpm.size), [384, 384]);
 assert.equal(wpm.pathing[192*384+192] & 2, 0, 'Center must be walkable');
 assert.ok(wpm.pathing[0] & 2, 'Outer boundary must block walking');
 const custom = parsed['war3map.w3u'].customTable.objects;
-assert.equal(custom.length, 12, 'Five melee, five ranged, barracks, tower');
-assert.equal(new Set(custom.map(o => o.newId)).size, 12, 'Unique custom rawcodes');
+assert.equal(races.length, 4);
+assert.equal(heroes.length, 24);
+assert.equal(new Set(heroes.map(h => h.id)).size, 24);
+assert.deepEqual([0,1,2,3,4].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8]);
+assert.equal(custom.length, 42, 'Four races x five tiers x two roles, barracks, tower');
+assert.equal(new Set(custom.map(o => o.newId)).size, 42, 'Unique custom rawcodes');
+for (let race = 0; race < 4; race++) {
+  for (let tier = 0; tier < 5; tier++) {
+    for (const role of ['fm', 'fr']) assert.ok(custom.some(o => o.newId === `${role}${race}${tier}`));
+  }
+}
+assert.equal(parsed['war3map.w3a'].customTable.objects[0].newId, 'Fmen');
+assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 assert.equal(parsed['war3map.w3q'].customTable.objects.length, 2);
 for (const player of info.players) {
   const [x, y] = player.startLocation;
@@ -94,4 +108,4 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ extraction, 11 binary formats, Classic versions, 12 slots / 4 forces, terrain, pathing, object IDs and embedded JASS.');
+console.log('PASS: MPQ, 13 binary formats, Classic versions, 12 slots / 4 forces, 24 heroes, 40 army variants, menu ability, walls, identifiers and embedded JASS.');

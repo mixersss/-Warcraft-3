@@ -3,6 +3,7 @@
 debug.setmetatable('', {__add=function(a,b) return tostring(a)..tostring(b) end})
 UNIT_TYPE_DEAD, UNIT_TYPE_STRUCTURE = 'dead', 'structure'
 UNIT_TYPE_SUMMONED = 'summoned'
+UNIT_TYPE_UNDEAD, UNIT_TYPE_HERO = 'undead', 'hero'
 UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
 PLAYER_STATE_RESOURCE_GOLD = 'gold'
 Players, World = {}, {}
@@ -18,7 +19,8 @@ function GetUnitTypeId(u) return u.id end
 function GetWidgetLife(u) return u.hp end
 function GetUnitState(u,k) return u[k] end
 function SetUnitState(u,k,v) u[k]=math.min(v,u[k=='hp' and 'max' or 'maxmana']) end
-function IsUnitType(u,t) return (t=='dead' and u.hp<=0) or (t=='structure' and u.structure==true) end
+function IsUnitType(u,t) return (t=='dead' and u.hp<=0) or u[t]==true end
+function IsUnitAlly(u,p) return TeamOf(u.owner)==TeamOf(p) end
 function GetPlayerState(p,k) return Players[p][k] end
 function SetPlayerState(p,k,v) Players[p][k]=v end
 function SetPlayerTechResearched(p,k,v) Players[p].tech[k]=v end
@@ -34,11 +36,36 @@ function GetUnitY(u) return u.y end
 function SetUnitUserData(u,v) u.data=v end
 function GetUnitUserData(u) return u.data or 0 end
 function CreateUnit(p,id,x,y,facing)
-    local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=0,maxmana=100,str=20,agi=20,int=20,level=1,data=0}
+    local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=100,maxmana=100,str=20,agi=20,int=20,level=1,data=0,abilities={},points=1}
     table.insert(World,u)
     return u
 end
 function IssuePointOrder(u,order,x,y) u.order={order,x,y}; return true end
+function IssueImmediateOrder(u,order) u.order={order};return AllowedOrders and AllowedOrders[order] or false end
+function IssueTargetOrder(u,order,target) u.order={order,target};return AllowedOrders and AllowedOrders[order] or false end
+function GetUnitAbilityLevel(u,id) return u.abilities[id] or 0 end
+function UnitAddAbility(u,id) u.abilities[id]=1;return true end
+function UnitMakeAbilityPermanent(u,v,id) return true end
+function PauseUnit(u,v) u.paused=v end
+function SetHeroLevel(u,level) u.points=u.points+level-u.level;u.level=level end
+function SelectHeroSkill(u,skill)
+    if u.points<=0 then return end
+    local kind=-1
+    for k=0,HERO_COUNT-1 do if HeroType[k]==u.id then kind=k end end
+    assert(kind>=0,'Learned skills must belong to a roster hero')
+    local slot=-1
+    for k=0,3 do if ResolvedSkill(u,HeroSkill[kind*4+k])==skill then slot=k end end
+    assert(slot>=0,'Bot attempted a skill not owned by its hero')
+    local old=u.abilities[skill] or 0
+    if (slot==3 and u.level>=6 and old==0) or (slot~=3 and old<3 and u.level>=1+old*2) then
+        u.abilities[skill]=old+1;u.points=u.points-1
+    end
+end
+function GetRandomInt(low,high)
+    local value=RngQueue and table.remove(RngQueue,1) or low
+    assert(value>=low and value<=high,'Random choice uses full valid bounds')
+    return value
+end
 function GetUnitCurrentOrder(u) return 0 end
 function CountUnitsInGroup(g) return #g end
 function GroupAddUnit(g,u)
@@ -51,6 +78,7 @@ function GroupRemoveUnit(g,u)
 end
 function IsUnitInGroup(u,g) for _,v in ipairs(g) do if v==u then return true end end; return false end
 function GroupAddGroup(a,b) for _,u in ipairs(a) do table.insert(b,u) end end
+function GroupClear(g) for i=#g,1,-1 do g[i]=nil end end
 function GroupEnumUnitsOfPlayer(g,p)
     for i=#g,1,-1 do g[i]=nil end
     for _,u in ipairs(World) do if u.owner==p and not u.removed then table.insert(g,u) end end
@@ -68,10 +96,22 @@ function AddHeroXP(u,xp) u.xp=(u.xp or 0)+xp end
 function ReviveHero(u,x,y) u.hp=u.max;u.x=x;u.y=y;u.revived=true; return true end
 function DisplayTimedTextToPlayer() end
 function DisplayTimedTextToForce() end
-function DialogDisplay() end
+function DialogDisplay(p,d,v) if d then d.visible=v end end
+function DialogClear(d) d.buttons={} end
+function DialogSetMessage(d,s) d.title=s end
+function DialogAddButton(d,s,key)
+    local button={label=s}
+    table.insert(d.buttons,button)
+    assert(#d.buttons<=12,'Classic dialogs may not overflow their button capacity')
+    return button
+end
+function GetTriggerPlayer() return EventPlayer or 0 end
+function GetClickedButton() return Clicked end
+function GetSpellAbilityId() return SpellId end
 function CustomVictoryBJ(p) Players[p].victory=true end
 function CustomDefeatBJ(p) Players[p].defeat=true end
--- UI and hero combat are outside these trigger tests.
+-- The main clock test skips board rendering and tactical combat.
+local realBotHero=BotHero
 function UpdateBoard() end
 function BotHero() end
 function reset()
@@ -82,8 +122,10 @@ function reset()
     for p=0,11 do
         Players[p]={gold=STARTING_GOLD,tech={}}
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
+        ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Speed[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
         Army[p]={}
+        Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
         Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0)
     end
@@ -168,3 +210,88 @@ Tick();assert(Hero[0].hp==0)
 Tick();assert(Hero[0].revived and Hero[0].hp==Hero[0].max)
 Base[1].hp=0;Hero[1].hp=0;Respawn[1]=1
 Tick();Tick();assert(not Hero[1].revived)
+
+-- All races retain upgrades, prices and the two-melee/one-ranged wave layout.
+for race=0,3 do
+    reset()
+    assert(SelectArmyRace(0,race))
+    Players[0].gold=100000
+    assert(Buy(0,0) and Buy(0,1))
+    for tier=0,4 do
+        GroupClear(Army[0]);SpawnWave(0)
+        assert(#Army[0]==SPAWN_UNITS)
+        assert(Army[0][1].id==MeleeType[race*5+tier])
+        assert(Army[0][3].id==RangedType[race*5+tier])
+        assert(IsArmyUnit(Army[0][1]) and IsArmyUnit(Army[0][3]))
+        if tier<4 then assert(Buy(0,2)) end
+    end
+    Seconds=WARMUP_SECONDS
+    assert(not SelectArmyRace(0,(race+1)%4) and ArmyRace[0]==race)
+end
+
+reset()
+-- Exercise actual menu callbacks: race -> hero group -> hero -> upgrade menu.
+local function click(action)
+    for k=0,11 do
+        if MenuAction[k]==action and ShopButton[k] then Clicked=ShopButton[k];OnShop();return end
+    end
+    error('Missing menu action '..action)
+end
+ShowRaces(0);assert(#Shop[0].buttons==7)
+click(102);assert(ArmyRace[0]==2)
+click(204);assert(#Shop[0].buttons==11,'Eight neutral heroes plus navigation fit')
+click(323);assert(HeroKind[0]==23 and Hero[0].id==HeroType[23])
+local gold=Players[0].gold
+click(0);assert(Attack[0]==1 and Players[0].gold==gold-ATTACK_COST)
+click(1);assert(Armor[0]==1)
+local oldHero=Hero[0]
+Seconds=WARMUP_SECONDS
+assert(not SelectRosterHero(0,0) and Hero[0]==oldHero)
+-- Menu spell on a player's own barracks is a visible route to upgrades.
+Dying=Base[0]
+SpellId=string.byte('F')*16777216+string.byte('m')*65536+string.byte('e')*256+string.byte('n')
+OnArmyMenu();assert(Shop[0].visible)
+
+-- Every roster hero is selectable. Every bot can draw both RNG endpoints and
+-- all intervening choices, rather than using its player index as a hero class.
+for kind=0,HERO_COUNT-1 do
+    reset()
+    assert(SelectRosterHero(0,kind))
+    assert(Hero[0].id==HeroType[kind] and Hero[0].paused)
+    Bot[1]=true;RngQueue={kind%4,kind}
+    AssignBotChoices(1)
+    assert(ArmyRace[1]==kind%4 and HeroKind[1]==kind and Hero[1].id==HeroType[kind])
+    SetHeroLevel(Hero[1],10)
+    for i=1,12 do LearnHero(1) end
+    assert(Hero[1].points==0,'Bot spends hero skill points across its own roster abilities')
+    Seconds=WARMUP_SECONDS+10
+    Hero[1].paused=false
+    Hero[3].x=HomeX[1]+150;Hero[3].y=HomeY[1]
+    AllowedOrders={}
+    for slot=0,3 do AllowedOrders[SpellOrder[kind*4+slot]]=true end
+    if AutoOrder[kind]~='' then AllowedOrders[AutoOrder[kind]]=true end
+    realBotHero(1)
+    assert(Hero[1].order,'Each of the 24 bot hero classes issues combat orders')
+    if CastUntil[1]>Seconds then
+        local order=Hero[1].order
+        realBotHero(1)
+        assert(Hero[1].order==order,'Do not interrupt a spell with skill/autocast orders')
+    end
+    AllowedOrders=nil
+end
+
+reset()
+-- Generic casting uses this hero's learned skill, and waits for a channel.
+Bot[0]=true;CreateHero(0,1)
+local enemy=Hero[3];enemy.x=HomeX[0]+100;enemy.y=HomeY[0]
+AllowedOrders={thunderbolt=true}
+assert(TryBotSpell(0,enemy) and Hero[0].order[1]=='thunderbolt')
+assert(CastUntil[0]>Seconds)
+AllowedOrders=nil
+
+reset()
+-- Charm must remove a troop from its old owner's cap at reconciliation.
+SpawnWave(0)
+local charmed=Army[0][1];charmed.owner=3
+CommandArmy(0,true);CommandArmy(3,true)
+assert(#Army[0]==2 and IsUnitInGroup(charmed,Army[3]))

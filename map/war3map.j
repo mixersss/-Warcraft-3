@@ -18,6 +18,8 @@ globals
     integer array Respawn
     integer array Kills
     integer array HeroKind
+    integer array ArmyRace
+    integer array CastUntil
     integer array RetreatUntil
     integer array Target
     real array HomeX
@@ -28,6 +30,7 @@ globals
     real array RallyY
     dialog array Shop
     button array ShopButton
+    integer array MenuAction
     integer Seconds = 0
     boolean Finished = false
     group Scan = null
@@ -37,6 +40,7 @@ globals
     trigger ChatTrigger = null
     trigger ShopTrigger = null
     trigger LeaveTrigger = null
+    trigger MenuTrigger = null
 endglobals
 
 function TeamOf takes integer p returns integer
@@ -49,7 +53,7 @@ endfunction
 
 function IsArmyUnit takes unit u returns boolean
     local integer id = GetUnitTypeId(u)
-    return (id >= 'fm00' and id <= 'fm04') or (id >= 'fr00' and id <= 'fr04')
+    return (id >= 'fm00' and id <= 'fm34') or (id >= 'fr00' and id <= 'fr34')
 endfunction
 
 function Tell takes integer p, string message returns nothing
@@ -159,17 +163,17 @@ endfunction
 
 function UpgradeName takes integer kind returns string
     if kind == 0 then
-        return "Army attack +3"
+        return "Атака армии +3"
     elseif kind == 1 then
-        return "Army armor +1"
+        return "Броня армии +1"
     elseif kind == 2 then
-        return "Next army tier"
+        return "Следующая ступень армии"
     elseif kind == 3 then
-        return "Spawn interval -1 sec"
+        return "Интервал спавна -1 сек."
     elseif kind == 4 then
-        return "Hero: +3 all attributes"
+        return "Герою: +3 ко всем характеристикам"
     endif
-    return "Heal hero (at your base)"
+    return "Лечение героя у своей базы"
 endfunction
 
 function Buy takes integer p, integer kind returns boolean
@@ -219,81 +223,223 @@ function Buy takes integer p, integer kind returns boolean
     return true
 endfunction
 
+function MenuButton takes integer p, integer slot, string title, integer action returns nothing
+    set ShopButton[p*12+slot] = DialogAddButton(Shop[p], title, 0)
+    set MenuAction[p*12+slot] = action
+endfunction
+
+function ClearMenu takes integer p, string title returns nothing
+    local integer k = 0
+    call DialogClear(Shop[p])
+    call DialogSetMessage(Shop[p], title)
+    loop
+        exitwhen k == 12
+        set ShopButton[p*12+k] = null
+        set MenuAction[p*12+k] = -1
+        set k = k+1
+    endloop
+endfunction
+
 function ShowShop takes integer p returns nothing
     local integer k = 0
     local integer cost
-    call DialogClear(Shop[p])
-    call DialogSetMessage(Shop[p], "UPGRADES | Gold: " + I2S(GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)))
+    call ClearMenu(p, "АРМИЯ | " + RaceName[ArmyRace[p]] + " | Ступень " + I2S(Tier[p]+1) + " | Золото: " + I2S(GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)))
     loop
         exitwhen k == 6
         set cost = UpgradeCost(p, k)
         if cost >= 0 then
-            set ShopButton[p*8+k] = DialogAddButton(Shop[p], UpgradeName(k) + " [" + I2S(cost) + "]", 0)
-        else
-            set ShopButton[p*8+k] = null
+            call MenuButton(p, k, UpgradeName(k) + " [" + I2S(cost) + "]", k)
         endif
         set k = k+1
     endloop
-    set ShopButton[p*8+6] = DialogAddButton(Shop[p], "Close", 0)
+    if Seconds < WARMUP_SECONDS then
+        call MenuButton(p, 6, "Выбрать расу армии", 10)
+        call MenuButton(p, 7, "Выбрать героя (24 героя)", 11)
+    endif
+    call MenuButton(p, 8, "Закрыть", 12)
+    call DialogDisplay(Player(p), Shop[p], true)
+endfunction
+
+function ResolvedSkill takes unit h, integer skill returns integer
+    local integer engineering = GetUnitAbilityLevel(h, 'ANeg')
+    if engineering > 0 and engineering <= 3 then
+        if skill == 'ANsy' then
+            return 'ANs1'+engineering-1
+        elseif skill == 'ANcs' then
+            return 'ANc1'+engineering-1
+        elseif skill == 'ANrg' then
+            return 'ANg1'+engineering-1
+        endif
+    endif
+    return skill
+endfunction
+
+function LearnHero takes integer p returns nothing
+    local integer level = GetHeroLevel(Hero[p])
+    local integer slot = 0
+    local integer index = HeroKind[p]*4
+    if level >= 6 then
+        call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+3]))
+    endif
+    loop
+        exitwhen slot == 3
+        call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+slot]))
+        set slot = slot+1
+    endloop
+    if AutoSkill[HeroKind[p]] != 0 and GetUnitAbilityLevel(Hero[p], AutoSkill[HeroKind[p]]) > 0 then
+        call IssueImmediateOrder(Hero[p], AutoOrder[HeroKind[p]])
+    endif
+endfunction
+
+function CreateHero takes integer p, integer kind returns nothing
+    set HeroKind[p] = kind
+    set Hero[p] = CreateUnit(Player(p), HeroType[kind], HomeX[p], HomeY[p]-240, 270)
+    call SetHeroLevel(Hero[p], 1, false)
+    call UnitAddAbility(Hero[p], 'Fmen')
+    call UnitMakeAbilityPermanent(Hero[p], true, 'Fmen')
+    call PauseUnit(Hero[p], Seconds < WARMUP_SECONDS)
+    if Bot[p] then
+        call LearnHero(p)
+    endif
+endfunction
+
+function AssignBotChoices takes integer p returns nothing
+    set ArmyRace[p] = GetRandomInt(0, 3)
+    call CreateHero(p, GetRandomInt(0, HERO_COUNT-1))
+endfunction
+
+function SelectArmyRace takes integer p, integer choice returns boolean
+    if Seconds >= WARMUP_SECONDS or choice < 0 or choice > 3 or Lost[p] then
+        call Tell(p, "Расу армии можно выбрать только до первого спавна.")
+        return false
+    endif
+    set ArmyRace[p] = choice
+    call Tell(p, "Раса армии: " + RaceName[choice])
+    return true
+endfunction
+
+function SelectRosterHero takes integer p, integer choice returns boolean
+    if Seconds >= WARMUP_SECONDS or Power[p] > 0 or choice < 0 or choice >= HERO_COUNT or Lost[p] then
+        call Tell(p, "Выбор героя закрыт после начала боя или покупки характеристик.")
+        return false
+    endif
+    if Hero[p] != null then
+        call RemoveUnit(Hero[p])
+    endif
+    call CreateHero(p, choice)
+    call Tell(p, "Герой: " + HeroName[choice])
+    return true
+endfunction
+
+function ShowRaces takes integer p returns nothing
+    local integer k = 0
+    if Seconds >= WARMUP_SECONDS then
+        call ShowShop(p)
+        return
+    endif
+    call ClearMenu(p, "ВЫБОР РАСЫ АРМИИ (до начала боя)")
+    loop
+        exitwhen k == 4
+        call MenuButton(p, k, RaceName[k], 100+k)
+        set k = k+1
+    endloop
+    call MenuButton(p, 4, "Случайная раса", 104)
+    call MenuButton(p, 5, "Меню армии", 13)
+    call MenuButton(p, 6, "Закрыть", 12)
+    call DialogDisplay(Player(p), Shop[p], true)
+endfunction
+
+function HeroCategory takes integer category returns string
+    if category < 4 then
+        return RaceName[category]
+    endif
+    return "Нейтральные герои"
+endfunction
+
+function ShowHeroGroups takes integer p returns nothing
+    local integer k = 0
+    if Seconds >= WARMUP_SECONDS then
+        call ShowShop(p)
+        return
+    endif
+    call ClearMenu(p, "ВЫБОР ГЕРОЯ: 24 стандартных героя")
+    loop
+        exitwhen k == 5
+        call MenuButton(p, k, HeroCategory(k), 200+k)
+        set k = k+1
+    endloop
+    call MenuButton(p, 5, "Случайный герой", 399)
+    call MenuButton(p, 6, "Меню армии", 13)
+    call MenuButton(p, 7, "Закрыть", 12)
+    call DialogDisplay(Player(p), Shop[p], true)
+endfunction
+
+function ShowHeroes takes integer p, integer category returns nothing
+    local integer k = 0
+    local integer slot = 0
+    if Seconds >= WARMUP_SECONDS then
+        call ShowShop(p)
+        return
+    endif
+    call ClearMenu(p, "ВЫБОР ГЕРОЯ: " + HeroCategory(category))
+    loop
+        exitwhen k == HERO_COUNT
+        if HeroGroup[k] == category then
+            call MenuButton(p, slot, HeroName[k], 300+k)
+            set slot = slot+1
+        endif
+        set k = k+1
+    endloop
+    call MenuButton(p, slot, "Назад к расам героев", 11)
+    call MenuButton(p, slot+1, "Случайный герой", 399)
+    call MenuButton(p, slot+2, "Закрыть", 12)
     call DialogDisplay(Player(p), Shop[p], true)
 endfunction
 
 function OnShop takes nothing returns nothing
     local integer p = GetPlayerId(GetTriggerPlayer())
     local integer k = 0
-    if p >= 12 or Finished then
+    local integer action = -1
+    if p >= 12 or Finished or Bot[p] then
         return
     endif
     loop
-        exitwhen k == 6
-        if GetClickedButton() == ShopButton[p*8+k] then
-            call Buy(p, k)
-            call ShowShop(p)
-            return
+        exitwhen k == 12
+        if GetClickedButton() == ShopButton[p*12+k] then
+            set action = MenuAction[p*12+k]
         endif
         set k = k+1
     endloop
-endfunction
-
-function LearnHero takes integer p returns nothing
-    local integer level = GetHeroLevel(Hero[p])
-    // Skill points are spent by bots only. Human players retain full control.
-    if HeroKind[p] == 0 then
-        if level >= 6 then
-            call SelectHeroSkill(Hero[p], 'AHre')
+    if action >= 0 and action < 6 then
+        call Buy(p, action)
+        call ShowShop(p)
+    elseif action == 10 then
+        call ShowRaces(p)
+    elseif action == 11 then
+        call ShowHeroGroups(p)
+    elseif action == 13 then
+        call ShowShop(p)
+    elseif action >= 100 and action <= 104 then
+        if action == 104 then
+            set action = 100+GetRandomInt(0, 3)
         endif
-        call SelectHeroSkill(Hero[p], 'AHhb')
-        call SelectHeroSkill(Hero[p], 'AHad')
-        call SelectHeroSkill(Hero[p], 'AHds')
-    elseif HeroKind[p] == 1 then
-        if level >= 6 then
-            call SelectHeroSkill(Hero[p], 'AHav')
-        endif
-        call SelectHeroSkill(Hero[p], 'AHtb')
-        call SelectHeroSkill(Hero[p], 'AHtc')
-        call SelectHeroSkill(Hero[p], 'AHbh')
-    else
-        if level >= 6 then
-            call SelectHeroSkill(Hero[p], 'AHmt')
-        endif
-        call SelectHeroSkill(Hero[p], 'AHwe')
-        call SelectHeroSkill(Hero[p], 'AHab')
-        call SelectHeroSkill(Hero[p], 'AHbz')
+        call SelectArmyRace(p, action-100)
+        call ShowHeroGroups(p)
+    elseif action >= 200 and action < 205 then
+        call ShowHeroes(p, action-200)
+    elseif action == 399 then
+        call SelectRosterHero(p, GetRandomInt(0, HERO_COUNT-1))
+        call ShowShop(p)
+    elseif action >= 300 and action < 300+HERO_COUNT then
+        call SelectRosterHero(p, action-300)
+        call ShowShop(p)
     endif
 endfunction
 
-function CreateHero takes integer p, integer kind returns nothing
-    local integer id = 'Hpal'
-    if kind == 1 then
-        set id = 'Hmkg'
-    elseif kind == 2 then
-        set id = 'Hamg'
-    endif
-    set HeroKind[p] = kind
-    set Hero[p] = CreateUnit(Player(p), id, HomeX[p], HomeY[p]-240, 270)
-    call SetHeroLevel(Hero[p], 1, false)
-    if Bot[p] then
-        call LearnHero(p)
+function OnArmyMenu takes nothing returns nothing
+    local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
+    if GetSpellAbilityId() == 'Fmen' and p < 12 and not Bot[p] and not Finished then
+        call ShowShop(p)
     endif
 endfunction
 
@@ -305,9 +451,9 @@ function SpawnWave takes integer p returns nothing
     loop
         exitwhen n >= SPAWN_UNITS or count >= ARMY_CAP
         if n == SPAWN_UNITS-1 then
-            set id = RangedType[Tier[p]]
+            set id = RangedType[ArmyRace[p]*5+Tier[p]]
         else
-            set id = MeleeType[Tier[p]]
+            set id = MeleeType[ArmyRace[p]*5+Tier[p]]
         endif
         set u = CreateUnit(Player(p), id, HomeX[p] + I2R(n-1)*90, HomeY[p] + 220, 270)
         // 11..15: advancing through center; 1..5: reached the center.
@@ -329,6 +475,7 @@ function CommandArmy takes integer p, boolean forceOrder returns nothing
     local integer t = TeamOf(p)
     // Reconcile resurrected troops as well as newly summoned elementals.
     // Summons receive orders but do not occupy the trained-army cap.
+    call GroupClear(Army[p])
     call GroupEnumUnitsOfPlayer(Work, Player(p), null)
     loop
         set u = FirstOfGroup(Work)
@@ -384,83 +531,114 @@ function BotBuy takes integer p returns nothing
     endif
 endfunction
 
+// Heal targeting follows the unit's actual race, independently of army choice.
+function FindBotAlly takes integer p, integer mode returns unit
+    local unit u
+    local unit best = null
+    local real lowest = 0.75
+    local real health
+    call GroupEnumUnitsInRange(Scan, GetUnitX(Hero[p]), GetUnitY(Hero[p]), 650, null)
+    loop
+        set u = FirstOfGroup(Scan)
+        exitwhen u == null
+        call GroupRemoveUnit(Scan, u)
+        if Alive(u) and IsUnitAlly(u, Player(p)) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) then
+            if (mode != 3 or (u != Hero[p] and not IsUnitType(u, UNIT_TYPE_UNDEAD))) and (mode != 7 or (u != Hero[p] and IsUnitType(u, UNIT_TYPE_UNDEAD))) then
+                set health = GetWidgetLife(u)/GetUnitState(u, UNIT_STATE_MAX_LIFE)
+                if health < lowest then
+                    set lowest = health
+                    set best = u
+                endif
+            endif
+        endif
+    endloop
+    set u = null
+    return best
+endfunction
+
+function TryBotSpell takes integer p, unit enemy returns boolean
+    local integer slot = 0
+    local integer index
+    local integer mode
+    local unit ally = null
+    local boolean cast = false
+    local unit h = Hero[p]
+    local real health = GetWidgetLife(h)/GetUnitState(h, UNIT_STATE_MAX_LIFE)
+    loop
+        exitwhen slot == 4
+        set index = HeroKind[p]*4+slot
+        set mode = SpellMode[index]
+        if SpellAbility[index] != 0 and GetUnitAbilityLevel(h, ResolvedSkill(h, SpellAbility[index])) > 0 then
+            if mode == 3 or mode == 6 or mode == 7 or mode == 10 then
+                set ally = FindBotAlly(p, mode)
+                if ally != null then
+                    if mode == 10 then
+                        set cast = IssuePointOrder(h, SpellOrder[index], GetUnitX(ally), GetUnitY(ally))
+                    else
+                        set cast = IssueTargetOrder(h, SpellOrder[index], ally)
+                    endif
+                endif
+            elseif enemy != null then
+                if mode == 0 or (mode == 4 and health < 0.55) or (mode == 5 and DistanceSq(GetUnitX(h), GetUnitY(h), GetUnitX(enemy), GetUnitY(enemy)) < 160000) then
+                    set cast = IssueImmediateOrder(h, SpellOrder[index])
+                elseif mode == 1 or (mode == 8 and not IsUnitType(enemy, UNIT_TYPE_UNDEAD)) or (mode == 9 and not IsUnitType(enemy, UNIT_TYPE_HERO) and not IsUnitType(enemy, UNIT_TYPE_SUMMONED)) then
+                    set cast = IssueTargetOrder(h, SpellOrder[index], enemy)
+                elseif mode == 2 then
+                    set cast = IssuePointOrder(h, SpellOrder[index], GetUnitX(enemy), GetUnitY(enemy))
+                endif
+            endif
+            if cast then
+                set CastUntil[p] = Seconds+SpellHold[index]
+                set h = null
+                set ally = null
+                return true
+            endif
+        endif
+        set slot = slot+1
+    endloop
+    set h = null
+    set ally = null
+    return false
+endfunction
+
 function BotHero takes integer p returns nothing
     local unit h = Hero[p]
     local unit enemy
-    local unit ally = null
-    local unit u
-    local real hp
-    local real lowest = 0.7
+    local real health
     local integer team = TeamOf(p)
     if not Alive(h) then
         set h = null
         return
     endif
-    call LearnHero(p)
-    set hp = GetWidgetLife(h) / GetUnitState(h, UNIT_STATE_MAX_LIFE)
+    if CastUntil[p] <= Seconds then
+        call LearnHero(p)
+    endif
+    set health = GetWidgetLife(h) / GetUnitState(h, UNIT_STATE_MAX_LIFE)
     set enemy = EnemyNear(p, GetUnitX(h), GetUnitY(h), 750)
-    if Alive(Base[p]) and (hp < 0.28 or (RetreatUntil[p] > Seconds and hp < 0.85)) then
+    if Alive(Base[p]) and (health < 0.28 or (RetreatUntil[p] > Seconds and health < 0.85)) then
         set RetreatUntil[p] = Seconds+8
-        if HeroKind[p] == 0 and hp < 0.35 then
+        if HeroKind[p] == 0 then
             call IssueImmediateOrder(h, "divineshield")
+        elseif HeroKind[p] == 4 then
+            call IssueImmediateOrder(h, "windwalk")
         endif
         call IssuePointOrder(h, "move", HomeX[p], HomeY[p]-260)
-        if DistanceSq(GetUnitX(h), GetUnitY(h), HomeX[p], HomeY[p]) < 500000 and hp < 0.5 then
+        if DistanceSq(GetUnitX(h), GetUnitY(h), HomeX[p], HomeY[p]) < 500000 and health < 0.5 then
             call Buy(p, 5)
         endif
         set h = null
         set enemy = null
         return
     endif
-    if HeroKind[p] == 0 then
-        call GroupEnumUnitsInRange(Scan, GetUnitX(h), GetUnitY(h), 700, null)
-        loop
-            set u = FirstOfGroup(Scan)
-            exitwhen u == null
-            call GroupRemoveUnit(Scan, u)
-            if u != h and IsUnitAlly(u, Player(p)) and Alive(u) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) and not IsUnitType(u, UNIT_TYPE_UNDEAD) then
-                set hp = GetWidgetLife(u)/GetUnitState(u, UNIT_STATE_MAX_LIFE)
-                if hp < lowest then
-                    set lowest = hp
-                    set ally = u
-                endif
-            endif
-        endloop
-        if ally != null and IssueTargetOrder(h, "holybolt", ally) then
-            set h = null
-            set ally = null
-            set u = null
-            set enemy = null
-            return
-        endif
-        if enemy != null and GetUnitAbilityLevel(h, 'AHre') > 0 and IssueImmediateOrder(h, "resurrection") then
-            set h = null
-            set enemy = null
-            return
-        endif
-    elseif HeroKind[p] == 1 and enemy != null then
-        if GetHeroLevel(h) >= 6 and IssueImmediateOrder(h, "avatar") then
-            set h = null
-            set enemy = null
-            return
-        endif
-        if DistanceSq(GetUnitX(h), GetUnitY(h), GetUnitX(enemy), GetUnitY(enemy)) < 90000 and IssueImmediateOrder(h, "thunderclap") then
-            set h = null
-            set enemy = null
-            return
-        endif
-        if IssueTargetOrder(h, "thunderbolt", enemy) then
-            set h = null
-            set enemy = null
-            return
-        endif
-    elseif HeroKind[p] == 2 and enemy != null then
-        if IssueImmediateOrder(h, "waterelemental") then
-            set h = null
-            set enemy = null
-            return
-        endif
-        // Blizzard is deliberately omitted here: allied melee are usually in the blast.
+    if CastUntil[p] > Seconds then
+        set h = null
+        set enemy = null
+        return
+    endif
+    if TryBotSpell(p, enemy) then
+        set h = null
+        set enemy = null
+        return
     endif
     if enemy == null then
         call IssuePointOrder(h, "attack", RallyX[team], RallyY[team])
@@ -469,8 +647,6 @@ function BotHero takes integer p returns nothing
     endif
     set h = null
     set enemy = null
-    set ally = null
-    set u = null
 endfunction
 
 function FinishIfWon takes nothing returns nothing
@@ -601,6 +777,10 @@ function OnChat takes nothing returns nothing
     endif
     if command == "-shop" then
         call ShowShop(p)
+    elseif command == "-race" then
+        call ShowRaces(p)
+    elseif command == "-hero" then
+        call ShowHeroGroups(p)
     elseif command == "-attack" then
         call Buy(p, 0)
     elseif command == "-armor" then
@@ -623,26 +803,37 @@ function OnChat takes nothing returns nothing
     elseif command == "-go" then
         call CommandArmy(p, true)
     elseif command == "-status" then
-        call Tell(p, TierName[Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | spawn " + I2S(SPAWN_SECONDS-Speed[p]) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
-    elseif SubString(command, 0, 6) == "-hero " then
-        if Seconds >= WARMUP_SECONDS or Power[p] > 0 then
-            call Tell(p, "Choose your hero before the first wave.")
-            return
-        endif
-        if command == "-hero paladin" then
+        call Tell(p, RaceName[ArmyRace[p]] + " | " + TierName[ArmyRace[p]*5+Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | spawn " + I2S(SPAWN_SECONDS-Speed[p]) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
+    elseif SubString(command, 0, 6) == "-race " then
+        if command == "-race random" then
+            call SelectArmyRace(p, GetRandomInt(0, 3))
+        else
             set kind = 0
-        elseif command == "-hero king" then
-            set kind = 1
-        elseif command == "-hero mage" then
-            set kind = 2
+            loop
+                exitwhen kind == 4
+                if command == "-race " + RaceAlias[kind] then
+                    call SelectArmyRace(p, kind)
+                    return
+                endif
+                set kind = kind+1
+            endloop
         endif
-        if kind >= 0 then
-            call RemoveUnit(Hero[p])
-            call CreateHero(p, kind)
-            call Tell(p, "Hero selected.")
+    elseif SubString(command, 0, 6) == "-hero " then
+        if command == "-hero random" then
+            call SelectRosterHero(p, GetRandomInt(0, HERO_COUNT-1))
+        else
+            set kind = 0
+            loop
+                exitwhen kind == HERO_COUNT
+                if command == "-hero " + HeroAlias[kind] then
+                    call SelectRosterHero(p, kind)
+                    return
+                endif
+                set kind = kind+1
+            endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "-shop upgrades | -status army | -auto toggle army orders | -go rally | -hero paladin/king/mage during warmup. Destroy all enemy barracks to win. F9: rules.")
+        call Tell(p, "Кнопка [U] на казарме или герое: улучшения армии. -shop: меню | -race: 4 расы | -hero: 24 героя | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -680,6 +871,16 @@ function Tick takes nothing returns nothing
         return
     endif
     set Seconds = Seconds+1
+    if Seconds == 1 then
+        loop
+            exitwhen p == 12
+            if not Bot[p] then
+                call ShowRaces(p)
+            endif
+            set p = p+1
+        endloop
+        set p = 0
+    endif
     if ModuloInteger(Seconds, 6) == 0 then
         loop
             exitwhen t == 4
@@ -731,11 +932,13 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("The battle begins! Type -shop to upgrade your army.")
+        call Say("Бой начался! Кнопка [U] на казарме или герое открывает улучшения армии.")
         set p = 0
         loop
             exitwhen p == 12
             if Alive(Base[p]) then
+                call PauseUnit(Hero[p], false)
+                call DialogDisplay(Player(p), Shop[p], false)
                 call SpawnWave(p)
             endif
             set p = p+1
@@ -749,12 +952,12 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Each player owns barracks, a tower and a hero. Barracks produce two melee soldiers and one rifleman every 8 seconds. Upgrade army tier, attack, armor and spawn rate with gold. Destroy all three barracks to eliminate a team. Last surviving team wins. Gold: passive income and enemy kills. Army cap: 48 per player. Empty slots and leavers are controlled by scripted bots. Hero revival is automatic while your own barracks survive. Base regeneration heals nearby heroes when there are no enemies.")
+    call QuestSetDescription(q, "4 teams of 3. Each team's fortress has one gate facing the arena. Choose army race and hero during the first 60 seconds. Barracks produce two melee and one ranged soldier every 8 seconds. Army Menu [U] on barracks and heroes opens upgrades. Attack and armor affect existing troops; tiers affect future waves. Destroy all three barracks to eliminate a team. Last surviving team wins. Bots randomly choose any of 24 heroes and one of 4 races. Heroes revive while their own barracks survive.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop: upgrade menu. -attack / -armor / -tier / -spawn / -power / -heal: direct purchase. -status: army stats. -auto: toggle automatic army orders (ON by default). -go: send army to team target. -hero paladin / -hero king / -hero mage: choose during first 30 seconds. Heroes are always manually controlled for human players. Existing troops receive attack/armor research; tier upgrades apply to new waves. Bot difficulty currently uses one shared ruleset.")
+    call QuestSetDescription(q, "-shop: upgrade menu, also available as Army Menu [U] on barracks and heroes. -race: army race menu. -hero: hero roster (16 racial + 8 neutral heroes). -hero random / -race random: random choice. Race and hero lock at 60 seconds. -attack / -armor / -tier / -spawn / -power / -heal: direct purchases. -status: army stats. -auto: toggle army orders. -go: rally. Human heroes remain manually controlled after preparation.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -773,7 +976,9 @@ function InitGame takes nothing returns nothing
     set ChatTrigger = CreateTrigger()
     set LeaveTrigger = CreateTrigger()
     set ShopTrigger = CreateTrigger()
+    set MenuTrigger = CreateTrigger()
     call InitBalance()
+    call InitWalls()
     call SetTimeOfDay(12)
     call SetTimeOfDayScale(0)
     call SetMapFlag(MAP_FOG_HIDE_TERRAIN, false)
@@ -806,9 +1011,14 @@ function InitGame takes nothing returns nothing
         set Army[p] = CreateGroup()
         set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
         set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
-        call CreateHero(p, ModuloInteger(p, 3))
+        if Bot[p] then
+            call AssignBotChoices(p)
+        else
+            call CreateHero(p, 0)
+        endif
         set Shop[p] = DialogCreate()
         call TriggerRegisterDialogEvent(ShopTrigger, Shop[p])
+        call TriggerRegisterPlayerUnitEvent(MenuTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
         call TriggerRegisterPlayerUnitEvent(DeathTrigger, Player(p), EVENT_PLAYER_UNIT_DEATH, null)
         call TriggerRegisterPlayerChatEvent(ChatTrigger, Player(p), "-", false)
         call TriggerRegisterPlayerEvent(LeaveTrigger, Player(p), EVENT_PLAYER_LEAVE)
@@ -820,6 +1030,7 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(DeathTrigger, function OnDeath)
     call TriggerAddAction(ChatTrigger, function OnChat)
     call TriggerAddAction(ShopTrigger, function OnShop)
+    call TriggerAddAction(MenuTrigger, function OnArmyMenu)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0
     loop
@@ -847,7 +1058,7 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy alpha | 4 teams x 3 | Type -help or -shop. Choose -hero paladin / king / mage before 30 seconds.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Меню улучшений: кнопка [U] на казарме/герое или -shop.")
     call TimerStart(clock, 1, true, function Tick)
     set clock = null
     set cell = null
