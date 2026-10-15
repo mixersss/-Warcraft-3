@@ -107,7 +107,9 @@ for (let race = 0; race < 4; race++) {
     assert.equal(troop.modifications.find(m=>m.id==='upgr').value,'Rfat,Rfar,Rfhp');
   }
 }
-assert.equal(parsed['war3map.w3a'].customTable.objects.length, 0, 'Summons use explicit unit definitions per skill rank');
+const gear=require('../map/equipment.json');
+const gearAbilities=parsed['war3map.w3a'].customTable.objects;
+assert.equal(gearAbilities.length,36,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -182,9 +184,31 @@ assert.ok(value(abilityById.get('AUts'),'Uts2',300)<=1,'Thorns must not increase
 assert.ok(value(abilityById.get('AOae'),'Oae2',300)>value(abilityById.get('AOae'),'Oae2',3),'Endurance Aura continues growing');
 assert.equal(balance.spawn_seconds,16);
 const shopItems = require('../map/items.json');
-assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length);
+assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length);
 assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
 for (const item of shopItems) assert.equal(value(parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id),'igol'),item.cost);
+assert.equal(gear.length,24);
+assert.match(misc,/StrHitPointBonus=30/);
+assert.match(misc,/IntManaBonus=18/);
+const effectSpec={attack:['Iatt',0,1],armor:['Idef',0,1],strength:['Istr',0,3],agility:['Iagi',0,1],intelligence:['Iint',0,2],health:['Ilif',0,1],mana:['Iman',0,1],health_regen:['Ihpr',0,1],mana_regen:['Imrp',2,1]};
+for(let shop=0;shop<3;shop++) {
+  const seller=custom.find(o=>o.newId===`fs${shop}p`);
+  assert.equal(value(seller,'usei'),gear.filter(i=>i.shop===shop).map(i=>i.id).join(','));
+  assert.ok(gear.filter(i=>i.shop===shop).length<=9,'Room for native shop controls');
+}
+for(const item of gear) {
+  const obj=parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id);
+  assert.equal(value(obj,'igol'),item.cost);
+  const effects=value(obj,'iabi').split(',').map(id=>gearAbilities.find(o=>o.newId===id));
+  assert.equal(effects.length,Object.keys(item.stats).length);
+  for(const [stat,amount] of Object.entries(item.stats)) {
+    const [field,type,column]=effectSpec[stat];
+    const mod=effects.flatMap(o=>o.modifications).find(m=>m.id===field);
+    assert.ok(mod,`${item.id}: ${stat} has a real ability effect`);
+    assert.equal(mod.variableType,type);assert.equal(mod.levelOrVariation,1);assert.equal(mod.dataPointer,column);
+    assert.ok(Math.abs(mod.value-amount)<1e-5);
+  }
+}
 for (const player of info.players) {
   const [x, y] = player.startLocation;
   assert.ok(Math.abs(x) < 5888 && Math.abs(y) < 5888, 'Start inside playable bounds');
@@ -225,4 +249,4 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 10 shop items, 12 slots, 24 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 34 shop items, 12 slots, 24 heroes and 20 army variants and rank-specific summons.');

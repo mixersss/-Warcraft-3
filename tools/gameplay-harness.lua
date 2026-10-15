@@ -38,13 +38,45 @@ function GetUnitY(u) return u.y end
 function SetUnitUserData(u,v) u.data=v end
 function GetUnitUserData(u) return u.data or 0 end
 function CreateUnit(p,id,x,y,facing)
-    local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=100,maxmana=100,str=20,agi=20,int=20,level=1,data=0,abilities={},points=1}
+    local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=100,maxmana=100,str=20,agi=20,int=20,level=1,data=0,abilities={},points=1,inventory={}}
     table.insert(World,u)
     return u
 end
 function IssuePointOrder(u,order,x,y) u.order={order,x,y}; return true end
 function IssueImmediateOrder(u,order) u.order={order};return AllowedOrders and AllowedOrders[order] or false end
 function IssueTargetOrder(u,order,target) u.order={order,target};return AllowedOrders and AllowedOrders[order] or false end
+function UnitItemInSlot(u,slot) return u.inventory[slot] end
+function UnitInventorySize(u) return 6 end
+function GetItemTypeId(it) return it and it.id or 0 end
+function IMinBJ(a,b) return math.min(a,b) end
+function IMaxBJ(a,b) return math.max(a,b) end
+function IssueNeutralTargetOrder(p,shop,order,h)
+    assert(order=='neutralinteract')
+    if h.owner~=p or (h.x-shop.x)^2+(h.y-shop.y)^2>600^2 then return false end
+    shop.buyers=shop.buyers or {};shop.buyers[p]=h;return true
+end
+function IssueNeutralImmediateOrderById(p,shop,id)
+    local h=shop.buyers and shop.buyers[p]
+    if not h or not EngineShops[shop.id][id] or BlockStock then return false end
+    local config=assert(EngineItems[id])
+    if Players[p].gold<config.cost then return false end
+    for slot=0,5 do
+        if not h.inventory[slot] then
+            Players[p].gold=Players[p].gold-config.cost
+            h.inventory[slot]={id=id};return true
+        end
+    end
+    return false
+end
+function UnitDropItemTarget(h,it,shop)
+    if BlockSale or (h.x-shop.x)^2+(h.y-shop.y)^2>600^2 then return false end
+    for slot=0,5 do if h.inventory[slot]==it then
+        h.inventory[slot]=nil
+        Players[h.owner].gold=Players[h.owner].gold+math.floor(EngineItems[it.id].cost/2)
+        return true
+    end end
+    return false
+end
 function GetUnitAbilityLevel(u,id) return u.abilities[id] or 0 end
 function UnitAddAbility(u,id) u.abilities[id]=1;return true end
 function UnitMakeAbilityPermanent(u,v,id) return true end
@@ -156,10 +188,14 @@ function BotHero() end
 function reset()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
+    BlockStock,BlockSale=false,false
     InitBalance()
     for t=0,3 do TeamLost[t]=false; Defending[t]=false; RallyX[t]=0;RallyY[t]=0 end
     for p=0,11 do
         Players[p]={gold=STARTING_GOLD,tech={}}
+        GearProgress[p],GearSavings[p]=0,0
+        local raw=function(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
+        FortressShop[p]=CreateUnit(15,raw("fs"..(p%3).."p"),ShopX[p],ShopY[p],0);FortressShop[p].structure=true
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
@@ -349,3 +385,45 @@ SetHeroLevel(Hero[0],500);Dying=Hero[0];OnHeroLevel()
 assert(Hero[0].points==999)
 OnHeroLevel();assert(Hero[0].points==999,'Repeated events cannot duplicate points')
 Dying=Hero[3];OnHeroLevel();assert(Hero[0].points==999)
+
+-- Slow sanctuary regeneration applies only to allies inside their own circle.
+reset()
+local friend=Hero[0];friend.x=FortressX[0];friend.y=FortressY[0];friend.hp=50;friend.mana=40
+local ally=Hero[1];ally.x=friend.x+100;ally.y=friend.y;ally.hp=50;ally.mana=40
+local invader=Hero[3];invader.x=friend.x;invader.y=friend.y;invader.hp=50;invader.mana=40
+local outside=Hero[2];outside.x=0;outside.y=0;outside.hp=50;outside.mana=40
+Base[0].hp=1000
+RegenerateFortresses()
+assert(math.abs(friend.hp-50.15)<1e-6 and math.abs(friend.mana-40.1)<1e-6)
+assert(math.abs(ally.hp-50.15)<1e-6)
+assert(invader.hp==50 and invader.mana==40,'Enemies receive no regeneration')
+assert(outside.hp==50 and Base[0].hp==1000,'Arena units and buildings receive no sanctuary regeneration')
+friend.hp=100;friend.mana=100;RegenerateFortresses();assert(friend.hp==100 and friend.mana==100)
+
+-- All hero classes build and upgrade six slots across all three fortress shops.
+for kind=0,HERO_COUNT-1 do
+    reset();Bot[0]=true;CreateHero(0,kind);Players[0].gold=100000000
+    local first=DesiredGear(0);local target=GearShop[first]
+    local gold=Players[0].gold
+    assert(BotShop(0) and GearProgress[0]==0 and Players[0].gold==gold,'Travel before buying')
+    for step=0,17 do
+        local index=DesiredGear(0);local shop=GearShop[index]
+        Hero[0].x=ShopX[shop];Hero[0].y=ShopY[shop]
+        local before=Players[0].gold
+        local refund=step>=6 and math.floor(EngineItems[GearId[index-1]].cost/2) or 0
+        assert(BotShop(0) and GearProgress[0]==step+1,"Gear progress: hero "..kind.." step "..step)
+        assert(Players[0].gold==before-GearCost[index]+refund,'Native full price and resale apply exactly once')
+        assert(HeroItem(Hero[0],GearId[index]))
+    end
+    local count=0;for slot=0,5 do if UnitItemInSlot(Hero[0],slot) then count=count+1 end end
+    assert(count==6 and not BotShop(0),'Six final items, no infinite duplicate buying')
+end
+reset();Bot[0]=true;Players[0].gold=100000
+local index=DesiredGear(0);local shop=GearShop[index]
+Hero[0].x=ShopX[shop];Hero[0].y=ShopY[shop]
+BlockStock=true;BotShop(0);assert(GearProgress[0]==0 and Players[0].gold==100000,'No stock means no free item or charge')
+BlockStock=false
+for slot=0,5 do Hero[0].inventory[slot]={id=0} end
+assert(not BotShop(0) and GearProgress[0]==0 and Players[0].gold==100000,'Full unrelated inventory is preserved')
+reset();Bot[0]=true;AddGold(0,1000)
+assert(GearSavings[0]==500 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')

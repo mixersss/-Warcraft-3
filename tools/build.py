@@ -13,6 +13,7 @@ from pathlib import Path
 import struct
 import zlib
 from progression import hero_abilities, summoned_units
+from equipment import item_effects
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 96
@@ -21,8 +22,9 @@ BOUNDS = HALF - 256
 MASK = 0xFFFFFFFF
 WALL_RADIUS = 2300
 WALL_HALF_THICKNESS = 96
-GATE_HALF_WIDTH = 320
+GATE_HALF_WIDTH = 560
 TUNNEL_LENGTH = 900
+TUNNEL_FLARE = 0.4
 ENCLOSURES = [(-3904, -3904), (3904, -3904), (3904, 3904), (-3904, 3904)]
 
 
@@ -36,7 +38,8 @@ def wall_at(x: float, y: float) -> bool:
         length = math.hypot(cx, cy)
         inward = (-cx*dx-cy*dy)/length
         sideways = (-cy*dx+cx*dy)/length
-        if WALL_RADIUS-160 <= inward <= WALL_RADIUS+TUNNEL_LENGTH and abs(abs(sideways)-GATE_HALF_WIDTH) <= WALL_HALF_THICKNESS:
+        half_width = GATE_HALF_WIDTH+max(0,inward-WALL_RADIUS)*TUNNEL_FLARE
+        if WALL_RADIUS-160 <= inward <= WALL_RADIUS+TUNNEL_LENGTH and abs(abs(sideways)-half_width) <= WALL_HALF_THICKNESS:
             return True
         if abs(math.hypot(dx, dy)-WALL_RADIUS) <= WALL_HALF_THICKNESS:
             if inward <= 0 or abs(sideways) >= GATE_HALF_WIDTH:
@@ -54,10 +57,11 @@ def wall_segments() -> list[tuple[float, float, float]]:
                 result.append((x, y, math.degrees(angle)+90))
         length = math.hypot(cx, cy)
         for along in range(WALL_RADIUS-120, WALL_RADIUS+TUNNEL_LENGTH+1, 80):
-            for side in (-GATE_HALF_WIDTH, GATE_HALF_WIDTH):
+            half_width = GATE_HALF_WIDTH+max(0,along-WALL_RADIUS)*TUNNEL_FLARE
+            for side in (-half_width, half_width):
                 result.append((cx-cx/length*along-cy/length*side,
                                cy-cy/length*along+cx/length*side,
-                               math.degrees(math.atan2(-cy,-cx))))
+                               math.degrees(math.atan2(-cy,-cx))+math.degrees(math.atan(TUNNEL_FLARE))*(1 if side>0 else -1)))
     return result
 
 
@@ -81,6 +85,15 @@ def positions() -> list[tuple[int, int]]:
             for _ in range(team):
                 x, y = -y, x
             result.append((x, y))
+    return result
+
+
+def shop_positions() -> list[tuple[int,int]]:
+    result=[]
+    for team in range(4):
+        for x,y in [(-5050,-5100),(-5050,-2450),(-2500,-5000)]:
+            for _ in range(team): x,y=-y,x
+            result.append((x,y))
     return result
 
 
@@ -211,23 +224,31 @@ def units(b: dict) -> bytes:
         ('ucol',2,96.0),('ureq',3,''),
         ('utub',3,'Общий магазин брони, оружия, сапог, колец и амулетов. Подведи героя к магазину и выбери предмет. Всего 6 мест в инвентаре.'),
     ]))
+    for shop,name in enumerate(['Арсенал','Броня и сила','Лавка магии']):
+        entries.append(('ngme',f'fs{shop}p',[
+            ('unam',3,name),('usei',3,','.join(row['id'] for row in catalog('equipment') if row['shop']==shop)),
+            ('ucol',2,96.0),('ureq',3,''),
+            ('utub',3,'Сильная экипировка трёх ступеней. Для покупки подведи героя. Улучшенные предметы стоят дороже.'),
+        ]))
     return objects(entries)
 
 
 def menu_ability() -> bytes:
-    return objects([], extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0], extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
+    _,effects=item_effects(ROOT)
     return objects([(row['base'],row['id'],[
         ('unam',3,row['name']),('utip',3,row['name']),('utub',3,row['description']),
         ('igol',0,row['cost']),('ilum',0,0),('isto',0,12),('istr',0,2),('isst',0,0),
-    ]) for row in catalog('items')])
+    ]+([('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in catalog('items')+catalog('equipment')])
 
 
 def misc(b: dict) -> bytes:
     return (f'[Misc]\nMaxHeroLevel={b["hero_max_level"]}\nHeroAbilityLevelSkip=1\n'
             'HeroFactorXP=100,100,100,100,100\n'
+            'StrHitPointBonus=30\nIntManaBonus=18\n'
             'NeedHeroXP=200\nNeedHeroXPFormulaA=1.0\nNeedHeroXPFormulaB=100\nNeedHeroXPFormulaC=0\n').encode('ascii')
 
 
@@ -270,7 +291,8 @@ def script(b: dict) -> str:
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
-        '    integer array HeroGroup', '    integer array HeroSkill',
+        '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary',
+        '    integer array GearId', '    integer array GearCost', '    integer array GearShop',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', 'endglobals']
@@ -278,6 +300,13 @@ def script(b: dict) -> str:
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    for team,(x,y) in enumerate(ENCLOSURES):
+        init += [f'    set FortressX[{team}] = {x}.0',f'    set FortressY[{team}] = {y}.0']
+    for idx,(x,y) in enumerate(shop_positions()):
+        init += [f'    set ShopX[{idx}] = {x}.0',f'    set ShopY[{idx}] = {y}.0']
+    for row in catalog('equipment'):
+        idx=row['family']*3+row['rank']
+        init += [f"    set GearId[{idx}] = '{row['id']}'",f'    set GearCost[{idx}] = {row["cost"]}',f'    set GearShop[{idx}] = {row["shop"]}']
     for kind, rawcode in enumerate(['Rfat','Rfar','Rfhp','Rfti']):
         init += [f"    set ArmyResearch[{kind}] = '{rawcode}'"]
     for n, row in enumerate(b['tiers']):
@@ -288,7 +317,7 @@ def script(b: dict) -> str:
             idx = race*5+tier
             init += [f"    set ArmyType[{idx}] = 'fm{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
     for idx, hero in enumerate(heroes):
-        init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}']
+        init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}', f'    set HeroPrimary[{idx}] = {hero["primary"]}']
         for slot, skill in enumerate(hero['skills']):
             init += [f"    set HeroSkill[{idx*4+slot}] = '{skill}'"]
         for slot in range(4):

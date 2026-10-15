@@ -26,7 +26,8 @@
         "resurrection",
         0
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Hmkg",
@@ -55,7 +56,8 @@
         "thunderbolt",
         1
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Hamg",
@@ -74,7 +76,8 @@
         "waterelemental",
         0
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Hblm",
@@ -104,7 +107,8 @@
         1,
         3
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Obla",
@@ -134,7 +138,8 @@
         "windwalk",
         4
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Ofar",
@@ -158,7 +163,8 @@
         "chainlightning",
         1
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Otch",
@@ -182,7 +188,8 @@
         "shockwave",
         2
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Oshd",
@@ -217,7 +224,8 @@
         "ward",
         2
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Udea",
@@ -246,7 +254,8 @@
         "animatedead",
         0
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Ulic",
@@ -270,7 +279,8 @@
         "frostarmor",
         6
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Udre",
@@ -299,7 +309,8 @@
         "sleep",
         1
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Ucrl",
@@ -328,7 +339,8 @@
         "impale",
         2
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Edem",
@@ -352,7 +364,8 @@
         "manaburn",
         1
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Ekee",
@@ -377,7 +390,8 @@
         "entanglingroots",
         1
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Emoo",
@@ -401,7 +415,8 @@
         0,
         6
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Ewar",
@@ -430,7 +445,8 @@
         "shadowstrike",
         1
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Nbst",
@@ -465,7 +481,8 @@
         2,
         5
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Nbrn",
@@ -499,7 +516,8 @@
         1,
         3
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Npbm",
@@ -528,7 +546,8 @@
         "breathoffire",
         2
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Nfir",
@@ -558,7 +577,8 @@
         2,
         5
       ]
-    ]
+    ],
+    "primary": 1
   },
   {
     "id": "Nplh",
@@ -582,7 +602,8 @@
         "howlofterror",
         5
       ]
-    ]
+    ],
+    "primary": 0
   },
   {
     "id": "Nngs",
@@ -615,7 +636,8 @@
         "tornado",
         2
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Ntin",
@@ -645,7 +667,8 @@
         2,
         3
       ]
-    ]
+    ],
+    "primary": 2
   },
   {
     "id": "Nalc",
@@ -680,6 +703,7 @@
         10,
         3
       ]
-    ]
+    ],
+    "primary": 0
   }
 ]

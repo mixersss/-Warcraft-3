@@ -44,6 +44,13 @@ globals
     trigger LevelTrigger = null
     integer array SkillLevel
     unit EquipmentShop = null
+    unit array FortressShop
+    real array FortressX
+    real array FortressY
+    real array ShopX
+    real array ShopY
+    integer array GearProgress
+    integer array GearSavings
 endglobals
 
 function TeamOf takes integer p returns integer
@@ -75,6 +82,9 @@ endfunction
 
 function AddGold takes integer p, integer amount returns nothing
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) + amount)
+    if Bot[p] and GearProgress[p] < 18 then
+        set GearSavings[p] = GearSavings[p]+amount/2
+    endif
 endfunction
 
 function EnemyNear takes integer p, real x, real y, real radius returns unit
@@ -511,24 +521,120 @@ function CommandArmy takes integer p, boolean forceOrder returns nothing
     set u = null
 endfunction
 
+function GearFamily takes integer p, integer slot returns integer
+    if slot == 0 then
+        return 0
+    elseif slot == 1 then
+        return 1
+    elseif slot == 2 then
+        return 2+HeroPrimary[HeroKind[p]]
+    endif
+    return slot+2
+endfunction
+
+function DesiredGear takes integer p returns integer
+    return GearFamily(p, ModuloInteger(GearProgress[p], 6))*3+R2I(I2R(GearProgress[p])/6.0)
+endfunction
+
+function HeroItem takes unit h, integer id returns item
+    local integer slot = 0
+    local item it
+    loop
+        exitwhen slot == 6
+        set it = UnitItemInSlot(h, slot)
+        if it != null and GetItemTypeId(it) == id then
+            return it
+        endif
+        set slot = slot+1
+    endloop
+    set it = null
+    return null
+endfunction
+
+function BotShop takes integer p returns boolean
+    local integer index
+    local integer shopIndex
+    local integer slot = 0
+    local boolean room = false
+    local item old = null
+    local unit h = Hero[p]
+    if GearProgress[p] >= 18 or not Alive(h) or UnitInventorySize(h) < 6 then
+        set h = null
+        return false
+    endif
+    set index = DesiredGear(p)
+    if HeroItem(h, GearId[index]) != null then
+        set GearProgress[p] = GearProgress[p]+1
+        set GearSavings[p] = IMaxBJ(0, GearSavings[p]-GearCost[index])
+        set h = null
+        return false
+    endif
+    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) < GearCost[index] then
+        set h = null
+        return false
+    endif
+    set shopIndex = TeamOf(p)*3+GearShop[index]
+    if DistanceSq(GetUnitX(h), GetUnitY(h), ShopX[shopIndex], ShopY[shopIndex]) > 160000 then
+        call IssuePointOrder(h, "move", ShopX[shopIndex], ShopY[shopIndex])
+        set h = null
+        return true
+    endif
+    loop
+        exitwhen slot == 6
+        if UnitItemInSlot(h, slot) == null then
+            set room = true
+        endif
+        set slot = slot+1
+    endloop
+    if GearProgress[p] >= 6 then
+        set old = HeroItem(h, GearId[index-1])
+        if old != null then
+            // Normal shop sale, including the native resale price.
+            set room = UnitDropItemTarget(h, old, FortressShop[shopIndex])
+        endif
+    endif
+    if room then
+        call IssueNeutralTargetOrder(Player(p), FortressShop[shopIndex], "neutralinteract", h)
+        // Native stock, gold price and item delivery also apply to bots.
+        call IssueNeutralImmediateOrderById(Player(p), FortressShop[shopIndex], GearId[index])
+        if HeroItem(h, GearId[index]) != null then
+            set GearProgress[p] = GearProgress[p]+1
+            set GearSavings[p] = IMaxBJ(0, GearSavings[p]-GearCost[index])
+        endif
+    endif
+    set old = null
+    set h = null
+    return room
+endfunction
+
+function BotResearch takes integer p, integer kind returns nothing
+    local integer reserve = 0
+    if GearProgress[p] < 18 then
+        set reserve = IMinBJ(GearSavings[p], GearCost[DesiredGear(p)])
+    endif
+    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-UpgradeCost(p, kind) >= reserve then
+        call Buy(p, kind)
+    endif
+endfunction
+
 function BotBuy takes integer p returns nothing
     call SyncArmyResearch(p)
     // Develop the barracks early; balance all three troop stats afterwards.
     // No free gold or instant upgrades: use the native research queue.
     if Tier[p] < 4 and Attack[p] >= (Tier[p]+1)*2 and Armor[p] >= Tier[p]+1 and Vitality[p] >= Tier[p]+1 then
-        call Buy(p, 3)
+        call BotResearch(p, 3)
     elseif Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p]*2 and Attack[p] <= Vitality[p]*2 then
-        call Buy(p, 0)
+        call BotResearch(p, 0)
     elseif Armor[p] < UPGRADE_MAX and Armor[p] <= Vitality[p] then
-        call Buy(p, 1)
+        call BotResearch(p, 1)
     elseif Vitality[p] < UPGRADE_MAX then
-        call Buy(p, 2)
+        call BotResearch(p, 2)
     elseif Attack[p] < UPGRADE_MAX then
-        call Buy(p, 0)
+        call BotResearch(p, 0)
     elseif Tier[p] < 4 then
-        call Buy(p, 3)
+        call BotResearch(p, 3)
     elseif Power[p] < 10 then
-        call Buy(p, 4)
+        call BotResearch(p, 4)
     endif
 endfunction
 
@@ -632,6 +738,11 @@ function BotHero takes integer p returns nothing
         return
     endif
     if CastUntil[p] > Seconds then
+        set h = null
+        set enemy = null
+        return
+    endif
+    if enemy == null and BotShop(p) then
         set h = null
         set enemy = null
         return
@@ -869,14 +980,38 @@ function UpdateBoard takes nothing returns nothing
     endloop
 endfunction
 
+function RegenerateFortresses takes nothing returns nothing
+    local integer team = 0
+    local integer p
+    local unit u
+    loop
+        exitwhen team == 4
+        if not TeamLost[team] then
+            call GroupEnumUnitsInRange(Scan, FortressX[team], FortressY[team], 2200, null)
+            loop
+                set u = FirstOfGroup(Scan)
+                exitwhen u == null
+                call GroupRemoveUnit(Scan, u)
+                set p = GetPlayerId(GetOwningPlayer(u))
+                if p < 12 and TeamOf(p) == team and Alive(u) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) then
+                    call SetUnitState(u, UNIT_STATE_LIFE, GetWidgetLife(u)+GetUnitState(u, UNIT_STATE_MAX_LIFE)*0.0015)
+                    call SetUnitState(u, UNIT_STATE_MANA, GetUnitState(u, UNIT_STATE_MANA)+GetUnitState(u, UNIT_STATE_MAX_MANA)*0.001)
+                endif
+            endloop
+        endif
+        set team = team+1
+    endloop
+    set u = null
+endfunction
+
 function Tick takes nothing returns nothing
     local integer p = 0
     local integer t = 0
-    local real life
     if Finished then
         return
     endif
     set Seconds = Seconds+1
+    call RegenerateFortresses()
     if Seconds == 1 then
         loop
             exitwhen p == 12
@@ -914,13 +1049,6 @@ function Tick takes nothing returns nothing
                         call ReviveHero(Hero[p], HomeX[p], HomeY[p]-240, true)
                         call SetUnitState(Hero[p], UNIT_STATE_MANA, GetUnitState(Hero[p], UNIT_STATE_MAX_MANA))
                     endif
-                elseif DistanceSq(GetUnitX(Hero[p]), GetUnitY(Hero[p]), HomeX[p], HomeY[p]) < 360000 then
-                    // Fountain regeneration pauses under enemy pressure.
-                    if EnemyNear(p, HomeX[p], HomeY[p], 850) == null then
-                        set life = GetUnitState(Hero[p], UNIT_STATE_MAX_LIFE)
-                        call SetUnitState(Hero[p], UNIT_STATE_LIFE, GetWidgetLife(Hero[p])+life*0.035)
-                        call SetUnitState(Hero[p], UNIT_STATE_MANA, GetUnitState(Hero[p], UNIT_STATE_MANA)+8)
-                    endif
                 endif
                 if Bot[p] and Seconds >= WARMUP_SECONDS and ModuloInteger(Seconds+p, 5) == 0 then
                     call BotBuy(p)
@@ -938,7 +1066,7 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены.")
+        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё три магазина сильной экипировки.")
         set p = 0
         loop
             exitwhen p == 12
@@ -958,12 +1086,12 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +3000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One walled tunnel per fortress. Bots use the same research queue and prices.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +3000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Three equipment shops per fortress. Bots research and buy equipment at normal prices.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Three fortress shops sell weapon, armor and magic equipment. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -988,6 +1116,14 @@ function InitGame takes nothing returns nothing
     call InitWalls()
     set EquipmentShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fshp', 0, 640, 270)
     call SetUnitInvulnerable(EquipmentShop, true)
+    set p = 0
+    loop
+        exitwhen p == 12
+        set FortressShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fs0p'+ModuloInteger(p, 3)*256, ShopX[p], ShopY[p], 270)
+        call SetUnitInvulnerable(FortressShop[p], true)
+        set p = p+1
+    endloop
+    set p = 0
     call SetTimeOfDay(12)
     call SetTimeOfDayScale(0)
     call SetMapFlag(MAP_FOG_HIDE_TERRAIN, false)
@@ -1019,6 +1155,13 @@ function InitGame takes nothing returns nothing
         call FogModifierStart(fog)
         set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, 0, 640, 700, true, false)
         call FogModifierStart(fog)
+        set j = 0
+        loop
+            exitwhen j == 3
+            set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, ShopX[t*3+j], ShopY[t*3+j], 500, true, false)
+            call FogModifierStart(fog)
+            set j = j+1
+        endloop
         set Army[p] = CreateGroup()
         set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
         set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)

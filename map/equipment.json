@@ -1,0 +1,326 @@
+[
+  {
+    "id": "fg00",
+    "base": "ratf",
+    "name": "Клинок I",
+    "cost": 2000,
+    "shop": 0,
+    "family": 0,
+    "rank": 0,
+    "stats": {
+      "attack": 35
+    },
+    "description": "+35 урона."
+  },
+  {
+    "id": "fg01",
+    "base": "ratf",
+    "name": "Клинок II",
+    "cost": 6500,
+    "shop": 0,
+    "family": 0,
+    "rank": 1,
+    "stats": {
+      "attack": 90
+    },
+    "description": "+90 урона."
+  },
+  {
+    "id": "fg02",
+    "base": "ratf",
+    "name": "Клинок III",
+    "cost": 16000,
+    "shop": 0,
+    "family": 0,
+    "rank": 2,
+    "stats": {
+      "attack": 200
+    },
+    "description": "+200 урона."
+  },
+  {
+    "id": "fg10",
+    "base": "rde3",
+    "name": "Доспех I",
+    "cost": 2000,
+    "shop": 1,
+    "family": 1,
+    "rank": 0,
+    "stats": {
+      "armor": 10
+    },
+    "description": "+10 брони."
+  },
+  {
+    "id": "fg11",
+    "base": "rde3",
+    "name": "Доспех II",
+    "cost": 6500,
+    "shop": 1,
+    "family": 1,
+    "rank": 1,
+    "stats": {
+      "armor": 25
+    },
+    "description": "+25 брони."
+  },
+  {
+    "id": "fg12",
+    "base": "rde3",
+    "name": "Доспех III",
+    "cost": 16000,
+    "shop": 1,
+    "family": 1,
+    "rank": 2,
+    "stats": {
+      "armor": 60
+    },
+    "description": "+60 брони."
+  },
+  {
+    "id": "fg20",
+    "base": "bgst",
+    "name": "Пояс силы I",
+    "cost": 2000,
+    "shop": 1,
+    "family": 2,
+    "rank": 0,
+    "stats": {
+      "strength": 15
+    },
+    "description": "+15 силы."
+  },
+  {
+    "id": "fg21",
+    "base": "bgst",
+    "name": "Пояс силы II",
+    "cost": 6500,
+    "shop": 1,
+    "family": 2,
+    "rank": 1,
+    "stats": {
+      "strength": 40
+    },
+    "description": "+40 силы."
+  },
+  {
+    "id": "fg22",
+    "base": "bgst",
+    "name": "Пояс силы III",
+    "cost": 16000,
+    "shop": 1,
+    "family": 2,
+    "rank": 2,
+    "stats": {
+      "strength": 90
+    },
+    "description": "+90 силы."
+  },
+  {
+    "id": "fg30",
+    "base": "belv",
+    "name": "Перчатки ловкости I",
+    "cost": 2000,
+    "shop": 0,
+    "family": 3,
+    "rank": 0,
+    "stats": {
+      "agility": 15
+    },
+    "description": "+15 ловкости."
+  },
+  {
+    "id": "fg31",
+    "base": "belv",
+    "name": "Перчатки ловкости II",
+    "cost": 6500,
+    "shop": 0,
+    "family": 3,
+    "rank": 1,
+    "stats": {
+      "agility": 40
+    },
+    "description": "+40 ловкости."
+  },
+  {
+    "id": "fg32",
+    "base": "belv",
+    "name": "Перчатки ловкости III",
+    "cost": 16000,
+    "shop": 0,
+    "family": 3,
+    "rank": 2,
+    "stats": {
+      "agility": 90
+    },
+    "description": "+90 ловкости."
+  },
+  {
+    "id": "fg40",
+    "base": "ciri",
+    "name": "Посох разума I",
+    "cost": 2000,
+    "shop": 2,
+    "family": 4,
+    "rank": 0,
+    "stats": {
+      "intelligence": 15
+    },
+    "description": "+15 интеллекта."
+  },
+  {
+    "id": "fg41",
+    "base": "ciri",
+    "name": "Посох разума II",
+    "cost": 6500,
+    "shop": 2,
+    "family": 4,
+    "rank": 1,
+    "stats": {
+      "intelligence": 40
+    },
+    "description": "+40 интеллекта."
+  },
+  {
+    "id": "fg42",
+    "base": "ciri",
+    "name": "Посох разума III",
+    "cost": 16000,
+    "shop": 2,
+    "family": 4,
+    "rank": 2,
+    "stats": {
+      "intelligence": 90
+    },
+    "description": "+90 интеллекта."
+  },
+  {
+    "id": "fg50",
+    "base": "rhth",
+    "name": "Сердце титана I",
+    "cost": 3000,
+    "shop": 2,
+    "family": 5,
+    "rank": 0,
+    "stats": {
+      "health": 900,
+      "mana": 450
+    },
+    "description": "+900 HP; +450 маны."
+  },
+  {
+    "id": "fg51",
+    "base": "rhth",
+    "name": "Сердце титана II",
+    "cost": 8500,
+    "shop": 2,
+    "family": 5,
+    "rank": 1,
+    "stats": {
+      "health": 2400,
+      "mana": 1000
+    },
+    "description": "+2400 HP; +1000 маны."
+  },
+  {
+    "id": "fg52",
+    "base": "rhth",
+    "name": "Сердце титана III",
+    "cost": 22000,
+    "shop": 2,
+    "family": 5,
+    "rank": 2,
+    "stats": {
+      "health": 6000,
+      "mana": 2400
+    },
+    "description": "+6000 HP; +2400 маны."
+  },
+  {
+    "id": "fg60",
+    "base": "rlif",
+    "name": "Кольцо восстановления I",
+    "cost": 2000,
+    "shop": 2,
+    "family": 6,
+    "rank": 0,
+    "stats": {
+      "health_regen": 6,
+      "mana_regen": 1.0
+    },
+    "description": "+6 HP в секунду; +100% к обычной регенерации маны."
+  },
+  {
+    "id": "fg61",
+    "base": "rlif",
+    "name": "Кольцо восстановления II",
+    "cost": 6500,
+    "shop": 2,
+    "family": 6,
+    "rank": 1,
+    "stats": {
+      "health_regen": 15,
+      "mana_regen": 2.5
+    },
+    "description": "+15 HP в секунду; +250% к обычной регенерации маны."
+  },
+  {
+    "id": "fg62",
+    "base": "rlif",
+    "name": "Кольцо восстановления III",
+    "cost": 16000,
+    "shop": 2,
+    "family": 6,
+    "rank": 2,
+    "stats": {
+      "health_regen": 35,
+      "mana_regen": 5.0
+    },
+    "description": "+35 HP в секунду; +500% к обычной регенерации маны."
+  },
+  {
+    "id": "fg70",
+    "base": "cnob",
+    "name": "Венец могущества I",
+    "cost": 3000,
+    "shop": 0,
+    "family": 7,
+    "rank": 0,
+    "stats": {
+      "strength": 8,
+      "agility": 8,
+      "intelligence": 8
+    },
+    "description": "+8 силы; +8 ловкости; +8 интеллекта."
+  },
+  {
+    "id": "fg71",
+    "base": "cnob",
+    "name": "Венец могущества II",
+    "cost": 8500,
+    "shop": 0,
+    "family": 7,
+    "rank": 1,
+    "stats": {
+      "strength": 22,
+      "agility": 22,
+      "intelligence": 22
+    },
+    "description": "+22 силы; +22 ловкости; +22 интеллекта."
+  },
+  {
+    "id": "fg72",
+    "base": "cnob",
+    "name": "Венец могущества III",
+    "cost": 22000,
+    "shop": 0,
+    "family": 7,
+    "rank": 2,
+    "stats": {
+      "strength": 50,
+      "agility": 50,
+      "intelligence": 50
+    },
+    "description": "+50 силы; +50 ловкости; +50 интеллекта."
+  }
+]

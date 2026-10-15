@@ -19,3 +19,7 @@
 - Keep the 900-unit walled approach to each fortress; run tunnel side-wall and flood-fill tests. MPQ zlib compression must retain Classic format and independently round-trip every file.
 
 - The user reported an SFile.cpp:898 out-of-memory crash when opening 0.4.0 in Classic 1.26. Never emit compressed SINGLE_UNIT MPQ files. Use standard 4096-byte sectors with offset tables and zlib masks; verify all sectors and every archived file independently. A successful modern MPQ parse does not prove Classic loading.
+
+- Gates flare from half-width 560 to 920 over 900 units. Preserve wide cross-section, shop access and single-entry WPM tests.
+- Sanctuary regeneration is 0.15% HP / 0.1% mana per second inside radius 2200, only for the circle owner team, living non-buildings. Do not reintroduce the old fast personal fountain.
+- Each fortress has three shops. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
