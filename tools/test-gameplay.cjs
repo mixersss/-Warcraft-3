@@ -20,5 +20,17 @@ for (const match of source.matchAll(/^\s*(integer|real|boolean) array (\w+)\s*$/
   defaults.push(`setmetatable(${match[2]}, {__index=function() return ${match[1] === 'boolean' ? 'false' : '0'} end})`);
 }
 run(defaults.join('\n'));
+// Read prices and skill requirements from the emitted object data, independently
+// of UpgradeCost()/LearnHero(), so disagreements with native command-card data fail.
+const ObjectParser = require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
+const parseObjects = file => {
+  const p = new ObjectParser();p.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map',file))));return p;
+};
+const get = (o,id) => o.modifications.find(m=>m.id===id && m.levelOrVariation===0)?.value;
+const raw = id => [...id].reduce((v,c)=>v*256+c.charCodeAt(0),0);
+const researches = parseObjects('war3map.w3q').customTable.objects;
+run('EngineResearch={'+researches.map(o=>`[${raw(o.newId)}]={base=${get(o,'gglb')},step=${get(o,'gglm')},cap=${get(o,'glvl')}}`).join(',')+'}');
+const abilities = parseObjects('war3map.w3a').originalTable.objects;
+run('SkillCaps={'+abilities.map(o=>`[${raw(o.oldId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
-console.log('PASS: shipped JASS: purchases/caps, 4 races x 5 tiers, menu callbacks, all 24 selectable/random bot heroes, skill learning/combat orders/channels, bounties, charm, team elimination and revival (mock natives).');
+console.log('PASS: JASS: shared native research queue/prices, 200-rank caps and bot progression, 16s waves, 4 races, 24 heroes with 20/7 skills, channels, summons, charm, elimination and revival (mock natives).');

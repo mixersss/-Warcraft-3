@@ -24,6 +24,8 @@ function IsUnitAlly(u,p) return TeamOf(u.owner)==TeamOf(p) end
 function GetPlayerState(p,k) return Players[p][k] end
 function SetPlayerState(p,k,v) Players[p][k]=v end
 function SetPlayerTechResearched(p,k,v) Players[p].tech[k]=v end
+function GetPlayerTechCount(p,k) return Players[p].tech[k] or 0 end
+function SelectUnitForPlayerSingle(u,p) Players[p].selection=u end
 function GetHeroStr(u) return u.str end
 function GetHeroAgi(u) return u.agi end
 function GetHeroInt(u) return u.int end
@@ -46,6 +48,9 @@ function IssueTargetOrder(u,order,target) u.order={order,target};return AllowedO
 function GetUnitAbilityLevel(u,id) return u.abilities[id] or 0 end
 function UnitAddAbility(u,id) u.abilities[id]=1;return true end
 function UnitMakeAbilityPermanent(u,v,id) return true end
+function SetUnitAbilityLevel(u,id,rank) u.abilities[id]=rank;return rank end
+function GetSummonedUnit() return Summoned end
+function GetSummoningUnit() return Summoner end
 function PauseUnit(u,v) u.paused=v end
 function SetHeroLevel(u,level) u.points=u.points+level-u.level;u.level=level end
 function SelectHeroSkill(u,skill)
@@ -57,14 +62,47 @@ function SelectHeroSkill(u,skill)
     for k=0,3 do if ResolvedSkill(u,HeroSkill[kind*4+k])==skill then slot=k end end
     assert(slot>=0,'Bot attempted a skill not owned by its hero')
     local old=u.abilities[skill] or 0
-    if (slot==3 and u.level>=6 and old==0) or (slot~=3 and old<3 and u.level>=1+old*2) then
+    local config=assert(SkillCaps[skill],'Missing emitted ability configuration')
+    if old<config.cap and u.level>=config.req+old*config.skip then
         u.abilities[skill]=old+1;u.points=u.points-1
+        -- Native Engineering Upgrade transfers existing skill ranks to variants.
+        if skill==HeroSkill[22*4+2] and old<3 then
+            -- Resolve destinations from their four-character IDs below.
+            for _,pair in ipairs({{'ANsy','ANs'},{'ANcs','ANc'},{'ANrg','ANg'}}) do
+                local function raw(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
+                local from=old==0 and raw(pair[1]) or raw(pair[2]..old)
+                local to=raw(pair[2]..(old+1))
+                u.abilities[to]=u.abilities[from] or 0;u.abilities[from]=nil
+            end
+        end
     end
 end
 function GetRandomInt(low,high)
     local value=RngQueue and table.remove(RngQueue,1) or low
     assert(value>=low and value<=high,'Random choice uses full valid bounds')
     return value
+end
+function IssueImmediateOrderById(u,id)
+    local config=EngineResearch[id]
+    if not config or u.pending or u.hp<=0 then return false end
+    local p=u.owner;local old=GetPlayerTechCount(p,id)
+    local cost=config.base+config.step*old
+    if old>=config.cap or Players[p].gold<cost then return false end
+    Players[p].gold=Players[p].gold-cost
+    u.pending=id
+    return true
+end
+function FinishResearch(p)
+    local id=Base[p].pending
+    if not id then return end
+    Base[p].pending=nil
+    Players[p].tech[id]=GetPlayerTechCount(p,id)+1
+    local old=Dying;Dying=Base[p];OnResearch();Dying=old
+end
+function purchase(p,kind)
+    local result=Buy(p,kind)
+    if result and kind<4 then FinishResearch(p) end
+    return result
 end
 function GetUnitCurrentOrder(u) return 0 end
 function CountUnitsInGroup(g) return #g end
@@ -123,7 +161,7 @@ function reset()
         Players[p]={gold=STARTING_GOLD,tech={}}
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
-        Tier[p],Attack[p],Armor[p],Speed[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
+        Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
         Army[p]={}
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
@@ -133,26 +171,27 @@ end
 
 reset()
 for p=0,11 do assert(TeamOf(p)==math.floor(p/3)) end
-assert(Buy(0,0)==true and Attack[0]==1 and Players[0].gold==STARTING_GOLD-ATTACK_COST)
+assert(purchase(0,0)==true and Attack[0]==1 and Players[0].gold==STARTING_GOLD-ATTACK_COST)
 Players[0].gold=0
-assert(Buy(0,0)==false and Attack[0]==1 and Players[0].gold==0)
-Players[0].gold=100000
-while Attack[0]<UPGRADE_MAX do assert(Buy(0,0)) end
+assert(purchase(0,0)==false and Attack[0]==1 and Players[0].gold==0)
+Players[0].gold=100000000
+while Attack[0]<UPGRADE_MAX do assert(purchase(0,0)) end
 local gold=Players[0].gold
-assert(not Buy(0,0) and Players[0].gold==gold)
-while Tier[0]<4 do assert(Buy(0,2)) end
-assert(not Buy(0,2) and Tier[0]==4)
-while SPAWN_SECONDS-Speed[0]>SPAWN_MIN_SECONDS do assert(Buy(0,3)) end
-assert(not Buy(0,3) and SPAWN_SECONDS-Speed[0]==SPAWN_MIN_SECONDS)
+assert(not purchase(0,0) and Players[0].gold==gold)
+while Armor[0]<UPGRADE_MAX do assert(purchase(0,1)) end
+while Vitality[0]<UPGRADE_MAX do assert(purchase(0,2)) end
+assert(not purchase(0,1) and not purchase(0,2))
+while Tier[0]<4 do assert(purchase(0,3)) end
+assert(not purchase(0,3) and Tier[0]==4)
 local strength=Hero[0].str
-assert(Buy(0,4) and Hero[0].str==strength+3 and Power[0]==1)
+assert(purchase(0,4) and Hero[0].str==strength+3 and Power[0]==1)
 Hero[0].hp=30
-assert(Buy(0,5) and Hero[0].hp==Hero[0].max)
-assert(not Buy(0,5))
+assert(purchase(0,5) and Hero[0].hp==Hero[0].max)
+assert(not purchase(0,5))
 Hero[0].hp=30;Hero[0].x=0;Hero[0].y=0
-assert(not Buy(0,5),'No remote fountain purchase')
+assert(not purchase(0,5),'No remote fountain purchase')
 Base[0].hp=0;gold=Players[0].gold
-assert(not Buy(0,0) and Players[0].gold==gold,'No purchases after barracks loss')
+assert(not purchase(0,0) and Players[0].gold==gold,'No purchases after barracks loss')
 
 reset()
 for p=0,11 do
@@ -179,11 +218,14 @@ Bot[0]=true
 local income=0
 for second=1,18000 do
     AddGold(0,INCOME_PER_SECOND);income=income+INCOME_PER_SECOND
-    if second%5==0 then BotBuy(0) end
+    if second%5==0 then BotBuy(0);FinishResearch(0) end
     assert(Players[0].gold>=0 and Players[0].gold<=STARTING_GOLD+income)
 end
-assert(Tier[0]==4 and Attack[0]==UPGRADE_MAX and Armor[0]==UPGRADE_MAX)
-assert(Speed[0]==SPAWN_SECONDS-SPAWN_MIN_SECONDS and Power[0]==10,'Bot progresses through all upgrade categories')
+assert(Tier[0]==4 and Attack[0]>0 and Armor[0]>0 and Vitality[0]>0)
+-- A large test-only budget verifies all 600 troop research ranks are reachable.
+Players[0].gold=100000000
+for n=1,1000 do BotBuy(0);FinishResearch(0) end
+assert(Attack[0]==200 and Armor[0]==200 and Vitality[0]==200 and Power[0]==10)
 
 reset()
 -- A lost personal base does not eliminate the two allied players.
@@ -215,22 +257,22 @@ Tick();Tick();assert(not Hero[1].revived)
 for race=0,3 do
     reset()
     assert(SelectArmyRace(0,race))
-    Players[0].gold=100000
-    assert(Buy(0,0) and Buy(0,1))
+    Players[0].gold=100000000
+    assert(purchase(0,0) and purchase(0,1))
     for tier=0,4 do
         GroupClear(Army[0]);SpawnWave(0)
         assert(#Army[0]==SPAWN_UNITS)
         assert(Army[0][1].id==MeleeType[race*5+tier])
         assert(Army[0][3].id==RangedType[race*5+tier])
         assert(IsArmyUnit(Army[0][1]) and IsArmyUnit(Army[0][3]))
-        if tier<4 then assert(Buy(0,2)) end
+        if tier<4 then assert(purchase(0,3)) end
     end
     Seconds=WARMUP_SECONDS
     assert(not SelectArmyRace(0,(race+1)%4) and ArmyRace[0]==race)
 end
 
 reset()
--- Exercise actual menu callbacks: race -> hero group -> hero -> upgrade menu.
+-- Selection dialogs finish by focusing the barracks, without an upgrade dialog.
 local function click(action)
     for k=0,11 do
         if MenuAction[k]==action and ShopButton[k] then Clicked=ShopButton[k];OnShop();return end
@@ -241,16 +283,16 @@ ShowRaces(0);assert(#Shop[0].buttons==7)
 click(102);assert(ArmyRace[0]==2)
 click(204);assert(#Shop[0].buttons==11,'Eight neutral heroes plus navigation fit')
 click(323);assert(HeroKind[0]==23 and Hero[0].id==HeroType[23])
+assert(Players[0].selection==Base[0])
 local gold=Players[0].gold
-click(0);assert(Attack[0]==1 and Players[0].gold==gold-ATTACK_COST)
-click(1);assert(Armor[0]==1)
+-- A human research-button click reaches the same finish event as a bot order.
+assert(IssueImmediateOrderById(Base[0],ArmyResearch[0]))
+assert(Attack[0]==0,'Research is not instant')
+assert(Players[0].gold==gold-ATTACK_COST)
+FinishResearch(0);assert(Attack[0]==1)
 local oldHero=Hero[0]
 Seconds=WARMUP_SECONDS
 assert(not SelectRosterHero(0,0) and Hero[0]==oldHero)
--- Menu spell on a player's own barracks is a visible route to upgrades.
-Dying=Base[0]
-SpellId=string.byte('F')*16777216+string.byte('m')*65536+string.byte('e')*256+string.byte('n')
-OnArmyMenu();assert(Shop[0].visible)
 
 -- Every roster hero is selectable. Every bot can draw both RNG endpoints and
 -- all intervening choices, rather than using its player index as a hero class.
@@ -261,9 +303,12 @@ for kind=0,HERO_COUNT-1 do
     Bot[1]=true;RngQueue={kind%4,kind}
     AssignBotChoices(1)
     assert(ArmyRace[1]==kind%4 and HeroKind[1]==kind and Hero[1].id==HeroType[kind])
-    SetHeroLevel(Hero[1],10)
-    for i=1,12 do LearnHero(1) end
-    assert(Hero[1].points==0,'Bot spends hero skill points across its own roster abilities')
+    SetHeroLevel(Hero[1],100)
+    for i=1,25 do LearnHero(1) end
+    assert(Hero[1].points==33,'Hero level 100 spends 3x20 + 7 skill points')
+    for slot=0,3 do
+        assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 7 or 20))
+    end
     Seconds=WARMUP_SECONDS+10
     Hero[1].paused=false
     Hero[3].x=HomeX[1]+150;Hero[3].y=HomeY[1]
@@ -295,3 +340,10 @@ SpawnWave(0)
 local charmed=Army[0][1];charmed.owner=3
 CommandArmy(0,true);CommandArmy(3,true)
 assert(#Army[0]==2 and IsUnitInGroup(charmed,Army[3]))
+
+reset()
+CreateHero(0,2);SetHeroLevel(Hero[0],100)
+for n=1,25 do LearnHero(0) end
+Summoner=Hero[0];Summoned=CreateUnit(0,0,0,0,0)
+OnSummon()
+assert(GetUnitAbilityLevel(Summoned,(string.byte("F")*16777216+string.byte("s")*65536+string.byte("H")*256+string.byte("P")))==18) -- FsHP, rank 18 for skill rank 20

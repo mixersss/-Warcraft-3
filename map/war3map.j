@@ -12,7 +12,7 @@ globals
     integer array Tier
     integer array Attack
     integer array Armor
-    integer array Speed
+    integer array Vitality
     integer array Power
     integer array SpawnClock
     integer array Respawn
@@ -40,7 +40,9 @@ globals
     trigger ChatTrigger = null
     trigger ShopTrigger = null
     trigger LeaveTrigger = null
-    trigger MenuTrigger = null
+    trigger ResearchTrigger = null
+    trigger SummonTrigger = null
+    unit EquipmentShop = null
 endglobals
 
 function TeamOf takes integer p returns integer
@@ -144,15 +146,22 @@ function UpdateRally takes integer team returns nothing
     endloop
 endfunction
 
+function SyncArmyResearch takes integer p returns nothing
+    set Attack[p] = GetPlayerTechCount(Player(p), 'Rfat', true)
+    set Armor[p] = GetPlayerTechCount(Player(p), 'Rfar', true)
+    set Vitality[p] = GetPlayerTechCount(Player(p), 'Rfhp', true)
+    set Tier[p] = GetPlayerTechCount(Player(p), 'Rfti', true)
+endfunction
+
 function UpgradeCost takes integer p, integer kind returns integer
     if kind == 0 and Attack[p] < UPGRADE_MAX then
         return ATTACK_COST + Attack[p]*ATTACK_COST_STEP
     elseif kind == 1 and Armor[p] < UPGRADE_MAX then
         return ARMOR_COST + Armor[p]*ARMOR_COST_STEP
-    elseif kind == 2 and Tier[p] < 4 then
+    elseif kind == 2 and Vitality[p] < UPGRADE_MAX then
+        return HEALTH_COST + Vitality[p]*HEALTH_COST_STEP
+    elseif kind == 3 and Tier[p] < 4 then
         return TierCost[Tier[p]+1]
-    elseif kind == 3 and SPAWN_SECONDS-Speed[p] > SPAWN_MIN_SECONDS then
-        return SPAWN_COST + Speed[p]*SPAWN_COST_STEP
     elseif kind == 4 and Power[p] < 10 then
         return HERO_POWER_COST + Power[p]*HERO_POWER_COST_STEP
     elseif kind == 5 then
@@ -167,9 +176,9 @@ function UpgradeName takes integer kind returns string
     elseif kind == 1 then
         return "Броня армии +1"
     elseif kind == 2 then
-        return "Следующая ступень армии"
+        return "Здоровье армии +10%"
     elseif kind == 3 then
-        return "Интервал спавна -1 сек."
+        return "Развитие казармы"
     elseif kind == 4 then
         return "Герою: +3 ко всем характеристикам"
     endif
@@ -177,7 +186,9 @@ function UpgradeName takes integer kind returns string
 endfunction
 
 function Buy takes integer p, integer kind returns boolean
-    local integer cost = UpgradeCost(p, kind)
+    local integer cost
+    call SyncArmyResearch(p)
+    set cost = UpgradeCost(p, kind)
     if Finished or Lost[p] or not Alive(Base[p]) then
         call Tell(p, "Your barracks are destroyed. You can still command surviving units.")
         return false
@@ -198,19 +209,13 @@ function Buy takes integer p, integer kind returns boolean
         call Tell(p, "Not enough gold: " + I2S(cost) + " required.")
         return false
     endif
+    if kind < 4 then
+        // The engine charges gold, queues research and updates existing/new units.
+        // Human command-card clicks use exactly the same engine research path.
+        return IssueImmediateOrderById(Base[p], ArmyResearch[kind])
+    endif
     call AddGold(p, -cost)
-    if kind == 0 then
-        set Attack[p] = Attack[p]+1
-        call SetPlayerTechResearched(Player(p), 'Rfat', Attack[p])
-    elseif kind == 1 then
-        set Armor[p] = Armor[p]+1
-        call SetPlayerTechResearched(Player(p), 'Rfar', Armor[p])
-    elseif kind == 2 then
-        set Tier[p] = Tier[p]+1
-        // Existing troops remain; new waves use the purchased tier.
-    elseif kind == 3 then
-        set Speed[p] = Speed[p]+1
-    elseif kind == 4 then
+    if kind == 4 then
         set Power[p] = Power[p]+1
         call SetHeroStr(Hero[p], GetHeroStr(Hero[p], false)+3, true)
         call SetHeroAgi(Hero[p], GetHeroAgi(Hero[p], false)+3, true)
@@ -241,28 +246,18 @@ function ClearMenu takes integer p, string title returns nothing
 endfunction
 
 function ShowShop takes integer p returns nothing
-    local integer k = 0
-    local integer cost
-    call ClearMenu(p, "АРМИЯ | " + RaceName[ArmyRace[p]] + " | Ступень " + I2S(Tier[p]+1) + " | Золото: " + I2S(GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)))
-    loop
-        exitwhen k == 6
-        set cost = UpgradeCost(p, k)
-        if cost >= 0 then
-            call MenuButton(p, k, UpgradeName(k) + " [" + I2S(cost) + "]", k)
-        endif
-        set k = k+1
-    endloop
-    if Seconds < WARMUP_SECONDS then
-        call MenuButton(p, 6, "Выбрать расу армии", 10)
-        call MenuButton(p, 7, "Выбрать героя (24 героя)", 11)
+    if not Bot[p] and Alive(Base[p]) then
+        call SelectUnitForPlayerSingle(Base[p], Player(p))
+        call Tell(p, "В казарме четыре кнопки: атака, броня, здоровье бойцов (до 200) и развитие базы. Цена указана на каждой кнопке.")
     endif
-    call MenuButton(p, 8, "Закрыть", 12)
-    call DialogDisplay(Player(p), Shop[p], true)
 endfunction
 
 function ResolvedSkill takes unit h, integer skill returns integer
     local integer engineering = GetUnitAbilityLevel(h, 'ANeg')
-    if engineering > 0 and engineering <= 3 then
+    if engineering > 3 then
+        set engineering = 3
+    endif
+    if engineering > 0 then
         if skill == 'ANsy' then
             return 'ANs1'+engineering-1
         elseif skill == 'ANcs' then
@@ -295,8 +290,6 @@ function CreateHero takes integer p, integer kind returns nothing
     set HeroKind[p] = kind
     set Hero[p] = CreateUnit(Player(p), HeroType[kind], HomeX[p], HomeY[p]-240, 270)
     call SetHeroLevel(Hero[p], 1, false)
-    call UnitAddAbility(Hero[p], 'Fmen')
-    call UnitMakeAbilityPermanent(Hero[p], true, 'Fmen')
     call PauseUnit(Hero[p], Seconds < WARMUP_SECONDS)
     if Bot[p] then
         call LearnHero(p)
@@ -410,10 +403,7 @@ function OnShop takes nothing returns nothing
         endif
         set k = k+1
     endloop
-    if action >= 0 and action < 6 then
-        call Buy(p, action)
-        call ShowShop(p)
-    elseif action == 10 then
+    if action == 10 then
         call ShowRaces(p)
     elseif action == 11 then
         call ShowHeroGroups(p)
@@ -436,11 +426,39 @@ function OnShop takes nothing returns nothing
     endif
 endfunction
 
-function OnArmyMenu takes nothing returns nothing
+function OnResearch takes nothing returns nothing
     local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
-    if GetSpellAbilityId() == 'Fmen' and p < 12 and not Bot[p] and not Finished then
-        call ShowShop(p)
+    if p < 12 and GetTriggerUnit() == Base[p] then
+        call SyncArmyResearch(p)
+        call Tell(p, "Исследование завершено: атака " + I2S(Attack[p]) + ", броня " + I2S(Armor[p]) + ", здоровье " + I2S(Vitality[p]) + ", ступень базы " + I2S(Tier[p]+1))
     endif
+endfunction
+
+function OnSummon takes nothing returns nothing
+    local unit u = GetSummonedUnit()
+    local integer p = GetPlayerId(GetOwningPlayer(u))
+    local integer rank = 3
+    local integer slot = 0
+    local integer current
+    if p < 12 and GetSummoningUnit() == Hero[p] then
+        loop
+            exitwhen slot == 3
+            set current = GetUnitAbilityLevel(Hero[p], ResolvedSkill(Hero[p], HeroSkill[HeroKind[p]*4+slot]))
+            if current > rank then
+                set rank = current
+            endif
+            set slot = slot+1
+        endloop
+        if rank > 3 then
+            call UnitAddAbility(u, 'FsHP')
+            call UnitAddAbility(u, 'FsDM')
+            call UnitAddAbility(u, 'FsAR')
+            call SetUnitAbilityLevel(u, 'FsHP', rank-2)
+            call SetUnitAbilityLevel(u, 'FsDM', rank-2)
+            call SetUnitAbilityLevel(u, 'FsAR', rank-2)
+        endif
+    endif
+    set u = null
 endfunction
 
 function SpawnWave takes integer p returns nothing
@@ -507,27 +525,23 @@ function CommandArmy takes integer p, boolean forceOrder returns nothing
 endfunction
 
 function BotBuy takes integer p returns nothing
-    local integer cash = GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)
-    // Save for a tier after a balanced number of inexpensive upgrades.
-    // Purchase exclusively through Buy(), with the same prices as humans.
-    if Tier[p] < 4 and Attack[p] >= (Tier[p]+1)*2 and Armor[p] >= Tier[p]+1 then
-        if cash >= UpgradeCost(p, 2) then
-            call Buy(p, 2)
-        endif
-    elseif Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p]*2 then
+    call SyncArmyResearch(p)
+    // Develop the barracks early; balance all three troop stats afterwards.
+    // No free gold or instant upgrades: use the native research queue.
+    if Tier[p] < 4 and Attack[p] >= (Tier[p]+1)*2 and Armor[p] >= Tier[p]+1 and Vitality[p] >= Tier[p]+1 then
+        call Buy(p, 3)
+    elseif Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p]*2 and Attack[p] <= Vitality[p]*2 then
         call Buy(p, 0)
-    elseif Armor[p] < UPGRADE_MAX then
+    elseif Armor[p] < UPGRADE_MAX and Armor[p] <= Vitality[p] then
         call Buy(p, 1)
-    elseif Tier[p] < 4 then
+    elseif Vitality[p] < UPGRADE_MAX then
         call Buy(p, 2)
-    elseif Speed[p] < SPAWN_SECONDS-SPAWN_MIN_SECONDS then
+    elseif Attack[p] < UPGRADE_MAX then
+        call Buy(p, 0)
+    elseif Tier[p] < 4 then
         call Buy(p, 3)
     elseif Power[p] < 10 then
         call Buy(p, 4)
-    endif
-    // Extra purchases never consume the tier savings above.
-    if Tier[p] >= 2 and Speed[p] < Tier[p]-1 and cash > 2*UpgradeCost(p, 3) then
-        call Buy(p, 3)
     endif
 endfunction
 
@@ -786,9 +800,14 @@ function OnChat takes nothing returns nothing
     elseif command == "-armor" then
         call Buy(p, 1)
     elseif command == "-tier" then
+        call Buy(p, 3)
+    elseif command == "-hp" then
         call Buy(p, 2)
     elseif command == "-spawn" then
-        call Buy(p, 3)
+        call Tell(p, "Подкрепления появляются раз в 16 секунд.")
+    elseif command == "-items" then
+        call SelectUnitForPlayerSingle(EquipmentShop, Player(p))
+        call PanCameraToTimedForPlayer(Player(p), 0, 640, 0.25)
     elseif command == "-power" then
         call Buy(p, 4)
     elseif command == "-heal" then
@@ -803,7 +822,7 @@ function OnChat takes nothing returns nothing
     elseif command == "-go" then
         call CommandArmy(p, true)
     elseif command == "-status" then
-        call Tell(p, RaceName[ArmyRace[p]] + " | " + TierName[ArmyRace[p]*5+Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | spawn " + I2S(SPAWN_SECONDS-Speed[p]) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
+        call Tell(p, RaceName[ArmyRace[p]] + " | " + TierName[ArmyRace[p]*5+Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | hp " + I2S(Vitality[p]) + " | spawn " + I2S(SPAWN_SECONDS) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
     elseif SubString(command, 0, 6) == "-race " then
         if command == "-race random" then
             call SelectArmyRace(p, GetRandomInt(0, 3))
@@ -833,7 +852,7 @@ function OnChat takes nothing returns nothing
             endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "Кнопка [U] на казарме или герое: улучшения армии. -shop: меню | -race: 4 расы | -hero: 24 героя | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
+        call Tell(p, "Выдели казарму: 4 кнопки исследований. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 24 героя | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -857,7 +876,7 @@ function UpdateBoard takes nothing returns nothing
         else
             call BoardCell(p+1, 1, I2S(Tier[p]+1))
         endif
-        call BoardCell(p+1, 2, I2S(Attack[p]) + "/" + I2S(Armor[p]))
+        call BoardCell(p+1, 2, I2S(Attack[p]) + "/" + I2S(Armor[p]) + "/" + I2S(Vitality[p]))
         call BoardCell(p+1, 3, I2S(CountUnitsInGroup(Army[p])) + " / " + I2S(Kills[p]))
         set p = p+1
     endloop
@@ -897,7 +916,7 @@ function Tick takes nothing returns nothing
                 if Seconds > WARMUP_SECONDS then
                     call AddGold(p, INCOME_PER_SECOND)
                     set SpawnClock[p] = SpawnClock[p]+1
-                    if SpawnClock[p] >= SPAWN_SECONDS-Speed[p] then
+                    if SpawnClock[p] >= SPAWN_SECONDS then
                         set SpawnClock[p] = 0
                         call SpawnWave(p)
                     endif
@@ -932,7 +951,7 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("Бой начался! Кнопка [U] на казарме или герое открывает улучшения армии.")
+        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены.")
         set p = 0
         loop
             exitwhen p == 12
@@ -952,12 +971,12 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Each team's fortress has one gate facing the arena. Choose army race and hero during the first 60 seconds. Barracks produce two melee and one ranged soldier every 8 seconds. Army Menu [U] on barracks and heroes opens upgrades. Attack and armor affect existing troops; tiers affect future waves. Destroy all three barracks to eliminate a team. Last surviving team wins. Bots randomly choose any of 24 heroes and one of 4 races. Heroes revive while their own barracks survive.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +1000 HP to the barracks. Waves: two melee plus one ranged every 16 seconds. Destroy all three barracks to eliminate a team. One ground gate per fortress. Bots use the same research queue and prices.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop: upgrade menu, also available as Army Menu [U] on barracks and heroes. -race: army race menu. -hero: hero roster (16 racial + 8 neutral heroes). -hero random / -race random: random choice. Race and hero lock at 60 seconds. -attack / -armor / -tier / -spawn / -power / -heal: direct purchases. -status: army stats. -auto: toggle army orders. -go: rally. Human heroes remain manually controlled after preparation.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 100. Three normal skills: 20 ranks each, learned from level 1 every 2 hero levels. Ultimate: 7 ranks, from level 6 every 12 hero levels. Summoned troops receive extra stats at high skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -976,9 +995,12 @@ function InitGame takes nothing returns nothing
     set ChatTrigger = CreateTrigger()
     set LeaveTrigger = CreateTrigger()
     set ShopTrigger = CreateTrigger()
-    set MenuTrigger = CreateTrigger()
+    set ResearchTrigger = CreateTrigger()
+    set SummonTrigger = CreateTrigger()
     call InitBalance()
     call InitWalls()
+    set EquipmentShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fshp', 0, 640, 270)
+    call SetUnitInvulnerable(EquipmentShop, true)
     call SetTimeOfDay(12)
     call SetTimeOfDayScale(0)
     call SetMapFlag(MAP_FOG_HIDE_TERRAIN, false)
@@ -1008,6 +1030,8 @@ function InitGame takes nothing returns nothing
         endloop
         set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, HomeX[p], HomeY[p], 1200, true, false)
         call FogModifierStart(fog)
+        set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, 0, 640, 700, true, false)
+        call FogModifierStart(fog)
         set Army[p] = CreateGroup()
         set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
         set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
@@ -1018,7 +1042,18 @@ function InitGame takes nothing returns nothing
         endif
         set Shop[p] = DialogCreate()
         call TriggerRegisterDialogEvent(ShopTrigger, Shop[p])
-        call TriggerRegisterPlayerUnitEvent(MenuTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
+        call TriggerRegisterPlayerUnitEvent(ResearchTrigger, Player(p), EVENT_PLAYER_UNIT_RESEARCH_FINISH, null)
+        call TriggerRegisterPlayerUnitEvent(SummonTrigger, Player(p), EVENT_PLAYER_UNIT_SUMMON, null)
+        set j = 0
+        loop
+            exitwhen j == 4
+            if j == 3 then
+                call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], 4)
+            else
+                call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], UPGRADE_MAX)
+            endif
+            set j = j+1
+        endloop
         call TriggerRegisterPlayerUnitEvent(DeathTrigger, Player(p), EVENT_PLAYER_UNIT_DEATH, null)
         call TriggerRegisterPlayerChatEvent(ChatTrigger, Player(p), "-", false)
         call TriggerRegisterPlayerEvent(LeaveTrigger, Player(p), EVENT_PLAYER_LEAVE)
@@ -1030,7 +1065,8 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(DeathTrigger, function OnDeath)
     call TriggerAddAction(ChatTrigger, function OnChat)
     call TriggerAddAction(ShopTrigger, function OnShop)
-    call TriggerAddAction(MenuTrigger, function OnArmyMenu)
+    call TriggerAddAction(ResearchTrigger, function OnResearch)
+    call TriggerAddAction(SummonTrigger, function OnSummon)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0
     loop
@@ -1053,12 +1089,12 @@ function InitGame takes nothing returns nothing
     endloop
     call BoardCell(0, 0, "Team / Player")
     call BoardCell(0, 1, "Tier")
-    call BoardCell(0, 2, "Atk / Def")
+    call BoardCell(0, 2, "Atk / Def / HP")
     call BoardCell(0, 3, "Army / Kills")
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Меню улучшений: кнопка [U] на казарме/герое или -shop.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу армии и героя. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 100, навыки до 20/7.")
     call TimerStart(clock, 1, true, function Tick)
     set clock = null
     set cell = null

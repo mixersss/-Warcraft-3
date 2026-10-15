@@ -19,6 +19,7 @@ const formats = {
   'war3map.w3i': 'w3i', 'war3map.w3e': 'w3e', 'war3map.wpm': 'wpm',
   'war3map.w3u': 'w3u', 'war3map.w3q': 'w3d',
   'war3map.w3a': 'w3d', 'war3map.w3b': 'w3u',
+  'war3map.w3t': 'w3u',
   'war3map.doo': 'doo', 'war3mapUnits.doo': 'unitsdoo',
   'war3map.w3r': 'w3r', 'war3map.w3c': 'w3c', 'war3map.w3s': 'w3s',
   'war3map.imp': 'imp',
@@ -58,16 +59,48 @@ assert.equal(races.length, 4);
 assert.equal(heroes.length, 24);
 assert.equal(new Set(heroes.map(h => h.id)).size, 24);
 assert.deepEqual([0,1,2,3,4].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8]);
-assert.equal(custom.length, 42, 'Four races x five tiers x two roles, barracks, tower');
-assert.equal(new Set(custom.map(o => o.newId)).size, 42, 'Unique custom rawcodes');
+assert.equal(custom.length, 43, 'Four races x five tiers x two roles, barracks, tower, equipment shop');
+assert.equal(new Set(custom.map(o => o.newId)).size, 43, 'Unique custom rawcodes');
 for (let race = 0; race < 4; race++) {
   for (let tier = 0; tier < 5; tier++) {
     for (const role of ['fm', 'fr']) assert.ok(custom.some(o => o.newId === `${role}${race}${tier}`));
   }
 }
-assert.equal(parsed['war3map.w3a'].customTable.objects[0].newId, 'Fmen');
+assert.equal(parsed['war3map.w3a'].customTable.objects.length, 3, 'Summoned unit stat bonuses');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
-assert.equal(parsed['war3map.w3q'].customTable.objects.length, 2);
+const research = parsed['war3map.w3q'].customTable.objects;
+const value = (object,id,level=0) => object.modifications.find(m => m.id===id && m.levelOrVariation===level)?.value;
+assert.equal(research.length, 4);
+for (const [col,id,effect] of [[0,'Rfat','ratd'],[1,'Rfar','rarm'],[2,'Rfhp','rhpx'],[3,'Rfti','rhpo']]) {
+  const upgrade = research.find(o => o.newId===id);
+  assert.equal(value(upgrade,'glvl'),col===3 ? 4 : 200);
+  assert.equal(value(upgrade,'gbpx'),col);
+  assert.equal(value(upgrade,'gbpy'),0);
+  assert.equal(value(upgrade,'gef1'),effect);
+  for (let rank=1;rank<=(col===3 ? 4 : 200);rank++) assert.ok(value(upgrade,'gtp1',rank), 'Every research rank has a command-card tooltip');
+}
+const barracks = custom.find(o => o.newId==='fbax');
+assert.equal(value(barracks,'ures'),'Rfat,Rfar,Rfhp,Rfti');
+assert.equal(value(barracks,'uabi'),'','No modal upgrade-menu ability');
+const abilities = parsed['war3map.w3a'].originalTable.objects;
+assert.equal(abilities.length,105,'96 hero skills plus 9 engineering variants');
+for (const hero of heroes) {
+  for (const [slot,id] of hero.skills.entries()) {
+    const ability = abilities.find(o => o.oldId===id);
+    const cap = slot===3 ? 7 : 20;
+    assert.equal(value(ability,'alev'),cap);
+    assert.equal(value(ability,'arlv'),slot===3 ? 6 : 1);
+    assert.equal(value(ability,'alsk'),slot===3 ? 12 : 2);
+    for (let rank=1;rank<=cap;rank++) assert.ok(value(ability,'atp1',rank),`${id}: level ${rank} exists`);
+  }
+}
+const misc = map.get('war3mapMisc.txt').text();
+assert.match(misc,/MaxHeroLevel=100/);
+assert.equal(balance.spawn_seconds,16);
+const shopItems = require('../map/items.json');
+assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length);
+assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
+for (const item of shopItems) assert.equal(value(parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id),'igol'),item.cost);
 for (const player of info.players) {
   const [x, y] = player.startLocation;
   assert.ok(Math.abs(x) < 5888 && Math.abs(y) < 5888, 'Start inside playable bounds');
@@ -108,4 +141,4 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 13 binary formats, Classic versions, 12 slots / 4 forces, 24 heroes, 40 army variants, menu ability, walls, identifiers and embedded JASS.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 100 hero levels, 20/7 skill caps, 10 shop items, 12 slots, 24 heroes and 40 army variants.');

@@ -11,6 +11,7 @@ import json
 import math
 from pathlib import Path
 import struct
+from progression import hero_abilities, summon_bonus_abilities
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 96
@@ -77,7 +78,7 @@ def validate_balance(b: dict) -> None:
     assert len(b['tiers']) == 5
     assert 1 <= b['spawn_min_seconds'] <= b['spawn_seconds']
     assert 1 <= b['spawn_units'] <= b['army_cap'] <= 100
-    assert b['upgrade_max'] <= 20
+    assert b['upgrade_max'] <= 255
     assert b['warmup_seconds'] >= 10
     for tier in b['tiers']:
         assert tier['hp'] > 0 and tier['damage'] > 0
@@ -86,7 +87,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = '4 teams x 3. Choose from 4 army races and 24 heroes. Bots get random heroes. Upgrade troops with Army Menu [U] on barracks or heroes. Each team fortress has one gate. Choose during the first 60 seconds. Destroy enemy barracks. Classic TFT 1.26+.'
+    text = '4 teams x 3. 4 army races, 24 heroes. Barracks: attack, armor, health (200 ranks each), stronger army tiers. Waves every 16 seconds. Equipment shop in arena center. Hero level 100, normal skills 20, ultimates 7. Choose race and hero before 60 seconds. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (bots fill empty slots)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -139,8 +140,8 @@ def pathing() -> bytes:
     )
 
 
-def objects(entries: list, extended: bool = False) -> bytes:
-    data = i(2, 0, len(entries))
+def object_table(entries: list, extended: bool) -> bytes:
+    data = i(len(entries))
     for original, custom, changes in entries:
         data += original.encode('ascii') + custom.encode('ascii') + i(len(changes))
         for change in changes:
@@ -151,6 +152,10 @@ def objects(entries: list, extended: bool = False) -> bytes:
             data += s(value) if kind == 3 else f(value) if kind in (1, 2) else i(value)
             data += custom.encode('ascii')
     return data
+
+
+def objects(entries: list, extended: bool = False, original_entries: list | None = None) -> bytes:
+    return i(2)+object_table(original_entries or [], extended)+object_table(entries, extended)
 
 
 def units(b: dict) -> bytes:
@@ -170,18 +175,18 @@ def units(b: dict) -> bytes:
                 ('udu1', 0, 3), ('ua1g', 3, 'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
                 ('ucol', 2, 24.0),
-                ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar'), ('ureq', 3, ''),
+                ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
             entries.append((faction['ranged'] if ranged else faction['melee'][tier], rawcode, changes))
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
-        ('udef', 2, 5.0), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, ''),
-        ('uupt', 3, ''), ('uabi', 3, 'Fmen'), ('ubba', 0, 0), ('ubdi', 0, 0),
-        ('ubsi', 0, 0), ('upgr', 3, ''), ('uhpr', 2, 0.0),
+        ('udef', 2, 5.0), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti'),
+        ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
+        ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, 'Produces army waves. Click Army Menu [U] to upgrade troops, or type -shop. Choose your army race and hero during the first 60 seconds.'),
+        ('utub', 3, 'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень казармы даёт более сильные волны и +1000 здоровья базе. Спавн раз в 16 секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, 1200),
@@ -189,22 +194,28 @@ def units(b: dict) -> bytes:
         ('ureq', 3, ''), ('uupt', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, ''),
     ]))
+    entries.append(('ngme', 'fshp', [
+        ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
+        ('ucol',2,96.0),('ureq',3,''),
+        ('utub',3,'Общий магазин брони, оружия, сапог, колец и амулетов. Подведи героя к магазину и выбери предмет. Всего 6 мест в инвентаре.'),
+    ]))
     return objects(entries)
 
 
 def menu_ability() -> bytes:
-    return objects([('ANcl', 'Fmen', [
-        ('anam', 3, 'Меню армии'), ('aher', 0, 0), ('aite', 0, 0), ('alev', 0, 1),
-        ('aart', 3, 'ReplaceableTextures\\CommandButtons\\BTNHumanBuild.blp'),
-        ('abpx', 0, 2), ('abpy', 0, 1), ('ahky', 3, 'U'),
-        ('atp1', 3, 'Меню армии [|cffffcc00U|r]', 1, 0),
-        ('aub1', 3, 'Улучшения атаки, брони, ступени армии и скорости спавна. До начала боя: выбор одной из 4 рас армии и одного из 24 героев.', 1, 0),
-        ('amcs', 0, 0, 1, 0), ('acdn', 2, 0.0, 1, 0),
-        ('acas', 2, 0.0, 1, 0), ('adur', 2, 0.0, 1, 0), ('ahdu', 2, 0.0, 1, 0),
-        ('Ncl1', 2, 0.0, 1, 1), ('Ncl2', 0, 0, 1, 2), ('Ncl3', 0, 1, 1, 3),
-        ('Ncl4', 2, 0.0, 1, 4), ('Ncl5', 0, 0, 1, 5), ('Ncl6', 3, 'channel', 1, 6),
-        ('acat', 3, ''), ('atat', 3, ''), ('aeat', 3, ''),
-    ])], extended=True)
+    return objects(summon_bonus_abilities(), extended=True, original_entries=hero_abilities(ROOT))
+
+
+def items() -> bytes:
+    return objects([(row['base'],row['id'],[
+        ('unam',3,row['name']),('utip',3,row['name']),('utub',3,row['description']),
+        ('igol',0,row['cost']),('ilum',0,0),('isto',0,12),('istr',0,2),('isst',0,0),
+    ]) for row in catalog('items')])
+
+
+def misc(b: dict) -> bytes:
+    return ('[Misc]\nMaxHeroLevel=100\nHeroAbilityLevelSkip=2\n'
+            'HeroFactorXP=100,100,100,100,100\n').encode('ascii')
 
 
 def walls() -> bytes:
@@ -214,15 +225,30 @@ def walls() -> bytes:
 
 
 def upgrades(b: dict) -> bytes:
-    return objects([
-        ('Rhme', 'Rfat', [('gnam', 3, 'Frenzy Weapons'), ('glvl', 0, b['upgrade_max']), ('gef1', 3, 'ratd'), ('gba1', 2, 1.0), ('gmo1', 2, 0.0), ('gef2', 3, ''), ('gef3', 3, ''), ('gef4', 3, ''), ('greq', 3, '')]),
-        ('Rhar', 'Rfar', [('gnam', 3, 'Frenzy Armor'), ('glvl', 0, b['upgrade_max']), ('gef1', 3, 'rarm'), ('gba1', 2, 1.0), ('gmo1', 2, 0.0), ('gef2', 3, ''), ('gef3', 3, ''), ('gef4', 3, ''), ('greq', 3, '')]),
-    ], extended=True)
+    entries = []
+    rows = [
+        ('Rhme','Rfat','Атака армии','ratd',1.0,b['attack_cost'],b['attack_cost_step'],'BTNSteelMelee.blp','+3 к атаке всех существующих и новых бойцов.'),
+        ('Rhar','Rfar','Броня армии','rarm',1.0,b['armor_cost'],b['armor_cost_step'],'BTNHumanArmorUpOne.blp','+1 к броне всех существующих и новых бойцов.'),
+        ('Rhan','Rfhp','Здоровье армии','rhpx',b['health_percent'],b['health_cost'],b['health_cost_step'],'BTNPeriapt.blp','+10% базового максимального здоровья всех существующих и новых бойцов.'),
+        ('Rhac','Rfti','Развитие казармы','rhpo',1000.0,b['base_upgrade_cost'],b['base_upgrade_cost_step'],'BTNCastle.blp','Более сильные бойцы следующих волн. Казарме +1000 здоровья.'),
+    ]
+    for column,(base,rawcode,name,effect,amount,cost,step,art,description) in enumerate(rows):
+        cap = 4 if column==3 else b['upgrade_max']
+        changes = [('glvl',0,cap),('gbpx',0,column),('gbpy',0,0),
+            ('gglb',0,cost),('gglm',0,step),('glmb',0,0),('glmm',0,0),('gtib',0,1),('gtim',0,0),
+            ('gef1',3,effect),('gba1',2,amount),('gmo1',2,0.0),
+            ('gef2',3,''),('gef3',3,''),('gef4',3,'')]
+        for rank in range(1,cap+1):
+            changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {rank}/{cap}]',rank,0),
+                ('gub1',3,description+f' Цена: {cost+step*(rank-1)} золота.',rank,0),
+                ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),('greq',3,'',rank,0)]
+        entries.append((base,rawcode,changes))
+    return objects(entries,extended=True)
 
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'spawn_cost', 'spawn_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
@@ -233,11 +259,14 @@ def script(b: dict) -> str:
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
         '    integer array HeroGroup', '    integer array HeroSkill',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
-        '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder', 'endglobals']
+        '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
+        '    integer array ArmyResearch', 'endglobals']
     source = (ROOT/'map/war3map.j').read_text()
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    for kind, rawcode in enumerate(['Rfat','Rfar','Rfhp','Rfti']):
+        init += [f"    set ArmyResearch[{kind}] = '{rawcode}'"]
     for n, row in enumerate(b['tiers']):
         init += [f'    set TierCost[{n}] = {row["cost"]}']
     for race, faction in enumerate(races):
@@ -372,6 +401,7 @@ def build() -> Path:
         'war3map.w3i': info(b), 'war3map.w3e': terrain(), 'war3map.wpm': pathing(),
         'war3map.w3u': units(b), 'war3map.w3q': upgrades(b),
         'war3map.w3a': menu_ability(), 'war3map.w3b': walls(),
+        'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
         'war3map.j': script(b).encode('utf-8'),
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),
         'war3mapUnits.doo': b'W3do'+i(8, 11, 0),
