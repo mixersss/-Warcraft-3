@@ -44,6 +44,7 @@ globals
     trigger LevelTrigger = null
     integer array SkillLevel
     unit EquipmentShop = null
+    unit Fountain = null
     unit array FortressShop
     real array FortressX
     real array FortressY
@@ -523,13 +524,24 @@ endfunction
 
 function GearFamily takes integer p, integer slot returns integer
     if slot == 0 then
+        if HeroPrimary[HeroKind[p]] == 1 then
+            return 11
+        endif
         return 0
     elseif slot == 1 then
         return 1
     elseif slot == 2 then
         return 2+HeroPrimary[HeroKind[p]]
     endif
-    return slot+2
+    if slot == 3 then
+        return 5
+    elseif slot == 4 then
+        if HeroPrimary[HeroKind[p]] == 2 then
+            return 9
+        endif
+        return 10
+    endif
+    return 8
 endfunction
 
 function DesiredGear takes integer p returns integer
@@ -573,7 +585,7 @@ function BotShop takes integer p returns boolean
         set h = null
         return false
     endif
-    set shopIndex = TeamOf(p)*3+GearShop[index]
+    set shopIndex = TeamOf(p)*5+GearShop[index]
     if DistanceSq(GetUnitX(h), GetUnitY(h), ShopX[shopIndex], ShopY[shopIndex]) > 160000 then
         call IssuePointOrder(h, "move", ShopX[shopIndex], ShopY[shopIndex])
         set h = null
@@ -829,6 +841,24 @@ function CheckTeam takes integer team returns nothing
     set u = null
 endfunction
 
+function ShowGoldReward takes integer p, unit victim, integer amount returns nothing
+    local texttag label
+    if Bot[p] then
+        return
+    endif
+    set label = CreateTextTag()
+    call SetTextTagText(label, "+"+I2S(amount), 0.023)
+    call SetTextTagPosUnit(label, victim, 35)
+    call SetTextTagColor(label, 255, 220, 40, 255)
+    call SetTextTagVelocity(label, 0, 0.04)
+    call SetTextTagPermanent(label, false)
+    call SetTextTagLifespan(label, 1.8)
+    call SetTextTagFadepoint(label, 1.0)
+    // Only visibility is local; creation and all gameplay remain synchronized.
+    call SetTextTagVisibility(label, GetLocalPlayer() == Player(p))
+    set label = null
+endfunction
+
 function OnDeath takes nothing returns nothing
     local unit dead = GetTriggerUnit()
     local unit killer = GetKillingUnit()
@@ -857,6 +887,7 @@ function OnDeath takes nothing returns nothing
     endif
     if k >= 0 and k < 12 and TeamOf(k) != TeamOf(p) and reward > 0 then
         call AddGold(k, reward)
+        call ShowGoldReward(k, dead, reward)
         set Kills[k] = Kills[k]+1
         // Nearby hero receives additional deterministic experience even above melee level 5.
         if Alive(Hero[k]) and DistanceSq(GetUnitX(Hero[k]), GetUnitY(Hero[k]), GetUnitX(dead), GetUnitY(dead)) < 1440000 then
@@ -1004,6 +1035,23 @@ function RegenerateFortresses takes nothing returns nothing
     set u = null
 endfunction
 
+function RegenerateFountain takes nothing returns nothing
+    local unit u
+    local integer p
+    call GroupEnumUnitsInRange(Scan, 0, 0, FOUNTAIN_RADIUS, null)
+    loop
+        set u = FirstOfGroup(Scan)
+        exitwhen u == null
+        call GroupRemoveUnit(Scan, u)
+        set p = GetPlayerId(GetOwningPlayer(u))
+        if p < 12 and Alive(u) and not IsUnitType(u, UNIT_TYPE_STRUCTURE) then
+            call SetUnitState(u, UNIT_STATE_LIFE, GetWidgetLife(u)+GetUnitState(u, UNIT_STATE_MAX_LIFE)*FOUNTAIN_HP_PERCENT)
+            call SetUnitState(u, UNIT_STATE_MANA, GetUnitState(u, UNIT_STATE_MANA)+GetUnitState(u, UNIT_STATE_MAX_MANA)*FOUNTAIN_MANA_PERCENT)
+        endif
+    endloop
+    set u = null
+endfunction
+
 function Tick takes nothing returns nothing
     local integer p = 0
     local integer t = 0
@@ -1012,6 +1060,7 @@ function Tick takes nothing returns nothing
     endif
     set Seconds = Seconds+1
     call RegenerateFortresses()
+    call RegenerateFountain()
     if Seconds == 1 then
         loop
             exitwhen p == 12
@@ -1066,7 +1115,7 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё три магазина сильной экипировки.")
+        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё пять магазинов сильной экипировки. В центре — общий фонтан жизни и маны.")
         set p = 0
         loop
             exitwhen p == 12
@@ -1086,12 +1135,12 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +3000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Three equipment shops per fortress. Bots research and buy equipment at normal prices.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. HP research adds 10% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. Waves: three identical troops of the current army tier every 16 seconds. Destroy all three barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress only allied heroes and troops regenerate 0.15% HP and 0.1% mana each second. Five equipment shops per fortress. Shared fountain at the arena center: 1% life/mana regeneration per second for all teams. Bots research and buy equipment at normal prices.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Three fortress shops sell weapon, armor and magic equipment. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: selection before 60 seconds. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Five fortress shops sell weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1114,12 +1163,14 @@ function InitGame takes nothing returns nothing
     set LevelTrigger = CreateTrigger()
     call InitBalance()
     call InitWalls()
+    set Fountain = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'ffnt', 0, 0, 270)
+    call SetUnitInvulnerable(Fountain, true)
     set EquipmentShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fshp', 0, 640, 270)
     call SetUnitInvulnerable(EquipmentShop, true)
     set p = 0
     loop
-        exitwhen p == 12
-        set FortressShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fs0p'+ModuloInteger(p, 3)*256, ShopX[p], ShopY[p], 270)
+        exitwhen p == 20
+        set FortressShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE), 'fs0p'+ModuloInteger(p, 5)*256, ShopX[p], ShopY[p], 270)
         call SetUnitInvulnerable(FortressShop[p], true)
         set p = p+1
     endloop
@@ -1157,8 +1208,8 @@ function InitGame takes nothing returns nothing
         call FogModifierStart(fog)
         set j = 0
         loop
-            exitwhen j == 3
-            set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, ShopX[t*3+j], ShopY[t*3+j], 500, true, false)
+            exitwhen j == 5
+            set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, ShopX[t*5+j], ShopY[t*5+j], 500, true, false)
             call FogModifierStart(fog)
             set j = j+1
         endloop

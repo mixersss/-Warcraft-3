@@ -104,6 +104,11 @@ def hero_abilities(root):
             details=[]
             for field in seed['fields']:
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
+                if rawcode=='ANba' and field['id']=='atar':
+                    # Do not exclude the undead/mechanical troop categories.
+                    # Ground/air targets exclude the separate structure class.
+                    value='air,ground,enemy,neutral'
+                if rawcode=='ANba' and field['id']=='ahdu': value=2.0
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
                 if field['id'] in SUMMON_FIELDS:
                     hp,damage,scale=summon_details[value.split(',')[0]]
@@ -113,6 +118,7 @@ def hero_abilities(root):
                 elif field['kind']!=3 and field['column']>0 and any(w in field['label'].lower() for w in ('damage','heal','bonus','evasion','chance')):
                     details.append(f'{field["label"]}: {value:g}')
             text=f'Ранг {rank}/{seed["cap"]}. '+'; '.join(details[:7])
+            if rawcode=='ANba': text+=' Цели: живые и Нежить. Убитые стрелой бойцы поднимаются скелетами.'
             changes += [('atp1',3,f'{seed["name"]} [уровень {rank}]',rank,0),('aub1',3,text,rank,0)]
         entries.append((rawcode,'\0'*4,changes))
     return entries

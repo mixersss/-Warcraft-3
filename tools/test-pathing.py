@@ -44,23 +44,23 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
     # that fortress. An extra exit anywhere else would fail this assertion.
     length = math.hypot(cx,cy)
     gx,gy = cx-cx/length*2300, cy-cy/length*2300
-    # The 900-unit corridor has a clear center and solid side walls. Its exit
+    # The 1600-unit corridor has a clear center and solid side walls. Its exit
     # is near the arena, rather than immediately beside the bases.
-    for along in range(2400,3101,100):
+    for along in range(2400,3801,100):
         half_width=560+(along-2300)*0.4
         for side in (-half_width,0,half_width):
             x=cx-cx/length*along-cy/length*side
             y=cy-cy/length*along+cx/length*side
             assert (cell(x,y) in blocked)==(side!=0), ('Tunnel side/center',team,along,side)
-    for along, half_width in [(2400,600),(3100,880)]:
+    for along, half_width in [(2400,600),(3800,1160)]:
         for side in range(-int(half_width)+160,int(half_width)-159,64):
             x=cx-cx/length*along-cy/length*side
             y=cy-cy/length*along+cx/length*side
             assert cell(x,y) in accessible, ('Wide gate cross-section blocked',team,along,side)
-    for sx,sy in [(-5050,-5100),(-5050,-2450),(-2500,-5000)]:
+    for sx,sy in [(-5050,-5100),(-5050,-2450),(-2500,-5000),(-4200,-3000),(-3100,-3200)]:
         for _ in range(team):sx,sy=-sy,sx
         assert cell(sx,sy) in accessible, ('Fortress shop unreachable',team,sx,sy)
-    ex,ey=cx-cx/length*3300,cy-cy/length*3300
+    ex,ey=cx-cx/length*4000,cy-cy/length*4000
     assert cell(ex,ey) in accessible and math.hypot(ex,ey)<2300
     closure = set(blocked)
     for py in range(height):

@@ -322,5 +322,173 @@
       "intelligence": 50
     },
     "description": "+50 силы; +50 ловкости; +50 интеллекта."
+  },
+  {
+    "id": "fx00",
+    "base": "bspd",
+    "name": "Сапоги бури I",
+    "cost": 2500,
+    "shop": 3,
+    "family": 8,
+    "rank": 0,
+    "stats": {
+      "move_speed": 40,
+      "attack_speed": 0.2
+    },
+    "description": "+40 к скорости бега; +20% к скорости атаки. Предел скорости бега: 480."
+  },
+  {
+    "id": "fx01",
+    "base": "bspd",
+    "name": "Сапоги бури II",
+    "cost": 7500,
+    "shop": 3,
+    "family": 8,
+    "rank": 1,
+    "stats": {
+      "move_speed": 75,
+      "attack_speed": 0.4
+    },
+    "description": "+75 к скорости бега; +40% к скорости атаки. Предел скорости бега: 480."
+  },
+  {
+    "id": "fx02",
+    "base": "bspd",
+    "name": "Сапоги бури III",
+    "cost": 18000,
+    "shop": 3,
+    "family": 8,
+    "rank": 2,
+    "stats": {
+      "move_speed": 110,
+      "attack_speed": 0.7
+    },
+    "description": "+110 к скорости бега; +70% к скорости атаки. Предел скорости бега: 480."
+  },
+  {
+    "id": "fx10",
+    "base": "clfm",
+    "name": "Плащ пламени I",
+    "cost": 3000,
+    "shop": 4,
+    "family": 9,
+    "rank": 0,
+    "stats": {
+      "fire_dps": 30,
+      "mana_regen": 1.0
+    },
+    "description": "Постоянное пламя: 30 урона в секунду наземным врагам в радиусе 300. +100% к обычной регенерации маны."
+  },
+  {
+    "id": "fx11",
+    "base": "clfm",
+    "name": "Плащ пламени II",
+    "cost": 8500,
+    "shop": 4,
+    "family": 9,
+    "rank": 1,
+    "stats": {
+      "fire_dps": 80,
+      "mana_regen": 2.5
+    },
+    "description": "Постоянное пламя: 80 урона в секунду наземным врагам в радиусе 300. +250% к обычной регенерации маны."
+  },
+  {
+    "id": "fx12",
+    "base": "clfm",
+    "name": "Плащ пламени III",
+    "cost": 22000,
+    "shop": 4,
+    "family": 9,
+    "rank": 2,
+    "stats": {
+      "fire_dps": 180,
+      "mana_regen": 5.0
+    },
+    "description": "Постоянное пламя: 180 урона в секунду наземным врагам в радиусе 300. +500% к обычной регенерации маны."
+  },
+  {
+    "id": "fx20",
+    "base": "modt",
+    "name": "Маска пожирателя I",
+    "cost": 3000,
+    "shop": 4,
+    "family": 10,
+    "rank": 0,
+    "stats": {
+      "lifesteal": 0.15,
+      "health_regen": 6
+    },
+    "description": "Вампиризм обычных атак 15%; +6 HP в секунду. Учитываются стандартные ограничения вампиризма Warcraft III."
+  },
+  {
+    "id": "fx21",
+    "base": "modt",
+    "name": "Маска пожирателя II",
+    "cost": 8500,
+    "shop": 4,
+    "family": 10,
+    "rank": 1,
+    "stats": {
+      "lifesteal": 0.25,
+      "health_regen": 15
+    },
+    "description": "Вампиризм обычных атак 25%; +15 HP в секунду. Учитываются стандартные ограничения вампиризма Warcraft III."
+  },
+  {
+    "id": "fx22",
+    "base": "modt",
+    "name": "Маска пожирателя III",
+    "cost": 22000,
+    "shop": 4,
+    "family": 10,
+    "rank": 2,
+    "stats": {
+      "lifesteal": 0.4,
+      "health_regen": 35
+    },
+    "description": "Вампиризм обычных атак 40%; +35 HP в секунду. Учитываются стандартные ограничения вампиризма Warcraft III."
+  },
+  {
+    "id": "fx30",
+    "base": "ratf",
+    "name": "Талисман удара I",
+    "cost": 3000,
+    "shop": 3,
+    "family": 11,
+    "rank": 0,
+    "stats": {
+      "critical_chance": 20,
+      "critical_multiplier": 2.0
+    },
+    "description": "20% шанс критического удара с множителем 2."
+  },
+  {
+    "id": "fx31",
+    "base": "ratf",
+    "name": "Талисман удара II",
+    "cost": 9000,
+    "shop": 3,
+    "family": 11,
+    "rank": 1,
+    "stats": {
+      "critical_chance": 25,
+      "critical_multiplier": 2.5
+    },
+    "description": "25% шанс критического удара с множителем 2.5."
+  },
+  {
+    "id": "fx32",
+    "base": "ratf",
+    "name": "Талисман удара III",
+    "cost": 24000,
+    "shop": 3,
+    "family": 11,
+    "rank": 2,
+    "stats": {
+      "critical_chance": 30,
+      "critical_multiplier": 3.0
+    },
+    "description": "30% шанс критического удара с множителем 3."
   }
 ]

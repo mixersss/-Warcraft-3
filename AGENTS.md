@@ -15,11 +15,15 @@
 - Hero spell use, pathfinding, loading and multiplayer sync require real in-game validation. Record those separately from automated checks.
 
 - Waves contain one troop type per race/tier. Summon stats live in per-rank custom unit objects, not generic buffs based on the highest unrelated hero skill. Preserve rank 10/20/... summon count milestones.
-- Research effects are cumulative base + increment * (rank - 1): ratx +3 damage, rarm armor, rhpo +10% troop HP, rhpx +3000 barracks HP. Never swap percent and flat HP effects or zero the incremental effect.
-- Keep the 900-unit walled approach to each fortress; run tunnel side-wall and flood-fill tests. MPQ zlib compression must retain Classic format and independently round-trip every file.
+- Research effects are cumulative base + increment * (rank - 1): ratx +3 damage, rarm armor, rhpo +10% troop HP, rhpx +15000 barracks HP. Never swap percent and flat HP effects or zero the incremental effect.
+- Keep the 1600-unit walled approach to each fortress; run tunnel side-wall and flood-fill tests. MPQ zlib compression must retain Classic format and independently round-trip every file.
 
 - The user reported an SFile.cpp:898 out-of-memory crash when opening 0.4.0 in Classic 1.26. Never emit compressed SINGLE_UNIT MPQ files. Use standard 4096-byte sectors with offset tables and zlib masks; verify all sectors and every archived file independently. A successful modern MPQ parse does not prove Classic loading.
 
-- Gates flare from half-width 560 to 920 over 900 units. Preserve wide cross-section, shop access and single-entry WPM tests.
+- Gates flare from half-width 560 to 1200 over 1600 units. Preserve wide cross-section, shop access and single-entry WPM tests.
 - Sanctuary regeneration is 0.15% HP / 0.1% mana per second inside radius 2200, only for the circle owner team, living non-buildings. Do not reintroduce the old fast personal fountain.
-- Each fortress has three shops. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
+- Each fortress has five shops. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
+
+- Combat structures have 30000 base HP and +15000 per tier; towers have 6000 HP. The central neutral fountain uses one shared trigger (1% max HP/mana per second, radius 650, every team, living non-buildings) and no inherited healing ability.
+- Floating gold uses the actual OnDeath reward; create synchronized texttags and change only visibility with GetLocalPlayer. Never award a second bounty or show allied kills.
+- Black Arrow targets include all enemy/neutral ground and air troop categories, including undead mechanical troops; do not reintroduce organic-only filtering. Preserve native skeleton data and test gameplay limits separately.

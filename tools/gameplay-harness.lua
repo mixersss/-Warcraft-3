@@ -165,6 +165,16 @@ function GetTriggerUnit() return Dying end
 function GetKillingUnit() return Killer end
 function AddHeroXP(u,xp) u.xp=(u.xp or 0)+xp end
 function ReviveHero(u,x,y) u.hp=u.max;u.x=x;u.y=y;u.revived=true; return true end
+function GetLocalPlayer() return 0 end
+function CreateTextTag() local tag={};table.insert(GoldTags,tag);return tag end
+function SetTextTagText(t,v,size) t.text=v;t.size=size end
+function SetTextTagPosUnit(t,u,h) t.unit=u end
+function SetTextTagColor(t,r,g,b,a) t.color={r,g,b,a} end
+function SetTextTagVelocity(t,x,y) t.vy=y end
+function SetTextTagPermanent(t,v) t.permanent=v end
+function SetTextTagLifespan(t,v) t.lifespan=v end
+function SetTextTagFadepoint(t,v) t.fadepoint=v end
+function SetTextTagVisibility(t,v) t.visible=v end
 function DisplayTimedTextToPlayer() end
 function DisplayTimedTextToForce() end
 function DialogDisplay(p,d,v) if d then d.visible=v end end
@@ -188,14 +198,17 @@ function BotHero() end
 function reset()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
+    GoldTags={}
     BlockStock,BlockSale=false,false
     InitBalance()
     for t=0,3 do TeamLost[t]=false; Defending[t]=false; RallyX[t]=0;RallyY[t]=0 end
+    for shop=0,19 do
+        local raw=function(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
+        FortressShop[shop]=CreateUnit(15,raw("fs"..(shop%5).."p"),ShopX[shop],ShopY[shop],0);FortressShop[shop].structure=true
+    end
     for p=0,11 do
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
-        local raw=function(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
-        FortressShop[p]=CreateUnit(15,raw("fs"..(p%3).."p"),ShopX[p],ShopY[p],0);FortressShop[p].structure=true
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
@@ -400,7 +413,7 @@ assert(invader.hp==50 and invader.mana==40,'Enemies receive no regeneration')
 assert(outside.hp==50 and Base[0].hp==1000,'Arena units and buildings receive no sanctuary regeneration')
 friend.hp=100;friend.mana=100;RegenerateFortresses();assert(friend.hp==100 and friend.mana==100)
 
--- All hero classes build and upgrade six slots across all three fortress shops.
+-- All hero classes build and upgrade six slots across all five fortress shops.
 for kind=0,HERO_COUNT-1 do
     reset();Bot[0]=true;CreateHero(0,kind);Players[0].gold=100000000
     local first=DesiredGear(0);local target=GearShop[first]
@@ -427,3 +440,24 @@ for slot=0,5 do Hero[0].inventory[slot]={id=0} end
 assert(not BotShop(0) and GearProgress[0]==0 and Players[0].gold==100000,'Full unrelated inventory is preserved')
 reset();Bot[0]=true;AddGold(0,1000)
 assert(GearSavings[0]==500 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
+
+reset()
+-- The shared fountain heals both opposing teams, but no buildings or dead units.
+for _,p in ipairs({0,3,6,9}) do
+    Hero[p].x=100;Hero[p].y=0;Hero[p].hp=50;Hero[p].mana=30
+end
+Hero[1].x=700;Hero[1].y=0;Hero[1].hp=50;Hero[1].mana=30
+Base[0].x=0;Base[0].y=0;Base[0].hp=1000
+Hero[2].x=0;Hero[2].y=0;Hero[2].hp=0
+RegenerateFountain()
+for _,p in ipairs({0,3,6,9}) do assert(Hero[p].hp==51 and Hero[p].mana==31) end
+assert(Hero[1].hp==50 and Base[0].hp==1000 and Hero[2].hp==0)
+
+reset()
+SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
+local gold=Players[0].gold;OnDeath()
+assert(Players[0].gold==gold+8 and #GoldTags==1)
+assert(GoldTags[1].text=='+8' and GoldTags[1].visible and not GoldTags[1].permanent and GoldTags[1].lifespan==1.8)
+SpawnWave(1);Dying=Army[1][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'Allied kills give neither gold nor floating reward')
+Bot[0]=true;SpawnWave(3);Dying=Army[3][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'No cosmetic tag allocation for bot rewards')
+Bot[0]=false;ShowGoldReward(1,Hero[3],10);assert(not GoldTags[2].visible,'Reward is private to its owning player')

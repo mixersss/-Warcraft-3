@@ -23,7 +23,7 @@ MASK = 0xFFFFFFFF
 WALL_RADIUS = 2300
 WALL_HALF_THICKNESS = 96
 GATE_HALF_WIDTH = 560
-TUNNEL_LENGTH = 900
+TUNNEL_LENGTH = 1600
 TUNNEL_FLARE = 0.4
 ENCLOSURES = [(-3904, -3904), (3904, -3904), (3904, 3904), (-3904, 3904)]
 
@@ -91,7 +91,7 @@ def positions() -> list[tuple[int, int]]:
 def shop_positions() -> list[tuple[int,int]]:
     result=[]
     for team in range(4):
-        for x,y in [(-5050,-5100),(-5050,-2450),(-2500,-5000)]:
+        for x,y in [(-5050,-5100),(-5050,-2450),(-2500,-5000),(-4200,-3000),(-3100,-3200)]:
             for _ in range(team): x,y=-y,x
             result.append((x,y))
     return result
@@ -214,22 +214,28 @@ def units(b: dict) -> bytes:
         ('utub', 3, f'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в 16 секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
-        ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, 1200),
+        ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, b['tower_hp']),
         ('ua1b', 0, 24), ('ua1c', 2, 1.0), ('ua1r', 0, 700),
         ('ureq', 3, ''), ('uupt', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, ''),
     ]))
     entries.append(('ngme', 'fshp', [
         ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
-        ('ucol',2,96.0),('ureq',3,''),
+        ('ucol',2,96.0),('ureq',3,''),('uhpm',0,5000),
         ('utub',3,'Общий магазин брони, оружия, сапог, колец и амулетов. Подведи героя к магазину и выбери предмет. Всего 6 мест в инвентаре.'),
     ]))
-    for shop,name in enumerate(['Арсенал','Броня и сила','Лавка магии']):
+    for shop,name in enumerate(['Арсенал','Броня и сила','Лавка магии','Мастерская скорости','Лавка стихий']):
         entries.append(('ngme',f'fs{shop}p',[
             ('unam',3,name),('usei',3,','.join(row['id'] for row in catalog('equipment') if row['shop']==shop)),
-            ('ucol',2,96.0),('ureq',3,''),
+            ('ucol',2,96.0),('ureq',3,''),('uhpm',0,5000),
             ('utub',3,'Сильная экипировка трёх ступеней. Для покупки подведи героя. Улучшенные предметы стоят дороже.'),
         ]))
+    entries.append(('nfoh','ffnt',[
+        ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul'),
+        ('upat',3,''),('ucol',2,64.0),('ureq',3,''),
+        ('utip',3,'Общий фонтан жизни и маны'),
+        ('utub',3,'Восстанавливает 1% максимального HP и маны в секунду героям и отрядам всех команд в радиусе 650. Работает и во время боя.'),
+    ]))
     return objects(entries)
 
 
@@ -249,6 +255,7 @@ def misc(b: dict) -> bytes:
     return (f'[Misc]\nMaxHeroLevel={b["hero_max_level"]}\nHeroAbilityLevelSkip=1\n'
             'HeroFactorXP=100,100,100,100,100\n'
             'StrHitPointBonus=30\nIntManaBonus=18\n'
+            'MaxUnitSpeed=480\n'
             'NeedHeroXP=200\nNeedHeroXPFormulaA=1.0\nNeedHeroXPFormulaB=100\nNeedHeroXPFormulaC=0\n').encode('ascii')
 
 
@@ -282,10 +289,11 @@ def upgrades(b: dict) -> bytes:
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
+    generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}']
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',

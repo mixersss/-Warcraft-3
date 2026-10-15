@@ -34,7 +34,7 @@ const ItemParser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
 const itemData=new ItemParser();itemData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3t'))));
 run('EngineItems={'+itemData.customTable.objects.map(o=>`[${raw(o.newId)}]={cost=${get(o,'igol')}}`).join(',')+'}');
 const unitsData=new ItemParser();unitsData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3u'))));
-run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-2]p$/.test(o.newId)).map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
+run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId)).map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
 const abilities = parseObjects('war3map.w3a').originalTable.objects;
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.oldId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
