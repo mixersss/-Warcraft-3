@@ -551,7 +551,7 @@ Players[2].slot=PLAYER_SLOT_STATE_PLAYING
 Players[3].slot=PLAYER_SLOT_STATE_PLAYING;Players[3].controller=MAP_CONTROL_COMPUTER
 Players[5].slot=PLAYER_SLOT_STATE_LEFT
 Players[7].slot=PLAYER_SLOT_STATE_PLAYING
-for p=0,11 do InitSlot(p) end
+for p=0,11 do InitSlot(p);EnsureBotHero(p) end
 assert(HostPlayer==2,'First occupied human slot controls mode, not always red')
 for p=0,11 do
  if p==2 or p==3 or p==7 then
@@ -598,3 +598,12 @@ for _,u in ipairs(World) do assert(u.owner==15 or u.owner==2 or u.owner==3 or u.
 Dying=Base[7];Killer=Hero[2];Dying.hp=0;OnDeath();assert(TeamLost[2] and not Finished)
 Dying=Base[3];Dying.hp=0;OnDeath();assert(TeamLost[1] and Finished and Players[2].victory)
 for p=0,11 do if not SlotActive[p] then assert(not Players[p].victory and not Players[p].defeat,'No outcome UI for unoccupied slots') end end
+
+
+-- A computer gets a random hero without visiting any selection building.
+reset();Bot[3]=true;Hero[3]=nil;Seconds=0;RngQueue={27}
+Tick();assert(HeroKind[3]==27 and Alive(Hero[3]) and HeroPicker[3]==nil)
+local assigned=Hero[3];Tick();assert(Hero[3]==assigned,'Do not reroll existing bot heroes')
+Hero[3].hp=0;EnsureBotHero(3);assert(Hero[3]==assigned,'Dead heroes retain their revival identity')
+Hero[3]=nil;Lost[3]=true;EnsureBotHero(3);assert(Hero[3]==nil,'Never fill an inactive slot')
+reset();local human=Hero[0];EnsureBotHero(0);assert(Hero[0]==human,'Human choice is untouched')

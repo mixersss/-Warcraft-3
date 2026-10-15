@@ -343,6 +343,19 @@ function AssignBotChoices takes integer p returns nothing
     call CreateHero(p, GetRandomInt(0, HERO_COUNT-1))
 endfunction
 
+// Computer heroes are created by the first game tick, independently of UI.
+function EnsureBotHero takes integer p returns nothing
+    if Bot[p] and SlotActive[p] and not Lost[p] and Alive(Base[p]) then
+        if Hero[p] == null or GetUnitTypeId(Hero[p]) == 0 then
+            call CreateHero(p, GetRandomInt(0, HERO_COUNT-1))
+            // Keep a playable stock fallback if a custom object fails to load.
+            if Hero[p] == null then
+                call CreateHero(p, GetRandomInt(0, 23))
+            endif
+        endif
+    endif
+endfunction
+
 function SelectArmyRace takes integer p, integer choice returns boolean
     if AllRandomMode or Seconds >= WARMUP_SECONDS or choice < 0 or choice > 3 or Lost[p] then
         call Tell(p, "Расу армии можно выбрать только до первого спавна.")
@@ -499,7 +512,7 @@ function OnHeroPick takes nothing returns nothing
     local unit token = GetTrainedUnit()
     local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
     local integer k = 0
-    if p < 12 and GetTriggerUnit() == HeroPicker[p] then
+    if p < 12 and not Bot[p] and GetTriggerUnit() == HeroPicker[p] then
         loop
             exitwhen k == HERO_COUNT or GetUnitTypeId(token) == PickToken[k]
             set k = k+1
@@ -516,7 +529,7 @@ endfunction
 function OnPickerSpell takes nothing returns nothing
     local integer p = GetPlayerId(GetOwningPlayer(GetTriggerUnit()))
     local integer spell = GetSpellAbilityId()
-    if p >= 12 or GetTriggerUnit() != HeroPicker[p] then
+    if p >= 12 or Bot[p] or GetTriggerUnit() != HeroPicker[p] then
         return
     endif
     if spell == 'Fprv' then
@@ -1194,6 +1207,7 @@ function Tick takes nothing returns nothing
         endif
         if not Lost[p] then
             if Alive(Base[p]) then
+                call EnsureBotHero(p)
                 if Seconds > WARMUP_SECONDS then
                     call AddGold(p, INCOME_PER_SECOND)
                     set SpawnClock[p] = SpawnClock[p]+1
@@ -1329,7 +1343,7 @@ function InitSlot takes integer p returns nothing
     call TriggerRegisterUnitEvent(BaseDefenseTrigger, Base[p], EVENT_UNIT_DAMAGED)
     call TriggerRegisterUnitEvent(BaseDefenseTrigger, Bastion[p], EVENT_UNIT_DAMAGED)
     if Bot[p] then
-        call AssignBotChoices(p)
+        set ArmyRace[p] = GetRandomInt(0, 3)
     else
         call CreateHero(p, 0)
     endif
