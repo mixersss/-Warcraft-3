@@ -115,3 +115,10 @@ for along in range(1550,5800,64):
     for x,y in [(0,along),(0,-along),(along,0),(-along,0)]:
         assert data[16+cell(x,y)]&6==6
 print('PASS: Every inter-team path crosses the central arena; no outer ground/flying bypass.')
+for team in range(4):
+    sx,sy=-5100,-3100
+    for _ in range(team):sx,sy=-sy,sx
+    for dx in [-96,0,96]:
+        for dy in [-96,0,96]:assert cell(sx+dx,sy+dy) in accessible,('Supreme shop access',team)
+for sx,sy in [(0,-640),(-160,-640),(160,-640)]:assert cell(sx,sy) in accessible
+print('PASS: New supreme shops and central potion shop are reachable.')

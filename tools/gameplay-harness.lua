@@ -219,6 +219,9 @@ function reset()
     Seconds,Finished = 0,false
     AutosaveCount=0
     HeroQueueCursor=0
+    for team=0,3 do
+      SupremeShop[team]=CreateUnit(15,FourCC('fsup'),SuperX[team],SuperY[team],0);SupremeShop[team].structure=true
+    end
     for idx=0,CORPSE_SECONDS do CorpseRing[idx]={} end
     HostPlayer,AllRandomMode,ModeDialogOpen=0,false,false
     GoldTags={}
@@ -235,6 +238,7 @@ function reset()
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
         BotThinkTrigger[p]={actions={BotThink}}
         HeroQueued[p],HeroLearnQueued[p],ScheduledHero[p]=false,false,0
+        SuperProgress[p],ShoppingUntil[p]=0,0
         TierSavings[p]=0
         SlotActive[p]=true
         HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
@@ -245,7 +249,7 @@ function reset()
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
         Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);Hero[p].hero=true;SkillLevel[p]=1
-        Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=60000;Bastion[p].max=60000;Bastion[p].paused=true
+        Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=78000;Bastion[p].max=78000;Bastion[p].paused=true
     end
 end
 
@@ -286,7 +290,7 @@ Hero[0].x=Dying.x;Hero[0].y=Dying.y
 Dying.hp=0
 local gold=Players[0].gold
 OnDeath()
-assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+8 and Kills[0]==1)
+assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+12 and Kills[0]==1)
 assert(Hero[0].xp==8,'Manual reward XP is reduced from 16 to 8 for an 8-gold kill')
 SpawnWave(3)
 assert(#Army[3]==ARMY_CAP)
@@ -303,7 +307,7 @@ for second=1,18000 do
     if second%5==0 then BotBuy(0);FinishResearch(0) end
     assert(Players[0].gold>=0 and Players[0].gold<=STARTING_GOLD+income)
 end
-assert(Tier[0]==4 and Attack[0]>0 and Armor[0]>0 and Vitality[0]>0)
+assert(Tier[0]==4 and Attack[0]>0 and Armor[0]>0 and Vitality[0]>0, 'tier='..Tier[0]..' research='..Attack[0]..'/'..Armor[0]..'/'..Vitality[0]..' gold='..Players[0].gold..' tier savings='..TierSavings[0])
 -- A large test-only budget verifies all 600 troop research ranks are reachable.
 Players[0].gold=100000000
 for n=1,1000 do BotBuy(0);FinishResearch(0) end
@@ -463,7 +467,21 @@ for kind=0,HERO_COUNT-1 do
         assert(HeroItem(Hero[0],GearId[index]))
     end
     local count=0;for slot=0,5 do if UnitItemInSlot(Hero[0],slot) then count=count+1 end end
-    assert(count==6 and not BotShop(0),'Six final items, no infinite duplicate buying')
+    assert(count==6 and SuperProgress[0]==0,'Six regular items before supreme purchases')
+    Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
+    for step=0,5 do
+        local choice=DesiredSuper(0);local before=Players[0].gold
+        local cheapest=math.huge
+        for slot=0,5 do
+            local price=RegularGearCost(GetItemTypeId(UnitItemInSlot(Hero[0],slot)))
+            if price>0 then cheapest=math.min(cheapest,price) end
+        end
+        assert(BotShop(0) and SuperProgress[0]==step+1,'Every hero buys supreme gear through the native shop')
+        assert(Players[0].gold==before-SuperCost[choice]+math.floor(cheapest/2),'Full supreme price and regular resale apply once')
+        assert(HeroItem(Hero[0],SuperId[choice]))
+    end
+    assert(SuperBuild[kind*6]==HeroPrimary[kind],'Primary stat first')
+    assert(not BotShop(0),'Stop after six unique supreme items')
 end
 reset();Bot[0]=true;Players[0].gold=100000
 local index=DesiredGear(0);local shop=GearShop[index]
@@ -478,8 +496,8 @@ assert(math.floor(GearSavings[0])==333 and Players[0].gold==STARTING_GOLD+1000,'
 reset()
 SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
 local gold=Players[0].gold;OnDeath()
-assert(Players[0].gold==gold+8 and #GoldTags==1)
-assert(GoldTags[1].text=='+8' and GoldTags[1].visible and not GoldTags[1].permanent and GoldTags[1].lifespan==1.8)
+assert(Players[0].gold==gold+12 and #GoldTags==1)
+assert(GoldTags[1].text=='+12' and GoldTags[1].visible and not GoldTags[1].permanent and GoldTags[1].lifespan==1.8)
 SpawnWave(1);Dying=Army[1][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'Allied kills give neither gold nor floating reward')
 Bot[0]=true;SpawnWave(3);Dying=Army[3][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'No cosmetic tag allocation for bot rewards')
 Bot[0]=false;ShowGoldReward(1,Hero[3],10);assert(not GoldTags[2].visible,'Reward is private to its owning player')
@@ -488,7 +506,7 @@ reset()
 -- Destroying a vulnerable bastion pays once, without destroying its barracks.
 Dying=Bastion[3];Killer=Hero[0];Dying.hp=0
 local gold=Players[0].gold;OnDeath()
-assert(Players[0].gold==gold+250 and Alive(Base[3]) and not TeamLost[1])
+assert(Players[0].gold==gold+375 and Alive(Base[3]) and not TeamLost[1])
 for second=1,120 do Tick() end
 assert(not Alive(Bastion[3]),'Bastions never respawn')
 
@@ -715,3 +733,42 @@ assert(Hero[0]==chosen and HeroKind[0]==2,'Queued defaults never overwrite a hum
 reset();Hero[3]=nil;Bot[3]=true;QueueHero(3,27);Lost[3]=true
 for step=1,24 do ProcessHeroQueue() end
 assert(Hero[3]==nil and not HeroQueued[3],'Inactive slots stay empty while work is queued')
+
+-- All troop parameters and all four base tiers keep progressing together.
+reset();Bot[0]=true;Players[0].gold=100000000
+for n=1,250 do
+ BotBuy(0);FinishResearch(0)
+ assert(Vitality[0]>=Attack[0]-1 and Vitality[0]>=Armor[0]-1,'Health research stays in the regular rotation')
+end
+assert(Tier[0]==4 and Attack[0]>50 and Armor[0]>50 and Vitality[0]>50)
+
+-- Extra kill gold does not increase experience a second time.
+reset();Dying=Hero[3];Dying.hp=0;Killer=Hero[0];Hero[0].x=Dying.x;Hero[0].y=Dying.y
+local before=Players[0].gold;OnDeath()
+assert(Players[0].gold==before+172 and Hero[0].xp==115,'Level-1 hero: 115 base reward -> 172 gold, 115 supplemental XP')
+
+-- Supreme purchases respect stock and preserve unrelated player inventory.
+reset();Bot[0]=true;GearProgress[0]=18;Players[0].gold=100000
+Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
+BlockStock=true;BotShop(0)
+assert(SuperProgress[0]==0 and Players[0].gold==100000 and UnitItemInSlot(Hero[0],0)==nil)
+BlockStock=false
+for slot=0,5 do Hero[0].inventory[slot]={id=9000+slot} end
+assert(not BotShop(0) and SuperProgress[0]==0 and Players[0].gold==100000)
+
+-- A funded supreme target is protected from research spending until a real purchase.
+reset();Bot[0]=true;GearProgress[0]=18;GearSavings[0]=60000;Players[0].gold=60000
+assert(not BotResearch(0,0) and Players[0].gold==60000)
+Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
+assert(BotShop(0) and SuperProgress[0]==1 and Players[0].gold==0)
+
+-- Trips to the distant shop persist beyond the initial 15s purchase window.
+reset();Bot[0]=true;CreateHero(0,0);GearProgress[0]=18;Players[0].gold=100000;Seconds=90
+Hero[0].x=0;Hero[0].y=0
+assert(TryBotShopping(0) and ShoppingUntil[0]==135)
+Seconds=110;assert(TryBotShopping(0) and Hero[0].order[1]=='move')
+Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
+assert(TryBotShopping(0) and SuperProgress[0]==1 and ShoppingUntil[0]==0)
+reset();Bot[0]=true;CreateHero(0,12);GearProgress[0]=18;SuperProgress[0]=3
+Hero[0].agi=250;assert(DesiredSuper(0)==2,'Agility hero avoids buying attack speed already supplied by agility')
+CreateHero(0,0);Hero[0].agi=250;assert(DesiredSuper(0)==1,'Strength hero can replace redundant attack speed with useful agility')

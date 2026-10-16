@@ -1,4 +1,4 @@
-"""Five fortress shops and item effects supported by the Classic API."""
+"""Fortress and supreme shops and item effects supported by the Classic API."""
 import json
 from pathlib import Path
 
@@ -17,7 +17,7 @@ EFFECTS={
 
 def item_effects(root):
     abilities=[]; item_abilities={}
-    for row in json.loads((Path(root)/'map/equipment.json').read_text()):
+    for row in json.loads((Path(root)/'map/equipment.json').read_text())+json.loads((Path(root)/'map/supreme.json').read_text()):
         ids=[]
         for stat,value in row['stats'].items():
             if stat=='critical_multiplier': continue
@@ -30,3 +30,13 @@ def item_effects(root):
             abilities.append((base,raw,changes))
         item_abilities[row['id']]=','.join(ids)
     return abilities,item_abilities
+
+
+def potion_abilities(root):
+    result=[]
+    for row in json.loads((Path(root)/'map/potions.json').read_text()):
+        if 'base_ability' not in row: continue
+        result.append((row['base_ability'],row['ability'],[
+            ('alev',0,1),('aher',0,0),('aite',0,1),(row['field'],0,row['amount'],1,1),('acdn',2,30.0,1,0),
+            ('atp1',3,row['name'],1,0),('aub1',3,row['description'],1,0)]))
+    return result

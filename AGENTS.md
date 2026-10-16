@@ -15,20 +15,20 @@
 - Hero spell use, pathfinding, loading and multiplayer sync require real in-game validation. Record those separately from automated checks.
 
 - Waves contain one troop type per race/tier. Summon stats live in per-rank custom unit objects, not generic buffs based on the highest unrelated hero skill. Preserve rank 10/20/... summon count milestones.
-- Research effects are cumulative base + increment * (rank - 1): ratx +6 damage, rarm +2 armor through unit udup=2, rhpo +20% troop HP, rhpx +15000 barracks HP. Never swap percent and flat HP effects or zero the incremental effect.
+- Research effects are cumulative base + increment * (rank - 1): ratx +9 damage, rarm +3 armor through unit udup=3, rhpo +30% troop HP, rhpx +19500 barracks HP. Never swap percent and flat HP effects or zero the incremental effect.
 - Keep the 1600-unit walled approach to each fortress; run tunnel side-wall and flood-fill tests. MPQ zlib compression must retain Classic format and independently round-trip every file.
 
 - The user reported an SFile.cpp:898 out-of-memory crash when opening 0.4.0 in Classic 1.26. Never emit compressed SINGLE_UNIT MPQ files. Use standard 4096-byte sectors with offset tables and zlib masks; verify all sectors and every archived file independently. A successful modern MPQ parse does not prove Classic loading.
 
 - Gates flare from half-width 560 to 1200 over 1600 units. Preserve wide cross-section, shop access and single-entry WPM tests.
 - Sanctuary regeneration is 0.15% HP / 0.1% mana per second inside radius 2200, only for the circle owner team, living non-hero non-buildings. Do not reintroduce the old fast personal fountain.
-- Each fortress has five shops. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
+- Each fortress has five regular shops plus one supreme shop; the arena also has an equipment shop and a separate potion shop. Equipment definitions and effects are in map/equipment.json and tools/equipment.py. Bots reserve real income, travel to shops, select their buyer, buy through native neutral orders and sell old tiers through UnitDropItemTarget. Never grant free items or gold or destroy unrelated inventory. Preserve six slots and native stock/prices.
 
-- Combat structures have 30000 base HP and +15000 per tier; towers have 6000 HP. The central neutral fountain uses two native Classic regeneration auras: FfHP/ACnr and FfMP/ANre. Each restores 1.5% of max pool per second, radius 1000, heroes of every team, with no organic or alliance restriction. Do not reintroduce the removed trigger regeneration or double healing.
+- Combat structures have 39000 base HP and +19500 per tier; towers have 7800 HP. The central neutral fountain uses two native Classic regeneration auras: FfHP/ACnr and FfMP/ANre. Each restores 1.5% of max pool per second, radius 1000, heroes of every team, with no organic or alliance restriction. Do not reintroduce the removed trigger regeneration or double healing.
 - Floating gold uses the actual OnDeath reward; create synchronized texttags and change only visibility with GetLocalPlayer. Never award a second bounty or show allied kills.
 - Black Arrow targets include all enemy/neutral ground and air troop categories, including undead mechanical troops; do not reintroduce organic-only filtering. Preserve native skeleton data and test gameplay limits separately.
 
-- Each barracks has an additional vulnerable, non-regenerating 60000 HP bastion (700 base damage, 24 armor, 1000 range, 0.75-second attacks). Preserve existing guard towers and test bastion footprint clearance. Bastions never respawn.
+- Each barracks has an additional vulnerable, non-regenerating 78000 HP bastion (700 base damage, 24 armor, 1000 range, 0.75-second attacks). Preserve existing guard towers and test bastion footprint clearance. Bastions never respawn.
 - Experience multiplier is 0.50: keep native creep factors, native hero grants/formula and supplemental OnDeath XP consistent. Waves are every 12 seconds.
 - Every roster hero has six unique gear_families chosen for its gear_role. Do not add redundant critical strike to native crit heroes, lifesteal masks to Dreadlord or orb-arrow users, or force the same primary-stat loadout on every hero. Verify real purchases/upgrades for all 36 profiles.
 
@@ -49,3 +49,7 @@
 - Keep bot thinking in per-player static trigger threads and stagger army updates; a shared large combat Tick can exceed the Classic JASS operation limit even without a memory leak. No timer/trigger creation per unit or think invocation.
 
 - Startup optimizations must preserve all non-tooltip W3A fields, living unit quantities, hero availability and the 30s native autosave. Do not promise background/nonblocking native CreateUnit or SaveGame in Classic. The first 60s are intentional preparation, with UI/camera responsive.
+
+- 0.10 balance: kill gold is floor(base bounty * 1.5), while supplemental XP uses the original base bounty. Start/passive income are unchanged. Permanent buildings have +30% HP; troop upgrades are +9 damage/+3 armor/+30% base HP per rank. Bots keep all three troop stats within one rank while advancing base tiers; protect funded tier and gear reserves together so neither causes a spending deadlock.
+- Supreme items live in map/supreme.json (7), consumables in map/potions.json (4). BotSupremeShop uses six role-based choices after regular tier III, ordinary native purchases/sales and six inventory slots. Only sell known regular equipment; preserve unrelated items and already-owned supreme items. Do not buy redundant attack speed once agility already reaches its cap. A started shopping trip may continue up to 45s past the 15s start window; reset the trip after purchase.
+- OFFENSIVE_SKILLS in tools/progression.py get 1.5x positive cooldowns at every rank; custom copies inherit them. Preserve all other skill fields. Do not multiply passive/toggle/support cooldowns. Keep staged hero creation and 30s native autosave intact.

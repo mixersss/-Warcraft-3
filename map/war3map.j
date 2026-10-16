@@ -73,6 +73,10 @@ globals
     trigger ResearchTrigger = null
     trigger LevelTrigger = null
     integer array SkillLevel
+    unit PotionShop = null
+    unit array SupremeShop
+    integer array ShoppingUntil
+    integer array SuperProgress
     unit EquipmentShop = null
     unit Fountain = null
     unit array FortressShop
@@ -116,7 +120,7 @@ function AddGold takes integer p, integer amount returns nothing
     if Bot[p] and Tier[p] < 4 and amount > 0 then
         set TierSavings[p] = TierSavings[p]+amount/4
     endif
-    if Bot[p] and GearProgress[p] < 18 then
+    if Bot[p] and (GearProgress[p] < 18 or SuperProgress[p] < 6) and amount > 0 then
         set GearSavings[p] = GearSavings[p]+amount/3
     endif
 endfunction
@@ -219,11 +223,11 @@ endfunction
 
 function UpgradeName takes integer kind returns string
     if kind == 0 then
-        return "Атака армии +6"
+        return "Атака армии +9"
     elseif kind == 1 then
-        return "Броня армии +2"
+        return "Броня армии +3"
     elseif kind == 2 then
-        return "Здоровье армии +20%"
+        return "Здоровье армии +30%"
     elseif kind == 3 then
         return "Развитие казармы"
     elseif kind == 4 then
@@ -756,6 +760,91 @@ function HeroItem takes unit h, integer id returns item
     return null
 endfunction
 
+function DesiredSuper takes integer p returns integer
+    local integer choice = SuperBuild[HeroKind[p]*6+SuperProgress[p]]
+    // Do not waste the attack-speed purchase when agility already reaches the cap.
+    if choice == 4 and GetHeroAgi(Hero[p],true) >= 200 then
+        if HeroPrimary[HeroKind[p]] == 1 then
+            return 2
+        endif
+        return 1
+    endif
+    return choice
+endfunction
+
+function RegularGearCost takes integer raw returns integer
+    local integer k = 0
+    loop
+        exitwhen k == 36
+        if GearId[k] == raw then
+            return GearCost[k]
+        endif
+        set k = k+1
+    endloop
+    return 0
+endfunction
+
+function BotSupremeShop takes integer p returns boolean
+    local integer choice
+    local integer team = TeamOf(p)
+    local integer slot = 0
+    local integer price
+    local integer cheapest = 2147480000
+    local boolean room = false
+    local unit h = Hero[p]
+    local item old = null
+    local item candidate = null
+    if SuperProgress[p] >= 6 or not Alive(h) or UnitInventorySize(h) < 6 then
+        set h = null
+        return false
+    endif
+    set choice = DesiredSuper(p)
+    if HeroItem(h, SuperId[choice]) != null then
+        set SuperProgress[p] = SuperProgress[p]+1
+        set GearSavings[p] = IMaxBJ(0, GearSavings[p]-SuperCost[choice])
+        set h = null
+        return false
+    endif
+    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) < SuperCost[choice] then
+        set h = null
+        return false
+    endif
+    if DistanceSq(GetUnitX(h),GetUnitY(h),SuperX[team],SuperY[team]) > 160000 then
+        call IssuePointOrder(h,"move",SuperX[team],SuperY[team])
+        set h = null
+        return true
+    endif
+    loop
+        exitwhen slot == 6
+        set candidate = UnitItemInSlot(h,slot)
+        if candidate == null then
+            set room = true
+        else
+            set price = RegularGearCost(GetItemTypeId(candidate))
+            if price > 0 and price < cheapest then
+                set old = candidate
+                set cheapest = price
+            endif
+        endif
+        set slot = slot+1
+    endloop
+    if not room and old != null then
+        set room = UnitDropItemTarget(h,old,SupremeShop[team])
+    endif
+    if room then
+        call IssueNeutralTargetOrder(Player(p),SupremeShop[team],"neutralinteract",h)
+        call IssueNeutralImmediateOrderById(Player(p),SupremeShop[team],SuperId[choice])
+        if HeroItem(h,SuperId[choice]) != null then
+            set SuperProgress[p] = SuperProgress[p]+1
+            set GearSavings[p] = IMaxBJ(0,GearSavings[p]-SuperCost[choice])
+        endif
+    endif
+    set candidate = null
+    set old = null
+    set h = null
+    return room
+endfunction
+
 function BotShop takes integer p returns boolean
     local integer index
     local integer shopIndex
@@ -763,7 +852,11 @@ function BotShop takes integer p returns boolean
     local boolean room = false
     local item old = null
     local unit h = Hero[p]
-    if GearProgress[p] >= 18 or not Alive(h) or UnitInventorySize(h) < 6 then
+    if GearProgress[p] >= 18 then
+        set h = null
+        return BotSupremeShop(p)
+    endif
+    if not Alive(h) or UnitInventorySize(h) < 6 then
         set h = null
         return false
     endif
@@ -812,13 +905,36 @@ function BotShop takes integer p returns boolean
     return room
 endfunction
 
+function TryBotShopping takes integer p returns boolean
+    local integer previousGear = GearProgress[p]
+    local integer previousSuper = SuperProgress[p]
+    if ModuloInteger(Seconds+p*3,90) >= 15 and ShoppingUntil[p] <= Seconds then
+        return false
+    endif
+    if not BotShop(p) then
+        set ShoppingUntil[p] = 0
+        return false
+    endif
+    if GearProgress[p] != previousGear or SuperProgress[p] != previousSuper then
+        set ShoppingUntil[p] = 0
+    elseif ShoppingUntil[p] <= Seconds then
+        set ShoppingUntil[p] = Seconds+45
+    endif
+    return true
+endfunction
+
 function BotResearch takes integer p, integer kind returns boolean
     local integer reserve = 0
     if GearProgress[p] < 18 then
         set reserve = IMinBJ(IMinBJ(GearSavings[p], GearCost[DesiredGear(p)]), GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)/4)
+    elseif SuperProgress[p] < 6 then
+        set reserve = IMinBJ(GearSavings[p], SuperCost[DesiredSuper(p)])
+        if GearSavings[p] < SuperCost[DesiredSuper(p)] then
+            set reserve = IMinBJ(reserve,GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)/4)
+        endif
     endif
     if kind < 3 and Tier[p] < 4 and TierSavings[p] >= TierCost[Tier[p]+1] then
-        set reserve = IMaxBJ(reserve, TierCost[Tier[p]+1])
+        set reserve = reserve+TierCost[Tier[p]+1]
     endif
     if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-UpgradeCost(p, kind) >= reserve then
         return Buy(p, kind)
@@ -838,15 +954,15 @@ function BotBuy takes integer p returns nothing
             return
         endif
     endif
-    // If a base tier is too expensive, continue affordable troop research.
-    if Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p]*2 and Attack[p] <= Vitality[p]*2 then
-        call BotResearch(p, 0)
-    elseif Armor[p] < UPGRADE_MAX and Armor[p] <= Vitality[p] then
-        call BotResearch(p, 1)
+    // Rotate all troop parameters; health may never fall behind damage/armor.
+    if Vitality[p] < UPGRADE_MAX and (Vitality[p] < Attack[p] or Vitality[p] < Armor[p]) then
+        call BotResearch(p,2)
+    elseif Attack[p] < UPGRADE_MAX and Attack[p] <= Armor[p] then
+        call BotResearch(p,0)
+    elseif Armor[p] < UPGRADE_MAX then
+        call BotResearch(p,1)
     elseif Vitality[p] < UPGRADE_MAX then
-        call BotResearch(p, 2)
-    elseif Attack[p] < UPGRADE_MAX then
-        call BotResearch(p, 0)
+        call BotResearch(p,2)
     elseif Tier[p] < 4 then
         call BotResearch(p, 3)
     elseif Power[p] < 10 then
@@ -960,7 +1076,7 @@ function BotHero takes integer p returns nothing
         set enemy = null
         return
     endif
-    if enemy == null and ModuloInteger(Seconds+p*3, 90) < 15 and BotShop(p) then
+    if enemy == null and TryBotShopping(p) then
         set h = null
         set enemy = null
         return
@@ -1090,6 +1206,7 @@ function OnDeath takes nothing returns nothing
     local integer p = GetPlayerId(GetOwningPlayer(dead))
     local integer k = -1
     local integer reward = 0
+    local integer goldReward = 0
     if Finished or p >= 12 then
         set dead = null
         set killer = null
@@ -1116,8 +1233,9 @@ function OnDeath takes nothing returns nothing
         call GroupRemoveUnit(Army[p], dead)
     endif
     if k >= 0 and k < 12 and TeamOf(k) != TeamOf(p) and reward > 0 then
-        call AddGold(k, reward)
-        call ShowGoldReward(k, dead, reward)
+        set goldReward = R2I(I2R(reward)*KILL_GOLD_MULTIPLIER)
+        call AddGold(k, goldReward)
+        call ShowGoldReward(k, dead, goldReward)
         set Kills[k] = Kills[k]+1
         // Nearby hero receives additional deterministic experience even above melee level 5.
         if Alive(Hero[k]) and DistanceSq(GetUnitX(Hero[k]), GetUnitY(Hero[k]), GetUnitX(dead), GetUnitY(dead)) < 1440000 then
@@ -1173,6 +1291,12 @@ function OnChat takes nothing returns nothing
     elseif command == "-items" then
         call SelectUnitForPlayerSingle(EquipmentShop, Player(p))
         call PanCameraToTimedForPlayer(Player(p), 0, 640, 0.25)
+    elseif command == "-supreme" then
+        call SelectUnitForPlayerSingle(SupremeShop[TeamOf(p)],Player(p))
+        call PanCameraToTimedForPlayer(Player(p),SuperX[TeamOf(p)],SuperY[TeamOf(p)],0.25)
+    elseif command == "-potions" then
+        call SelectUnitForPlayerSingle(PotionShop,Player(p))
+        call PanCameraToTimedForPlayer(Player(p),0,-640,0.25)
     elseif command == "-power" then
         call Buy(p, 4)
     elseif command == "-heal" then
@@ -1424,7 +1548,7 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё пять магазинов сильной экипировки. В центре — общий фонтан жизни и маны.")
+        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё пять обычных магазинов и Сокровищница титанов (-supreme). Зелья: -potions. В центре — общий фонтан жизни и маны.")
         set p = 0
         loop
             exitwhen p == 12
@@ -1450,7 +1574,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 6 damage and armor adds 2 per rank. HP research adds 20% of base HP per rank. Barracks tiers strengthen future waves and give +15000 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five shops and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 60000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots buy hero-specific equipment.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 9 damage and armor adds 3 per rank. HP research adds 30% of base HP per rank. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots buy hero-specific equipment.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
@@ -1460,7 +1584,7 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Full native autosave every 30 seconds, same name: FFFAutosave. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%, offensive spell cooldowns +50%. -supreme selects high-end equipment; -potions selects central consumables. Full native autosave every 30 seconds, same name: FFFAutosave. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1522,6 +1646,10 @@ function InitSlot takes integer p returns nothing
     set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, HomeX[p], HomeY[p], 1200, true, false)
     call FogModifierStart(fog)
     set fog = CreateFogModifierRadius(Player(p), FOG_OF_WAR_VISIBLE, 0, 640, 700, true, false)
+    call FogModifierStart(fog)
+    set fog = CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,SuperX[t],SuperY[t],500,true,false)
+    call FogModifierStart(fog)
+    set fog = CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,0,-640,500,true,false)
     call FogModifierStart(fog)
     set j = 0
     loop
@@ -1602,6 +1730,15 @@ function InitGame takes nothing returns nothing
         call SetUnitInvulnerable(FortressShop[p], true)
         set p = p+1
     endloop
+    set p = 0
+    loop
+        exitwhen p == 4
+        set SupremeShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fsup',SuperX[p],SuperY[p],270)
+        call SetUnitInvulnerable(SupremeShop[p],true)
+        set p = p+1
+    endloop
+    set PotionShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fpot',0,-640,270)
+    call SetUnitInvulnerable(PotionShop,true)
     set p = 0
     call SetTimeOfDay(12)
     call SetTimeOfDayScale(0)

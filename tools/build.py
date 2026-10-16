@@ -13,7 +13,7 @@ from pathlib import Path
 import struct
 import zlib
 from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability
-from equipment import item_effects
+from equipment import item_effects, potion_abilities
 from hero_picker import units as picker_units, controls as picker_controls
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +100,15 @@ def shop_positions() -> list[tuple[int,int]]:
         for x,y in [(-5050,-5100),(-5050,-2450),(-2500,-5000),(-4200,-3000),(-3100,-3200)]:
             for _ in range(team): x,y=-y,x
             result.append((x,y))
+    return result
+
+
+def supreme_positions() -> list[tuple[int,int]]:
+    result=[]
+    for team in range(4):
+        x,y=-5100,-3100
+        for _ in range(team):x,y=-y,x
+        result.append((x,y))
     return result
 
 
@@ -246,25 +255,35 @@ def units(b: dict) -> bytes:
     ]))
     entries.append(('ngme', 'fshp', [
         ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
-        ('ucol',2,96.0),('ureq',3,''),('uhpm',0,5000),
+        ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
         ('utub',3,'Общий магазин брони, оружия, сапог, колец и амулетов. Подведи героя к магазину и выбери предмет. Всего 6 мест в инвентаре.'),
     ]))
     for shop,name in enumerate(['Арсенал','Броня и сила','Лавка магии','Мастерская скорости','Лавка стихий']):
         entries.append(('ngme',f'fs{shop}p',[
             ('unam',3,name),('usei',3,','.join(row['id'] for row in catalog('equipment') if row['shop']==shop)),
-            ('ucol',2,96.0),('ureq',3,''),('uhpm',0,5000),
+            ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
             ('utub',3,'Сильная экипировка трёх ступеней. Для покупки подведи героя. Улучшенные предметы стоят дороже.'),
         ]))
     entries.append(('nfoh','ffnt',[
-        ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul,FfHP,FfMP'),
+        ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,b['shop_hp']),('uabi',3,'Avul,FfHP,FfMP'),
         ('upat',3,''),('ucol',2,64.0),('ureq',3,''),
         ('utip',3,'Общий фонтан жизни и маны'),
         ('utub',3,f'Штатные ауры фонтана восстанавливают {b["fountain_hp_percent"]*100:g}% максимального HP и {b["fountain_mana_percent"]*100:g}% маны в секунду всем героям в радиусе {b["fountain_radius"]}, включая врагов и Нежить. Работает во время боя.'),
     ]))
     entries.append(('nfoh','fbfn',[
-        ('unam',3,'Союзный фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul,FbHP,FbMP'),
+        ('unam',3,'Союзный фонтан жизни и маны'),('uhpm',0,b['shop_hp']),('uabi',3,'Avul,FbHP,FbMP'),
         ('upat',3,''),('ucol',2,48.0),('ureq',3,''),('utip',3,'Союзный фонтан'),
         ('utub',3,'Восстанавливает союзным героям рядом 0,5% максимального HP и маны в секунду. Радиус 1200.'),
+    ]))
+    entries.append(('ngme','fsup',[
+        ('unam',3,'Сокровищница титанов'),('usei',3,','.join(row['id'] for row in catalog('supreme'))),
+        ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
+        ('utub',3,'Высшая экипировка: огромные бонусы за 55000–60000 золота. Подведи героя, шесть мест в инвентаре.'),
+    ]))
+    entries.append(('ngme','fpot',[
+        ('unam',3,'Аптека арены'),('usei',3,','.join(row['id'] for row in catalog('potions'))),
+        ('ucol',2,64.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
+        ('utub',3,'Одноразовые зелья здоровья, маны, скорости и невидимости.'),
     ]))
     originals=[(hero['id'],'\0'*4,[('uhab',3,','.join(hero['skills']+['Fatr']))]) for hero in catalog('heroes') if 'base' not in hero]
     return objects(entries,original_entries=originals)
@@ -288,7 +307,7 @@ def fountain_abilities(b: dict) -> list:
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability(), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -296,7 +315,7 @@ def items() -> bytes:
     return objects([(row['base'],row['id'],[
         ('unam',3,row['name']),('utip',3,row['name']),('utub',3,row['description']),
         ('igol',0,row['cost']),('ilum',0,0),('isto',0,12),('istr',0,2),('isst',0,0),
-    ]+([('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in catalog('items')+catalog('equipment')])
+    ]+([('iabi',3,row['ability'])] if 'ability' in row else [('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')])
 
 
 def misc(b: dict) -> bytes:
@@ -345,14 +364,14 @@ def script(b: dict) -> str:
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
-    generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}']
+    generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}', f'    constant real KILL_GOLD_MULTIPLIER = {b["kill_gold_multiplier"]:.6f}']
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/8)}',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
         '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary', '    integer array PickToken',
-        '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
+        '    integer array SuperId', '    integer array SuperCost', '    integer array SuperBuild', '    real array SuperX', '    real array SuperY', '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', 'endglobals']
@@ -366,6 +385,10 @@ def script(b: dict) -> str:
         init += [f'    set FortressX[{team}] = {x}.0',f'    set FortressY[{team}] = {y}.0']
     for idx,(x,y) in enumerate(shop_positions()):
         init += [f'    set ShopX[{idx}] = {x}.0',f'    set ShopY[{idx}] = {y}.0']
+    for idx,(x,y) in enumerate(supreme_positions()):
+        init += [f'    set SuperX[{idx}] = {x}.0',f'    set SuperY[{idx}] = {y}.0']
+    for idx,row in enumerate(catalog('supreme')):
+        init += [f"    set SuperId[{idx}] = '{row['id']}'",f'    set SuperCost[{idx}] = {row["cost"]}']
     for row in catalog('equipment'):
         idx=row['family']*3+row['rank']
         init += [f"    set GearId[{idx}] = '{row['id']}'",f'    set GearCost[{idx}] = {row["cost"]}',f'    set GearShop[{idx}] = {row["shop"]}']
@@ -380,6 +403,10 @@ def script(b: dict) -> str:
             init += [f"    set ArmyType[{idx}] = 'fm{race}{tier}'", f'    set TierName[{idx}] = "{faction["tier_names"][tier]}"']
     for idx, hero in enumerate(heroes):
         init += [f"    set PickToken[{idx}] = 'fp{idx:02d}'"]
+        super_build=[hero['primary'],6,3,4,5,2 if hero['primary']==0 else 0]
+        assert len(set(super_build))==6
+        for slot,choice in enumerate(super_build):
+            init += [f'    set SuperBuild[{idx*6+slot}] = {choice}']
         assert len(set(hero['gear_families']))==6 and all(0<=k<12 for k in hero['gear_families'])
         for slot,family in enumerate(hero['gear_families']):
             init += [f'    set HeroGear[{idx*6+slot}] = {family}']

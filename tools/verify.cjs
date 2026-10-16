@@ -108,8 +108,9 @@ for (let race = 0; race < 4; race++) {
   }
 }
 const gear=require('../map/equipment.json');
+const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,114,'Passive equipment effects');
+assert.equal(gearAbilities.length,123,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -124,7 +125,7 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   assert.equal(value(upgrade,'gbpx'),col);
   assert.equal(value(upgrade,'gbpy'),0);
   assert.equal(value(upgrade,'gef1'),effect);
-  const amount=[6,2,0.2,15000][col];
+  const amount=[9,3,0.3,19500][col];
   assert.ok(Math.abs(value(upgrade,'gba1')-amount)<1e-6);
   assert.ok(Math.abs(value(upgrade,'gmo1')-amount)<1e-6,'Every additional research rank must increase the effect');
   for (const rank of col===3 ? [1,2,4] : [1,2,10,200]) {
@@ -184,7 +185,7 @@ assert.ok(value(abilityById.get('AUts'),'Uts2',300)<=1,'Thorns must not increase
 assert.ok(value(abilityById.get('AOae'),'Oae2',300)>value(abilityById.get('AOae'),'Oae2',3),'Endurance Aura continues growing');
 assert.equal(balance.spawn_seconds,12);
 const shopItems = require('../map/items.json');
-assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length);
+assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length+supreme.length+potions.length);
 assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
 for (const item of shopItems) assert.equal(value(parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id),'igol'),item.cost);
 assert.equal(gear.length,36);
@@ -196,7 +197,7 @@ for(let shop=0;shop<5;shop++) {
   assert.equal(value(seller,'usei'),gear.filter(i=>i.shop===shop).map(i=>i.id).join(','));
   assert.ok(gear.filter(i=>i.shop===shop).length<=9,'Room for native shop controls');
 }
-for(const item of gear) {
+for(const item of [...gear,...supreme]) {
   const obj=parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id);
   assert.equal(value(obj,'igol'),item.cost);
   const effects=value(obj,'iabi').split(',').map(id=>gearAbilities.find(o=>o.newId===id));
@@ -209,10 +210,10 @@ for(const item of gear) {
     assert.ok(Math.abs(mod.value-amount)<1e-5);
   }
 }
-assert.equal(value(barracks,'uhpm'),30000);
-assert.equal(value(custom.find(o=>o.newId==='ftow'),'uhpm'),6000);
+assert.equal(value(barracks,'uhpm'),39000);
+assert.equal(value(custom.find(o=>o.newId==='ftow'),'uhpm'),7800);
 const bastion=custom.find(o=>o.newId==='fbst');
-assert.equal(value(bastion,'uhpm'),60000);
+assert.equal(value(bastion,'uhpm'),78000);
 assert.equal(value(bastion,'udef'),24);
 assert.equal(value(bastion,'ua1b'),700);
 assert.equal(value(bastion,'ua1r'),1000);
@@ -286,7 +287,7 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 46 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 57 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
 for(let page=0;page<5;page++) {
@@ -313,7 +314,7 @@ for(const [idx,hero] of heroes.entries()) {
   }
  }
 }
-for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),2);
+for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),3);
 
 // Fifth, native learnable skill: cumulative +2/rank, not a paid chat upgrade.
 const stats=gearAbilities.find(o=>o.newId==='Fatr');
@@ -361,17 +362,45 @@ for(const old of previousAbilities.originalTable.objects) {
  for(const mod of old.modifications) if(quantities.has(mod.id)) assert.equal(value(current,mod.id,mod.levelOrVariation),mod.value,'Creature/resurrection counts must match 0.8.1');
 }
 console.log('PASS: Creature, illusion and resurrection counts match previous release at every rank.');
-// Startup optimization must preserve every combat field from 0.9.0.
-const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.0-alpha.w3x'))),true);
+// The balance patch changes offensive cooldowns only among existing skill data.
+const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.1-alpha.w3x'))),true);
 const baselineSkills=new PreviousAbilities();baselineSkills.load(new Uint8Array(baseline.get('war3map.w3a').bytes()));
+let longerCooldowns=0;
 for(const table of ['originalTable','customTable']) {
  const current=parsed['war3map.w3a'][table].objects;
- const previous=baselineSkills[table].objects;
- assert.equal(current.length,previous.length);
- for(let idx=0;idx<current.length;idx++) {
-  assert.equal(current[idx].oldId,previous[idx].oldId);assert.equal(current[idx].newId,previous[idx].newId);
-  const combat=o=>o.modifications.filter(m=>m.id!=='atp1' && m.id!=='aub1');
-  assert.deepEqual(combat(current[idx]),combat(previous[idx]),'All non-tooltip ability data matches 0.9.0');
+ for(const old of baselineSkills[table].objects) {
+  const obj=current.find(o=>o.newId===old.newId && o.oldId===old.oldId);assert.ok(obj);
+  const stable=o=>o.modifications.filter(m=>!['atp1','aub1','acdn'].includes(m.id));
+  assert.deepEqual(stable(obj),stable(old),'Preserve all other hero ability fields');
+  for(const m of old.modifications.filter(m=>m.id==='acdn')) {
+   const actual=value(obj,'acdn',m.levelOrVariation);
+   if(Math.abs(actual-m.value)>1e-5) {
+    assert.ok(Math.abs(actual-m.value*1.5)<0.0002,'Offensive cooldown multiplier is exactly 1.5');longerCooldowns++;
+   }
+  }
  }
 }
-console.log('PASS: Startup patch preserves every non-tooltip ability field from 0.9.0.');
+assert.ok(longerCooldowns>1000);
+for(const id of ['AHtb','AHbz','AOsh','ANcs','ANab','ANfl']) assert.ok(value(abilityById.get(id),'acdn',1)>0);
+console.log('PASS: Existing hero skill effects preserved; offensive cooldowns increased by 50%.');
+const allItems=parsed['war3map.w3t'].customTable.objects;
+assert.equal(supreme.length,7);assert.deepEqual(supreme.map(i=>Object.keys(i.stats)[0]),['strength','agility','intelligence','armor','attack_speed','mana_regen','health_regen']);
+assert.equal(value(custom.find(u=>u.newId==='fsup'),'usei'),supreme.map(i=>i.id).join(','));
+assert.equal(value(custom.find(u=>u.newId==='fpot'),'usei'),potions.map(i=>i.id).join(','));
+for(const i of supreme) {assert.ok(i.cost>=55000 && i.cost<=60000);assert.equal(value(allItems.find(o=>o.newId===i.id),'igol'),i.cost);}
+for(const i of potions) {
+ const obj=allItems.find(o=>o.newId===i.id);assert.equal(obj.oldId,i.base);assert.equal(value(obj,'igol'),i.cost);assert.equal(value(obj,'iabi'),i.ability);
+ if(i.base_ability) {
+  const effect=gearAbilities.find(o=>o.newId===i.ability);assert.equal(effect.oldId,i.base_ability);
+  assert.equal(value(effect,i.field,1),i.amount);assert.equal(value(effect,'acdn',1),30);
+ }
+}
+const previousUnits=new (require(prefix+'w3x/w3u/file').default)();previousUnits.load(new Uint8Array(baseline.get('war3map.w3u').bytes()));
+for(const id of ['fbax','ftow','fbst','ffnt','fbfn','fshp','fs0p','fs1p','fs2p','fs3p','fs4p']) {
+ const old=previousUnits.customTable.objects.find(o=>o.newId===id),now=unitById.get(id);
+ assert.equal(value(now,'uhpm'),value(old,'uhpm')*1.3,'Every permanent building gains 30% HP');
+}
+for(let kind=0;kind<heroes.length;kind++) {
+ const list=[heroes[kind].primary,6,3,4,5,heroes[kind].primary===0?2:0];assert.equal(new Set(list).size,6);
+}
+console.log('PASS: Seven supreme items, four consumable potions, +30% building HP and full item effect/price validation.');

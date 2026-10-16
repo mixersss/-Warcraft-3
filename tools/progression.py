@@ -5,6 +5,9 @@ from pathlib import Path
 
 SUMMON_FIELDS = {'Hwe1','Osf1','Efnu','Esvu','Nbau','Ndou','Nef1','Nsy2','Nsyu','Rai3','Uin4','Ntou','Ulsu'}
 COUNT_FIELDS = {'Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1'}
+# Active offensive spells only: preserve passive, toggle and support cooldowns.
+OFFENSIVE_SKILLS = set(('AHtb AHtc AHbz AHfs AHbn AOcl AOws AOsh AOww AOeq AUdc AUfn AUcs AUim AUdd AUin AEer AEfk AEsh AEmb AEsf ANbf ANfl ANso ANvc ANht ANrf ANcs ANc1 ANc2 ANc3 ANst ANab ANsi ANdh ANdr AOhx AUsl ANch ANtm').split())
+
 
 
 def scaled_value(field, rank, ultimate):
@@ -110,6 +113,7 @@ def summoned_units(root): return summon_catalog(str(root))[0]
 
 def hero_abilities(root):
     seeds=json.loads((Path(root)/'map/ability-seeds.json').read_text())
+    cooldown_multiplier=json.loads((Path(root)/'map/balance.json').read_text())['offensive_cooldown_multiplier']
     _,replacements,summon_details=summon_catalog(str(root))
     entries=[]
     for rawcode,seed in seeds.items():
@@ -133,6 +137,8 @@ def hero_abilities(root):
                     floor=min(field['values'][-1],floor)
                     progress=(rank-seed['levels'])/max(1,seed['cap']-seed['levels'])
                     value=round(field['values'][-1]+(floor-field['values'][-1])*progress,4)
+                if field['id']=='acdn' and rawcode in OFFENSIVE_SKILLS and value>0:
+                    value=round(value*cooldown_multiplier,4)
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
                 if field['id'] in SUMMON_FIELDS:
                     hp,damage,scale=summon_details[value.split(',')[0]]

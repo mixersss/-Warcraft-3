@@ -1,0 +1,72 @@
+[
+  {
+    "id": "fl00",
+    "base": "bgst",
+    "name": "Сердце титана",
+    "cost": 60000,
+    "stats": {
+      "strength": 400
+    },
+    "description": "+400 силы."
+  },
+  {
+    "id": "fl01",
+    "base": "belv",
+    "name": "Душа ветра",
+    "cost": 60000,
+    "stats": {
+      "agility": 400
+    },
+    "description": "+400 ловкости."
+  },
+  {
+    "id": "fl02",
+    "base": "ciri",
+    "name": "Разум вечности",
+    "cost": 60000,
+    "stats": {
+      "intelligence": 400
+    },
+    "description": "+400 интеллекта."
+  },
+  {
+    "id": "fl03",
+    "base": "rde3",
+    "name": "Панцирь бессмертного",
+    "cost": 60000,
+    "stats": {
+      "armor": 200
+    },
+    "description": "+200 брони."
+  },
+  {
+    "id": "fl04",
+    "base": "glov",
+    "name": "Перчатки молний",
+    "cost": 55000,
+    "stats": {
+      "attack_speed": 2.5
+    },
+    "description": "+250% скорости атаки. Сохраняется предел скорости атаки движка."
+  },
+  {
+    "id": "fl05",
+    "base": "sobi",
+    "name": "Источник бездны",
+    "cost": 55000,
+    "stats": {
+      "mana_regen": 20.0
+    },
+    "description": "+2000% к обычной регенерации маны."
+  },
+  {
+    "id": "fl06",
+    "base": "rlif",
+    "name": "Пульс жизни",
+    "cost": 55000,
+    "stats": {
+      "health_regen": 200
+    },
+    "description": "+200 HP в секунду."
+  }
+]
