@@ -1,0 +1,15 @@
+{
+  "filename": "Naruto_ArchiveProbe03.w3x",
+  "bytes": 7229257,
+  "sha256": "aa2c0b2e70915f3b1597ba08bb7e099ef0338b727b64e99366c72cf0e5a0ebea",
+  "sourceSHA256": "a0350ca172f1049bf3a9472bcdfad7d08dc6551df965b4c5191c538890490533",
+  "onlyLogicalChange": "none",
+  "scriptEncryptedPayloadCopiedExactly": true,
+  "allBlockPropertiesOriginalExceptScriptOffset": true,
+  "originalLobbyAndPreviewAndModelsAndMusic": true,
+  "rootScriptAliasAdded": false,
+  "headerSizeAndSectorSizeUnchanged": true,
+  "newAI": false,
+  "engineTested": false,
+  "nativeStormLibFilesByteIdenticalToWorkingOriginal": 461
+}

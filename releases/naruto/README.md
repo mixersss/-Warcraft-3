@@ -1,4 +1,10 @@
-# Naruto Ultimate RPG 4.2i — Clean rebuild 0.2
+# Naruto Ultimate RPG 4.2i — диагностика совместимости Classic
+
+> **Обновление диагностики:** Clean_NoAI_02 вызвала у пользователя вылет 0x00000000 уже при показе в меню. Причина не установлена; 0.2 не является подтверждённым исправлением.
+>
+> [Контрольный файл ArchiveProbe03](https://github.com/mixersss/-Warcraft-3/raw/refs/heads/main/releases/naruto/Naruto_ArchiveProbe03.w3x) · [Инструкция](README_PROBE03_RU.txt) · [Побайтовая проверка](minimal-probe-report.json).
+>
+> Перед проверкой закройте игру и перенесите старые тестовые Naruto-карты за пределы `Maps`. Поместите только контрольный файл в отдельную папку `Maps\NarutoTest03`. Это диагностическая копия без новых ботов: все 461 внутренних файла совпадают с рабочим оригиналом, изменено только расположение блока скрипта в архиве.
 
 [Новая упаковка без ИИ — проверить первой](https://github.com/mixersss/-Warcraft-3/raw/refs/heads/main/releases/naruto/Naruto_4_2i_Clean_NoAI_02.w3x) · [Новая упаковка с тестовыми ботами](https://github.com/mixersss/-Warcraft-3/raw/refs/heads/main/releases/naruto/Naruto_4_2i_Clean_Bots_02.w3x) · [Обе карты и инструкция](https://github.com/mixersss/-Warcraft-3/raw/refs/heads/main/releases/naruto/Naruto_4_2i_Clean_02_Package.zip)
 
