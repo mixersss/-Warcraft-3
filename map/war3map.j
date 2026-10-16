@@ -17,6 +17,7 @@ globals
     trigger SummonTrigger = null
     timer AutosaveTimer = null
     integer AutosaveCount = 0
+    constant string AUTOSAVE_PATH = "save\\FFFAutosave.w3z"
     unit array HeroPicker
     integer array PickerPage
     integer array BastionUntil
@@ -118,10 +119,10 @@ endfunction
 function AddGold takes integer p, integer amount returns nothing
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) + amount)
     if Bot[p] and Tier[p] < 4 and amount > 0 then
-        set TierSavings[p] = TierSavings[p]+amount/4
+        set TierSavings[p] = TierSavings[p]+R2I(I2R(amount)/2.0)
     endif
     if Bot[p] and (GearProgress[p] < 18 or SuperProgress[p] < 6) and amount > 0 then
-        set GearSavings[p] = GearSavings[p]+amount/3
+        set GearSavings[p] = GearSavings[p]+R2I(I2R(amount)/3.0)
     endif
 endfunction
 
@@ -784,6 +785,13 @@ function RegularGearCost takes integer raw returns integer
     return 0
 endfunction
 
+function BotTierReserve takes integer p returns integer
+    if Tier[p] < 4 then
+        return IMinBJ(TierSavings[p],TierCost[Tier[p]+1])
+    endif
+    return 0
+endfunction
+
 function BotSupremeShop takes integer p returns boolean
     local integer choice
     local integer team = TeamOf(p)
@@ -805,7 +813,7 @@ function BotSupremeShop takes integer p returns boolean
         set h = null
         return false
     endif
-    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) < SuperCost[choice] then
+    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < SuperCost[choice] then
         set h = null
         return false
     endif
@@ -867,7 +875,7 @@ function BotShop takes integer p returns boolean
         set h = null
         return false
     endif
-    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) < GearCost[index] then
+    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < GearCost[index] then
         set h = null
         return false
     endif
@@ -926,15 +934,13 @@ endfunction
 function BotResearch takes integer p, integer kind returns boolean
     local integer reserve = 0
     if GearProgress[p] < 18 then
-        set reserve = IMinBJ(IMinBJ(GearSavings[p], GearCost[DesiredGear(p)]), GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)/4)
+        set reserve = IMinBJ(GearSavings[p], GearCost[DesiredGear(p)])
     elseif SuperProgress[p] < 6 then
         set reserve = IMinBJ(GearSavings[p], SuperCost[DesiredSuper(p)])
-        if GearSavings[p] < SuperCost[DesiredSuper(p)] then
-            set reserve = IMinBJ(reserve,GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)/4)
-        endif
     endif
-    if kind < 3 and Tier[p] < 4 and TierSavings[p] >= TierCost[Tier[p]+1] then
-        set reserve = reserve+TierCost[Tier[p]+1]
+    if kind != 3 then
+        // Protect partial savings too, otherwise frequent research drains them.
+        set reserve = reserve+BotTierReserve(p)
     endif
     if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-UpgradeCost(p, kind) >= reserve then
         return Buy(p, kind)
@@ -1076,7 +1082,8 @@ function BotHero takes integer p returns nothing
         set enemy = null
         return
     endif
-    if enemy == null and TryBotShopping(p) then
+    // Enemies at center must not prevent every scheduled shopping trip.
+    if health >= 0.5 and TryBotShopping(p) then
         set h = null
         set enemy = null
         return
@@ -1463,9 +1470,15 @@ endfunction
 function AutoSave takes nothing returns nothing
     if not Finished then
         set AutosaveCount = AutosaveCount+1
-        // Full native save, synchronized on all clients, always the same name.
+        // Full native save, synchronized on all clients, always the same path.
         call SyncSelections()
-        call SaveGame("FFFAutosave")
+        call SaveGame(AUTOSAVE_PATH)
+        // File availability is local: only UI may depend on it, never gameplay.
+        if SaveGameExists(AUTOSAVE_PATH) then
+            call DisplayTimedTextToPlayer(GetLocalPlayer(),0,0,5,"Файл автосохранения найден: Save\\FFFAutosave.w3z. Следующая запись через 2 минуты.")
+        else
+            call DisplayTimedTextToPlayer(GetLocalPlayer(),0,0,12,"Автосохранение: файл Save\\FFFAutosave.w3z не найден после попытки записи. Проверь доступ игры к папке Save.")
+        endif
     endif
 endfunction
 
@@ -1584,7 +1597,7 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%, offensive spell cooldowns +50%. -supreme selects high-end equipment; -potions selects central consumables. Full native autosave every 30 seconds, same name: FFFAutosave. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%, offensive spell cooldowns +50%. -supreme selects high-end equipment; -potions selects central consumables. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1797,7 +1810,7 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (36 героев). Первый игрок: -mode или -ar до 15-й секунды. Подготовка 60 секунд: герои компьютеров загружаются по очереди. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (36 героев). Первый игрок: -mode или -ar до 15-й секунды. Подготовка 60 секунд: герои компьютеров загружаются по очереди. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков. Автосохранение каждые 2 минуты: Save\\FFFAutosave.w3z.")
     set HeroQueueTimer = CreateTimer()
     call TimerStart(HeroQueueTimer, 0.5, true, function ProcessHeroQueue)
     call TimerStart(clock, 1, true, function Tick)

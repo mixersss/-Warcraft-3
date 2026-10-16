@@ -551,7 +551,7 @@ DamageSource=Hero[3];DamageAmount=0;OnBaseDefense();assert(Bastion[0].paused)
 Bastion[0].hp=0;DamageAmount=10;OnBaseDefense();assert(Bastion[0].hp==0,'No resurrection')
 
 -- Bots prioritize affordable research despite an expensive desired item.
-reset();Bot[0]=true;GearSavings[0]=200;Players[0].gold=500
+reset();Bot[0]=true;GearSavings[0]=100;Players[0].gold=500
 BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==400)
 local budget=Players[0].gold;BotBuy(0);assert(Players[0].gold==budget,'No duplicate orders during research')
 FinishResearch(0);BotBuy(0);FinishResearch(0);BotBuy(0);FinishResearch(0)
@@ -695,11 +695,20 @@ assert(summons==150,'Retain every summoned creature, even beyond 64')
 local saves={}
 function SyncSelections() end
 function SaveGame(name) table.insert(saves,{name=name,seconds=Seconds}) end
+function SaveGameExists(name) return not FailSave and name==AUTOSAVE_PATH end
 reset();Finished=false
-for n=1,4 do Seconds=n*30;AutoSave() end
+for n=1,4 do Seconds=n*120;AutoSave() end
 assert(#saves==4 and AutosaveCount==4)
-for _,v in ipairs(saves) do assert(v.name=='FFFAutosave') end
+for _,v in ipairs(saves) do assert(v.name=='save\\FFFAutosave.w3z') end
 Finished=true;AutoSave();assert(#saves==4)
+local originalDisplay=DisplayTimedTextToPlayer
+local saveNotice
+function DisplayTimedTextToPlayer(p,x,y,duration,message) saveNotice=message end
+Finished=false;FailSave=true;AutoSave()
+assert(string.find(saveNotice,'не найден',1,true),'A missing save must be reported rather than silently claimed successful')
+FailSave=false;AutoSave()
+assert(string.find(saveNotice,'Файл автосохранения найден',1,true))
+DisplayTimedTextToPlayer=originalDisplay
 
 -- Full 12-player startup, including all twelve unique custom heroes and four fountains.
 reset();HostPlayer=-1;World={}
@@ -707,7 +716,7 @@ for p=0,11 do
  Base[p],Hero[p],Bastion[p],Tower[p]=nil,nil,nil,nil
  Players[p].slot=PLAYER_SLOT_STATE_PLAYING;Players[p].controller=(p==0) and MAP_CONTROL_USER or MAP_CONTROL_COMPUTER
 end
-InitGame();assert(AutosaveTimer.period==30 and AutosaveTimer.callback==AutoSave)
+InitGame();assert(AutosaveTimer.period==120 and AutosaveTimer.callback==AutoSave)
 Clock.callback()
 for n=1,24 do ProcessHeroQueue() end
 for p=0,11 do assert(Alive(Base[p]) and Alive(Hero[p]) and SlotActive[p]) end
@@ -772,3 +781,58 @@ assert(TryBotShopping(0) and SuperProgress[0]==1 and ShoppingUntil[0]==0)
 reset();Bot[0]=true;CreateHero(0,12);GearProgress[0]=18;SuperProgress[0]=3
 Hero[0].agi=250;assert(DesiredSuper(0)==2,'Agility hero avoids buying attack speed already supplied by agility')
 CreateHero(0,0);Hero[0].agi=250;assert(DesiredSuper(0)==1,'Strength hero can replace redundant attack speed with useful agility')
+
+-- Partial reserves survive frequent cheap research, long before a tier is funded.
+reset();Bot[0]=true;Players[0].gold=850;GearSavings[0]=400;TierSavings[0]=400
+assert(not BotResearch(0,0) and Players[0].gold==850,'Protect BOTH partial savings instead of capping gear reserve at current gold/4')
+Players[0].gold=2400;GearSavings[0]=600
+assert(BotResearch(0,3));FinishResearch(0)
+assert(Tier[0]==1 and Players[0].gold==600,'Tier purchases may spend their own reserve but preserve equipment money')
+
+reset();Bot[0]=true;local index=DesiredGear(0);Players[0].gold=GearCost[index]+500;TierSavings[0]=600
+assert(not BotShop(0),'Equipment purchases may not consume the building reserve')
+
+-- Even with enemies permanently nearby, a healthy hero makes a bounded shopping trip.
+reset();Bot[0]=true;CreateHero(0,0);Seconds=90;Players[0].gold=GearCost[DesiredGear(0)]
+Hero[0].x,Hero[0].y=0,0;Hero[3].x,Hero[3].y=0,0;AllowedOrders={}
+realBotHero(0)
+assert(Hero[0].order[1]=='move' and ShoppingUntil[0]>Seconds,'Nearby enemies must not starve all equipment purchases')
+local shop=GearShop[DesiredGear(0)]
+Hero[0].x,Hero[0].y=ShopX[shop],ShopY[shop];Seconds=92
+Hero[3].x,Hero[3].y=Hero[0].x,Hero[0].y
+realBotHero(0);assert(GearProgress[0]==1,'Use the real native shop path even during ongoing nearby combat')
+
+-- Compete for the SAME finite income: native research, base tiers and physical shopping.
+-- Movement here is a bounded mock; actual wall routes are verified separately in WPM.
+for _,income in ipairs({4,16}) do
+ reset();Bot[0]=true;CreateHero(0,0);Hero[0].x,Hero[0].y=0,0;AllowedOrders={}
+ local earned=0
+ local firstTier,finalTier
+ for second=1,(income==4 and 7200 or 10800) do
+  Seconds=WARMUP_SECONDS+second;AddGold(0,income);earned=earned+income
+  BotBuy(0)
+  if second%5==0 then FinishResearch(0) end
+  if Tier[0]>=1 and not firstTier then firstTier=second end
+  if Tier[0]==4 and not finalTier then finalTier=second end
+  if second%2==0 then
+   Hero[3].x,Hero[3].y=Hero[0].x,Hero[0].y
+   realBotHero(0)
+  end
+  local order=Hero[0].order
+  if order and (order[1]=='move' or order[1]=='attack') and type(order[2])=='number' and type(order[3])=='number' then
+   local dx,dy=order[2]-Hero[0].x,order[3]-Hero[0].y
+   local distance=math.sqrt(dx*dx+dy*dy);local step=math.min(distance,250)
+   if distance>0 then Hero[0].x=Hero[0].x+dx*step/distance;Hero[0].y=Hero[0].y+dy*step/distance end
+  end
+  assert(Players[0].gold>=0 and Players[0].gold<=STARTING_GOLD+earned,'No overdraft or free income')
+ end
+ assert(Tier[0]>=2 and GearProgress[0]>=3 and Attack[0]>=4 and Armor[0]>=4 and Vitality[0]>=4,
+  'Mixed economy: income='..income..' tier='..Tier[0]..' gear='..GearProgress[0]..' troops='..Attack[0]..'/'..Armor[0]..'/'..Vitality[0])
+ if income==16 then
+  assert(Tier[0]==4 and GearProgress[0]>=12,'Combat income advances base and high-tier equipment together')
+  assert(firstTier and firstTier<=300 and finalTier and finalTier<=2400,'Faster base development on the same finite combat income')
+ else
+  assert(firstTier and firstTier<=1100,'First base tier must not wait for half an hour of passive income')
+ end
+ assert(math.abs(Attack[0]-Armor[0])<=1 and math.abs(Armor[0]-Vitality[0])<=1)
+end
