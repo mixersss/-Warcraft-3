@@ -76,6 +76,7 @@ globals
     integer array SkillLevel
     unit PotionShop = null
     unit array SupremeShop
+    unit array BookShop
     integer array ShoppingUntil
     integer array SuperProgress
     unit EquipmentShop = null
@@ -238,11 +239,11 @@ endfunction
 
 function UpgradeName takes integer kind returns string
     if kind == 0 then
-        return "Атака армии +9"
+        return "Атака армии +3"
     elseif kind == 1 then
-        return "Броня армии +3"
+        return "Броня армии +1"
     elseif kind == 2 then
-        return "Здоровье армии +20%"
+        return "Здоровье армии +6,67%"
     elseif kind == 3 then
         return "Развитие казармы"
     elseif kind == 4 then
@@ -1321,6 +1322,9 @@ function OnChat takes nothing returns nothing
     elseif command == "-potions" then
         call SelectUnitForPlayerSingle(PotionShop,Player(p))
         call PanCameraToTimedForPlayer(Player(p),0,-640,0.25)
+    elseif command == "-books" then
+        call SelectUnitForPlayerSingle(BookShop[p],Player(p))
+        call PanCameraToTimedForPlayer(Player(p),BookX[p],BookY[p],0.25)
     elseif command == "-power" then
         call Buy(p, 4)
     elseif command == "-heal" then
@@ -1604,7 +1608,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 9 damage and armor adds 3 per rank. HP research adds 20% of base HP per rank. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. Troop research costs are 40% higher. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Every barracks tier substantially strengthens future troops; models and collision are smaller. Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
@@ -1614,7 +1618,7 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%, offensive spell cooldowns +50%. -supreme selects high-end equipment; -potions selects central consumables. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1692,6 +1696,8 @@ function InitSlot takes integer p returns nothing
         set j = j+1
     endloop
     set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
+    set BookShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fbks',BookX[p],BookY[p],270)
+    call SetUnitInvulnerable(BookShop[p],true)
     set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
     set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
     call PauseUnit(Bastion[p], true)

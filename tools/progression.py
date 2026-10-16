@@ -8,6 +8,28 @@ COUNT_FIELDS = {'Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1'}
 # Active offensive spells only: preserve passive, toggle and support cooldowns.
 OFFENSIVE_SKILLS = set(('AHtb AHtc AHbz AHfs AHbn AOcl AOws AOsh AOww AOeq AUdc AUfn AUcs AUim AUdd AUin AEer AEfk AEsh AEmb AEsf ANbf ANfl ANso ANvc ANht ANrf ANcs ANc1 ANc2 ANc3 ANst ANab ANsi ANdh ANdr AOhx AUsl ANch ANtm').split())
 
+# Magnitudes only: never multiply flags, attack intervals or control durations.
+ULTIMATE_MAGNITUDES = set('Eme5 Esf1 Etq1 Hav1 Hav2 Hav3 Ndo1 Nrg5 Nrg6 Nst3 Nvc5 Oeq2 Oww1 Uin1 Uls5'.split())
+ULTIMATE_RECOVERY = {'AHmt':0.7,'AHre':0.65,'AUan':0.75,'ANch':0.7,'ANtm':0.7,'AOre':0.65,'AOvd':0.75}
+
+
+def ultimate_value(ability, field, rank, value, power):
+    raw=field['id']
+    if raw in ULTIMATE_MAGNITUDES: value*=power
+    if ability=='AUin' and raw=='Uin1': value=max(value,300+60*(rank-1))
+    if ability=='AUdd' and raw=='Udd1': value=min(0.35,value*1.5)
+    if ability=='AUls' and raw=='Uls4': value=min(6.0,value*1.5)
+    if raw=='acdn' and ability in ULTIMATE_RECOVERY and value>1: value*=ULTIMATE_RECOVERY[ability]
+    if ability=='AHmt' and raw=='Hmt1': value=max(value,min(96,24+2*rank))
+    if ability=='AHmt' and raw=='Hmt2': value=max(1.0,2.5-0.03*(rank-1))
+    if ability in ('ANch','ANtm') and raw in ('Nch1','Ntm3'): value=max(value,min(100,10+2*(rank-1)))
+    if ability=='ANtm' and raw=='Ntm1': value=min(2.0,max(value,1.2+0.01*(rank-1)))
+    if ability=='AOre' and raw=='Ore1': value=max(2.0,5.0-0.07*(rank-1))
+    if ability=='AOvd' and raw in ('adur','ahdu'): value=min(40.0,35.0+0.1*(rank-1))
+    if ability=='ANto' and raw in ('adur','ahdu'): value*=1.5
+    if ability=='AOeq' and raw in ('aare','Oeq4'): value=400+4*(rank-1)
+    return int(round(value)) if field['kind']==0 else round(value,5) if field['kind']!=3 else value
+
 
 
 def scaled_value(field, rank, ultimate):
@@ -79,7 +101,24 @@ def summon_catalog(root):
     root=Path(root)
     seeds=json.loads((root/'map/ability-seeds.json').read_text())
     stock=json.loads((root/'map/summon-seeds.json').read_text())
-    units=[]; replacements={}; details={}; cache={}
+    balance=json.loads((root/'map/balance.json').read_text())
+    units=[]; replacements={}; details={}; cache={}; support=[]
+    def make_unit(original,rank,ultimate):
+        key=(original,rank,ultimate)
+        if key not in cache:
+            raw=code(len(cache)); cache[key]=raw
+            src=stock[original]; extra=rank-1
+            factor=(1+extra*(0.60 if ultimate else 0.15))*(balance['ultimate_summon_hp_multiplier'] if ultimate else 1)
+            damage_factor=1+extra*(0.45 if ultimate else 0.12)
+            scale=src['scale']*balance['summon_model_scale']*(1+extra*(0.002 if ultimate else 0.0005))
+            hp=round(src['hp']*factor)
+            damage=round((src['damage']*damage_factor+extra*(2 if ultimate else 1))*(balance['ultimate_summon_damage_multiplier'] if ultimate else 1))
+            armor=src['armor']+extra*(0.6 if ultimate else 0.2)
+            units.append((original,raw,[('uhpm',0,hp),('ua1b',0,damage),('udef',0,round(armor)),
+                ('usca',1,scale),('ucol',2,min(src['collision'],24.0)),
+                ('upgr',3,''),('ufoo',0,0),('ugol',0,0),('ulum',0,0)]))
+            details[raw]=(hp,damage,scale)
+        return cache[key]
     for ability,seed in seeds.items():
         for rank in range(1,seed['cap']+1):
             for field in seed['fields']:
@@ -87,34 +126,47 @@ def summon_catalog(root):
                 originals=field['values'][min(rank,len(field['values']))-1].split(',')
                 ids=[]
                 for original in originals:
-                    key=(original,rank,seed['ultimate'])
-                    if key not in cache:
-                        raw=code(len(cache)); cache[key]=raw
-                        src=stock[original]
-                        # Size and collision are separate so large models fit the gates.
-                        extra=rank-1
-                        factor=1+extra*(0.60 if seed['ultimate'] else 0.15)
-                        damage_factor=1+extra*(0.45 if seed['ultimate'] else 0.12)
-                        scale=src['scale']*(1+(rank-1)*(0.02 if seed['ultimate'] else 0.005))
-                        hp=round(src['hp']*factor)
-                        damage=round(src['damage']*damage_factor+extra*(2 if seed['ultimate'] else 1))
-                        armor=src['armor']+extra*(0.6 if seed['ultimate'] else 0.2)
-                        units.append((original,raw,[('uhpm',0,hp),('ua1b',0,damage),('udef',0,round(armor)),
-                            ('usca',1,scale),('ucol',2,min(src['collision'],40.0)),
-                            ('upgr',3,''),('ufoo',0,0),('ugol',0,0),('ulum',0,0)]))
-                        details[raw]=(hp,damage,scale)
-                    ids.append(cache[key])
+                    ids.append(make_unit(original,rank,seed['ultimate']))
                 replacements[ability,rank,field['id']]=','.join(ids)
-    return units,replacements,details
+    # Append nested summons after the primary catalog, retaining existing rawcodes.
+    def effect(base,raw,changes):
+        support.append((base,raw,[('alev',0,1),('aher',0,0),('aite',0,0)]+changes))
+        return raw
+    def attach(original,rank,abilities,auto=None):
+        raw=cache[original,rank,True]
+        changes=next(row[2] for row in units if row[1]==raw)
+        changes.append(('uabi',3,','.join(abilities)))
+        if auto: changes.append(('udaa',3,auto))
+    for rank in range(1,51):
+        growth=1+0.18*(rank-1)
+        fire=effect('ANpi',f'Fi{rank:02}',[('Eim1',2,80.0*growth,1,1),('aare',2,300.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
+        attach('ninf',rank,['ACmi',fire,'ACrk'])
+        fire=effect('Apig',f'Fk{rank:02}',[('Eim1',2,60.0*growth,1,1),('aare',2,280.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
+        attach('npn1',rank,[fire,'ACrk'])
+        spirit=make_unit('even',rank,True)
+        vengeance=effect('Avng',f'Fv{rank:02}',[('Rai3',3,spirit,1,3)])
+        attach('espv',rank,['ACmi','Asp1','ACrk',vengeance],vengeance)
+        phoenix=cache['hphx',rank,True]; egg=make_unit('hpxe',rank,True)
+        rebirth=effect('Aphx',f'Fh{rank:02}',[('Eme1',3,phoenix,1,1),('Emeu',3,egg,1,0)])
+        fire=effect('Apxf',f'Fj{rank:02}',[('pxf1',2,120.0*growth,1,1),('pxf2',2,12.0*growth,1,2)])
+        attach('hphx',rank,[rebirth,'ACmi','ACrk',fire])
+        attach('hpxe',rank,[rebirth,'ACrk','ACmi'])
+        tornado=effect('Atdg',f'Ft{rank:02}',[('Tdg1',2,21.0*growth,1,1),('Tdg3',2,150.0*growth,1,3)])
+        attach('ntor',rank,[tornado,'Atsp','Atwa','Aasl'])
+    return units,replacements,details,support
 
 
 def summoned_units(root): return summon_catalog(str(root))[0]
 
 
+def summon_support_abilities(root): return summon_catalog(str(root))[3]
+
+
 def hero_abilities(root):
     seeds=json.loads((Path(root)/'map/ability-seeds.json').read_text())
-    cooldown_multiplier=json.loads((Path(root)/'map/balance.json').read_text())['offensive_cooldown_multiplier']
-    _,replacements,summon_details=summon_catalog(str(root))
+    balance=json.loads((Path(root)/'map/balance.json').read_text())
+    cooldown_multiplier=balance['offensive_cooldown_multiplier']
+    _,replacements,summon_details,_=summon_catalog(str(root))
     entries=[]
     for rawcode,seed in seeds.items():
         ultimate=seed['ultimate']
@@ -125,6 +177,8 @@ def hero_abilities(root):
             details=[]
             for field in seed['fields']:
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
+                if ultimate:
+                    value=ultimate_value(rawcode,field,rank,value,balance['ultimate_power_multiplier'])
                 if rawcode in ('ANba','AEim') and field['id']=='atar':
                     # Do not exclude the undead/mechanical troop categories.
                     # Ground/air targets exclude the separate structure class.

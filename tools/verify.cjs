@@ -135,9 +135,9 @@ for (let race = 0; race < 4; race++) {
   }
 }
 const gear=require('../map/equipment.json');
-const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');
+const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');const books=require('../map/books.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,123,'Passive equipment effects');
+assert.equal(gearAbilities.length,423,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -146,9 +146,9 @@ const value=(object,id,level=0)=>{
   return fieldIndex.get(object).get(id+':'+level);
 };
 assert.equal(research.length, 4);
-assert.equal(balance.health_percent,0.2);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),180);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),120);
+assert.equal(balance.health_percent,0.2/3);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),252);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),168);
 assert.equal(balance.bot_tactics.length,3);
 assert.ok(balance.bot_tactics[1].gear_percent>balance.bot_tactics[0].gear_percent);
 assert.ok(balance.bot_tactics[2].gear_percent<balance.bot_tactics[0].gear_percent);
@@ -158,7 +158,7 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   assert.equal(value(upgrade,'gbpx'),col);
   assert.equal(value(upgrade,'gbpy'),0);
   assert.equal(value(upgrade,'gef1'),effect);
-  const amount=[9,3,0.2,19500][col];
+  const amount=[3,1,0.2/3,19500][col];
   assert.ok(Math.abs(value(upgrade,'gba1')-amount)<1e-6);
   assert.ok(Math.abs(value(upgrade,'gmo1')-amount)<1e-6,'Every additional research rank must increase the effect');
   for (const rank of col===3 ? [1,2,4] : [1,2,10,200]) {
@@ -218,7 +218,7 @@ assert.ok(value(abilityById.get('AUts'),'Uts2',300)<=1,'Thorns must not increase
 assert.ok(value(abilityById.get('AOae'),'Oae2',300)>value(abilityById.get('AOae'),'Oae2',3),'Endurance Aura continues growing');
 assert.equal(balance.spawn_seconds,12);
 const shopItems = require('../map/items.json');
-assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length+supreme.length+potions.length);
+assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length+supreme.length+potions.length+books.length);
 assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
 for (const item of shopItems) assert.equal(value(parsed['war3map.w3t'].customTable.objects.find(o=>o.newId===item.id),'igol'),item.cost);
 assert.equal(gear.length,36);
@@ -320,7 +320,7 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 57 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 61 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
 for(let page=0;page<5;page++) {
@@ -347,7 +347,7 @@ for(const [idx,hero] of heroes.entries()) {
   }
  }
 }
-for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),3);
+for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),1);
 
 // Fifth, native learnable skill: cumulative +2/rank, not a paid chat upgrade.
 const stats=gearAbilities.find(o=>o.newId==='Fatr');
@@ -395,29 +395,44 @@ for(const old of previousAbilities.originalTable.objects) {
  for(const mod of old.modifications) if(quantities.has(mod.id)) assert.equal(value(current,mod.id,mod.levelOrVariation),mod.value,'Creature/resurrection counts must match 0.8.1');
 }
 console.log('PASS: Creature, illusion and resurrection counts match previous release at every rank.');
-// The balance patch changes offensive cooldowns only among existing skill data.
+// Non-ultimate mechanics remain unchanged; ultimate changes are explicit magnitudes.
 const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.1-alpha.w3x'))),true);
 const baselineSkills=new PreviousAbilities();baselineSkills.load(new Uint8Array(baseline.get('war3map.w3a').bytes()));
 let longerCooldowns=0;
+const skillSeeds=require('../map/ability-seeds.json');
+const ultMagnitude=new Set('Eme5 Esf1 Etq1 Hav1 Hav2 Hav3 Ndo1 Nrg5 Nrg6 Nst3 Nvc5 Oeq2 Oww1 Uin1 Uls5'.split(' '));
+const ultSpecial={AUdd:['Udd1'],AUls:['Uls4'],AHmt:['Hmt1','Hmt2'],ANch:['Nch1'],ANtm:['Ntm1','Ntm3'],AOre:['Ore1'],AOvd:['adur','ahdu'],ANto:['adur','ahdu'],AOeq:['aare','Oeq4']};
+const ultRecovery={AHmt:0.7,AHre:0.65,AUan:0.75,ANch:0.7,ANtm:0.7,AOre:0.65,AOvd:0.75};
 for(const table of ['originalTable','customTable']) {
  const current=parsed['war3map.w3a'][table].objects;
  for(const old of baselineSkills[table].objects) {
   // Repair the three older mana items without changing any effect fields.
   const base=table==='customTable' && ['Fg16','Fg18','Fg20'].includes(old.newId) && old.oldId==='AImm' ? 'AImb' : old.oldId;
   const obj=current.find(o=>o.newId===old.newId && o.oldId===base);assert.ok(obj);
-  const stable=o=>o.modifications.filter(m=>!['atp1','aub1','acdn'].includes(m.id));
-  assert.deepEqual(stable(obj),stable(old),'Preserve all other hero ability fields');
+  const ultimate=skillSeeds[old.oldId]?.ultimate;
+  const allowed=ultimate ? new Set([...ultMagnitude,...(ultSpecial[old.oldId]||[])]) : new Set();
+  const stable=o=>o.modifications.filter(m=>!['atp1','aub1','acdn'].includes(m.id) && !allowed.has(m.id));
+  assert.deepEqual(stable(obj),stable(old),'Preserve flags, intervals, counts and non-ultimate skill effects');
+  if(ultimate) for(const m of old.modifications) if(ultMagnitude.has(m.id)) {
+   const expected=old.oldId==='AUin' && m.id==='Uin1' ? Math.max(m.value*3,300+60*(m.levelOrVariation-1)) : m.value*3;
+   assert.ok(Math.abs(value(obj,m.id,m.levelOrVariation)-expected)<0.01,'Ultimate flat magnitudes receive the intended boost');
+  }
   for(const m of old.modifications.filter(m=>m.id==='acdn')) {
    const actual=value(obj,'acdn',m.levelOrVariation);
    if(Math.abs(actual-m.value)>1e-5) {
-    assert.ok(Math.abs(actual-m.value*1.5)<0.0002,'Offensive cooldown multiplier is exactly 1.5');longerCooldowns++;
+    if(ultimate && ultRecovery[old.oldId]) {
+     const offensive=['ANch','ANtm'].includes(old.oldId) ? 1.5 : 1;
+     assert.ok(Math.abs(actual-m.value*ultRecovery[old.oldId]*offensive)<0.0002,'Utility ultimate cooldown follows its reviewed multiplier');
+    }
+    else assert.ok(Math.abs(actual-m.value*1.5)<0.0002,'Offensive cooldown multiplier is exactly 1.5');
+    longerCooldowns++;
    }
   }
  }
 }
 assert.ok(longerCooldowns>1000);
 for(const id of ['AHtb','AHbz','AOsh','ANcs','ANab','ANfl']) assert.ok(value(abilityById.get(id),'acdn',1)>0);
-console.log('PASS: Existing hero skill effects preserved; offensive cooldowns increased by 50%.');
+console.log('PASS: Ultimate magnitude boosts; basic skills, control intervals, flags and summon counts preserved.');
 const allItems=parsed['war3map.w3t'].customTable.objects;
 assert.equal(supreme.length,7);assert.deepEqual(supreme.map(i=>Object.keys(i.stats)[0]),['strength','agility','intelligence','armor','attack_speed','mana_regen','health_regen']);
 assert.equal(value(custom.find(u=>u.newId==='fsup'),'usei'),supreme.map(i=>i.id).join(','));
@@ -438,4 +453,45 @@ for(const id of ['fbax','ftow','fbst','ffnt','fbfn','fshp','fs0p','fs1p','fs2p',
 for(let kind=0;kind<heroes.length;kind++) {
  const list=[heroes[kind].primary,6,3,4,5,heroes[kind].primary===0?2:0];assert.equal(new Set(list).size,6);
 }
+// Army tiers and research are independently observable in the emitted objects.
+for(let race=0;race<4;race++) for(let tier=0;tier<5;tier++) {
+ const unit=unitById.get(`fm${race}${tier}`);
+ assert.ok(Math.abs(value(unit,'usca')-0.7)<1e-6);assert.equal(value(unit,'ucol'),16);
+ assert.equal(value(unit,'uhpm'),balance.tiers[tier].hp);assert.equal(value(unit,'ua1b'),balance.tiers[tier].damage);
+ assert.equal(value(unit,'udup'),1);assert.equal(value(unit,'udu1'),3);
+ if(tier>0) {
+  assert.ok(balance.tiers[tier].hp>=balance.tiers[tier-1].hp*1.5);
+  assert.ok(balance.tiers[tier].damage>=balance.tiers[tier-1].damage*1.5);
+ }
+}
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglb'),140);
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglm'),105);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglb'),140);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglm'),105);
+assert.equal(value(custom.find(o=>o.newId==='fbks'),'usei'),books.map(i=>i.id).join(','));
+assert.deepEqual(books.map(i=>[i.base,i.cost]),[['tst2',350],['tdx2',350],['tin2',350],['tkno',1200]]);
+for(const book of books) {
+ const item=allItems.find(o=>o.newId===book.id);assert.equal(item.oldId,book.base);assert.equal(value(item,'igol'),book.cost);
+ assert.equal(value(item,'ilum'),0);assert.ok(!item.modifications.some(m=>m.id==='iabi'),'Inherit the native +2 / level power-up effect');
+}
+for(let rank=1;rank<=50;rank++) {
+ const pad=String(rank).padStart(2,'0');
+ const infernal=unitById.get(value(abilityById.get('AUin'),'Uin4',rank));
+ assert.ok(value(infernal,'uhpm')>=6000 && value(infernal,'ua1b')>=144);
+ assert.ok(value(infernal,'uabi').includes('Fi'+pad));
+ const fire=gearAbilities.find(a=>a.newId==='Fi'+pad);
+ assert.equal(fire.oldId,'ANpi');assert.ok(Math.abs(value(fire,'Eim1',1)-80*(1+0.18*(rank-1)))<0.001);
+ assert.equal(value(fire,'atar',1),'ground,air,enemy,neutral');
+ const vengeance=gearAbilities.find(a=>a.newId==='Fv'+pad);
+ const spirit=unitById.get(value(vengeance,'Rai3',1));assert.equal(spirit.oldId,'even');assert.ok(value(spirit,'ua1b')>0);
+ const rebirth=gearAbilities.find(a=>a.newId==='Fh'+pad);
+ const phoenix=unitById.get(value(rebirth,'Eme1',1)),egg=unitById.get(value(rebirth,'Emeu',1));
+ assert.equal(phoenix.oldId,'hphx');assert.equal(egg.oldId,'hpxe');
+ assert.ok(value(phoenix,'uabi').includes(rebirth.newId) && value(egg,'uabi').includes(rebirth.newId),'Phoenix keeps its rank after hatching');
+ const tornado=gearAbilities.find(a=>a.newId==='Ft'+pad);
+ assert.equal(tornado.oldId,'Atdg');assert.ok(!tornado.modifications.some(m=>m.id==='Tdg2'),'Do not scale the medium damage radius as damage');
+ assert.ok(!gearAbilities.some(a=>a.newId==='Fq'+pad),'Keep native tornado control timing');
+ assert.ok(value(abilityById.get('AUdd'),'Udd1',rank)<=0.350001,'Percent max-HP damage remains bounded');
+}
+console.log('PASS: Stronger army tiers, threefold weaker research/+40% prices, compact models, four native books and rank-specific ultimate secondary effects.');
 console.log('PASS: Seven supreme items, four consumable potions, +30% building HP and full item effect/price validation.');

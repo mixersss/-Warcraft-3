@@ -6,6 +6,7 @@ UNIT_TYPE_SUMMONED = 'summoned'
 UNIT_TYPE_UNDEAD, UNIT_TYPE_HERO = 'undead', 'hero'
 UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
 PLAYER_STATE_RESOURCE_GOLD = 'gold'
+PLAYER_NEUTRAL_PASSIVE = 15
 Players, World = {}, {}
 function FourCC(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
 function Player(p) return p end
@@ -63,6 +64,15 @@ function IssueNeutralImmediateOrderById(p,shop,id)
     if not h or not EngineShops[shop.id][id] or BlockStock then return false end
     local config=assert(EngineItems[id])
     if Players[p].gold<config.cost then return false end
+    local book=EngineBooks[id]
+    if book then
+        Players[p].gold=Players[p].gold-config.cost
+        if book=='level' then
+            SetHeroLevel(h,math.min(HERO_MAX_LEVEL,h.level+1))
+            local old=Dying;Dying=h;OnHeroLevel();Dying=old
+        else h[book]=h[book]+2 end
+        return true
+    end
     for slot=0,5 do
         if not h.inventory[slot] then
             Players[p].gold=Players[p].gold-config.cost
@@ -236,6 +246,7 @@ function reset()
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
         BotTactic[p],GearFraction[p],TierFraction[p]=0,0,0
+        BookShop[p]=nil
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
         BotThinkTrigger[p]={actions={BotThink}}
         HeroQueued[p],HeroLearnQueued[p],ScheduledHero[p]=false,false,0
@@ -552,8 +563,8 @@ DamageSource=Hero[3];DamageAmount=0;OnBaseDefense();assert(Bastion[0].paused)
 Bastion[0].hp=0;DamageAmount=10;OnBaseDefense();assert(Bastion[0].hp==0,'No resurrection')
 
 -- Bots prioritize affordable research despite an expensive desired item.
-reset();Bot[0]=true;GearSavings[0]=100;Players[0].gold=500
-BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==400)
+reset();Bot[0]=true;GearSavings[0]=0;Players[0].gold=600
+BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==460)
 local budget=Players[0].gold;BotBuy(0);assert(Players[0].gold==budget,'No duplicate orders during research')
 FinishResearch(0);BotBuy(0);FinishResearch(0);BotBuy(0);FinishResearch(0)
 assert(Attack[0]==1 and Armor[0]==1 and Vitality[0]==1,'Bots develop all troop stats early')
@@ -595,14 +606,14 @@ for n=1,24 do ProcessHeroQueue() end
 assert(HostPlayer==2,'First occupied human slot controls mode, not always red')
 for p=0,11 do
  if p==2 or p==3 or p==7 then
-  assert(SlotActive[p] and not Lost[p] and Alive(Base[p]) and Alive(Hero[p]) and Alive(Tower[p]) and Alive(Bastion[p]))
+  assert(SlotActive[p] and not Lost[p] and Alive(Base[p]) and Alive(Hero[p]) and Alive(Tower[p]) and Alive(Bastion[p]) and Alive(BookShop[p]))
  else
-  assert(not SlotActive[p] and Lost[p] and Base[p]==nil and Hero[p]==nil and Tower[p]==nil and Bastion[p]==nil)
+  assert(not SlotActive[p] and Lost[p] and Base[p]==nil and Hero[p]==nil and Tower[p]==nil and Bastion[p]==nil and BookShop[p]==nil)
  end
 end
 assert(Bot[3] and not Bot[2] and not Bot[0],'Only explicitly selected computer becomes a bot')
 SetAllRandom(2);assert(AllRandomMode)
-for _,u in ipairs(World) do assert(u.owner==2 or u.owner==3 or u.owner==7,'Random mode never creates units for empty slots') end
+for _,u in ipairs(World) do assert(u.owner==2 or u.owner==3 or u.owner==7 or (u.owner==15 and u.id==FourCC('fbks')),'Random mode never creates player units for empty slots') end
 Seconds=WARMUP_SECONDS-1;Tick()
 for p=0,11 do if not SlotActive[p] then assert(Base[p]==nil and Hero[p]==nil and #Army[p]==0) end end
 
@@ -871,3 +882,18 @@ RngQueue={2};InitSlot(0);assert(not Bot[0] and #RngQueue==1)
 Players[4].slot=PLAYER_SLOT_STATE_EMPTY;InitSlot(4);assert(not Bot[4] and #RngQueue==1)
 EventPlayer=0;OnLeave();assert(Bot[0] and BotTactic[0]==2 and #RngQueue==0)
 RngQueue={0};OnLeave();assert(BotTactic[0]==2 and #RngQueue==1,'Repeated departure handling never rerolls an existing bot')
+
+-- Native instant-use books work with six occupied slots and ordinary paid stock.
+reset();Players[0].slot=PLAYER_SLOT_STATE_PLAYING;Players[0].controller=MAP_CONTROL_USER;InitSlot(0)
+Hero[0].x,Hero[0].y=BookX[0],BookY[0];Players[0].gold=5000
+for slot=0,5 do Hero[0].inventory[slot]={id=9000+slot} end
+local strength,agility,intelligence=Hero[0].str,Hero[0].agi,Hero[0].int
+assert(IssueNeutralTargetOrder(0,BookShop[0],'neutralinteract',Hero[0]))
+for _,id in ipairs({'fbS0','fbA0','fbI0','fbL0'}) do assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC(id))) end
+assert(Hero[0].str==strength+2 and Hero[0].agi==agility+2 and Hero[0].int==intelligence+2)
+assert(Hero[0].level==2 and Hero[0].points==3 and Players[0].gold==2750,'The level book invokes the existing extra-skill-point handler exactly once')
+for slot=0,5 do assert(Hero[0].inventory[slot].id==9000+slot,'Instant books never replace equipment') end
+SetHeroLevel(Hero[0],499);Dying=Hero[0];OnHeroLevel()
+assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC('fbL0')) and Hero[0].level==500)
+assert(Hero[0].points==999,'Tome-based levels preserve the full native and extra point budget')
+assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC('fbL0')) and Hero[0].level==500 and Hero[0].points==999,'The engine hero cap still applies')

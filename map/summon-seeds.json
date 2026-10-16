@@ -320,5 +320,19 @@
     "armor": 0.0,
     "scale": 1.0,
     "collision": 8.0
+  },
+  "even": {
+    "hp": 500.0,
+    "damage": 16.0,
+    "armor": 5.0,
+    "scale": 1.0,
+    "collision": 32.0
+  },
+  "hpxe": {
+    "hp": 200.0,
+    "damage": 0,
+    "armor": 0.0,
+    "scale": 1.25,
+    "collision": 32.0
   }
 }

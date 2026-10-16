@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.12.0-alpha",
+  "version": "0.13.0-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 12,
@@ -9,10 +9,10 @@
   "army_cap": 48,
   "warmup_seconds": 60,
   "upgrade_max": 200,
-  "attack_cost": 100,
-  "attack_cost_step": 75,
-  "armor_cost": 100,
-  "armor_cost_step": 75,
+  "attack_cost": 140,
+  "attack_cost_step": 105,
+  "armor_cost": 140,
+  "armor_cost_step": 105,
   "spawn_cost": 300,
   "spawn_cost_step": 200,
   "hero_power_cost": 250,
@@ -30,39 +30,39 @@
     {
       "name": "Veterans",
       "melee_base": "hfoo",
-      "hp": 600,
-      "damage": 22,
-      "armor": 2,
+      "hp": 800,
+      "damage": 32,
+      "armor": 3,
       "cost": 1800
     },
     {
       "name": "Grunts",
       "melee_base": "ogru",
-      "hp": 850,
-      "damage": 32,
-      "armor": 3,
+      "hp": 1400,
+      "damage": 58,
+      "armor": 6,
       "cost": 3200
     },
     {
       "name": "Knights",
       "melee_base": "hkni",
-      "hp": 1150,
-      "damage": 44,
-      "armor": 4,
+      "hp": 2300,
+      "damage": 100,
+      "armor": 10,
       "cost": 4600
     },
     {
       "name": "Tauren",
       "melee_base": "otau",
-      "hp": 1500,
-      "damage": 58,
-      "armor": 5,
+      "hp": 3600,
+      "damage": 165,
+      "armor": 15,
       "cost": 6000
     }
   ],
-  "health_cost": 180,
-  "health_cost_step": 120,
-  "health_percent": 0.2,
+  "health_cost": 252,
+  "health_cost_step": 168,
+  "health_percent": 0.06666666666666667,
   "base_upgrade_cost": 1800,
   "base_upgrade_cost_step": 1400,
   "hero_max_level": 500,
@@ -79,8 +79,8 @@
   "bastion_range": 1000,
   "bastion_cooldown": 0.75,
   "experience_multiplier": 0.5,
-  "attack_per_rank": 9,
-  "armor_per_rank": 3,
+  "attack_per_rank": 3,
+  "armor_per_rank": 1,
   "corpse_seconds": 120,
   "autosave_seconds": 120,
   "base_fountain_radius": 1200,
@@ -105,5 +105,11 @@
       "tier_percent": 55,
       "gear_percent": 15
     }
-  ]
+  ],
+  "army_model_scale": 0.7,
+  "army_collision": 16,
+  "summon_model_scale": 0.7,
+  "ultimate_power_multiplier": 3,
+  "ultimate_summon_hp_multiplier": 4,
+  "ultimate_summon_damage_multiplier": 3
 }

@@ -122,3 +122,12 @@ for team in range(4):
         for dy in [-96,0,96]:assert cell(sx+dx,sy+dy) in accessible,('Supreme shop access',team)
 for sx,sy in [(0,-640),(-160,-640),(160,-640)]:assert cell(sx,sy) in accessible
 print('PASS: New supreme shops and central potion shop are reachable.')
+for team in range(4):
+    for sx,sy in [(-5000,-3500),(-4100,-5100),(-2750,-4450)]:
+        for _ in range(team): sx,sy=-sy,sx
+        for dx in [-96,0,96]:
+            for dy in [-96,0,96]: assert cell(sx+dx,sy+dy) in accessible,('Book shop access',team,sx,sy)
+        for hx,hy in first:
+            for _ in range(team): hx,hy=-hy,hx
+            assert math.hypot(sx-hx,sy-hy)>250,'Book shop must not overlap barracks'
+print('PASS: All twelve book-shop sites have clear footprints and connect to their fortress.')

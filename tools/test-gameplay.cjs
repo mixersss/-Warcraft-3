@@ -33,8 +33,11 @@ run('EngineResearch={'+researches.map(o=>`[${raw(o.newId)}]={base=${get(o,'gglb'
 const ItemParser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
 const itemData=new ItemParser();itemData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3t'))));
 run('EngineItems={'+itemData.customTable.objects.map(o=>`[${raw(o.newId)}]={cost=${get(o,'igol')}}`).join(',')+'}');
+// Classic native power-up bases, independent of the requested book descriptions.
+const bookBases={tst2:'str',tdx2:'agi',tin2:'int',tkno:'level'};
+run('EngineBooks={'+itemData.customTable.objects.filter(o=>bookBases[o.oldId]).map(o=>`[${raw(o.newId)}]="${bookBases[o.oldId]}"`).join(',')+'}');
 const unitsData=new ItemParser();unitsData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3u'))));
-run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId) || o.newId==='fsup' || o.newId==='fpot').map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
+run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId) || o.newId==='fsup' || o.newId==='fpot' || o.newId==='fbks').map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
 const abilityData=parseObjects('war3map.w3a');
 const abilities=[...abilityData.originalTable.objects,...abilityData.customTable.objects.filter(o=>get(o,'aher')===1)];
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.newId==='\0\0\0\0' ? o.oldId : o.newId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');

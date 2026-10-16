@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability
+from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities
 from equipment import item_effects, potion_abilities
 from hero_picker import units as picker_units, controls as picker_controls
 
@@ -109,6 +109,15 @@ def supreme_positions() -> list[tuple[int,int]]:
         x,y=-5100,-3100
         for _ in range(team):x,y=-y,x
         result.append((x,y))
+    return result
+
+
+def book_positions() -> list[tuple[int,int]]:
+    result=[]
+    for team in range(4):
+        for x,y in [(-5000,-3500),(-4100,-5100),(-2750,-4450)]:
+            for _ in range(team): x,y=-y,x
+            result.append((x,y))
     return result
 
 
@@ -227,7 +236,7 @@ def units(b: dict) -> bytes:
             ('udef', 0, row['armor']), ('udup', 0, b['armor_per_rank']),
             ('udu1', 0, b['attack_per_rank']), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
-                ('ucol', 2, 24.0),
+                ('usca', 1, b['army_model_scale']), ('ucol', 2, float(b['army_collision'])),
                 ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
@@ -290,6 +299,11 @@ def units(b: dict) -> bytes:
         ('ucol',2,64.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
         ('utub',3,'Одноразовые зелья здоровья, маны, скорости и невидимости.'),
     ]))
+    entries.append(('ngme','fbks',[
+        ('unam',3,'Лавка знаний'),('usei',3,','.join(row['id'] for row in catalog('books'))),
+        ('ucol',2,48.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
+        ('utub',3,'Книги +2 силы, ловкости или интеллекта — по 350 золота; +1 уровень героя — 1200. Применяются при покупке.'),
+    ]))
     originals=[(hero['id'],'\0'*4,[('uhab',3,','.join(hero['skills']+['Fatr']))]) for hero in catalog('heroes') if 'base' not in hero]
     return objects(entries,original_entries=originals)
 
@@ -312,11 +326,11 @@ def fountain_abilities(b: dict) -> list:
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
-    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')
+    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')+catalog('books')
     stock = set(json.loads((ROOT/'map/classic-object-ids.json').read_text())['tables']['items'])
     for row in rows:
         if row['base'] not in stock:
@@ -382,7 +396,7 @@ def script(b: dict) -> str:
         '    string array RaceName', '    string array RaceAlias',
         '    integer array HeroType', '    string array HeroName', '    string array HeroAlias',
         '    integer array HeroGroup', '    integer array HeroSkill', '    integer array HeroPrimary', '    integer array PickToken',
-        '    integer array SuperId', '    integer array SuperCost', '    integer array SuperBuild', '    real array SuperX', '    real array SuperY', '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
+        '    real array BookX', '    real array BookY', '    integer array SuperId', '    integer array SuperCost', '    integer array SuperBuild', '    real array SuperX', '    real array SuperY', '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', 'endglobals']
@@ -402,6 +416,8 @@ def script(b: dict) -> str:
         init += [f'    set ShopX[{idx}] = {x}.0',f'    set ShopY[{idx}] = {y}.0']
     for idx,(x,y) in enumerate(supreme_positions()):
         init += [f'    set SuperX[{idx}] = {x}.0',f'    set SuperY[{idx}] = {y}.0']
+    for idx,(x,y) in enumerate(book_positions()):
+        init += [f'    set BookX[{idx}] = {x}.0',f'    set BookY[{idx}] = {y}.0']
     for idx,row in enumerate(catalog('supreme')):
         init += [f"    set SuperId[{idx}] = '{row['id']}'",f'    set SuperCost[{idx}] = {row["cost"]}']
     for row in catalog('equipment'):

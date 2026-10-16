@@ -81,6 +81,7 @@ def extract_summons(source, abilities):
             for name in ('unitbalance','unitweapons','unitui')}
     ids={raw for seed in abilities.values() for field in seed['fields']
          if field['id'] in SUMMON_FIELDS for value in field['values'] for raw in value.split(',')}
+    ids.update({'even','hpxe'})  # Nested vengeance spirits and phoenix rebirth.
     def number(row,key,default):
         try: return float(row[key])
         except (KeyError,ValueError): return default
