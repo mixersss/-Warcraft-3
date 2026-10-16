@@ -1,6 +1,11 @@
 // Four Fronts Frenzy. Plain JASS: Warcraft III TFT 1.26+.
 // Balance globals and InitBalance are generated from balance.json.
 globals
+    timer HeroQueueTimer = null
+    integer HeroQueueCursor = 0
+    boolean array HeroQueued
+    boolean array HeroLearnQueued
+    integer array ScheduledHero
     unit ReturnedUnit = null
     item ReturnedItem = null
     trigger array BotThinkTrigger
@@ -348,6 +353,8 @@ function LearnHero takes integer p returns nothing
 endfunction
 
 function CreateHero takes integer p, integer kind returns nothing
+    set HeroQueued[p] = false
+    set HeroLearnQueued[p] = false
     set HeroKind[p] = kind
     set SkillLevel[p] = 1
     set Hero[p] = CreateUnit(Player(p), HeroType[kind], HomeX[p], HomeY[p]-240, 270)
@@ -360,8 +367,44 @@ function CreateHero takes integer p, integer kind returns nothing
     call SetHeroLevel(Hero[p], 1, false)
     call PauseUnit(Hero[p], Seconds < WARMUP_SECONDS)
     if Bot[p] then
-        call LearnHero(p)
+        set HeroLearnQueued[p] = true
     endif
+endfunction
+
+function QueueHero takes integer p, integer kind returns nothing
+    set ScheduledHero[p] = kind
+    set HeroKind[p] = kind
+    set HeroQueued[p] = true
+    set HeroLearnQueued[p] = false
+endfunction
+
+function ProcessHeroQueue takes nothing returns nothing
+    local integer checked = 0
+    local integer p
+    loop
+        exitwhen checked == 12
+        set p = HeroQueueCursor
+        set HeroQueueCursor = ModuloInteger(HeroQueueCursor+1,12)
+        if not Lost[p] and SlotActive[p] and Alive(Base[p]) then
+            if HeroQueued[p] then
+                call CreateHero(p, ScheduledHero[p])
+                if Hero[p] == null then
+                    call QueueHero(p, GetRandomInt(0,23))
+                endif
+                return
+            elseif HeroLearnQueued[p] then
+                set HeroLearnQueued[p] = false
+                if Bot[p] and Alive(Hero[p]) then
+                    call LearnHero(p)
+                endif
+                return
+            endif
+        else
+            set HeroQueued[p] = false
+            set HeroLearnQueued[p] = false
+        endif
+        set checked = checked+1
+    endloop
 endfunction
 
 function AssignBotChoices takes integer p returns nothing
@@ -369,15 +412,11 @@ function AssignBotChoices takes integer p returns nothing
     call CreateHero(p, GetRandomInt(0, HERO_COUNT-1))
 endfunction
 
-// Computer heroes are created by the first game tick, independently of UI.
+// Queue repairs, never reroll an existing or dead hero.
 function EnsureBotHero takes integer p returns nothing
-    if Bot[p] and SlotActive[p] and not Lost[p] and Alive(Base[p]) then
+    if Bot[p] and SlotActive[p] and not Lost[p] and Alive(Base[p]) and not HeroQueued[p] then
         if Hero[p] == null or GetUnitTypeId(Hero[p]) == 0 then
-            call CreateHero(p, GetRandomInt(0, HERO_COUNT-1))
-            // Keep a playable stock fallback if a custom object fails to load.
-            if Hero[p] == null then
-                call CreateHero(p, GetRandomInt(0, 23))
-            endif
+            call QueueHero(p, GetRandomInt(0, HERO_COUNT-1))
         endif
     endif
 endfunction
@@ -523,7 +562,9 @@ function SetAllRandom takes integer requester returns nothing
         exitwhen p == 12
         if not Lost[p] then
             call RemoveUnit(Hero[p])
-            call AssignBotChoices(p)
+            set Hero[p] = null
+            set ArmyRace[p] = GetRandomInt(0,3)
+            call QueueHero(p, GetRandomInt(0,HERO_COUNT-1))
             if HeroPicker[p] != null then
                 call RemoveUnit(HeroPicker[p])
                 set HeroPicker[p] = null
@@ -1357,7 +1398,7 @@ function Tick takes nothing returns nothing
                         call SpawnWave(p)
                     endif
                 endif
-                if not Alive(Hero[p]) then
+                if Hero[p] != null and not Alive(Hero[p]) then
                     set Respawn[p] = Respawn[p]-1
                     if Respawn[p] <= 0 then
                         call ReviveHero(Hero[p], HomeX[p], HomeY[p]-240, true)
@@ -1388,7 +1429,9 @@ function Tick takes nothing returns nothing
         loop
             exitwhen p == 12
             if Alive(Base[p]) then
-                call PauseUnit(Hero[p], false)
+                if Hero[p] != null then
+                    call PauseUnit(Hero[p], false)
+                endif
                 if HeroPicker[p] != null then
                     call RemoveUnit(HeroPicker[p])
                     set HeroPicker[p] = null
@@ -1495,6 +1538,7 @@ function InitSlot takes integer p returns nothing
     call TriggerRegisterUnitEvent(BaseDefenseTrigger, Bastion[p], EVENT_UNIT_DAMAGED)
     if Bot[p] then
         set ArmyRace[p] = GetRandomInt(0, 3)
+        call QueueHero(p, GetRandomInt(0,HERO_COUNT-1))
     else
         call CreateHero(p, 0)
     endif
@@ -1616,7 +1660,9 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (36 героев). Первый игрок: -mode или -ar до 15-й секунды. Бой начнётся через 60 секунд. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (36 героев). Первый игрок: -mode или -ar до 15-й секунды. Подготовка 60 секунд: герои компьютеров загружаются по очереди. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 300/50. За каждый уровень героя — два очка навыков.")
+    set HeroQueueTimer = CreateTimer()
+    call TimerStart(HeroQueueTimer, 0.5, true, function ProcessHeroQueue)
     call TimerStart(clock, 1, true, function Tick)
     set AutosaveTimer = CreateTimer()
     call TimerStart(AutosaveTimer, I2R(AUTOSAVE_SECONDS), true, function AutoSave)

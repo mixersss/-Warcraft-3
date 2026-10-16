@@ -361,3 +361,17 @@ for(const old of previousAbilities.originalTable.objects) {
  for(const mod of old.modifications) if(quantities.has(mod.id)) assert.equal(value(current,mod.id,mod.levelOrVariation),mod.value,'Creature/resurrection counts must match 0.8.1');
 }
 console.log('PASS: Creature, illusion and resurrection counts match previous release at every rank.');
+// Startup optimization must preserve every combat field from 0.9.0.
+const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.0-alpha.w3x'))),true);
+const baselineSkills=new PreviousAbilities();baselineSkills.load(new Uint8Array(baseline.get('war3map.w3a').bytes()));
+for(const table of ['originalTable','customTable']) {
+ const current=parsed['war3map.w3a'][table].objects;
+ const previous=baselineSkills[table].objects;
+ assert.equal(current.length,previous.length);
+ for(let idx=0;idx<current.length;idx++) {
+  assert.equal(current[idx].oldId,previous[idx].oldId);assert.equal(current[idx].newId,previous[idx].newId);
+  const combat=o=>o.modifications.filter(m=>m.id!=='atp1' && m.id!=='aub1');
+  assert.deepEqual(combat(current[idx]),combat(previous[idx]),'All non-tooltip ability data matches 0.9.0');
+ }
+}
+console.log('PASS: Startup patch preserves every non-tooltip ability field from 0.9.0.');

@@ -37,7 +37,7 @@
 - Bastions sit behind bases, initially paused. Enemy damage to the base or bastion wakes defense for six seconds. Extend the window without reissuing attack orders on every damage event; this prevents repeated hits from resetting attacks. Towers stay vulnerable and never regenerate/respawn.
 - Bots check native research every second and do not reissue orders while busy. Develop a base tier after at least tier+1 ranks in each troop parameter. Gear savings accrue at roughly one third of real income; gear reserve never exceeds a quarter of current gold. TierSavings tracks a quarter of real positive income for base tiers; preserve funded tier money while continuing affordable troop research when the tier is unaffordable. Keep native item purchases and real research prices.
 
-- Computer heroes are assigned randomly by EnsureBotHero on the first game tick, independently of gallery input. Retry only missing/removed hero objects, never reroll dead heroes; preserve their revival identity. Native gallery callbacks reject computers.
+- Computer heroes are queued randomly by InitSlot/EnsureBotHero, independently of gallery input. A single 0.5s HeroQueueTimer runs at most one creation or initial learning operation per callback. All Random queues all active players as well; manual human selections cancel stale defaults. Retry only missing/removed hero objects, never reroll dead heroes; preserve their revival identity. Native gallery callbacks reject computers.
 
 - Every hero has native Fatr/Aamk as a fifth learnable skill: 500 ranks, cumulative Iagi/Iint/Istr=2*rank, using ordinary skill points. Preserve 999 points total at hero level 500 and the human choice of build. Bot attribute target is floor(level/12).
 - Base fountains fbfn are owned by the first active player of each non-empty team. Native FbHP/FbMP only affect friendly heroes, 0.5% each pool/sec, radius 1200; center FfHP/FfMP remain all-team 1.5%. Do not double-trigger heal heroes through sanctuary.
@@ -47,3 +47,5 @@
 - Autosave is full native SaveGame("FFFAutosave") on a separate repeating 30s timer with SyncSelections, identical name and synchronized calls. No fake checkpoint/gamecache substitutes or timestamped save series. Warcraft file I/O, restoration, pauses, multiplayer and crash resolution require actual engine tests; never promise a <=30s recovery guarantee without them.
 
 - Keep bot thinking in per-player static trigger threads and stagger army updates; a shared large combat Tick can exceed the Classic JASS operation limit even without a memory leak. No timer/trigger creation per unit or think invocation.
+
+- Startup optimizations must preserve all non-tooltip W3A fields, living unit quantities, hero availability and the 30s native autosave. Do not promise background/nonblocking native CreateUnit or SaveGame in Classic. The first 60s are intentional preparation, with UI/camera responsive.

@@ -218,6 +218,7 @@ function reset()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
     AutosaveCount=0
+    HeroQueueCursor=0
     for idx=0,CORPSE_SECONDS do CorpseRing[idx]={} end
     HostPlayer,AllRandomMode,ModeDialogOpen=0,false,false
     GoldTags={}
@@ -233,6 +234,7 @@ function reset()
         GearProgress[p],GearSavings[p]=0,0
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
         BotThinkTrigger[p]={actions={BotThink}}
+        HeroQueued[p],HeroLearnQueued[p],ScheduledHero[p]=false,false,0
         TierSavings[p]=0
         SlotActive[p]=true
         HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
@@ -409,7 +411,7 @@ end
 
 reset()
 -- Generic casting uses this hero's learned skill, and waits for a channel.
-Bot[0]=true;CreateHero(0,1)
+Bot[0]=true;CreateHero(0,1);ProcessHeroQueue()
 local enemy=Hero[3];enemy.x=HomeX[0]+100;enemy.y=HomeY[0]
 AllowedOrders={thunderbolt=true}
 assert(TryBotSpell(0,enemy) and Hero[0].order[1]=='thunderbolt')
@@ -512,6 +514,7 @@ reset();ShowHeroPicker(0,0);local oldPicker=HeroPicker[0]
 SetAllRandom(1);assert(not AllRandomMode)
 RngQueue={};for p=0,11 do table.insert(RngQueue,p%4);table.insert(RngQueue,(p%2==0) and 0 or HERO_COUNT-1) end
 SetAllRandom(0);assert(AllRandomMode and oldPicker.removed)
+for n=1,24 do ProcessHeroQueue() end
 for p=0,11 do assert(ArmyRace[p]==p%4 and HeroKind[p]==((p%2==0) and 0 or HERO_COUNT-1)) end
 local chosen=Hero[0];assert(not SelectRosterHero(0,1) and Hero[0]==chosen);assert(not SelectArmyRace(0,1))
 reset();Seconds=16;SetAllRandom(0);assert(not AllRandomMode)
@@ -569,6 +572,7 @@ Players[3].slot=PLAYER_SLOT_STATE_PLAYING;Players[3].controller=MAP_CONTROL_COMP
 Players[5].slot=PLAYER_SLOT_STATE_LEFT
 Players[7].slot=PLAYER_SLOT_STATE_PLAYING
 for p=0,11 do InitSlot(p);EnsureBotHero(p) end
+for n=1,24 do ProcessHeroQueue() end
 assert(HostPlayer==2,'First occupied human slot controls mode, not always red')
 for p=0,11 do
  if p==2 or p==3 or p==7 then
@@ -619,7 +623,8 @@ for p=0,11 do if not SlotActive[p] then assert(not Players[p].victory and not Pl
 
 -- A computer gets a random hero without visiting any selection building.
 reset();Bot[3]=true;Hero[3]=nil;Seconds=0;RngQueue={27}
-Tick();assert(HeroKind[3]==27 and Alive(Hero[3]) and HeroPicker[3]==nil)
+Tick();assert(Hero[3]==nil and HeroQueued[3])
+ProcessHeroQueue();assert(HeroKind[3]==27 and Alive(Hero[3]) and HeroPicker[3]==nil)
 local assigned=Hero[3];Tick();assert(Hero[3]==assigned,'Do not reroll existing bot heroes')
 Hero[3].hp=0;EnsureBotHero(3);assert(Hero[3]==assigned,'Dead heroes retain their revival identity')
 Hero[3]=nil;Lost[3]=true;EnsureBotHero(3);assert(Hero[3]==nil,'Never fill an inactive slot')
@@ -686,9 +691,27 @@ for p=0,11 do
 end
 InitGame();assert(AutosaveTimer.period==30 and AutosaveTimer.callback==AutoSave)
 Clock.callback()
+for n=1,24 do ProcessHeroQueue() end
 for p=0,11 do assert(Alive(Base[p]) and Alive(Hero[p]) and SlotActive[p]) end
 for team=0,3 do assert(Alive(TeamFountain[team]) and TeamOf(TeamFountain[team].owner)==team) end
 for kind=24,35 do
  if Hero[0] then RemoveUnit(Hero[0]) end
  CreateHero(0,kind);assert(Alive(Hero[0]) and Hero[0].id==HeroType[kind])
 end
+
+-- One expensive operation per 0.5s callback, even with twelve random heroes.
+reset()
+for p=0,11 do Bot[p]=true;Hero[p]=nil;QueueHero(p,p+24) end
+for step=1,24 do
+ local before=#World
+ ProcessHeroQueue()
+ assert(#World-before<=1,'Never create a batch of heroes in one callback')
+ if #World>before then assert(World[#World].points==1,'Initial learning runs in a different callback') end
+end
+for p=0,11 do assert(Alive(Hero[p]) and HeroKind[p]==p+24 and Hero[p].points==0 and not HeroQueued[p] and not HeroLearnQueued[p]) end
+reset();QueueHero(0,27);assert(SelectRosterHero(0,2));local chosen=Hero[0]
+for step=1,24 do ProcessHeroQueue() end
+assert(Hero[0]==chosen and HeroKind[0]==2,'Queued defaults never overwrite a human selection')
+reset();Hero[3]=nil;Bot[3]=true;QueueHero(3,27);Lost[3]=true
+for step=1,24 do ProcessHeroQueue() end
+assert(Hero[3]==nil and not HeroQueued[3],'Inactive slots stay empty while work is queued')
