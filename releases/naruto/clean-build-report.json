@@ -1,0 +1,42 @@
+[
+  {
+    "filename": "Naruto_4_2i_Clean_Bots_02.w3x",
+    "bytes": 7838939,
+    "sha256": "cc276228665c52f1ecc7b894bae938c8891b3def8d4ae60515e63b51a5b560f6",
+    "allFilesRebuilt": 461,
+    "assetFilesIdenticalToOriginal": 457,
+    "recoveredNames": 459,
+    "sectorSize": 16384,
+    "encryption": false,
+    "singleUnitFiles": false,
+    "rootScriptAlias": true,
+    "lobbyPlayers": 12,
+    "teamMasks": [
+      7,
+      56,
+      448,
+      3584
+    ],
+    "engineTested": false
+  },
+  {
+    "filename": "Naruto_4_2i_Clean_NoAI_02.w3x",
+    "bytes": 7834078,
+    "sha256": "dcecb38e06dd4b25e4b859f4c32351a913d204303a7bfe7adb2d2358af20f4fe",
+    "allFilesRebuilt": 461,
+    "assetFilesIdenticalToOriginal": 457,
+    "recoveredNames": 459,
+    "sectorSize": 16384,
+    "encryption": false,
+    "singleUnitFiles": false,
+    "rootScriptAlias": true,
+    "lobbyPlayers": 12,
+    "teamMasks": [
+      7,
+      56,
+      448,
+      3584
+    ],
+    "engineTested": false
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "filename": "Naruto_4_2i_Clean_Bots_02.w3x",
+    "nativeStormLibFilesReadAndVerified": 461,
+    "independentPythonUniqueFilesVerified": 454,
+    "modelsUnchanged": 67,
+    "texturesUnchanged": 200,
+    "audioFilesUnchanged": 174,
+    "bytes": 7838939,
+    "belowClassic8MiBLimit": true,
+    "enginePlaytest": false
+  },
+  {
+    "filename": "Naruto_4_2i_Clean_NoAI_02.w3x",
+    "nativeStormLibFilesReadAndVerified": 461,
+    "independentPythonUniqueFilesVerified": 454,
+    "modelsUnchanged": 67,
+    "texturesUnchanged": 200,
+    "audioFilesUnchanged": 174,
+    "bytes": 7834078,
+    "belowClassic8MiBLimit": true,
+    "enginePlaytest": false
+  }
+]
