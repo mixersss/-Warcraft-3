@@ -1,0 +1,1483 @@
+{
+  "heroes": [
+    {
+      "slot": 0,
+      "id": "R000",
+      "source_id": "H002",
+      "name": "Uzumaki Naruto",
+      "model": "Naruto.mdx",
+      "icon": "Icon_Naruto_Portrait2.blp",
+      "scale": 0.8999999761581421,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack",
+        "Attack - 2",
+        "Walk",
+        "Spell",
+        "Spell Two",
+        "Death",
+        "Dissipate",
+        "Attack 3",
+        "Stand 2",
+        "Morph",
+        "Stand Alternate",
+        "Attack Alternate",
+        "Walk Alternate",
+        "Spell slam Alternate",
+        "Morph Alternate",
+        "death alternate",
+        "disspate alternate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundJiraiyaRasenganNew.mp3",
+        "war3mapImported\\SoundNarutoDieNew4.mp3",
+        "war3mapImported\\SoundNarutoKageBunshinJutsu.mp3",
+        "war3mapImported\\SoundNarutoKuchiyose.mp3",
+        "war3mapImported\\SoundNarutoThrow.mp3",
+        "war3mapImported\\SoundNarutoTransform.mp3",
+        "war3mapImported\\SoundRasengan.mp3",
+        "war3mapImported\\Sound_Naruto_Death32br48hz.mp3",
+        "war3mapImported\\Sound_Naruto_KageBunshin 32br48hz.mp3",
+        "war3mapImported\\Sound_Naruto_RasenganLong_32br.mp3",
+        "war3mapImported\\Sound_Naruto_Throw 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A00L",
+          "name": "Jinchuriki (D)",
+          "base_ability": "AUau",
+          "levels": 4,
+          "description": "Naruto utilizes the Kyuubi's red chakra, increasing his stamina and healing speed.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A001",
+          "name": "Kage Bunshin No Jutsu (F)",
+          "base_ability": "AOmi",
+          "levels": 4,
+          "description": "Naruto creates numerous shadow clones that fight with him.",
+          "animation_tags": "spell,loop",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundNarutoKageBunshinJutsu.mp3",
+            "war3mapImported\\Sound_Naruto_KageBunshin 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00R",
+          "name": "Kuchiyose No Jutsu (G)",
+          "base_ability": "AHwe",
+          "levels": 3,
+          "description": "Summons a frog fighting for Naruto. This jutsu was learned from Jirayia.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundNarutoKuchiyose.mp3",
+            "war3mapImported\\Sound_Jiraiya_Kuchiyose.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01P",
+          "name": "Rasengan (W)",
+          "base_ability": "ANsb",
+          "levels": 3,
+          "description": "A powerful jutsu developed by the 4th Hokage, this ball of chakra can be a lethal attack.",
+          "animation_tags": "spell,two",
+          "source_trigger_sound_paths": [
+            "Abilities\\Spells\\Human\\Banish\\BanishLoop1.wav",
+            "war3mapImported\\SoundJiraiyaRasenganNew.mp3",
+            "war3mapImported\\SoundRasengan.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A015",
+          "name": "One-Tailed Transformation (E)",
+          "base_ability": "ANrg",
+          "levels": 3,
+          "description": "The Kyuubi's chakra begins to overtake Naruto causing him to become increasingly stronger.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundNarutoTransform.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 1,
+      "id": "R001",
+      "source_id": "H003",
+      "name": "Uchiha Sasuke",
+      "model": "sasuke.mdx",
+      "icon": "Icon_Sasuke_Portrait2.blp",
+      "scale": 0.800000011920929,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack",
+        "Attack - 2",
+        "Walk",
+        "Spell Stand",
+        "Spell Attack",
+        "Death",
+        "Dissipate",
+        "Spell Walk",
+        "spell Death",
+        "spell Dissipate",
+        "Attack 3",
+        "Stand 2"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundSasukeDieNew2.mp3",
+        "war3mapImported\\SoundSharingan.mp3",
+        "war3mapImported\\Sound_Chidori32br38hz.mp3",
+        "war3mapImported\\Sound_ChidoriStart 32br48hz.mp3",
+        "war3mapImported\\Sound_Itachi_MangekyoSharingan.mp3",
+        "war3mapImported\\Sound_Sasuke_Chidori 32br48hz.mp3",
+        "war3mapImported\\Sound_Sasuke_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Sasuke_KatonP1 32br48hz.mp3",
+        "war3mapImported\\Sound_Sasuke_KatonP2 32br48hz.mp3",
+        "war3mapImported\\Sound_Sasuke_Roar.mp3",
+        "war3mapImported\\Sound_Sasuke_Sharingan.mp3",
+        "war3mapImported\\Sound_Sasuke_ShishiRendan.mp3",
+        "war3mapImported\\Sound_Sasuke_Throw 32br48hz.mp3",
+        "war3mapImported\\Sound_Sasuke_Throw2 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A01B",
+          "name": "Katon: Goukakyuu no jutsu (D)",
+          "base_ability": "ANbf",
+          "levels": 4,
+          "description": "A large fireball is spewed from the mouth towards the opponent.",
+          "animation_tags": "spell,walk",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Itachi_KatonGokakyu.mp3",
+            "war3mapImported\\Sound_Jiraiya_KatonGamayuEndan_32br.mp3",
+            "war3mapImported\\Sound_Sasuke_KatonP1 32br48hz.mp3",
+            "war3mapImported\\Sound_Sasuke_KatonP2 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01A",
+          "name": "Sharingan (F)",
+          "base_ability": "AOw2",
+          "levels": 3,
+          "description": "The hereditary jutsu of the Uchiha clan, Sharingan gives the advantage by seeing and predicting movements with more ease.",
+          "animation_tags": "",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSharingan.mp3",
+            "war3mapImported\\Sound_Sasuke_Sharingan.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A033",
+          "name": "Shishi Rendan (G)",
+          "base_ability": "AOcl",
+          "levels": 3,
+          "description": "Being evolved from one Rock Lee's Omoto Renge, Sasuke developed this through the use of his Sharingan. Essentially, Sasuke causes an opponent to go airborne.From there he attacks from behind, sending the opponent into the ground with a kick-to-the-chest finisher.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Sasuke_ShishiRendan.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01D",
+          "name": "Chidori (W)",
+          "base_ability": "ANsb",
+          "levels": 3,
+          "description": "Derived from Kakashi's raikiri, this technique channels a large amount of lightning chakra to the user's hand.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Chidori32br38hz.mp3",
+            "war3mapImported\\Sound_ChidoriStart 32br48hz.mp3",
+            "war3mapImported\\Sound_Kakashi_Raikiri 32br48hz.mp3",
+            "war3mapImported\\Sound_Kakashi_Roar 32br48hz.mp3",
+            "war3mapImported\\Sound_Sasuke_Chidori 32br48hz.mp3",
+            "war3mapImported\\Sound_Sasuke_Roar.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A019",
+          "name": "Ten no Juin: 2nd Level (E)",
+          "base_ability": "ANrg",
+          "levels": 3,
+          "description": "The seal implanted in Sasuke by Orochimaru.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Sasuke_Roar.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 2,
+      "id": "R002",
+      "source_id": "H004",
+      "name": "Haruno Sakura",
+      "model": "sakura.mdx",
+      "icon": "Icon_Sakura_Portrait.BLP",
+      "scale": 1.0499999523162842,
+      "animations": [
+        "Stand Ready",
+        "Spell",
+        "Walk",
+        "Attack",
+        "Attack 2",
+        "Death",
+        "Dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundSakuraDieNew.mp3",
+        "war3mapImported\\SoundSakuraThrowNew.mp3",
+        "war3mapImported\\SoundSakuraThrowNew2.mp3",
+        "war3mapImported\\SoundSakuraThrowNew3.mp3",
+        "war3mapImported\\Sound_Sakura_Bunshin32br.mp3",
+        "war3mapImported\\Sound_Sakura_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Sakura_Kai32br.mp3",
+        "war3mapImported\\Sound_Sakura_RoarShort.mp3",
+        "war3mapImported\\Sound_Sakura_Throw2 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A005",
+          "name": "Kunai Toss (D)",
+          "base_ability": "AHtb",
+          "levels": 4,
+          "description": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "animation_tags": "attack,2,throw",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSakuraThrowNew.mp3",
+            "war3mapImported\\Sound_Tenten_Throw3 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A010",
+          "name": "Jibaku Fuda: Kassei (F)",
+          "base_ability": "ANc3",
+          "levels": 4,
+          "description": "An explosion note is tossed then activated remotely by the user's chakra.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSakuraThrowNew2.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02D",
+          "name": "Shosen Jutsu (G)",
+          "base_ability": "AHdr",
+          "levels": 3,
+          "description": "The user gathers chakra towards  the hands that is then channeled into the patient. The chakra then is focused into performing surgery and regenerating wounds.",
+          "animation_tags": "spell,slam",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Sakura_Kai32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01G",
+          "name": "Okasho (W)",
+          "base_ability": "AHtc",
+          "levels": 1,
+          "description": "Sakura advances to being able to manipulate incredible strength to the point of fracturing solid rock.",
+          "animation_tags": "attack,attack 2,slam",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Sakura_RoarShort.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02S",
+          "name": "Transport Shizune (E)",
+          "base_ability": "ANhs",
+          "levels": 1,
+          "description": "Sakura calls forth Shizune via a transportation scroll. She then becomes a helpful aid for a limited time before being called back.",
+          "animation_tags": "attack",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSakuraThrowNew2.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 3,
+      "id": "R003",
+      "source_id": "H007",
+      "name": "Rock Lee",
+      "model": "RockLee.mdx",
+      "icon": "Icon_Lee_Portrait.blp",
+      "scale": 0.8399999737739563,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack",
+        "Attack 3",
+        "Walk",
+        "Spell",
+        "Death",
+        "Dissipate",
+        "Spell Throw",
+        "Spell power up",
+        "Attack walk stand spin",
+        "Attack 2",
+        "Spell 2"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundLeeDieNew.mp3",
+        "war3mapImported\\SoundLeeThrow.mp3",
+        "war3mapImported\\Sound_Lee_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
+        "war3mapImported\\Sound_Lee_HachimonSeimon32br.mp3",
+        "war3mapImported\\Sound_Lee_HachimonTomon32br.mp3",
+        "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3",
+        "war3mapImported\\Sound_Lee_Throw 32br48hz.mp3",
+        "war3mapImported\\Sound_Lee_UraRenge.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A02U",
+          "name": "Second Chance (E)",
+          "base_ability": "AOre",
+          "levels": 3,
+          "description": "The unit will resurrect when killed immediately, when this ability is ready.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00E",
+          "name": "Konoha Senpuu (D)",
+          "base_ability": "ANfb",
+          "levels": 4,
+          "description": "Rock Lee's special kick.",
+          "animation_tags": "attack,walk,stand,spin",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00U",
+          "name": "Suiken (F)",
+          "base_ability": "AOw2",
+          "levels": 3,
+          "description": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A029",
+          "name": "Hachimon (G)",
+          "base_ability": "AHtc",
+          "levels": 3,
+          "description": "Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Gai_Hachimon32br.mp3",
+            "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
+            "war3mapImported\\Sound_Lee_HachimonSeimon32br.mp3",
+            "war3mapImported\\Sound_Lee_HachimonTomon32br.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 4,
+      "id": "R004",
+      "source_id": "H005",
+      "name": "Hyuuga Neji",
+      "model": "neji.mdx",
+      "icon": "Icon_Neji_Portrait2.blp",
+      "scale": 0.800000011920929,
+      "animations": [
+        "Stand Ready",
+        "Walk",
+        "spell spin",
+        "Spell",
+        "Attack",
+        "Attack 2",
+        "Stand",
+        "Death",
+        "Dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundNejiThrow.mp3",
+        "war3mapImported\\Sound_Neji_Byakugan.mp3",
+        "war3mapImported\\Sound_Neji_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Neji_Death32br48hz.mp3",
+        "war3mapImported\\Sound_Neji_HakkeHasangeki32br.mp3",
+        "war3mapImported\\Sound_Neji_HakkeHyakuNijuhachiSho32br.mp3",
+        "war3mapImported\\Sound_Neji_HakkeRokujuyonSho32br.mp3",
+        "war3mapImported\\Sound_Neji_Kaiten2.mp3",
+        "war3mapImported\\Sound_Neji_Kaiten32br.mp3",
+        "war3mapImported\\Sound_Neji_Throw2 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A034",
+          "name": "Hyuuga Bloodline (D)",
+          "base_ability": "ANms",
+          "levels": 4,
+          "description": "Contains the hereditary abilties such as Byakugan, which allows 360 degree vision and tracking chakra, and Juken, a fighting style that inflicts damage to an opponent's chakra flow.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Byakugan.mp3",
+            "war3mapImported\\Sound_Hinata_Byakugan.mp3",
+            "war3mapImported\\Sound_Neji_Byakugan.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A006",
+          "name": "Kaiten (F)",
+          "base_ability": "AOw2",
+          "levels": 3,
+          "description": "The ultimate defense of the Hyuuga clan.",
+          "animation_tags": "spell,spin",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundHinataSpin3.mp3",
+            "war3mapImported\\Sound_Hinata_Kaiten 32br48hz.mp3",
+            "war3mapImported\\Sound_Neji_Kaiten2.mp3",
+            "war3mapImported\\Sound_Neji_Kaiten32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02L",
+          "name": "Hakke Rokujuyon Sho (G)",
+          "base_ability": "ANcl",
+          "levels": 3,
+          "description": "Neji strikes sixty four chakra points, effectively closing them. The effects of this causes the victim and nearby enemies to take damage and lose chakra. (Takes away as much chakra as it damages.)",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Neji_HakkeRokujuyonSho32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A008",
+          "name": "Hakke Hyaku Nijuhachi Sho (W)",
+          "base_ability": "ANfb",
+          "levels": 3,
+          "description": "Neji strikes with 128 impacts - at twice the speed. Unfortunately for the opponent, these rapid impacts not only cause damage, but closes off chakra points as well. (Takes away as much chakra as it damages.)",
+          "animation_tags": "attack",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Neji_HakkeHasangeki32br.mp3",
+            "war3mapImported\\Sound_Neji_HakkeHyakuNijuhachiSho32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A009",
+          "name": "Hakke Hasangeki (E)",
+          "base_ability": "AEev",
+          "levels": 1,
+          "description": "Extending chakra from his body, neji thrusts out a wave of it from his palm, knocking the opponent backwards. This ability will be used as a finisher for Hakke Hyaku Nijuhachi Sho.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 5,
+      "id": "R005",
+      "source_id": "H006",
+      "name": "Tenten",
+      "model": "tenten.mdx",
+      "icon": "Icon_Tenten_Portrait3.blp",
+      "scale": 1.100000023841858,
+      "animations": [
+        "Stand Ready",
+        "Spell",
+        "Walk",
+        "Attack",
+        "Attack 2",
+        "Death",
+        "Dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundTentenDieNew.mp3",
+        "war3mapImported\\Sound_Tenten_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Tenten_NinguKuchiyose32br48hz.mp3",
+        "war3mapImported\\Sound_Tenten_Soshoryu.mp3",
+        "war3mapImported\\Sound_Tenten_Throw2 32br48hz.mp3",
+        "war3mapImported\\Sound_Tenten_Throw3 32br48hz.mp3",
+        "war3mapImported\\Sound_Tenten_Throw4 32br48h.mp3",
+        "war3mapImported\\Sound_Tenten_Yell1_32br.mp3",
+        "war3mapImported\\Sound_Tenten_Yell2_32br.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A005",
+          "name": "Kunai Toss (D)",
+          "base_ability": "AHtb",
+          "levels": 4,
+          "description": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "animation_tags": "attack,2,throw",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSakuraThrowNew.mp3",
+            "war3mapImported\\Sound_Tenten_Throw3 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00W",
+          "name": "Tobidogu (F)",
+          "base_ability": "AEfk",
+          "levels": 3,
+          "description": "Flying Tools: Tenten launches herself up in the air, releasing a scroll while spinning rapidly. These scrolls summon weapons from a variety of choices, which in turn are launched towards the enemy.",
+          "animation_tags": "spell,looping",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Tenten_Yell1_32br.mp3",
+            "war3mapImported\\Sound_Tenten_Yell2_32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A000",
+          "name": "Weaponry Specialist (G)",
+          "base_ability": "Aroc",
+          "levels": 3,
+          "description": "Being rumored to hit a bullseye 100 out of 100 times, Tenten's mastery in weapons allows her to throw multiples at once.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00Z",
+          "name": "Soshoryu (W)",
+          "base_ability": "ANc3",
+          "levels": 3,
+          "description": "Twin Rising Dragons: While jumping high into the air while spinning, Tenten unravels two of her scrolls. From here she summons many weapons in a quick succession, causing unavoidable widespread damage..",
+          "animation_tags": "spell,looping",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Tenten_Soshoryu.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02Z",
+          "name": "Ningu Kuchiyose (E)",
+          "base_ability": "ANcl",
+          "levels": 1,
+          "description": "Summons a giant weapon that is hurled towards the enemies with terrifying force.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Tenten_NinguKuchiyose32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 6,
+      "id": "R006",
+      "source_id": "H00D",
+      "name": "Nara Shikamaru",
+      "model": "ShikamaruGenin.mdx",
+      "icon": "Icon_Shikamaru_Portrait0.BLP",
+      "scale": 0.8500000238418579,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack 1",
+        "Attack 2",
+        "Walk",
+        "Spell",
+        "Death",
+        "Dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundShikamaruDieNew.mp3",
+        "war3mapImported\\SoundShikamaruKageKubiShibariJutsu.mp3",
+        "war3mapImported\\SoundShikamaruKageManaJutsu.mp3",
+        "war3mapImported\\Sound_Shikamaru_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Shikamaru_Throw 32br48hz.mp3",
+        "war3mapImported\\Sound_Shikamaru_Throw2 32br48hz.mp3",
+        "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A02H",
+          "name": "Kage Mane no Jutsu (D)",
+          "base_ability": "ANcl",
+          "levels": 4,
+          "description": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
+          "animation_tags": "spell,looping",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundShikamaruKageManaJutsu.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00P",
+          "name": "Strategy (F)",
+          "base_ability": "AEev",
+          "levels": 3,
+          "description": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02A",
+          "name": "Explosion Note Barrage (G)",
+          "base_ability": "ANc3",
+          "levels": 3,
+          "description": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02U",
+          "name": "Second Chance (E)",
+          "base_ability": "AOre",
+          "levels": 3,
+          "description": "The unit will resurrect when killed immediately, when this ability is ready.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 7,
+      "id": "R007",
+      "source_id": "H00B",
+      "name": "Inuzuka Kiba",
+      "model": "kiba.mdx",
+      "icon": "Icon_Kiba_Portrait.blp",
+      "scale": 0.9,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack",
+        "Attack - 2",
+        "Walk",
+        "Spell",
+        "attack walk stand spin",
+        "Death",
+        "Dissipate",
+        "Attack 3",
+        "Stand 2",
+        "Morph",
+        "Stand Alternate",
+        "Attack Alternate",
+        "Walk Alternate",
+        "Spell slam Alternate",
+        "Morph Alternate",
+        "death alternate",
+        "dissipate alternate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundKibaDieNew.mp3",
+        "war3mapImported\\SoundKibaSotoro.mp3",
+        "war3mapImported\\SoundKibaThrow.mp3",
+        "war3mapImported\\SoundKibaYahooNew.mp3",
+        "war3mapImported\\Sound_Kiba_Akamaru 32br48hz.mp3",
+        "war3mapImported\\Sound_Kiba_Akamaru2 32br48hz.mp3",
+        "war3mapImported\\Sound_Kiba_Death2 32br48hz.mp3",
+        "war3mapImported\\Sound_Kiba_Shikyaku.mp3",
+        "war3mapImported\\Sound_Kiba_Throw 32br48hz.mp3",
+        "war3mapImported\\Sound_Kiba_Tsuuga32br.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A01C",
+          "name": "Release Akamaru (D)",
+          "base_ability": "Arsg",
+          "levels": 3,
+          "description": "As per Inuzuka clan practice, Kiba was given Akamaru to be his dog warrior companion.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Kiba_Akamaru 32br48hz.mp3",
+            "war3mapImported\\Sound_Kiba_Akamaru2 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A016",
+          "name": "Smoke Bomb (F)",
+          "base_ability": "ANc3",
+          "levels": 4,
+          "description": "A shinobi tool to surprise or escape from an enemy using a ghastly smoke bomb.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundKibaYahooNew.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01Q",
+          "name": "Shikyaku No Jutsu (G)",
+          "base_ability": "AEme",
+          "levels": 3,
+          "description": "Kiba takes on the appearance of a canine as his speed and strength increase.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Kiba_Shikyaku.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01H",
+          "name": "Tsuuga (W)",
+          "base_ability": "AHtb",
+          "levels": 3,
+          "description": "Kiba spins rapidly, creating heavy speed and damage to targets.",
+          "animation_tags": "attack,walk,stand,spin,looping",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Kiba_Tsuuga32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A026",
+          "name": "Konbi Henge: Sotoro (E)",
+          "base_ability": "AHwe",
+          "levels": 1,
+          "description": "Kiba and Akamaru combine to create the ultimate beast.",
+          "animation_tags": "spell,slam,alternate",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundKibaSotoro.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 8,
+      "id": "R008",
+      "source_id": "H00J",
+      "name": "Hyuuga Hinata",
+      "model": "Hinata.mdx",
+      "icon": "Icon_Hinata_Portrait.blp",
+      "scale": 0.75,
+      "animations": [
+        "Stand Ready",
+        "Walk",
+        "Walk Fast",
+        "spell spin",
+        "Spell",
+        "Attack",
+        "Attack 2",
+        "Stand",
+        "Death",
+        "Dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundHinataDieNew.mp3",
+        "war3mapImported\\SoundHinataHakke2.mp3",
+        "war3mapImported\\SoundHinataSpin.mp3",
+        "war3mapImported\\SoundHinataSpin3.mp3",
+        "war3mapImported\\Sound_Hinata_Byakugan.mp3",
+        "war3mapImported\\Sound_Hinata_Charge_32br.mp3",
+        "war3mapImported\\Sound_Hinata_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Hinata_HakuroTenbu_32br.mp3",
+        "war3mapImported\\Sound_Hinata_Kaiten 32br48hz.mp3",
+        "war3mapImported\\Sound_Hinata_Sorry.mp3",
+        "war3mapImported\\Sound_Hinata_Throw 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A034",
+          "name": "Hyuuga Bloodline (D)",
+          "base_ability": "ANms",
+          "levels": 4,
+          "description": "Contains the hereditary abilties such as Byakugan, which allows 360 degree vision and tracking chakra, and Juken, a fighting style that inflicts damage to an opponent's chakra flow.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Byakugan.mp3",
+            "war3mapImported\\Sound_Hinata_Byakugan.mp3",
+            "war3mapImported\\Sound_Neji_Byakugan.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A006",
+          "name": "Kaiten (F)",
+          "base_ability": "AOw2",
+          "levels": 3,
+          "description": "The ultimate defense of the Hyuuga clan.",
+          "animation_tags": "spell,spin",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundHinataSpin3.mp3",
+            "war3mapImported\\Sound_Hinata_Kaiten 32br48hz.mp3",
+            "war3mapImported\\Sound_Neji_Kaiten2.mp3",
+            "war3mapImported\\Sound_Neji_Kaiten32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01E",
+          "name": "Hakke Hidoi Tenketsu (G)",
+          "base_ability": "ANsi",
+          "levels": 3,
+          "description": "This Hyuuga technique damages the flow of chakra, thus crippling the victim's chakra capacity.",
+          "animation_tags": "attack",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundHinataSpin.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01F",
+          "name": "Shugohakke Rokujuyon Sho (W)",
+          "base_ability": "ANc3",
+          "levels": 3,
+          "description": "Using her flexibility, Hinata emits a constant stream of chakra from her palms, creating extremely sharp chakra blades.",
+          "animation_tags": "stand",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundHinataHakke2.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02J",
+          "name": "Hakuro Tenbu (E)",
+          "base_ability": "ANcl",
+          "levels": 1,
+          "description": "A shining blue light consumes Hinata's hands, followed by attacks to the enemy with several powered-up Jukens. Finally, she finishes off by using the light to blow the enemy away.",
+          "animation_tags": "spell,slam",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Hinata_Charge_32br.mp3",
+            "war3mapImported\\Sound_Hinata_HakuroTenbu_32br.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 9,
+      "id": "R009",
+      "source_id": "H008",
+      "name": "Gaara",
+      "model": "Gaara.mdx",
+      "icon": "Icon_Gaara_Portrait.blp",
+      "scale": 0.800000011920929,
+      "animations": [
+        "Stand Ready",
+        "Stand",
+        "Attack",
+        "spell channel",
+        "Walk",
+        "Spell",
+        "spell looping",
+        "Death",
+        "Dissipate",
+        "Spell Throw",
+        "Attack 2"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundGaaraDieNew.mp3",
+        "war3mapImported\\SoundGaaraRyusaBakaryuNew.mp3",
+        "war3mapImported\\SoundGaaraThrow.mp3",
+        "war3mapImported\\SoundGaaraTransform.mp3",
+        "war3mapImported\\SoundGaaraTransform2.mp3",
+        "war3mapImported\\Sound_Gaara_Death2 32br48hz.mp3",
+        "war3mapImported\\Sound_Gaara_RyuusaBakuryu 32br48hz.mp3",
+        "war3mapImported\\Sound_Gaara_SabakuKyu.mp3",
+        "war3mapImported\\Sound_Gaara_SabakuTaiso_32br.mp3",
+        "war3mapImported\\Sound_Gaara_Throw2 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A014",
+          "name": "Sabaku Kyu (D)",
+          "base_ability": "AEer",
+          "levels": 4,
+          "description": "Gaara uses sand to surround and apprehend a target, followed by crushing pressure.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundSand.mp3",
+            "war3mapImported\\Sound_Gaara_SabakuKyu.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01W",
+          "name": "Suna no Tate (F)",
+          "base_ability": "ANms",
+          "levels": 3,
+          "description": "The sand shield of gaara, when gaara is hit, his chakra will decrease instead of his hit points.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01I",
+          "name": "Ryuusa Bakuryu (G)",
+          "base_ability": "ANst",
+          "levels": 3,
+          "description": "Gaara creates a wave sand and hurls it towards targets, drowning them in an ocean of sand.",
+          "animation_tags": "spell,channel",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundGaaraRyusaBakaryuNew.mp3",
+            "war3mapImported\\SoundSand.mp3",
+            "war3mapImported\\Sound_Gaara_RyuusaBakuryu 32br48hz.mp3",
+            "war3mapImported\\Sound_Gaara_SabakuTaiso_32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00Y",
+          "name": "Tanuki Neiri no Jutsu (W)",
+          "base_ability": "AHwe",
+          "levels": 3,
+          "description": "Gaara falls fast asleep as he is transformed into Shukaku",
+          "animation_tags": "spell,channel",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundGaaraTransform.mp3",
+            "war3mapImported\\SoundGaaraTransform2.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02N",
+          "name": "Sabaku Taiso (E)",
+          "base_ability": "AEev",
+          "levels": 1,
+          "description": "Performed after using Ryusa Bakuryu, Gaara slams both palms into the ground where his sand has settled. Earthquakes occur, and anything within the sand is immediately compacted, ",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 10,
+      "id": "R00A",
+      "source_id": "H00A",
+      "name": "Kankuro",
+      "model": "Kankuro.mdx",
+      "icon": "Icon_Kankuro_Portrait2.blp",
+      "scale": 0.8999999761581421,
+      "animations": [
+        "Stand",
+        "Spell throw",
+        "Attack",
+        "Attack 2",
+        "Walk",
+        "Spell",
+        "Death",
+        "dissipate"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundKankuroDieNew.mp3",
+        "war3mapImported\\SoundKankuroSummonSanshou.mp3",
+        "war3mapImported\\SoundKankuroThrow.mp3",
+        "war3mapImported\\Sound_Kankuro_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Kankuro_KirohigiP1 32br48hz.mp3",
+        "war3mapImported\\Sound_Kankuro_KirohigiP2 32br48hz.mp3",
+        "war3mapImported\\Sound_Kankuro_Kugutsu.mp3",
+        "war3mapImported\\Sound_Kankuro_Throw 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A003",
+          "name": "Karasu (D)",
+          "base_ability": "Arsg",
+          "levels": 3,
+          "description": "Equipped with poison-tipped darts, kunai blades and a huge poisoned needle concealed within its head, this makes Karasu a very offensive puppet.",
+          "animation_tags": "spell,throw",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A004",
+          "name": "Kugutsu no Jutsu (F)",
+          "base_ability": "AHtb",
+          "levels": 4,
+          "description": "The puppeteer lashes at the oppponent with precise coordination of his puppet by control of chakra strings.",
+          "animation_tags": "attack",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Kankuro_Kugutsu.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A011",
+          "name": "Kuroari (G)",
+          "base_ability": "Arsg",
+          "levels": 3,
+          "description": "Being the defensive puppet, Kuroari is a key component for the lethal jutsu - Kurohigi Kiki Ippatsu.",
+          "animation_tags": "spell,throw",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A013",
+          "name": "Sanshouo (W)",
+          "base_ability": "AUin",
+          "levels": 3,
+          "description": "Kankuro's final puppet, Sanshouo has incredible defensive powers.",
+          "animation_tags": "spell,throw",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundKankuroSummonSanshou.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A02R",
+          "name": "Puppet Bombs (E)",
+          "base_ability": "ANcl",
+          "levels": 1,
+          "description": "Several bombs spill from each of Kankuro's puppets, causing severe damage when detonated. Must have puppets deployed.",
+          "animation_tags": "spell,slam",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        }
+      ]
+    },
+    {
+      "slot": 11,
+      "id": "R00B",
+      "source_id": "H009",
+      "name": "Temari",
+      "model": "Temari.mdx",
+      "icon": "Icon_Temari_Portrait.blp",
+      "scale": 0.9,
+      "animations": [
+        "Stand",
+        "Attack",
+        "Spell",
+        "Walk",
+        "death",
+        "dissipate",
+        "attack"
+      ],
+      "voice_paths": [
+        "war3mapImported\\SoundTemariDaiKamaitachiJutsu.mp3",
+        "war3mapImported\\SoundTemariDieNew.mp3",
+        "war3mapImported\\SoundTemariKuchiyoseKiriKiriMai.mp3",
+        "war3mapImported\\SoundTemariSwing.mp3",
+        "war3mapImported\\SoundTemariThrow.mp3",
+        "war3mapImported\\Sound_Temari_Death 32br48hz.mp3",
+        "war3mapImported\\Sound_Temari_Kamaitachi2.mp3",
+        "war3mapImported\\Sound_Temari_Kamaitachi_32br.mp3",
+        "war3mapImported\\Sound_Temari_TatsuNoOshigato 32br48hz.mp3",
+        "war3mapImported\\Sound_Temari_Throw 32br48hz.mp3"
+      ],
+      "skills": [
+        {
+          "source_id": "A00S",
+          "name": "Kamaitachi no Jutsu (D)",
+          "base_ability": "AOsh",
+          "levels": 4,
+          "description": "Temari blows a tornado mixed with slicing concentrated chakra, cutting up anything in its path.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\Sound_Temari_Kamaitachi2.mp3",
+            "war3mapImported\\Sound_Temari_Kamaitachi_32br.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00T",
+          "name": "Wind Defense (F)",
+          "base_ability": "AEev",
+          "levels": 3,
+          "description": "Temari has a chance of avoiding attempted attacks with her fan and wind expertise.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A01J",
+          "name": "Tatsu no Oshigoto (G)",
+          "base_ability": "Acyc",
+          "levels": 3,
+          "description": "Temari summons a tornado from the sky down onto her opponent.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundTemariSwing.mp3",
+            "war3mapImported\\SoundWind3.mp3",
+            "war3mapImported\\Sound_Temari_TatsuNoOshigato 32br48hz.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A00V",
+          "name": "Daikamaitachi no Jutsu (W)",
+          "base_ability": "ANst",
+          "levels": 3,
+          "description": "Temari creates a more powerful version of her tornadoes in a great windstorm mixed with slicing concentrated chakra.",
+          "animation_tags": "spell",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundTemariDaiKamaitachiJutsu.mp3"
+          ],
+          "runtime_recreated": false
+        },
+        {
+          "source_id": "A027",
+          "name": "Kuchiyose: Kirikiri Mai (E)",
+          "base_ability": "AOsh",
+          "levels": 1,
+          "description": "Temari summons Kamatari, who launches towards and through the enemy causing great destruction in his path.",
+          "animation_tags": "spell,slam",
+          "source_trigger_sound_paths": [
+            "war3mapImported\\SoundTemariKuchiyoseKiriKiriMai.mp3",
+            "war3mapImported\\SoundWind3.mp3"
+          ],
+          "runtime_recreated": false
+        }
+      ]
+    }
+  ],
+  "shared_innate_skills": [
+    {
+      "id": "A00F",
+      "data": {
+        "base": "Aeat",
+        "fields": {
+          "anam": "Jump to tree (T)",
+          "ahky": "T",
+          "atp1": "Jump to tree (T)",
+          "aub1": "Use this ability to leap to a tree. (Just right click a tree to use).",
+          "aart": "UI\\Feedback\\Resources\\ResourceLumber.blp",
+          "asat": "",
+          "aspt": "",
+          "aran": 1000.0,
+          "Eat3": 0.0,
+          "Eat1": 0.0,
+          "Eat2": 0.0,
+          "abuf": "",
+          "aord": "",
+          "abpx": 2,
+          "abpy": 1,
+          "amcs": 50,
+          "arac": "human",
+          "acas": 0.009999999776482582,
+          "aefs": "PriestMissileLaunch",
+          "aani": "attack 3"
+        },
+        "mods": [
+          [
+            "anam",
+            0,
+            0,
+            "Jump to tree (T)"
+          ],
+          [
+            "ahky",
+            0,
+            0,
+            "T"
+          ],
+          [
+            "atp1",
+            1,
+            0,
+            "Jump to tree (T)"
+          ],
+          [
+            "aub1",
+            1,
+            0,
+            "Use this ability to leap to a tree. (Just right click a tree to use)."
+          ],
+          [
+            "aart",
+            0,
+            0,
+            "UI\\Feedback\\Resources\\ResourceLumber.blp"
+          ],
+          [
+            "asat",
+            0,
+            0,
+            ""
+          ],
+          [
+            "aspt",
+            0,
+            0,
+            ""
+          ],
+          [
+            "aran",
+            1,
+            0,
+            1000.0
+          ],
+          [
+            "Eat3",
+            1,
+            3,
+            0.0
+          ],
+          [
+            "Eat1",
+            1,
+            1,
+            0.0
+          ],
+          [
+            "Eat2",
+            1,
+            2,
+            0.0
+          ],
+          [
+            "abuf",
+            1,
+            0,
+            ""
+          ],
+          [
+            "aord",
+            0,
+            0,
+            ""
+          ],
+          [
+            "abpx",
+            0,
+            0,
+            2
+          ],
+          [
+            "abpy",
+            0,
+            0,
+            1
+          ],
+          [
+            "amcs",
+            1,
+            0,
+            50
+          ],
+          [
+            "arac",
+            0,
+            0,
+            "human"
+          ],
+          [
+            "acas",
+            1,
+            0,
+            0.009999999776482582
+          ],
+          [
+            "aefs",
+            0,
+            0,
+            "PriestMissileLaunch"
+          ],
+          [
+            "aani",
+            0,
+            0,
+            "attack 3"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "A012",
+      "data": {
+        "base": "AOwk",
+        "fields": {
+          "anam": "Kawarimi No Jutsu (R)",
+          "aret": "Learn Kawarimi No Jutsu (R)",
+          "arut": "Used to lure the ennemy.",
+          "alev": 1,
+          "amcs": 150,
+          "Owk3": 50.0,
+          "Owk2": 0.20000000298023224,
+          "Owk1": 0.0,
+          "ahdu": 3.0,
+          "adur": 3.0,
+          "aefs": "LoadUnload",
+          "aart": "Icon_Kawarimi.blp",
+          "arar": "ReplaceableTextures\\CommandButtons\\BTNNaturesBlessing.blp",
+          "aub1": "A common escape technique.",
+          "atp1": "Kawarimi No Jutsu (R)",
+          "aher": 0,
+          "arac": "human",
+          "abpx": 1,
+          "abpy": 1,
+          "ahky": "R",
+          "acdn": 8.0,
+          "aaea": "Abilities\\Spells\\Human\\FlakCannons\\FlakTarget.mdl",
+          "abuf": "B00F",
+          "aani": "spell",
+          "auar": "Icon_Kawarimi.blp"
+        },
+        "mods": [
+          [
+            "anam",
+            0,
+            0,
+            "Kawarimi No Jutsu (R)"
+          ],
+          [
+            "aret",
+            0,
+            0,
+            "Learn Kawarimi No Jutsu (R)"
+          ],
+          [
+            "arut",
+            0,
+            0,
+            "Used to lure the ennemy."
+          ],
+          [
+            "alev",
+            0,
+            0,
+            1
+          ],
+          [
+            "amcs",
+            1,
+            0,
+            150
+          ],
+          [
+            "Owk3",
+            1,
+            3,
+            50.0
+          ],
+          [
+            "Owk2",
+            1,
+            2,
+            0.20000000298023224
+          ],
+          [
+            "Owk1",
+            1,
+            1,
+            0.0
+          ],
+          [
+            "ahdu",
+            1,
+            0,
+            3.0
+          ],
+          [
+            "adur",
+            1,
+            0,
+            3.0
+          ],
+          [
+            "aefs",
+            0,
+            0,
+            "LoadUnload"
+          ],
+          [
+            "aart",
+            0,
+            0,
+            "Icon_Kawarimi.blp"
+          ],
+          [
+            "arar",
+            0,
+            0,
+            "ReplaceableTextures\\CommandButtons\\BTNNaturesBlessing.blp"
+          ],
+          [
+            "aub1",
+            1,
+            0,
+            "A common escape technique."
+          ],
+          [
+            "atp1",
+            1,
+            0,
+            "Kawarimi No Jutsu (R)"
+          ],
+          [
+            "aher",
+            0,
+            0,
+            0
+          ],
+          [
+            "arac",
+            0,
+            0,
+            "human"
+          ],
+          [
+            "abpx",
+            0,
+            0,
+            1
+          ],
+          [
+            "abpy",
+            0,
+            0,
+            1
+          ],
+          [
+            "ahky",
+            0,
+            0,
+            "R"
+          ],
+          [
+            "acdn",
+            1,
+            0,
+            8.0
+          ],
+          [
+            "aaea",
+            0,
+            0,
+            "Abilities\\Spells\\Human\\FlakCannons\\FlakTarget.mdl"
+          ],
+          [
+            "abuf",
+            1,
+            0,
+            "B00F"
+          ],
+          [
+            "aani",
+            0,
+            0,
+            "spell"
+          ],
+          [
+            "auar",
+            0,
+            0,
+            "Icon_Kawarimi.blp"
+          ]
+        ]
+      }
+    }
+  ],
+  "note": "All source skill definitions inventoried; mechanics are not yet recreated in the foundation test."
+}

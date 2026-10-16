@@ -1,0 +1,698 @@
+[
+  {
+    "path": "war3mapImported\\SoundSharingan.mp3",
+    "source_index": 44
+  },
+  {
+    "path": "war3mapImported\\SoundRasengan.mp3",
+    "source_index": 45
+  },
+  {
+    "path": "war3mapImported\\SoundSand.mp3",
+    "source_index": 47
+  },
+  {
+    "path": "war3mapImported\\SoundKibaSotoro.mp3",
+    "source_index": 51
+  },
+  {
+    "path": "war3mapImported\\SoundBunshinPuff.mp3",
+    "source_index": 54
+  },
+  {
+    "path": "war3mapImported\\SoundKageManeStricken.mp3",
+    "source_index": 90
+  },
+  {
+    "path": "war3mapImported\\SoundKakashiSkill1.mp3",
+    "source_index": 92
+  },
+  {
+    "path": "war3mapImported\\SoundNarutoKuchiyose.mp3",
+    "source_index": 93
+  },
+  {
+    "path": "war3mapImported\\SoundHinataHakke2.mp3",
+    "source_index": 94
+  },
+  {
+    "path": "war3mapImported\\SoundTreeJump.mp3",
+    "source_index": 100
+  },
+  {
+    "path": "war3mapImported\\SoundGaaraDieNew.mp3",
+    "source_index": 101
+  },
+  {
+    "path": "war3mapImported\\SoundGaaraRyusaBakaryuNew.mp3",
+    "source_index": 102
+  },
+  {
+    "path": "war3mapImported\\SoundHinataDieNew.mp3",
+    "source_index": 103
+  },
+  {
+    "path": "war3mapImported\\SoundHinataSpin.mp3",
+    "source_index": 104
+  },
+  {
+    "path": "war3mapImported\\SoundItachiDie.mp3",
+    "source_index": 105
+  },
+  {
+    "path": "war3mapImported\\SoundItachiThrow.mp3",
+    "source_index": 106
+  },
+  {
+    "path": "war3mapImported\\SoundJiraiyaRasenganNew.mp3",
+    "source_index": 107
+  },
+  {
+    "path": "war3mapImported\\SoundKabutoDie2.mp3",
+    "source_index": 108
+  },
+  {
+    "path": "war3mapImported\\SoundKabutoThrow.mp3",
+    "source_index": 109
+  },
+  {
+    "path": "war3mapImported\\SoundKibaDieNew.mp3",
+    "source_index": 110
+  },
+  {
+    "path": "war3mapImported\\SoundKibaYahooNew.mp3",
+    "source_index": 111
+  },
+  {
+    "path": "war3mapImported\\SoundKisameDie.mp3",
+    "source_index": 112
+  },
+  {
+    "path": "war3mapImported\\SoundLeeDieNew.mp3",
+    "source_index": 113
+  },
+  {
+    "path": "war3mapImported\\SoundNarutoKageBunshinJutsu.mp3",
+    "source_index": 114
+  },
+  {
+    "path": "war3mapImported\\SoundOrochimaruThrow2.mp3",
+    "source_index": 115
+  },
+  {
+    "path": "war3mapImported\\SoundSandaimeDie.mp3",
+    "source_index": 116
+  },
+  {
+    "path": "war3mapImported\\SoundSandaimeThrow.mp3",
+    "source_index": 117
+  },
+  {
+    "path": "war3mapImported\\SoundShikamaruDieNew.mp3",
+    "source_index": 118
+  },
+  {
+    "path": "war3mapImported\\SoundShikamaruKageKubiShibariJutsu.mp3",
+    "source_index": 119
+  },
+  {
+    "path": "war3mapImported\\SoundShikamaruKageManaJutsu.mp3",
+    "source_index": 120
+  },
+  {
+    "path": "war3mapImported\\SoundTemariDaiKamaitachiJutsu.mp3",
+    "source_index": 121
+  },
+  {
+    "path": "war3mapImported\\SoundTemariDieNew.mp3",
+    "source_index": 122
+  },
+  {
+    "path": "war3mapImported\\SoundTemariKuchiyoseKiriKiriMai.mp3",
+    "source_index": 123
+  },
+  {
+    "path": "war3mapImported\\SoundTentenDieNew.mp3",
+    "source_index": 124
+  },
+  {
+    "path": "war3mapImported\\SoundNarutoTransform.mp3",
+    "source_index": 125
+  },
+  {
+    "path": "war3mapImported\\SoundSakuraThrowNew.mp3",
+    "source_index": 126
+  },
+  {
+    "path": "war3mapImported\\SoundSakuraDieNew.mp3",
+    "source_index": 127
+  },
+  {
+    "path": "war3mapImported\\SOUND_0041 3.mp3",
+    "source_index": 128
+  },
+  {
+    "path": "war3mapImported\\SOUND_0054 3.mp3",
+    "source_index": 129
+  },
+  {
+    "path": "war3mapImported\\SoundKabutoThrow2.mp3",
+    "source_index": 130
+  },
+  {
+    "path": "war3mapImported\\SoundSasukeDieNew2.mp3",
+    "source_index": 131
+  },
+  {
+    "path": "war3mapImported\\SoundHinataSpin3.mp3",
+    "source_index": 132
+  },
+  {
+    "path": "war3mapImported\\SoundSakuraThrowNew2.mp3",
+    "source_index": 133
+  },
+  {
+    "path": "war3mapImported\\SoundNarutoThrow.mp3",
+    "source_index": 134
+  },
+  {
+    "path": "war3mapImported\\SoundLeeThrow.mp3",
+    "source_index": 135
+  },
+  {
+    "path": "war3mapImported\\SoundNejiThrow.mp3",
+    "source_index": 136
+  },
+  {
+    "path": "war3mapImported\\SoundKibaThrow.mp3",
+    "source_index": 137
+  },
+  {
+    "path": "war3mapImported\\SoundGaaraThrow.mp3",
+    "source_index": 138
+  },
+  {
+    "path": "war3mapImported\\SoundKankuroThrow.mp3",
+    "source_index": 139
+  },
+  {
+    "path": "war3mapImported\\SoundTemariThrow.mp3",
+    "source_index": 140
+  },
+  {
+    "path": "war3mapImported\\SoundTemariSwing.mp3",
+    "source_index": 141
+  },
+  {
+    "path": "war3mapImported\\SoundKankuroSummonSanshou.mp3",
+    "source_index": 142
+  },
+  {
+    "path": "war3mapImported\\SoundGaaraTransform2.mp3",
+    "source_index": 143
+  },
+  {
+    "path": "war3mapImported\\SoundFlute1.mp3",
+    "source_index": 144
+  },
+  {
+    "path": "war3mapImported\\SoundFlute2.mp3",
+    "source_index": 145
+  },
+  {
+    "path": "war3mapImported\\SoundWind3.mp3",
+    "source_index": 146
+  },
+  {
+    "path": "war3mapImported\\SoundSakuraThrowNew3.mp3",
+    "source_index": 147
+  },
+  {
+    "path": "war3mapImported\\m057 3.mp3",
+    "source_index": 149
+  },
+  {
+    "path": "war3mapImported\\m051 3.mp3",
+    "source_index": 150
+  },
+  {
+    "path": "war3mapImported\\Sound_Byakugan.mp3",
+    "source_index": 151
+  },
+  {
+    "path": "war3mapImported\\Sound_Gai_Death.mp3",
+    "source_index": 152
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Byakugan.mp3",
+    "source_index": 153
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Sorry.mp3",
+    "source_index": 154
+  },
+  {
+    "path": "war3mapImported\\Sound_Itachi_KatonGokakyu.mp3",
+    "source_index": 155
+  },
+  {
+    "path": "war3mapImported\\Sound_Itachi_MangekyoSharingan.mp3",
+    "source_index": 156
+  },
+  {
+    "path": "war3mapImported\\Sound_Itachi_Tsukiyomi.mp3",
+    "source_index": 157
+  },
+  {
+    "path": "war3mapImported\\Sound_Jiraiya_Kuchiyose.mp3",
+    "source_index": 158
+  },
+  {
+    "path": "war3mapImported\\Sound_Kankuro_Kugutsu.mp3",
+    "source_index": 159
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Shikyaku.mp3",
+    "source_index": 160
+  },
+  {
+    "path": "war3mapImported\\Sound_Kisame_Suikodan.mp3",
+    "source_index": 161
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_UraRenge.mp3",
+    "source_index": 162
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Byakugan.mp3",
+    "source_index": 163
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Kaiten2.mp3",
+    "source_index": 164
+  },
+  {
+    "path": "war3mapImported\\Sound_Orochimaru_Kuchiyose.mp3",
+    "source_index": 165
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Roar.mp3",
+    "source_index": 166
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Sharingan.mp3",
+    "source_index": 167
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_ShishiRendan.mp3",
+    "source_index": 168
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Soshoryu.mp3",
+    "source_index": 169
+  },
+  {
+    "path": "war3mapImported\\Sound_Sakura_RoarShort.mp3",
+    "source_index": 170
+  },
+  {
+    "path": "war3mapImported\\SoundGaiThrow2.mp3",
+    "source_index": 171
+  },
+  {
+    "path": "war3mapImported\\Sound_Temari_Kamaitachi2.mp3",
+    "source_index": 231
+  },
+  {
+    "path": "war3mapImported\\Sound_Gaara_SabakuKyu.mp3",
+    "source_index": 260
+  },
+  {
+    "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
+    "source_index": 261
+  },
+  {
+    "path": "war3mapImported\\SOUND_0045 3.mp3",
+    "source_index": 262
+  },
+  {
+    "path": "war3mapImported\\SoundKabutoThrow4.mp3",
+    "source_index": 270
+  },
+  {
+    "path": "war3mapImported\\SoundGaaraTransform.mp3",
+    "source_index": 271
+  },
+  {
+    "path": "war3mapImported\\SoundNarutoDieNew4.mp3",
+    "source_index": 272
+  },
+  {
+    "path": "war3mapImported\\SoundKankuroDieNew.mp3",
+    "source_index": 273
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Yell1_32br.mp3",
+    "source_index": 274
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Yell2_32br.mp3",
+    "source_index": 275
+  },
+  {
+    "path": "war3mapImported\\Sound_Naruto_RasenganLong_32br.mp3",
+    "source_index": 315
+  },
+  {
+    "path": "war3mapImported\\Those Who Inherit The Will of Fire16br16000sr.mp3",
+    "source_index": 316
+  },
+  {
+    "path": "war3mapImported\\Sound_Kurenai_JubakuSatsu_32br.mp3",
+    "source_index": 318
+  },
+  {
+    "path": "war3mapImported\\Sound_Kurenai_Death_32br.mp3",
+    "source_index": 319
+  },
+  {
+    "path": "war3mapImported\\Sound_Asuma_Throw_32br.mp3",
+    "source_index": 320
+  },
+  {
+    "path": "war3mapImported\\Sound_Asuma_Death_32br.mp3",
+    "source_index": 321
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_HakuroTenbu_32br.mp3",
+    "source_index": 327
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Charge_32br.mp3",
+    "source_index": 328
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_HakkeRokujuyonSho32br.mp3",
+    "source_index": 329
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_HakkeHyakuNijuhachiSho32br.mp3",
+    "source_index": 330
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_HakkeHasangeki32br.mp3",
+    "source_index": 333
+  },
+  {
+    "path": "war3mapImported\\Sound_Gaara_SabakuTaiso_32br.mp3",
+    "source_index": 335
+  },
+  {
+    "path": "war3mapImported\\Sound_Shizune_Attack32br.mp3",
+    "source_index": 340
+  },
+  {
+    "path": "war3mapImported\\Sound_Shizune_Death32br.mp3",
+    "source_index": 341
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_HachimonTomon32br.mp3",
+    "source_index": 342
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
+    "source_index": 343
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_HachimonSeimon32br.mp3",
+    "source_index": 344
+  },
+  {
+    "path": "war3mapImported\\Sound_Gai_HachimonKaimon32br.mp3",
+    "source_index": 345
+  },
+  {
+    "path": "war3mapImported\\Sound_Gai_Hachimon32br.mp3",
+    "source_index": 346
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Tsuuga32br.mp3",
+    "source_index": 347
+  },
+  {
+    "path": "war3mapImported\\Sound_Jiraiya_Death32br.mp3",
+    "source_index": 348
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Kaiten32br.mp3",
+    "source_index": 349
+  },
+  {
+    "path": "war3mapImported\\Sound_Sakura_Bunshin32br.mp3",
+    "source_index": 350
+  },
+  {
+    "path": "war3mapImported\\Sound_Sakura_Kai32br.mp3",
+    "source_index": 351
+  },
+  {
+    "path": "war3mapImported\\Sound_Kisame_Suiro32br.mp3",
+    "source_index": 352
+  },
+  {
+    "path": "war3mapImported\\Sound_Kisame_MizuBunshin32br.mp3",
+    "source_index": 353
+  },
+  {
+    "path": "war3mapImported\\Hero Beginning32br48hz.mp3",
+    "source_index": 354
+  },
+  {
+    "path": "war3mapImported\\Sound_Jiraiya_KatonGamayuEndan_32br.mp3",
+    "source_index": 355
+  },
+  {
+    "path": "war3mapImported\\Sound_Temari_Kamaitachi_32br.mp3",
+    "source_index": 356
+  },
+  {
+    "path": "war3mapImported\\SoundGaiThrow_32br.mp3",
+    "source_index": 357
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Death32br48hz.mp3",
+    "source_index": 358
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_NinguKuchiyose32br48hz.mp3",
+    "source_index": 361
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_KatonP1 32br48hz.mp3",
+    "source_index": 362
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_KatonP2 32br48hz.mp3",
+    "source_index": 363
+  },
+  {
+    "path": "war3mapImported\\Sound_Chidori32br38hz.mp3",
+    "source_index": 365
+  },
+  {
+    "path": "war3mapImported\\Sound_JutsuAkatsuki32br38hz.mp3",
+    "source_index": 366
+  },
+  {
+    "path": "war3mapImported\\Sound_Kankuro_KirohigiP1 32br48hz.mp3",
+    "source_index": 367
+  },
+  {
+    "path": "war3mapImported\\Sound_Kankuro_KirohigiP2 32br48hz.mp3",
+    "source_index": 368
+  },
+  {
+    "path": "war3mapImported\\Sound_Kakashi_Death 32br48hz.mp3",
+    "source_index": 369
+  },
+  {
+    "path": "war3mapImported\\Sound_Kakashi_Raikiri 32br48hz.mp3",
+    "source_index": 370
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Chidori 32br48hz.mp3",
+    "source_index": 371
+  },
+  {
+    "path": "war3mapImported\\Sound_ChidoriStart 32br48hz.mp3",
+    "source_index": 372
+  },
+  {
+    "path": "war3mapImported\\Sound_Kakashi_Roar 32br48hz.mp3",
+    "source_index": 373
+  },
+  {
+    "path": "war3mapImported\\Sound_Orochimaru_Death 32br48hz.mp3",
+    "source_index": 414
+  },
+  {
+    "path": "war3mapImported\\Sound_Anko_Throw 32br48hz.mp3",
+    "source_index": 415
+  },
+  {
+    "path": "war3mapImported\\Sound_Anko_Death 32br48hz.mp3",
+    "source_index": 416
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Throw 32br48hz.mp3",
+    "source_index": 417
+  },
+  {
+    "path": "war3mapImported\\Sound_Naruto_Throw 32br48hz.mp3",
+    "source_index": 418
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Throw 32br48hz.mp3",
+    "source_index": 419
+  },
+  {
+    "path": "war3mapImported\\Sound_Gaara_RyuusaBakuryu 32br48hz.mp3",
+    "source_index": 420
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Death 32br48hz.mp3",
+    "source_index": 421
+  },
+  {
+    "path": "war3mapImported\\Sound_Hinata_Kaiten 32br48hz.mp3",
+    "source_index": 422
+  },
+  {
+    "path": "war3mapImported\\Sound_Itachi_Throw 32br48hz.mp3",
+    "source_index": 423
+  },
+  {
+    "path": "war3mapImported\\Sound_Kankuro_Death 32br48hz.mp3",
+    "source_index": 424
+  },
+  {
+    "path": "war3mapImported\\Sound_Kankuro_Throw 32br48hz.mp3",
+    "source_index": 425
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Throw 32br48hz.mp3",
+    "source_index": 426
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_Death 32br48hz.mp3",
+    "source_index": 427
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_Throw 32br48hz.mp3",
+    "source_index": 428
+  },
+  {
+    "path": "war3mapImported\\Sound_Naruto_Death32br48hz.mp3",
+    "source_index": 429
+  },
+  {
+    "path": "war3mapImported\\Sound_Naruto_KageBunshin 32br48hz.mp3",
+    "source_index": 430
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Death 32br48hz.mp3",
+    "source_index": 431
+  },
+  {
+    "path": "war3mapImported\\Sound_Sakura_Death 32br48hz.mp3",
+    "source_index": 432
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Death 32br48hz.mp3",
+    "source_index": 433
+  },
+  {
+    "path": "war3mapImported\\Sound_Shikamaru_Death 32br48hz.mp3",
+    "source_index": 434
+  },
+  {
+    "path": "war3mapImported\\Sound_Shikamaru_Throw 32br48hz.mp3",
+    "source_index": 435
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Death 32br48hz.mp3",
+    "source_index": 436
+  },
+  {
+    "path": "war3mapImported\\Sound_Temari_Death 32br48hz.mp3",
+    "source_index": 437
+  },
+  {
+    "path": "war3mapImported\\Sound_Temari_TatsuNoOshigato 32br48hz.mp3",
+    "source_index": 438
+  },
+  {
+    "path": "war3mapImported\\Sound_Temari_Throw 32br48hz.mp3",
+    "source_index": 439
+  },
+  {
+    "path": "war3mapImported\\Sound_Sasuke_Throw2 32br48hz.mp3",
+    "source_index": 440
+  },
+  {
+    "path": "war3mapImported\\HeavyViolence 32br48hz.mp3",
+    "source_index": 441
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Throw2 32br48hz.mp3",
+    "source_index": 442
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Throw3 32br48hz.mp3",
+    "source_index": 443
+  },
+  {
+    "path": "war3mapImported\\Sound_Tenten_Throw4 32br48h.mp3",
+    "source_index": 444
+  },
+  {
+    "path": "war3mapImported\\Sound_Gaara_Death2 32br48hz.mp3",
+    "source_index": 445
+  },
+  {
+    "path": "war3mapImported\\Sound_Gaara_Throw2 32br48hz.mp3",
+    "source_index": 446
+  },
+  {
+    "path": "war3mapImported\\Sound_Neji_Throw2 32br48hz.mp3",
+    "source_index": 447
+  },
+  {
+    "path": "war3mapImported\\Sound_Sakura_Throw2 32br48hz.mp3",
+    "source_index": 448
+  },
+  {
+    "path": "war3mapImported\\Sound_Shikamaru_Throw2 32br48hz.mp3",
+    "source_index": 449
+  },
+  {
+    "path": "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3",
+    "source_index": 450
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Death2 32br48hz.mp3",
+    "source_index": 451
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Akamaru 32br48hz.mp3",
+    "source_index": 452
+  },
+  {
+    "path": "war3mapImported\\Sound_Kiba_Akamaru2 32br48hz.mp3",
+    "source_index": 453
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3",
+    "source_index": 454
+  }
+]

@@ -1,0 +1,1057 @@
+[
+  {
+    "path": "Hinata.mdx",
+    "animations": [
+      "Stand Ready",
+      "Walk",
+      "Walk Fast",
+      "spell spin",
+      "Spell",
+      "Attack",
+      "Attack 2",
+      "Stand",
+      "Death",
+      "Dissipate"
+    ],
+    "textures": [
+      "Hinata.blp",
+      "",
+      "HinataNeji1.blp",
+      "HinataNeji2.blp"
+    ]
+  },
+  {
+    "path": "Jiroubu.mdx",
+    "animations": [
+      "Stand Ready",
+      "Attack",
+      "Attack",
+      "spell",
+      "walk",
+      "death",
+      "dissipate"
+    ],
+    "textures": [
+      "",
+      "Jiroubu.blp"
+    ]
+  },
+  {
+    "path": "Kankuro.mdx",
+    "animations": [
+      "Stand",
+      "Spell throw",
+      "Attack",
+      "Attack 2",
+      "Walk",
+      "Spell",
+      "Death",
+      "dissipate"
+    ],
+    "textures": [
+      "",
+      "Kankuro.blp"
+    ]
+  },
+  {
+    "path": "Kidoumaru.mdx",
+    "animations": [
+      "walk",
+      "stand",
+      "spell",
+      "attack",
+      "death",
+      "dissipate"
+    ],
+    "textures": [
+      "Kidoumaru.blp",
+      ""
+    ]
+  },
+  {
+    "path": "Kimimaro.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "spell",
+      "walk",
+      "death",
+      "dissipate"
+    ],
+    "textures": [
+      "",
+      "Kimimaro.blp"
+    ]
+  },
+  {
+    "path": "Kisame.mdx",
+    "animations": [
+      "Stand Ready",
+      "Attack 1",
+      "Attack 2",
+      "Walk",
+      "Spell",
+      "Spell Slam",
+      "Death",
+      "Dissipate",
+      "Stand",
+      "Attack 3",
+      "Stand Channel",
+      "Attack 4"
+    ],
+    "textures": [
+      "",
+      "Kisame.blp"
+    ]
+  },
+  {
+    "path": "Naruto.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "Walk",
+      "Spell",
+      "Spell Two",
+      "Death",
+      "Dissipate",
+      "Attack 3",
+      "Stand 2",
+      "Morph",
+      "Stand Alternate",
+      "Attack Alternate",
+      "Walk Alternate",
+      "Spell slam Alternate",
+      "Morph Alternate",
+      "death alternate",
+      "disspate alternate"
+    ],
+    "textures": [
+      "naruto.blp",
+      ""
+    ]
+  },
+  {
+    "path": "Orochimaru.mdx",
+    "animations": [
+      "Walk",
+      "Stand",
+      "Stand Ready",
+      "Spell two",
+      "stand channel",
+      "Spell summon gate",
+      "Spell summon coffin",
+      "Spell channel",
+      "Attack - 1",
+      "Attack - 2",
+      "Attack - 4",
+      "Death"
+    ],
+    "textures": [
+      "Orochimaru.blp"
+    ]
+  },
+  {
+    "path": "RockLee.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack 3",
+      "Walk",
+      "Spell",
+      "Death",
+      "Dissipate",
+      "Spell Throw",
+      "Spell power up",
+      "Attack walk stand spin",
+      "Attack 2",
+      "Spell 2"
+    ],
+    "textures": [
+      "",
+      "RockLee.blp"
+    ]
+  },
+  {
+    "path": "Sakon.mdx",
+    "animations": [
+      "Stand Ready",
+      "Attack",
+      "Attack - 2",
+      "spell",
+      "walk",
+      "death",
+      "dissipate"
+    ],
+    "textures": [
+      "",
+      "Sakon.blp"
+    ]
+  },
+  {
+    "path": "Sandaime.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Attack 1",
+      "Attack 2",
+      "Walk",
+      "Spell",
+      "Spell Slam",
+      "Death",
+      "Dissipate",
+      "Spell 2"
+    ],
+    "textures": [
+      "Sandaime.blp",
+      "Sandaime.blp",
+      ""
+    ]
+  },
+  {
+    "path": "SasukeCursed.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "Walk",
+      "Spell",
+      "spell channel",
+      "Death",
+      "Dissipate",
+      "Spell slam"
+    ],
+    "textures": [
+      "",
+      "SasukeCursed.blp"
+    ]
+  },
+  {
+    "path": "Shukaku.mdx",
+    "animations": [
+      "Stand",
+      "Attack",
+      "Spell",
+      "Walk",
+      "death",
+      "Stand 2"
+    ],
+    "textures": [
+      "Shukaku.blp"
+    ]
+  },
+  {
+    "path": "Tayuya.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "spell",
+      "walk",
+      "death",
+      "dissipate"
+    ],
+    "textures": [
+      "",
+      "Tayuya.blp"
+    ]
+  },
+  {
+    "path": "Temari.mdx",
+    "animations": [
+      "Stand",
+      "Attack",
+      "Spell",
+      "Walk",
+      "death",
+      "dissipate",
+      "attack"
+    ],
+    "textures": [
+      "",
+      "Temari.blp"
+    ]
+  },
+  {
+    "path": "ScrollRed.mdx",
+    "animations": [
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "Textures\\Purple_Star.blp",
+      "ReplaceableTextures\\CommandButtons\\BTNScroll.blp",
+      "Textures\\Purple_Glow_Dim.blp"
+    ]
+  },
+  {
+    "path": "Jiraiya.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Attack 1",
+      "Attack 2",
+      "Walk",
+      "Spell",
+      "Death",
+      "Dissipate",
+      "Spell slam",
+      "Spell Death",
+      "Spell  Dissipate"
+    ],
+    "textures": [
+      "Jiraiya.blp",
+      "Sandaime.blp",
+      ""
+    ]
+  },
+  {
+    "path": "MindFog.mdx",
+    "animations": [
+      "Birth",
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "Textures\\Clouds8x8.blp",
+      "Textures\\Black32.blp"
+    ]
+  },
+  {
+    "path": "Bag_1.mdx",
+    "animations": [
+      "stand",
+      "Birth",
+      "Death"
+    ],
+    "textures": [
+      "Textures\\DungeonDoodad0.blp",
+      "Textures\\CloudSingleBlend.blp"
+    ]
+  },
+  {
+    "path": "Gaara.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "spell channel",
+      "Walk",
+      "Spell",
+      "spell looping",
+      "Death",
+      "Dissipate",
+      "Spell Throw",
+      "Attack 2"
+    ],
+    "textures": [
+      "",
+      "gaara.blp"
+    ]
+  },
+  {
+    "path": "Electrical Cyclone.mdx",
+    "animations": [
+      "Birth",
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "Textures\\Zap1b.blp"
+    ]
+  },
+  {
+    "path": "WindAttack.mdx",
+    "animations": [
+      "Birth",
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "Abilities\\Spells\\Human\\Slow\\Tail_Dust3.blp"
+    ]
+  },
+  {
+    "path": "Kunai.mdx",
+    "animations": [
+      "Birth",
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "Kunai.blp"
+    ]
+  },
+  {
+    "path": "Shurikens.mdx",
+    "animations": [
+      "Stand",
+      "Birth",
+      "Death"
+    ],
+    "textures": [
+      "Kunai.blp"
+    ]
+  },
+  {
+    "path": "Karasu.mdx",
+    "animations": [
+      "stand",
+      "walk",
+      "attack - 1",
+      "spell",
+      "spell two",
+      "death",
+      "attack - 2"
+    ],
+    "textures": [
+      "Karasu.blp"
+    ]
+  },
+  {
+    "path": "Kuroari.mdx",
+    "animations": [
+      "stand",
+      "walk",
+      "attack - 1",
+      "attack - 2",
+      "spell",
+      "spell two",
+      "death"
+    ],
+    "textures": [
+      "Kuroari.blp"
+    ]
+  },
+  {
+    "path": "Sanshouo.mdx",
+    "animations": [
+      "stand",
+      "walk",
+      "attack",
+      "spell",
+      "spell TWO",
+      "death"
+    ],
+    "textures": [
+      "Sanshouo.blp"
+    ]
+  },
+  {
+    "path": "gaars sand.mdx",
+    "animations": [
+      "Birth"
+    ],
+    "textures": [
+      "Textures\\Dust5A.blp"
+    ]
+  },
+  {
+    "path": "GaaraSand2.mdx",
+    "animations": [
+      "Birth"
+    ],
+    "textures": [
+      "Textures\\Dust5A.blp"
+    ]
+  },
+  {
+    "path": "Manda.mdx",
+    "animations": [
+      "stand",
+      "walk",
+      "attack",
+      "spell",
+      "spell two",
+      "spell three",
+      "death"
+    ],
+    "textures": [
+      "Manda.blp"
+    ]
+  },
+  {
+    "path": "ANBU_2.mdx",
+    "animations": [
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "walk",
+      "death",
+      "Attack - 3"
+    ],
+    "textures": [
+      "ANBU_2.blp",
+      ""
+    ]
+  },
+  {
+    "path": "ChakraShark.mdx",
+    "animations": [
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "ChakraShark1.blp",
+      "ChakraShark2.blp",
+      "ChakraShark1.blp"
+    ]
+  },
+  {
+    "path": "Ichiraku.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "Ichiraku.blp"
+    ]
+  },
+  {
+    "path": "Kabuto.mdx",
+    "animations": [
+      "walk",
+      "Stand - 1",
+      "Stand - 2",
+      "Spell Slam",
+      "Spell",
+      "Attack",
+      "Attack -2",
+      "Death",
+      "Dissipate",
+      "Stand Ready"
+    ],
+    "textures": [
+      "Kabuto.blp",
+      "Kabuto2.blp"
+    ]
+  },
+  {
+    "path": "Gamabunta_2.mdx",
+    "animations": [
+      "Stand",
+      "Stand 2",
+      "Attack",
+      "Spell",
+      "Walk",
+      "death"
+    ],
+    "textures": [
+      "Gamabunta_2.blp"
+    ]
+  },
+  {
+    "path": "haku.mdx",
+    "animations": [
+      "Stand Ready",
+      "Attack",
+      "Attack - 2",
+      "walk",
+      "death"
+    ],
+    "textures": [
+      "",
+      "haku.blp"
+    ]
+  },
+  {
+    "path": "kiba.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "Walk",
+      "Spell",
+      "attack walk stand spin",
+      "Death",
+      "Dissipate",
+      "Attack 3",
+      "Stand 2",
+      "Morph",
+      "Stand Alternate",
+      "Attack Alternate",
+      "Walk Alternate",
+      "Spell slam Alternate",
+      "Morph Alternate",
+      "death alternate",
+      "dissipate alternate"
+    ],
+    "textures": [
+      "kiba.blp",
+      "Textures\\Tornado1.blp",
+      "Textures\\Tornado2b.blp",
+      ""
+    ]
+  },
+  {
+    "path": "neji.mdx",
+    "animations": [
+      "Stand Ready",
+      "Walk",
+      "spell spin",
+      "Spell",
+      "Attack",
+      "Attack 2",
+      "Stand",
+      "Death",
+      "Dissipate"
+    ],
+    "textures": [
+      "neji.blp",
+      "",
+      "HinataNeji1.blp",
+      "Abilities\\spells\\orc\\ensnare\\Tornado2.blp",
+      "HinataNeji2.blp"
+    ]
+  },
+  {
+    "path": "sakura.mdx",
+    "animations": [
+      "Stand Ready",
+      "Spell",
+      "Walk",
+      "Attack",
+      "Attack 2",
+      "Death",
+      "Dissipate"
+    ],
+    "textures": [
+      "",
+      "sakura.blp"
+    ]
+  },
+  {
+    "path": "sasuke.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "Walk",
+      "Spell Stand",
+      "Spell Attack",
+      "Death",
+      "Dissipate",
+      "Spell Walk",
+      "spell Death",
+      "spell Dissipate",
+      "Attack 3",
+      "Stand 2"
+    ],
+    "textures": [
+      "",
+      "sasuke.blp"
+    ]
+  },
+  {
+    "path": "tenten.mdx",
+    "animations": [
+      "Stand Ready",
+      "Spell",
+      "Walk",
+      "Attack",
+      "Attack 2",
+      "Death",
+      "Dissipate"
+    ],
+    "textures": [
+      "",
+      "tenten.blp"
+    ]
+  },
+  {
+    "path": "Itachi.mdx",
+    "animations": [
+      "Stand",
+      "Attack",
+      "Attack - 2",
+      "spell",
+      "walk",
+      "death",
+      "dissipate",
+      "spell two"
+    ],
+    "textures": [
+      "Itachi.blp",
+      ""
+    ]
+  },
+  {
+    "path": "Zabuza.mdx",
+    "animations": [
+      "Walk",
+      "Attack 1",
+      "Stand",
+      "Death",
+      "Attack 3",
+      "spell"
+    ],
+    "textures": [
+      "Zabuza1.blp",
+      "Zabuza2.blp"
+    ]
+  },
+  {
+    "path": "Note.MDX",
+    "animations": [
+      "Birth",
+      "Stand",
+      "Death"
+    ],
+    "textures": [
+      "note.blp",
+      "CartoonSmoke.blp"
+    ]
+  },
+  {
+    "path": "Gai.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack",
+      "Attack 3",
+      "Walk",
+      "Spell",
+      "Death",
+      "Dissipate",
+      "Spell Throw",
+      "Spell channel",
+      "Attack walk stand spin",
+      "Attack 2",
+      "Spell slam"
+    ],
+    "textures": [
+      "",
+      "Gai.blp"
+    ]
+  },
+  {
+    "path": "ShikamaruGenin.mdx",
+    "animations": [
+      "Stand Ready",
+      "Stand",
+      "Attack 1",
+      "Attack 2",
+      "Walk",
+      "Spell",
+      "Death",
+      "Dissipate"
+    ],
+    "textures": [
+      "",
+      "ShikamaruGenin.blp"
+    ]
+  },
+  {
+    "path": "ShikamaruKageMane.mdx",
+    "animations": [
+      "Birth",
+      "Death"
+    ],
+    "textures": [
+      "ShikamaruKageMane.blp",
+      "Textures\\RockParticle.blp",
+      "Textures\\Dust3x.blp",
+      "Textures\\Shockwave1.blp"
+    ]
+  },
+  {
+    "path": "Shizune.mdx",
+    "animations": [
+      "Stand",
+      "Stand 2",
+      "Death",
+      "Attack",
+      "Attack 2",
+      "Walk",
+      "Dissipate",
+      "Stand Ready",
+      "Spell",
+      "Spell Channel"
+    ],
+    "textures": [
+      "Shizune.blp",
+      "",
+      "",
+      "Textures\\Yellow_Star_Dim.blp"
+    ]
+  },
+  {
+    "path": "Iron Wrecking Ball.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "UI\\Glues\\SinglePlayer\\OrcCampaign3D\\CampaignOrcHelm.blp",
+      "Textures\\HellscreamChaos.blp"
+    ]
+  },
+  {
+    "path": "GamaKichi.mdx",
+    "animations": [
+      "stand",
+      "stand ready",
+      "attack",
+      "attack 2",
+      "walk",
+      "death",
+      "stand 2"
+    ],
+    "textures": [
+      "GamaKichi.blp"
+    ]
+  },
+  {
+    "path": "SandJounin.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Walk",
+      "Attack -1",
+      "Attack -2",
+      "Death"
+    ],
+    "textures": [
+      "",
+      "SandJounin.BLP"
+    ]
+  },
+  {
+    "path": "KurenaiNew.mdx",
+    "animations": [
+      "Walk",
+      "Stand Ready",
+      "Attack",
+      "Attack 2",
+      "Spell",
+      "Death",
+      "Stand"
+    ],
+    "textures": [
+      "",
+      "KurenaiNew.blp"
+    ]
+  },
+  {
+    "path": "Eye_Byakugan.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "Abilities\\Spells\\Items\\AIda\\Rune8.blp",
+      "Abilities\\Spells\\Human\\InnerFire\\Rune7.blp",
+      "Textures\\Rune1d.blp",
+      "Eye_Byakugan.blp"
+    ]
+  },
+  {
+    "path": "Eye_MangekyoItachi.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "Abilities\\Spells\\Items\\AIda\\Rune8.blp",
+      "Abilities\\Spells\\Human\\InnerFire\\Rune7.blp",
+      "Textures\\Rune1d.blp",
+      "Eye_MangekyoItachi.blp"
+    ]
+  },
+  {
+    "path": "Eye_Sharingan.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "Abilities\\Spells\\Items\\AIda\\Rune8.blp",
+      "Abilities\\Spells\\Human\\InnerFire\\Rune7.blp",
+      "Textures\\Rune1d.blp",
+      "Eye_Sharingan.blp"
+    ]
+  },
+  {
+    "path": "HakkeAura.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "HakkeAura.blp",
+      "HakkeAura.blp"
+    ]
+  },
+  {
+    "path": "MistNin.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Attack - 1",
+      "Attack - 2",
+      "Death",
+      "Spell Slam",
+      "Walk"
+    ],
+    "textures": [
+      "MistNin.blp",
+      "Textures\\LightningBall.blp",
+      "Textures\\Zap1.blp"
+    ]
+  },
+  {
+    "path": "Ramen.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "Ramen.blp",
+      "doodads\\LordaeronSummer\\Props\\CauldronWithHeads\\BubbleParticle.blp"
+    ]
+  },
+  {
+    "path": "LeafJounin.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Walk",
+      "Attack -1",
+      "Attack -2",
+      "Spell Channel",
+      "Spell",
+      "Death"
+    ],
+    "textures": [
+      "",
+      "LeafJounin.BLP"
+    ]
+  },
+  {
+    "path": "KakashiNew.mdx",
+    "animations": [
+      "Stand Ready",
+      "Attack",
+      "Attack 2",
+      "Stand",
+      "Stand 2",
+      "Spell",
+      "Spell one",
+      "Spell two",
+      "Spell three",
+      "Spell Slam",
+      "Walk",
+      "Death"
+    ],
+    "textures": [
+      "",
+      "KakashiNew.blp",
+      "KakashiNew2.blp",
+      "KakashiNew3.blp"
+    ]
+  },
+  {
+    "path": "Kuchiyose.mdx",
+    "animations": [
+      "Stand",
+      "Birth",
+      "Death"
+    ],
+    "textures": [
+      "kuchiyose.blp"
+    ]
+  },
+  {
+    "path": "RainGenin.mdx",
+    "animations": [
+      "Walk",
+      "Stand Ready",
+      "Attack",
+      "Stand",
+      "Spell",
+      "Death",
+      "Dissipate",
+      "Attack - 2"
+    ],
+    "textures": [
+      "RainGenin.blp"
+    ]
+  },
+  {
+    "path": "SoundJounin.mdx",
+    "animations": [
+      "Stand",
+      "Stand Ready",
+      "Walk",
+      "Attack -1",
+      "Attack -2",
+      "Spell Channel",
+      "Spell",
+      "Death"
+    ],
+    "textures": [
+      "",
+      "SoundJounin.BLP"
+    ]
+  },
+  {
+    "path": "Anko.mdx",
+    "animations": [
+      "Walk",
+      "Stand",
+      "Attack",
+      "Attack 2",
+      "Spell one"
+    ],
+    "textures": [
+      "",
+      "Anko.blp"
+    ]
+  },
+  {
+    "path": "AsumaNew.mdx",
+    "animations": [
+      "Walk",
+      "Stand",
+      "Stand Ready",
+      "Attack",
+      "Attack - 2",
+      "Spell Channel",
+      "Spell Slam",
+      "Spell Throw",
+      "Attack Slam",
+      "Spell",
+      "Death"
+    ],
+    "textures": [
+      "Textures\\RibbonNE1_blue.blp",
+      "Textures\\RibbonBlur1.blp",
+      "Textures\\clouds_anim1_bw.blp",
+      "AsumaNew.blp"
+    ]
+  },
+  {
+    "path": "war3mapImported\\FBLTree.mdx",
+    "animations": [
+      "stand",
+      "stand hit",
+      "death",
+      "Birth"
+    ],
+    "textures": [
+      "",
+      "UI\\Glues\\SinglePlayer\\Orc_Exp\\BarrensTree01.blp",
+      "UI\\Glues\\SinglePlayer\\HumanCampaign3D\\HumanCampaignleaf1.blp"
+    ]
+  },
+  {
+    "path": "Tree3.mdx",
+    "animations": [
+      "Stand"
+    ],
+    "textures": [
+      "UI\\Glues\\SinglePlayer\\HumanCampaign3D\\HumanCampaignTreeCanopy.blp",
+      "worldtreetrunk.blp"
+    ]
+  }
+]

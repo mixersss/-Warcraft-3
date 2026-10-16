@@ -1,0 +1,19 @@
+{
+  "filename": "Shinobi_New_Foundation_01.w3x",
+  "bytes": 7623965,
+  "sha256": "b356d5aa2939a4a931a8d52208ac0dab423d729ed31eb9837dd1744233e8104c",
+  "newMetadataAndScript": true,
+  "copiedOriginalScenarioOrObjects": false,
+  "importedAssets": 368,
+  "models": 67,
+  "audioFiles": 174,
+  "animationsInModels": 442,
+  "teams": 4,
+  "slots": 12,
+  "inventoriedLearnableSkills": 58,
+  "inventoriedInnateSkills": 2,
+  "recreatedSkillMechanics": 0,
+  "sectorSize": 4096,
+  "stage": "Resource foundation test, not a completed RPG",
+  "engineTested": false
+}
