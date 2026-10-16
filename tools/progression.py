@@ -114,6 +114,10 @@ def summon_catalog(root):
             hp=round(src['hp']*factor)
             damage=round((src['damage']*damage_factor+extra*(2 if ultimate else 1))*(balance['ultimate_summon_damage_multiplier'] if ultimate else 1))
             armor=src['armor']+extra*(0.6 if ultimate else 0.2)
+            if original=='ninf':
+                hp=round(hp*balance['infernal_power_multiplier'])
+                damage=round(damage*balance['infernal_power_multiplier'])
+                armor*=balance['infernal_power_multiplier']
             units.append((original,raw,[('uhpm',0,hp),('ua1b',0,damage),('udef',0,round(armor)),
                 ('usca',1,scale),('ucol',2,min(src['collision'],24.0)),
                 ('upgr',3,''),('ufoo',0,0),('ugol',0,0),('ulum',0,0)]))
@@ -139,7 +143,7 @@ def summon_catalog(root):
         if auto: changes.append(('udaa',3,auto))
     for rank in range(1,51):
         growth=1+0.18*(rank-1)
-        fire=effect('ANpi',f'Fi{rank:02}',[('Eim1',2,80.0*growth,1,1),('aare',2,300.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
+        fire=effect('ANpi',f'Fi{rank:02}',[('Eim1',2,balance['infernal_immolation_base']*growth,1,1),('aare',2,300.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
         attach('ninf',rank,['ACmi',fire,'ACrk'])
         fire=effect('Apig',f'Fk{rank:02}',[('Eim1',2,60.0*growth,1,1),('aare',2,280.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
         attach('npn1',rank,[fire,'ACrk'])
@@ -179,6 +183,11 @@ def hero_abilities(root):
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
                 if ultimate:
                     value=ultimate_value(rawcode,field,rank,value,balance['ultimate_power_multiplier'])
+                aura=balance['aura_balance'].get(rawcode,{}).get(field['id'])
+                if aura:
+                    # Useful rank one, diminishing growth, exact finite rank-300 cap.
+                    progress=((rank-1)/(rank-1+40))/((seed['cap']-1)/(seed['cap']-1+40))
+                    value=round(min(aura['cap'],aura['start']+(aura['cap']-aura['start'])*progress),6)
                 if rawcode in ('ANba','AEim') and field['id']=='atar':
                     # Do not exclude the undead/mechanical troop categories.
                     # Ground/air targets exclude the separate structure class.
@@ -194,7 +203,13 @@ def hero_abilities(root):
                 if field['id']=='acdn' and rawcode in OFFENSIVE_SKILLS and value>0:
                     value=round(value*cooldown_multiplier,4)
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
-                if field['id'] in SUMMON_FIELDS:
+                if aura:
+                    multiplier=100 if aura['percent'] else 1
+                    suffix='%' if aura['percent'] else ''
+                    details.append(f'{aura["label"]}: +{value*multiplier:.2f}{suffix} (предел {aura["cap"]*multiplier:g}{suffix})')
+                elif rawcode in balance['aura_balance'] and field['column']>0:
+                    pass  # Hide technical aura flags from player tooltips.
+                elif field['id'] in SUMMON_FIELDS:
                     hp,damage,scale=summon_details[value.split(',')[0]]
                     details.append(f'Призыв: {hp} HP; базовый урон {damage}; размер {scale:.2f}')
                 elif field['id'] in COUNT_FIELDS:

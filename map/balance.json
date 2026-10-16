@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.13.0-alpha",
+  "version": "0.13.1-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 12,
@@ -111,5 +111,77 @@
   "summon_model_scale": 0.7,
   "ultimate_power_multiplier": 3,
   "ultimate_summon_hp_multiplier": 4,
-  "ultimate_summon_damage_multiplier": 3
+  "ultimate_summon_damage_multiplier": 3,
+  "infernal_power_multiplier": 0.75,
+  "infernal_immolation_base": 60,
+  "aura_balance": {
+    "AUau": {
+      "Uau1": {
+        "start": 0.15,
+        "cap": 0.3,
+        "label": "Скорость передвижения",
+        "percent": true
+      },
+      "Uau2": {
+        "start": 6,
+        "cap": 80,
+        "label": "Восстановление HP/с",
+        "percent": false
+      }
+    },
+    "AHab": {
+      "Hab1": {
+        "start": 3,
+        "cap": 40,
+        "label": "Восстановление маны/с",
+        "percent": false
+      }
+    },
+    "AHad": {
+      "Had1": {
+        "start": 6,
+        "cap": 35,
+        "label": "Броня",
+        "percent": false
+      }
+    },
+    "AOae": {
+      "Oae1": {
+        "start": 0.15,
+        "cap": 0.3,
+        "label": "Скорость передвижения",
+        "percent": true
+      },
+      "Oae2": {
+        "start": 0.15,
+        "cap": 0.6,
+        "label": "Скорость атаки",
+        "percent": true
+      }
+    },
+    "AEar": {
+      "Ear1": {
+        "start": 0.2,
+        "cap": 0.6,
+        "label": "Урон дальних атак",
+        "percent": true
+      }
+    },
+    "AEah": {
+      "Eah1": {
+        "start": 0.2,
+        "cap": 0.5,
+        "label": "Возврат урона ближних атак",
+        "percent": true
+      }
+    },
+    "AUav": {
+      "Uav1": {
+        "start": 0.2,
+        "cap": 0.5,
+        "label": "Вампиризм ближних атак",
+        "percent": true
+      }
+    }
+  }
 }

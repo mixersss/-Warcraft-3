@@ -410,7 +410,7 @@ for(const table of ['originalTable','customTable']) {
   const base=table==='customTable' && ['Fg16','Fg18','Fg20'].includes(old.newId) && old.oldId==='AImm' ? 'AImb' : old.oldId;
   const obj=current.find(o=>o.newId===old.newId && o.oldId===base);assert.ok(obj);
   const ultimate=skillSeeds[old.oldId]?.ultimate;
-  const allowed=ultimate ? new Set([...ultMagnitude,...(ultSpecial[old.oldId]||[])]) : new Set();
+  const allowed=ultimate ? new Set([...ultMagnitude,...(ultSpecial[old.oldId]||[])]) : new Set(Object.keys(balance.aura_balance[old.oldId]||{}));
   const stable=o=>o.modifications.filter(m=>!['atp1','aub1','acdn'].includes(m.id) && !allowed.has(m.id));
   assert.deepEqual(stable(obj),stable(old),'Preserve flags, intervals, counts and non-ultimate skill effects');
   if(ultimate) for(const m of old.modifications) if(ultMagnitude.has(m.id)) {
@@ -477,10 +477,10 @@ for(const book of books) {
 for(let rank=1;rank<=50;rank++) {
  const pad=String(rank).padStart(2,'0');
  const infernal=unitById.get(value(abilityById.get('AUin'),'Uin4',rank));
- assert.ok(value(infernal,'uhpm')>=6000 && value(infernal,'ua1b')>=144);
+ assert.ok(value(infernal,'uhpm')>=4500 && value(infernal,'ua1b')>=108);
  assert.ok(value(infernal,'uabi').includes('Fi'+pad));
  const fire=gearAbilities.find(a=>a.newId==='Fi'+pad);
- assert.equal(fire.oldId,'ANpi');assert.ok(Math.abs(value(fire,'Eim1',1)-80*(1+0.18*(rank-1)))<0.001);
+ assert.equal(fire.oldId,'ANpi');assert.ok(Math.abs(value(fire,'Eim1',1)-60*(1+0.18*(rank-1)))<0.001);
  assert.equal(value(fire,'atar',1),'ground,air,enemy,neutral');
  const vengeance=gearAbilities.find(a=>a.newId==='Fv'+pad);
  const spirit=unitById.get(value(vengeance,'Rai3',1));assert.equal(spirit.oldId,'even');assert.ok(value(spirit,'ua1b')>0);
@@ -494,4 +494,34 @@ for(let rank=1;rank<=50;rank++) {
  assert.ok(value(abilityById.get('AUdd'),'Udd1',rank)<=0.350001,'Percent max-HP damage remains bounded');
 }
 console.log('PASS: Stronger army tiers, threefold weaker research/+40% prices, compact models, four native books and rank-specific ultimate secondary effects.');
+const auraLimits={AUau:{Uau1:[0.15,0.30],Uau2:[6,80]},AHab:{Hab1:[3,40]},AHad:{Had1:[6,35]},AOae:{Oae1:[0.15,0.30],Oae2:[0.15,0.60]},AEar:{Ear1:[0.20,0.60]},AEah:{Eah1:[0.20,0.50]},AUav:{Uav1:[0.20,0.50]}};
+for(const [id,fields] of Object.entries(auraLimits)) {
+ const aura=abilityById.get(id);
+ const copies=heroes.filter(h=>h.skill_sources?.includes(id)).map(h=>gearAbilities.find(a=>a.newId===h.skills[h.skill_sources.indexOf(id)]));
+ for(const [field,[start,cap]] of Object.entries(fields)) for(const effect of [aura,...copies]) {
+  let previous=start-1;
+  for(let rank=1;rank<=300;rank++) {
+   const amount=value(effect,field,rank);
+   assert.ok(amount>=start-1e-5 && amount<=cap+1e-5);
+   assert.ok(amount>previous,'Aura ranks progress monotonically without runaway growth');previous=amount;
+   if(rank===1) assert.ok(Math.abs(amount-start)<1e-5,'Useful aura bonus from rank one');
+   if(rank===300) assert.ok(Math.abs(amount-cap)<1e-5,'Exact final aura cap');
+  }
+ }
+ assert.match(value(aura,'aub1',1),/предел/,'Aura tooltip explains the limit');
+}
+assert.equal(value(abilityById.get('AUau'),'Uau3',1),0,'Unholy uses flat HP/sec, not a percentage of natural regeneration');
+assert.equal(value(abilityById.get('AHab'),'Hab2',1),0,'Brilliance uses flat mana/sec');
+const lastMap=new War3Map();lastMap.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.13.0-alpha.w3x'))),true);
+const lastUnits=new (require(prefix+'w3x/w3u/file').default)();lastUnits.load(new Uint8Array(lastMap.get('war3map.w3u').bytes()));
+for(const old of lastUnits.customTable.objects) {
+ const current=unitById.get(old.newId);
+ if(old.oldId!=='ninf') assert.deepEqual(current,old,'Keep other summons, army, heroes and buildings unchanged');
+ else {
+  for(const field of ['uhpm','ua1b','udef']) assert.ok(Math.abs(value(current,field)-value(old,field)*0.75)<=1,'Infernal stats reduced by one quarter with integer rounding');
+  const fixed=o=>o.modifications.filter(m=>!['uhpm','ua1b','udef'].includes(m.id));
+  assert.deepEqual(fixed(current),fixed(old),'Preserve Infernal model, count, abilities and pathing');
+ }
+}
+console.log('PASS: Seven useful capped auras, all 300 ranks/custom copies, and a 25% Infernal nerf without changing other units.');
 console.log('PASS: Seven supreme items, four consumable potions, +30% building HP and full item effect/price validation.');
