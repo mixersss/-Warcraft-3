@@ -1,18 +1,18 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.13.1-alpha",
+  "version": "0.13.2-alpha",
   "starting_gold": 500,
-  "income_per_second": 4,
-  "spawn_seconds": 12,
-  "spawn_min_seconds": 12,
+  "income_per_second": 3,
+  "spawn_seconds": 24,
+  "spawn_min_seconds": 24,
   "spawn_units": 3,
   "army_cap": 48,
   "warmup_seconds": 60,
   "upgrade_max": 200,
-  "attack_cost": 140,
-  "attack_cost_step": 105,
-  "armor_cost": 140,
-  "armor_cost_step": 105,
+  "attack_cost": 280,
+  "attack_cost_step": 210,
+  "armor_cost": 280,
+  "armor_cost_step": 210,
   "spawn_cost": 300,
   "spawn_cost_step": 200,
   "hero_power_cost": 250,
@@ -22,46 +22,46 @@
     {
       "name": "Footmen",
       "melee_base": "hfoo",
-      "hp": 420,
-      "damage": 15,
+      "hp": 380,
+      "damage": 13,
       "armor": 1,
       "cost": 0
     },
     {
       "name": "Veterans",
       "melee_base": "hfoo",
-      "hp": 800,
-      "damage": 32,
-      "armor": 3,
+      "hp": 500,
+      "damage": 18,
+      "armor": 2,
       "cost": 1800
     },
     {
       "name": "Grunts",
       "melee_base": "ogru",
-      "hp": 1400,
-      "damage": 58,
-      "armor": 6,
+      "hp": 650,
+      "damage": 23,
+      "armor": 3,
       "cost": 3200
     },
     {
       "name": "Knights",
       "melee_base": "hkni",
-      "hp": 2300,
-      "damage": 100,
-      "armor": 10,
+      "hp": 850,
+      "damage": 30,
+      "armor": 4,
       "cost": 4600
     },
     {
       "name": "Tauren",
       "melee_base": "otau",
-      "hp": 3600,
-      "damage": 165,
-      "armor": 15,
+      "hp": 1100,
+      "damage": 40,
+      "armor": 5,
       "cost": 6000
     }
   ],
-  "health_cost": 252,
-  "health_cost_step": 168,
+  "health_cost": 504,
+  "health_cost_step": 336,
   "health_percent": 0.06666666666666667,
   "base_upgrade_cost": 1800,
   "base_upgrade_cost_step": 1400,
@@ -87,7 +87,7 @@
   "base_fountain_hp_percent": 0.005,
   "base_fountain_mana_percent": 0.005,
   "shop_hp": 6500,
-  "kill_gold_multiplier": 1.5,
+  "kill_gold_multiplier": 1.125,
   "offensive_cooldown_multiplier": 1.5,
   "bot_tactics": [
     {
@@ -112,8 +112,8 @@
   "ultimate_power_multiplier": 3,
   "ultimate_summon_hp_multiplier": 4,
   "ultimate_summon_damage_multiplier": 3,
-  "infernal_power_multiplier": 0.75,
-  "infernal_immolation_base": 60,
+  "infernal_power_multiplier": 0.45,
+  "infernal_immolation_base": 36,
   "aura_balance": {
     "AUau": {
       "Uau1": {
@@ -183,5 +183,8 @@
         "percent": true
       }
     }
-  }
+  },
+  "research_soft_cap": 10,
+  "advanced_research_cost_multiplier": 4,
+  "hero_respawn_seconds": 35
 }

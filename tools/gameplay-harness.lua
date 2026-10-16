@@ -26,6 +26,9 @@ function IsUnitAlly(u,p) return TeamOf(u.owner)==TeamOf(p) end
 function GetPlayerState(p,k) return Players[p][k] end
 function SetPlayerState(p,k,v) Players[p][k]=v end
 function SetPlayerTechResearched(p,k,v) Players[p].tech[k]=v end
+function SetPlayerTechMaxAllowed(p,id,maximum)
+    Players[p].techLimits=Players[p].techLimits or {};Players[p].techLimits[id]=maximum
+end
 function GetPlayerTechCount(p,k) return Players[p].tech[k] or 0 end
 function SelectUnitForPlayerSingle(u,p) Players[p].selection=u end
 function GetHeroStr(u,bonus) return u.str+(bonus and (u.attributeBonus or 0) or 0) end
@@ -135,7 +138,9 @@ function IssueImmediateOrderById(u,id)
     if not config or u.pending or u.hp<=0 then return false end
     local p=u.owner;local old=GetPlayerTechCount(p,id)
     local cost=config.base+config.step*old
-    if old>=config.cap or Players[p].gold<cost then return false end
+    local maximum=Players[p].techLimits and Players[p].techLimits[id] or config.cap
+    if config.requires and GetPlayerTechCount(p,config.requires)<config.required then return false end
+    if old>=math.min(config.cap,maximum) or Players[p].gold<cost then return false end
     Players[p].gold=Players[p].gold-cost
     u.pending=id
     return true
@@ -246,6 +251,7 @@ function reset()
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
         BotTactic[p],GearFraction[p],TierFraction[p]=0,0,0
+        for k=0,2 do AdvancedUnlocked[p*3+k]=false end
         BookShop[p]=nil
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
         BotThinkTrigger[p]={actions={BotThink}}
@@ -270,7 +276,7 @@ for p=0,11 do assert(TeamOf(p)==math.floor(p/3)) end
 assert(purchase(0,0)==true and Attack[0]==1 and Players[0].gold==STARTING_GOLD-ATTACK_COST)
 Players[0].gold=0
 assert(purchase(0,0)==false and Attack[0]==1 and Players[0].gold==0)
-Players[0].gold=100000000
+Players[0].gold=100000000;GearSavings[0]=100000000
 while Attack[0]<UPGRADE_MAX do assert(purchase(0,0)) end
 local gold=Players[0].gold
 assert(not purchase(0,0) and Players[0].gold==gold)
@@ -302,7 +308,7 @@ Hero[0].x=Dying.x;Hero[0].y=Dying.y
 Dying.hp=0
 local gold=Players[0].gold
 OnDeath()
-assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+12 and Kills[0]==1)
+assert(#Army[3]==ARMY_CAP-1 and Players[0].gold==gold+9 and Kills[0]==1)
 assert(Hero[0].xp==8,'Manual reward XP is reduced from 16 to 8 for an 8-gold kill')
 SpawnWave(3)
 assert(#Army[3]==ARMY_CAP)
@@ -321,7 +327,7 @@ for second=1,18000 do
 end
 assert(Tier[0]==4 and Attack[0]>0 and Armor[0]>0 and Vitality[0]>0, 'tier='..Tier[0]..' research='..Attack[0]..'/'..Armor[0]..'/'..Vitality[0]..' gold='..Players[0].gold..' tier savings='..TierSavings[0])
 -- A large test-only budget verifies all 600 troop research ranks are reachable.
-Players[0].gold=100000000
+Players[0].gold=100000000;GearSavings[0]=100000000
 for n=1,1000 do BotBuy(0);FinishResearch(0) end
 assert(Attack[0]==200 and Armor[0]==200 and Vitality[0]==200 and Power[0]==10)
 
@@ -355,7 +361,7 @@ Tick();Tick();assert(not Hero[1].revived)
 for race=0,3 do
     reset()
     assert(SelectArmyRace(0,race))
-    Players[0].gold=100000000
+    Players[0].gold=100000000;GearSavings[0]=100000000
     assert(purchase(0,0) and purchase(0,1))
     for tier=0,4 do
         GroupClear(Army[0]);SpawnWave(0)
@@ -465,7 +471,7 @@ friend.hp=100;friend.mana=100;RegenerateFortresses();assert(friend.hp==100 and f
 
 -- All hero classes build and upgrade six slots across all five fortress shops.
 for kind=0,HERO_COUNT-1 do
-    reset();Bot[0]=true;CreateHero(0,kind);Players[0].gold=100000000
+    reset();Bot[0]=true;CreateHero(0,kind);Players[0].gold=100000000;GearSavings[0]=100000000
     local first=DesiredGear(0);local target=GearShop[first]
     local gold=Players[0].gold
     assert(BotShop(0) and GearProgress[0]==0 and Players[0].gold==gold,'Travel before buying')
@@ -495,7 +501,7 @@ for kind=0,HERO_COUNT-1 do
     assert(SuperBuild[kind*6]==HeroPrimary[kind],'Primary stat first')
     assert(not BotShop(0),'Stop after six unique supreme items')
 end
-reset();Bot[0]=true;Players[0].gold=100000
+reset();Bot[0]=true;Players[0].gold=100000;GearSavings[0]=100000
 local index=DesiredGear(0);local shop=GearShop[index]
 Hero[0].x=ShopX[shop];Hero[0].y=ShopY[shop]
 BlockStock=true;BotShop(0);assert(GearProgress[0]==0 and Players[0].gold==100000,'No stock means no free item or charge')
@@ -508,8 +514,8 @@ assert(GearSavings[0]==300 and Players[0].gold==STARTING_GOLD+1000,'Equipment sa
 reset()
 SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
 local gold=Players[0].gold;OnDeath()
-assert(Players[0].gold==gold+12 and #GoldTags==1)
-assert(GoldTags[1].text=='+12' and GoldTags[1].visible and not GoldTags[1].permanent and GoldTags[1].lifespan==1.8)
+assert(Players[0].gold==gold+9 and #GoldTags==1)
+assert(GoldTags[1].text=='+9' and GoldTags[1].visible and not GoldTags[1].permanent and GoldTags[1].lifespan==1.8)
 SpawnWave(1);Dying=Army[1][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'Allied kills give neither gold nor floating reward')
 Bot[0]=true;SpawnWave(3);Dying=Army[3][1];Dying.hp=0;OnDeath();assert(#GoldTags==1,'No cosmetic tag allocation for bot rewards')
 Bot[0]=false;ShowGoldReward(1,Hero[3],10);assert(not GoldTags[2].visible,'Reward is private to its owning player')
@@ -518,7 +524,7 @@ reset()
 -- Destroying a vulnerable bastion pays once, without destroying its barracks.
 Dying=Bastion[3];Killer=Hero[0];Dying.hp=0
 local gold=Players[0].gold;OnDeath()
-assert(Players[0].gold==gold+375 and Alive(Base[3]) and not TeamLost[1])
+assert(Players[0].gold==gold+281 and Alive(Base[3]) and not TeamLost[1])
 for second=1,120 do Tick() end
 assert(not Alive(Bastion[3]),'Bastions never respawn')
 
@@ -563,8 +569,8 @@ DamageSource=Hero[3];DamageAmount=0;OnBaseDefense();assert(Bastion[0].paused)
 Bastion[0].hp=0;DamageAmount=10;OnBaseDefense();assert(Bastion[0].hp==0,'No resurrection')
 
 -- Bots prioritize affordable research despite an expensive desired item.
-reset();Bot[0]=true;GearSavings[0]=0;Players[0].gold=600
-BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==460)
+reset();Bot[0]=true;GearSavings[0]=0;Players[0].gold=2*ATTACK_COST+HEALTH_COST
+BotBuy(0);assert(Base[0].pending==ArmyResearch[0] and Players[0].gold==ATTACK_COST+HEALTH_COST)
 local budget=Players[0].gold;BotBuy(0);assert(Players[0].gold==budget,'No duplicate orders during research')
 FinishResearch(0);BotBuy(0);FinishResearch(0);BotBuy(0);FinishResearch(0)
 assert(Attack[0]==1 and Armor[0]==1 and Vitality[0]==1,'Bots develop all troop stats early')
@@ -591,7 +597,6 @@ function TriggerRegisterUnitEvent() end
 function TriggerRegisterPlayerUnitEvent() end
 function TriggerRegisterPlayerChatEvent() end
 function TriggerRegisterPlayerEvent() end
-function SetPlayerTechMaxAllowed() end
 reset();HostPlayer=-1;World={}
 for p=0,11 do
  Base[p],Hero[p],Bastion[p],Tower[p]=nil,nil,nil,nil
@@ -756,7 +761,7 @@ for step=1,24 do ProcessHeroQueue() end
 assert(Hero[3]==nil and not HeroQueued[3],'Inactive slots stay empty while work is queued')
 
 -- All troop parameters and all four base tiers keep progressing together.
-reset();Bot[0]=true;Players[0].gold=100000000
+reset();Bot[0]=true;Players[0].gold=100000000;GearSavings[0]=100000000
 for n=1,250 do
  BotBuy(0);FinishResearch(0)
  assert(Vitality[0]>=Attack[0]-1 and Vitality[0]>=Armor[0]-1,'Health research stays in the regular rotation')
@@ -766,10 +771,10 @@ assert(Tier[0]==4 and Attack[0]>50 and Armor[0]>50 and Vitality[0]>50)
 -- Extra kill gold does not increase experience a second time.
 reset();Dying=Hero[3];Dying.hp=0;Killer=Hero[0];Hero[0].x=Dying.x;Hero[0].y=Dying.y
 local before=Players[0].gold;OnDeath()
-assert(Players[0].gold==before+172 and Hero[0].xp==115,'Level-1 hero: 115 base reward -> 172 gold, 115 supplemental XP')
+assert(Players[0].gold==before+129 and Hero[0].xp==115,'Level-1 hero: 115 base reward -> 129 gold, 115 supplemental XP')
 
 -- Supreme purchases respect stock and preserve unrelated player inventory.
-reset();Bot[0]=true;GearProgress[0]=18;Players[0].gold=100000
+reset();Bot[0]=true;GearProgress[0]=18;Players[0].gold=100000;GearSavings[0]=100000
 Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
 BlockStock=true;BotShop(0)
 assert(SuperProgress[0]==0 and Players[0].gold==100000 and UnitItemInSlot(Hero[0],0)==nil)
@@ -784,7 +789,7 @@ Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
 assert(BotShop(0) and SuperProgress[0]==1 and Players[0].gold==0)
 
 -- Trips to the distant shop persist beyond the initial 15s purchase window.
-reset();Bot[0]=true;CreateHero(0,0);GearProgress[0]=18;Players[0].gold=100000;Seconds=90
+reset();Bot[0]=true;CreateHero(0,0);GearProgress[0]=18;Players[0].gold=100000;GearSavings[0]=100000;Seconds=90
 Hero[0].x=0;Hero[0].y=0
 assert(TryBotShopping(0) and ShoppingUntil[0]==135)
 Seconds=110;assert(TryBotShopping(0) and Hero[0].order[1]=='move')
@@ -801,11 +806,11 @@ Players[0].gold=2400;GearSavings[0]=600
 assert(BotResearch(0,3));FinishResearch(0)
 assert(Tier[0]==1 and Players[0].gold==600,'Tier purchases may spend their own reserve but preserve equipment money')
 
-reset();Bot[0]=true;local index=DesiredGear(0);Players[0].gold=GearCost[index]+500;TierSavings[0]=600
+reset();Bot[0]=true;local index=DesiredGear(0);Players[0].gold=GearCost[index]+500;GearSavings[0]=GearCost[index];TierSavings[0]=600
 assert(not BotShop(0),'Equipment purchases may not consume the building reserve')
 
 -- Even with enemies permanently nearby, a healthy hero makes a bounded shopping trip.
-reset();Bot[0]=true;CreateHero(0,0);Seconds=90;Players[0].gold=GearCost[DesiredGear(0)]
+reset();Bot[0]=true;CreateHero(0,0);Seconds=90;Players[0].gold=GearCost[DesiredGear(0)];GearSavings[0]=GearCost[DesiredGear(0)]
 Hero[0].x,Hero[0].y=0,0;Hero[3].x,Hero[3].y=0,0;AllowedOrders={}
 realBotHero(0)
 assert(Hero[0].order[1]=='move' and ShoppingUntil[0]>Seconds,'Nearby enemies must not starve all equipment purchases')
@@ -818,14 +823,16 @@ realBotHero(0);assert(GearProgress[0]==1,'Use the real native shop path even dur
 -- Movement here is a bounded mock; actual wall routes are verified separately in WPM.
 local tacticOutcomes={}
 for tactic=0,2 do
-for _,income in ipairs(tactic==0 and {4,16} or {16}) do
+for _,income in ipairs(tactic==0 and {3,12} or {12}) do
  reset();Bot[0]=true;BotTactic[0]=tactic;CreateHero(0,0);Hero[0].x,Hero[0].y=0,0;AllowedOrders={}
  local earned=0
  local firstTier,finalTier
- for second=1,(income==4 and 7200 or 10800) do
+ -- Doubled research prices intentionally need a longer passive-income horizon.
+ for second=1,18000 do
   Seconds=WARMUP_SECONDS+second;AddGold(0,income);earned=earned+income
   BotBuy(0)
   if second%5==0 then FinishResearch(0) end
+  if second==300 then assert(math.max(Attack[0],Armor[0],Vitality[0])<=5,'New prices prevent a five-minute research rush on this finite income') end
   if Tier[0]>=1 and not firstTier then firstTier=second end
   if Tier[0]==4 and not finalTier then finalTier=second end
   if second%2==0 then
@@ -842,20 +849,24 @@ for _,income in ipairs(tactic==0 and {4,16} or {16}) do
  end
  assert(Tier[0]>=2 and GearProgress[0]>=3 and Attack[0]>=4 and Armor[0]>=4 and Vitality[0]>=4,
   'Mixed economy: income='..income..' tier='..Tier[0]..' gear='..GearProgress[0]..' troops='..Attack[0]..'/'..Armor[0]..'/'..Vitality[0])
- if income==16 then
+ if income==12 then
   assert(Tier[0]==4 and GearProgress[0]>=6,'Every tactic develops its base and equips all six inventory slots')
   local share=income*BotTierBudget[tactic]/100
-  assert(firstTier and firstTier<=math.ceil(1800/share)+60 and finalTier and finalTier<=math.ceil(15600/share)+300,'Base development follows each tactic budget without research starvation')
+  local researchShare=income*(100-BotTierBudget[tactic]-BotGearBudget[tactic])/100
+  local minimumResearch=0
+  for rank=0,3 do minimumResearch=minimumResearch+2*(ATTACK_COST+rank*ATTACK_COST_STEP)+HEALTH_COST+rank*HEALTH_COST_STEP end
+  local deadline=math.max(math.ceil(15600/share),math.ceil(minimumResearch/researchShare))+300
+  assert(firstTier and firstTier<=math.ceil(1800/share)+60 and finalTier and finalTier<=deadline,'Base development respects both new research prices and the tactic budget')
   if tactic==0 then assert(GearProgress[0]>=12,'Balanced tactic still reaches high-tier equipment') end
   tacticOutcomes[tactic]={gear=GearProgress[0],troops=Attack[0]+Armor[0]+Vitality[0]}
  else
-  assert(firstTier and firstTier<=1100,'First base tier must not wait for half an hour of passive income')
+  assert(firstTier and firstTier<=math.ceil(1800/(income*BotTierBudget[tactic]/100))+60,'First base tier follows the reduced passive-income budget')
  end
  assert(math.abs(Attack[0]-Armor[0])<=1 and math.abs(Armor[0]-Vitality[0])<=1)
  assert(BotTactic[0]==tactic,'Tactic stays fixed throughout combat, purchases and research')
 end
 end
-assert(tacticOutcomes[1].gear>tacticOutcomes[0].gear and tacticOutcomes[0].gear>tacticOutcomes[2].gear,'Equipment priority measurably changes actual purchases on equal income')
+assert(tacticOutcomes[1].gear>tacticOutcomes[0].gear and tacticOutcomes[0].gear>tacticOutcomes[2].gear,'Equipment priority: '..tacticOutcomes[0].gear..'/'..tacticOutcomes[1].gear..'/'..tacticOutcomes[2].gear..' troops '..tacticOutcomes[0].troops..'/'..tacticOutcomes[1].troops..'/'..tacticOutcomes[2].troops)
 assert(tacticOutcomes[2].troops>tacticOutcomes[1].troops,'Army priority measurably increases troop development on equal income')
 
 -- Random strategy is synchronized once; tiny income payments retain their fractions.
@@ -897,3 +908,40 @@ SetHeroLevel(Hero[0],499);Dying=Hero[0];OnHeroLevel()
 assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC('fbL0')) and Hero[0].level==500)
 assert(Hero[0].points==999,'Tome-based levels preserve the full native and extra point budget')
 assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC('fbL0')) and Hero[0].level==500 and Hero[0].points==999,'The engine hero cap still applies')
+
+-- The advanced price jump uses real native research, shared by humans and bots.
+for kind=0,2 do
+ reset();Players[0].gold=1000000
+ assert(not IssueImmediateOrderById(Base[0],AdvancedArmyResearch[kind]),'Advanced research cannot bypass its rank-ten prerequisite')
+ for rank=1,9 do assert(purchase(0,kind)) end
+ assert(not AdvancedUnlocked[kind])
+ local tenth=({2170,2170,3528})[kind+1]
+ assert(UpgradeCost(0,kind)==tenth)
+ local gold=Players[0].gold;assert(purchase(0,kind));assert(Players[0].gold==gold-tenth)
+ assert(AdvancedUnlocked[kind] and Players[0].techLimits[AdvancedArmyResearch[kind]]==190)
+ assert(GetPlayerTechCount(0,ArmyResearch[kind])==10)
+ local eleventh=({9520,9520,15456})[kind+1]
+ assert(UpgradeCost(0,kind)==eleventh)
+ Players[0].gold=eleventh-1;assert(not Buy(0,kind) and not Base[0].pending)
+ Players[0].gold=eleventh;assert(Buy(0,kind) and Base[0].pending==AdvancedArmyResearch[kind])
+ assert(Players[0].gold==0);FinishResearch(0);assert(Players[0].gold==0,'No second charge in the finish event')
+ assert(GetPlayerTechCount(0,ArmyResearch[kind])==10 and GetPlayerTechCount(0,AdvancedArmyResearch[kind])==1)
+ assert(({Attack[0],Armor[0],Vitality[0]})[kind+1]==11,'Status and bot decisions use total research ranks')
+ local occupied={}
+ for id,config in pairs(EngineResearch) do
+  local limit=Players[0].techLimits and Players[0].techLimits[id] or config.cap
+  if GetPlayerTechCount(0,id)<math.min(limit,config.cap) and (not config.requires or GetPlayerTechCount(0,config.requires)>=config.required) then
+   assert(not occupied[config.column],'Only one research stage occupies each command-card column')
+   occupied[config.column]=true
+  end
+ end
+end
+
+-- Ordinary revival is exactly 35 clock ticks at low and maximum hero levels.
+for _,level in ipairs({1,100,500}) do
+ reset();Seconds=WARMUP_SECONDS+10
+ Hero[0].level=level;Hero[0].hp=0;Dying=Hero[0];Killer=nil;OnDeath()
+ assert(Respawn[0]==35,'Death level does not increase the revival delay')
+ for tick=1,34 do Tick();assert(not Alive(Hero[0])) end
+ Tick();assert(Alive(Hero[0]) and Hero[0].revived)
+end

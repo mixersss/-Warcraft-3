@@ -29,7 +29,11 @@ const parseObjects = file => {
 const get = (o,id) => o.modifications.find(m=>m.id===id && m.levelOrVariation===0)?.value;
 const raw = id => [...id].reduce((v,c)=>v*256+c.charCodeAt(0),0);
 const researches = parseObjects('war3map.w3q').customTable.objects;
-run('EngineResearch={'+researches.map(o=>`[${raw(o.newId)}]={base=${get(o,'gglb')},step=${get(o,'gglm')},cap=${get(o,'glvl')}}`).join(',')+'}');
+run('EngineResearch={'+researches.map(o=>{
+ const req=o.modifications.find(m=>m.id==='greq' && m.levelOrVariation===1)?.value;
+ const count=o.modifications.find(m=>m.id==='grqc' && m.levelOrVariation===1)?.value;
+ return `[${raw(o.newId)}]={base=${get(o,'gglb')},step=${get(o,'gglm')},cap=${get(o,'glvl')},column=${get(o,'gbpx')}${req ? `,requires=${raw(req)},required=${Number(count)}` : ''}}`;
+}).join(',')+'}');
 const ItemParser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
 const itemData=new ItemParser();itemData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3t'))));
 run('EngineItems={'+itemData.customTable.objects.map(o=>`[${raw(o.newId)}]={cost=${get(o,'igol')}}`).join(',')+'}');
@@ -42,4 +46,4 @@ const abilityData=parseObjects('war3map.w3a');
 const abilities=[...abilityData.originalTable.objects,...abilityData.customTable.objects.filter(o=>get(o,'aher')===1)];
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.newId==='\0\0\0\0' ? o.oldId : o.newId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
-console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 12s waves, 4 races, 36 heroes with 300/50 skills, channels, summons, charm, elimination and revival (mock natives).');
+console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 24s waves, 4 races, 36 heroes with 300/50 skills, channels, summons, charm, elimination and revival (mock natives).');

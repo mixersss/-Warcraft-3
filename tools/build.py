@@ -140,6 +140,8 @@ def validate_balance(b: dict) -> None:
     assert 1 <= b['spawn_min_seconds'] <= b['spawn_seconds']
     assert 1 <= b['spawn_units'] <= b['army_cap'] <= 100
     assert b['upgrade_max'] <= 255
+    assert 1 <= b['research_soft_cap'] < b['upgrade_max']
+    assert b['advanced_research_cost_multiplier'] >= 2
     assert b['warmup_seconds'] >= 10
     for tier in b['tiers']:
         assert tier['hp'] > 0 and tier['damage'] > 0
@@ -237,7 +239,7 @@ def units(b: dict) -> bytes:
             ('udu1', 0, b['attack_per_rank']), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
                 ('umvs', 0, 300), ('umvr', 2, 0.6),
                 ('usca', 1, b['army_model_scale']), ('ucol', 2, float(b['army_collision'])),
-                ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp'), ('ureq', 3, ''),
+                ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp,Rfa2,Rfr2,Rfh2'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
@@ -246,7 +248,7 @@ def units(b: dict) -> bytes:
     entries += picker_units(catalog('heroes'))
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
-        ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti'),
+        ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti,Rfa2,Rfr2,Rfh2'),
         ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
@@ -369,22 +371,29 @@ def upgrades(b: dict) -> bytes:
         ('Rhac','Rfti','Развитие казармы','rhpx',float(b['base_upgrade_hp']),b['base_upgrade_cost'],b['base_upgrade_cost_step'],'BTNCastle.blp',f'Новый тип бойца следующих волн. Казарме +{b["base_upgrade_hp"]} здоровья.'),
     ]
     for column,(base,rawcode,name,effect,amount,cost,step,art,description) in enumerate(rows):
-        cap = 4 if column==3 else b['upgrade_max']
-        changes = [('glvl',0,cap),('gbpx',0,column),('gbpy',0,0),
-            ('gglb',0,cost),('gglm',0,step),('glmb',0,0),('glmm',0,0),('gtib',0,1),('gtim',0,0),
-            ('gef1',3,effect),('gba1',2,amount),('gmo1',2,amount),
-            ('gef2',3,''),('gef3',3,''),('gef4',3,'')]
-        for rank in range(1,cap+1):
-            changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {rank}/{cap}]',rank,0),
-                ('gub1',3,description+f' Цена: {cost+step*(rank-1)} золота.',rank,0),
-                ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),('greq',3,'',rank,0)]
-        entries.append((base,rawcode,changes))
+        stages=[(rawcode,4 if column==3 else b['research_soft_cap'],0,1)]
+        if column<3:
+            stages.append((['Rfa2','Rfr2','Rfh2'][column],b['upgrade_max']-b['research_soft_cap'],b['research_soft_cap'],b['advanced_research_cost_multiplier']))
+        for raw,cap,offset,factor in stages:
+            price=(cost+offset*step)*factor
+            increment=step*factor
+            changes = [('glvl',0,cap),('gbpx',0,column),('gbpy',0,0),
+                ('gglb',0,price),('gglm',0,increment),('glmb',0,0),('glmm',0,0),('gtib',0,1),('gtim',0,0),
+                ('gef1',3,effect),('gba1',2,amount),('gmo1',2,amount),
+                ('gef2',3,''),('gef3',3,''),('gef4',3,'')]
+            for rank in range(1,cap+1):
+                total=rank+offset
+                changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {total}/{4 if column==3 else b["upgrade_max"]}]',rank,0),
+                    ('gub1',3,description+f' Цена: {price+increment*(rank-1)} золота.'+(' Продвинутое исследование: цена ×4 после 10-го уровня.' if offset or column<3 else ''),rank,0),
+                    ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),
+                    ('greq',3,rawcode if offset else '',rank,0),('grqc',3,str(offset) if offset else '',rank,0)]
+            entries.append((base,raw,changes))
     return objects(entries,extended=True)
 
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
@@ -399,7 +408,7 @@ def script(b: dict) -> str:
         '    real array BookX', '    real array BookY', '    integer array SuperId', '    integer array SuperCost', '    integer array SuperBuild', '    real array SuperX', '    real array SuperY', '    integer array GearId', '    integer array GearCost', '    integer array GearShop', '    integer array HeroGear',
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
-        '    integer array ArmyResearch', 'endglobals']
+        '    integer array ArmyResearch', '    integer array AdvancedArmyResearch', 'endglobals']
     source = (ROOT/'map/war3map.j').read_text()
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
@@ -425,6 +434,8 @@ def script(b: dict) -> str:
         init += [f"    set GearId[{idx}] = '{row['id']}'",f'    set GearCost[{idx}] = {row["cost"]}',f'    set GearShop[{idx}] = {row["shop"]}']
     for kind, rawcode in enumerate(['Rfat','Rfar','Rfhp','Rfti']):
         init += [f"    set ArmyResearch[{kind}] = '{rawcode}'"]
+    for kind, rawcode in enumerate(['Rfa2','Rfr2','Rfh2']):
+        init += [f"    set AdvancedArmyResearch[{kind}] = '{rawcode}'"]
     for n, row in enumerate(b['tiers']):
         init += [f'    set TierCost[{n}] = {row["cost"]}']
     for race, faction in enumerate(races):

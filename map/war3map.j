@@ -40,6 +40,7 @@ globals
     boolean array TeamLost
     boolean array Defending
     integer array TierSavings
+    boolean array AdvancedUnlocked
     integer array Tier
     integer array Attack
     integer array Armor
@@ -214,19 +215,35 @@ function UpdateRally takes integer team returns nothing
 endfunction
 
 function SyncArmyResearch takes integer p returns nothing
-    set Attack[p] = GetPlayerTechCount(Player(p), 'Rfat', true)
-    set Armor[p] = GetPlayerTechCount(Player(p), 'Rfar', true)
-    set Vitality[p] = GetPlayerTechCount(Player(p), 'Rfhp', true)
+    local integer k = 0
+    set Attack[p] = GetPlayerTechCount(Player(p), 'Rfat', true)+GetPlayerTechCount(Player(p), 'Rfa2', true)
+    set Armor[p] = GetPlayerTechCount(Player(p), 'Rfar', true)+GetPlayerTechCount(Player(p), 'Rfr2', true)
+    set Vitality[p] = GetPlayerTechCount(Player(p), 'Rfhp', true)+GetPlayerTechCount(Player(p), 'Rfh2', true)
     set Tier[p] = GetPlayerTechCount(Player(p), 'Rfti', true)
+    loop
+        exitwhen k == 3
+        if not AdvancedUnlocked[p*3+k] and GetPlayerTechCount(Player(p),ArmyResearch[k],true) >= RESEARCH_SOFT_CAP then
+            call SetPlayerTechMaxAllowed(Player(p),AdvancedArmyResearch[k],UPGRADE_MAX-RESEARCH_SOFT_CAP)
+            set AdvancedUnlocked[p*3+k] = true
+        endif
+        set k = k+1
+    endloop
+endfunction
+
+function TroopResearchCost takes integer baseCost, integer stepCost, integer level returns integer
+    if level >= RESEARCH_SOFT_CAP then
+        return (baseCost+level*stepCost)*ADVANCED_RESEARCH_COST_MULTIPLIER
+    endif
+    return baseCost+level*stepCost
 endfunction
 
 function UpgradeCost takes integer p, integer kind returns integer
     if kind == 0 and Attack[p] < UPGRADE_MAX then
-        return ATTACK_COST + Attack[p]*ATTACK_COST_STEP
+        return TroopResearchCost(ATTACK_COST,ATTACK_COST_STEP,Attack[p])
     elseif kind == 1 and Armor[p] < UPGRADE_MAX then
-        return ARMOR_COST + Armor[p]*ARMOR_COST_STEP
+        return TroopResearchCost(ARMOR_COST,ARMOR_COST_STEP,Armor[p])
     elseif kind == 2 and Vitality[p] < UPGRADE_MAX then
-        return HEALTH_COST + Vitality[p]*HEALTH_COST_STEP
+        return TroopResearchCost(HEALTH_COST,HEALTH_COST_STEP,Vitality[p])
     elseif kind == 3 and Tier[p] < 4 then
         return TierCost[Tier[p]+1]
     elseif kind == 4 and Power[p] < 10 then
@@ -279,7 +296,10 @@ function Buy takes integer p, integer kind returns boolean
     if kind < 4 then
         // The engine charges gold, queues research and updates existing/new units.
         // Human command-card clicks use exactly the same engine research path.
-        return IssueImmediateOrderById(Base[p], ArmyResearch[kind])
+        if kind < 3 and GetPlayerTechCount(Player(p),ArmyResearch[kind],true) >= RESEARCH_SOFT_CAP then
+            return IssueImmediateOrderById(Base[p],AdvancedArmyResearch[kind])
+        endif
+        return IssueImmediateOrderById(Base[p],ArmyResearch[kind])
     endif
     call AddGold(p, -cost)
     if kind == 4 then
@@ -828,7 +848,7 @@ function BotSupremeShop takes integer p returns boolean
         set h = null
         return false
     endif
-    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < SuperCost[choice] then
+    if GearSavings[p] < SuperCost[choice] or GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < SuperCost[choice] then
         set h = null
         return false
     endif
@@ -890,7 +910,7 @@ function BotShop takes integer p returns boolean
         set h = null
         return false
     endif
-    if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < GearCost[index] then
+    if GearSavings[p] < GearCost[index] or GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-BotTierReserve(p) < GearCost[index] then
         set h = null
         return false
     endif
@@ -1245,7 +1265,7 @@ function OnDeath takes nothing returns nothing
         call Say(GetPlayerName(Player(p)) + " lost their barracks!")
     elseif dead == Hero[p] then
         set reward = 100 + 15*GetHeroLevel(dead)
-        set Respawn[p] = 15 + GetHeroLevel(dead)*3
+        set Respawn[p] = HERO_RESPAWN_SECONDS
     elseif dead == Bastion[p] then
         set reward = 250
     elseif dead == Tower[p] then
@@ -1608,7 +1628,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. Troop research costs are 40% higher. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Every barracks tier substantially strengthens future troops; models and collision are smaller. Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. Troop research costs are doubled relative to 0.13.1; from rank 11 the normal next-rank price is multiplied by four. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Every barracks tier moderately strengthens future troops; models and collision are smaller. Waves: three identical troops of the current army tier every 24 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
@@ -1618,7 +1638,7 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Kill gold +50%. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Living army and summon numbers are unchanged. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three troops per wave, now every 24 seconds; army cap 48 and summon counts preserved. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1721,7 +1741,8 @@ function InitSlot takes integer p returns nothing
         if j == 3 then
             call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], 4)
         else
-            call SetPlayerTechMaxAllowed(Player(p), ArmyResearch[j], UPGRADE_MAX)
+            call SetPlayerTechMaxAllowed(Player(p),ArmyResearch[j],RESEARCH_SOFT_CAP)
+            call SetPlayerTechMaxAllowed(Player(p),AdvancedArmyResearch[j],0)
         endif
         set j = j+1
     endloop
