@@ -38,6 +38,8 @@ for i in range(461):
     if name.lower() in lookup:selected.add(lookup[name.lower()])
  models[i]={'path':reverse[i],'animations':animations,'textures':textures}
 selected.update(all_audio)
+# Portrait for the first playable summoned companion.
+selected.add(lookup['icon_gamabunta_portrait.blp'])
 heroes=[]
 for h,raw in enumerate(heroids):
  f=units[raw]['fields'];model=f['umdl'].replace('.mdl','.mdx');index=lookup[model.lower()];skills=[]

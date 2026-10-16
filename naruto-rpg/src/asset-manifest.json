@@ -906,6 +906,12 @@
     "sha256": "de8a78a9b3748d2b39990bad3483d8dd5bb268ca6d113eb68af65e34e160563d"
   },
   {
+    "source_index": 177,
+    "path": "Icon_Gamabunta_Portrait.blp",
+    "bytes": 29404,
+    "sha256": "56ccc8ee54bd3e813fc9a169f1904bb11627ad7dcd7f5f6351ec393946336fdb"
+  },
+  {
     "source_index": 179,
     "path": "Icon_Hinata_Portrait.blp",
     "bytes": 39043,

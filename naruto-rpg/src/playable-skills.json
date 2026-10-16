@@ -1,0 +1,817 @@
+[
+  {
+    "hero": 0,
+    "source_id": "A00L",
+    "id": "Rn01",
+    "base": "AUau",
+    "name": "Джинчурики",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "cooldown": 0.0,
+    "range": 0.0,
+    "targets": "self",
+    "description": "Пассивно восстанавливает здоровье Наруто и повышает скорость.",
+    "fields": [
+      [
+        "Uau1",
+        2,
+        1,
+        [
+          0.05,
+          0.08,
+          0.11,
+          0.14
+        ]
+      ],
+      [
+        "Uau2",
+        2,
+        2,
+        [
+          3.0,
+          5.0,
+          7.0,
+          9.0
+        ]
+      ],
+      [
+        "Uau3",
+        0,
+        3,
+        [
+          0
+        ]
+      ],
+      [
+        "aare",
+        2,
+        0,
+        [
+          100.0
+        ]
+      ],
+      [
+        "abuf",
+        3,
+        0,
+        [
+          "BUau"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Регенерация 3 HP/сек, скорость +5%.",
+      "Регенерация 5 HP/сек, скорость +8%.",
+      "Регенерация 7 HP/сек, скорость +11%.",
+      "Регенерация 9 HP/сек, скорость +14%."
+    ],
+    "key": "D",
+    "icon": "Icon_Naruto_Jinchuriki.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 0,
+    "source_id": "A001",
+    "id": "Rn02",
+    "base": "AOmi",
+    "name": "Теневое клонирование",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      100,
+      125,
+      150,
+      175
+    ],
+    "cooldown": 28.0,
+    "range": 128.0,
+    "targets": "",
+    "description": "Создаёт временных боевых клонов Наруто.",
+    "fields": [
+      [
+        "Omi1",
+        0,
+        1,
+        [
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      [
+        "Omi2",
+        2,
+        2,
+        [
+          0.25,
+          0.35,
+          0.45,
+          0.55
+        ]
+      ],
+      [
+        "Omi3",
+        2,
+        3,
+        [
+          2.0
+        ]
+      ],
+      [
+        "Omi4",
+        2,
+        4,
+        [
+          0.4
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          20.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          20.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "2 клона на 20 сек; урон 25%, получаемый урон 200%.",
+      "3 клона на 20 сек; урон 35%, получаемый урон 200%.",
+      "4 клона на 20 сек; урон 45%, получаемый урон 200%.",
+      "5 клона на 20 сек; урон 55%, получаемый урон 200%."
+    ],
+    "key": "F",
+    "icon": "Icon_Naruto_KageBunshin.BLP",
+    "animation": "spell,loop",
+    "audio_index": 23,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 0,
+    "source_id": "A00R",
+    "id": "Rn03",
+    "base": "AHwe",
+    "name": "Призыв Гамабунты",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      180,
+      220,
+      260
+    ],
+    "cooldown": 65.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Призывает Гамабунту на 35 секунд.",
+    "fields": [
+      [
+        "Hwe1",
+        3,
+        0,
+        [
+          "rt01",
+          "rt02",
+          "rt03"
+        ]
+      ],
+      [
+        "Hwe2",
+        0,
+        1,
+        [
+          1
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          35.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          35.0
+        ]
+      ],
+      [
+        "asat",
+        3,
+        0,
+        [
+          "Kuchiyose.mdl"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "35 сек: 1600 HP, урон 61–63, броня 4.",
+      "35 сек: 2200 HP, урон 86–88, броня 6.",
+      "35 сек: 2800 HP, урон 111–113, броня 8."
+    ],
+    "key": "G",
+    "icon": "Icon_Naruto_Kuchiyose.blp",
+    "animation": "stand",
+    "audio_index": 7,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 0,
+    "source_id": "A01P",
+    "id": "Rn04",
+    "base": "ANsb",
+    "name": "Расенган",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      140,
+      180,
+      220
+    ],
+    "cooldown": 18.0,
+    "range": 260.0,
+    "targets": "ground,enemy,neutral,organic",
+    "description": "Удар чакрой, оглушение и ударная волна по ближайшим врагам.",
+    "fields": [
+      [
+        "Htb1",
+        2,
+        1,
+        [
+          250.0,
+          450.0,
+          650.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.5,
+          1.75,
+          2.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          1.0,
+          1.25,
+          1.5
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "Abilities\\Weapons\\KeeperGroveMissile\\KeeperGroveMissile.mdl"
+        ]
+      ],
+      [
+        "amsp",
+        0,
+        0,
+        [
+          1500
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Урон цели 250; соседям в радиусе 220 — 125. Оглушение героя 1 сек.",
+      "Урон цели 450; соседям в радиусе 220 — 225. Оглушение героя 1.25 сек.",
+      "Урон цели 650; соседям в радиусе 220 — 325. Оглушение героя 1.5 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Naruto_Rasengan.BLP",
+    "animation": "spell,two",
+    "audio_index": 1,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 0,
+    "source_id": "A015",
+    "id": "Rn05",
+    "base": "AEme",
+    "name": "Однохвостая форма",
+    "ranks": 3,
+    "required_level": 10,
+    "level_skip": 5,
+    "mana": [
+      200,
+      250,
+      300
+    ],
+    "cooldown": 90.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 25 секунд раскрывает чакру Кьюби: больше HP, урон и скорость атак.",
+    "fields": [
+      [
+        "Eme1",
+        3,
+        1,
+        [
+          "R000"
+        ]
+      ],
+      [
+        "Emeu",
+        3,
+        0,
+        [
+          "Rnfm"
+        ]
+      ],
+      [
+        "Eme5",
+        2,
+        5,
+        [
+          300.0,
+          650.0,
+          1000.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          25.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "25 сек: +300 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек).",
+      "25 сек: +650 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек).",
+      "25 сек: +1000 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек)."
+    ],
+    "key": "E",
+    "icon": "Icon_Naruto_OneTailedTransformation.blp",
+    "animation": "spell",
+    "audio_index": 34,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 1,
+    "source_id": "A01B",
+    "id": "Rs01",
+    "base": "ANbf",
+    "name": "Катон: Огненный шар",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      110,
+      130,
+      150
+    ],
+    "cooldown": 12.0,
+    "range": 650.0,
+    "targets": "ground,air,enemy,neutral",
+    "description": "Поток огня обжигает врагов перед Саске.",
+    "fields": [
+      [
+        "Ucs1",
+        2,
+        1,
+        [
+          140.0,
+          220.0,
+          300.0,
+          380.0
+        ]
+      ],
+      [
+        "Ucs2",
+        2,
+        2,
+        [
+          1000.0,
+          1500.0,
+          2000.0,
+          2500.0
+        ]
+      ],
+      [
+        "Nbf5",
+        2,
+        5,
+        [
+          8.0,
+          12.0,
+          16.0,
+          20.0
+        ]
+      ],
+      [
+        "Ucs3",
+        2,
+        3,
+        [
+          650.0
+        ]
+      ],
+      [
+        "Ucs4",
+        2,
+        4,
+        [
+          180.0
+        ]
+      ],
+      [
+        "aare",
+        2,
+        0,
+        [
+          120.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          3.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          3.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Прямой урон 140, затем 8 урона/сек в течение 3 сек.",
+      "Прямой урон 220, затем 12 урона/сек в течение 3 сек.",
+      "Прямой урон 300, затем 16 урона/сек в течение 3 сек.",
+      "Прямой урон 380, затем 20 урона/сек в течение 3 сек."
+    ],
+    "key": "D",
+    "icon": "Icon_Sasuke_KatonGokakyu.blp",
+    "animation": "spell,walk",
+    "audio_index": 122,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 1,
+    "source_id": "A01A",
+    "id": "Rs02",
+    "base": "Aroa",
+    "name": "Шаринган",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 3,
+    "mana": [
+      80,
+      100,
+      120
+    ],
+    "cooldown": 35.0,
+    "range": 0.0,
+    "targets": "self",
+    "description": "На 18 секунд повышает урон, броню и ловкость; даёт уклонение и критические удары.",
+    "fields": [
+      [
+        "Roa1",
+        2,
+        1,
+        [
+          0.15,
+          0.25,
+          0.35
+        ]
+      ],
+      [
+        "Roa2",
+        0,
+        2,
+        [
+          2,
+          4,
+          6
+        ]
+      ],
+      [
+        "Roa3",
+        2,
+        3,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Roa4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "aare",
+        2,
+        0,
+        [
+          100.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          18.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          18.0
+        ]
+      ],
+      [
+        "acat",
+        3,
+        0,
+        [
+          "Eye_Sharingan.mdl"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "18 сек: урон +15%, броня +2, ловкость +6; уклонение 15%, крит 15% ×1.5.",
+      "18 сек: урон +25%, броня +4, ловкость +10; уклонение 20%, крит 20% ×1.75.",
+      "18 сек: урон +35%, броня +6, ловкость +14; уклонение 25%, крит 25% ×2."
+    ],
+    "key": "F",
+    "icon": "Icon_Sasuke_Sharingan.blp",
+    "animation": "spell",
+    "audio_index": 75,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 1,
+    "source_id": "A033",
+    "id": "Rs03",
+    "base": "AOcl",
+    "name": "Шиши Рендан",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      150,
+      180
+    ],
+    "cooldown": 20.0,
+    "range": 250.0,
+    "targets": "ground,enemy,neutral,organic",
+    "description": "Комбинация из трёх последовательных ударов по одной цели.",
+    "fields": [
+      [
+        "Ocl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ocl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ocl3",
+        2,
+        3,
+        [
+          0.0
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          ""
+        ]
+      ],
+      [
+        "alig",
+        3,
+        0,
+        [
+          ""
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "3 удара по 100 урона за 0,75 сек (всего 300). Комбинация прерывается при смерти, удалении или большом удалении цели.",
+      "3 удара по 160 урона за 0,75 сек (всего 480). Комбинация прерывается при смерти, удалении или большом удалении цели.",
+      "3 удара по 220 урона за 0,75 сек (всего 660). Комбинация прерывается при смерти, удалении или большом удалении цели."
+    ],
+    "key": "G",
+    "icon": "Icon_Sasuke_ShishiRendan.BLP",
+    "animation": "stand",
+    "audio_index": 76,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 1,
+    "source_id": "A01D",
+    "id": "Rs04",
+    "base": "ANsb",
+    "name": "Чидори",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      150,
+      190,
+      230
+    ],
+    "cooldown": 22.0,
+    "range": 450.0,
+    "targets": "ground,enemy,neutral,organic",
+    "description": "Пробивающий удар молнией с оглушением.",
+    "fields": [
+      [
+        "Htb1",
+        2,
+        1,
+        [
+          350.0,
+          575.0,
+          800.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.0,
+          1.25,
+          1.5
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          1.0,
+          1.25,
+          1.5
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "Abilities\\Weapons\\FarseerMissile\\FarseerMissile.mdl"
+        ]
+      ],
+      [
+        "amsp",
+        0,
+        0,
+        [
+          1800
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "350 урона и оглушение на 1 сек.",
+      "575 урона и оглушение на 1.25 сек.",
+      "800 урона и оглушение на 1.5 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Sasuke_Chidori.BLP",
+    "animation": "stand",
+    "audio_index": 130,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  },
+  {
+    "hero": 1,
+    "source_id": "A019",
+    "id": "Rs05",
+    "base": "AEme",
+    "name": "Проклятая печать: II",
+    "ranks": 3,
+    "required_level": 10,
+    "level_skip": 5,
+    "mana": [
+      200,
+      250,
+      300
+    ],
+    "cooldown": 90.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 25 секунд раскрывает проклятую печать; использует исходную модель SasukeCursed.",
+    "fields": [
+      [
+        "Eme1",
+        3,
+        1,
+        [
+          "R001"
+        ]
+      ],
+      [
+        "Emeu",
+        3,
+        0,
+        [
+          "Rsfm"
+        ]
+      ],
+      [
+        "Eme5",
+        2,
+        5,
+        [
+          250.0,
+          550.0,
+          850.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          25.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "25 сек: +250 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек).",
+      "25 сек: +550 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек).",
+      "25 сек: +850 максимального HP, усиленные атаки формы (база 45, интервал 1,1 сек)."
+    ],
+    "key": "E",
+    "icon": "Icon_Sasuke_2ndForm.blp",
+    "animation": "spell",
+    "audio_index": 74,
+    "implementation": "Independent adaptation; original trigger mechanics not copied"
+  }
+]

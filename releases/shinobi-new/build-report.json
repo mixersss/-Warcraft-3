@@ -1,10 +1,10 @@
 {
-  "filename": "Shinobi_New_Foundation_04.w3x",
-  "bytes": 7633636,
-  "sha256": "b177594ed022c04d70f8553acdc64097f588b3b67715edca9fc13cfa96e7edc8",
+  "filename": "Shinobi_Skills_Alpha_05.w3x",
+  "bytes": 7674764,
+  "sha256": "022894f197ab6db4a43019b8dda57a3a442dccfa70c20ea806ec314045e44dbf",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": false,
-  "importedAssets": 368,
+  "importedAssets": 369,
   "models": 67,
   "audioFiles": 174,
   "animationsInModels": 442,
@@ -12,8 +12,10 @@
   "slots": 12,
   "inventoriedLearnableSkills": 58,
   "inventoriedInnateSkills": 2,
-  "recreatedSkillMechanics": 0,
+  "recreatedSkillMechanics": 10,
+  "skillImplementation": "new independent adaptations, not original script",
+  "playableHeroesWithSkills": 2,
   "sectorSize": 4096,
-  "stage": "Resource foundation test, not a completed RPG",
+  "stage": "Ten-technique training alpha; story and other heroes skills pending",
   "engineTested": false
 }

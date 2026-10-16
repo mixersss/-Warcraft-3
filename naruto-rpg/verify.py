@@ -43,5 +43,5 @@ for row in manifest:
 assert len(full)<8*1024*1024 and hashlib.sha256(full).hexdigest()==report['sha256']
 # File tables, scenario and imported data are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
-result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':0}
+result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
 (ROOT/'dist/verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))

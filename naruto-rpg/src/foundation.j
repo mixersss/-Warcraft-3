@@ -1,4 +1,25 @@
 globals
+    integer array HeroTemplate
+    integer array HeroRole
+    integer array PlayableSkill
+    integer array SkillRanks
+    integer array SkillRequired
+    integer array SkillSkip
+    integer array SkillAudio
+    integer array SkillTarget
+    string array SkillOrder
+    real array SkillCooldown
+    real array SkillMana
+    real array BotReadyAt
+    real array BotNextCast
+    real array SharinganUntil
+    real array BurstUntil
+    effect array SharinganArt
+    effect array BurstArt
+    unit array ComboTarget
+    integer array ComboLeft
+    real array ComboDamage
+    group SkillScratch=null
     unit array Hero
     unit array Dummy
     integer array HeroType
@@ -14,6 +35,7 @@ globals
     sound array AudioHandle
     integer array AudioDuration
     string array AudioEAX
+    boolean array AudioQueued
     integer PendingAudio=-1
     timer AudioClock=null
     string array AudioPath
@@ -30,12 +52,17 @@ function FoundationAlive takes unit u returns boolean
     return u!=null and GetWidgetLife(u)>.405
 endfunction
 function FoundationPlayPending takes nothing returns nothing
-    local integer index=PendingAudio
+    local integer index=0
     set PendingAudio=-1
-    if index>=0 and index<=174 then
-        call StopSound(AudioHandle[index],false,false)
-        call StartSound(AudioHandle[index])
-    endif
+    loop
+        exitwhen index>174
+        if AudioQueued[index] then
+            set AudioQueued[index]=false
+            call StopSound(AudioHandle[index],false,false)
+            call StartSound(AudioHandle[index])
+        endif
+        set index=index+1
+    endloop
 endfunction
 function FoundationSound takes integer index returns nothing
     if index<0 or index>174 then
@@ -50,41 +77,52 @@ function FoundationSound takes integer index returns nothing
         call SetSoundVolume(AudioHandle[index],127)
         call SetSoundPitch(AudioHandle[index],1.)
     endif
+    set AudioQueued[index]=true
     set PendingAudio=index
     call TimerStart(AudioClock,.2,false,function FoundationPlayPending)
 endfunction
+// SKILLS_RUNTIME
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
     local string msg=GetEventPlayerChatString()
     local integer k=0
+    local integer template=HeroTemplate[p]
     if p>=12 then
         return
     endif
-    if msg=="-anim" or SubString(msg,0,6)=="-anim " then
+    if msg=="-naruto" then
+        call SkillsChoose(p,0)
+    elseif msg=="-sasuke" then
+        call SkillsChoose(p,1)
+    elseif msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
+        call SetHeroLevel(Hero[p],30,false)
+        call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+        call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Тренировочный режим: 30-й уровень. Изучи техники кнопкой +. Мана восстановлена; перезарядки сохраняются.")
+    elseif msg=="-anim" or SubString(msg,0,6)=="-anim " then
         if not FoundationAlive(Hero[p]) then
             call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Герой ещё не создан или погиб.")
             return
         endif
         if msg=="-anim" then
-            set k=ModuloInteger(AnimCursor[p],AnimCount[p])
+            set k=ModuloInteger(AnimCursor[p],AnimCount[template])
         else
             set k=S2I(SubString(msg,6,StringLength(msg)))
         endif
-        if k<0 or k>=AnimCount[p] then
-            call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Индекс анимации: 0.."+I2S(AnimCount[p]-1))
+        if k<0 or k>=AnimCount[template] then
+            call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Индекс анимации: 0.."+I2S(AnimCount[template]-1))
             return
         endif
         call IssueImmediateOrder(Hero[p],"stop")
         call SetUnitTimeScale(Hero[p],1.)
         call SetUnitAnimationByIndex(Hero[p],k)
         set ResumeAt[p]=TimeNow+4.
-        set AnimCursor[p]=ModuloInteger(k+1,AnimCount[p])
-        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Анимация "+I2S(k)+": "+AnimName[p*64+k])
-    elseif msg=="-voice" and VoiceCount[p]>0 then
-        set k=ModuloInteger(VoiceCursor[p],VoiceCount[p])
-        call FoundationSound(VoiceIndex[p*64+k])
+        set AnimCursor[p]=ModuloInteger(k+1,AnimCount[template])
+        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Анимация "+I2S(k)+": "+AnimName[template*64+k])
+    elseif msg=="-voice" and VoiceCount[template]>0 then
+        set k=ModuloInteger(VoiceCursor[p],VoiceCount[template])
+        call FoundationSound(VoiceIndex[template*64+k])
         set VoiceCursor[p]=k+1
-        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Озвучка: "+AudioPath[VoiceIndex[p*64+k]])
+        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Озвучка: "+AudioPath[VoiceIndex[template*64+k]])
     elseif msg=="-sound" or SubString(msg,0,7)=="-sound " then
         if msg=="-sound" then
             set k=ModuloInteger(AudioCursor[p],174)
@@ -110,12 +148,12 @@ function FoundationChat takes nothing returns nothing
         set MusicOn=not MusicOn
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-naruto / -sasuke: выбрать героя; -practice: 30-й уровень; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Каталог навыков: "+HeroName[p]+". Механики ещё не подключены в техническом тесте.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У Наруто и Саске работают пять техник; изучай их кнопкой +.")
         loop
-            exitwhen k>=SkillCount[p]
-            call DisplayTimedTextToPlayer(Player(p),0,0,15.,SkillName[p*5+k])
+            exitwhen k>=SkillCount[template]
+            call DisplayTimedTextToPlayer(Player(p),0,0,15.,SkillName[template*5+k])
             set k=k+1
         endloop
     endif
@@ -123,6 +161,7 @@ endfunction
 function FoundationTick takes nothing returns nothing
     local integer p=0
     local integer team=0
+    local boolean casting=false
     set TimeNow=TimeNow+.5
     loop
         exitwhen p>=12
@@ -132,8 +171,11 @@ function FoundationTick takes nothing returns nothing
                 set ResumeAt[p]=0.
             endif
             set team=(p-ModuloInteger(p,3))/3
-            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and ResumeAt[p]==0. and FoundationAlive(Dummy[team]) and GetUnitCurrentOrder(Hero[p])==0 then
-                call IssueTargetOrder(Hero[p],"attack",Dummy[team])
+            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and ResumeAt[p]==0. and FoundationAlive(Dummy[team]) then
+                set casting=SkillsBot(p)
+                if not casting and TimeNow>=BotNextCast[p] and GetUnitCurrentOrder(Hero[p])==0 then
+                    call IssueTargetOrder(Hero[p],"attack",Dummy[team])
+                endif
             endif
         endif
         set p=p+1
@@ -149,6 +191,12 @@ function FoundationSpawn takes nothing returns nothing
     endif
     if GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
         set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
+        if HeroRole[p]>=0 then
+            call SetHeroLevel(Hero[p],10,false)
+            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
+                call SkillsLearnBot(p)
+            endif
+        endif
         call SetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD,500)
         call SelectUnitForPlayerSingle(Hero[p],Player(p))
         call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],0.)
@@ -161,6 +209,7 @@ function FoundationInit takes nothing returns nothing
     local trigger chat=CreateTrigger()
     local timer clock=CreateTimer()
 // GENERATED_DATA
+    call SkillsInit()
     set AudioClock=CreateTimer()
     set AudioPath[174]="Sound\\Interface\\QuestNew.wav"
     set AudioEAX[174]=""
@@ -170,6 +219,7 @@ function FoundationInit takes nothing returns nothing
     set Dummy[3]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',-3400.,3400.,135.)
     loop
         exitwhen p>=12
+        set HeroTemplate[p]=p
         call TriggerRegisterPlayerChatEvent(chat,Player(p),"-",false)
         set p=p+1
     endloop
@@ -179,7 +229,7 @@ function FoundationInit takes nothing returns nothing
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI NEW FOUNDATION 04: новая основа, четыре команды по три. Техническая проверка моделей и озвучек, не готовая RPG. -help: команды теста; -anim 5: анимация; -voice: голос; -sound: следующий звук; -music: выключить/включить музыку. Навыки пока не подключены.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI SKILLS ALPHA 05: первые 10 техник Наруто и Саске. -naruto / -sasuke: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты Наруто/Саске используют техники. Сюжет и навыки остальных героев ещё не подключены.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)
