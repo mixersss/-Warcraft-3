@@ -345,6 +345,16 @@
       "type": "string",
       "column": 0,
       "specific": ""
+    },
+    "aefs": {
+      "type": "soundLabel",
+      "column": 0,
+      "specific": ""
+    },
+    "aefl": {
+      "type": "soundLabel",
+      "column": 0,
+      "specific": ""
     }
   },
   "unitFields": {

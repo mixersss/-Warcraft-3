@@ -22,10 +22,12 @@ for(const o of units){
 for(const row of rows)assert(assets.has(row.icon.toLowerCase()),'Missing spell icon');
 function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','defenseType','deathType','regenType'].includes(t)?0:3;}
 for(const o of abilities){
+ assert.equal(get(o,'aefs'),'');assert.equal(get(o,'aefl'),'');
  assert(schema.stockIds.abilities.includes(o.oldId),'Invalid native ability base '+o.oldId);
  for(const mod of o.modifications){const meta=schema.abilityFields[mod.id];assert(meta,'Unknown ability field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);if(mod.levelOrVariation>0)assert.equal(mod.dataPointer,meta.column,o.newId+':'+mod.id+' column');}
 }
 for(const o of units){
+ assert.equal(get(o,'usnd'),'');assert.equal(get(o,'ucs1'),'');assert.equal(get(o,'ucs2'),'');
  assert(schema.stockIds.units.includes(o.oldId),'Invalid native unit base');
  for(const mod of o.modifications){const meta=schema.unitFields[mod.id];assert(meta,'Unknown unit field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);}
  for(const id of (get(o,'uhab')||'').split(',').filter(Boolean))assert(ability[id]);
