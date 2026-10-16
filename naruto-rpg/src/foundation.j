@@ -11,6 +11,11 @@ globals
     integer array VoiceCount
     integer array VoiceIndex
     integer array VoiceCursor
+    sound array AudioHandle
+    integer array AudioDuration
+    string array AudioEAX
+    integer PendingAudio=-1
+    timer AudioClock=null
     string array AudioPath
     string array SkillName
     integer array SkillCount
@@ -24,17 +29,29 @@ endglobals
 function FoundationAlive takes unit u returns boolean
     return u!=null and GetWidgetLife(u)>.405
 endfunction
-function FoundationSound takes integer index returns nothing
-    local sound snd=null
-    if index>=0 and index<174 then
-        set snd=CreateSound(AudioPath[index],false,false,false,10,10,"DefaultEAXON")
-        call SetSoundChannel(snd,0)
-        call SetSoundVolume(snd,127)
-        call SetSoundPitch(snd,1.)
-        call StartSound(snd)
-        call KillSoundWhenDone(snd)
+function FoundationPlayPending takes nothing returns nothing
+    local integer index=PendingAudio
+    set PendingAudio=-1
+    if index>=0 and index<=174 then
+        call StopSound(AudioHandle[index],false,false)
+        call StartSound(AudioHandle[index])
     endif
-    set snd=null
+endfunction
+function FoundationSound takes integer index returns nothing
+    if index<0 or index>174 then
+        return
+    endif
+    if AudioHandle[index]==null then
+        set AudioHandle[index]=CreateSound(AudioPath[index],false,false,false,10,10,AudioEAX[index])
+        if index<174 then
+            call SetSoundDuration(AudioHandle[index],AudioDuration[index])
+        endif
+        call SetSoundChannel(AudioHandle[index],0)
+        call SetSoundVolume(AudioHandle[index],127)
+        call SetSoundPitch(AudioHandle[index],1.)
+    endif
+    set PendingAudio=index
+    call TimerStart(AudioClock,.2,false,function FoundationPlayPending)
 endfunction
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
@@ -81,6 +98,9 @@ function FoundationChat takes nothing returns nothing
         call FoundationSound(k)
         set AudioCursor[p]=k+1
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Звук "+I2S(k)+": "+AudioPath[k])
+    elseif msg=="-soundtest" then
+        call FoundationSound(174)
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Тест обычного звука Warcraft: сигнал нового задания.")
     elseif msg=="-music" then
         if MusicOn then
             call StopMusic(false)
@@ -141,6 +161,9 @@ function FoundationInit takes nothing returns nothing
     local trigger chat=CreateTrigger()
     local timer clock=CreateTimer()
 // GENERATED_DATA
+    set AudioClock=CreateTimer()
+    set AudioPath[174]="Sound\\Interface\\QuestNew.wav"
+    set AudioEAX[174]=""
     set Dummy[0]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',-3400.,-3400.,225.)
     set Dummy[1]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',3400.,-3400.,315.)
     set Dummy[2]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',3400.,3400.,45.)
@@ -156,7 +179,7 @@ function FoundationInit takes nothing returns nothing
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI NEW FOUNDATION 03: новая основа, четыре команды по три. Техническая проверка моделей и озвучек, не готовая RPG. -help: команды теста; -anim 5: анимация; -voice: голос; -sound: следующий звук; -music: выключить/включить музыку. Навыки пока не подключены.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI NEW FOUNDATION 04: новая основа, четыре команды по три. Техническая проверка моделей и озвучек, не готовая RPG. -help: команды теста; -anim 5: анимация; -voice: голос; -sound: следующий звук; -music: выключить/включить музыку. Навыки пока не подключены.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)

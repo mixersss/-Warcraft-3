@@ -20,21 +20,26 @@ function I2S(n) return tostring(n) end
 function ModuloInteger(n,d) return n%d end
 function GetWidgetLife(u) return 1000 end
 function DisplayTimedTextToPlayer(p,x,y,t,s) Feedback=s end
-function CreateSound(path,loop,is3d,range,fadein,fadeout,eax) return {path=path,is3d=is3d} end
+Created=0
+function CreateSound(path,loop,is3d,range,fadein,fadeout,eax) Created=Created+1;return {path=path,is3d=is3d,eax=eax} end
+function SetSoundDuration(s,d) assert(d>0);s.duration=d end
+function StopSound(s,kill,fade) assert(not kill);s.stopped=true end
+function TimerStart(t,delay,loop,callback) assert(delay==.2 and not loop);Deferred=callback end
+function flush() if Deferred then local cb=Deferred;Deferred=nil;cb() end end
 function SetSoundChannel(s,c) s.channel=c end
 function SetSoundVolume(s,v) s.volume=v end
 function SetSoundPitch(s,p) s.pitch=p end
-function StartSound(s) assert(s.volume==127 and s.pitch==1 and s.channel==0 and not s.is3d);Played=s end
-function KillSoundWhenDone(s) assert(s==Played) end
+function StartSound(s) assert(s.volume==127 and s.pitch==1 and s.channel==0 and not s.is3d and s.stopped);Played=s end
+function KillSoundWhenDone(s) error('Imported sounds must remain cached') end
 function PauseUnit() error('Animation preview must not pause hero') end
 function IssueImmediateOrder(u,s) assert(s=='stop');Stopped=u end
 function SetUnitTimeScale(u,s) assert(s==1) end
 function SetUnitAnimationByIndex(u,k) assert(Stopped==u);Animation=k end
 function StopMusic(fade) MusicStopped=true end
 function PlayMusic(path) MusicStarted=path end
-function chat(msg) Message=msg;FoundationChat() end
+function chat(msg) Message=msg;FoundationChat();flush() end
 Hero[0]={};AnimCount[0]=19;VoiceCount[0]=2;VoiceIndex[0]=10;VoiceIndex[1]=11
-for i=0,173 do AudioPath[i]='audio'..i end
+for i=0,173 do AudioPath[i]='audio'..i;AudioDuration[i]=1000;AudioEAX[i]='' end
 for i=0,18 do AnimName[i]='sequence'..i end
 chat('-sound 173');assert(Played.path=='audio173' and string.find(Feedback,'173'))
 chat('-sound');assert(Played.path=='audio0')
@@ -42,6 +47,9 @@ chat('-sound 174');assert(Played.path=='audio0')
 chat('-voice');assert(Played.path=='audio10')
 chat('-voice');assert(Played.path=='audio11')
 chat('-voice');assert(Played.path=='audio10')
+local before=Created;chat('-voice');assert(Created==before and Played.path=='audio11')
+AudioPath[174]='stock';AudioEAX[174]='';chat('-soundtest');assert(Played.path=='stock')
+Message='-sound 1';FoundationChat();assert(PendingAudio==1 and Played.path=='stock');flush();assert(Played.path=='audio1' and PendingAudio==-1)
 chat('-anim 5');assert(Animation==5 and ResumeAt[0]==4)
 chat('-anim');assert(Animation==6)
 chat('-anim 18');chat('-anim');assert(Animation==0)
@@ -52,4 +60,4 @@ chat('-music');assert(MusicStopped and not MusicOn)
 chat('-music');assert(MusicOn and MusicStarted)
 chat('-help');assert(string.find(Feedback,'-anim'))
 `);
-console.log('PASS: actual chat dispatch, explicit/cyclic sound, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, music toggle (mock natives).');
+console.log('PASS: actual chat dispatch, explicit/cyclic sound, duration/cache/deferred playback, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, music toggle (mock natives).');
