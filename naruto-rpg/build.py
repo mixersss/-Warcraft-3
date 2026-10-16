@@ -5,7 +5,7 @@ from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=96;HALF=6144;BOUND=5888
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-3900,-3900),(3900,-3900),(3900,3900),(-3900,3900)]
-NAME='SHINOBI NEW FOUNDATION 02'
+NAME='SHINOBI NEW FOUNDATION 03'
 DESC='Новая основа RPG для Warcraft III 1.26. Четыре команды по три героя. Проверка исходных моделей, анимаций и озвучек. Сюжет и механики навыков пока не подключены.'
 def positions():return [(BASE[p//3][0]+(p%3-1)*250,BASE[p//3][1]) for p in range(12)]
 def info():
@@ -78,7 +78,7 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_New_Foundation_02.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_New_Foundation_03.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
  report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':0,'sectorSize':4096,'stage':'Resource foundation test, not a completed RPG','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))

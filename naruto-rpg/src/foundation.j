@@ -16,6 +16,8 @@ globals
     integer array SkillCount
     real array ResumeAt
     real TimeNow=0.
+    integer array AudioCursor
+    boolean MusicOn=true
     integer SpawnCursor=0
     timer SpawnClock=null
 endglobals
@@ -26,6 +28,9 @@ function FoundationSound takes integer index returns nothing
     local sound snd=null
     if index>=0 and index<174 then
         set snd=CreateSound(AudioPath[index],false,false,false,10,10,"DefaultEAXON")
+        call SetSoundChannel(snd,0)
+        call SetSoundVolume(snd,127)
+        call SetSoundPitch(snd,1.)
         call StartSound(snd)
         call KillSoundWhenDone(snd)
     endif
@@ -35,24 +40,57 @@ function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
     local string msg=GetEventPlayerChatString()
     local integer k=0
-    if p>=12 or Hero[p]==null then
+    if p>=12 then
         return
     endif
-    if msg=="-anim" and AnimCount[p]>0 then
-        set k=ModuloInteger(AnimCursor[p],AnimCount[p])
-        call PauseUnit(Hero[p],true)
-        call SetUnitAnimation(Hero[p],AnimName[p*64+k])
+    if msg=="-anim" or SubString(msg,0,6)=="-anim " then
+        if not FoundationAlive(Hero[p]) then
+            call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Герой ещё не создан или погиб.")
+            return
+        endif
+        if msg=="-anim" then
+            set k=ModuloInteger(AnimCursor[p],AnimCount[p])
+        else
+            set k=S2I(SubString(msg,6,StringLength(msg)))
+        endif
+        if k<0 or k>=AnimCount[p] then
+            call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Индекс анимации: 0.."+I2S(AnimCount[p]-1))
+            return
+        endif
+        call IssueImmediateOrder(Hero[p],"stop")
+        call SetUnitTimeScale(Hero[p],1.)
+        call SetUnitAnimationByIndex(Hero[p],k)
         set ResumeAt[p]=TimeNow+4.
-        set AnimCursor[p]=k+1
-        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Анимация: "+AnimName[p*64+k])
+        set AnimCursor[p]=ModuloInteger(k+1,AnimCount[p])
+        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Анимация "+I2S(k)+": "+AnimName[p*64+k])
     elseif msg=="-voice" and VoiceCount[p]>0 then
         set k=ModuloInteger(VoiceCursor[p],VoiceCount[p])
         call FoundationSound(VoiceIndex[p*64+k])
         set VoiceCursor[p]=k+1
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Озвучка: "+AudioPath[VoiceIndex[p*64+k]])
-    elseif SubString(msg,0,7)=="-sound " then
-        set k=S2I(SubString(msg,7,StringLength(msg)))
+    elseif msg=="-sound" or SubString(msg,0,7)=="-sound " then
+        if msg=="-sound" then
+            set k=ModuloInteger(AudioCursor[p],174)
+        else
+            set k=S2I(SubString(msg,7,StringLength(msg)))
+        endif
+        if k<0 or k>=174 then
+            call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Индекс звука: 0..173")
+            return
+        endif
         call FoundationSound(k)
+        set AudioCursor[p]=k+1
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Звук "+I2S(k)+": "+AudioPath[k])
+    elseif msg=="-music" then
+        if MusicOn then
+            call StopMusic(false)
+        else
+            call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
+        endif
+        set MusicOn=not MusicOn
+        call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
+    elseif msg=="-help" then
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Каталог навыков: "+HeroName[p]+". Механики ещё не подключены в техническом тесте.")
         loop
@@ -70,12 +108,11 @@ function FoundationTick takes nothing returns nothing
         exitwhen p>=12
         if FoundationAlive(Hero[p]) then
             if ResumeAt[p]>0. and TimeNow>=ResumeAt[p] then
-                call PauseUnit(Hero[p],false)
                 call SetUnitAnimation(Hero[p],"stand")
                 set ResumeAt[p]=0.
             endif
             set team=(p-ModuloInteger(p,3))/3
-            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and not IsUnitPaused(Hero[p]) and FoundationAlive(Dummy[team]) and GetUnitCurrentOrder(Hero[p])==0 then
+            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and ResumeAt[p]==0. and FoundationAlive(Dummy[team]) and GetUnitCurrentOrder(Hero[p])==0 then
                 call IssueTargetOrder(Hero[p],"attack",Dummy[team])
             endif
         endif
@@ -119,7 +156,7 @@ function FoundationInit takes nothing returns nothing
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI NEW FOUNDATION 01: новая основа, четыре команды по три. Техническая проверка моделей и озвучек, не готовая RPG. -anim: следующая анимация; -voice: озвучка героя; -sound 0..173: любой звук; -skills: полный список его навыков для воссоздания.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI NEW FOUNDATION 03: новая основа, четыре команды по три. Техническая проверка моделей и озвучек, не готовая RPG. -help: команды теста; -anim 5: анимация; -voice: голос; -sound: следующий звук; -music: выключить/включить музыку. Навыки пока не подключены.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)
