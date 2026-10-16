@@ -1,5 +1,6 @@
 {
   "strictLegacyJASS": true,
+  "classicMinimap256x256": true,
   "nativeStormLibImportedAssetsVerified": 368,
   "independentPythonAssetsVerified": 368,
   "nativeStormLibMetadataVerified": 20,

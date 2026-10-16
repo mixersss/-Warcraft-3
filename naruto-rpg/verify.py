@@ -16,6 +16,13 @@ for row in manifest:
  data=read(row['path']);assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'],row['path']
 metadata={p.name:p.read_bytes() for p in (ROOT/'dist/map').iterdir() if p.is_file()}
 for name,data in metadata.items():assert read(name)==data,name
+# Classic loads war3mapMap as a fixed 256x256 RGBA buffer (0x40000 bytes).
+# A valid smaller TGA parses successfully but the 1.26 engine overreads it.
+for name in ('war3mapMap.tga','war3mapPreview.tga'):
+ data=metadata[name]
+ assert data[2]==2 and data[16]==24,name
+ assert struct.unpack_from('<HH',data,12)==(256,256),name
+ assert len(data)==18+256*256*3,name
 S.SFileCloseArchive(a)
 sys.path.insert(0,'/tmp/warcraft-validation/python');import mpyq
 full=target.read_bytes();mpq=mpyq.MPQArchive(io.BytesIO(full[512:]),listfile=False)
@@ -36,5 +43,5 @@ for row in manifest:
 assert len(full)<8*1024*1024 and hashlib.sha256(full).hexdigest()==report['sha256']
 # File tables, scenario and imported data are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
-result={'strictLegacyJASS':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':0}
+result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':0}
 (ROOT/'dist/verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))
