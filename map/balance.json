@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.11.0-alpha",
+  "version": "0.12.0-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 12,
@@ -60,9 +60,9 @@
       "cost": 6000
     }
   ],
-  "health_cost": 120,
-  "health_cost_step": 80,
-  "health_percent": 0.3,
+  "health_cost": 180,
+  "health_cost_step": 120,
+  "health_percent": 0.2,
   "base_upgrade_cost": 1800,
   "base_upgrade_cost_step": 1400,
   "hero_max_level": 500,
@@ -88,5 +88,22 @@
   "base_fountain_mana_percent": 0.005,
   "shop_hp": 6500,
   "kill_gold_multiplier": 1.5,
-  "offensive_cooldown_multiplier": 1.5
+  "offensive_cooldown_multiplier": 1.5,
+  "bot_tactics": [
+    {
+      "name": "Баланс",
+      "tier_percent": 50,
+      "gear_percent": 30
+    },
+    {
+      "name": "Экипировка",
+      "tier_percent": 30,
+      "gear_percent": 50
+    },
+    {
+      "name": "Армия",
+      "tier_percent": 55,
+      "gear_percent": 15
+    }
+  ]
 }

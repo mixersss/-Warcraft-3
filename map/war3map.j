@@ -87,6 +87,9 @@ globals
     real array ShopY
     integer array GearProgress
     integer array GearSavings
+    integer array BotTactic
+    integer array GearFraction
+    integer array TierFraction
 endglobals
 
 function TeamOf takes integer p returns integer
@@ -117,13 +120,24 @@ function DistanceSq takes real ax, real ay, real bx, real by returns real
 endfunction
 
 function AddGold takes integer p, integer amount returns nothing
+    local integer credit
+    local integer whole = R2I(I2R(amount)/100.0)
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) + amount)
     if Bot[p] and Tier[p] < 4 and amount > 0 then
-        set TierSavings[p] = TierSavings[p]+R2I(I2R(amount)/2.0)
+        set credit = ModuloInteger(amount,100)*BotTierBudget[BotTactic[p]]+TierFraction[p]
+        set TierSavings[p] = TierSavings[p]+whole*BotTierBudget[BotTactic[p]]+R2I(I2R(credit)/100.0)
+        set TierFraction[p] = ModuloInteger(credit,100)
     endif
     if Bot[p] and (GearProgress[p] < 18 or SuperProgress[p] < 6) and amount > 0 then
-        set GearSavings[p] = GearSavings[p]+R2I(I2R(amount)/3.0)
+        set credit = ModuloInteger(amount,100)*BotGearBudget[BotTactic[p]]+GearFraction[p]
+        set GearSavings[p] = GearSavings[p]+whole*BotGearBudget[BotTactic[p]]+R2I(I2R(credit)/100.0)
+        set GearFraction[p] = ModuloInteger(credit,100)
     endif
+endfunction
+
+function AssignBotTactic takes integer p returns nothing
+    // Synchronized once per bot; never reroll on death, purchase or revival.
+    set BotTactic[p] = GetRandomInt(0,2)
 endfunction
 
 function EnemyNear takes integer p, real x, real y, real radius returns unit
@@ -228,7 +242,7 @@ function UpgradeName takes integer kind returns string
     elseif kind == 1 then
         return "Броня армии +3"
     elseif kind == 2 then
-        return "Здоровье армии +30%"
+        return "Здоровье армии +20%"
     elseif kind == 3 then
         return "Развитие казармы"
     elseif kind == 4 then
@@ -1259,6 +1273,9 @@ endfunction
 function OnLeave takes nothing returns nothing
     local integer p = GetPlayerId(GetTriggerPlayer())
     if p < 12 and not Lost[p] then
+        if not Bot[p] then
+            call AssignBotTactic(p)
+        endif
         set Bot[p] = true
         set AutoArmy[p] = true
         call SetPlayerController(Player(p), MAP_CONTROL_COMPUTER)
@@ -1587,7 +1604,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 9 damage and armor adds 3 per rank. HP research adds 30% of base HP per rank. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots buy hero-specific equipment.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 9 damage and armor adds 3 per rank. HP research adds 20% of base HP per rank. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Waves: three identical troops of the current army tier every 12 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
@@ -1634,6 +1651,9 @@ function InitSlot takes integer p returns nothing
         return
     endif
     set Bot[p] = GetPlayerController(Player(p)) != MAP_CONTROL_USER
+    if Bot[p] then
+        call AssignBotTactic(p)
+    endif
     if not Bot[p] and HostPlayer == -1 then
         set HostPlayer = p
     endif
@@ -1642,7 +1662,7 @@ function InitSlot takes integer p returns nothing
     set AutoArmy[p] = true
     if Bot[p] then
         call SetPlayerController(Player(p), MAP_CONTROL_COMPUTER)
-        call SetPlayerName(Player(p), "Bot " + I2S(p+1))
+        call SetPlayerName(Player(p), "Bot " + I2S(p+1) + " [" + BotTacticName[BotTactic[p]] + "]")
     endif
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, STARTING_GOLD)
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_LUMBER, 0)

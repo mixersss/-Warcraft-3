@@ -122,6 +122,11 @@ def bastion_positions() -> list[tuple[int,int]]:
 
 
 def validate_balance(b: dict) -> None:
+    assert len(b['bot_tactics']) == 3
+    for tactic in b['bot_tactics']:
+        assert 10 <= tactic['tier_percent'] <= 60
+        assert 10 <= tactic['gear_percent'] <= 60
+        assert tactic['tier_percent'] + tactic['gear_percent'] <= 85
     assert len(b['tiers']) == 5
     assert 1 <= b['spawn_min_seconds'] <= b['spawn_seconds']
     assert 1 <= b['spawn_units'] <= b['army_cap'] <= 100
@@ -371,6 +376,7 @@ def script(b: dict) -> str:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
     generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}', f'    constant real KILL_GOLD_MULTIPLIER = {b["kill_gold_multiplier"]:.6f}']
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/8)}',
+        '    integer array BotTierBudget', '    integer array BotGearBudget', '    string array BotTacticName',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
@@ -384,6 +390,10 @@ def script(b: dict) -> str:
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    for idx,tactic in enumerate(b['bot_tactics']):
+        init += [f'    set BotTierBudget[{idx}] = {tactic["tier_percent"]}',
+                 f'    set BotGearBudget[{idx}] = {tactic["gear_percent"]}',
+                 f'    set BotTacticName[{idx}] = "{tactic["name"]}"']
     for idx,(x,y) in enumerate(bastion_positions()):
         init += [f'    set BastionX[{idx}] = {x}.0',f'    set BastionY[{idx}] = {y}.0']
     for team,(x,y) in enumerate(ENCLOSURES):

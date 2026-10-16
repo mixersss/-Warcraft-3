@@ -235,6 +235,7 @@ function reset()
     for p=0,11 do
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
+        BotTactic[p],GearFraction[p],TierFraction[p]=0,0,0
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
         BotThinkTrigger[p]={actions={BotThink}}
         HeroQueued[p],HeroLearnQueued[p],ScheduledHero[p]=false,false,0
@@ -491,7 +492,7 @@ BlockStock=false
 for slot=0,5 do Hero[0].inventory[slot]={id=0} end
 assert(not BotShop(0) and GearProgress[0]==0 and Players[0].gold==100000,'Full unrelated inventory is preserved')
 reset();Bot[0]=true;AddGold(0,1000)
-assert(math.floor(GearSavings[0])==333 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
+assert(GearSavings[0]==300 and Players[0].gold==STARTING_GOLD+1000,'Equipment savings reserve real income; they do not create gold')
 
 reset()
 SpawnWave(3);Dying=Army[3][1];Killer=Hero[0];Dying.hp=0
@@ -804,8 +805,10 @@ realBotHero(0);assert(GearProgress[0]==1,'Use the real native shop path even dur
 
 -- Compete for the SAME finite income: native research, base tiers and physical shopping.
 -- Movement here is a bounded mock; actual wall routes are verified separately in WPM.
-for _,income in ipairs({4,16}) do
- reset();Bot[0]=true;CreateHero(0,0);Hero[0].x,Hero[0].y=0,0;AllowedOrders={}
+local tacticOutcomes={}
+for tactic=0,2 do
+for _,income in ipairs(tactic==0 and {4,16} or {16}) do
+ reset();Bot[0]=true;BotTactic[0]=tactic;CreateHero(0,0);Hero[0].x,Hero[0].y=0,0;AllowedOrders={}
  local earned=0
  local firstTier,finalTier
  for second=1,(income==4 and 7200 or 10800) do
@@ -829,10 +832,42 @@ for _,income in ipairs({4,16}) do
  assert(Tier[0]>=2 and GearProgress[0]>=3 and Attack[0]>=4 and Armor[0]>=4 and Vitality[0]>=4,
   'Mixed economy: income='..income..' tier='..Tier[0]..' gear='..GearProgress[0]..' troops='..Attack[0]..'/'..Armor[0]..'/'..Vitality[0])
  if income==16 then
-  assert(Tier[0]==4 and GearProgress[0]>=12,'Combat income advances base and high-tier equipment together')
-  assert(firstTier and firstTier<=300 and finalTier and finalTier<=2400,'Faster base development on the same finite combat income')
+  assert(Tier[0]==4 and GearProgress[0]>=6,'Every tactic develops its base and equips all six inventory slots')
+  local share=income*BotTierBudget[tactic]/100
+  assert(firstTier and firstTier<=math.ceil(1800/share)+60 and finalTier and finalTier<=math.ceil(15600/share)+300,'Base development follows each tactic budget without research starvation')
+  if tactic==0 then assert(GearProgress[0]>=12,'Balanced tactic still reaches high-tier equipment') end
+  tacticOutcomes[tactic]={gear=GearProgress[0],troops=Attack[0]+Armor[0]+Vitality[0]}
  else
   assert(firstTier and firstTier<=1100,'First base tier must not wait for half an hour of passive income')
  end
  assert(math.abs(Attack[0]-Armor[0])<=1 and math.abs(Armor[0]-Vitality[0])<=1)
+ assert(BotTactic[0]==tactic,'Tactic stays fixed throughout combat, purchases and research')
 end
+end
+assert(tacticOutcomes[1].gear>tacticOutcomes[0].gear and tacticOutcomes[0].gear>tacticOutcomes[2].gear,'Equipment priority measurably changes actual purchases on equal income')
+assert(tacticOutcomes[2].troops>tacticOutcomes[1].troops,'Army priority measurably increases troop development on equal income')
+
+-- Random strategy is synchronized once; tiny income payments retain their fractions.
+for tactic=0,2 do
+ reset();Bot[0]=true;RngQueue={tactic};AssignBotTactic(0)
+ assert(BotTactic[0]==tactic and #RngQueue==0)
+ for n=1,250 do AddGold(0,4) end
+ assert(GearSavings[0]==10*BotGearBudget[tactic] and TierSavings[0]==10*BotTierBudget[tactic])
+ assert(Players[0].gold==STARTING_GOLD+1000,'Budget allocation never creates gold')
+ local gear,tier=GearSavings[0],TierSavings[0];AddGold(0,-100)
+ assert(GearSavings[0]==gear and TierSavings[0]==tier,'Spending never credits an income budget')
+end
+
+-- The actual lobby initializer draws separately for computers, never empty/human slots.
+reset()
+for tactic=0,2 do
+ local p=tactic+1
+ Players[p].slot=PLAYER_SLOT_STATE_PLAYING;Players[p].controller=MAP_CONTROL_COMPUTER
+ RngQueue={tactic,0,0};InitSlot(p)
+ assert(Bot[p] and BotTactic[p]==tactic and #RngQueue==0,'Each occupied computer independently draws tactic, race and hero')
+end
+Players[0].slot=PLAYER_SLOT_STATE_PLAYING;Players[0].controller=MAP_CONTROL_USER
+RngQueue={2};InitSlot(0);assert(not Bot[0] and #RngQueue==1)
+Players[4].slot=PLAYER_SLOT_STATE_EMPTY;InitSlot(4);assert(not Bot[4] and #RngQueue==1)
+EventPlayer=0;OnLeave();assert(Bot[0] and BotTactic[0]==2 and #RngQueue==0)
+RngQueue={0};OnLeave();assert(BotTactic[0]==2 and #RngQueue==1,'Repeated departure handling never rerolls an existing bot')
