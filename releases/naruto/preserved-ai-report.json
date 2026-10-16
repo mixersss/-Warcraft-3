@@ -1,0 +1,23 @@
+{
+  "filename": "Naruto_Bots_Layout04.w3x",
+  "bytes": 7234814,
+  "sha256": "9af1a37c11150f1c8fd4580e62901d54cb258c06ef1d6f79dd194a0a89e47e68",
+  "scriptSHA256": "16ce1823ca9b3a0f2ae9205fc1a41707d37a55091425fc4d8c0d35202c06900f",
+  "basis": "Original map; same original-layout approach as user-confirmed ArchiveProbe03",
+  "firstLocationAI": true,
+  "rawAssetBlocksUnchanged": 459,
+  "allOriginalFileFlagsPreserved": true,
+  "allOriginalOffsetsPreservedExceptScript": true,
+  "hashTableUnchanged": true,
+  "blockTablePositionUnchanged": true,
+  "headerSizeAndSectorSizeUnchanged": true,
+  "lobbyPreviewModelsTexturesMusicUnchanged": true,
+  "originalScriptPathOnly": true,
+  "attributesOnlyScriptCRCChanged": true,
+  "engineTested": false,
+  "nativeStormLibFilesRead": 461,
+  "nativeStormLibNonScriptFilesUnchanged": 459,
+  "allFileCRCsVerified": true,
+  "legacyJASSValidated": true,
+  "nativeMockScenarioChecks": 75
+}
