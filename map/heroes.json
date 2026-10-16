@@ -37,7 +37,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroPaladin.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroPaladin.blp",
+    "stock_model": "units\\human\\HeroPaladin\\HeroPaladin.mdl"
   },
   {
     "id": "Hmkg",
@@ -77,7 +78,8 @@
       8,
       0
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp",
+    "stock_model": "units\\human\\HeroMountainKing\\HeroMountainKing.mdl"
   },
   {
     "id": "Hamg",
@@ -107,7 +109,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroArchMage.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroArchMage.blp",
+    "stock_model": "units\\human\\HeroArchMage\\HeroArchMage.mdl"
   },
   {
     "id": "Hblm",
@@ -148,7 +151,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBloodElfPrince.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBloodElfPrince.blp",
+    "stock_model": "units\\human\\HeroBloodElf\\HeroBloodElf.mdl"
   },
   {
     "id": "Obla",
@@ -189,7 +193,8 @@
       5,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBlademaster.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroBlademaster.blp",
+    "stock_model": "units\\orc\\HeroBladeMaster\\HeroBladeMaster.mdl"
   },
   {
     "id": "Ofar",
@@ -224,7 +229,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroFarseer.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroFarseer.blp",
+    "stock_model": "units\\orc\\HeroFarSeer\\HeroFarSeer.mdl"
   },
   {
     "id": "Otch",
@@ -259,7 +265,8 @@
       7,
       0
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTaurenChieftain.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTaurenChieftain.blp",
+    "stock_model": "units\\orc\\HeroTaurenChieftain\\HeroTaurenChieftain.mdl"
   },
   {
     "id": "Oshd",
@@ -305,7 +312,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowHunter.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNShadowHunter.blp",
+    "stock_model": "units\\orc\\HeroShadowHunter\\HeroShadowHunter.mdl"
   },
   {
     "id": "Udea",
@@ -345,7 +353,8 @@
       7,
       0
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp",
+    "stock_model": "units\\undead\\HeroDeathKnight\\HeroDeathKnight.mdl"
   },
   {
     "id": "Ulic",
@@ -380,7 +389,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNLichVersion2.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNLichVersion2.blp",
+    "stock_model": "units\\undead\\HeroLich\\HeroLich.mdl"
   },
   {
     "id": "Udre",
@@ -420,7 +430,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDreadLord.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDreadLord.blp",
+    "stock_model": "units\\undead\\HeroDreadLord\\HeroDreadLord.mdl"
   },
   {
     "id": "Ucrl",
@@ -460,7 +471,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroCryptLord.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroCryptLord.blp",
+    "stock_model": "units\\undead\\HeroCryptLord\\HeroCryptLord.mdl"
   },
   {
     "id": "Edem",
@@ -483,6 +495,11 @@
         "AEmb",
         "manaburn",
         1
+      ],
+      [
+        "AEim",
+        "immolation",
+        11
       ]
     ],
     "primary": 1,
@@ -495,7 +512,8 @@
       5,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDemonHunter.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDemonHunter.blp",
+    "stock_model": "units\\nightelf\\HeroDemonHunter\\HeroDemonHunter.mdl"
   },
   {
     "id": "Ekee",
@@ -531,7 +549,8 @@
       1,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNKeeperOfTheGrove.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNKeeperOfTheGrove.blp",
+    "stock_model": "units\\nightelf\\HeroKeeperoftheGrove\\HeroKeeperoftheGrove.mdl"
   },
   {
     "id": "Emoo",
@@ -566,7 +585,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNPriestessOfTheMoon.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPriestessOfTheMoon.blp",
+    "stock_model": "units\\nightelf\\HeroMoonPriestess\\HeroMoonPriestess.mdl"
   },
   {
     "id": "Ewar",
@@ -606,7 +626,8 @@
       8,
       1
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroWarden.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroWarden.blp",
+    "stock_model": "units\\nightelf\\herowarden\\herowarden.mdl"
   },
   {
     "id": "Nbst",
@@ -652,7 +673,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNBeastMaster.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBeastMaster.blp",
+    "stock_model": "Units\\Creeps\\Beastmaster\\Beastmaster.mdl"
   },
   {
     "id": "Nbrn",
@@ -697,7 +719,8 @@
       8,
       1
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNBansheeRanger.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBansheeRanger.blp",
+    "stock_model": "Units\\Creeps\\BansheeRanger\\BansheeRanger.mdl"
   },
   {
     "id": "Npbm",
@@ -737,7 +760,8 @@
       5,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNPandarenBrewmaster.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPandarenBrewmaster.blp",
+    "stock_model": "Units\\Creeps\\PandarenBrewmaster\\PandarenBrewmaster.mdl"
   },
   {
     "id": "Nfir",
@@ -778,7 +802,8 @@
       1,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAvatarOfFlame.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAvatarOfFlame.blp",
+    "stock_model": "Units\\Creeps\\HeroFlameLord\\HeroFlameLord.mdl"
   },
   {
     "id": "Nplh",
@@ -813,7 +838,8 @@
       5,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNPitLord.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPitLord.blp",
+    "stock_model": "units\\demon\\HeroPitLord\\HeroPitLord.mdl"
   },
   {
     "id": "Nngs",
@@ -857,7 +883,8 @@
       8,
       7
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNNagaSeaWitch.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNNagaSeaWitch.blp",
+    "stock_model": "units\\naga\\HeroNagaSeawitch\\HeroNagaSeawitch.mdl"
   },
   {
     "id": "Ntin",
@@ -898,7 +925,8 @@
       6,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTinker.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroTinker.blp",
+    "stock_model": "Units\\Creeps\\HeroTinker\\HeroTinker.mdl"
   },
   {
     "id": "Nalc",
@@ -944,7 +972,8 @@
       1,
       8
     ],
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAlchemist.blp"
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroAlchemist.blp",
+    "stock_model": "Units\\Creeps\\HeroGoblinAlchemist\\HeroGoblinAlchemist.mdl"
   },
   {
     "id": "Fc00",
@@ -993,13 +1022,27 @@
       255
     ],
     "description": "Маг льда: ледяная звезда, снежная буря, аура маны и торнадо.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNLichVersion2.blp",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNRevenant.blp",
     "skill_sources": [
       "AUfn",
       "AHbz",
       "AHab",
       "ANto"
-    ]
+    ],
+    "model_source": "nrvd",
+    "model": "units\\creeps\\Revenant\\Revenant.mdl",
+    "stats": {
+      "strength": 18,
+      "agility": 16,
+      "intelligence": 27,
+      "strength_growth": 1.8,
+      "agility_growth": 1.7,
+      "intelligence_growth": 2.8,
+      "hp": 250,
+      "mana": 150,
+      "damage": 18,
+      "armor": 2
+    }
   },
   {
     "id": "Fc01",
@@ -1047,13 +1090,27 @@
       255
     ],
     "description": "Воин грозы: цепь молний, молот бури, аура выносливости и аватар.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroMountainKing.blp",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBlueMagnataur.blp",
     "skill_sources": [
       "AOcl",
       "AHtb",
       "AOae",
       "AHav"
-    ]
+    ],
+    "model_source": "nmgd",
+    "model": "Units\\Creeps\\MagnataurBlue\\MagnataurBlue.mdl",
+    "stats": {
+      "strength": 28,
+      "agility": 19,
+      "intelligence": 19,
+      "strength_growth": 2.9,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 265,
+      "mana": 160,
+      "damage": 19,
+      "armor": 3
+    }
   },
   {
     "id": "Fc02",
@@ -1101,13 +1158,27 @@
       120
     ],
     "description": "Тёмный призыватель: тёмная стая, жуки, аура вампиризма и инфернал.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroDeathKnight.blp",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNSpiderBlue.blp",
     "skill_sources": [
       "AUcs",
       "AUcb",
       "AUav",
       "AUin"
-    ]
+    ],
+    "model_source": "nsbm",
+    "model": "units\\creeps\\SpiderBlue\\SpiderBlue.mdl",
+    "stats": {
+      "strength": 29,
+      "agility": 17,
+      "intelligence": 21,
+      "strength_growth": 3.0,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 280,
+      "mana": 170,
+      "damage": 20,
+      "armor": 4
+    }
   },
   {
     "id": "Fc03",
@@ -1155,12 +1226,548 @@
       140
     ],
     "description": "Боевой жрец: святой свет, огненный столб, защитная аура и феникс.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNHeroPaladin.blp",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNInfernal.blp",
     "skill_sources": [
       "AHhb",
       "AHfs",
       "AHad",
       "AHpx"
-    ]
+    ],
+    "model_source": "ninf",
+    "model": "units\\demon\\Infernal\\Infernal.mdl",
+    "stats": {
+      "strength": 30,
+      "agility": 20,
+      "intelligence": 18,
+      "strength_growth": 2.8,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 295,
+      "mana": 180,
+      "damage": 21,
+      "armor": 2
+    }
+  },
+  {
+    "id": "Fc04",
+    "base": "Otch",
+    "name": "Вождь кентавров",
+    "alias": "centaur",
+    "group": 5,
+    "primary": 0,
+    "skills": [
+      "F040",
+      "F041",
+      "F042",
+      "F043"
+    ],
+    "skill_sources": [
+      "AOsh",
+      "AHad",
+      "AHbh",
+      "AOre"
+    ],
+    "spells": [
+      [
+        "F040",
+        "shockwave",
+        2
+      ]
+    ],
+    "description": "Воин: ударная волна, аура защиты, оглушение и перерождение.",
+    "proper_name": "Вождь кентавров",
+    "gear_role": "custom_centaur",
+    "gear_families": [
+      2,
+      1,
+      0,
+      6,
+      7,
+      5
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "ncnk",
+    "model": "units\\creeps\\CentaurKhan\\CentaurKhan.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNCentaurKhan.blp",
+    "stats": {
+      "strength": 31,
+      "agility": 18,
+      "intelligence": 20,
+      "strength_growth": 2.9,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 310,
+      "mana": 190,
+      "damage": 22,
+      "armor": 3
+    }
+  },
+  {
+    "id": "Fc05",
+    "base": "Hmkg",
+    "name": "Морской исполин",
+    "alias": "seagiant",
+    "group": 5,
+    "primary": 0,
+    "skills": [
+      "F050",
+      "F051",
+      "F052",
+      "F053"
+    ],
+    "skill_sources": [
+      "AHtc",
+      "AOhw",
+      "AEah",
+      "AHav"
+    ],
+    "spells": [
+      [
+        "F050",
+        "thunderclap",
+        5
+      ],
+      [
+        "F051",
+        "healingwave",
+        6
+      ],
+      [
+        "F053",
+        "avatar",
+        0
+      ]
+    ],
+    "description": "Защитник: раскат грома, целительная волна, шипы и аватар.",
+    "proper_name": "Морской исполин",
+    "gear_role": "custom_seagiant",
+    "gear_families": [
+      2,
+      1,
+      0,
+      6,
+      7,
+      5
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nsgb",
+    "model": "Units\\Creeps\\SeaGiant\\SeaGiant.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNSeaGiant.blp",
+    "stats": {
+      "strength": 27,
+      "agility": 16,
+      "intelligence": 17,
+      "strength_growth": 3.0,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 325,
+      "mana": 200,
+      "damage": 23,
+      "armor": 4
+    }
+  },
+  {
+    "id": "Fc06",
+    "base": "Udea",
+    "name": "Голодный вендиго",
+    "alias": "wendigo",
+    "group": 6,
+    "primary": 0,
+    "skills": [
+      "F060",
+      "F061",
+      "F062",
+      "F063"
+    ],
+    "skill_sources": [
+      "AUav",
+      "AOhx",
+      "AUcs",
+      "AUls"
+    ],
+    "spells": [
+      [
+        "F061",
+        "hex",
+        1
+      ],
+      [
+        "F062",
+        "carrionswarm",
+        2
+      ],
+      [
+        "F063",
+        "locustswarm",
+        0
+      ]
+    ],
+    "description": "Хищник: вампиризм, сглаз, тёмная стая и рой саранчи.",
+    "proper_name": "Голодный вендиго",
+    "gear_role": "custom_wendigo",
+    "gear_families": [
+      2,
+      1,
+      0,
+      6,
+      7,
+      5
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nwen",
+    "model": "units\\creeps\\Wendigo\\Wendigo.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNWendigo.blp",
+    "stats": {
+      "strength": 28,
+      "agility": 19,
+      "intelligence": 19,
+      "strength_growth": 2.8,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 340,
+      "mana": 210,
+      "damage": 24,
+      "armor": 2
+    }
+  },
+  {
+    "id": "Fc07",
+    "base": "Emoo",
+    "name": "Болотный ловчий",
+    "alias": "murloc",
+    "group": 6,
+    "primary": 1,
+    "skills": [
+      "F070",
+      "F071",
+      "F072",
+      "F073"
+    ],
+    "skill_sources": [
+      "AEer",
+      "ANso",
+      "AOcr",
+      "ANst"
+    ],
+    "spells": [
+      [
+        "F070",
+        "entanglingroots",
+        1
+      ],
+      [
+        "F071",
+        "soulburn",
+        1
+      ],
+      [
+        "F073",
+        "stampede",
+        2,
+        6
+      ]
+    ],
+    "description": "Ловчий: корни, ожог души, критические удары и звериный натиск.",
+    "proper_name": "Болотный ловчий",
+    "gear_role": "custom_murloc",
+    "gear_families": [
+      3,
+      0,
+      9,
+      6,
+      7,
+      1
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nmmu",
+    "model": "units\\creeps\\MurlocMutant\\MurlocMutant.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNMurlocMutant.blp",
+    "stats": {
+      "strength": 21,
+      "agility": 29,
+      "intelligence": 21,
+      "strength_growth": 1.8,
+      "agility_growth": 2.9,
+      "intelligence_growth": 1.8,
+      "hp": 355,
+      "mana": 220,
+      "damage": 25,
+      "armor": 3
+    }
+  },
+  {
+    "id": "Fc08",
+    "base": "Ewar",
+    "name": "Наёмный отравитель",
+    "alias": "poisoner",
+    "group": 6,
+    "primary": 1,
+    "skills": [
+      "F080",
+      "F081",
+      "F082",
+      "F083"
+    ],
+    "skill_sources": [
+      "AEsh",
+      "AEbl",
+      "AEev",
+      "AEsv"
+    ],
+    "spells": [
+      [
+        "F080",
+        "shadowstrike",
+        1
+      ],
+      [
+        "F083",
+        "spiritofvengeance",
+        0
+      ]
+    ],
+    "description": "Убийца: отравленный нож, скачок, уклонение и дух возмездия.",
+    "proper_name": "Наёмный отравитель",
+    "gear_role": "custom_poisoner",
+    "gear_families": [
+      3,
+      0,
+      9,
+      6,
+      7,
+      1
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nass",
+    "model": "units\\creeps\\BanditSpearThrower\\BanditSpearThrower.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBanditSpearThrower.blp",
+    "stats": {
+      "strength": 18,
+      "agility": 30,
+      "intelligence": 18,
+      "strength_growth": 1.8,
+      "agility_growth": 3.0,
+      "intelligence_growth": 1.8,
+      "hp": 370,
+      "mana": 230,
+      "damage": 26,
+      "armor": 4
+    }
+  },
+  {
+    "id": "Fc09",
+    "base": "Ekee",
+    "name": "Хранитель чащи",
+    "alias": "owlbear",
+    "group": 6,
+    "primary": 2,
+    "skills": [
+      "F090",
+      "F091",
+      "F092",
+      "F093"
+    ],
+    "skill_sources": [
+      "AHwe",
+      "AEah",
+      "AHab",
+      "AEtq"
+    ],
+    "spells": [
+      [
+        "F090",
+        "waterelemental",
+        0
+      ],
+      [
+        "F093",
+        "tranquility",
+        4,
+        10
+      ]
+    ],
+    "description": "Призыватель: элементаль, шипы, аура маны и спокойствие.",
+    "proper_name": "Хранитель чащи",
+    "gear_role": "custom_owlbear",
+    "gear_families": [
+      4,
+      5,
+      8,
+      6,
+      1,
+      7
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nowk",
+    "model": "units\\creeps\\Owlbear\\Owlbear.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNOwlBear.blp",
+    "stats": {
+      "strength": 19,
+      "agility": 18,
+      "intelligence": 31,
+      "strength_growth": 1.8,
+      "agility_growth": 1.7,
+      "intelligence_growth": 2.8,
+      "hp": 385,
+      "mana": 240,
+      "damage": 27,
+      "armor": 2
+    }
+  },
+  {
+    "id": "Fc10",
+    "base": "Otch",
+    "name": "Панцирный дракон",
+    "alias": "turtle",
+    "group": 6,
+    "primary": 0,
+    "skills": [
+      "F0a0",
+      "F0a1",
+      "F0a2",
+      "F0a3"
+    ],
+    "skill_sources": [
+      "AUts",
+      "ANbf",
+      "AHds",
+      "ANvc"
+    ],
+    "spells": [
+      [
+        "F0a1",
+        "breathoffire",
+        2
+      ],
+      [
+        "F0a2",
+        "divineshield",
+        4
+      ],
+      [
+        "F0a3",
+        "volcano",
+        2,
+        5
+      ]
+    ],
+    "description": "Танк: шипастый панцирь, огненное дыхание, щит и вулкан.",
+    "proper_name": "Панцирный дракон",
+    "gear_role": "custom_turtle",
+    "gear_families": [
+      2,
+      1,
+      0,
+      6,
+      7,
+      5
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "ntrd",
+    "model": "Units\\Creeps\\DragonSeaTurtle\\DragonSeaTurtle.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNSeaTurtleRed.blp",
+    "stats": {
+      "strength": 27,
+      "agility": 16,
+      "intelligence": 17,
+      "strength_growth": 2.9,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
+      "hp": 400,
+      "mana": 250,
+      "damage": 28,
+      "armor": 3
+    }
+  },
+  {
+    "id": "Fc11",
+    "base": "Obla",
+    "name": "Страж Скверны",
+    "alias": "felguard",
+    "group": 6,
+    "primary": 1,
+    "skills": [
+      "F0b0",
+      "F0b1",
+      "F0b2",
+      "F0b3"
+    ],
+    "skill_sources": [
+      "AOcr",
+      "ANca",
+      "AUim",
+      "AOww"
+    ],
+    "spells": [
+      [
+        "F0b2",
+        "impale",
+        2
+      ],
+      [
+        "F0b3",
+        "whirlwind",
+        5
+      ]
+    ],
+    "description": "Берсерк: критические и рассекающие удары, шипы и вихрь клинков.",
+    "proper_name": "Страж Скверны",
+    "gear_role": "custom_felguard",
+    "gear_families": [
+      3,
+      0,
+      9,
+      6,
+      7,
+      1
+    ],
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "model_source": "nfgu",
+    "model": "units\\demon\\Felgaurd\\Felgaurd.mdl",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNFelGuard.blp",
+    "stats": {
+      "strength": 21,
+      "agility": 28,
+      "intelligence": 19,
+      "strength_growth": 1.8,
+      "agility_growth": 3.0,
+      "intelligence_growth": 1.8,
+      "hp": 415,
+      "mana": 260,
+      "damage": 29,
+      "armor": 4
+    }
   }
 ]

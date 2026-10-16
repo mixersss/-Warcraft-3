@@ -16,8 +16,8 @@ function ModuloInteger(a,b) return a%b end
 function GetPlayerId(p) return p end
 function GetPlayerName(p) return 'Player '..p end
 function GetOwningPlayer(u) return u.owner end
-function GetUnitTypeId(u) return u.id end
-function GetWidgetLife(u) return u.hp end
+function GetUnitTypeId(u) return u and not u.removed and u.id or 0 end
+function GetWidgetLife(u) return u and u.hp or 0 end
 function GetUnitState(u,k) return u[k] end
 function SetUnitState(u,k,v) u[k]=math.min(v,u[k=='hp' and 'max' or 'maxmana']) end
 function IsUnitType(u,t) return (t=='dead' and u.hp<=0) or u[t]==true end
@@ -27,19 +27,21 @@ function SetPlayerState(p,k,v) Players[p][k]=v end
 function SetPlayerTechResearched(p,k,v) Players[p].tech[k]=v end
 function GetPlayerTechCount(p,k) return Players[p].tech[k] or 0 end
 function SelectUnitForPlayerSingle(u,p) Players[p].selection=u end
-function GetHeroStr(u) return u.str end
-function GetHeroAgi(u) return u.agi end
-function GetHeroInt(u) return u.int end
+function GetHeroStr(u,bonus) return u.str+(bonus and (u.attributeBonus or 0) or 0) end
+function GetHeroAgi(u,bonus) return u.agi+(bonus and (u.attributeBonus or 0) or 0) end
+function GetHeroInt(u,bonus) return u.int+(bonus and (u.attributeBonus or 0) or 0) end
 function SetHeroStr(u,v) u.str=v end
 function SetHeroAgi(u,v) u.agi=v end
 function SetHeroInt(u,v) u.int=v end
 function GetHeroLevel(u) return u.level end
 function GetUnitX(u) return u.x end
 function GetUnitY(u) return u.y end
+function SetUnitPosition(u,x,y) u.x=x;u.y=y end
 function SetUnitUserData(u,v) u.data=v end
 function GetUnitUserData(u) return u.data or 0 end
 function CreateUnit(p,id,x,y,facing)
     local u={owner=p,id=id,x=x,y=y,hp=100,max=100,mana=100,maxmana=100,str=20,agi=20,int=20,level=1,data=0,abilities={},points=1,inventory={}}
+    for k=0,HERO_COUNT-1 do if HeroType[k]==id then u.hero=true end end
     table.insert(World,u)
     return u
 end
@@ -94,11 +96,13 @@ function SelectHeroSkill(u,skill)
     assert(kind>=0,'Learned skills must belong to a roster hero')
     local slot=-1
     for k=0,3 do if ResolvedSkill(u,HeroSkill[kind*4+k])==skill then slot=k end end
+    if skill==FourCC('Fatr') then slot=4 end
     assert(slot>=0,'Bot attempted a skill not owned by its hero')
     local old=u.abilities[skill] or 0
     local config=assert(SkillCaps[skill],'Missing emitted ability configuration')
     if old<config.cap and u.level>=config.req+old*config.skip then
         u.abilities[skill]=old+1;u.points=u.points-1
+        if skill==FourCC('Fatr') then u.attributeBonus=(old+1)*2 end
         -- Native Engineering Upgrade transfers existing skill ranks to variants.
         if skill==HeroSkill[22*4+2] and old<3 then
             -- Resolve destinations from their four-character IDs below.
@@ -139,6 +143,14 @@ function purchase(p,kind)
     return result
 end
 function GetUnitCurrentOrder(u) return u.pending or 0 end
+function CreateTrigger() return {events={},actions={}} end
+function TriggerAddAction(t,f) table.insert(t.actions,f) end
+function TriggerExecute(t)
+ local prior=CurrentTrigger;CurrentTrigger=t
+ for _,action in ipairs(t.actions) do action() end
+ CurrentTrigger=prior
+end
+function GetTriggeringTrigger() return CurrentTrigger end
 function CountUnitsInGroup(g) return #g end
 function GroupAddUnit(g,u)
     for _,v in ipairs(g) do if v==u then return end end
@@ -205,6 +217,8 @@ function BotHero() end
 function reset()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
+    AutosaveCount=0
+    for idx=0,CORPSE_SECONDS do CorpseRing[idx]={} end
     HostPlayer,AllRandomMode,ModeDialogOpen=0,false,false
     GoldTags={}
     BlockStock,BlockSale=false,false
@@ -218,14 +232,17 @@ function reset()
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
+        BotThinkTrigger[p]={actions={BotThink}}
+        TierSavings[p]=0
         SlotActive[p]=true
+        HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
         Army[p]={}
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
-        Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);SkillLevel[p]=1
+        Hero[p]=CreateUnit(p,0,HomeX[p],HomeY[p]-240,0);Hero[p].hero=true;SkillLevel[p]=1
         Bastion[p]=CreateUnit(p,0,BastionX[p],BastionY[p],0);Bastion[p].structure=true;Bastion[p].hp=60000;Bastion[p].max=60000;Bastion[p].paused=true
     end
 end
@@ -370,7 +387,7 @@ for kind=0,HERO_COUNT-1 do
     assert(ArmyRace[1]==kind%4 and HeroKind[1]==kind and Hero[1].id==HeroType[kind])
     SetHeroLevel(Hero[1],500)
     for i=1,310 do LearnHero(1) end
-    assert(Hero[1].points==49,'500 levels grant 999 points; 3x300 + 50 are spent')
+    assert(Hero[1].points+GetUnitAbilityLevel(Hero[1],FourCC('Fatr'))==49,'500 levels grant 999 points; 3x300 + 50 are spent')
     for slot=0,3 do
         assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 50 or 300))
     end
@@ -416,8 +433,8 @@ Dying=Hero[3];OnHeroLevel();assert(Hero[0].points==999)
 
 -- Slow sanctuary regeneration applies only to allies inside their own circle.
 reset()
-local friend=Hero[0];friend.x=FortressX[0];friend.y=FortressY[0];friend.hp=50;friend.mana=40
-local ally=Hero[1];ally.x=friend.x+100;ally.y=friend.y;ally.hp=50;ally.mana=40
+local friend=Hero[0];friend.hero=false;friend.x=FortressX[0];friend.y=FortressY[0];friend.hp=50;friend.mana=40
+local ally=Hero[1];ally.hero=false;ally.x=friend.x+100;ally.y=friend.y;ally.hp=50;ally.mana=40
 local invader=Hero[3];invader.x=friend.x;invader.y=friend.y;invader.hp=50;invader.mana=40
 local outside=Hero[2];outside.x=0;outside.y=0;outside.hp=50;outside.mana=40
 Base[0].hp=1000
@@ -485,7 +502,7 @@ for kind=0,HERO_COUNT-1 do
 end
 reset();ShowHeroPicker(0,0);local previous=HeroPicker[0]
 Dying=previous;SpellId=FourCC('Fprv');OnPickerSpell()
-assert(PickerPage[0]==3 and previous.removed,'Previous wraps to last page')
+assert(PickerPage[0]==4 and previous.removed,'Previous wraps to last page')
 Dying=HeroPicker[0];SpellId=FourCC('Fnxt');OnPickerSpell();assert(PickerPage[0]==0)
 Dying=HeroPicker[0];SpellId=FourCC('Frnd');RngQueue={27};OnPickerSpell();assert(HeroKind[0]==27)
 Seconds=WARMUP_SECONDS-1;Tick();assert(HeroPicker[0]==nil,'Remove gallery before combat')
@@ -577,7 +594,7 @@ PLAYER_NEUTRAL_PASSIVE=15
 function CreateTrigger() return {events={},actions={}} end
 function TriggerAddAction(t,f) table.insert(t.actions,f) end
 function CreateTimer() return {} end
-function TimerStart(t,period,repeats,callback) t.callback=callback;Clock=t end
+function TimerStart(t,period,repeats,callback) t.callback=callback;t.period=period;if period==1 then Clock=t end end
 function CreateDestructable() return {} end
 function CreateMultiboard() return {} end
 function MultiboardGetItem() return {} end
@@ -607,3 +624,71 @@ local assigned=Hero[3];Tick();assert(Hero[3]==assigned,'Do not reroll existing b
 Hero[3].hp=0;EnsureBotHero(3);assert(Hero[3]==assigned,'Dead heroes retain their revival identity')
 Hero[3]=nil;Lost[3]=true;EnsureBotHero(3);assert(Hero[3]==nil,'Never fill an inactive slot')
 reset();local human=Hero[0];EnsureBotHero(0);assert(Hero[0]==human,'Human choice is untouched')
+
+-- Native attribute skill uses skill points and grants cumulative +2 each rank.
+reset();CreateHero(0,12);SetHeroLevel(Hero[0],500)
+for n=1,500 do SelectHeroSkill(Hero[0],FourCC('Fatr')) end
+assert(GetUnitAbilityLevel(Hero[0],FourCC('Fatr'))==500 and Hero[0].attributeBonus==1000)
+assert(GetHeroStr(Hero[0],true)-GetHeroStr(Hero[0],false)==1000)
+assert(Hero[0].points==0,'Attribute skill consumes points, never free stat boosts')
+
+-- An unaffordable base tier must not stall affordable attack/armor/HP research.
+reset();Bot[0]=true
+Players[0].tech[ArmyResearch[0]],Players[0].tech[ArmyResearch[1]],Players[0].tech[ArmyResearch[2]]=3,3,3
+SyncArmyResearch(0);Players[0].gold=1000;GearSavings[0]=0
+BotBuy(0);assert(Base[0].pending==ArmyResearch[0],'Keep researching while a base tier is unaffordable')
+FinishResearch(0);assert(Attack[0]==4)
+
+-- Healthy computer heroes gather at center outside bounded siege/shopping windows.
+reset();Bot[0]=true;CreateHero(0,1);Hero[0].x=HomeX[0];Hero[0].y=HomeY[0]
+Seconds=WARMUP_SECONDS+20;GearProgress[0]=18;AllowedOrders={}
+RallyX[0],RallyY[0]=HomeX[3],HomeY[3]
+realBotHero(0);assert(Hero[0].order[1]=='attack' and Hero[0].order[2]==0 and Hero[0].order[3]==0)
+
+-- Teleporting across territories is rejected unless the hero visits center.
+reset();CreateHero(0,0);local priorX,priorY=Hero[0].x,Hero[0].y
+Hero[0].x,Hero[0].y=4000,-4000;CheckHeroRoute(0)
+assert(Hero[0].x==priorX and Hero[0].y==priorY)
+Hero[0].x,Hero[0].y=0,0;CheckHeroRoute(0);assert(HeroSector[0]==-1)
+Hero[0].x,Hero[0].y=4000,-4000;CheckHeroRoute(0);assert(HeroSector[0]==1 and Hero[0].x==4000)
+
+-- Only dead corpses expire after 120 seconds; resurrected/living units survive.
+reset();SpawnWave(0);local corpse=Army[0][1];Dying=corpse;Killer=nil;corpse.hp=0;OnDeath()
+Seconds=CORPSE_SECONDS-1;CleanCorpses();assert(not corpse.removed)
+Seconds=CORPSE_SECONDS;CleanCorpses();assert(corpse.removed)
+reset();SpawnWave(0);local raised=Army[0][1];Dying=raised;raised.hp=0;OnDeath();raised.hp=raised.max
+Seconds=CORPSE_SECONDS;CleanCorpses();assert(not raised.removed,'Never delete resurrected troops')
+
+-- Summoning remains unlimited by this patch: no living units are discarded.
+reset();Bot[0]=true
+for n=1,150 do
+ Summoned=CreateUnit(0,FourCC('s000'),0,0,0);Summoned.summoned=true;OnSummon()
+ assert(not Summoned.removed and GetUnitUserData(Summoned)==11)
+end
+local summons=0;for _,u in ipairs(World) do if u.summoned and not u.removed then summons=summons+1 end end
+assert(summons==150,'Retain every summoned creature, even beyond 64')
+
+-- Full native saves use the same slot on every invocation, on an independent timer.
+local saves={}
+function SyncSelections() end
+function SaveGame(name) table.insert(saves,{name=name,seconds=Seconds}) end
+reset();Finished=false
+for n=1,4 do Seconds=n*30;AutoSave() end
+assert(#saves==4 and AutosaveCount==4)
+for _,v in ipairs(saves) do assert(v.name=='FFFAutosave') end
+Finished=true;AutoSave();assert(#saves==4)
+
+-- Full 12-player startup, including all twelve unique custom heroes and four fountains.
+reset();HostPlayer=-1;World={}
+for p=0,11 do
+ Base[p],Hero[p],Bastion[p],Tower[p]=nil,nil,nil,nil
+ Players[p].slot=PLAYER_SLOT_STATE_PLAYING;Players[p].controller=(p==0) and MAP_CONTROL_USER or MAP_CONTROL_COMPUTER
+end
+InitGame();assert(AutosaveTimer.period==30 and AutosaveTimer.callback==AutoSave)
+Clock.callback()
+for p=0,11 do assert(Alive(Base[p]) and Alive(Hero[p]) and SlotActive[p]) end
+for team=0,3 do assert(Alive(TeamFountain[team]) and TeamOf(TeamFountain[team].owner)==team) end
+for kind=24,35 do
+ if Hero[0] then RemoveUnit(Hero[0]) end
+ CreateHero(0,kind);assert(Alive(Hero[0]) and Hero[0].id==HeroType[kind])
+end

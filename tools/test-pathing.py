@@ -93,3 +93,25 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
     assert center not in sealed, ('Fortress has a second exit',team)
     for x,y in homes: assert cell(x,y) in sealed, ('All three bases must share the enclosure',team)
 print('PASS: WPM flood fill: 12 bases/spawns connect to arena; closing each single gate seals exactly that team fortress.')
+
+# Removing the central arena must disconnect every team from every other team.
+# This proves no route can skirt a radial wall via the outer map edge.
+without_center=set(blocked)
+for py in range(height):
+    wy=(py+0.5)*32-6144
+    for px in range(width):
+        wx=(px+0.5)*32-6144
+        if wx*wx+wy*wy<=1500**2: without_center.add(py*width+px)
+for team in range(4):
+    x,y=first[0]
+    for _ in range(team):x,y=-y,x
+    connected=reached(cell(x,y),without_center)
+    for other in range(4):
+        ox,oy=first[0]
+        for _ in range(other):ox,oy=-oy,ox
+        assert (cell(ox,oy) in connected)==(other==team),('Route bypasses central arena',team,other)
+# Ground and flying pathing share the radial dividers.
+for along in range(1550,5800,64):
+    for x,y in [(0,along),(0,-along),(along,0),(-along,0)]:
+        assert data[16+cell(x,y)]&6==6
+print('PASS: Every inter-team path crosses the central arena; no outer ground/flying bypass.')

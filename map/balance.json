@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.8.1-alpha",
+  "version": "0.9.0-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 12,
@@ -80,5 +80,10 @@
   "bastion_cooldown": 0.75,
   "experience_multiplier": 0.5,
   "attack_per_rank": 6,
-  "armor_per_rank": 2
+  "armor_per_rank": 2,
+  "corpse_seconds": 120,
+  "autosave_seconds": 30,
+  "base_fountain_radius": 1200,
+  "base_fountain_hp_percent": 0.005,
+  "base_fountain_mana_percent": 0.005
 }

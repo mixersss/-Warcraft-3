@@ -18,8 +18,8 @@ def scaled_value(field, rank, ultimate):
     if field['kind'] == 3:
         return '' if raw in ('Neg3','Neg4','Neg5','Neg6') else last
     if raw == 'acdn':
-        return round(max(1.0,last*max(0.4,1-extra*(0.025 if ultimate else 0.003))),4) if last>1 else last
-    if raw == 'aare': return round(last*(1+min(extra*(0.025 if ultimate else 0.002),0.75)),4)
+        return round(max(1.0,last*(1-0.6*extra/max(1,(50 if ultimate else 300)-len(values)))),4) if last>1 else last
+    if raw == 'aare': return round(last*(1+min(extra*(0.01 if ultimate else 0.0012),0.35)),4)
     if raw in ('acas','adur','ahdu','aran','amcs'): return last
     if raw == 'Nms2': return last  # Mana Shield already absorbs 100%.
     if raw in ('Ocl3','Uts2'):
@@ -28,8 +28,21 @@ def scaled_value(field, rank, ultimate):
     if 'movement speed increase' in label: return round(min(1.0,last+0.005*extra),5)
     if 'attack speed increase' in label: return round(min(3.0,last+0.01*extra),5)
     # These are engine mechanics and identifiers, not scalable magnitudes.
+    progress=extra/max(1,(50 if ultimate else 300)-len(values))
+    if 'chance' in label or 'evasion' in label:
+        if max(values)<=0: return last
+        limit=(0.75 if max(values)<=1 else 75.0) if ('evade' in label or 'evasion' in label) else (0.60 if max(values)<=1 else 60.0)
+        return round(min(limit,last+(limit-last)*progress),6)
+    if 'damage multiplier' in label and last>0:
+        return round(last+(max(last,10.0)-last)*progress,5)
+    if raw == 'nca1': return round(last+(2.0-last)*progress,5)
+    if raw == 'Uts1': return round(last+(1.5-last)*progress,5)
+    if raw == 'Ncs5' or raw == 'Nvc4' or raw == 'Nvc6': return last
+    if 'life stolen' in label or 'damage increase (%)' in label or 'damage bonus (%)' in label:
+        return round(last+(max(last,0.8)-last)*progress,5)
     if any(word in label for word in ('flag','type','allow','can ','boolean','interval','duration','delay','distance','range','permanent','invulnerable','split','generation')):
-        return last
+        if not any(word in label for word in ('damage per interval','damage interval amount','damage per second')):
+            return last
     if raw == 'Omi1': return last+rank//10
     if raw == 'Omi2': return min(0.75,0.0025*extra)
     if raw == 'Omi3': return max(1.0,last-0.003*extra)
@@ -38,7 +51,11 @@ def scaled_value(field, rank, ultimate):
     meaningful = any(word in label for word in ('damage','heal','bonus','regenerat','chance','evasion','life','hit point','strength','agility','intelligence','corpses','creep level','multiplier'))
     if not meaningful: return last
     delta = last-values[-2] if len(values)>1 else 0
-    step = max(abs(delta),abs(last)*(0.15 if ultimate else 0.04))
+    step = max(abs(delta),abs(last)*(0.12 if ultimate else 0.04))
+    if 'corpses' in label:
+        step=max(abs(delta),abs(last)*(0.15 if ultimate else 0.04))
+    if 'defense bonus' in label or 'armor bonus' in label:
+        step=abs(last)*(0.10 if ultimate else 0.04)
     value = last + (step*extra if last>=0 else -step*extra)
     if any(word in label for word in ('chance','evasion','life stolen','damage reduction','damage reflected','damage increase (%)','speed reduction')):
         value = min(value,0.80 if max(values)<=1 else 80)
@@ -104,11 +121,18 @@ def hero_abilities(root):
             details=[]
             for field in seed['fields']:
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
-                if rawcode=='ANba' and field['id']=='atar':
+                if rawcode in ('ANba','AEim') and field['id']=='atar':
                     # Do not exclude the undead/mechanical troop categories.
                     # Ground/air targets exclude the separate structure class.
                     value='air,ground,enemy,neutral'
                 if rawcode=='ANba' and field['id']=='ahdu': value=2.0
+                if field['id']=='acdn' and rawcode in ('AHds','AHtb','AEer','AOhx') and rank>seed['levels']:
+                    # Prevent permanent shields or single-caster hard-control loops.
+                    duration=max((f['values'][-1] for f in seed['fields'] if f['id']=='ahdu'),default=0)
+                    floor=max(field['values'][-1]*0.4,duration+(8 if rawcode=='AHds' else 1))
+                    floor=min(field['values'][-1],floor)
+                    progress=(rank-seed['levels'])/max(1,seed['cap']-seed['levels'])
+                    value=round(field['values'][-1]+(floor-field['values'][-1])*progress,4)
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
                 if field['id'] in SUMMON_FIELDS:
                     hp,damage,scale=summon_details[value.split(',')[0]]
@@ -135,3 +159,17 @@ def custom_hero_abilities(root):
             changes += [('aher',0,1),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
             result.append((original,raw,changes))
     return result
+
+
+def attribute_ability():
+    changes=[('anam',3,'Характеристики +'),('aher',0,1),('aite',0,0),('alev',0,500),
+             ('arlv',0,1),('alsk',0,1),('arpx',0,3),('arpy',0,1),('abpx',0,3),('abpy',0,1),
+             ('arar',3,'ReplaceableTextures\\CommandButtons\\BTNStatUp.blp'),
+             ('aart',3,'ReplaceableTextures\\PassiveButtons\\PASBTNStatUp.blp'),
+             ('aret',3,'Характеристики + [ранг %d]'),
+             ('arut',3,'Одно очко навыка: +2 силы, +2 ловкости и +2 интеллекта за каждый ранг. До 500 рангов.')]
+    for rank in range(1,501):
+        changes += [('Iagi',0,2*rank,rank,1),('Iint',0,2*rank,rank,2),('Istr',0,2*rank,rank,3),
+                    ('Ihid',0,0,rank,4),('atp1',3,f'Характеристики + [ранг {rank}]',rank,0),
+                    ('aub1',3,f'+{rank*2} силы, ловкости и интеллекта. Каждый следующий ранг: ещё +2 ко всем.',rank,0)]
+    return [('Aamk','Fatr',changes)]

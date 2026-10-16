@@ -95,9 +95,9 @@ for(const unit of custom) for(const mod of unit.modifications) {
   if(expected!==undefined) assert.equal(mod.variableType,expected,`${unit.newId}: Classic ${mod.id} binary type`);
 }
 assert.equal(races.length, 4);
-assert.equal(heroes.length, 28);
-assert.equal(new Set(heroes.map(h => h.id)).size, 28);
-assert.deepEqual([0,1,2,3,4,5].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8,4]);
+assert.equal(heroes.length, 36);
+assert.equal(new Set(heroes.map(h => h.id)).size, 36);
+assert.deepEqual([0,1,2,3,4,5,6].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8,6,6]);
 assert.equal(custom.filter(o=>o.newId.startsWith('fm')).length,20,'Exactly one troop type per race/tier');
 assert.equal(new Set(custom.map(o => o.newId)).size,custom.length,'Unique custom rawcodes');
 for (let race = 0; race < 4; race++) {
@@ -109,7 +109,7 @@ for (let race = 0; race < 4; race++) {
 }
 const gear=require('../map/equipment.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,79,'Passive equipment effects');
+assert.equal(gearAbilities.length,114,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -286,10 +286,10 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 46 shop items, 12 slots, 28 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 14 binary formats, 4 command-card research columns (200/200/200/4), 500 hero levels, 300/50 skill caps, 46 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
-for(let page=0;page<4;page++) {
+for(let page=0;page<5;page++) {
  const picker=custom.find(o=>o.newId===`fpk${page}`);
  assert.equal(picker.oldId,'hbar');
  assert.equal(value(picker,'utra'),heroes.slice(page*8,page*8+8).map((h,i)=>`fp${String(page*8+i).padStart(2,'0')}`).join(','));
@@ -304,7 +304,7 @@ for(const [idx,hero] of heroes.entries()) {
  assert.equal(value(card,'ubpx'),idx%4);assert.equal(value(card,'ubpy'),Math.floor(idx%8/4));
  if(hero.base) {
   const unit=custom.find(o=>o.newId===hero.id);
-  assert.equal(unit.oldId,hero.base);assert.equal(value(unit,'uhab'),hero.skills.join(','));
+  assert.equal(unit.oldId,hero.base);assert.equal(value(unit,'uhab'),[...hero.skills,'Fatr'].join(','));
   for(const [slot,id] of hero.skills.entries()) {
    const skill=gearAbilities.find(o=>o.newId===id);
    assert.equal(skill.oldId,hero.skill_sources[slot]);
@@ -314,3 +314,50 @@ for(const [idx,hero] of heroes.entries()) {
  }
 }
 for(const troop of custom.filter(o=>/^fm[0-3][0-4]$/.test(o.newId))) assert.equal(value(troop,'udup'),2);
+
+// Fifth, native learnable skill: cumulative +2/rank, not a paid chat upgrade.
+const stats=gearAbilities.find(o=>o.newId==='Fatr');
+assert.equal(stats.oldId,'Aamk');assert.equal(value(stats,'aher'),1);assert.equal(value(stats,'alev'),500);
+for(let rank=1;rank<=500;rank++) for(const field of ['Istr','Iagi','Iint']) assert.equal(value(stats,field,rank),rank*2);
+const originalHeroes=parsed['war3map.w3u'].originalTable.objects;
+for(const h of heroes.filter(h=>!h.base)) assert.equal(value(originalHeroes.find(o=>o.oldId===h.id),'uhab'),[...h.skills,'Fatr'].join(','));
+const customHeroes=heroes.filter(h=>h.base);
+assert.equal(customHeroes.length,12);
+assert.equal(new Set(customHeroes.map(h=>h.model.toLowerCase())).size,12);
+for(const h of customHeroes) {
+ assert.ok(!heroes.filter(s=>!s.base).some(s=>s.stock_model.toLowerCase()===h.model.toLowerCase()));
+ const u=unitById.get(h.id);assert.equal(value(u,'umdl'),h.model);assert.equal(value(u,'umvt'),'foot');
+ assert.equal(value(u,'ustr'),h.stats.strength);assert.equal(value(u,'uagi'),h.stats.agility);assert.equal(value(u,'uint'),h.stats.intelligence);
+ assert.equal(value(u,'uico'),h.icon);
+}
+// Evasion never exceeds 75%, including the alternate drunken-brawler field.
+for(const a of [...abilities,...gearAbilities.filter(o=>o.newId!=='Fatr')]) {
+ for(const m of a.modifications) if(m.id==='Eev1' || m.id==='Ocr4') assert.ok(m.value>=0 && m.value<=0.750001);
+}
+const immo=abilityById.get('AEim');
+for(let rank=4;rank<=300;rank++) assert.ok(value(immo,'Eim1',rank)>value(immo,'Eim1',rank-1),'Immolation damage improves at EVERY rank, despite interval in label');
+assert.ok(value(immo,'Eim1',300)>1000);assert.equal(value(immo,'Eim2',300),7,'Do not amplify ongoing mana drain');
+assert.ok(value(abilityById.get('AEev'),'Eev1',10)<0.4,'Evasion must not hit its cap early');
+assert.equal(value(abilityById.get('AEev'),'Eev1',300),0.75);
+const alliedFont=unitById.get('fbfn');assert.equal(value(alliedFont,'uabi'),'Avul,FbHP,FbMP');
+for(const [id,field,flag] of [['FbHP','Oar1','Oar2'],['FbMP','Arm1','Arm2']]) {
+ const a=gearAbilities.find(o=>o.newId===id);assert.equal(value(a,'aare',1),1200);
+ assert.equal(value(a,'atar',1),'ground,air,hero,friend,self,vuln,invu');
+ assert.ok(Math.abs(value(a,field,1)-0.005)<1e-6);assert.equal(value(a,flag,1),1);
+}
+assert.equal(balance.army_cap,48);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,12);
+console.log('PASS: 36 heroes / 12 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
+for(const [id,gap] of [['AHds',8],['AHtb',1],['AEer',1],['AOhx',1]]) {
+ const a=abilityById.get(id);assert.ok(value(a,'acdn',300)>=value(a,'ahdu',300)+gap-0.001,'No permanent shield/control from cooldown scaling');
+}
+for(const unit of customHeroes.map(h=>unitById.get(h.id))) for(const id of ['ustp','uagp','uinp']) assert.equal(unit.modifications.find(m=>m.id===id).variableType,2,'Classic hero growth uses unreal');
+// Compare shipped 0.8.1 counts independently: optimization may not reduce creatures.
+const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.8.1-alpha.w3x'))),true);
+const PreviousAbilities=require(prefix+'w3x/w3d/file').default;
+const previousAbilities=new PreviousAbilities();previousAbilities.load(new Uint8Array(previous.get('war3map.w3a').bytes()));
+const quantities=new Set(['Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1','Ucb5','Omi1','Hre1']);
+for(const old of previousAbilities.originalTable.objects) {
+ const current=abilityById.get(old.oldId);
+ for(const mod of old.modifications) if(quantities.has(mod.id)) assert.equal(value(current,mod.id,mod.levelOrVariation),mod.value,'Creature/resurrection counts must match 0.8.1');
+}
+console.log('PASS: Creature, illusion and resurrection counts match previous release at every rank.');

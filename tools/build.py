@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units, custom_hero_abilities
+from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability
 from equipment import item_effects
 from hero_picker import units as picker_units, controls as picker_controls
 
@@ -34,6 +34,9 @@ def catalog(name: str) -> list[dict]:
 
 
 def wall_at(x: float, y: float) -> bool:
+    # Four radial dividers seal all side routes; their only junction is center.
+    if (abs(x)<=96 and abs(y)>=1350) or (abs(y)<=96 and abs(x)>=1350):
+        return True
     for cx, cy in ENCLOSURES:
         dx, dy = x-cx, y-cy
         length = math.hypot(cx, cy)
@@ -63,6 +66,8 @@ def wall_segments() -> list[tuple[float, float, float]]:
                 result.append((cx-cx/length*along-cy/length*side,
                                cy-cy/length*along+cx/length*side,
                                math.degrees(math.atan2(-cy,-cx))+math.degrees(math.atan(TUNNEL_FLARE))*(1 if side>0 else -1)))
+    for along in range(1350, HALF, 80):
+        result += [(0,along,0),(0,-along,0),(along,0,90),(-along,0,90)]
     return result
 
 
@@ -120,7 +125,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = f'4 teams x 3. One troop type per army tier, 4 races, 28 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
+    text = f'4 teams x 3. One troop type per army tier, 4 races, 36 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (open slots stay empty)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -144,8 +149,8 @@ def texture(x: float, y: float) -> int:
     if min((x-hx)**2+(y-hy)**2 for hx, hy in positions()) < 520**2:
         return 3
     radius = math.hypot(x, y)
-    if radius < 950:
-        return 3 if radius < 780 else 2
+    if radius < 1500:
+        return 3 if radius < 1400 else 2
     if abs(abs(x)-abs(y)) < 330 or 3550 < max(abs(x), abs(y)) < 4250:
         return 2
     if int(x//640 + y//640) % 7 == 0:
@@ -168,7 +173,7 @@ def pathing() -> bytes:
     width = SIZE*4
     return b'MP3W' + i(0, width, width) + bytes(
         0x0E if x < 8 or y < 8 or x >= width-8 or y >= width-8
-        else 0x0A if wall_at((x+0.5)*32-HALF, (y+0.5)*32-HALF) else 0x08
+        else 0x0E if wall_at((x+0.5)*32-HALF, (y+0.5)*32-HALF) else 0x08
         for y in range(width) for x in range(width)
     )
 
@@ -256,7 +261,13 @@ def units(b: dict) -> bytes:
         ('utip',3,'Общий фонтан жизни и маны'),
         ('utub',3,f'Штатные ауры фонтана восстанавливают {b["fountain_hp_percent"]*100:g}% максимального HP и {b["fountain_mana_percent"]*100:g}% маны в секунду всем героям в радиусе {b["fountain_radius"]}, включая врагов и Нежить. Работает во время боя.'),
     ]))
-    return objects(entries)
+    entries.append(('nfoh','fbfn',[
+        ('unam',3,'Союзный фонтан жизни и маны'),('uhpm',0,5000),('uabi',3,'Avul,FbHP,FbMP'),
+        ('upat',3,''),('ucol',2,48.0),('ureq',3,''),('utip',3,'Союзный фонтан'),
+        ('utub',3,'Восстанавливает союзным героям рядом 0,5% максимального HP и маны в секунду. Радиус 1200.'),
+    ]))
+    originals=[(hero['id'],'\0'*4,[('uhab',3,','.join(hero['skills']+['Fatr']))]) for hero in catalog('heroes') if 'base' not in hero]
+    return objects(entries,original_entries=originals)
 
 
 def fountain_abilities(b: dict) -> list:
@@ -270,11 +281,14 @@ def fountain_abilities(b: dict) -> list:
             ('atar',3,'ground,air,hero,vuln,invu',1,0),
             (field,2,rate,1,1),(flag,0,1,1,2),
             ('atp1',3,name,1,0),('aub1',3,f'{rate*100:g}% максимального запаса в секунду. Все герои, все команды, радиус {b["fountain_radius"]}.',1,0)]))
+    for base,raw,field,flag,rate in [('ACnr','FbHP','Oar1','Oar2',b['base_fountain_hp_percent']),('ANre','FbMP','Arm1','Arm2',b['base_fountain_mana_percent'])]:
+        entries.append((base,raw,[('alev',0,1),('aher',0,0),('aite',0,0),('aare',2,float(b['base_fountain_radius']),1,0),
+            ('atar',3,'ground,air,hero,friend,self,vuln,invu',1,0),(field,2,rate,1,1),(flag,0,1,1,2)]))
     return entries
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability(), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -327,12 +341,12 @@ def upgrades(b: dict) -> bytes:
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
     generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}']
-    generated += [f'    constant integer HERO_COUNT = {len(heroes)}',
+    generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/8)}',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',

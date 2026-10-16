@@ -43,8 +43,12 @@ def units(heroes):
         r,g,b=hero['tint']
         result.append((hero['base'],hero['id'],[
             ('unam',3,hero['name']),('upro',3,hero['proper_name']),('uico',3,hero['icon']),
-            ('uhab',3,','.join(hero['skills'])),('uabi',3,'AInv'),('ureq',3,''),('upgr',3,''),
+            ('uhab',3,','.join(hero['skills']+['Fatr'])),('uabi',3,'AInv'),('ureq',3,''),('upgr',3,''),
             ('utip',3,hero['name']),('utub',3,hero['description']),
             ('uclr',0,r),('uclg',0,g),('uclb',0,b),
+            ('umdl',3,hero['model']),('umvt',3,'foot'),('usca',1,0.8),
+            ('ustr',0,hero['stats']['strength']),('uagi',0,hero['stats']['agility']),('uint',0,hero['stats']['intelligence']),
+            ('ustp',2,hero['stats']['strength_growth']),('uagp',2,hero['stats']['agility_growth']),('uinp',2,hero['stats']['intelligence_growth']),
+            ('uhpm',0,hero['stats']['hp']),('umpm',0,hero['stats']['mana']),('ua1b',0,hero['stats']['damage']),('udef',0,hero['stats']['armor']),
         ]))
     return result
