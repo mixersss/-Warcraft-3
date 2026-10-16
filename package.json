@@ -1,6 +1,6 @@
 {
   "name": "four-fronts-frenzy",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "private": true,
   "description": "Classic Warcraft III 4x3 arena with scripted bots",
   "scripts": {

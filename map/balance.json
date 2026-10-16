@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.10.0-alpha",
+  "version": "0.10.1-alpha",
   "starting_gold": 500,
   "income_per_second": 4,
   "spawn_seconds": 12,

@@ -311,11 +311,16 @@ def menu_ability(b: dict) -> bytes:
 
 
 def items() -> bytes:
+    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')
+    stock = set(json.loads((ROOT/'map/classic-object-ids.json').read_text())['tables']['items'])
+    for row in rows:
+        if row['base'] not in stock:
+            raise ValueError(f"{row['id']}: unknown Classic item base {row['base']}")
     _,effects=item_effects(ROOT)
     return objects([(row['base'],row['id'],[
         ('unam',3,row['name']),('utip',3,row['name']),('utub',3,row['description']),
         ('igol',0,row['cost']),('ilum',0,0),('isto',0,12),('istr',0,2),('isst',0,0),
-    ]+([('iabi',3,row['ability'])] if 'ability' in row else [('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')])
+    ]+([('iabi',3,row['ability'])] if 'ability' in row else [('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in rows])
 
 
 def misc(b: dict) -> bytes:

@@ -7,7 +7,7 @@ EFFECTS={
  'attack':('AItg','Iatt',0,1), 'armor':('AId2','Idef',0,1),
  'strength':('AIs1','Istr',0,3), 'agility':('AIa1','Iagi',0,1),
  'intelligence':('AIi1','Iint',0,2), 'health':('AIlf','Ilif',0,1),
- 'mana':('AImm','Iman',0,1), 'health_regen':('Arel','Ihpr',0,1),
+ 'mana':('AImb','Iman',0,1), 'health_regen':('Arel','Ihpr',0,1),
  'mana_regen':('AIrm','Imrp',2,1),
  'move_speed':('AIms','Imvb',0,1), 'attack_speed':('AIsx','Isx1',2,1),
  'fire_dps':('AIcf','Icfd',0,1), 'lifesteal':('AIva','Ivam',2,1),

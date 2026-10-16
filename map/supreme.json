@@ -41,7 +41,7 @@
   },
   {
     "id": "fl04",
-    "base": "glov",
+    "base": "gcel",
     "name": "Перчатки молний",
     "cost": 55000,
     "stats": {
@@ -51,7 +51,7 @@
   },
   {
     "id": "fl05",
-    "base": "sobi",
+    "base": "rwiz",
     "name": "Источник бездны",
     "cost": 55000,
     "stats": {

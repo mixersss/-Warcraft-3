@@ -70,6 +70,33 @@ for (const [name, format] of Object.entries(formats)) {
   parsed[name] = object;
 }
 const info = parsed['war3map.w3i'];
+// A structurally valid W3T can still crash Classic when an oldId does not exist.
+// Check emitted objects and their references against independent stock SLK IDs.
+const stockIds=require('../map/classic-object-ids.json').tables;
+const objectTables={items:'war3map.w3t',units:'war3map.w3u',abilities:'war3map.w3a',upgrades:'war3map.w3q',destructables:'war3map.w3b'};
+const knownIds={};
+for(const [kind,file] of Object.entries(objectTables)) {
+  const stock=new Set(stockIds[kind]);
+  const table=parsed[file];
+  knownIds[kind]=new Set(stock);
+  for(const object of table.originalTable.objects) assert.ok(stock.has(object.oldId),`${file}: unknown original ${object.oldId}`);
+  for(const object of table.customTable.objects) {
+    assert.ok(stock.has(object.oldId),`${file}: ${object.newId} has nonexistent Classic base ${object.oldId}`);
+    assert.ok(!knownIds[kind].has(object.newId),`${file}: duplicate/stock collision ${object.newId}`);
+    knownIds[kind].add(object.newId);
+  }
+}
+const referenceKinds={usei:'items',iabi:'abilities',uabi:'abilities',uhab:'abilities',utra:'units',uupt:'units',ures:'upgrades',upgr:'upgrades'};
+for(const file of Object.values(objectTables)) for(const object of [...parsed[file].originalTable.objects,...parsed[file].customTable.objects]) {
+  for(const mod of object.modifications) {
+    const kind=referenceKinds[mod.id];
+    if(!kind || !mod.value) continue;
+    for(const id of mod.value.split(',')) assert.ok(knownIds[kind].has(id),`${file}: ${object.newId || object.oldId} ${mod.id} references nonexistent ${id}`);
+  }
+}
+assert.ok(knownIds.items.has('gcel') && knownIds.items.has('rwiz'));
+assert.ok(!knownIds.items.has('glov') && !knownIds.items.has('sobi'),'Reject the invalid bases from 0.10.0');
+console.log('PASS: All object bases, rawcode uniqueness, shop stock and unit/item ability references exist in Classic data.');
 assert.equal(info.version, 25, 'Classic TFT info format');
 assert.equal(info.players.length, 12);
 assert.equal(info.forces.length, 4);
@@ -369,7 +396,9 @@ let longerCooldowns=0;
 for(const table of ['originalTable','customTable']) {
  const current=parsed['war3map.w3a'][table].objects;
  for(const old of baselineSkills[table].objects) {
-  const obj=current.find(o=>o.newId===old.newId && o.oldId===old.oldId);assert.ok(obj);
+  // Repair the three older mana items without changing any effect fields.
+  const base=table==='customTable' && ['Fg16','Fg18','Fg20'].includes(old.newId) && old.oldId==='AImm' ? 'AImb' : old.oldId;
+  const obj=current.find(o=>o.newId===old.newId && o.oldId===base);assert.ok(obj);
   const stable=o=>o.modifications.filter(m=>!['atp1','aub1','acdn'].includes(m.id));
   assert.deepEqual(stable(obj),stable(old),'Preserve all other hero ability fields');
   for(const m of old.modifications.filter(m=>m.id==='acdn')) {
