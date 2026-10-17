@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Chapter_01_Alpha_08b.w3x",
-  "bytes": 8074699,
-  "sha256": "dcbcf4ff47b48f0d184068a0855e2ca14fa32ba60a69debdd24f54748901b155",
+  "filename": "Shinobi_Chapter_01_Alpha_08c.w3x",
+  "bytes": 8074888,
+  "sha256": "836dd05cf20c547344f4c8518282c0155c6aa0dfd8d3ea7802bdd4d7c1c07a03",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery only; no original units, abilities, metadata or JASS",
   "importedAssets": 376,
@@ -34,6 +34,6 @@
   "nativeImpactSounds": true,
   "musicMode": "source chapter mapping; forest HeavyViolence loop",
   "experienceProfile": "source factors, radius, creature levels and hero start/cap; no quest XP",
-  "stage": "08b reliable Tobidogu visuals and persistent Shikamaru shadow binding",
+  "stage": "08c empty preparation inventories and imported shop item icons",
   "engineTested": false
 }

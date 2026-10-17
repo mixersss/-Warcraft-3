@@ -6,8 +6,10 @@ ROOT=Path(__file__).parent
 NODES=[(-14711,15611),(-12057,14824),(-10654,13930),(-8868,13112)]
 OFFSETS=[(0,0),(8192,0),(0,-4864),(8192,-4864)]
 ITEMS=[('rat6','Rc01','Кунай шиноби',150),('rst1','Rc02','Повязка выносливости',120),('rag1','Rc03','Повязка ловкости',120),('rin1','Rc04','Повязка чакры',120),('rde1','Rc05','Защитный жилет',160),('phea','Rc06','Лечебный настой',75),('pman','Rc07','Восстановление чакры',90)]
+# Imported source art; keep independently configured effects and prices unchanged.
+SHOP_ICONS={'rat6':'Icon_Kunai.BLP','rst1':'Icon_SoldierPills.blp','rag1':'Icon_Shuriken.BLP','rin1':'Icon_SoldierPills.blp','rde1':'Icon_GeninArmor.blp','phea':'Icon_Ramen.BLP','pman':'Icon_SoldierPills.blp'}
 def item_entries():
- return [(base,raw,[('unam',3,name),('utip',3,name),('utub',3,{'rat6':'+6 к урону.','rst1':'+3 к силе.','rag1':'+3 к ловкости.','rin1':'+3 к интеллекту.','rde1':'+2 к броне.','phea':'Восстанавливает 250 здоровья.','pman':'Восстанавливает 150 маны.'}[base]),('igol',0,cost),('ilum',0,0),('isto',0,1),('istr',0,10),('isst',0,0)]) for base,raw,name,cost in ITEMS]
+ return [(base,raw,[('unam',3,name),('iico',3,SHOP_ICONS[base]),('utip',3,name),('utub',3,{'rat6':'+6 к урону.','rst1':'+3 к силе.','rag1':'+3 к ловкости.','rin1':'+3 к интеллекту.','rde1':'+2 к броне.','phea':'Восстанавливает 250 здоровья.','pman':'Восстанавливает 150 маны.'}[base]),('igol',0,cost),('ilum',0,0),('isto',0,1),('istr',0,10),('isst',0,0)]) for base,raw,name,cost in ITEMS]
 def unit_entries():
  out=[]
  defs=[('re01','Разбойник Тумана','MistNin.mdl',650,26,128,1.05),('re02','Шиноби Дождя','RainGenin.mdl',850,32,450,1.),('re03','Хаку','haku.mdl',3800,48,550,.95),('re04','Момочи Забуза','Zabuza.mdl',8500,75,140,1.4),('re05','Водяной клон Забузы','Zabuza.mdl',1100,26,140,1.2),('rq01','Какаши — командир миссии','KakashiNew.mdl',5000,0,128,1.)]

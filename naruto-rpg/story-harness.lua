@@ -152,6 +152,10 @@ Hero[4].items[0]={type=raw('Nlsh')};BotUseItemAt[4]=0;boss.x=Hero[4].x+100;boss.
 assert(StoryLootBot(4,boss) and Hero[4].used==Hero[4].items[0] and Hero[4].usedTarget==boss)
 -- Shop still uses real gold, inventory and role-specific choices.
 Hero[1].items={};StoryBought[1]=0;gold[1]=500;StoryBuyAt[1]=0
+StoryStarted[0]=false;TimeNow=400;StoryBuy(1)
+assert(gold[1]==500 and StoryBought[1]==0,'No purchases during hero selection')
+StoryStarted[0]=true;StoryStage[0]=1;TimeNow=30;StoryBuy(1)
+assert(gold[1]==500 and StoryBought[1]==0,'No immediate opening purchases')
 for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
 assert(gold[1]==70 and StoryBought[1]==3)
 -- Sand crest cleanup remains bounded.

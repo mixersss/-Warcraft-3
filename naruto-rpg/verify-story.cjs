@@ -58,6 +58,7 @@ assert.equal(itemFile.customTable.objects.length,14);
 const field=o=>Object.fromEntries(o.modifications.map(m=>[m.id,m.value]));
 for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert(f.igol>0 && f.ilum===0);if(f.iabi)assert(schema.stockIds.abilities.includes(f.iabi) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt'].includes(f.iabi));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
 const assets=new Set(JSON.parse(fs.readFileSync(path.join(root,'src/asset-manifest.json'))).map(a=>a.path.toLowerCase()));
+for(const item of itemFile.customTable.objects){const f=field(item);assert(f.iico && (assets.has(f.iico.toLowerCase()) || item.newId==='Nlne'),'Item must use imported source art: '+item.newId)}
 const modelAnimations=JSON.parse(fs.readFileSync(path.join(root,'src/model-animations.json')));
 for(const [model,index] of [['MistNin.mdx',5],['RainGenin.mdx',4],['haku.mdx',2],['Zabuza.mdx',5]])assert(modelAnimations.find(m=>m.path===model).animations[index]);
 assert(assets.has('gaarasand2.mdx'));

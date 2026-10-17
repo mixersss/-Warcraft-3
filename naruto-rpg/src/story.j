@@ -331,6 +331,10 @@ function StoryBuy takes integer p returns nothing
     local integer choice=0
     local integer role=HeroRole[p]
     local boolean full=true
+    // Preparation must leave every hero inventory empty; purchases begin during play.
+    if not StoryStarted[t] or StoryStage[t]==0 or TimeNow<60. then
+        return
+    endif
     if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<120 then
         return
     endif
