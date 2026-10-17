@@ -4821,7 +4821,7 @@
     ],
     "key": "G",
     "icon": "Icon_Gaara_RyuusaBakuryu.BLP",
-    "animation": "spell,channel",
+    "animation": "spell throw",
     "audio_index": 139,
     "implementation": "Independent adaptation of source slot",
     "order": "cripple",

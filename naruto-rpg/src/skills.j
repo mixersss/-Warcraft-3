@@ -224,6 +224,11 @@ function SkillsChoose takes integer p, integer role returns nothing
     local item carried=null
     local integer k=0
     local integer xp=0
+    if StoryStage[(p-ModuloInteger(p,3))/3]>0 then
+        call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Выбор героя закрыт: отряд уже вышел на миссию.")
+        set old=null
+        return
+    endif
     if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER or not FoundationAlive(old) then
         return
     endif
@@ -245,8 +250,8 @@ function SkillsChoose takes integer p, integer role returns nothing
     set HeroType[p]=RosterHeroType[role]
     set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
     call SetHeroXP(Hero[p],xp,false)
-    if GetHeroLevel(Hero[p])<10 then
-        call SetHeroLevel(Hero[p],10,false)
+    if GetHeroLevel(Hero[p])<3 then
+        call SetHeroLevel(Hero[p],3,false)
     endif
     loop
         exitwhen k>=6
@@ -260,7 +265,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     call RemoveUnit(old)
     call SelectUnitForPlayerSingle(Hero[p],Player(p))
     call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],0.)
-    call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Тренировочная смена героя: изучи техники кнопкой +. -practice даёт 30-й уровень только в этой тестовой сборке.")
+    call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Герой выбран. Изучи техники кнопкой +. Когда будете готовы, напиши -go.")
     set old=null
     set carried=null
 endfunction

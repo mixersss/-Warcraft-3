@@ -1,0 +1,32 @@
+{
+  "source": "Naruto Ultimate RPG 4.2i / ShikamaruShadow; user supplied map",
+  "sourceSha256": "a0350ca172f1049bf3a9472bcdfad7d08dc6551df965b4c5191c538890490533",
+  "scope": "Original terrain, static pathing, placed scenery, doodad/destructable definitions only. No original scenario, unit/ability objects, player metadata or script.",
+  "files": [
+    {
+      "file": "original-war3map.doo",
+      "bytes": 446824,
+      "sha256": "3c773cc4b3d27fdb7ec1628cb04be7b0b802d2a2a95390aad4fb9589ba027426"
+    },
+    {
+      "file": "original-war3map.w3b",
+      "bytes": 1410,
+      "sha256": "272bb7e359e1be97ca9aff17469afa666751594b4379270ed8eaa726d68f2fb9"
+    },
+    {
+      "file": "original-war3map.w3d",
+      "bytes": 433,
+      "sha256": "3f808df38aeb5c9480300a3bcbffc9d437091962b86b8a6a4629cdf0048c7b8a"
+    },
+    {
+      "file": "original-war3map.w3e",
+      "bytes": 462424,
+      "sha256": "0d7367c34ff01ae8b961825351e5e80e09b4efe1565e7709f1160dc279db58ad"
+    },
+    {
+      "file": "original-war3map.wpm",
+      "bytes": 1048592,
+      "sha256": "36569f4499d9b3fc02dedcf07626faf5d902ff48fc6e4255deb0440894ba5c1c"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "sourceSceneryCount": 8936,
+  "terrainSize": [
+    256,
+    256
+  ],
+  "independentTeamRoutes": 4,
+  "reachableStages": 16,
+  "approximateHeroClearance": 32,
+  "rectangularSceneryCollisionIncluded": true,
+  "nonRectangularFootprints": "retained original WPM; native engine test needed",
+  "nativeShopItems": 7,
+  "validatedEnemyAnimationIndices": 4,
+  "enginePlaytest": false
+}

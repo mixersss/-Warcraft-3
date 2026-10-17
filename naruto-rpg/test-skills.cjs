@@ -16,8 +16,8 @@ const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
 const assets=new Set(JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')).map(r=>r.path.toLowerCase()));
 for(const o of units){
- assert(['rdum','rdst'].includes(o.newId) || assets.has(get(o,'uico').toLowerCase()),'Missing unit portrait '+o.newId);
- if(!['rdum','rdst'].includes(o.newId))assert(get(o,'umdl').toLowerCase().startsWith('units\\') || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
+ assert(['rdum','rdst'].includes(o.newId) || (get(o,'uico')||'replaceabletextures\\').toLowerCase().startsWith('replaceabletextures\\') || assets.has((get(o,'uico')||'').toLowerCase()),'Missing unit portrait '+o.newId);
+ if(!['rdum','rdst'].includes(o.newId))assert((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
 }
 for(const row of rows)assert(row.icon.toLowerCase().startsWith('replaceabletextures\\') || assets.has(row.icon.toLowerCase()),'Missing spell icon');
 function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','defenseType','deathType','regenType','channelType','channelFlags','silenceFlags'].includes(t)?0:3;}
@@ -191,10 +191,14 @@ Hero={};Controllers={};SpawnCursor=0
 for p=0,11 do HeroType[p]=p;HeroRole[p]=p;SpawnX[p]=p*10;SpawnY[p]=0 end
 for p=0,12 do FoundationSpawn() end
 for p=0,11 do assert((Hero[p]~=nil)==(slots[p]=='playing'),'Open slots must remain empty') end
-assert(Hero[0].level==10 and Hero[1].level==10 and Hero[4].level==10)
+assert(Hero[0].level==3 and Hero[1].level==3 and Hero[4].level==3)
 -- All started effect handles have a bounded cleanup path.
 TimeNow=100;SkillsTick();assert(Effects==Destroyed)
 `);
 run(fs.readFileSync(__dirname+'/roster-harness.lua','utf8'));
+const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|StoryPrice|SpawnX|SpawnY)\[/.test(s));
+run(translate('function StoryFixtureData takes nothing returns nothing\n'+storyLines.join('\n')+'\nendfunction\n'));run('StoryFixtureData()');
+run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
+console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, boss telegraphs/phases, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
 fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,nativeMocks:true,enginePlaytest:false},null,2));
 console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 52 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');

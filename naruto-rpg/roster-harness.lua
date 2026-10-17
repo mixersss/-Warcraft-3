@@ -1,3 +1,9 @@
+function SetUnitPathing(u,flag)u.pathing=flag end
+function SetUnitFacing(u,a)u.facing=a end
+function Atan2(y,x)return math.atan(y,x)end
+function SetUnitX(u,x)u.x=x end
+function SetUnitY(u,y)u.y=y end
+bj_RADTODEG=180/math.pi
 -- Run the generated initializer in twelve independent callbacks, as the engine does.
 function raw(s)local n=0;for i=1,#s do n=n*256+string.byte(s,i)end;return n end
 function SetUnitAnimationByIndex(u,n)assert(n>=0);u.animationIndex=n end

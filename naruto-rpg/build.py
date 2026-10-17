@@ -3,15 +3,15 @@ from pathlib import Path
 import json,math,struct,hashlib
 from skills import SKILLS,HERO_SKILLS,ability_data,summon_units
 from classic_formats import i,f,s,objects,archive
-ROOT=Path(__file__).parent;SIZE=96;HALF=6144;BOUND=5888
+ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
-BASE=[(-3900,-3900),(3900,-3900),(3900,3900),(-3900,3900)]
-NAME='SHINOBI ROSTER ALPHA 06a'
-DESC='Новая основа RPG для Warcraft III 1.26. Четыре команды по три героя. 58 ячеек техник всех 12 персонажей: лечение, призывы, формы и боевые навыки. Тренировочная альфа; сюжет пока не подключён.'
-def positions():return [(BASE[p//3][0]+(p%3-1)*250,BASE[p//3][1]) for p in range(12)]
+BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
+NAME='SHINOBI CHAPTER 01 ALPHA 07'
+DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
+def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
  d=i(25,1,6061)+s(NAME)+s('mixersss; imported assets from ShikamaruShadow map')+s(DESC)+s('1-12; 4 teams x 3')
- d+=f(-BOUND,-BOUND,BOUND,BOUND,-BOUND,BOUND,BOUND,-BOUND)+i(2,2,2,2,SIZE-4,SIZE-4,0x60)+b'L'
+ d+=f(-BOUND,-BOUND,BOUND,BOUND,-BOUND,BOUND,BOUND,-BOUND)+i(0,0,0,0,SIZE,SIZE,0x60)+b'X'
  d+=i(-1)+s('')+s(DESC)+s(NAME)+s('Resource and animation test')
  d+=i(2)+s('')+s('')+s('')+s('')+i(0)+f(3000,5000,.5)+bytes([0,0,0,255])+i(0)+s('Default')+b'L'+bytes([255]*4)
  d+=i(12)
@@ -47,18 +47,25 @@ def unit_data():
   entries.append(('Hpal',raw,base))
  # Tenten must really attack at range for native Barrage to work.
  entries[5][2].extend([('ua1w',3,'missile'),('ua1r',0,600),('ua1m',3,'Kunai.mdl'),('ua1z',0,1100)])
+ from story import unit_entries
+ entries.extend(unit_entries())
  entries.extend(summon_units())
  entries.append(('hfoo','rdum',[('unam',3,'Тренировочный противник'),('uhpm',0,50000),('uhpr',2,30.),('uaen',0,0),('umvs',0,0),('uabi',3,''),('upgr',3,''),('ureq',3,'')]))
  for _,_,mods in entries:
   mods.extend([('usnd',3,''),('ucs1',3,''),('ucs2',3,'')])
  return objects(entries)
 def preview():
- w=256;d=bytearray(struct.pack('<BBBHHBHHHHBB',0,0,2,0,0,0,0,0,w,w,24,0));palette=[(48,88,43),(65,90,48),(115,91,64),(145,147,132)];teams=[(245,60,60),(65,130,245),(185,90,240),(245,210,45)]
+ raw=(ROOT/'src/location/original-war3map.w3e').read_bytes()
+ n=struct.unpack_from('<i',raw,13)[0];off=17+n*4
+ cliffs=struct.unpack_from('<i',raw,off)[0];off+=4+cliffs*4+16
+ w=256;d=bytearray(struct.pack('<BBBHHBHHHHBB',0,0,2,0,0,0,0,0,w,w,24,0))
+ palette=[(116,91,62),(115,94,64),(108,105,97),(125,121,108),(142,139,123),(99,94,87),(59,91,42),(120,119,108),(67,98,45)]
  for py in range(w):
   for px in range(w):
-   x,y=(px/w*2-1)*HALF,(py/w*2-1)*HALF;color=palette[texture(x,y)]
-   for t,(xx,yy) in enumerate(BASE):
-    if (x-xx)**2+(y-yy)**2<400**2:color=teams[t]
+   tile=raw[off+(py*257+px)*7+4]&15
+   color=palette[tile%len(palette)]
+   for xx,yy in BASE:
+    if abs(px-(xx+HALF)/128)<2 and abs(py-(yy+HALF)/128)<2:color=(245,215,50)
    d+=bytes(reversed(color))
  return bytes(d)
 def q(x):return json.dumps(x,ensure_ascii=False)
@@ -99,7 +106,8 @@ def script():
  dispatch += ['    endif','    set SkillDataCursor=SkillDataCursor+1','    if SkillDataCursor>=12 then','        set SkillDataReady=true','        call PauseTimer(SkillDataClock)','        call DestroyTimer(SkillDataClock)','        set SkillDataClock=null','    endif','endfunction']
  skillfunctions.append('\n'.join(dispatch))
  skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
- code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)).replace('// SKILLS_RUNTIME',skills)
+ from story import generated_data
+ code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text())
  lines=['function config takes nothing returns nothing',f'    call SetMapName({q(NAME)})',f'    call SetMapDescription({q(DESC)})','    call SetPlayers(12)','    call SetTeams(4)','    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)']
  for p,(x,y) in enumerate(positions()):
   lines += [f'    call DefineStartLocation({p},{x}.,{y}.)',f'    call SetPlayerStartLocation(Player({p}),{p})',f'    call ForcePlayerStartLocation(Player({p}),{p})',f'    call SetPlayerColor(Player({p}),ConvertPlayerColor({p}))',f'    call SetPlayerRacePreference(Player({p}),RACE_PREF_HUMAN)',f'    call SetPlayerRaceSelectable(Player({p}),false)',f'    call SetPlayerController(Player({p}),MAP_CONTROL_USER)',f'    call SetPlayerTeam(Player({p}),{p//3})',f'    call SetPlayerState(Player({p}),PLAYER_STATE_ALLIED_VICTORY,1)',f'    call SetStartLocPrioCount({p},2)']
@@ -111,7 +119,9 @@ def script():
 def build():
  files={row['path']:(ROOT/'assets'/row['path'].replace('\\','/')).read_bytes() for row in ASSETS}
  for row in ASSETS:assert hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
- files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data(),True),'war3map.w3t':objects([]),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
+ files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data(),True),'war3map.w3t':objects(__import__('story').item_entries()),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
+ for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
+  files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
  imported=[name for name in files if name in {x['path'] for x in ASSETS}]
  files['war3map.imp']=i(1,len(imported))+b''.join(b'\x0d'+s(name) for name in imported)
  mapdir=ROOT/'dist/map';mapdir.mkdir(parents=True,exist_ok=True)
@@ -119,8 +129,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Roster_Alpha_06a.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Full-roster technique alpha; story pending','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Chapter 01: camps, Haku, Zabuza; independent per-team quests and bot cooperation','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

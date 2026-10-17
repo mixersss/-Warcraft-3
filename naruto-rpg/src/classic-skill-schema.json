@@ -562,7 +562,8 @@
       "type": "stringList"
     },
     "uico": {
-      "type": "icon"
+      "type": "icon",
+      "column": 0
     },
     "iico": {
       "type": "icon"
@@ -628,7 +629,8 @@
       "type": "unreal"
     },
     "ua1m": {
-      "type": "model"
+      "type": "model",
+      "column": 0
     },
     "ua2m": {
       "type": "model"
@@ -640,7 +642,8 @@
       "type": "bool"
     },
     "ua1z": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ua2z": {
       "type": "int"
@@ -649,7 +652,8 @@
       "type": "soundLabel"
     },
     "unam": {
-      "type": "string"
+      "type": "string",
+      "column": 0
     },
     "upro": {
       "type": "stringList"
@@ -661,7 +665,8 @@
       "type": "int"
     },
     "ureq": {
-      "type": "techList"
+      "type": "techList",
+      "column": 0
     },
     "urq1": {
       "type": "techList"
@@ -703,7 +708,8 @@
       "type": "icon"
     },
     "usei": {
-      "type": "itemList"
+      "type": "itemList",
+      "column": 0
     },
     "useu": {
       "type": "unitList"
@@ -730,7 +736,8 @@
       "type": "unitList"
     },
     "uabi": {
-      "type": "abilityList"
+      "type": "abilityList",
+      "column": 0
     },
     "udaa": {
       "type": "abilCode"
@@ -748,13 +755,16 @@
       "type": "int"
     },
     "ubdi": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ubba": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ubsi": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ulbd": {
       "type": "int"
@@ -766,7 +776,8 @@
       "type": "int"
     },
     "ucol": {
-      "type": "unreal"
+      "type": "unreal",
+      "column": 0
     },
     "udef": {
       "type": "int"
@@ -790,7 +801,8 @@
       "type": "int"
     },
     "uhpm": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "uint": {
       "type": "int"
@@ -802,7 +814,8 @@
       "type": "bool"
     },
     "ulev": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ulum": {
       "type": "int"
@@ -835,7 +848,8 @@
       "type": "attributeType"
     },
     "uhpr": {
-      "type": "unreal"
+      "type": "unreal",
+      "column": 0
     },
     "umpr": {
       "type": "unreal"
@@ -865,7 +879,8 @@
       "type": "int"
     },
     "umvs": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "usma": {
       "type": "int"
@@ -889,7 +904,8 @@
       "type": "unitClass"
     },
     "upgr": {
-      "type": "upgradeList"
+      "type": "upgradeList",
+      "column": 0
     },
     "uabr": {
       "type": "unreal"
@@ -991,7 +1007,8 @@
       "type": "real"
     },
     "umdl": {
-      "type": "model"
+      "type": "model",
+      "column": 0
     },
     "uver": {
       "type": "versionFlags"
@@ -1015,7 +1032,8 @@
       "type": "real"
     },
     "usca": {
-      "type": "real"
+      "type": "real",
+      "column": 0
     },
     "unbm": {
       "type": "bool"
@@ -1057,7 +1075,8 @@
       "type": "real"
     },
     "ushr": {
-      "type": "bool"
+      "type": "bool",
+      "column": 0
     },
     "ushw": {
       "type": "real"
@@ -1114,7 +1133,8 @@
       "type": "unreal"
     },
     "ua1c": {
-      "type": "unreal"
+      "type": "unreal",
+      "column": 0
     },
     "ua2c": {
       "type": "unreal"
@@ -1126,13 +1146,15 @@
       "type": "unreal"
     },
     "ua1d": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ua2d": {
       "type": "int"
     },
     "ua1b": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ua2b": {
       "type": "int"
@@ -1201,7 +1223,8 @@
       "type": "unreal"
     },
     "ua1r": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ua2r": {
       "type": "int"
@@ -1219,7 +1242,8 @@
       "type": "bool"
     },
     "ua1s": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "ua2s": {
       "type": "int"
@@ -1255,10 +1279,12 @@
       "type": "targetList"
     },
     "uaen": {
-      "type": "attackBits"
+      "type": "attackBits",
+      "column": 0
     },
     "ua1w": {
-      "type": "weaponType"
+      "type": "weaponType",
+      "column": 0
     },
     "ua2w": {
       "type": "weaponType"
@@ -3525,5 +3551,39 @@
       "ZTw2",
       "ZTw3"
     ]
+  },
+  "itemFields": {
+    "unam": {
+      "type": "string",
+      "column": 0
+    },
+    "utip": {
+      "type": "string",
+      "column": 0
+    },
+    "utub": {
+      "type": "string",
+      "column": 0
+    },
+    "igol": {
+      "type": "int",
+      "column": 0
+    },
+    "ilum": {
+      "type": "int",
+      "column": 0
+    },
+    "isto": {
+      "type": "int",
+      "column": 0
+    },
+    "istr": {
+      "type": "int",
+      "column": 0
+    },
+    "isst": {
+      "type": "int",
+      "column": 0
+    }
   }
 }

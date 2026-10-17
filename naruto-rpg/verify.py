@@ -37,7 +37,13 @@ for row in manifest:
   assert len(sector)==size;plain.append(sector)
  assert hashlib.sha256(b''.join(plain)).hexdigest()==row['sha256']
 assert len(full)<8*1024*1024 and hashlib.sha256(full).hexdigest()==report['sha256']
-# File tables, scenario and imported data are newly authored; no original JASS.
+# Source scenery is intentionally transferred unchanged; runtime/story remain new.
+scene=json.loads((ROOT/'src/location/provenance.json').read_text())
+for row in scene['files']:
+ data=(ROOT/'src/location'/row['file']).read_bytes()
+ assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256']
+ assert metadata[row['file'].removeprefix('original-')]==data
+# Archive tables and scenario are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
 result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
 (ROOT/'dist/verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))

@@ -1,4 +1,30 @@
 globals
+    integer array StoryStage
+    integer array StoryMembers
+    boolean array StoryHasHuman
+    boolean array StoryMarch
+    boolean array StoryRetreat
+    real array StoryAdvanceAt
+    real array StoryX
+    real array StoryY
+    unit array StoryEnemy
+    unit array StoryShop
+    real array EnemyNext
+    real array EnemyPending
+    real array EnemyX
+    real array EnemyY
+    effect array EnemyMark
+    boolean array EnemyPhase
+    real array StoryRevive
+    real array StoryBotOrderAt
+    real array StoryBuyAt
+    integer array StoryBought
+    integer array StoryItem
+    integer array StoryPrice
+    unit array SandWave
+    real array SandWaveUntil
+    real array SandWaveDX
+    real array SandWaveDY
     integer array RosterMechanic
     real array RosterPower
     real array RosterBurn
@@ -141,6 +167,7 @@ function FoundationMusicStart takes nothing returns nothing
         call TimerStart(MusicClock,PlaylistDuration[MusicCursor],false,function FoundationMusicNext)
     endif
 endfunction
+// STORY_RUNTIME
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
     local string msg=GetEventPlayerChatString()
@@ -149,7 +176,9 @@ function FoundationChat takes nothing returns nothing
     if p>=12 then
         return
     endif
-    if msg=="-naruto" then
+    if msg=="-go" or msg=="-follow" or msg=="-retreat" or msg=="-quest" or msg=="-shop" or msg=="-camera" then
+        call StoryCommand(p,msg)
+    elseif msg=="-naruto" then
         call SkillsChoose(p,0)
     elseif msg=="-sasuke" then
         call SkillsChoose(p,1)
@@ -165,13 +194,13 @@ function FoundationChat takes nothing returns nothing
             call DisplayTimedTextToPlayer(Player(p),0,0,30.,I2S(k+1)+" — "+HeroName[k])
             set k=k+1
         endloop
-    elseif msg=="-wound" and FoundationAlive(Hero[p]) then
+    elseif StoryStage[(p-ModuloInteger(p,3))/3]==0 and msg=="-wound" and FoundationAlive(Hero[p]) then
         call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.5)
-        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Тренировочная проверка лечения: здоровье героя снижено до половины.")
-    elseif msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Проверка лечения до начала миссии: здоровье героя снижено до половины.")
+    elseif StoryStage[(p-ModuloInteger(p,3))/3]==0 and msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
         call SetHeroLevel(Hero[p],30,false)
         call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
-        call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Тренировочный режим: 30-й уровень. Изучи техники кнопкой +. Мана восстановлена; перезарядки сохраняются.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Проверка техник перед миссией: 30-й уровень. Изучи техники кнопкой +. Мана восстановлена; перезарядки сохраняются.")
     elseif msg=="-anim" or SubString(msg,0,6)=="-anim " then
         if not FoundationAlive(Hero[p]) then
             call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Герой ещё не создан или погиб.")
@@ -231,7 +260,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Выбран трек "+I2S(MusicCursor+1)+"/"+I2S(MusicCount)+". -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-hero 1..12: выбрать героя; -heroes: список; -practice: 30-й уровень; -wound: проверить лечение; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop: магазин; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
@@ -274,21 +303,12 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
-    call FoundationRefreshTargets()
+    call StoryTick()
     loop
         exitwhen p>=12
-        if FoundationAlive(Hero[p]) then
-            if ResumeAt[p]>0. and TimeNow>=ResumeAt[p] then
-                call SetUnitAnimation(Hero[p],"stand")
-                set ResumeAt[p]=0.
-            endif
-            set team=(p-ModuloInteger(p,3))/3
-            if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and ResumeAt[p]==0. and FoundationAlive(Dummy[team]) then
-                set casting=SkillsBot(p)
-                if not casting and TimeNow>=BotNextCast[p] and GetUnitCurrentOrder(Hero[p])==0 then
-                    call IssueTargetOrder(Hero[p],"attack",Dummy[team])
-                endif
-            endif
+        if FoundationAlive(Hero[p]) and ResumeAt[p]>0. and TimeNow>=ResumeAt[p] then
+            call SetUnitAnimation(Hero[p],"stand")
+            set ResumeAt[p]=0.
         endif
         set p=p+1
     endloop
@@ -304,7 +324,7 @@ function FoundationSpawn takes nothing returns nothing
     if GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
         set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
         if HeroRole[p]>=0 then
-            call SetHeroLevel(Hero[p],10,false)
+            call SetHeroLevel(Hero[p],3,false)
             if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
                 call SkillsLearnBot(p)
             endif
@@ -325,10 +345,6 @@ function FoundationInit takes nothing returns nothing
     set AudioClock=CreateTimer()
     set AudioPath[174]="Sound\\Interface\\QuestNew.wav"
     set AudioEAX[174]=""
-    set Dummy[0]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',-3400.,-3400.,225.)
-    set Dummy[1]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',3400.,-3400.,315.)
-    set Dummy[2]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',3400.,3400.,45.)
-    set Dummy[3]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',-3400.,3400.,135.)
     loop
         exitwhen p>=12
         set HeroTemplate[p]=p
@@ -336,13 +352,14 @@ function FoundationInit takes nothing returns nothing
         set p=p+1
     endloop
     call TriggerAddAction(chat,function FoundationChat)
+    call StoryInit()
     call FogMaskEnable(false)
     call FogEnable(false)
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     set MusicClock=CreateTimer()
     call FoundationMusicStart()
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI ROSTER ALPHA 06a: техники всех 12 героев. -heroes: список; -hero 1..12: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты изучают и применяют техники. Сюжет ещё не подключён.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"Глава I — Страна Волн. -heroes: список; -hero 1..12: выбор до выхода; +: изучить техники. -go: начать миссию; -follow: боты прикрывают вас; -quest: цель; -shop: снабжение. Гибель: возвращение через 20 секунд.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)
@@ -350,7 +367,7 @@ function FoundationInit takes nothing returns nothing
     set clock=null
 endfunction
 function main takes nothing returns nothing
-    call SetCameraBounds(-5888.,-5888.,5888.,5888.,-5888.,5888.,5888.,-5888.)
+    call SetCameraBounds(-16320.,-16320.,16320.,16320.,-16320.,16320.,16320.,-16320.)
     call SetDayNightModels("Environment\\DNC\\DNCLordaeron\\DNCLordaeronTerrain\\DNCLordaeronTerrain.mdl","Environment\\DNC\\DNCLordaeron\\DNCLordaeronUnit\\DNCLordaeronUnit.mdl")
     call NewSoundEnvironment("Default")
     call SetAmbientDaySound("")

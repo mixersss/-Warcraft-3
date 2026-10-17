@@ -24,8 +24,45 @@ function RosterClearZone takes integer p returns nothing
         set ZoneArt[p]=null
     endif
 endfunction
+function RosterClearSand takes integer p returns nothing
+    local integer n=0
+    loop
+        exitwhen n>=3
+        if SandWave[p*3+n]!=null then
+            call RemoveUnit(SandWave[p*3+n])
+            set SandWave[p*3+n]=null
+        endif
+        set n=n+1
+    endloop
+    set SandWaveUntil[p]=0.
+endfunction
+function RosterSand takes integer p, real tx, real ty returns nothing
+    local integer n=0
+    local real x=GetUnitX(Hero[p])
+    local real y=GetUnitY(Hero[p])
+    local real dx=tx-x
+    local real dy=ty-y
+    local real length=SquareRoot(dx*dx+dy*dy)
+    call RosterClearSand(p)
+    if length<1. then
+        set length=1.
+        set dx=1.
+    endif
+    set SandWaveDX[p]=dx/length*110.
+    set SandWaveDY[p]=dy/length*110.
+    set SandWaveUntil[p]=TimeNow+1.5
+    loop
+        exitwhen n>=3
+        set SandWave[p*3+n]=CreateUnit(Player(p),'rswv',x+dx/length*120.-dy/length*(n-1)*160.,y+dy/length*120.+dx/length*(n-1)*160.,0.)
+        call SetUnitPathing(SandWave[p*3+n],false)
+        call SetUnitFacing(SandWave[p*3+n],bj_RADTODEG*Atan2(dy,dx))
+        call SetUnitAnimation(SandWave[p*3+n],"birth")
+        set n=n+1
+    endloop
+endfunction
 function RosterReset takes integer p returns nothing
     local integer k=0
+    call RosterClearSand(p)
     call RosterClearBuff(p)
     call RosterClearZone(p)
     loop
@@ -214,6 +251,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
     elseif kind==4 then
         call RosterBuff(p,index,rank)
     elseif kind==5 or kind==8 then
+        if index==47 then
+            call RosterSand(p,GetSpellTargetX(),GetSpellTargetY())
+        endif
         call RosterClearZone(p)
         if kind==5 then
             call RosterBuff(p,index,rank)
@@ -311,6 +351,21 @@ function RosterTick takes nothing returns nothing
     set p=0
     loop
         exitwhen p>=12
+        if SandWaveUntil[p]>0. then
+            if not FoundationAlive(Hero[p]) or TimeNow>=SandWaveUntil[p] then
+                call RosterClearSand(p)
+            else
+                set q=0
+                loop
+                    exitwhen q>=3
+                    if SandWave[p*3+q]!=null then
+                        call SetUnitX(SandWave[p*3+q],GetUnitX(SandWave[p*3+q])+SandWaveDX[p])
+                        call SetUnitY(SandWave[p*3+q],GetUnitY(SandWave[p*3+q])+SandWaveDY[p])
+                    endif
+                    set q=q+1
+                endloop
+            endif
+        endif
         if not FoundationAlive(Hero[p]) then
             if RosterBuffUntil[p]>0. then
                 call RosterClearBuff(p)
