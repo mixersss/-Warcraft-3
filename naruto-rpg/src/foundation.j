@@ -84,6 +84,11 @@ globals
     real TimeNow=0.
     integer array AudioCursor
     boolean MusicOn=true
+    timer MusicClock=null
+    integer MusicCursor=0
+    integer MusicCount=9
+    integer array PlaylistAudio
+    real array PlaylistDuration
     integer SpawnCursor=0
     timer SpawnClock=null
 endglobals
@@ -121,6 +126,21 @@ function FoundationSound takes integer index returns nothing
     call TimerStart(AudioClock,.2,false,function FoundationPlayPending)
 endfunction
 // SKILLS_RUNTIME
+function FoundationMusicNext takes nothing returns nothing
+    set MusicCursor=ModuloInteger(MusicCursor+1,MusicCount)
+    if MusicOn then
+        call StopMusic(false)
+        call PlayMusic(AudioPath[PlaylistAudio[MusicCursor]])
+        call TimerStart(MusicClock,PlaylistDuration[MusicCursor],false,function FoundationMusicNext)
+    endif
+endfunction
+function FoundationMusicStart takes nothing returns nothing
+    if MusicOn then
+        call StopMusic(false)
+        call PlayMusic(AudioPath[PlaylistAudio[MusicCursor]])
+        call TimerStart(MusicClock,PlaylistDuration[MusicCursor],false,function FoundationMusicNext)
+    endif
+endfunction
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
     local string msg=GetEventPlayerChatString()
@@ -199,14 +219,19 @@ function FoundationChat takes nothing returns nothing
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Тест обычного звука Warcraft: сигнал нового задания.")
     elseif msg=="-music" then
         if MusicOn then
+            set MusicOn=false
+            call PauseTimer(MusicClock)
             call StopMusic(false)
         else
-            call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
+            set MusicOn=true
+            call FoundationMusicStart()
         endif
-        set MusicOn=not MusicOn
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
+    elseif msg=="-nextmusic" then
+        call FoundationMusicNext()
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Выбран трек "+I2S(MusicCursor+1)+"/"+I2S(MusicCount)+". -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-hero 1..12: выбрать героя; -heroes: список; -practice: 30-й уровень; -wound: проверить лечение; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-hero 1..12: выбрать героя; -heroes: список; -practice: 30-й уровень; -wound: проверить лечение; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
@@ -315,8 +340,9 @@ function FoundationInit takes nothing returns nothing
     call FogEnable(false)
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
-    call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI ROSTER ALPHA 06: техники всех 12 героев. -heroes: список; -hero 1..12: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты изучают и применяют техники. Сюжет ещё не подключён.")
+    set MusicClock=CreateTimer()
+    call FoundationMusicStart()
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI ROSTER ALPHA 06a: техники всех 12 героев. -heroes: список; -hero 1..12: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты изучают и применяют техники. Сюжет ещё не подключён.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)

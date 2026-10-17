@@ -6,7 +6,7 @@ from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=96;HALF=6144;BOUND=5888
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-3900,-3900),(3900,-3900),(3900,3900),(-3900,3900)]
-NAME='SHINOBI ROSTER ALPHA 06'
+NAME='SHINOBI ROSTER ALPHA 06a'
 DESC='Новая основа RPG для Warcraft III 1.26. Четыре команды по три героя. 58 ячеек техник всех 12 персонажей: лечение, призывы, формы и боевые навыки. Тренировочная альфа; сюжет пока не подключён.'
 def positions():return [(BASE[p//3][0]+(p%3-1)*250,BASE[p//3][1]) for p in range(12)]
 def info():
@@ -68,6 +68,9 @@ def script():
  for j,row in enumerate(json.loads((ROOT/'src/audio-settings.json').read_text())):
   data.append(f'    set AudioDuration[{j}]={row["duration_ms"]}')
   data.append(f'    set AudioEAX[{j}]={q(row["eax"])}')
+ for j,row in enumerate(json.loads((ROOT/'src/music-playlist.json').read_text())):
+  data.append(f"    set PlaylistAudio[{j}]={row['audio_index']}")
+  data.append(f"    set PlaylistDuration[{j}]={row['duration_ms']/1000.}")
  for p,h in enumerate(HEROES):
   data += [f"    set RosterHeroType[{p}]='{h['id']}'",f"    set HeroType[{p}]='{h['id']}'",f'    set HeroName[{p}]={q(h["name"])}',f'    set SpawnX[{p}]={positions()[p][0]}.',f'    set SpawnY[{p}]={positions()[p][1]}.',f'    set AnimCount[{p}]={len(h["animations"])}',f'    set VoiceCount[{p}]={len(h["voice_paths"])}',f'    set SkillCount[{p}]={len(h["skills"])}']
   assert len(h['animations'])<64 and len(h['voice_paths'])<64
@@ -116,8 +119,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Roster_Alpha_06.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Roster_Alpha_06a.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Full-roster technique alpha; story pending','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Full-roster technique alpha; story pending','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

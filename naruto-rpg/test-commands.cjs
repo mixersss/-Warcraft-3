@@ -6,6 +6,8 @@ const L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
 function run(s){if(lauxlib.luaL_dostring(L,to_luastring(s))!==lua.LUA_OK)throw Error(to_jsstring(lua.lua_tostring(L,-1)));}
 const source=fs.readFileSync(__dirname+'/dist/map/war3map.j','utf8');
 run(translate(source).replace(/\bnot(?=[A-Z(])/g,'not '));
+const musicLines=source.split('\n').filter(s=>/^\s*set Playlist(Audio|Duration)\[/.test(s));
+run(translate('function MusicFixtureData takes nothing returns nothing\n'+musicLines.join('\n')+'\nendfunction\n'));run('MusicFixtureData()');
 run(`
 debug.setmetatable('', {__add=function(a,b) return tostring(a)..tostring(b) end})
 for _,a in ipairs({AnimCursor,AudioCursor,VoiceCursor,ResumeAt}) do setmetatable(a,{__index=function() return 0 end}) end
@@ -25,7 +27,11 @@ Created=0
 function CreateSound(path,loop,is3d,range,fadein,fadeout,eax) Created=Created+1;return {path=path,is3d=is3d,eax=eax} end
 function SetSoundDuration(s,d) assert(d>0);s.duration=d end
 function StopSound(s,kill,fade) assert(not kill);s.stopped=true end
-function TimerStart(t,delay,loop,callback) assert(delay==.2 and not loop);Deferred=callback end
+function TimerStart(t,delay,loop,callback)
+ assert(not loop)
+ if t==MusicClock then MusicDelay=delay;MusicCallback=callback else assert(delay==.2);Deferred=callback end
+end
+function PauseTimer(t) assert(t==MusicClock);MusicPaused=true end
 function flush() if Deferred then local cb=Deferred;Deferred=nil;cb() end end
 function SetSoundChannel(s,c) s.channel=c end
 function SetSoundVolume(s,v) s.volume=v end
@@ -39,7 +45,7 @@ function SetUnitAnimationByIndex(u,k) assert(Stopped==u);Animation=k end
 function StopMusic(fade) MusicStopped=true end
 function PlayMusic(path) MusicStarted=path end
 function chat(msg) Message=msg;FoundationChat();flush() end
-HeroType[0]=0;HeroTemplate[0]=0;HeroRole[0]=0;Hero[0]={};AnimCount[0]=19;VoiceCount[0]=2;VoiceIndex[0]=10;VoiceIndex[1]=11
+MusicClock='music';HeroType[0]=0;HeroTemplate[0]=0;HeroRole[0]=0;Hero[0]={};AnimCount[0]=19;VoiceCount[0]=2;VoiceIndex[0]=10;VoiceIndex[1]=11
 for i=0,173 do AudioPath[i]='audio'..i;AudioDuration[i]=1000;AudioEAX[i]='' end
 for i=0,18 do AnimName[i]='sequence'..i end
 chat('-sound 173');assert(Played.path=='audio173' and string.find(Feedback,'173'))
@@ -60,5 +66,18 @@ chat('-anim');assert(Animation==0)
 chat('-music');assert(MusicStopped and not MusicOn)
 chat('-music');assert(MusicOn and MusicStarted)
 chat('-help');assert(string.find(Feedback,'-anim'))
+-- Each completed track advances; only the ninth wraps to the first.
+local seen={}
+for i=1,9 do
+ assert(not seen[PlaylistAudio[MusicCursor]]);seen[PlaylistAudio[MusicCursor]]=true
+ assert(MusicDelay==PlaylistDuration[MusicCursor])
+ local previous=MusicStarted
+ MusicCallback()
+ assert(MusicCursor==i%9 and MusicStarted==AudioPath[PlaylistAudio[MusicCursor]] and MusicStarted~=previous)
+end
+local old=MusicStarted;chat('-music');assert(not MusicOn and MusicPaused)
+chat('-nextmusic');assert(MusicCursor==1 and MusicStarted==old,'Skipping while muted must remain silent')
+chat('-music');assert(MusicOn and MusicStarted==AudioPath[PlaylistAudio[1]])
+local playing=MusicStarted;chat('-sound 1');assert(Played.path=='audio1' and MusicStarted==playing,'Voices must not replace background music')
 `);
-console.log('PASS: actual chat dispatch, explicit/cyclic sound, duration/cache/deferred playback, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, music toggle (mock natives).');
+console.log('PASS: actual chat dispatch, explicit/cyclic sound, duration/cache/deferred playback, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, nine-track automatic cycling, wrap, mute/skip/resume and separate voice playback (mock natives).');
