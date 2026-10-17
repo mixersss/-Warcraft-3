@@ -1,4 +1,14 @@
 globals
+    unit array LogActor
+    real array LogActorUntil
+    real array LogUntil
+    real array LogReadyAt
+    multiboard StageBoard=null
+    timer PhaseClock=null
+    timerdialog PhaseDialog=null
+    integer HUDClockKey=0
+    integer array HUDPreviousStage
+    real array HUDStageAt
     integer ExamPhase=0
     real ExamReadyAt=0.
     real ExamNextAt=0.

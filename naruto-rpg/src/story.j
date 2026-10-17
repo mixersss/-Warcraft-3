@@ -492,6 +492,7 @@ function StoryTick takes nothing returns nothing
     local unit target=null
     local boolean cast=false
     call NextChapterTick()
+    call HUDTick()
     loop
         exitwhen t>=4
         if StoryMembers[t]>0 and TimeNow>=6. and StoryPopulateCursor>=64 then
@@ -603,7 +604,10 @@ function StoryTick takes nothing returns nothing
                             else
                                 set enemy=StoryNearest(t,Hero[p])
                             endif
-                            set cast=StoryLootBot(p,enemy)
+                            set cast=CommonLogBot(p,enemy)
+                            if not cast then
+                                set cast=StoryLootBot(p,enemy)
+                            endif
                             if enemy!=null and not cast then
                                 set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
                                 set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
@@ -713,6 +717,8 @@ function StoryInit takes nothing returns nothing
     call TimerDialogSetTitle(StoryMentorDialog,"До выхода наставников")
     call TimerStart(StoryMentorClock,330.,false,function StoryReleaseMentors)
     call TimerDialogDisplay(StoryMentorDialog,true)
+    call HUDInit()
+    call HUDTick()
     call TriggerAddAction(sell,function StoryOnBuy)
     set npc=null
     set journal=null

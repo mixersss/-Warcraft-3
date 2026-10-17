@@ -22,6 +22,7 @@ def unit_entries():
   if raw=='rq01':mods += [('uaen',0,0),('uabi',3,'Avul'),('umvs',0,0)]
   out.append(('hfoo',raw,mods))
  out.append(('ngme','rqsh',[('unam',3,'Снабжение отряда'),('usei',3,','.join(x[1] for x in ITEMS)),('uabi',3,'Aneu,Apit,Avul'),('ucol',2,32.),('upgr',3,''),('ureq',3,'')]))
+ out.append(('hfoo','rlgd',[('unam',3,'Бревно замены'),('umdl',3,'Doodads\\Ashenvale\\Props\\AshenLogAngled\\AshenLogAngled.mdl'),('uico',3,'Icon_Kawarimi.blp'),('usca',1,.3),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvt',3,'fly'),('umvh',2,150.),('umvf',2,-400.),('umvs',0,0),('ucol',2,0.),('usin',0,0),('usid',0,0),('uhom',0,1),('ufoo',0,0),('ushb',3,''),('ushu',3,''),('upgr',3,''),('ureq',3,'')]))
  out.append(('hfoo','rean',[('unam',3,'Анко — экзаменатор'),('umdl',3,'Anko.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('upgr',3,''),('ureq',3,'')]))
  # Sand crest: persistent visible Birth animation; no attack, collision or orders.
  out.append(('hfoo','rswv',[('unam',3,'Песчаное цунами'),('umdl',3,'GaaraSand2.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('ushr',0,0),('usca',1,1.5)]))
@@ -65,6 +66,7 @@ def generated_data():
 def ability_entries():
  from loot import abilities
  out=abilities()
+ out.append(('AOwk','Rlog',[('anam',3,'Каварими — замена на бревно'),('aher',0,0),('aite',0,0),('alev',0,1),('aart',3,'Icon_Kawarimi.blp'),('abpx',0,3),('abpy',0,1),('ahky',3,'R'),('atp1',3,'Каварими — замена [R]',1,0),('aub1',3,'Оставляет бревно и скрывает на 3 секунды. 150 чакры; перезарядка 8 секунд. Скорость +20%; атака прерывает невидимость и наносит +50 урона. Обнаружение раскрывает героя.',1,0),('amcs',0,150,1,0),('acdn',2,8.,1,0),('adur',2,3.,1,0),('ahdu',2,3.,1,0),('Owk1',2,0.,1,1),('Owk2',2,.2,1,2),('Owk3',2,50.,1,3),('Owk4',0,0,1,4),('aani',3,'spell'),('areq',3,''),('aefs',3,''),('aefl',3,''),('abuf',3,'BOwk',1,0)]))
  # All heroes have a non-learnable smart-tree target. Runtime cancels native eating.
  out.append(('Aeat','Rjtr',[('anam',3,'Прыжок на дерево'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('aart',3,'UI\\Feedback\\Resources\\ResourceLumber.blp'),('atp1',3,'Прыжок на дерево [T]',1,0),('aub1',3,'ПКМ по живому дереву: прыжок в радиусе 1000. 50 чакры, перезарядка 3 сек. Дерево сохраняется.',1,0),('ahky',3,'T'),('abpx',0,2),('abpy',0,1),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,1000.,1,0),('acas',2,10.,1,0),('atar',3,'tree',1,0),('adur',2,0.,1,0),('ahdu',2,0.,1,0),('Eat1',2,0.,1,1),('Eat2',2,.1,1,2),('Eat3',2,0.,1,3),('aani',3,'walk'),('aefs',3,''),('aefl',3,'')]))
  out.append(('AHtb','Zbwp',[('anam',3,'Суйтон: водяная тюрьма'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('Htb1',2,120.,1,1),('amcs',0,80,1,0),('acdn',2,12.,1,0),('aran',2,700.,1,0),('adur',2,2.,1,0),('ahdu',2,1.5,1,0),('atar',3,'ground,air,enemy,organic',1,0),('amat',3,'Abilities\\Weapons\\WaterElementalMissile\\WaterElementalMissile.mdl'),('amsp',0,1100,1,0),('aani',3,'spell'),('aefs',3,''),('aefl',3,'')]))

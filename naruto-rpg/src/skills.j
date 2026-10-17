@@ -81,6 +81,9 @@ function SkillsEffect takes nothing returns nothing
         endif
         set j=j+1
     endloop
+    if raw=='Rlog' then
+        call CommonLogEffect(p)
+    endif
     if index>=0 then
         if not SkillPassive[index] then
             set SkillPoseAbility[p]=index
@@ -232,6 +235,7 @@ function SkillsTick takes nothing returns nothing
         endif
         set p=p+1
     endloop
+    call CommonLogTick()
     call RosterTick()
     set u=null
     set target=null

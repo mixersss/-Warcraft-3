@@ -14,7 +14,7 @@ const units=parse(Parser,'war3map.w3u').customTable.objects;
 const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===(schema.abilityFields[id]?.repeat===0?0:rank))?.value;
 const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
-const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl"].map(x=>x.toLowerCase()));
+const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl", "Doodads\\Ashenvale\\Props\\AshenLogAngled\\AshenLogAngled.mdl"].map(x=>x.toLowerCase()));
 for(const v of JSON.parse(fs.readFileSync(__dirname+'/src/skill-visuals.json')).visualUnits)if(/^(abilities|objects|doodads)\\/i.test(v.model))nativeModels.add(v.model.toLowerCase());
 const assets=new Set([...JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')),...JSON.parse(fs.readFileSync(__dirname+'/src/generated-assets.json'))].map(r=>r.path.toLowerCase()));
 for(const o of units){
@@ -53,6 +53,8 @@ for(let n=1;n<=3;n++)assert(get(ability.R902,'Nms1',n)<=(n===1?1:get(ability.R90
 assert.equal(get(ability.Rn02,'Omi1',4),5);assert.equal(get(ability.Rn04,'Htb1',3),650);assert.equal(get(ability.Rs04,'Htb1',3),800);
 const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json'));
 for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
+assert.equal(ability.Rlog.oldId,'AOwk');assert.equal(get(ability.Rlog,'aher'),0);assert.equal(get(ability.Rlog,'amcs',1),150);assert.equal(get(ability.Rlog,'acdn',1),8);assert.equal(get(ability.Rlog,'adur',1),3);assert.equal(get(ability.Rlog,'ahdu',1),3);assert.equal(get(ability.Rlog,'Owk1',1),0);assert(Math.abs(get(ability.Rlog,'Owk2',1)-.2)<.001);assert.equal(get(ability.Rlog,'Owk3',1),50);assert.equal(get(ability.Rlog,'abuf',1),'BOwk');assert.equal(get(ability.Rlog,'aart'),'Icon_Kawarimi.blp');assert.equal(get(ability.Rlog,'ahky'),'R');assert.equal(get(ability.Rlog,'abpx'),3);assert.equal(get(ability.Rlog,'abpy'),1);
+for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rlog'),'Every base/morph hero has the common skill');
 assert.equal(ability.R604.oldId,'AOre');assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
@@ -232,6 +234,7 @@ TimeNow=100;SkillsTick();for i=1,40 do VisualTick() end;assert(Effects==Destroye
 run(fs.readFileSync(__dirname+'/roster-harness.lua','utf8'));
 const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|StoryPrice|SpawnX|SpawnY|EnemySpawnX|EnemySpawnY|StoryMentorType|StoryMentorName|StoryLootType)\[\d+\]/.test(s));
 run(translate('function StoryFixtureData takes nothing returns nothing\n'+storyLines.join('\n')+'\nendfunction\n'));run('StoryFixtureData()');
+run(fs.readFileSync(__dirname+'/hud-native-mocks.lua','utf8'));
 run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
@@ -241,8 +244,9 @@ run(fs.readFileSync(__dirname+'/corrective-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/appearance-harness.lua','utf8'));
 for(const m of source.matchAll(/^\s*set (Exam(?:Spawn[XY]|Enemy[XY]|QuestionText|Correct)\[\d+\])=(.+)$/gm))run(m[1]+'='+m[2]);
 run(fs.readFileSync(__dirname+'/exam-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/common-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
-fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,nativeMocks:true,enginePlaytest:false},null,2));
+fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,commonKawarimiDataAndBotOrders:true,stageHUDDeadlinesAndHandleCleanup:true,nativeMocks:true,enginePlaytest:false},null,2));
 console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 52 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');

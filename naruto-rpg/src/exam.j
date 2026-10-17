@@ -440,6 +440,16 @@ function ExamStartQuiz takes nothing returns nothing
     local integer j=0
     local trigger answers=CreateTrigger()
     set ExamAnswers=answers
+    if StoryMentorDialog!=null then
+        call TimerDialogDisplay(StoryMentorDialog,false)
+        call DestroyTimerDialog(StoryMentorDialog)
+        set StoryMentorDialog=null
+    endif
+    if StoryMentorClock!=null then
+        call PauseTimer(StoryMentorClock)
+        call DestroyTimer(StoryMentorClock)
+        set StoryMentorClock=null
+    endif
     set ExamPhase=2
     set ExamAsked=0
     set ExamNextAt=TimeNow+10.

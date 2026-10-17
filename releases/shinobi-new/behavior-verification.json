@@ -11,5 +11,7 @@
   "autoStartHumanTeamAtSeconds": 30,
   "skillSourceListsAudited": 12,
   "nativeMocks": true,
-  "enginePlaytest": false
+  "enginePlaytest": false,
+  "commonKawarimiDataAndBotOrders": true,
+  "stageHUDDeadlinesAndHandleCleanup": true
 }

@@ -2260,5 +2260,11 @@
     "bytes": 18736,
     "sha256": "daaa60b44107d20c85d87f3bbd4e4ee605ffad52611288c4abc384ee4d027b09",
     "source": "original exam scroll icon"
+  },
+  {
+    "path": "Icon_Kawarimi.blp",
+    "bytes": 25673,
+    "sha256": "16c145bad39a0c28a184d715f02122bb3e6658a083024eb25478c3af681b4d3b",
+    "source": "original A012 icon"
   }
 ]

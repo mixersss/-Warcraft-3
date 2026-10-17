@@ -573,6 +573,26 @@
       "type": "bool",
       "column": 0,
       "repeat": 0
+    },
+    "Owk1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4
+    },
+    "Owk2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4
+    },
+    "Owk3": {
+      "type": "unreal",
+      "column": 3,
+      "repeat": 4
+    },
+    "Owk4": {
+      "type": "bool",
+      "column": 4,
+      "repeat": 4
     }
   },
   "unitFields": {

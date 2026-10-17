@@ -195,6 +195,7 @@ function RosterGrantInnate takes integer p returns nothing
 endfunction
 function RosterReset takes integer p returns nothing
     local integer k=0
+    call CommonLogClear(p)
     call VisualClearHero(p)
     call RosterClearSand(p)
     call RosterClearVision(p)
