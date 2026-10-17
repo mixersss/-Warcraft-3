@@ -6,8 +6,8 @@ from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=96;HALF=6144;BOUND=5888
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-3900,-3900),(3900,-3900),(3900,3900),(-3900,3900)]
-NAME='SHINOBI SKILLS ALPHA 05a'
-DESC='Новая основа RPG для Warcraft III 1.26. Четыре команды по три героя. Первые 10 техник Наруто и Саске: клоны, призывы, формы и боевые навыки. Тренировочная альфа; сюжет пока не подключён.'
+NAME='SHINOBI ROSTER ALPHA 06'
+DESC='Новая основа RPG для Warcraft III 1.26. Четыре команды по три героя. 58 ячеек техник всех 12 персонажей: лечение, призывы, формы и боевые навыки. Тренировочная альфа; сюжет пока не подключён.'
 def positions():return [(BASE[p//3][0]+(p%3-1)*250,BASE[p//3][1]) for p in range(12)]
 def info():
  d=i(25,1,6061)+s(NAME)+s('mixersss; imported assets from ShikamaruShadow map')+s(DESC)+s('1-12; 4 teams x 3')
@@ -38,11 +38,15 @@ def unit_data():
  entries=[]
  for h in HEROES:
   entries.append(('Hpal',h['id'],[('unam',3,h['name']),('upro',3,h['name']),('upru',0,1),('umdl',3,h['model'].replace('.mdx','.mdl')),('uico',3,h['icon']),('usca',1,float(h['scale'])),('uhab',3,HERO_SKILLS.get(h['slot'],'')),('uabi',3,'AInv'),('uhpm',0,1000),('umpm',0,1000),('umpi',0,1000),('umpr',2,8.),('umvs',0,320),('ucol',2,24.),('ua1b',0,20),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,128),('upgr',3,''),('ureq',3,'')]))
- for slot,raw,model in [(0,'Rnfm','Naruto.mdl'),(1,'Rsfm','SasukeCursed.mdl')]:
-  base=list(entries[slot][2]);overrides={'unam':'Наруто — Кьюби' if slot==0 else 'Саске — проклятая печать','umdl':model,'ua1b':45,'ua1c':1.1,'umvs':360}
+ for slot,raw,model in [(0,'Rnfm','Naruto.mdl'),(1,'Rsfm','SasukeCursed.mdl'),(7,'Rkfm','units\\creeps\\WhiteWolf\\WhiteWolf.mdl'),(9,'Rgfm','Shukaku.mdl')]:
+  base=list(entries[slot][2]);overrides={'unam':{0:'Наруто — Кьюби',1:'Саске — проклятая печать',7:'Киба — звериная форма',9:'Гаара — Сюкаку'}[slot],'umdl':model,'ua1b':45,'ua1c':1.1,'umvs':360}
   base=[(key,kind,overrides.get(key,value)) for key,kind,value in base]
   if slot==0:base += [('uani',3,'alternate')]
+  if slot==7:base += [('usca',1,1.2)]
+  if slot==9:base += [('usca',1,1.3)]
   entries.append(('Hpal',raw,base))
+ # Tenten must really attack at range for native Barrage to work.
+ entries[5][2].extend([('ua1w',3,'missile'),('ua1r',0,600),('ua1m',3,'Kunai.mdl'),('ua1z',0,1100)])
  entries.extend(summon_units())
  entries.append(('hfoo','rdum',[('unam',3,'Тренировочный противник'),('uhpm',0,50000),('uhpr',2,30.),('uaen',0,0),('umvs',0,0),('uabi',3,''),('upgr',3,''),('ureq',3,'')]))
  for _,_,mods in entries:
@@ -65,18 +69,33 @@ def script():
   data.append(f'    set AudioDuration[{j}]={row["duration_ms"]}')
   data.append(f'    set AudioEAX[{j}]={q(row["eax"])}')
  for p,h in enumerate(HEROES):
-  data += [f"    set HeroType[{p}]='{h['id']}'",f'    set HeroName[{p}]={q(h["name"])}',f'    set SpawnX[{p}]={positions()[p][0]}.',f'    set SpawnY[{p}]={positions()[p][1]}.',f'    set AnimCount[{p}]={len(h["animations"])}',f'    set VoiceCount[{p}]={len(h["voice_paths"])}',f'    set SkillCount[{p}]={len(h["skills"])}']
+  data += [f"    set RosterHeroType[{p}]='{h['id']}'",f"    set HeroType[{p}]='{h['id']}'",f'    set HeroName[{p}]={q(h["name"])}',f'    set SpawnX[{p}]={positions()[p][0]}.',f'    set SpawnY[{p}]={positions()[p][1]}.',f'    set AnimCount[{p}]={len(h["animations"])}',f'    set VoiceCount[{p}]={len(h["voice_paths"])}',f'    set SkillCount[{p}]={len(h["skills"])}']
   assert len(h['animations'])<64 and len(h['voice_paths'])<64
   for k,name in enumerate(h['animations']):data.append(f'    set AnimName[{p*64+k}]={q(name)}')
   for k,name in enumerate(h['voice_paths']):data.append(f'    set VoiceIndex[{p*64+k}]={voice_indices[name.lower()]}')
   for k,row in enumerate(h['skills']):data.append(f'    set SkillName[{p*5+k}]={q(row["name"])}')
- skilldata=[]
- orders=['','mirrorimage','waterelemental','thunderbolt','metamorphosis','breathoffire','roar','chainlightning','thunderbolt','metamorphosis']
- targets=[0,0,0,1,0,2,0,1,1,0]
- for j,row in enumerate(SKILLS):
-  skilldata += [f"    set PlayableSkill[{j}]='{row['id']}'",f"    set SkillRanks[{j}]={row['ranks']}",f"    set SkillRequired[{j}]={row['required_level']}",f"    set SkillSkip[{j}]={row['level_skip']}",f"    set SkillAudio[{j}]={row['audio_index']}",f"    set SkillOrder[{j}]={q(orders[j])}",f"    set SkillTarget[{j}]={targets[j]}",f"    set SkillCooldown[{j}]={float(row['cooldown'])}"]
-  for n,mana in enumerate(row['mana']):skilldata.append(f'    set SkillMana[{j*4+n}]={float(mana)}')
- skills=(ROOT/'src/skills.j').read_text().replace('// GENERATED_SKILLS','\n'.join(skilldata))
+ skillbodies=[[] for _ in range(12)]
+ for row in SKILLS:
+  j=row['index'];body=skillbodies[row['hero']]
+  anims=HEROES[row['hero']]['animations'];tokens=row['animation'].lower().replace(',',' ').split()
+  anim=next((k for k,name in enumerate(anims) if all(t in name.lower().split() for t in tokens)), -1)
+  values={'PlayableSkill':"'"+row['id']+"'",'SkillRanks':row['ranks'],'SkillRequired':row['required_level'],'SkillSkip':row['level_skip'],'SkillAudio':row['audio_index'],'SkillOrder':q(row['order']),'SkillTarget':row['target_mode'],'SkillCooldown':float(row['cooldown']),'SkillPassive':str(row.get('passive',False)).lower(),'SkillMorph':str(row['base']=='AEme').lower(),'SkillToggle':str(row['base']=='ANms').lower(),'SkillHeal':str(row.get('heal',False)).lower(),'SkillAnimation':anim,'RosterMechanic':row.get('mechanic',0),'RosterRadius':float(row.get('radius',0.)),'RosterDuration':float(row.get('duration',0.)),'RosterVisual':q(row.get('effect','')),'RosterProfile':row.get('profile',0),'RosterPetSlot':row.get('companion_slot',0)}
+  for key,value in values.items():body.append(f'    set {key}[{j}]={value}')
+  for n,mana in enumerate(row['mana']):
+   body.append(f'    set SkillMana[{j*4+n}]={float(mana)}')
+   body.append(f"    set RosterPower[{j*4+n}]={float(row.get('damage',[0.]*row['ranks'])[n])}")
+   body.append(f"    set RosterBurn[{j*4+n}]={float(row.get('burn',[0.]*row['ranks'])[n])}")
+   summon=row.get('summon','')
+   if summon:
+    raw=summon if len(summon)==4 else summon+str(n+1)
+    body.append(f"    set RosterPetType[{j*4+n}]='{raw}'")
+ skillfunctions=[]
+ for h,body in enumerate(skillbodies):skillfunctions.append(f'function SkillsData{h} takes nothing returns nothing\n'+'\n'.join(body)+'\nendfunction')
+ dispatch=['function SkillsLoadData takes nothing returns nothing']
+ for h in range(12):dispatch += [('    if' if h==0 else '    elseif')+f' SkillDataCursor=={h} then',f'        call SkillsData{h}()']
+ dispatch += ['    endif','    set SkillDataCursor=SkillDataCursor+1','    if SkillDataCursor>=12 then','        set SkillDataReady=true','        call PauseTimer(SkillDataClock)','        call DestroyTimer(SkillDataClock)','        set SkillDataClock=null','    endif','endfunction']
+ skillfunctions.append('\n'.join(dispatch))
+ skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
  code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)).replace('// SKILLS_RUNTIME',skills)
  lines=['function config takes nothing returns nothing',f'    call SetMapName({q(NAME)})',f'    call SetMapDescription({q(DESC)})','    call SetPlayers(12)','    call SetTeams(4)','    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)']
  for p,(x,y) in enumerate(positions()):
@@ -92,13 +111,13 @@ def build():
  files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data(),True),'war3map.w3t':objects([]),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
  imported=[name for name in files if name in {x['path'] for x in ASSETS}]
  files['war3map.imp']=i(1,len(imported))+b''.join(b'\x0d'+s(name) for name in imported)
- mapdir=ROOT/'dist/map';mapdir.mkdir(exist_ok=True)
+ mapdir=ROOT/'dist/map';mapdir.mkdir(parents=True,exist_ok=True)
  for old in mapdir.iterdir():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Skills_Alpha_05a.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Roster_Alpha_06.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':10,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':2,'sectorSize':4096,'stage':'Ten-technique training alpha; story and other heroes skills pending','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':False,'importedAssets':len(ASSETS),'models':67,'audioFiles':174,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Full-roster technique alpha; story pending','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

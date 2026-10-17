@@ -16,6 +16,7 @@ function SkillsBurst takes integer p, string model returns nothing
     set BurstArt[p]=AddSpecialEffectTarget(model,Hero[p],"hand,right")
     set BurstUntil[p]=TimeNow+1.
 endfunction
+// ROSTER_RUNTIME
 function SkillsLearnBot takes integer p returns nothing
     local integer role=HeroRole[p]
     local integer pass=0
@@ -48,6 +49,7 @@ function SkillsEffect takes nothing returns nothing
     local integer raw=GetSpellAbilityId()
     local integer rank=GetUnitAbilityLevel(caster,raw)
     local integer j=0
+    local integer index=-1
     local real x=0.
     local real y=0.
     if p>=12 or caster!=Hero[p] or IsUnitIllusion(caster) then
@@ -56,12 +58,18 @@ function SkillsEffect takes nothing returns nothing
         return
     endif
     loop
-        exitwhen j>=10
-        if PlayableSkill[j]==raw and SkillAudio[j]>=0 then
-            call FoundationSound(SkillAudio[j])
+        exitwhen j>=60
+        if PlayableSkill[j]==raw then
+            set index=j
+            if SkillAudio[j]>=0 then
+                call FoundationSound(SkillAudio[j])
+            endif
         endif
         set j=j+1
     endloop
+    if index>=0 then
+        call RosterApply(p,index,rank,target)
+    endif
     if raw=='Rn04' and FoundationAlive(target) then
         set x=GetUnitX(target)
         set y=GetUnitY(target)
@@ -91,6 +99,7 @@ function SkillsEffect takes nothing returns nothing
     elseif raw=='Rs03' and FoundationAlive(target) then
         set ComboTarget[p]=target
         set ComboLeft[p]=3
+        set ComboBurn[p]=0.
         set ComboDamage[p]=40.+60.*rank
     elseif raw=='Rn03' then
         call DestroyEffect(AddSpecialEffect("Kuchiyose.mdl",GetUnitX(caster),GetUnitY(caster)))
@@ -133,7 +142,7 @@ function SkillsTick takes nothing returns nothing
                 if dx*dx+dy*dy<=650.*650. and not IsUnitType(target,UNIT_TYPE_MAGIC_IMMUNE) then
                     call SetUnitAnimation(u,"attack")
                     call DestroyEffect(AddSpecialEffectTarget("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",target,"origin"))
-                    call UnitDamageTarget(u,target,ComboDamage[p],false,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
+                    call RosterHit(u,target,ComboDamage[p],ComboBurn[p])
                     set ComboLeft[p]=ComboLeft[p]-1
                 else
                     set ComboLeft[p]=0
@@ -147,6 +156,7 @@ function SkillsTick takes nothing returns nothing
         endif
         set p=p+1
     endloop
+    call RosterTick()
     set u=null
     set target=null
 endfunction
@@ -160,7 +170,7 @@ function SkillsBot takes integer p returns boolean
     local boolean issued=false
     local real dx=0.
     local real dy=0.
-    if role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 then
+    if not SkillDataReady or role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 then
         set u=null
         set target=null
         return false
@@ -177,8 +187,19 @@ function SkillsBot takes integer p returns boolean
         exitwhen k<0 or issued
         set raw=PlayableSkill[role*5+k]
         set rank=GetUnitAbilityLevel(u,raw)
-        if rank>0 and not (role==0 and k==0) and TimeNow>=BotReadyAt[p*5+k] and GetUnitState(u,UNIT_STATE_MANA)>=SkillMana[(role*5+k)*4+rank-1] then
-            if k==4 and GetUnitTypeId(u)!=HeroType[p] then
+        if rank>0 and not SkillPassive[role*5+k] and TimeNow>=BotReadyAt[p*5+k] and GetUnitState(u,UNIT_STATE_MANA)>=SkillMana[(role*5+k)*4+rank-1] then
+            if SkillHeal[role*5+k] then
+                call RosterFindAlly(p)
+                set target=RosterAlly
+                set RosterAlly=null
+            else
+                set target=Dummy[(p-ModuloInteger(p,3))/3]
+            endif
+            if SkillHeal[role*5+k] and target==null then
+                // Healing only spends mana when an ally actually needs it.
+            elseif SkillToggle[role*5+k] and GetUnitAbilityLevel(u,'BNms')>0 then
+                // Leave an active native mana shield enabled.
+            elseif SkillMorph[role*5+k] and GetUnitTypeId(u)!=HeroType[p] then
                 // Do not re-enter a native transformation while already transformed.
             elseif SkillTarget[role*5+k]==0 then
                 set issued=IssueImmediateOrder(u,SkillOrder[role*5+k])
@@ -208,22 +229,20 @@ function SkillsChoose takes integer p, integer role returns nothing
     endif
     set xp=GetHeroXP(old)
     call SkillsClearSharingan(p)
+    call RosterReset(p)
     if BurstArt[p]!=null then
         call DestroyEffect(BurstArt[p])
         set BurstArt[p]=null
     endif
     set ComboLeft[p]=0
     set ComboTarget[p]=null
+    set ComboBurn[p]=0.
     set ResumeAt[p]=0.
     set AnimCursor[p]=0
     set VoiceCursor[p]=0
     set HeroTemplate[p]=role
     set HeroRole[p]=role
-    if role==0 then
-        set HeroType[p]='R000'
-    else
-        set HeroType[p]='R001'
-    endif
+    set HeroType[p]=RosterHeroType[role]
     set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
     call SetHeroXP(Hero[p],xp,false)
     if GetHeroLevel(Hero[p])<10 then
@@ -245,6 +264,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     set old=null
     set carried=null
 endfunction
+// GENERATED_SKILL_FUNCTIONS
 function SkillsInit takes nothing returns nothing
     local integer p=0
     local trigger spells=CreateTrigger()
@@ -252,15 +272,17 @@ function SkillsInit takes nothing returns nothing
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
 // GENERATED_SKILLS
+    set RosterBonus[0]='Rbev'
+    set RosterBonus[1]='Rbcr'
+    set RosterBonus[2]='Rbat'
+    set RosterBonus[3]='Rbas'
+    set RosterBonus[4]='Rbar'
+    set RosterBonus[5]='Rbms'
     loop
         exitwhen p>=12
         call TriggerRegisterPlayerUnitEvent(spells,Player(p),EVENT_PLAYER_UNIT_SPELL_EFFECT,null)
         call TriggerRegisterPlayerUnitEvent(summons,Player(p),EVENT_PLAYER_UNIT_SUMMON,null)
-        if p==0 or p==1 then
-            set HeroRole[p]=p
-        else
-            set HeroRole[p]=-1
-        endif
+        set HeroRole[p]=p
         set p=p+1
     endloop
     call TriggerAddAction(spells,function SkillsEffect)

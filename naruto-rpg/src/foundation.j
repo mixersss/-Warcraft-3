@@ -1,4 +1,41 @@
 globals
+    integer array RosterMechanic
+    real array RosterPower
+    real array RosterBurn
+    real array RosterRadius
+    real array RosterDuration
+    string array RosterVisual
+    integer array RosterProfile
+    integer array RosterPetType
+    integer array RosterPetSlot
+    integer array RosterBonus
+    boolean array SkillPassive
+    boolean array SkillMorph
+    boolean array SkillToggle
+    boolean array SkillHeal
+    integer array SkillAnimation
+    boolean SkillDataReady=false
+    integer SkillDataCursor=0
+    timer SkillDataClock=null
+    real array RosterBuffUntil
+    real array RosterBuffDrain
+    effect array RosterBuffArt
+    real array ZoneUntil
+    real array ZoneNext
+    real array ZoneX
+    real array ZoneY
+    real array ZoneRadius
+    real array ZonePower
+    real array ZoneBurn
+    boolean array ZoneFollow
+    effect array ZoneArt
+    real array RosterNextSecond
+    unit RosterAlly=null
+    unit array Companion
+    unit array StunDummy
+    real array StunExpires
+    integer StunCursor=0
+    real array ComboBurn
     integer array HeroTemplate
     integer array HeroRole
     integer array PlayableSkill
@@ -21,7 +58,9 @@ globals
     real array ComboDamage
     group SkillScratch=null
     unit array Hero
+    real array DummyRespawnAt
     unit array Dummy
+    integer array RosterHeroType
     integer array HeroType
     string array HeroName
     real array SpawnX
@@ -94,6 +133,21 @@ function FoundationChat takes nothing returns nothing
         call SkillsChoose(p,0)
     elseif msg=="-sasuke" then
         call SkillsChoose(p,1)
+    elseif SubString(msg,0,6)=="-hero " then
+        set k=S2I(SubString(msg,6,StringLength(msg)))-1
+        if k>=0 and k<12 then
+            call SkillsChoose(p,k)
+        endif
+    elseif msg=="-heroes" then
+        set k=0
+        loop
+            exitwhen k>=12
+            call DisplayTimedTextToPlayer(Player(p),0,0,30.,I2S(k+1)+" — "+HeroName[k])
+            set k=k+1
+        endloop
+    elseif msg=="-wound" and FoundationAlive(Hero[p]) then
+        call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.5)
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Тренировочная проверка лечения: здоровье героя снижено до половины.")
     elseif msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
         call SetHeroLevel(Hero[p],30,false)
         call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
@@ -101,6 +155,10 @@ function FoundationChat takes nothing returns nothing
     elseif msg=="-anim" or SubString(msg,0,6)=="-anim " then
         if not FoundationAlive(Hero[p]) then
             call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Герой ещё не создан или погиб.")
+            return
+        endif
+        if GetUnitTypeId(Hero[p])!=HeroType[p] then
+            call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Просмотр анимаций доступен в обычной форме героя.")
             return
         endif
         if msg=="-anim" then
@@ -148,9 +206,9 @@ function FoundationChat takes nothing returns nothing
         set MusicOn=not MusicOn
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-naruto / -sasuke: выбрать героя; -practice: 30-й уровень; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-hero 1..12: выбрать героя; -heroes: список; -practice: 30-й уровень; -wound: проверить лечение; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: переключить музыку; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У Наруто и Саске работают пять техник; изучай их кнопкой +.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
             exitwhen k>=SkillCount[template]
             call DisplayTimedTextToPlayer(Player(p),0,0,15.,SkillName[template*5+k])
@@ -158,11 +216,40 @@ function FoundationChat takes nothing returns nothing
         endloop
     endif
 endfunction
+function FoundationRefreshTargets takes nothing returns nothing
+    local integer team=0
+    local real x=-3400.
+    local real y=-3400.
+    loop
+        exitwhen team>=4
+        if not FoundationAlive(Dummy[team]) then
+            if DummyRespawnAt[team]==0. then
+                set DummyRespawnAt[team]=TimeNow+5.
+            elseif TimeNow>=DummyRespawnAt[team] then
+                call RemoveUnit(Dummy[team])
+                if team==1 or team==2 then
+                    set x=3400.
+                else
+                    set x=-3400.
+                endif
+                if team==2 or team==3 then
+                    set y=3400.
+                else
+                    set y=-3400.
+                endif
+                set Dummy[team]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'rdum',x,y,0.)
+                set DummyRespawnAt[team]=0.
+            endif
+        endif
+        set team=team+1
+    endloop
+endfunction
 function FoundationTick takes nothing returns nothing
     local integer p=0
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call FoundationRefreshTargets()
     loop
         exitwhen p>=12
         if FoundationAlive(Hero[p]) then
@@ -229,7 +316,7 @@ function FoundationInit takes nothing returns nothing
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     call PlayMusic("war3mapImported\\Hero Beginning32br48hz.mp3")
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI SKILLS ALPHA 05a: первые 10 техник Наруто и Саске. -naruto / -sasuke: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты Наруто/Саске используют техники. Сюжет и навыки остальных героев ещё не подключены.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"SHINOBI ROSTER ALPHA 06: техники всех 12 героев. -heroes: список; -hero 1..12: выбор; кнопка +: изучить навыки; -practice: 30-й уровень для проверки. Боты изучают и применяют техники. Сюжет ещё не подключён.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)

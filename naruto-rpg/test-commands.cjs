@@ -19,6 +19,7 @@ function S2I(s) return tonumber(s) or 0 end
 function I2S(n) return tostring(n) end
 function ModuloInteger(n,d) return n%d end
 function GetWidgetLife(u) return 1000 end
+function GetUnitTypeId(u) return 0 end
 function DisplayTimedTextToPlayer(p,x,y,t,s) Feedback=s end
 Created=0
 function CreateSound(path,loop,is3d,range,fadein,fadeout,eax) Created=Created+1;return {path=path,is3d=is3d,eax=eax} end
@@ -38,7 +39,7 @@ function SetUnitAnimationByIndex(u,k) assert(Stopped==u);Animation=k end
 function StopMusic(fade) MusicStopped=true end
 function PlayMusic(path) MusicStarted=path end
 function chat(msg) Message=msg;FoundationChat();flush() end
-HeroTemplate[0]=0;HeroRole[0]=0;Hero[0]={};AnimCount[0]=19;VoiceCount[0]=2;VoiceIndex[0]=10;VoiceIndex[1]=11
+HeroType[0]=0;HeroTemplate[0]=0;HeroRole[0]=0;Hero[0]={};AnimCount[0]=19;VoiceCount[0]=2;VoiceIndex[0]=10;VoiceIndex[1]=11
 for i=0,173 do AudioPath[i]='audio'..i;AudioDuration[i]=1000;AudioEAX[i]='' end
 for i=0,18 do AnimName[i]='sequence'..i end
 chat('-sound 173');assert(Played.path=='audio173' and string.find(Feedback,'173'))

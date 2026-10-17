@@ -1,10 +1,30 @@
 {
   "source": "Classic 1.24.4 SLK metadata (legacy 1.26-compatible fields)",
   "abilityFields": {
+    "Eer1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AEer,Aenr,Aenw"
+    },
     "Eev1": {
       "type": "unreal",
       "column": 1,
       "specific": "AEev,AIev,ACev,ACes"
+    },
+    "Efk1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AEfk,Aroc"
+    },
+    "Efk2": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "AEfk,Aroc"
+    },
+    "Efk3": {
+      "type": "int",
+      "column": 3,
+      "specific": "AEfk,Aroc"
     },
     "Eme1": {
       "type": "unitCode",
@@ -41,20 +61,80 @@
       "column": 1,
       "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
     },
+    "Iatt": {
+      "type": "int",
+      "column": 1,
+      "specific": "AIat,AIt6,AIt9,AItc,AItf,AItg,AIth,AIti,AItj,AItk,AItl,AItn"
+    },
+    "Idef": {
+      "type": "int",
+      "column": 1,
+      "specific": "AIde,AId1,AId2,AId3,AId4,AId5,AIda,AIdb"
+    },
     "Iint": {
       "type": "int",
       "column": 2,
       "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+    },
+    "Imvb": {
+      "type": "int",
+      "column": 1,
+      "specific": "AIms"
     },
     "Istr": {
       "type": "int",
       "column": 3,
       "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
     },
+    "Isx1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AIas,AIsx,AIs2"
+    },
     "Nbf5": {
       "type": "unreal",
       "column": 5,
       "specific": "ANbf,ACbc,ACbf"
+    },
+    "Ncl1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "ANcl"
+    },
+    "Ncl2": {
+      "type": "channelType",
+      "column": 2,
+      "specific": "ANcl"
+    },
+    "Ncl3": {
+      "type": "channelFlags",
+      "column": 3,
+      "specific": "ANcl"
+    },
+    "Ncl4": {
+      "type": "unreal",
+      "column": 4,
+      "specific": "ANcl"
+    },
+    "Ncl5": {
+      "type": "bool",
+      "column": 5,
+      "specific": "ANcl"
+    },
+    "Ncl6": {
+      "type": "orderString",
+      "column": 6,
+      "specific": "ANcl"
+    },
+    "Nms1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "ANms,ACmf"
+    },
+    "Nms2": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "ANms,ACmf"
     },
     "Ocl1": {
       "type": "unreal",
@@ -115,6 +195,31 @@
       "type": "unreal",
       "column": 4,
       "specific": "AOmi"
+    },
+    "Ore1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AOre,ACrn,ANrn"
+    },
+    "Osh1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AOsh,ACsh,ACst"
+    },
+    "Osh2": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "AOsh,ACsh,ACst"
+    },
+    "Osh3": {
+      "type": "unreal",
+      "column": 3,
+      "specific": "AOsh,ACsh,ACst"
+    },
+    "Osh4": {
+      "type": "unreal",
+      "column": 4,
+      "specific": "AOsh,ACsh,ACst"
     },
     "Roa1": {
       "type": "unreal",
@@ -218,6 +323,16 @@
     },
     "aeat": {
       "type": "modelList",
+      "column": 0,
+      "specific": ""
+    },
+    "aefl": {
+      "type": "soundLabel",
+      "column": 0,
+      "specific": ""
+    },
+    "aefs": {
+      "type": "soundLabel",
       "column": 0,
       "specific": ""
     },
@@ -336,6 +451,11 @@
       "column": 0,
       "specific": ""
     },
+    "atat": {
+      "type": "modelList",
+      "column": 0,
+      "specific": ""
+    },
     "atp1": {
       "type": "string",
       "column": 0,
@@ -343,16 +463,6 @@
     },
     "aub1": {
       "type": "string",
-      "column": 0,
-      "specific": ""
-    },
-    "aefs": {
-      "type": "soundLabel",
-      "column": 0,
-      "specific": ""
-    },
-    "aefl": {
-      "type": "soundLabel",
       "column": 0,
       "specific": ""
     }

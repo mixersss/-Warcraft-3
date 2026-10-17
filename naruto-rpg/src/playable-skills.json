@@ -76,7 +76,13 @@
     "icon": "Icon_Naruto_Jinchuriki.blp",
     "animation": "spell",
     "audio_index": -1,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 0,
+    "index": 0,
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true
   },
   {
     "hero": 0,
@@ -163,7 +169,13 @@
     "icon": "Icon_Naruto_KageBunshin.BLP",
     "animation": "spell,loop",
     "audio_index": 23,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 1,
+    "index": 1,
+    "order": "mirrorimage",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 0,
@@ -236,7 +248,13 @@
     "icon": "Icon_Naruto_Kuchiyose.blp",
     "animation": "stand",
     "audio_index": 7,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 2,
+    "index": 2,
+    "order": "waterelemental",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 0,
@@ -313,7 +331,13 @@
     "icon": "Icon_Naruto_Rasengan.BLP",
     "animation": "spell,two",
     "audio_index": 1,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 3,
+    "index": 3,
+    "order": "thunderbolt",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 0,
@@ -386,7 +410,13 @@
     "icon": "Icon_Naruto_OneTailedTransformation.blp",
     "animation": "spell",
     "audio_index": 34,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 4,
+    "index": 4,
+    "order": "metamorphosis",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 1,
@@ -492,7 +522,13 @@
     "icon": "Icon_Sasuke_KatonGokakyu.blp",
     "animation": "spell,walk",
     "audio_index": 122,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 0,
+    "index": 5,
+    "order": "breathoffire",
+    "target_mode": 2,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 1,
@@ -591,7 +627,13 @@
     "icon": "Icon_Sasuke_Sharingan.blp",
     "animation": "spell",
     "audio_index": 75,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 1,
+    "index": 6,
+    "order": "roar",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 1,
@@ -662,7 +704,13 @@
     "icon": "Icon_Sasuke_ShishiRendan.BLP",
     "animation": "stand",
     "audio_index": 76,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 2,
+    "index": 7,
+    "order": "chainlightning",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 1,
@@ -739,7 +787,13 @@
     "icon": "Icon_Sasuke_Chidori.BLP",
     "animation": "stand",
     "audio_index": 130,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 3,
+    "index": 8,
+    "order": "thunderbolt",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false
   },
   {
     "hero": 1,
@@ -812,6 +866,5251 @@
     "icon": "Icon_Sasuke_2ndForm.blp",
     "animation": "spell",
     "audio_index": 74,
-    "implementation": "Independent adaptation; original trigger mechanics not copied"
+    "implementation": "Independent adaptation; original trigger mechanics not copied",
+    "slot": 4,
+    "index": 9,
+    "order": "metamorphosis",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false
+  },
+  {
+    "hero": 2,
+    "slot": 0,
+    "index": 10,
+    "source_id": "A005",
+    "id": "R201",
+    "base": "ANcl",
+    "name": "Бросок куная",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      55,
+      65,
+      75,
+      85
+    ],
+    "cooldown": 9.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Кунай наносит магический урон одной вражеской цели.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Кунай наносит магический урон одной вражеской цели. Сила эффекта: 130.",
+      "Кунай наносит магический урон одной вражеской цели. Сила эффекта: 200.",
+      "Кунай наносит магический урон одной вражеской цели. Сила эффекта: 270.",
+      "Кунай наносит магический урон одной вражеской цели. Сила эффекта: 340."
+    ],
+    "key": "D",
+    "icon": "Icon_KunaiThrow.BLP",
+    "animation": "attack,2,throw",
+    "audio_index": 35,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 1,
+    "mechanic": 1,
+    "passive": false,
+    "damage": [
+      130,
+      200,
+      270,
+      340
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "Kunai.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 2,
+    "slot": 1,
+    "index": 11,
+    "source_id": "A010",
+    "id": "R202",
+    "base": "ANcl",
+    "name": "Взрывная печать",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      105,
+      105,
+      105,
+      105
+    ],
+    "cooldown": 14.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Взрыв печати поражает врагов в радиусе 260.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Взрыв печати поражает врагов в радиусе 260. Сила эффекта: 140.",
+      "Взрыв печати поражает врагов в радиусе 260. Сила эффекта: 220.",
+      "Взрыв печати поражает врагов в радиусе 260. Сила эффекта: 300.",
+      "Взрыв печати поражает врагов в радиусе 260. Сила эффекта: 380."
+    ],
+    "key": "F",
+    "icon": "Icon_Sakura_Notes.blp",
+    "animation": "stand",
+    "audio_index": 42,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 2,
+    "mechanic": 2,
+    "passive": false,
+    "damage": [
+      140,
+      220,
+      300,
+      380
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 260.0,
+    "effect": "Note.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 2,
+    "slot": 2,
+    "index": 12,
+    "source_id": "A02D",
+    "id": "R203",
+    "base": "ANcl",
+    "name": "Сёсэн: лечение",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      80,
+      100,
+      120
+    ],
+    "cooldown": 10.0,
+    "range": 750.0,
+    "targets": "air,ground,friend,self,organic",
+    "description": "Лечит выбранного союзника, включая саму Сакуру; не лечит врагов и постройки.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Лечит выбранного союзника, включая саму Сакуру; не лечит врагов и постройки. Сила эффекта: 260.",
+      "Лечит выбранного союзника, включая саму Сакуру; не лечит врагов и постройки. Сила эффекта: 440.",
+      "Лечит выбранного союзника, включая саму Сакуру; не лечит врагов и постройки. Сила эффекта: 620."
+    ],
+    "key": "G",
+    "icon": "Icon_Sakura_Shosen.blp",
+    "animation": "spell,slam",
+    "audio_index": 113,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 1,
+    "mechanic": 3,
+    "passive": false,
+    "damage": [
+      260,
+      440,
+      620
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Human\\Heal\\HealTarget.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": true
+  },
+  {
+    "hero": 2,
+    "slot": 3,
+    "index": 13,
+    "source_id": "A01G",
+    "id": "R204",
+    "base": "ANcl",
+    "name": "Окасё",
+    "ranks": 1,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      190
+    ],
+    "cooldown": 30.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Удар по земле: урон вокруг Сакуры и короткое оглушение.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Удар по земле: урон вокруг Сакуры и короткое оглушение. Сила эффекта: 700. Длительность: 1.5 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_SakuraShip_Okasho.blp",
+    "animation": "attack,attack 2,slam",
+    "audio_index": 78,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 0,
+    "mechanic": 2,
+    "passive": false,
+    "damage": [
+      700
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 1.5,
+    "radius": 320.0,
+    "effect": "Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 2,
+    "slot": 4,
+    "index": 14,
+    "source_id": "A02S",
+    "id": "R205",
+    "base": "ANcl",
+    "name": "Призыв Сидзунэ",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 65.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Сидзунэ сражается 40 секунд и раз в секунду лечит союзных героев рядом на 35 HP.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Сидзунэ сражается 40 секунд и раз в секунду лечит союзных героев рядом на 35 HP. Длительность: 40 сек."
+    ],
+    "key": "E",
+    "icon": "Icon_Shizune_ChikatsuSaisei.blp",
+    "animation": "attack",
+    "audio_index": 42,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 0,
+    "mechanic": 7,
+    "passive": false,
+    "damage": [
+      0.0
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 40.0,
+    "radius": 0.0,
+    "effect": "Kuchiyose.mdl",
+    "profile": 0,
+    "summon": "rz01",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 3,
+    "slot": 0,
+    "index": 15,
+    "source_id": "A02U",
+    "id": "R301",
+    "base": "AOre",
+    "name": "Второй шанс",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      0,
+      0,
+      0
+    ],
+    "cooldown": 110.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Нативное перерождение после смерти через 3 секунды. С рангом быстрее восстанавливается готовность.",
+    "fields": [
+      [
+        "Ore1",
+        2,
+        1,
+        [
+          3.0
+        ]
+      ],
+      [
+        "amcs",
+        0,
+        0,
+        [
+          0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Перерождение через 3 секунды. Перезарядка 110 секунд.",
+      "Перерождение через 3 секунды. Перезарядка 90 секунд.",
+      "Перерождение через 3 секунды. Перезарядка 70 секунд."
+    ],
+    "key": "E",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNAnkh.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false,
+    "cooldowns": [
+      110.0,
+      90.0,
+      70.0
+    ]
+  },
+  {
+    "hero": 3,
+    "slot": 1,
+    "index": 16,
+    "source_id": "A00E",
+    "id": "R302",
+    "base": "ANcl",
+    "name": "Коноха Сэнпу",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      105,
+      105,
+      105,
+      105
+    ],
+    "cooldown": 11.0,
+    "range": 300.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Мощный удар ногой с оглушением на 1 секунду.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Мощный удар ногой с оглушением на 1 секунду. Сила эффекта: 160. Длительность: 1 сек.",
+      "Мощный удар ногой с оглушением на 1 секунду. Сила эффекта: 240. Длительность: 1 сек.",
+      "Мощный удар ногой с оглушением на 1 секунду. Сила эффекта: 320. Длительность: 1 сек.",
+      "Мощный удар ногой с оглушением на 1 секунду. Сила эффекта: 400. Длительность: 1 сек."
+    ],
+    "key": "D",
+    "icon": "Icon_Lee_KonohaSenpu2.blp",
+    "animation": "attack,walk,stand,spin",
+    "audio_index": 173,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 1,
+    "mechanic": 1,
+    "passive": false,
+    "damage": [
+      160,
+      240,
+      320,
+      400
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 1.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 3,
+    "slot": 2,
+    "index": 17,
+    "source_id": "A00U",
+    "id": "R303",
+    "base": "ANcl",
+    "name": "Пьяный кулак",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 28.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 14 секунд: уклонение, критические удары и прибавка урона. Сильнее с каждым рангом.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "На 14 секунд: уклонение, критические удары и прибавка урона. Сильнее с каждым рангом. уклонение 10%, крит 15% ×1.5, урон +10.",
+      "На 14 секунд: уклонение, критические удары и прибавка урона. Сильнее с каждым рангом. уклонение 15%, крит 20% ×1.7, урон +20.",
+      "На 14 секунд: уклонение, критические удары и прибавка урона. Сильнее с каждым рангом. уклонение 20%, крит 25% ×1.9, урон +30."
+    ],
+    "key": "F",
+    "icon": "Icon_Lee_Suiken2.blp",
+    "animation": "stand",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 14.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Other\\DrunkenHaze\\DrunkenHazeTarget.mdl",
+    "profile": 7,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 3,
+    "slot": 3,
+    "index": 18,
+    "source_id": "A029",
+    "id": "R304",
+    "base": "ANcl",
+    "name": "Восемь врат",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 40.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 12 секунд повышает урон, скорость атаки и бега. Теряет 2% максимального HP в секунду, но не погибает от этого истощения.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "На 12 секунд повышает урон, скорость атаки и бега. Теряет 2% максимального HP в секунду, но не погибает от этого истощения. урон +10, скорость атаки +15%, скорость бега +20.",
+      "На 12 секунд повышает урон, скорость атаки и бега. Теряет 2% максимального HP в секунду, но не погибает от этого истощения. урон +20, скорость атаки +25%, скорость бега +30.",
+      "На 12 секунд повышает урон, скорость атаки и бега. Теряет 2% максимального HP в секунду, но не погибает от этого истощения. урон +30, скорость атаки +35%, скорость бега +40."
+    ],
+    "key": "G",
+    "icon": "Icon_Lee_OpenGates.BLP",
+    "animation": "stand",
+    "audio_index": 105,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 12.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Other\\ImmolationRed\\ImmolationRedTarget.mdl",
+    "profile": 44,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 4,
+    "slot": 0,
+    "index": 20,
+    "source_id": "A034",
+    "id": "R401",
+    "base": "ANcl",
+    "name": "Бьякуган",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      90,
+      90,
+      90
+    ],
+    "cooldown": 30.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 10%, урон +10.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 15%, урон +20.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 20%, урон +30.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 25%, урон +40."
+    ],
+    "key": "D",
+    "icon": "Icon_Neji_Byakugan.blp",
+    "animation": "stand",
+    "audio_index": 71,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 15.0,
+    "radius": 0.0,
+    "effect": "Eye_Byakugan.mdl",
+    "profile": 5,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 4,
+    "slot": 1,
+    "index": 21,
+    "source_id": "A006",
+    "id": "R402",
+    "base": "ANcl",
+    "name": "Кайтэн",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      105,
+      105,
+      105
+    ],
+    "cooldown": 22.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 45. Длительность: 4 сек.",
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 65. Длительность: 4 сек.",
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 85. Длительность: 4 сек."
+    ],
+    "key": "F",
+    "icon": "Icon_Neji_Kaiten.BLP",
+    "animation": "spell,spin",
+    "audio_index": 72,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 0,
+    "mechanic": 5,
+    "passive": false,
+    "damage": [
+      45,
+      65,
+      85
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 4.0,
+    "radius": 270.0,
+    "effect": "HakkeAura.mdl",
+    "profile": 17,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 4,
+    "slot": 2,
+    "index": 22,
+    "source_id": "A02L",
+    "id": "R403",
+    "base": "ANcl",
+    "name": "64 ладони",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 20.0,
+    "range": 450.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Четыре серии ударов за 1 секунду; каждая наносит урон и выжигает ману.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Четыре серии ударов за 1 секунду; каждая наносит урон и выжигает ману. Сила эффекта: 65. Потеря маны: 20. Длительность: 2 сек.",
+      "Четыре серии ударов за 1 секунду; каждая наносит урон и выжигает ману. Сила эффекта: 95. Потеря маны: 30. Длительность: 2 сек.",
+      "Четыре серии ударов за 1 секунду; каждая наносит урон и выжигает ману. Сила эффекта: 125. Потеря маны: 40. Длительность: 2 сек."
+    ],
+    "key": "G",
+    "icon": "Icon_Neji_HakkeRokujuyonSho.blp",
+    "animation": "stand",
+    "audio_index": 98,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 1,
+    "mechanic": 6,
+    "passive": false,
+    "damage": [
+      65,
+      95,
+      125
+    ],
+    "burn": [
+      20,
+      30,
+      40
+    ],
+    "duration": 2.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 4,
+    "slot": 3,
+    "index": 23,
+    "source_id": "A008",
+    "id": "R404",
+    "base": "ANcl",
+    "name": "128 ладоней",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 28.0,
+    "range": 450.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Восемь серий ударов за 2 секунды; каждая наносит урон и выжигает ману.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Восемь серий ударов за 2 секунды; каждая наносит урон и выжигает ману. Сила эффекта: 85. Потеря маны: 25. Длительность: 2.5 сек.",
+      "Восемь серий ударов за 2 секунды; каждая наносит урон и выжигает ману. Сила эффекта: 125. Потеря маны: 40. Длительность: 2.5 сек.",
+      "Восемь серий ударов за 2 секунды; каждая наносит урон и выжигает ману. Сила эффекта: 165. Потеря маны: 55. Длительность: 2.5 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Hyuga.blp",
+    "animation": "attack",
+    "audio_index": 100,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 1,
+    "mechanic": 6,
+    "passive": false,
+    "damage": [
+      85,
+      125,
+      165
+    ],
+    "burn": [
+      25,
+      40,
+      55
+    ],
+    "duration": 2.5,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 4,
+    "slot": 4,
+    "index": 24,
+    "source_id": "A009",
+    "id": "R405",
+    "base": "ANcl",
+    "name": "Хаккэ Хасангэки",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 30.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Волна чакры проходит 900 единиц и поражает врагов на её пути.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Волна чакры проходит 900 единиц и поражает врагов на её пути. Сила эффекта: 550. Потеря маны: 200."
+    ],
+    "key": "E",
+    "icon": "Icon_NejiShip_HakkeKusho2.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 2,
+    "mechanic": 9,
+    "passive": false,
+    "damage": [
+      550
+    ],
+    "burn": [
+      200
+    ],
+    "duration": 0.0,
+    "radius": 180.0,
+    "effect": "WindAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 5,
+    "slot": 0,
+    "index": 25,
+    "source_id": "A005",
+    "id": "R501",
+    "base": "ANcl",
+    "name": "Бросок куная",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      55,
+      65,
+      75,
+      85
+    ],
+    "cooldown": 9.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Кунай наносит урон одной вражеской цели.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Кунай наносит урон одной вражеской цели. Сила эффекта: 130.",
+      "Кунай наносит урон одной вражеской цели. Сила эффекта: 200.",
+      "Кунай наносит урон одной вражеской цели. Сила эффекта: 270.",
+      "Кунай наносит урон одной вражеской цели. Сила эффекта: 340."
+    ],
+    "key": "D",
+    "icon": "Icon_KunaiThrow.BLP",
+    "animation": "attack,2,throw",
+    "audio_index": 162,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 1,
+    "mechanic": 1,
+    "passive": false,
+    "damage": [
+      130,
+      200,
+      270,
+      340
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "Kunai.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 5,
+    "slot": 1,
+    "index": 26,
+    "source_id": "A00W",
+    "id": "R502",
+    "base": "ANcl",
+    "name": "Тобидогу",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      105,
+      105,
+      105
+    ],
+    "cooldown": 15.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Разбрасывает призванное оружие вокруг Тентен в радиусе 400.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Разбрасывает призванное оружие вокруг Тентен в радиусе 400. Сила эффекта: 200.",
+      "Разбрасывает призванное оружие вокруг Тентен в радиусе 400. Сила эффекта: 320.",
+      "Разбрасывает призванное оружие вокруг Тентен в радиусе 400. Сила эффекта: 440."
+    ],
+    "key": "F",
+    "icon": "Icon_TentenSoshoryu0.BLP",
+    "animation": "spell,looping",
+    "audio_index": 88,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 0,
+    "mechanic": 2,
+    "passive": false,
+    "damage": [
+      200,
+      320,
+      440
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 400.0,
+    "effect": "Shurikens.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 5,
+    "slot": 2,
+    "index": 27,
+    "source_id": "A000",
+    "id": "R503",
+    "base": "Aroc",
+    "name": "Мастерство оружия",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      0,
+      0,
+      0
+    ],
+    "cooldown": 0.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Обычная дальняя атака поражает до 2/3/4 целей кунаями; сила дополнительных снарядов 25/40/55.",
+    "fields": [
+      [
+        "Efk1",
+        2,
+        1,
+        [
+          25.0,
+          40.0,
+          55.0
+        ]
+      ],
+      [
+        "Efk2",
+        2,
+        2,
+        [
+          100.0,
+          200.0,
+          330.0
+        ]
+      ],
+      [
+        "Efk3",
+        0,
+        3,
+        [
+          2,
+          3,
+          4
+        ]
+      ],
+      [
+        "aare",
+        2,
+        0,
+        [
+          600.0
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "Kunai.mdl"
+        ]
+      ],
+      [
+        "atar",
+        3,
+        0,
+        [
+          "ground,air,enemy,neutral"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Обычная дальняя атака поражает до 2/3/4 целей кунаями; сила дополнительных снарядов 25/40/55.",
+      "Обычная дальняя атака поражает до 2/3/4 целей кунаями; сила дополнительных снарядов 25/40/55.",
+      "Обычная дальняя атака поражает до 2/3/4 целей кунаями; сила дополнительных снарядов 25/40/55."
+    ],
+    "key": "G",
+    "icon": "Icon_Tenten_Portrait3.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 5,
+    "slot": 3,
+    "index": 28,
+    "source_id": "A00Z",
+    "id": "R504",
+    "base": "ANcl",
+    "name": "Сосёрю",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 30.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Обстрел выбранной зоны призванным оружием каждые 0,5 сек в течение 4 сек.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Обстрел выбранной зоны призванным оружием каждые 0,5 сек в течение 4 сек. Сила эффекта: 65. Длительность: 4 сек.",
+      "Обстрел выбранной зоны призванным оружием каждые 0,5 сек в течение 4 сек. Сила эффекта: 95. Длительность: 4 сек.",
+      "Обстрел выбранной зоны призванным оружием каждые 0,5 сек в течение 4 сек. Сила эффекта: 125. Длительность: 4 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Tenten_Soshoryu2.blp",
+    "animation": "spell,looping",
+    "audio_index": 77,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 2,
+    "mechanic": 8,
+    "passive": false,
+    "damage": [
+      65,
+      95,
+      125
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 4.0,
+    "radius": 350.0,
+    "effect": "Shurikens.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 5,
+    "slot": 4,
+    "index": 29,
+    "source_id": "A02Z",
+    "id": "R505",
+    "base": "ANcl",
+    "name": "Призыв гигантского оружия",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 40.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Огромное оружие прорезает прямой проход длиной 900 и шириной 440.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Огромное оружие прорезает прямой проход длиной 900 и шириной 440. Сила эффекта: 700."
+    ],
+    "key": "E",
+    "icon": "Icon_Tenten_Jindana.blp",
+    "animation": "stand",
+    "audio_index": 121,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 2,
+    "mechanic": 9,
+    "passive": false,
+    "damage": [
+      700
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 220.0,
+    "effect": "Iron Wrecking Ball.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 6,
+    "slot": 0,
+    "index": 30,
+    "source_id": "A02H",
+    "id": "R601",
+    "base": "AEer",
+    "name": "Теневое подражание",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      90,
+      90,
+      90
+    ],
+    "cooldown": 16.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Нативно удерживает врага на месте и постепенно наносит урон; срок растёт с рангом.",
+    "fields": [
+      [
+        "Eer1",
+        2,
+        1,
+        [
+          20.0,
+          30.0,
+          40.0,
+          50.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          2.0,
+          2.5,
+          3.0,
+          3.5
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          1.5,
+          2.0,
+          2.5,
+          3.0
+        ]
+      ],
+      [
+        "atat",
+        3,
+        0,
+        [
+          "ShikamaruKageMane.mdl"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Нативно удерживает врага на месте и постепенно наносит урон; срок растёт с рангом.",
+      "Нативно удерживает врага на месте и постепенно наносит урон; срок растёт с рангом.",
+      "Нативно удерживает врага на месте и постепенно наносит урон; срок растёт с рангом.",
+      "Нативно удерживает врага на месте и постепенно наносит урон; срок растёт с рангом."
+    ],
+    "key": "D",
+    "icon": "Icon_Shikamaru_KageMane.BLP",
+    "animation": "spell,looping",
+    "audio_index": 29,
+    "implementation": "Independent adaptation of source slot",
+    "order": "entanglingroots",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 6,
+    "slot": 1,
+    "index": 31,
+    "source_id": "A00P",
+    "id": "R602",
+    "base": "AEev",
+    "name": "Стратегия",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      0,
+      0,
+      0
+    ],
+    "cooldown": 0.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Пассивное уклонение 12/20/28%; не превышает безопасного предела 75%.",
+    "fields": [
+      [
+        "Eev1",
+        2,
+        1,
+        [
+          0.12,
+          0.2,
+          0.28
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Пассивное уклонение 12/20/28%; не превышает безопасного предела 75%.",
+      "Пассивное уклонение 12/20/28%; не превышает безопасного предела 75%.",
+      "Пассивное уклонение 12/20/28%; не превышает безопасного предела 75%."
+    ],
+    "key": "F",
+    "icon": "Icon_Shikamaru_Strategy.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 6,
+    "slot": 2,
+    "index": 32,
+    "source_id": "A02A",
+    "id": "R603",
+    "base": "ANcl",
+    "name": "Залп взрывных печатей",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 24.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Взрывные кунаи обстреливают зону каждые 0,5 секунды в течение 3 секунд.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Взрывные кунаи обстреливают зону каждые 0,5 секунды в течение 3 секунд. Сила эффекта: 65. Длительность: 3 сек.",
+      "Взрывные кунаи обстреливают зону каждые 0,5 секунды в течение 3 секунд. Сила эффекта: 100. Длительность: 3 сек.",
+      "Взрывные кунаи обстреливают зону каждые 0,5 секунды в течение 3 секунд. Сила эффекта: 135. Длительность: 3 сек."
+    ],
+    "key": "G",
+    "icon": "Icon_Shikamaru_Kunais.blp",
+    "animation": "stand",
+    "audio_index": 169,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 2,
+    "mechanic": 8,
+    "passive": false,
+    "damage": [
+      65,
+      100,
+      135
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 3.0,
+    "radius": 300.0,
+    "effect": "Note.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 6,
+    "slot": 3,
+    "index": 33,
+    "source_id": "A02U",
+    "id": "R604",
+    "base": "AOre",
+    "name": "Второй шанс",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      0,
+      0,
+      0
+    ],
+    "cooldown": 110.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Нативное перерождение после смерти через 3 секунды. С рангом быстрее восстанавливается готовность.",
+    "fields": [
+      [
+        "Ore1",
+        2,
+        1,
+        [
+          3.0
+        ]
+      ],
+      [
+        "amcs",
+        0,
+        0,
+        [
+          0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Перерождение через 3 секунды. Перезарядка 110 секунд.",
+      "Перерождение через 3 секунды. Перезарядка 90 секунд.",
+      "Перерождение через 3 секунды. Перезарядка 70 секунд."
+    ],
+    "key": "E",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNAnkh.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false,
+    "cooldowns": [
+      110.0,
+      90.0,
+      70.0
+    ]
+  },
+  {
+    "hero": 7,
+    "slot": 0,
+    "index": 35,
+    "source_id": "A01C",
+    "id": "R701",
+    "base": "ANcl",
+    "name": "Призыв Акамару",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      90,
+      90,
+      90
+    ],
+    "cooldown": 50.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Акамару сражается рядом 45 секунд. Повторный призыв заменяет прежнего Акамару.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Акамару сражается рядом 45 секунд. Повторный призыв заменяет прежнего Акамару. Длительность: 45 сек.",
+      "Акамару сражается рядом 45 секунд. Повторный призыв заменяет прежнего Акамару. Длительность: 45 сек.",
+      "Акамару сражается рядом 45 секунд. Повторный призыв заменяет прежнего Акамару. Длительность: 45 сек."
+    ],
+    "key": "D",
+    "icon": "Icon_Akamaru_Portrait.blp",
+    "animation": "stand",
+    "audio_index": 171,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 0,
+    "mechanic": 7,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 45.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "ra0",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 7,
+    "slot": 1,
+    "index": 36,
+    "source_id": "A016",
+    "id": "R702",
+    "base": "ANcl",
+    "name": "Дымовая бомба",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      105,
+      105,
+      105,
+      105
+    ],
+    "cooldown": 20.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Дым повышает уклонение и скорость бега на 8 секунд. Бонусы усиливаются с рангом.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Дым повышает уклонение и скорость бега на 8 секунд. Бонусы усиливаются с рангом. уклонение 10%, скорость бега +20.",
+      "Дым повышает уклонение и скорость бега на 8 секунд. Бонусы усиливаются с рангом. уклонение 15%, скорость бега +30.",
+      "Дым повышает уклонение и скорость бега на 8 секунд. Бонусы усиливаются с рангом. уклонение 20%, скорость бега +40.",
+      "Дым повышает уклонение и скорость бега на 8 секунд. Бонусы усиливаются с рангом. уклонение 25%, скорость бега +50."
+    ],
+    "key": "F",
+    "icon": "Icon_Kiba_SmokeBomb.BLP",
+    "animation": "stand",
+    "audio_index": 20,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 8.0,
+    "radius": 0.0,
+    "effect": "MindFog.mdl",
+    "profile": 33,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 7,
+    "slot": 2,
+    "index": 37,
+    "source_id": "A01Q",
+    "id": "R703",
+    "base": "ANcl",
+    "name": "Четвероногая техника",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 30.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 15 секунд повышает урон, скорость атаки и скорость бега.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "На 15 секунд повышает урон, скорость атаки и скорость бега. урон +10, скорость атаки +15%, скорость бега +20.",
+      "На 15 секунд повышает урон, скорость атаки и скорость бега. урон +20, скорость атаки +25%, скорость бега +30.",
+      "На 15 секунд повышает урон, скорость атаки и скорость бега. урон +30, скорость атаки +35%, скорость бега +40."
+    ],
+    "key": "G",
+    "icon": "Icon_Kiba_Shikyaku.blp",
+    "animation": "spell",
+    "audio_index": 68,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 15.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Orc\\Bloodlust\\BloodlustTarget.mdl",
+    "profile": 44,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 7,
+    "slot": 3,
+    "index": 38,
+    "source_id": "A01H",
+    "id": "R704",
+    "base": "ANcl",
+    "name": "Цууга",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 20.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Вращающийся удар волной поражает врагов вдоль линии длиной 900.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 300.",
+      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 450.",
+      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 600."
+    ],
+    "key": "W",
+    "icon": "Icon_Kiba_Tsuga.blp",
+    "animation": "attack,walk,stand,spin,looping",
+    "audio_index": 109,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 2,
+    "mechanic": 9,
+    "passive": false,
+    "damage": [
+      300,
+      450,
+      600
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 160.0,
+    "effect": "WindAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 7,
+    "slot": 4,
+    "index": 39,
+    "source_id": "A026",
+    "id": "R705",
+    "base": "AEme",
+    "name": "Двухголовый волк",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 85.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Временная звериная форма на 25 секунд: +800 HP и усиленные атаки. В этой адаптации используется стандартная модель белого волка.",
+    "fields": [
+      [
+        "Eme1",
+        3,
+        1,
+        [
+          "R007"
+        ]
+      ],
+      [
+        "Emeu",
+        3,
+        0,
+        [
+          "Rkfm"
+        ]
+      ],
+      [
+        "Eme5",
+        2,
+        5,
+        [
+          800.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          25.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Временная звериная форма на 25 секунд: +800 HP и усиленные атаки. В этой адаптации используется стандартная модель белого волка."
+    ],
+    "key": "E",
+    "icon": "Icon_Kiba_Sotoro2.blp",
+    "animation": "spell,slam,alternate",
+    "audio_index": 3,
+    "implementation": "Independent adaptation of source slot",
+    "order": "metamorphosis",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 8,
+    "slot": 0,
+    "index": 40,
+    "source_id": "A034",
+    "id": "R801",
+    "base": "ANcl",
+    "name": "Бьякуган",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      90,
+      90,
+      90
+    ],
+    "cooldown": 30.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 10%, урон +10.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 15%, урон +20.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 20%, урон +30.",
+      "На 15 секунд повышает урон и уклонение; видит невидимых врагов рядом. Комбинации этого героя отдельно выжигают чакру. уклонение 25%, урон +40."
+    ],
+    "key": "D",
+    "icon": "Icon_Neji_Byakugan.blp",
+    "animation": "stand",
+    "audio_index": 61,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 0,
+    "mechanic": 4,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 15.0,
+    "radius": 0.0,
+    "effect": "Eye_Byakugan.mdl",
+    "profile": 5,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 8,
+    "slot": 1,
+    "index": 41,
+    "source_id": "A006",
+    "id": "R802",
+    "base": "ANcl",
+    "name": "Кайтэн",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      105,
+      105,
+      105
+    ],
+    "cooldown": 22.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 45. Длительность: 4 сек.",
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 65. Длительность: 4 сек.",
+      "Вращение: урон ближайшим врагам каждые 0,5 сек в течение 4 сек; повышает броню и уклонение. Сила эффекта: 85. Длительность: 4 сек."
+    ],
+    "key": "F",
+    "icon": "Icon_Neji_Kaiten.BLP",
+    "animation": "spell,spin",
+    "audio_index": 141,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 0,
+    "mechanic": 5,
+    "passive": false,
+    "damage": [
+      45,
+      65,
+      85
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 4.0,
+    "radius": 270.0,
+    "effect": "HakkeAura.mdl",
+    "profile": 17,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 8,
+    "slot": 2,
+    "index": 42,
+    "source_id": "A01E",
+    "id": "R803",
+    "base": "ANcl",
+    "name": "Хаккэ Хидои Тэнкэцу",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 17.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Точный удар повреждает здоровье и чакру; коротко оглушает врага.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Точный удар повреждает здоровье и чакру; коротко оглушает врага. Сила эффекта: 200. Потеря маны: 120. Длительность: 1.25 сек.",
+      "Точный удар повреждает здоровье и чакру; коротко оглушает врага. Сила эффекта: 320. Потеря маны: 200. Длительность: 1.25 сек.",
+      "Точный удар повреждает здоровье и чакру; коротко оглушает врага. Сила эффекта: 440. Потеря маны: 280. Длительность: 1.25 сек."
+    ],
+    "key": "G",
+    "icon": "Icon_Hinata_Juken2.blp",
+    "animation": "attack",
+    "audio_index": 13,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 1,
+    "mechanic": 1,
+    "passive": false,
+    "damage": [
+      200,
+      320,
+      440
+    ],
+    "burn": [
+      120,
+      200,
+      280
+    ],
+    "duration": 1.25,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 8,
+    "slot": 3,
+    "index": 43,
+    "source_id": "A01F",
+    "id": "R804",
+    "base": "ANcl",
+    "name": "Защитные 64 ладони",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 28.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Защитная область следует за Хинатой: 8 импульсов урона и потери маны за 4 секунды.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Защитная область следует за Хинатой: 8 импульсов урона и потери маны за 4 секунды. Сила эффекта: 55. Потеря маны: 10. Длительность: 4 сек.",
+      "Защитная область следует за Хинатой: 8 импульсов урона и потери маны за 4 секунды. Сила эффекта: 80. Потеря маны: 15. Длительность: 4 сек.",
+      "Защитная область следует за Хинатой: 8 импульсов урона и потери маны за 4 секунды. Сила эффекта: 105. Потеря маны: 20. Длительность: 4 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Hyuga.blp",
+    "animation": "stand",
+    "audio_index": 8,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 0,
+    "mechanic": 5,
+    "passive": false,
+    "damage": [
+      55,
+      80,
+      105
+    ],
+    "burn": [
+      10,
+      15,
+      20
+    ],
+    "duration": 4.0,
+    "radius": 330.0,
+    "effect": "HakkeAura.mdl",
+    "profile": 16,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 8,
+    "slot": 4,
+    "index": 44,
+    "source_id": "A02J",
+    "id": "R805",
+    "base": "ANcl",
+    "name": "Хакуро Тэнбу",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 35.0,
+    "range": 450.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Шесть серий ударов за 1,5 секунды, каждая повреждает здоровье и чакру.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Шесть серий ударов за 1,5 секунды, каждая повреждает здоровье и чакру. Сила эффекта: 110. Потеря маны: 40. Длительность: 2 сек."
+    ],
+    "key": "E",
+    "icon": "Icon_Hinata_HakuroTenbu3.blp",
+    "animation": "spell,slam",
+    "audio_index": 97,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 1,
+    "mechanic": 6,
+    "passive": false,
+    "damage": [
+      110
+    ],
+    "burn": [
+      40
+    ],
+    "duration": 2.0,
+    "radius": 0.0,
+    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 9,
+    "slot": 0,
+    "index": 45,
+    "source_id": "A014",
+    "id": "R901",
+    "base": "AEer",
+    "name": "Песчаный гроб",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      90,
+      90,
+      90
+    ],
+    "cooldown": 16.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Песок удерживает цель и наносит постепенный урон; срок растёт с рангом.",
+    "fields": [
+      [
+        "Eer1",
+        2,
+        1,
+        [
+          25.0,
+          40.0,
+          55.0,
+          70.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          2.0,
+          2.5,
+          3.0,
+          3.5
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          1.5,
+          2.0,
+          2.5,
+          3.0
+        ]
+      ],
+      [
+        "atat",
+        3,
+        0,
+        [
+          "GaaraSand2.mdl"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Песок удерживает цель и наносит постепенный урон; срок растёт с рангом.",
+      "Песок удерживает цель и наносит постепенный урон; срок растёт с рангом.",
+      "Песок удерживает цель и наносит постепенный урон; срок растёт с рангом.",
+      "Песок удерживает цель и наносит постепенный урон; срок растёт с рангом."
+    ],
+    "key": "D",
+    "icon": "Icon_Gaara_SabakuKyuu.BLP",
+    "animation": "spell",
+    "audio_index": 81,
+    "implementation": "Independent adaptation of source slot",
+    "order": "entanglingroots",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 9,
+    "slot": 1,
+    "index": 46,
+    "source_id": "A01W",
+    "id": "R902",
+    "base": "ANms",
+    "name": "Песчаный щит",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      105,
+      105,
+      105
+    ],
+    "cooldown": 3.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Переключаемый нативный щит: 35/50/65% урона поглощается маной, 1 мана поглощает 1,2/1,8/2,4 HP.",
+    "fields": [
+      [
+        "Nms1",
+        2,
+        1,
+        [
+          0.8333333333333334,
+          0.5555555555555556,
+          0.4166666666666667
+        ]
+      ],
+      [
+        "Nms2",
+        2,
+        2,
+        [
+          0.35,
+          0.5,
+          0.65
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Переключаемый нативный щит: 35/50/65% урона поглощается маной, 1 мана поглощает 1,2/1,8/2,4 HP.",
+      "Переключаемый нативный щит: 35/50/65% урона поглощается маной, 1 мана поглощает 1,2/1,8/2,4 HP.",
+      "Переключаемый нативный щит: 35/50/65% урона поглощается маной, 1 мана поглощает 1,2/1,8/2,4 HP."
+    ],
+    "key": "F",
+    "icon": "Icon_Gaara_SunaNoTate.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "manashieldon",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 9,
+    "slot": 2,
+    "index": 47,
+    "source_id": "A01I",
+    "id": "R903",
+    "base": "ANcl",
+    "name": "Песчаное цунами",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 28.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Песок захлёстывает выбранную область: урон каждые 0,5 секунды в течение 4 секунд.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Песок захлёстывает выбранную область: урон каждые 0,5 секунды в течение 4 секунд. Сила эффекта: 65. Длительность: 4 сек.",
+      "Песок захлёстывает выбранную область: урон каждые 0,5 секунды в течение 4 секунд. Сила эффекта: 100. Длительность: 4 сек.",
+      "Песок захлёстывает выбранную область: урон каждые 0,5 секунды в течение 4 секунд. Сила эффекта: 135. Длительность: 4 сек."
+    ],
+    "key": "G",
+    "icon": "Icon_Gaara_RyuusaBakuryu.BLP",
+    "animation": "spell,channel",
+    "audio_index": 139,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 2,
+    "mechanic": 8,
+    "passive": false,
+    "damage": [
+      65,
+      100,
+      135
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 4.0,
+    "radius": 380.0,
+    "effect": "GaaraSand2.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 9,
+    "slot": 3,
+    "index": 48,
+    "source_id": "A00Y",
+    "id": "R904",
+    "base": "AEme",
+    "name": "Пробуждение Сюкаку",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 90.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Нативная форма Сюкаку на 25 секунд, +500/900/1300 HP и усиленные атаки; исходная модель Shukaku.",
+    "fields": [
+      [
+        "Eme1",
+        3,
+        1,
+        [
+          "R009"
+        ]
+      ],
+      [
+        "Emeu",
+        3,
+        0,
+        [
+          "Rgfm"
+        ]
+      ],
+      [
+        "Eme5",
+        2,
+        5,
+        [
+          500.0,
+          900.0,
+          1300.0
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          1.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          25.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Нативная форма Сюкаку на 25 секунд, +500/900/1300 HP и усиленные атаки; исходная модель Shukaku.",
+      "Нативная форма Сюкаку на 25 секунд, +500/900/1300 HP и усиленные атаки; исходная модель Shukaku.",
+      "Нативная форма Сюкаку на 25 секунд, +500/900/1300 HP и усиленные атаки; исходная модель Shukaku."
+    ],
+    "key": "W",
+    "icon": "Icon_Shukaku_Portrait2.blp",
+    "animation": "spell,channel",
+    "audio_index": 85,
+    "implementation": "Independent adaptation of source slot",
+    "order": "metamorphosis",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 9,
+    "slot": 4,
+    "index": 49,
+    "source_id": "A02N",
+    "id": "R905",
+    "base": "ANcl",
+    "name": "Песчаное погребение",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 35.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Сдавливает врагов в активной области своего цунами; без цунами действует вокруг Гаары. Коротко оглушает.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Сдавливает врагов в активной области своего цунами; без цунами действует вокруг Гаары. Коротко оглушает. Сила эффекта: 700. Длительность: 1 сек."
+    ],
+    "key": "E",
+    "icon": "Icon_GaaraShip_SabakuTaiso.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 0,
+    "mechanic": 2,
+    "passive": false,
+    "damage": [
+      700
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 1.0,
+    "radius": 380.0,
+    "effect": "gaars sand.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 10,
+    "slot": 0,
+    "index": 50,
+    "source_id": "A003",
+    "id": "RA01",
+    "base": "ANcl",
+    "name": "Карасу",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      90,
+      90,
+      90
+    ],
+    "cooldown": 55.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Атакующая марионетка на 50 секунд: отравляющие атаки. Новый призыв заменяет прежнюю марионетку этого типа.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "acidbomb"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Атакующая марионетка на 50 секунд: отравляющие атаки. Новый призыв заменяет прежнюю марионетку этого типа. Длительность: 50 сек.",
+      "Атакующая марионетка на 50 секунд: отравляющие атаки. Новый призыв заменяет прежнюю марионетку этого типа. Длительность: 50 сек.",
+      "Атакующая марионетка на 50 секунд: отравляющие атаки. Новый призыв заменяет прежнюю марионетку этого типа. Длительность: 50 сек."
+    ],
+    "key": "D",
+    "icon": "Icon_Kankuro_Karasu.blp",
+    "animation": "spell,throw",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "acidbomb",
+    "target_mode": 0,
+    "mechanic": 7,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 50.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "rc0",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 10,
+    "slot": 1,
+    "index": 51,
+    "source_id": "A004",
+    "id": "RA02",
+    "base": "ANcl",
+    "name": "Управление марионеткой",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      105,
+      105,
+      105,
+      105
+    ],
+    "cooldown": 12.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Согласованный удар: +25% урона за каждую живую марионетку Канкуро; короткое оглушение.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "banish"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Согласованный удар: +25% урона за каждую живую марионетку Канкуро; короткое оглушение. Сила эффекта: 140. Длительность: 1 сек.",
+      "Согласованный удар: +25% урона за каждую живую марионетку Канкуро; короткое оглушение. Сила эффекта: 210. Длительность: 1 сек.",
+      "Согласованный удар: +25% урона за каждую живую марионетку Канкуро; короткое оглушение. Сила эффекта: 280. Длительность: 1 сек.",
+      "Согласованный удар: +25% урона за каждую живую марионетку Канкуро; короткое оглушение. Сила эффекта: 350. Длительность: 1 сек."
+    ],
+    "key": "F",
+    "icon": "Icon_Kankuro_Kugutsu.blp",
+    "animation": "attack",
+    "audio_index": 67,
+    "implementation": "Independent adaptation of source slot",
+    "order": "banish",
+    "target_mode": 1,
+    "mechanic": 1,
+    "passive": false,
+    "damage": [
+      140,
+      210,
+      280,
+      350
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 1.0,
+    "radius": 0.0,
+    "effect": "Kunai.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 10,
+    "slot": 2,
+    "index": 52,
+    "source_id": "A011",
+    "id": "RA03",
+    "base": "ANcl",
+    "name": "Куроари",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 55.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Защитная марионетка на 50 секунд: больше здоровья и брони, чем у Карасу.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "cripple"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Защитная марионетка на 50 секунд: больше здоровья и брони, чем у Карасу. Длительность: 50 сек.",
+      "Защитная марионетка на 50 секунд: больше здоровья и брони, чем у Карасу. Длительность: 50 сек.",
+      "Защитная марионетка на 50 секунд: больше здоровья и брони, чем у Карасу. Длительность: 50 сек."
+    ],
+    "key": "G",
+    "icon": "Icon_Kankuro_Kuroari.blp",
+    "animation": "spell,throw",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cripple",
+    "target_mode": 0,
+    "mechanic": 7,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 50.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "rk0",
+    "companion_slot": 1,
+    "heal": false
+  },
+  {
+    "hero": 10,
+    "slot": 3,
+    "index": 53,
+    "source_id": "A013",
+    "id": "RA04",
+    "base": "ANcl",
+    "name": "Сансёо",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 65.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Тяжёлая марионетка на 45 секунд с большим запасом здоровья и брони.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Тяжёлая марионетка на 45 секунд с большим запасом здоровья и брони. Длительность: 45 сек.",
+      "Тяжёлая марионетка на 45 секунд с большим запасом здоровья и брони. Длительность: 45 сек.",
+      "Тяжёлая марионетка на 45 секунд с большим запасом здоровья и брони. Длительность: 45 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Kankuro_Sanshouo.blp",
+    "animation": "spell,throw",
+    "audio_index": 51,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 0,
+    "mechanic": 7,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 45.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "rs0",
+    "companion_slot": 2,
+    "heal": false
+  },
+  {
+    "hero": 10,
+    "slot": 4,
+    "index": 54,
+    "source_id": "A02R",
+    "id": "RA05",
+    "base": "ANcl",
+    "name": "Бомбы марионеток",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 35.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Взрывы вокруг каждой живой марионетки. Без призванных марионеток — один взрыв вокруг Канкуро.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Взрывы вокруг каждой живой марионетки. Без призванных марионеток — один взрыв вокруг Канкуро. Сила эффекта: 350."
+    ],
+    "key": "E",
+    "icon": "Icon_Kankuro_PuppetBomb.blp",
+    "animation": "spell,slam",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 0,
+    "mechanic": 10,
+    "passive": false,
+    "damage": [
+      350
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 250.0,
+    "effect": "Note.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 11,
+    "slot": 0,
+    "index": 55,
+    "source_id": "A00S",
+    "id": "RB01",
+    "base": "AOsh",
+    "name": "Камайтачи",
+    "ranks": 4,
+    "required_level": 1,
+    "level_skip": 2,
+    "mana": [
+      90,
+      90,
+      90,
+      90
+    ],
+    "cooldown": 11.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Нативная волна ветра: 120/200/280/360 урона врагам на линии.",
+    "fields": [
+      [
+        "Osh1",
+        2,
+        1,
+        [
+          120.0,
+          200.0,
+          280.0,
+          360.0
+        ]
+      ],
+      [
+        "Osh2",
+        2,
+        2,
+        [
+          1200.0
+        ]
+      ],
+      [
+        "Osh3",
+        2,
+        3,
+        [
+          900.0
+        ]
+      ],
+      [
+        "Osh4",
+        2,
+        4,
+        [
+          170.0
+        ]
+      ],
+      [
+        "aare",
+        2,
+        0,
+        [
+          120.0
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "WindAttack.mdl"
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Нативная волна ветра: 120/200/280/360 урона врагам на линии.",
+      "Нативная волна ветра: 120/200/280/360 урона врагам на линии.",
+      "Нативная волна ветра: 120/200/280/360 урона врагам на линии.",
+      "Нативная волна ветра: 120/200/280/360 урона врагам на линии."
+    ],
+    "key": "D",
+    "icon": "Icon_Temari_Kamaitachi.blp",
+    "animation": "spell",
+    "audio_index": 80,
+    "implementation": "Independent adaptation of source slot",
+    "order": "shockwave",
+    "target_mode": 2,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 11,
+    "slot": 1,
+    "index": 56,
+    "source_id": "A00T",
+    "id": "RB02",
+    "base": "AEev",
+    "name": "Ветряная защита",
+    "ranks": 3,
+    "required_level": 1,
+    "level_skip": 4,
+    "mana": [
+      0,
+      0,
+      0
+    ],
+    "cooldown": 0.0,
+    "range": 0.0,
+    "targets": "",
+    "description": "Пассивное уклонение 12/20/28%, с заметным ростом и безопасным пределом.",
+    "fields": [
+      [
+        "Eev1",
+        2,
+        1,
+        [
+          0.12,
+          0.2,
+          0.28
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Пассивное уклонение 12/20/28%, с заметным ростом и безопасным пределом.",
+      "Пассивное уклонение 12/20/28%, с заметным ростом и безопасным пределом.",
+      "Пассивное уклонение 12/20/28%, с заметным ростом и безопасным пределом."
+    ],
+    "key": "F",
+    "icon": "Icon_Temari_Portrait.blp",
+    "animation": "spell",
+    "audio_index": -1,
+    "implementation": "Independent adaptation of source slot",
+    "order": "",
+    "target_mode": 0,
+    "mechanic": 0,
+    "passive": true,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 11,
+    "slot": 2,
+    "index": 57,
+    "source_id": "A01J",
+    "id": "RB03",
+    "base": "Acyc",
+    "name": "Татсу но Осигото",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      120,
+      120,
+      120
+    ],
+    "cooldown": 22.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Нативный циклон временно поднимает врага в воздух; 1/1,5/2 секунды против героев.",
+    "fields": [
+      [
+        "adur",
+        2,
+        0,
+        [
+          2.0,
+          2.5,
+          3.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          1.0,
+          1.5,
+          2.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Нативный циклон временно поднимает врага в воздух; 1/1,5/2 секунды против героев.",
+      "Нативный циклон временно поднимает врага в воздух; 1/1,5/2 секунды против героев.",
+      "Нативный циклон временно поднимает врага в воздух; 1/1,5/2 секунды против героев."
+    ],
+    "key": "G",
+    "icon": "Icon_Temari_TatsuNoOshigoto.blp",
+    "animation": "spell",
+    "audio_index": 157,
+    "implementation": "Independent adaptation of source slot",
+    "order": "cyclone",
+    "target_mode": 1,
+    "mechanic": 0,
+    "passive": false,
+    "damage": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 0.0,
+    "effect": "",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 11,
+    "slot": 3,
+    "index": 58,
+    "source_id": "A00V",
+    "id": "RB04",
+    "base": "ANcl",
+    "name": "Дайкамайтачи",
+    "ranks": 3,
+    "required_level": 6,
+    "level_skip": 4,
+    "mana": [
+      135,
+      135,
+      135
+    ],
+    "cooldown": 30.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Ветряная буря в выбранной зоне: 8 импульсов урона за 4 секунды.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "drunkenhaze"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Ветряная буря в выбранной зоне: 8 импульсов урона за 4 секунды. Сила эффекта: 70. Длительность: 4 сек.",
+      "Ветряная буря в выбранной зоне: 8 импульсов урона за 4 секунды. Сила эффекта: 110. Длительность: 4 сек.",
+      "Ветряная буря в выбранной зоне: 8 импульсов урона за 4 секунды. Сила эффекта: 150. Длительность: 4 сек."
+    ],
+    "key": "W",
+    "icon": "Icon_Orochimaru_FutonDaitoppa.blp",
+    "animation": "spell",
+    "audio_index": 30,
+    "implementation": "Independent adaptation of source slot",
+    "order": "drunkenhaze",
+    "target_mode": 2,
+    "mechanic": 8,
+    "passive": false,
+    "damage": [
+      70,
+      110,
+      150
+    ],
+    "burn": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "duration": 4.0,
+    "radius": 400.0,
+    "effect": "Electrical Cyclone.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
+  },
+  {
+    "hero": 11,
+    "slot": 4,
+    "index": 59,
+    "source_id": "A027",
+    "id": "RB05",
+    "base": "ANcl",
+    "name": "Призыв: Кирикири Май",
+    "ranks": 1,
+    "required_level": 10,
+    "level_skip": 4,
+    "mana": [
+      150
+    ],
+    "cooldown": 40.0,
+    "range": 750.0,
+    "targets": "ground,air,enemy,neutral,organic",
+    "description": "Режущий ветер Каматари поражает врагов вдоль широкой линии длиной 900.",
+    "fields": [
+      [
+        "Ncl1",
+        2,
+        1,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl2",
+        0,
+        2,
+        [
+          2
+        ]
+      ],
+      [
+        "Ncl3",
+        0,
+        3,
+        [
+          1
+        ]
+      ],
+      [
+        "Ncl4",
+        2,
+        4,
+        [
+          0.0
+        ]
+      ],
+      [
+        "Ncl5",
+        0,
+        5,
+        [
+          0
+        ]
+      ],
+      [
+        "Ncl6",
+        3,
+        6,
+        [
+          "howlofterror"
+        ]
+      ],
+      [
+        "adur",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ],
+      [
+        "ahdu",
+        2,
+        0,
+        [
+          0.0
+        ]
+      ]
+    ],
+    "rank_descriptions": [
+      "Режущий ветер Каматари поражает врагов вдоль широкой линии длиной 900. Сила эффекта: 750."
+    ],
+    "key": "E",
+    "icon": "Icon_Temari_KuchiyoseKirikiriMai.blp",
+    "animation": "spell,slam",
+    "audio_index": 32,
+    "implementation": "Independent adaptation of source slot",
+    "order": "howlofterror",
+    "target_mode": 2,
+    "mechanic": 9,
+    "passive": false,
+    "damage": [
+      750
+    ],
+    "burn": [
+      0.0
+    ],
+    "duration": 0.0,
+    "radius": 220.0,
+    "effect": "WindAttack.mdl",
+    "profile": 0,
+    "summon": "",
+    "companion_slot": 0,
+    "heal": false
   }
 ]

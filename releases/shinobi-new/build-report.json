@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Skills_Alpha_05a.w3x",
-  "bytes": 7674935,
-  "sha256": "5255d91767606c50d98cc72865ea301448c6840646dad80df5b2f5d18724de41",
+  "filename": "Shinobi_Roster_Alpha_06.w3x",
+  "bytes": 7717168,
+  "sha256": "eb8fd4477e124b1dc11f7ae7684fa5fc99defe6797b3f7d9aee446c5b409d4f3",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": false,
   "importedAssets": 369,
@@ -12,10 +12,10 @@
   "slots": 12,
   "inventoriedLearnableSkills": 58,
   "inventoriedInnateSkills": 2,
-  "recreatedSkillMechanics": 10,
+  "recreatedSkillMechanics": 58,
   "skillImplementation": "new independent adaptations, not original script",
-  "playableHeroesWithSkills": 2,
+  "playableHeroesWithSkills": 12,
   "sectorSize": 4096,
-  "stage": "Ten-technique training alpha; story and other heroes skills pending",
+  "stage": "Full-roster technique alpha; story pending",
   "engineTested": false
 }

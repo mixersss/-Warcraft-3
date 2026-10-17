@@ -1,0 +1,9 @@
+{
+  "sourceTechniqueSlots": 58,
+  "rosterHeroes": 12,
+  "activeBotOrders": 52,
+  "mechanicFamilies": 10,
+  "staggeredDataCallbacks": 12,
+  "nativeMocks": true,
+  "enginePlaytest": false
+}
