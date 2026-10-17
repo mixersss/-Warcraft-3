@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Chapter_01_Alpha_07c.w3x",
-  "bytes": 8065157,
-  "sha256": "de4cee2dd1d22470413ddecd5d4fa4c400e75d32bf15e84856ed841bacca7714",
+  "filename": "Shinobi_Chapter_01_Alpha_08.w3x",
+  "bytes": 8073353,
+  "sha256": "3fd9b2d96c17b536c149bcfc6e446c08e738aae20fc28106fc37d492fbdc2090",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery only; no original units, abilities, metadata or JASS",
   "importedAssets": 375,
@@ -24,9 +24,14 @@
   "recreatedInnateSkills": 1,
   "nativeVisibleTrees": 3377,
   "auditedActiveSkillAnimations": 52,
+  "sourceVisualSlotsAudited": 58,
+  "modelsWithSequenceAndAttachmentAudit": 67,
+  "visualActorTypes": 16,
+  "boundedVisualActorCapacity": 256,
+  "realChannelCastPoses": true,
   "nativeImpactSounds": true,
   "musicMode": "source chapter mapping; forest HeavyViolence loop",
   "experienceProfile": "source factors, radius, creature levels and hero start/cap; no quest XP",
-  "stage": "Chapter 01 roster audit, shadow tether, Byakugan vision and close-range bot casts",
+  "stage": "Chapter 01 source visual choreography audit and moving skill effects",
   "engineTested": false
 }

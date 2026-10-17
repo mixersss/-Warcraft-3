@@ -2,12 +2,12 @@
 from pathlib import Path
 import json,math,struct,hashlib
 from presentation import combat,misc,scenery
-from skills import SKILLS,HERO_SKILLS,ability_data,summon_units,buff_data
+from skills import VISUALS,SKILLS,HERO_SKILLS,ability_data,summon_units,buff_data
 from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI CHAPTER 01 ALPHA 07c'
+NAME='SHINOBI CHAPTER 01 ALPHA 08'
 DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
@@ -92,7 +92,16 @@ def script():
   j=row['index'];body=skillbodies[row['hero']]
   anims=HEROES[row['hero']]['animations'];tokens=row['animation'].lower().replace(',',' ').split()
   anim=next((k for k,name in enumerate(anims) if all(t in name.lower().split() for t in tokens)), -1)
-  values={'PlayableSkill':"'"+row['id']+"'",'SkillRanks':row['ranks'],'SkillRequired':row['required_level'],'SkillSkip':row['level_skip'],'SkillAudio':row['audio_index'],'SkillOrder':q(row['order']),'SkillTarget':row['target_mode'],'SkillCooldown':float(row['cooldown']),'SkillPassive':str(row.get('passive',False)).lower(),'SkillMorph':str(row['base']=='AEme').lower(),'SkillToggle':str(row['base']=='ANms').lower(),'SkillHeal':str(row.get('heal',False)).lower(),'SkillAnimation':anim,'RosterMechanic':row.get('mechanic',0),'RosterRadius':float(row.get('radius',0.)),'RosterDuration':float(row.get('duration',0.)),'RosterVisual':q(row.get('effect','')),'RosterProfile':row.get('profile',0),'RosterPetSlot':row.get('companion_slot',0)}
+  profile=next(p for p in VISUALS['skills'] if p['index']==j)
+  formindex=-1;formscale=1.
+  formmodels={0:'Naruto.mdx',1:'SasukeCursed.mdx',9:'Shukaku.mdx'}
+  if row['hero'] in formmodels:
+   metadata=json.loads((ROOT/'src/model-visual-metadata.json').read_text())
+   seqs=next(m['sequences'] for m in metadata if m['path']==formmodels[row['hero']])
+   desired='Spell slam Alternate' if row['hero']==0 else ('Spell slam' if row['hero']==1 and row['slot'] in (2,3) else 'Spell')
+   formindex=next(n for n,a in enumerate(seqs) if a['name'].lower()==desired.lower())
+   formscale=seqs[formindex]['seconds']/profile['channelSeconds'] if profile['channelSeconds'] else 1.
+  values={'SkillFormAnimation':formindex,'SkillFormPoseScale':formscale,'SkillHold':profile['channelSeconds'],'SkillPoseScale':profile['sequencePlaybackScale'],'PlayableSkill':"'"+row['id']+"'",'SkillRanks':row['ranks'],'SkillRequired':row['required_level'],'SkillSkip':row['level_skip'],'SkillAudio':row['audio_index'],'SkillOrder':q(row['order']),'SkillTarget':row['target_mode'],'SkillCooldown':float(row['cooldown']),'SkillPassive':str(row.get('passive',False)).lower(),'SkillMorph':str(row['base']=='AEme').lower(),'SkillToggle':str(row['base']=='ANms').lower(),'SkillHeal':str(row.get('heal',False)).lower(),'SkillAnimation':anim,'RosterMechanic':row.get('mechanic',0),'RosterRadius':float(row.get('radius',0.)),'RosterDuration':float(row.get('duration',0.)),'RosterVisual':q(row.get('effect','')),'RosterProfile':row.get('profile',0),'RosterPetSlot':row.get('companion_slot',0)}
   for key,value in values.items():body.append(f'    set {key}[{j}]={value}')
   for n,mana in enumerate(row['mana']):
    body.append(f'    set SkillMana[{j*4+n}]={float(mana)}')
@@ -108,7 +117,7 @@ def script():
  for h in range(12):dispatch += [('    if' if h==0 else '    elseif')+f' SkillDataCursor=={h} then',f'        call SkillsData{h}()']
  dispatch += ['    endif','    set SkillDataCursor=SkillDataCursor+1','    if SkillDataCursor>=12 then','        set SkillDataReady=true','        call PauseTimer(SkillDataClock)','        call DestroyTimer(SkillDataClock)','        set SkillDataClock=null','    endif','endfunction']
  skillfunctions.append('\n'.join(dispatch))
- skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
+ skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/visuals.j').read_text()+'\n'+(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
  from story import generated_data
  code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()).replace('// TREE_RUNTIME',(ROOT/'src/tree-jump.j').read_text()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text())
  lines=['function config takes nothing returns nothing',f'    call SetMapName({q(NAME)})',f'    call SetMapDescription({q(DESC)})','    call SetPlayers(12)','    call SetTeams(4)','    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)']
@@ -134,8 +143,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07c.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Chapter_01_Alpha_08.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'Chapter 01 roster audit, shadow tether, Byakugan vision and close-range bot casts','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'Chapter 01 source visual choreography audit and moving skill effects','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

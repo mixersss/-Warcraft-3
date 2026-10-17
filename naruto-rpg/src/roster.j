@@ -4,6 +4,10 @@ function RosterFlag takes integer mask, integer flag returns boolean
 endfunction
 function RosterClearBuff takes integer p returns nothing
     local integer n=0
+    if KibaFourLegs[p] then
+        call AddUnitAnimationProperties(Hero[p],"alternate",false)
+        set KibaFourLegs[p]=false
+    endif
     loop
         exitwhen n>=6
         call UnitRemoveAbility(Hero[p],RosterBonus[n])
@@ -170,6 +174,7 @@ function RosterGrantInnate takes integer p returns nothing
 endfunction
 function RosterReset takes integer p returns nothing
     local integer k=0
+    call VisualClearHero(p)
     call RosterClearSand(p)
     call RosterClearVision(p)
     call RosterClearShadow(p)
@@ -290,6 +295,10 @@ function RosterBuff takes integer p, integer index, integer rank returns nothing
         set n=n+1
         set flag=flag*2
     endloop
+    if index==37 then
+        call AddUnitAnimationProperties(Hero[p],"alternate",true)
+        set KibaFourLegs[p]=true
+    endif
     set RosterBuffUntil[p]=TimeNow+RosterDuration[index]
     if HeroRole[p]==3 and ModuloInteger(index,5)==3 then
         set RosterBuffDrain[p]=.02
@@ -360,11 +369,7 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         return
     endif
     if SkillAnimation[index]>=0 then
-        if GetUnitTypeId(Hero[p])==HeroType[p] then
-            call SetUnitAnimationByIndex(Hero[p],SkillAnimation[index])
-        else
-            call SetUnitAnimation(Hero[p],"spell")
-        endif
+        call VisualPose(p,index)
     endif
     if kind==1 then
         if HeroRole[p]==10 then
@@ -416,6 +421,7 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
             set x=GetSpellTargetX()
             set y=GetSpellTargetY()
         endif
+        set VisualZoneIndex[p]=index
         set ZoneFollow[p]=kind==5
         set ZoneX[p]=x
         set ZoneY[p]=y
@@ -461,13 +467,11 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
                 set x=GetUnitX(Companion[p*3+n])
                 set y=GetUnitY(Companion[p*3+n])
                 call RosterArea(p,x,y,RosterRadius[index],power,0.,0.)
-                call SkillsFlashAt("Note.mdl",x,y)
             endif
             set n=n+1
         endloop
         if count==0 then
             call RosterArea(p,x,y,RosterRadius[index],power,0.,0.)
-            call SkillsFlashAt("Note.mdl",x,y)
         endif
     endif
 endfunction
@@ -553,6 +557,7 @@ function RosterTick takes nothing returns nothing
                     set ZoneY[p]=GetUnitY(Hero[p])
                 endif
                 call RosterArea(p,ZoneX[p],ZoneY[p],ZoneRadius[p],ZonePower[p],ZoneBurn[p],0.)
+                call VisualPulse(p,VisualZoneIndex[p],ZoneX[p],ZoneY[p])
                 set ZoneNext[p]=TimeNow+.5
             elseif ZoneUntil[p]>0. and TimeNow>=ZoneUntil[p] then
                 call RosterClearZone(p)

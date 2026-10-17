@@ -14,10 +14,12 @@ const units=parse(Parser,'war3map.w3u').customTable.objects;
 const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===rank)?.value;
 const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
+const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl"].map(x=>x.toLowerCase()));
+for(const v of JSON.parse(fs.readFileSync(__dirname+'/src/skill-visuals.json')).visualUnits)if(/^(abilities|objects|doodads)\\/i.test(v.model))nativeModels.add(v.model.toLowerCase());
 const assets=new Set(JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')).map(r=>r.path.toLowerCase()));
 for(const o of units){
  assert(['rdum','rdst'].includes(o.newId) || (get(o,'uico')||'replaceabletextures\\').toLowerCase().startsWith('replaceabletextures\\') || assets.has((get(o,'uico')||'').toLowerCase()),'Missing unit portrait '+o.newId);
- if(!['rdum','rdst'].includes(o.newId))assert(((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || get(o,'umdl')==='Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl') || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
+ if(!['rdum','rdst'].includes(o.newId))assert(((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || nativeModels.has(get(o,'umdl').toLowerCase())) || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
 }
 for(const row of rows)assert(row.icon.toLowerCase().startsWith('replaceabletextures\\') || assets.has(row.icon.toLowerCase()),'Missing spell icon');
 function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','defenseType','deathType','regenType','channelType','channelFlags','silenceFlags','detectionType'].includes(t)?0:3;}
@@ -34,7 +36,8 @@ for(const o of units){
 }
 for(let j=0;j<rows.length;j++){const pos=rows[j].slot;assert.equal(get(ability[rows[j].id],'abpy'),pos<4?2:1);assert.equal(get(ability[rows[j].id],'abpx'),pos<4?pos:1);}
 const buffs=parse(Parser,'war3map.w3h').customTable.objects;
-assert.equal(buffs.length,1);assert.equal(buffs[0].newId,'Rsmb');assert.equal(get(buffs[0],'ftat'),'');
+assert.equal(buffs.length,6);assert.equal(buffs[0].newId,'Rsmb');assert.equal(get(buffs[0],'ftat'),'');
+for(const buff of buffs){assert(schema.stockIds.buffs.includes(buff.oldId),'Invalid native buff base '+buff.oldId);for(const mod of buff.modifications){assert(schema.buffFields[mod.id]);assert.equal(mod.variableType,kind(schema.buffFields[mod.id].type));}}
 for(let rank=1;rank<=4;rank++){assert.equal(get(ability.R601,'abuf',rank),'Rsmb');assert.equal(get(ability.Rbyg,'aran',rank),200+200*rank);assert.equal(get(ability.Rbyg,'Det1',rank),1);}
 assert.equal(rows.length,58);assert.equal(new Set(rows.map(r=>r.id)).size,58);
 for(const r of rows){assert.equal(get(ability[r.id],'alev'),r.ranks);for(let rank=1;rank<=r.ranks;rank++){assert.equal(get(ability[r.id],'amcs',rank),r.mana[rank-1]);assert(Math.abs(get(ability[r.id],'acdn',rank)-(r.cooldowns?.[rank-1]??r.cooldown))<.01);}}
@@ -53,7 +56,7 @@ for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map
 assert.equal(ability.R604.oldId,'AOre');assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
-for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Kunai.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
+for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Shurikens.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
 assert.equal(get(unit.re01,'ulev'),4);assert.equal(get(unit.re02,'ulev'),4);assert.equal(get(unit.re03,'ulev'),20);assert.equal(get(unit.re04,'ulev'),30);
 for(const id of ['Zbwp','Zbce','Zbbl','Ljkn','Ljsh','Ljnt'])assert(ability[id]);
 const info=parse(Info,'war3map.w3i');assert.equal(info.players.length,12);assert.equal(info.forces.length,4);assert.deepEqual(info.forces.map(f=>f.playerMasks),[7,56,448,3584]);
@@ -105,6 +108,7 @@ function GetLocalPlayer()return LocalPlayer end
 function IsPlayerAlly(a,b)return math.floor(a/3)==math.floor(b/3)end
 function PingMinimapEx(x,y,d,r,g,b,extra)Pings[#Pings+1]={x=x,y=y}end
 function GetUnitFacing(u) return 0 end
+function GetUnitCurrentOrder(u)return u.order or 0 end
 function Cos(x) return math.cos(x) end
 function Sin(x) return math.sin(x) end
 function SquareRoot(x) return math.sqrt(x) end
@@ -132,6 +136,11 @@ function GroupEnumUnitsInRange(g,x,y,r,f) for _,u in ipairs(World)do if (u.x-x)^
 function FirstOfGroup(g) return g[1] end
 function GroupRemoveUnit(g,u) assert(g[1]==u);table.remove(g,1) end
 function UnitDamageTarget(c,t,amount,attack,ranged,at,dt,wt) assert(c~=t and amount>0);Hits[#Hits+1]={target=t,damage=amount};t.hp=t.hp-amount;return true end
+function AddUnitAnimationProperties(u,tag,on)u.alternate=on end
+function SetUnitTimeScale(u,s)if u then u.timeScale=s end end
+function QueueUnitAnimation(u,s)u.queuedAnimation=s end
+function SetUnitFlyHeight(u,h,s)u.height=h end
+function SetUnitFacing(u,a)u.facing=a end
 function SetUnitAnimation(u,a) u.animation=a end
 function SetUnitAnimationByIndex(u,n) assert(n>=0);u.animationIndex=n end
 function CreateSound(path,loop,d3,range,fi,fo,eax) return {path=path} end
@@ -217,7 +226,7 @@ for p=0,12 do FoundationSpawn() end
 for p=0,11 do assert((Hero[p]~=nil)==(slots[p]=='playing'),'Open slots must remain empty') end
 assert(Hero[0].level==1 and Hero[1].level==1 and Hero[4].level==1)
 -- All started effect handles have a bounded cleanup path.
-TimeNow=100;SkillsTick();assert(Effects==Destroyed)
+TimeNow=100;SkillsTick();for i=1,40 do VisualTick() end;assert(Effects==Destroyed)
 `);
 run(fs.readFileSync(__dirname+'/roster-harness.lua','utf8'));
 const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|StoryPrice|SpawnX|SpawnY|EnemySpawnX|EnemySpawnY|StoryMentorType|StoryMentorName|StoryLootType)\[\d+\]/.test(s));
@@ -226,6 +235,7 @@ run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/technique-audit-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/visual-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

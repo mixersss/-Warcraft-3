@@ -29,8 +29,9 @@ for h in heroes:
    if field in ('Eev1','Ocr4'):assert all(0<=v<=.75 for v in values)
    if kind==3:
     for value in values:
-     if isinstance(value,str) and value.lower().endswith(('.mdl','.mdx')) and not value.lower().startswith(('units\\','abilities\\')):
-      assert value.lower().removesuffix('.mdl')+'.mdx' in assets,(r['id'],value)
+     for model in str(value).split(','):
+      if model.lower().endswith(('.mdl','.mdx')) and not model.lower().startswith(('units\\','abilities\\','objects\\','doodads\\')):
+       assert model.lower().removesuffix('.mdl').removesuffix('.mdx')+'.mdx' in assets,(r['id'],model)
   tokens=r['animation'].lower().replace(',',' ').split()
   matching=[(n,name) for n,name in enumerate(model_sequences) if all(t in name.lower().split() for t in tokens)]
   if not r['passive']:

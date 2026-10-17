@@ -1,4 +1,29 @@
 globals
+    boolean array KibaFourLegs
+    integer array SkillFormAnimation
+    real array SkillFormPoseScale
+    integer array SkillPoseAbility
+    real array VisualPoseLife
+    integer array VisualZoneIndex
+    unit array VisualUnit
+    integer array VisualOwner
+    integer array VisualMode
+    real array VisualSX
+    real array VisualSY
+    real array VisualTX
+    real array VisualTY
+    real array VisualHeight
+    real array VisualEndHeight
+    real array VisualElapsed
+    real array VisualLife
+    integer VisualCursor=0
+    effect array VisualHand
+    real array VisualHandLife
+    integer array VisualPulseCount
+    real array VisualChannelUntil
+    integer array VisualChannelIndex
+    real array SkillHold
+    real array SkillPoseScale
     unit array ShadowSegment
     unit array ShadowTarget
     real array ShadowUntil

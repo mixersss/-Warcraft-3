@@ -1,0 +1,4163 @@
+[
+  {
+    "path": "Hinata.mdx",
+    "attachments": [
+      "hand left",
+      "head",
+      "overhead",
+      "hand right",
+      "chest",
+      "foot right",
+      "foot left",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 1667,
+        "to": 2633,
+        "seconds": 0.966,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk Fast",
+        "from": 2667,
+        "to": 3000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "spell spin",
+        "from": 3667,
+        "to": 6600,
+        "seconds": 2.933,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 6667,
+        "to": 7667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 9333,
+        "to": 10167,
+        "seconds": 0.834,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 10333,
+        "to": 11333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 20000,
+        "to": 21667,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 22000,
+        "to": 23333,
+        "seconds": 1.333,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 4,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "Jiroubu.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 4667,
+        "to": 5667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 9333,
+        "to": 11000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kankuro.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell throw",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 4367,
+        "to": 5000,
+        "seconds": 0.633,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kidoumaru.mdx",
+    "attachments": [
+      "foot right",
+      "foot left",
+      "hand right",
+      "hand left",
+      "head",
+      "chest",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "walk",
+        "from": 333,
+        "to": 1167,
+        "seconds": 0.834,
+        "nonLooping": 0
+      },
+      {
+        "name": "stand",
+        "from": 1500,
+        "to": 2667,
+        "seconds": 1.167,
+        "nonLooping": 0
+      },
+      {
+        "name": "spell",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kimimaro.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 9333,
+        "to": 11000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kisame.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "sphere01",
+      "sphere02"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 1",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Slam",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 16000,
+        "to": 17000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 3",
+        "from": 18333,
+        "to": 19667,
+        "seconds": 1.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand Channel",
+        "from": 20000,
+        "to": 20333,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 4",
+        "from": 21667,
+        "to": 22667,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Naruto.mdx",
+    "attachments": [
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5433,
+        "to": 6867,
+        "seconds": 1.434,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Two",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 12000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 12333,
+        "to": 13333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand 2",
+        "from": 13667,
+        "to": 16667,
+        "seconds": 3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Morph",
+        "from": 17000,
+        "to": 18333,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand Alternate",
+        "from": 18667,
+        "to": 21000,
+        "seconds": 2.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack Alternate",
+        "from": 21333,
+        "to": 22167,
+        "seconds": 0.834,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk Alternate",
+        "from": 22333,
+        "to": 24333,
+        "seconds": 2,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell slam Alternate",
+        "from": 24667,
+        "to": 25333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "Morph Alternate",
+        "from": 25667,
+        "to": 26333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "death alternate",
+        "from": 26767,
+        "to": 27767,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "disspate alternate",
+        "from": 28100,
+        "to": 29100,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Orochimaru.mdx",
+    "attachments": [
+      "hand right",
+      "hand left",
+      "foot right",
+      "foot left",
+      "chest",
+      "head",
+      "overhead",
+      "weapon left",
+      "weapon left",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 1000,
+        "to": 2000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 11000,
+        "to": 12000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell two",
+        "from": 17000,
+        "to": 17260,
+        "seconds": 0.26,
+        "nonLooping": 1
+      },
+      {
+        "name": "stand channel",
+        "from": 17260,
+        "to": 17800,
+        "seconds": 0.54,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell summon gate",
+        "from": 19000,
+        "to": 20000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell summon coffin",
+        "from": 21000,
+        "to": 22000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell channel",
+        "from": 23000,
+        "to": 23700,
+        "seconds": 0.7,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack - 1",
+        "from": 28000,
+        "to": 29000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 30000,
+        "to": 31000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 4",
+        "from": 35000,
+        "to": 36000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 37000,
+        "to": 38000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "RockLee.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6367,
+        "seconds": 0.7,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Throw",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell power up",
+        "from": 14400,
+        "to": 15900,
+        "seconds": 1.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack walk stand spin",
+        "from": 16000,
+        "to": 16533,
+        "seconds": 0.533,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 2",
+        "from": 17333,
+        "to": 18333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell 2",
+        "from": 18667,
+        "to": 20333,
+        "seconds": 1.666,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "Sakon.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 9333,
+        "to": 11000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Sandaime.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 1",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 4333,
+        "to": 5000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Slam",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell 2",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "SasukeCursed.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell channel",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell slam",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Shukaku.mdx",
+    "attachments": [
+      "head",
+      "hand right",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left",
+      "overhead",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand 2",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Tayuya.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 4667,
+        "to": 5667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 9333,
+        "to": 11000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Temari.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "head",
+      "hand left",
+      "hand right",
+      "chest",
+      "foot right",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 4,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "ScrollRed.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 667,
+        "to": 7667,
+        "seconds": 7,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 8000,
+        "to": 8300,
+        "seconds": 0.3,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 2,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Jiraiya.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 1",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 7967,
+        "seconds": 0.967,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell slam",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Death",
+        "from": 14667,
+        "to": 15267,
+        "seconds": 0.6,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell  Dissipate",
+        "from": 15300,
+        "to": 15600,
+        "seconds": 0.3,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "MindFog.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 333,
+        "to": 667,
+        "seconds": 0.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 1200,
+        "to": 1533,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 1933,
+        "to": 2267,
+        "seconds": 0.334,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 2,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Bag_1.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 0,
+        "to": 33,
+        "seconds": 0.033,
+        "nonLooping": 0
+      },
+      {
+        "name": "Birth",
+        "from": 333,
+        "to": 867,
+        "seconds": 0.534,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 1333,
+        "to": 1667,
+        "seconds": 0.334,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Gaara.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell channel",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell looping",
+        "from": 8167,
+        "to": 9167,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Throw",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 17333,
+        "to": 18333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Electrical Cyclone.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 0,
+        "to": 67,
+        "seconds": 0.067,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 800,
+        "to": 1333,
+        "seconds": 0.533,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 2400,
+        "to": 2500,
+        "seconds": 0.1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 3,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "WindAttack.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 367,
+        "to": 1000,
+        "seconds": 0.633,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1333,
+        "to": 2667,
+        "seconds": 1.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 3333,
+        "to": 4000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kunai.mdx",
+    "attachments": [
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 0,
+        "to": 333,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 667,
+        "to": 1000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 1333,
+        "to": 2333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Shurikens.mdx",
+    "attachments": [
+      "origin ref01",
+      "origin ref02",
+      "origin ref03"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 33,
+        "to": 333,
+        "seconds": 0.3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Birth",
+        "from": 667,
+        "to": 1000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 1333,
+        "to": 2333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Karasu.mdx",
+    "attachments": [
+      "head",
+      "overhead",
+      "hand left",
+      "hand right",
+      "wist",
+      "body",
+      "foot right",
+      "foot left",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 333,
+        "to": 667,
+        "seconds": 0.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "walk",
+        "from": 1000,
+        "to": 1333,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "attack - 1",
+        "from": 1667,
+        "to": 2500,
+        "seconds": 0.833,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 2667,
+        "to": 3333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell two",
+        "from": 3667,
+        "to": 5000,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 5333,
+        "to": 5667,
+        "seconds": 0.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack - 2",
+        "from": 6000,
+        "to": 6667,
+        "seconds": 0.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kuroari.mdx",
+    "attachments": [
+      "foot right",
+      "foot left",
+      "hand right",
+      "hand left",
+      "overhead",
+      "head",
+      "body",
+      "wist",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 333,
+        "to": 667,
+        "seconds": 0.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "walk",
+        "from": 1000,
+        "to": 1333,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "attack - 1",
+        "from": 1667,
+        "to": 2167,
+        "seconds": 0.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack - 2",
+        "from": 2333,
+        "to": 2833,
+        "seconds": 0.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell two",
+        "from": 4333,
+        "to": 6667,
+        "seconds": 2.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 7000,
+        "to": 7333,
+        "seconds": 0.333,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Sanshouo.mdx",
+    "attachments": [
+      "overhead",
+      "head",
+      "body",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 333,
+        "to": 1667,
+        "seconds": 1.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "walk",
+        "from": 2000,
+        "to": 3333,
+        "seconds": 1.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "attack",
+        "from": 3667,
+        "to": 4167,
+        "seconds": 0.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 4333,
+        "to": 5000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell TWO",
+        "from": 5333,
+        "to": 6000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 6333,
+        "to": 6667,
+        "seconds": 0.334,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "gaars sand.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 45267,
+        "to": 45484,
+        "seconds": 0.217,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "GaaraSand2.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 45267,
+        "to": 45484,
+        "seconds": 0.217,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Manda.mdx",
+    "attachments": [
+      "origin",
+      "head",
+      "overhead",
+      "body"
+    ],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 333,
+        "to": 667,
+        "seconds": 0.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "walk",
+        "from": 1000,
+        "to": 3333,
+        "seconds": 2.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "attack",
+        "from": 3667,
+        "to": 4333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 4667,
+        "to": 5333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell two",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell three",
+        "from": 7000,
+        "to": 8667,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 9000,
+        "to": 9333,
+        "seconds": 0.333,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "ANBU_2.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot left",
+      "sphere02",
+      "sphere01"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 3",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 4,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "ChakraShark.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 3000,
+        "seconds": 2.667,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 3333,
+        "to": 4000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 1,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Ichiraku.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 100,
+        "to": 500,
+        "seconds": 0.4,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 14,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Kabuto.mdx",
+    "attachments": [
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "walk",
+        "from": 700,
+        "to": 1233,
+        "seconds": 0.533,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand - 1",
+        "from": 1500,
+        "to": 2667,
+        "seconds": 1.167,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand - 2",
+        "from": 3000,
+        "to": 6000,
+        "seconds": 3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell Slam",
+        "from": 6667,
+        "to": 8667,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 10000,
+        "to": 11000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 11333,
+        "to": 12000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack -2",
+        "from": 12333,
+        "to": 13000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 13333,
+        "to": 15000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 15333,
+        "to": 17333,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand Ready",
+        "from": 17667,
+        "to": 18667,
+        "seconds": 1,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Gamabunta_2.mdx",
+    "attachments": [
+      "hnad left",
+      "hand right",
+      "head",
+      "chest",
+      "foot right",
+      "foot left",
+      "overhead",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand 2",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "haku.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "kiba.mdx",
+    "attachments": [
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5433,
+        "to": 6867,
+        "seconds": 1.434,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack walk stand spin",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 12000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 12333,
+        "to": 13333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand 2",
+        "from": 13667,
+        "to": 16667,
+        "seconds": 3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Morph",
+        "from": 17000,
+        "to": 18333,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand Alternate",
+        "from": 18667,
+        "to": 21000,
+        "seconds": 2.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack Alternate",
+        "from": 21333,
+        "to": 22167,
+        "seconds": 0.834,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk Alternate",
+        "from": 22333,
+        "to": 24333,
+        "seconds": 2,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell slam Alternate",
+        "from": 24667,
+        "to": 25333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "Morph Alternate",
+        "from": 25667,
+        "to": 26333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      },
+      {
+        "name": "death alternate",
+        "from": 26667,
+        "to": 27667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate alternate",
+        "from": 28000,
+        "to": 29000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "neji.mdx",
+    "attachments": [
+      "hand left",
+      "head",
+      "overhead",
+      "hand right",
+      "chest",
+      "foot right",
+      "foot left",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 1667,
+        "to": 2333,
+        "seconds": 0.666,
+        "nonLooping": 0
+      },
+      {
+        "name": "spell spin",
+        "from": 3667,
+        "to": 6600,
+        "seconds": 2.933,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 6667,
+        "to": 7667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 9333,
+        "to": 10167,
+        "seconds": 0.834,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 10333,
+        "to": 11333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 20000,
+        "to": 21667,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 22000,
+        "to": 23333,
+        "seconds": 1.333,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 3
+  },
+  {
+    "path": "sakura.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "head",
+      "hand right",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 5467,
+        "to": 6333,
+        "seconds": 0.866,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 6667,
+        "to": 7667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 8000,
+        "to": 10000,
+        "seconds": 2,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "sasuke.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell Stand",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Attack",
+        "from": 8333,
+        "to": 9333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Walk",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell Death",
+        "from": 14667,
+        "to": 15667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "spell Dissipate",
+        "from": 16000,
+        "to": 17000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 17333,
+        "to": 19000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand 2",
+        "from": 19500,
+        "to": 25000,
+        "seconds": 5.5,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "tenten.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "head",
+      "hand right",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 5467,
+        "to": 6333,
+        "seconds": 0.866,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 6667,
+        "to": 7667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 8000,
+        "to": 10000,
+        "seconds": 2,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Itachi.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "hand right",
+      "head",
+      "hand left",
+      "chest",
+      "foot left",
+      "sphere02",
+      "sphere01"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 7000,
+        "to": 7833,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "dissipate",
+        "from": 9333,
+        "to": 11000,
+        "seconds": 1.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell two",
+        "from": 15667,
+        "to": 16667,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Zabuza.mdx",
+    "attachments": [
+      "hand second left",
+      "hand first right",
+      "hand first left",
+      "chest left",
+      "chest second",
+      "head second",
+      "overhead",
+      "origin",
+      "head first",
+      "hand first right",
+      "hand first left",
+      "chest right",
+      "hand first right"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 6667,
+        "to": 7333,
+        "seconds": 0.666,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 1",
+        "from": 20000,
+        "to": 21333,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 23333,
+        "to": 24667,
+        "seconds": 1.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 50000,
+        "to": 51500,
+        "seconds": 1.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 60000,
+        "to": 61000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "spell",
+        "from": 70000,
+        "to": 70500,
+        "seconds": 0.5,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Note.MDX",
+    "attachments": [
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 33,
+        "to": 333,
+        "seconds": 0.3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 667,
+        "to": 1000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 1333,
+        "to": 2667,
+        "seconds": 1.334,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Gai.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 2667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 3",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6367,
+        "seconds": 0.7,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Throw",
+        "from": 13333,
+        "to": 14333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell channel",
+        "from": 14400,
+        "to": 15900,
+        "seconds": 1.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack walk stand spin",
+        "from": 16000,
+        "to": 16533,
+        "seconds": 0.533,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 2",
+        "from": 17333,
+        "to": 18333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell slam",
+        "from": 18667,
+        "to": 20333,
+        "seconds": 1.666,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "ShikamaruGenin.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "hand right",
+      "head",
+      "hand left",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1600,
+        "to": 2667,
+        "seconds": 1.067,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack 1",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 4333,
+        "to": 5000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 11000,
+        "to": 13000,
+        "seconds": 2,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "ShikamaruKageMane.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Birth",
+        "from": 333,
+        "to": 2667,
+        "seconds": 2.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 3000,
+        "to": 5000,
+        "seconds": 2,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 2,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Shizune.mdx",
+    "attachments": [
+      "foot right",
+      "foot left",
+      "hand right",
+      "hand left",
+      "head",
+      "chest",
+      "origin",
+      "overhead",
+      "weapon"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 167,
+        "to": 1333,
+        "seconds": 1.166,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand 2",
+        "from": 1500,
+        "to": 3500,
+        "seconds": 2,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 11500,
+        "to": 14733,
+        "seconds": 3.233,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack",
+        "from": 15933,
+        "to": 16800,
+        "seconds": 0.867,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 17033,
+        "to": 18033,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 18200,
+        "to": 19033,
+        "seconds": 0.833,
+        "nonLooping": 0
+      },
+      {
+        "name": "Dissipate",
+        "from": 30833,
+        "to": 32933,
+        "seconds": 2.1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand Ready",
+        "from": 46600,
+        "to": 47733,
+        "seconds": 1.133,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 50000,
+        "to": 51133,
+        "seconds": 1.133,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Channel",
+        "from": 51233,
+        "to": 53233,
+        "seconds": 2,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 2,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 3
+  },
+  {
+    "path": "Iron Wrecking Ball.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 100,
+        "to": 500,
+        "seconds": 0.4,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "GamaKichi.mdx",
+    "attachments": [
+      "head",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 333,
+        "to": 2000,
+        "seconds": 1.667,
+        "nonLooping": 0
+      },
+      {
+        "name": "stand ready",
+        "from": 2333,
+        "to": 4000,
+        "seconds": 1.667,
+        "nonLooping": 0
+      },
+      {
+        "name": "attack",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "attack 2",
+        "from": 5667,
+        "to": 7000,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "walk",
+        "from": 16333,
+        "to": 18333,
+        "seconds": 2,
+        "nonLooping": 0
+      },
+      {
+        "name": "death",
+        "from": 18667,
+        "to": 20000,
+        "seconds": 1.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "stand 2",
+        "from": 21000,
+        "to": 22010,
+        "seconds": 1.01,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "SandJounin.mdx",
+    "attachments": [
+      "hand right",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 1000,
+        "to": 2010,
+        "seconds": 1.01,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 5000,
+        "to": 5844,
+        "seconds": 0.844,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack -1",
+        "from": 6000,
+        "to": 7000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack -2",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 14000,
+        "to": 14752,
+        "seconds": 0.752,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "KurenaiNew.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "foot right",
+      "foot left",
+      "head",
+      "hand left",
+      "weapon",
+      "hand right",
+      "chest"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 333,
+        "to": 1000,
+        "seconds": 0.667,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 1333,
+        "to": 1667,
+        "seconds": 0.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 2000,
+        "to": 3000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 3333,
+        "to": 4333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 9000,
+        "to": 9333,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 9667,
+        "to": 10667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 11000,
+        "to": 12333,
+        "seconds": 1.333,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 4,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 1,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Eye_Byakugan.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 7000,
+        "seconds": 6.667,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Eye_MangekyoItachi.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 7000,
+        "seconds": 6.667,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Eye_Sharingan.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 7000,
+        "seconds": 6.667,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "HakkeAura.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1600,
+        "seconds": 1.267,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "MistNin.mdx",
+    "attachments": [
+      "origin",
+      "chest",
+      "over head",
+      "right weapon",
+      "left weapon"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 1000,
+        "to": 1999,
+        "seconds": 0.999,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 2000,
+        "to": 2999,
+        "seconds": 0.999,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack - 1",
+        "from": 3000,
+        "to": 3999,
+        "seconds": 0.999,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 4200,
+        "to": 5300,
+        "seconds": 1.1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 6000,
+        "to": 6800,
+        "seconds": 0.8,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Slam",
+        "from": 11000,
+        "to": 12300,
+        "seconds": 1.3,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 14000,
+        "to": 14800,
+        "seconds": 0.8,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 3,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "Ramen.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 0,
+        "to": 3333,
+        "seconds": 3.333,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 1,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "LeafJounin.mdx",
+    "attachments": [
+      "overhead",
+      "chest",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 1000,
+        "to": 2010,
+        "seconds": 1.01,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 5000,
+        "to": 5844,
+        "seconds": 0.844,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack -1",
+        "from": 6000,
+        "to": 6800,
+        "seconds": 0.8,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack -2",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Channel",
+        "from": 10000,
+        "to": 11000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 12000,
+        "to": 13920,
+        "seconds": 1.92,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 14000,
+        "to": 14752,
+        "seconds": 0.752,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "KakashiNew.mdx",
+    "attachments": [
+      "head",
+      "hand right",
+      "weapon",
+      "hand left",
+      "chest",
+      "foot right",
+      "foot left",
+      "origin",
+      "overhead",
+      "sphere01",
+      "sphere02"
+    ],
+    "sequences": [
+      {
+        "name": "Stand Ready",
+        "from": 333,
+        "to": 667,
+        "seconds": 0.334,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 1000,
+        "to": 2000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 2333,
+        "to": 3333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 3667,
+        "to": 10000,
+        "seconds": 6.333,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand 2",
+        "from": 10333,
+        "to": 13333,
+        "seconds": 3,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 13667,
+        "to": 14667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell one",
+        "from": 15000,
+        "to": 16000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell two",
+        "from": 16333,
+        "to": 17000,
+        "seconds": 0.667,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell three",
+        "from": 17333,
+        "to": 18000,
+        "seconds": 0.667,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell Slam",
+        "from": 18333,
+        "to": 19333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Walk",
+        "from": 19667,
+        "to": 20333,
+        "seconds": 0.666,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 20667,
+        "to": 21333,
+        "seconds": 0.666,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 8,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 1,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "Kuchiyose.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 333,
+        "to": 1400,
+        "seconds": 1.067,
+        "nonLooping": 0
+      },
+      {
+        "name": "Birth",
+        "from": 1433,
+        "to": 1467,
+        "seconds": 0.034,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 3967,
+        "to": 4300,
+        "seconds": 0.333,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 0,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "RainGenin.mdx",
+    "attachments": [
+      "origin",
+      "overhead",
+      "head",
+      "hand left",
+      "weapon",
+      "hand right",
+      "chest",
+      "foot left",
+      "foot right"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 41,
+        "to": 833,
+        "seconds": 0.792,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 958,
+        "to": 1666,
+        "seconds": 0.708,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 1791,
+        "to": 2708,
+        "seconds": 0.917,
+        "nonLooping": 1
+      },
+      {
+        "name": "Stand",
+        "from": 3041,
+        "to": 3750,
+        "seconds": 0.709,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 4166,
+        "to": 5000,
+        "seconds": 0.834,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 5416,
+        "to": 7000,
+        "seconds": 1.584,
+        "nonLooping": 1
+      },
+      {
+        "name": "Dissipate",
+        "from": 7166,
+        "to": 7583,
+        "seconds": 0.417,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 7833,
+        "to": 8750,
+        "seconds": 0.917,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 7,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  },
+  {
+    "path": "SoundJounin.mdx",
+    "attachments": [
+      "overhead",
+      "chest",
+      "origin"
+    ],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 1000,
+        "to": 2010,
+        "seconds": 1.01,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 3000,
+        "to": 4000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Walk",
+        "from": 5000,
+        "to": 5844,
+        "seconds": 0.844,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack -1",
+        "from": 6000,
+        "to": 6800,
+        "seconds": 0.8,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack -2",
+        "from": 8000,
+        "to": 9000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Channel",
+        "from": 10000,
+        "to": 11000,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Spell",
+        "from": 12000,
+        "to": 13920,
+        "seconds": 1.92,
+        "nonLooping": 1
+      },
+      {
+        "name": "Death",
+        "from": 14000,
+        "to": 14752,
+        "seconds": 0.752,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 5,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 1
+  },
+  {
+    "path": "Anko.mdx",
+    "attachments": [
+      "foot right",
+      "foot left",
+      "head",
+      "hand left",
+      "weapon",
+      "hand right",
+      "chest",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 3667,
+        "to": 10000,
+        "seconds": 6.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 11000,
+        "to": 12000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack 2",
+        "from": 12333,
+        "to": 13333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell one",
+        "from": 14333,
+        "to": 14667,
+        "seconds": 0.334,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 4,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 4
+  },
+  {
+    "path": "AsumaNew.mdx",
+    "attachments": [
+      "foot right",
+      "foot left",
+      "head",
+      "hand left",
+      "weapon",
+      "hand right",
+      "chest",
+      "origin",
+      "overhead"
+    ],
+    "sequences": [
+      {
+        "name": "Walk",
+        "from": 333,
+        "to": 1333,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand",
+        "from": 1667,
+        "to": 3333,
+        "seconds": 1.666,
+        "nonLooping": 0
+      },
+      {
+        "name": "Stand Ready",
+        "from": 3667,
+        "to": 4000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Attack",
+        "from": 4333,
+        "to": 5333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack - 2",
+        "from": 5667,
+        "to": 6667,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Channel",
+        "from": 7000,
+        "to": 8000,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Slam",
+        "from": 8167,
+        "to": 9000,
+        "seconds": 0.833,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell Throw",
+        "from": 9333,
+        "to": 10667,
+        "seconds": 1.334,
+        "nonLooping": 1
+      },
+      {
+        "name": "Attack Slam",
+        "from": 12333,
+        "to": 13333,
+        "seconds": 1,
+        "nonLooping": 1
+      },
+      {
+        "name": "Spell",
+        "from": 13667,
+        "to": 14000,
+        "seconds": 0.333,
+        "nonLooping": 0
+      },
+      {
+        "name": "Death",
+        "from": 15000,
+        "to": 16000,
+        "seconds": 1,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 1,
+    "ribbonEmitterCount": 2,
+    "geosetAnimationCount": 2
+  },
+  {
+    "path": "war3mapImported\\FBLTree.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "stand",
+        "from": 167,
+        "to": 1167,
+        "seconds": 1,
+        "nonLooping": 0
+      },
+      {
+        "name": "stand hit",
+        "from": 1300,
+        "to": 1600,
+        "seconds": 0.3,
+        "nonLooping": 1
+      },
+      {
+        "name": "death",
+        "from": 1833,
+        "to": 3333,
+        "seconds": 1.5,
+        "nonLooping": 1
+      },
+      {
+        "name": "Birth",
+        "from": 6667,
+        "to": 66667,
+        "seconds": 60,
+        "nonLooping": 1
+      }
+    ],
+    "geosetCount": 8,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 8
+  },
+  {
+    "path": "Tree3.mdx",
+    "attachments": [],
+    "sequences": [
+      {
+        "name": "Stand",
+        "from": 0,
+        "to": 3333,
+        "seconds": 3.333,
+        "nonLooping": 0
+      }
+    ],
+    "geosetCount": 2,
+    "particleEmitterCount": 0,
+    "ribbonEmitterCount": 0,
+    "geosetAnimationCount": 0
+  }
+]

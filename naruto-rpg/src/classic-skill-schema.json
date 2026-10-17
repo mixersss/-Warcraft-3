@@ -468,6 +468,10 @@
     "Det1": {
       "type": "detectionType",
       "column": 1
+    },
+    "amho": {
+      "type": "bool",
+      "column": 0
     }
   },
   "unitFields": {
@@ -3556,6 +3560,245 @@
       "ZTw1",
       "ZTw2",
       "ZTw3"
+    ],
+    "buffs": [
+      "BPSE",
+      "BSTN",
+      "Bchd",
+      "Bdef",
+      "Bdet",
+      "Bfre",
+      "Bfro",
+      "Bvul",
+      "Bpoi",
+      "Bpsd",
+      "Bpsi",
+      "Bsha",
+      "Bspe",
+      "Btrv",
+      "Bclf",
+      "Bcmg",
+      "Bhea",
+      "Binf",
+      "Binv",
+      "Bmlc",
+      "Bmlt",
+      "Bmil",
+      "Bpxf",
+      "Bphx",
+      "Bply",
+      "Bslo",
+      "BHab",
+      "BHad",
+      "BHav",
+      "BHbn",
+      "BHbd",
+      "BHbz",
+      "BHds",
+      "Bdcb",
+      "Bdcl",
+      "Bdcm",
+      "Bdtb",
+      "Bdtl",
+      "Bdtm",
+      "BHfs",
+      "BHtc",
+      "BHwe",
+      "Bakb",
+      "Boar",
+      "Barm",
+      "Bbof",
+      "Bbsk",
+      "Bblo",
+      "Bdvv",
+      "Bdig",
+      "Bens",
+      "Bena",
+      "Beng",
+      "Beye",
+      "Bhwd",
+      "Blsh",
+      "Blsa",
+      "Bliq",
+      "Bprg",
+      "Bspl",
+      "Bstt",
+      "BOac",
+      "BOae",
+      "BOeq",
+      "BOea",
+      "BOhx",
+      "BOmi",
+      "BOsh",
+      "BOsf",
+      "BOvd",
+      "BOvc",
+      "BOwd",
+      "BOww",
+      "BOwk",
+      "Bbar",
+      "Bcor",
+      "Bcyc",
+      "Bcy2",
+      "Beat",
+      "Bfae",
+      "Bgra",
+      "Bmfl",
+      "Bmfa",
+      "Bpsh",
+      "Brej",
+      "Broa",
+      "Bspo",
+      "Bssd",
+      "Bssi",
+      "Bvng",
+      "BEah",
+      "BEar",
+      "BEer",
+      "BEfn",
+      "BEim",
+      "BEia",
+      "BEme",
+      "BEst",
+      "BEsh",
+      "BEsv",
+      "Bams",
+      "Bam2",
+      "Babr",
+      "Bapl",
+      "Bcri",
+      "Bcrs",
+      "Bfrz",
+      "Bplg",
+      "Bpoc",
+      "Bpos",
+      "Brai",
+      "Brpb",
+      "Brpl",
+      "Brpm",
+      "Bspa",
+      "Buhf",
+      "Buns",
+      "Bweb",
+      "Bwea",
+      "BUan",
+      "BUau",
+      "BUav",
+      "BUcb",
+      "BUcs",
+      "BUdd",
+      "BUfa",
+      "BUim",
+      "BUsl",
+      "BUsp",
+      "BUst",
+      "BUts",
+      "Basl",
+      "BCbf",
+      "BCtc",
+      "Bfzy",
+      "Bmec",
+      "BNmr",
+      "Bpig",
+      "BNpi",
+      "BNsa",
+      "Bshs",
+      "BNss",
+      "Btdg",
+      "Btsp",
+      "Btsa",
+      "BNba",
+      "BNbf",
+      "BHca",
+      "Bcsd",
+      "Bcsi",
+      "BNdm",
+      "BNdo",
+      "BNdi",
+      "BNdh",
+      "BNef",
+      "BNht",
+      "BNms",
+      "BNsi",
+      "BNst",
+      "BNsg",
+      "BNsq",
+      "BNsw",
+      "BNto",
+      "BNwm",
+      "BNbr",
+      "BNdc",
+      "BNin",
+      "BNpa",
+      "BNpm",
+      "BNrd",
+      "BNrf",
+      "BNsl",
+      "BIcb",
+      "BFig",
+      "BIcf",
+      "BIil",
+      "BIrb",
+      "BIrg",
+      "BIrl",
+      "BIrm",
+      "BIsv",
+      "BIsh",
+      "BIwb",
+      "BImo",
+      "BIpv",
+      "Xclf",
+      "Xfla",
+      "XHbz",
+      "XHfs",
+      "Xbof",
+      "XOeq",
+      "XOre",
+      "Xesn",
+      "XEsf",
+      "XEtq",
+      "XUdd",
+      "XNmo",
+      "XErc",
+      "XErf",
+      "XIct",
+      "AEsd",
+      "AEtr",
+      "ANmd",
+      "Bivs",
+      "BUad",
+      "Bult",
+      "BNab",
+      "BNcr",
+      "BNhs",
+      "XNhs",
+      "BNtm",
+      "BNeg",
+      "BNcs",
+      "XNcs",
+      "BNfy",
+      "BNcg",
+      "BNic",
+      "BNso",
+      "BNlm",
+      "BNvc",
+      "BNva",
+      "XNvc",
+      "Xbdt",
+      "Xbli",
+      "Xdis",
+      "Xfhs",
+      "Xfhm",
+      "Xfhl",
+      "Xfos",
+      "Xfom",
+      "Xfol",
+      "Xfns",
+      "Xfnm",
+      "Xfnl",
+      "Xfus",
+      "Xfum",
+      "Xful"
     ]
   },
   "itemFields": {
@@ -3622,6 +3865,89 @@
     "icla": {
       "type": "itemClass",
       "column": 0
+    }
+  },
+  "buffFields": {
+    "fnam": {
+      "type": "string"
+    },
+    "fnsf": {
+      "type": "string"
+    },
+    "ftip": {
+      "type": "string"
+    },
+    "fube": {
+      "type": "string"
+    },
+    "feff": {
+      "type": "bool"
+    },
+    "frac": {
+      "type": "unitRace"
+    },
+    "fart": {
+      "type": "icon"
+    },
+    "ftat": {
+      "type": "modelList"
+    },
+    "fsat": {
+      "type": "modelList"
+    },
+    "feat": {
+      "type": "modelList"
+    },
+    "flig": {
+      "type": "lightningEffect"
+    },
+    "fmat": {
+      "type": "modelList"
+    },
+    "fmsp": {
+      "type": "int"
+    },
+    "fmac": {
+      "type": "unreal"
+    },
+    "fmho": {
+      "type": "bool"
+    },
+    "ftac": {
+      "type": "int"
+    },
+    "fta0": {
+      "type": "stringList"
+    },
+    "fta1": {
+      "type": "stringList"
+    },
+    "fta2": {
+      "type": "stringList"
+    },
+    "fta3": {
+      "type": "stringList"
+    },
+    "fta4": {
+      "type": "stringList"
+    },
+    "fta5": {
+      "type": "stringList"
+    },
+    "feft": {
+      "type": "stringList"
+    },
+    "fspt": {
+      "type": "stringList"
+    },
+    "fefs": {
+      "type": "soundLabel"
+    },
+    "fefl": {
+      "type": "soundLabel"
+    },
+    "fspd": {
+      "type": "spellDetail"
     }
   }
 }

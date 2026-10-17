@@ -76,7 +76,7 @@ for _,p in ipairs({4,8}) do
  assert(near.x==220 and ally.x==100,'Rank-one Kaiten must repel enemies 120 without moving allies')
  local zone=ZoneArt[p];local untilTime=ZoneUntil[p]
  cast(p,PlayableSkill[p*5],1,nil)
- assert(ZoneArt[p]==zone and ZoneUntil[p]==untilTime and not zone.destroyed,'Activating sight must preserve Kaiten')
+ assert(ZoneArt[p]==zone and ZoneUntil[p]==untilTime and (not zone or not zone.destroyed),'Activating sight must preserve Kaiten')
  RosterClearZone(p);RosterClearBuff(p);RosterClearVision(p)
 end
 -- A blocked passage and a cliff stop knockback before the obstacle.

@@ -1,0 +1,822 @@
+{
+  "checkedSourceSlots": 58,
+  "checkedImportedModels": 67,
+  "activeSkills": 52,
+  "visualActorTypes": 16,
+  "sourceObjectsAndTriggersCompared": true,
+  "bodySequencesAndAttachmentPointsChecked": true,
+  "sourceSpecificKaitenVisibility": [
+    {
+      "model": "neji.mdx",
+      "spinSeconds": 2.933,
+      "visibleShellGeosets": [
+        {
+          "geoset": 2,
+          "keys": [
+            [
+              333,
+              0
+            ],
+            [
+              1667,
+              0
+            ],
+            [
+              3667,
+              0
+            ],
+            [
+              3933,
+              1
+            ],
+            [
+              6367,
+              0
+            ],
+            [
+              6667,
+              0
+            ],
+            [
+              9333,
+              0
+            ],
+            [
+              10333,
+              0
+            ],
+            [
+              13333,
+              0
+            ],
+            [
+              20000,
+              0
+            ],
+            [
+              22000,
+              0
+            ]
+          ]
+        },
+        {
+          "geoset": 3,
+          "keys": [
+            [
+              333,
+              0
+            ],
+            [
+              1667,
+              0
+            ],
+            [
+              3667,
+              0
+            ],
+            [
+              3933,
+              1
+            ],
+            [
+              6367,
+              0
+            ],
+            [
+              6667,
+              0
+            ],
+            [
+              9333,
+              0
+            ],
+            [
+              10333,
+              0
+            ],
+            [
+              13333,
+              0
+            ],
+            [
+              20000,
+              0
+            ],
+            [
+              22000,
+              0
+            ]
+          ]
+        }
+      ],
+      "channelSeconds": 4,
+      "playbackScale": 0.73325
+    },
+    {
+      "model": "Hinata.mdx",
+      "spinSeconds": 2.933,
+      "visibleShellGeosets": [
+        {
+          "geoset": 2,
+          "keys": [
+            [
+              333,
+              0
+            ],
+            [
+              1667,
+              0
+            ],
+            [
+              2667,
+              0
+            ],
+            [
+              3667,
+              0
+            ],
+            [
+              3933,
+              1
+            ],
+            [
+              6367,
+              0
+            ],
+            [
+              6667,
+              0
+            ],
+            [
+              9333,
+              0
+            ],
+            [
+              10333,
+              0
+            ],
+            [
+              13333,
+              0
+            ],
+            [
+              20000,
+              0
+            ],
+            [
+              22000,
+              0
+            ]
+          ]
+        }
+      ],
+      "channelSeconds": 4,
+      "playbackScale": 0.73325
+    }
+  ],
+  "finiteChanneledCastPoses": true,
+  "tentenBasicProjectile": "Shurikens.mdl (explicit user preference; source basic attack is Kunai.mdl)",
+  "temariWindProjectile": "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl",
+  "enginePlaybackChecked": false,
+  "exactOriginalChoreography": false,
+  "skills": [
+    {
+      "hero": "Uzumaki Naruto",
+      "name": "Джинчурики",
+      "id": "Rn01",
+      "sourceId": "A00L",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uzumaki Naruto",
+      "name": "Теневое клонирование",
+      "id": "Rn02",
+      "sourceId": "A001",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "clone",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uzumaki Naruto",
+      "name": "Призыв Гамабунты",
+      "id": "Rn03",
+      "sourceId": "A00R",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "summon",
+      "animation": "Spell Two",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uzumaki Naruto",
+      "name": "Расенган",
+      "id": "Rn04",
+      "sourceId": "A01P",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "rasengan",
+      "animation": "Spell Two",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uzumaki Naruto",
+      "name": "Однохвостая форма",
+      "id": "Rn05",
+      "sourceId": "A015",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "morph",
+      "animation": "Morph",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uchiha Sasuke",
+      "name": "Катон: Огненный шар",
+      "id": "Rs01",
+      "sourceId": "A01B",
+      "sourceTriggerVisualFunctionCount": 7,
+      "visualKind": "fire",
+      "animation": "Spell Walk",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uchiha Sasuke",
+      "name": "Шаринган",
+      "id": "Rs02",
+      "sourceId": "A01A",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "sharingan",
+      "animation": "Spell Stand",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uchiha Sasuke",
+      "name": "Шиши Рендан",
+      "id": "Rs03",
+      "sourceId": "A033",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "combo",
+      "animation": "Attack 3",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uchiha Sasuke",
+      "name": "Чидори",
+      "id": "Rs04",
+      "sourceId": "A01D",
+      "sourceTriggerVisualFunctionCount": 8,
+      "visualKind": "chidori",
+      "animation": "Spell Attack",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Uchiha Sasuke",
+      "name": "Проклятая печать: II",
+      "id": "Rs05",
+      "sourceId": "A019",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "morph",
+      "animation": "Spell Stand",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Haruno Sakura",
+      "name": "Бросок куная",
+      "id": "R201",
+      "sourceId": "A005",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "throw",
+      "animation": "Attack 2",
+      "channelSeconds": 0.866,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Haruno Sakura",
+      "name": "Взрывная печать",
+      "id": "R202",
+      "sourceId": "A010",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "note",
+      "animation": "Attack",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Haruno Sakura",
+      "name": "Сёсэн: лечение",
+      "id": "R203",
+      "sourceId": "A02D",
+      "sourceTriggerVisualFunctionCount": 8,
+      "visualKind": "heal",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Haruno Sakura",
+      "name": "Окасё",
+      "id": "R204",
+      "sourceId": "A01G",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "ground",
+      "animation": "Attack 2",
+      "channelSeconds": 0.866,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Haruno Sakura",
+      "name": "Призыв Сидзунэ",
+      "id": "R205",
+      "sourceId": "A02S",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "summon",
+      "animation": "Attack",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Rock Lee",
+      "name": "Второй шанс",
+      "id": "R301",
+      "sourceId": "A02U",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Rock Lee",
+      "name": "Коноха Сэнпу",
+      "id": "R302",
+      "sourceId": "A00E",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "kick",
+      "animation": "Attack 3",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Rock Lee",
+      "name": "Пьяный кулак",
+      "id": "R303",
+      "sourceId": "A00U",
+      "sourceTriggerVisualFunctionCount": 9,
+      "visualKind": "buff",
+      "animation": "Spell power up",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Rock Lee",
+      "name": "Восемь врат",
+      "id": "R304",
+      "sourceId": "A029",
+      "sourceTriggerVisualFunctionCount": 10,
+      "visualKind": "gates",
+      "animation": "Spell power up",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Neji",
+      "name": "Бьякуган",
+      "id": "R401",
+      "sourceId": "A034",
+      "sourceTriggerVisualFunctionCount": 10,
+      "visualKind": "vision",
+      "animation": "spell spin",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Neji",
+      "name": "Кайтэн",
+      "id": "R402",
+      "sourceId": "A006",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "spin",
+      "animation": "spell spin",
+      "channelSeconds": 4,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Neji",
+      "name": "64 ладони",
+      "id": "R403",
+      "sourceId": "A02L",
+      "sourceTriggerVisualFunctionCount": 6,
+      "visualKind": "palms",
+      "animation": "Attack",
+      "channelSeconds": 0.834,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Neji",
+      "name": "128 ладоней",
+      "id": "R404",
+      "sourceId": "A008",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "palms",
+      "animation": "Attack 2",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Neji",
+      "name": "Хаккэ Хасангэки",
+      "id": "R405",
+      "sourceId": "A009",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "palmwave",
+      "animation": "spell spin",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Tenten",
+      "name": "Бросок куная",
+      "id": "R501",
+      "sourceId": "A005",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "throw",
+      "animation": "Attack 2",
+      "channelSeconds": 0.866,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Tenten",
+      "name": "Тобидогу",
+      "id": "R502",
+      "sourceId": "A00W",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "barrage",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Tenten",
+      "name": "Мастерство оружия",
+      "id": "R503",
+      "sourceId": "A000",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Tenten",
+      "name": "Сосёрю",
+      "id": "R504",
+      "sourceId": "A00Z",
+      "sourceTriggerVisualFunctionCount": 6,
+      "visualKind": "barrage",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Tenten",
+      "name": "Призыв гигантского оружия",
+      "id": "R505",
+      "sourceId": "A02Z",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "ironball",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Nara Shikamaru",
+      "name": "Теневое подражание",
+      "id": "R601",
+      "sourceId": "A02H",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "shadow",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Nara Shikamaru",
+      "name": "Стратегия",
+      "id": "R602",
+      "sourceId": "A00P",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Nara Shikamaru",
+      "name": "Залп взрывных печатей",
+      "id": "R603",
+      "sourceId": "A02A",
+      "sourceTriggerVisualFunctionCount": 9,
+      "visualKind": "barrage",
+      "animation": "Attack 2",
+      "channelSeconds": 0.667,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Nara Shikamaru",
+      "name": "Второй шанс",
+      "id": "R604",
+      "sourceId": "A02U",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Inuzuka Kiba",
+      "name": "Призыв Акамару",
+      "id": "R701",
+      "sourceId": "A01C",
+      "sourceTriggerVisualFunctionCount": 2,
+      "visualKind": "summon",
+      "animation": "Attack - 2",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Inuzuka Kiba",
+      "name": "Дымовая бомба",
+      "id": "R702",
+      "sourceId": "A016",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "smoke",
+      "animation": "Attack 3",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Inuzuka Kiba",
+      "name": "Четвероногая техника",
+      "id": "R703",
+      "sourceId": "A01Q",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "buff",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Inuzuka Kiba",
+      "name": "Цууга",
+      "id": "R704",
+      "sourceId": "A01H",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "roll",
+      "animation": "attack walk stand spin",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Inuzuka Kiba",
+      "name": "Двухголовый волк",
+      "id": "R705",
+      "sourceId": "A026",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "morph",
+      "animation": "Morph",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Hinata",
+      "name": "Бьякуган",
+      "id": "R801",
+      "sourceId": "A034",
+      "sourceTriggerVisualFunctionCount": 10,
+      "visualKind": "vision",
+      "animation": "spell spin",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Hinata",
+      "name": "Кайтэн",
+      "id": "R802",
+      "sourceId": "A006",
+      "sourceTriggerVisualFunctionCount": 4,
+      "visualKind": "spin",
+      "animation": "spell spin",
+      "channelSeconds": 4,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Hinata",
+      "name": "Хаккэ Хидои Тэнкэцу",
+      "id": "R803",
+      "sourceId": "A01E",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "strike",
+      "animation": "Attack",
+      "channelSeconds": 0.834,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Hinata",
+      "name": "Защитные 64 ладони",
+      "id": "R804",
+      "sourceId": "A01F",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "guard",
+      "animation": "spell spin",
+      "channelSeconds": 4,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Hyuuga Hinata",
+      "name": "Хакуро Тэнбу",
+      "id": "R805",
+      "sourceId": "A02J",
+      "sourceTriggerVisualFunctionCount": 2,
+      "visualKind": "palms",
+      "animation": "Attack 2",
+      "channelSeconds": 1.5,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Gaara",
+      "name": "Песчаный гроб",
+      "id": "R901",
+      "sourceId": "A014",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "coffin",
+      "animation": "spell channel",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Gaara",
+      "name": "Песчаный щит",
+      "id": "R902",
+      "sourceId": "A01W",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "shield",
+      "animation": "spell channel",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Gaara",
+      "name": "Песчаное цунами",
+      "id": "R903",
+      "sourceId": "A01I",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "sand",
+      "animation": "spell looping",
+      "channelSeconds": 1.5,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Gaara",
+      "name": "Пробуждение Сюкаку",
+      "id": "R904",
+      "sourceId": "A00Y",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "morph",
+      "animation": "spell channel",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Gaara",
+      "name": "Песчаное погребение",
+      "id": "R905",
+      "sourceId": "A02N",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "sandburial",
+      "animation": "spell channel",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Kankuro",
+      "name": "Карасу",
+      "id": "RA01",
+      "sourceId": "A003",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "summon",
+      "animation": "Spell throw",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Kankuro",
+      "name": "Управление марионеткой",
+      "id": "RA02",
+      "sourceId": "A004",
+      "sourceTriggerVisualFunctionCount": 1,
+      "visualKind": "puppet",
+      "animation": "Attack",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Kankuro",
+      "name": "Куроари",
+      "id": "RA03",
+      "sourceId": "A011",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "summon",
+      "animation": "Spell throw",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Kankuro",
+      "name": "Сансёо",
+      "id": "RA04",
+      "sourceId": "A013",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "summon",
+      "animation": "Spell throw",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Kankuro",
+      "name": "Бомбы марионеток",
+      "id": "RA05",
+      "sourceId": "A02R",
+      "sourceTriggerVisualFunctionCount": 3,
+      "visualKind": "bombs",
+      "animation": "Spell throw",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Temari",
+      "name": "Камайтачи",
+      "id": "RB01",
+      "sourceId": "A00S",
+      "sourceTriggerVisualFunctionCount": 7,
+      "visualKind": "wind",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Temari",
+      "name": "Ветряная защита",
+      "id": "RB02",
+      "sourceId": "A00T",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "passive",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Temari",
+      "name": "Татсу но Осигото",
+      "id": "RB03",
+      "sourceId": "A01J",
+      "sourceTriggerVisualFunctionCount": 5,
+      "visualKind": "cyclone",
+      "animation": "Spell",
+      "channelSeconds": 0,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Temari",
+      "name": "Дайкамайтачи",
+      "id": "RB04",
+      "sourceId": "A00V",
+      "sourceTriggerVisualFunctionCount": 0,
+      "visualKind": "windbarrage",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    },
+    {
+      "hero": "Temari",
+      "name": "Призыв: Кирикири Май",
+      "id": "RB05",
+      "sourceId": "A027",
+      "sourceTriggerVisualFunctionCount": 2,
+      "visualKind": "kirikiri",
+      "animation": "Spell",
+      "channelSeconds": 1,
+      "enginePlaybackChecked": false
+    }
+  ]
+}

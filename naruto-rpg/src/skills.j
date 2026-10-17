@@ -13,7 +13,7 @@ function SkillsBurst takes integer p, string model returns nothing
     if BurstArt[p]!=null then
         call DestroyEffect(BurstArt[p])
     endif
-    set BurstArt[p]=AddSpecialEffectTarget(model,Hero[p],"hand,right")
+    set BurstArt[p]=AddSpecialEffectTarget(model,Hero[p],"hand right")
     set BurstUntil[p]=TimeNow+1.
 endfunction
 function SkillsHoldFlash takes effect art returns nothing
@@ -83,16 +83,28 @@ function SkillsEffect takes nothing returns nothing
     endloop
     if index>=0 then
         if not SkillPassive[index] then
+            set SkillPoseAbility[p]=index
+            set VisualPoseLife[p]=RMaxBJ(1.,SkillHold[index])+.35
             set SkillPoseQueued[p]=true
             set SkillPoseIndex[p]=SkillAnimation[index]
             set SkillPoseType[p]=GetUnitTypeId(caster)
         endif
         call RosterApply(p,index,rank,target)
+        call VisualApply(p,index,rank,target)
+        if SkillHold[index]>0. then
+            set VisualChannelIndex[p]=index
+            set VisualChannelUntil[p]=TimeNow+SkillHold[index]
+            if GetUnitTypeId(caster)==HeroType[p] then
+                call SetUnitTimeScale(caster,SkillPoseScale[index])
+            else
+                call SetUnitTimeScale(caster,SkillFormPoseScale[index])
+            endif
+            set BotNextCast[p]=RMaxBJ(BotNextCast[p],TimeNow+SkillHold[index]+.25)
+        endif
     endif
     if raw=='Rn04' and FoundationAlive(target) then
         set x=GetUnitX(target)
         set y=GetUnitY(target)
-        call SkillsBurst(p,"Abilities\\Spells\\Human\\ManaFlare\\ManaFlareBoltImpact.mdl")
         call DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",x,y))
         call GroupEnumUnitsInRange(SkillScratch,x,y,220.,null)
         loop
@@ -103,8 +115,6 @@ function SkillsEffect takes nothing returns nothing
                 call UnitDamageTarget(caster,other,25.+100.*rank,false,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
             endif
         endloop
-    elseif raw=='Rs04' then
-        call SkillsBurst(p,"Abilities\\Weapons\\FarseerMissile\\FarseerMissile.mdl")
     elseif raw=='Rs02' then
         call SkillsClearSharingan(p)
         call UnitAddAbility(caster,'Rsev')
@@ -120,11 +130,31 @@ function SkillsEffect takes nothing returns nothing
         set ComboLeft[p]=3
         set ComboBurn[p]=0.
         set ComboDamage[p]=40.+60.*rank
-    elseif raw=='Rn03' then
-        call SkillsFlashAt("Kuchiyose.mdl",GetUnitX(caster),GetUnitY(caster))
     endif
     set other=null
     set target=null
+    set caster=null
+endfunction
+function SkillsEndcast takes nothing returns nothing
+    local unit caster=GetTriggerUnit()
+    local integer p=GetPlayerId(GetOwningPlayer(caster))
+    local integer index=0
+    if p<12 and caster==Hero[p] then
+        set index=VisualChannelIndex[p]
+        if VisualChannelUntil[p]>0. and index>=0 then
+            if GetSpellAbilityId()==PlayableSkill[index] then
+                if index==21 or index==41 or index==43 then
+                    call RosterClearZone(p)
+                    call RosterClearBuff(p)
+                endif
+                call SetUnitTimeScale(caster,1.)
+                call SetUnitAnimation(caster,"stand")
+                set VisualChannelUntil[p]=0.
+                set VisualChannelIndex[p]=-1
+                set SkillPoseQueued[p]=false
+            endif
+        endif
+    endif
     set caster=null
 endfunction
 function SkillsSummoned takes nothing returns nothing
@@ -158,12 +188,17 @@ function SkillsTick takes nothing returns nothing
         if SkillPoseQueued[p] then
             set SkillPoseQueued[p]=false
             if FoundationAlive(u) and GetUnitTypeId(u)==SkillPoseType[p] then
-                if GetUnitTypeId(u)==HeroType[p] and SkillPoseIndex[p]>=0 then
-                    call SetUnitAnimationByIndex(u,SkillPoseIndex[p])
-                else
-                    call SetUnitAnimation(u,"attack")
+                // A real Channel already plays and holds this pose. Restarting it here
+                // would cut the end of the sphere/throw sequence by another quarter second.
+                if SkillHold[SkillPoseAbility[p]]<=0. then
+                    call VisualPose(p,SkillPoseAbility[p])
                 endif
             endif
+        endif
+        if VisualChannelUntil[p]>0. and (not FoundationAlive(u) or TimeNow>VisualChannelUntil[p]+.5) then
+            call SetUnitTimeScale(u,1.)
+            set VisualChannelUntil[p]=0.
+            set VisualChannelIndex[p]=-1
         endif
         if SharinganUntil[p]>0. and (TimeNow>=SharinganUntil[p] or not FoundationAlive(u)) then
             call SkillsClearSharingan(p)
@@ -208,7 +243,7 @@ function SkillsBot takes integer p returns boolean
     local boolean issued=false
     local real dx=0.
     local real dy=0.
-    if not SkillDataReady or role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 then
+    if not SkillDataReady or role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 or TimeNow<VisualChannelUntil[p] then
         set u=null
         set target=null
         return false
@@ -250,7 +285,7 @@ function SkillsBot takes integer p returns boolean
             endif
             if issued then
                 set BotReadyAt[p*5+k]=TimeNow+SkillCooldown[role*5+k]+2.
-                set BotNextCast[p]=TimeNow+2.5
+                set BotNextCast[p]=TimeNow+RMaxBJ(2.5,SkillHold[role*5+k]+.25)
             endif
         endif
         set k=k-1
@@ -316,6 +351,8 @@ function SkillsInit takes nothing returns nothing
     local integer p=0
     local trigger spells=CreateTrigger()
     local trigger summons=CreateTrigger()
+    local trigger ended=CreateTrigger()
+    local timer visualclock=CreateTimer()
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
 // GENERATED_SKILLS
@@ -328,13 +365,18 @@ function SkillsInit takes nothing returns nothing
     loop
         exitwhen p>=12
         call TriggerRegisterPlayerUnitEvent(spells,Player(p),EVENT_PLAYER_UNIT_SPELL_EFFECT,null)
+        call TriggerRegisterPlayerUnitEvent(ended,Player(p),EVENT_PLAYER_UNIT_SPELL_ENDCAST,null)
         call TriggerRegisterPlayerUnitEvent(summons,Player(p),EVENT_PLAYER_UNIT_SUMMON,null)
         set HeroRole[p]=p
         set p=p+1
     endloop
     call TriggerAddAction(spells,function SkillsEffect)
+    call TriggerAddAction(ended,function SkillsEndcast)
+    call TimerStart(visualclock,.05,true,function VisualTick)
     call TriggerAddAction(summons,function SkillsSummoned)
     call TimerStart(clock,.25,true,function SkillsTick)
+    set ended=null
+    set visualclock=null
     set spells=null
     set summons=null
     set clock=null

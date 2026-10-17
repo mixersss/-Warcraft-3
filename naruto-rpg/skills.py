@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 ROOT=Path(__file__).parent
 # Checked-in runtime data, rather than original protected object definitions.
+VISUALS=json.loads((ROOT/'src/skill-visuals.json').read_text())
 SKILLS=json.loads((ROOT/'src/playable-skills.json').read_text())
 HERO_SKILLS={h:','.join(s['id'] for s in SKILLS if s['hero']==h) for h in range(12)}
 def ability_data():
@@ -57,8 +58,14 @@ def summon_units():
    out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
  out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,3.5),('ufoo',0,0)]))
  out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
+ for entry in VISUALS['visualUnits']:
+  out.append(('hfoo',entry['id'],[('unam',3,'Графика техники'),('umdl',3,entry['model']),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,entry['scale']),('ushu',3,''),('ushb',3,''),('ussc',1,0.),('usin',0,0),('usid',0,0),('utar',3,''),('utyp',3,''),('ufoo',0,0),('ureq',3,''),('upgr',3,'')]))
  return out
 
 
 def buff_data():
- return [('BEer','Rsmb',[('fnam',3,'Теневое подражание'),('ftip',3,'Теневое подражание'),('fube',3,'Тень удерживает на месте.'),('fart',3,'Icon_Shikamaru_KageMane.BLP'),('ftat',3,''),('fsat',3,''),('feat',3,'')])]
+ out=[('BEer','Rsmb',[('fnam',3,'Теневое подражание'),('ftip',3,'Теневое подражание'),('fube',3,'Тень удерживает на месте.'),('fart',3,'Icon_Shikamaru_KageMane.BLP'),('ftat',3,''),('fsat',3,''),('feat',3,'')])]
+
+ for base,raw,name,art in [('BUau','Rnav','Джинчурики',''),('Broa','Rshb','Шаринган',''),('BEer','Rgac','Песчаный гроб','gaars sand.mdl'),('BNms','Rgas','Песчаный щит','gaars sand.mdl'),('BEme','Rgam','Сюкаку','')]:
+  out.append((base,raw,[('fnam',3,name),('ftip',3,name),('ftat',3,art),('fta0',3,'origin'),('fsat',3,''),('feat',3,'')]))
+ return out

@@ -58,11 +58,27 @@
         ]
       ],
       [
+        "acat",
+        3,
+        0,
+        [
+          ""
+        ]
+      ],
+      [
+        "atat",
+        3,
+        0,
+        [
+          ""
+        ]
+      ],
+      [
         "abuf",
         3,
         0,
         [
-          "BUau"
+          "Rnav"
         ]
       ]
     ],
@@ -82,7 +98,8 @@
     "order": "",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": true
+    "passive": true,
+    "effect": ""
   },
   {
     "hero": 0,
@@ -157,6 +174,30 @@
         [
           20.0
         ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          ""
+        ]
+      ],
+      [
+        "asat",
+        3,
+        0,
+        [
+          ""
+        ]
+      ],
+      [
+        "acat",
+        3,
+        0,
+        [
+          ""
+        ]
       ]
     ],
     "rank_descriptions": [
@@ -175,7 +216,8 @@
     "order": "mirrorimage",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 0,
@@ -235,7 +277,7 @@
         3,
         0,
         [
-          "Kuchiyose.mdl"
+          ""
         ]
       ]
     ],
@@ -246,7 +288,7 @@
     ],
     "key": "G",
     "icon": "Icon_Naruto_Kuchiyose.blp",
-    "animation": "Stand Ready",
+    "animation": "Spell Two",
     "audio_index": 7,
     "implementation": "Independent adaptation; original trigger mechanics not copied",
     "slot": 2,
@@ -254,7 +296,8 @@
     "order": "waterelemental",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 0,
@@ -310,7 +353,7 @@
         3,
         0,
         [
-          "Abilities\\Weapons\\KeeperGroveMissile\\KeeperGroveMissile.mdl"
+          ""
         ]
       ],
       [
@@ -318,7 +361,7 @@
         0,
         0,
         [
-          1500
+          0
         ]
       ]
     ],
@@ -337,7 +380,8 @@
     "order": "thunderbolt",
     "target_mode": 1,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 0,
@@ -408,7 +452,7 @@
     ],
     "key": "E",
     "icon": "Icon_Naruto_OneTailedTransformation.blp",
-    "animation": "Spell",
+    "animation": "Morph",
     "audio_index": 34,
     "implementation": "Independent adaptation; original trigger mechanics not copied",
     "slot": 4,
@@ -416,7 +460,8 @@
     "order": "metamorphosis",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 1,
@@ -510,6 +555,14 @@
         [
           3.0
         ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "Abilities\\Spells\\Other\\BreathOfFire\\BreathOfFireMissile.mdl"
+        ]
       ]
     ],
     "rank_descriptions": [
@@ -528,7 +581,8 @@
     "order": "breathoffire",
     "target_mode": 2,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 1,
@@ -614,7 +668,15 @@
         3,
         0,
         [
-          "Eye_Sharingan.mdl"
+          ""
+        ]
+      ],
+      [
+        "abuf",
+        3,
+        0,
+        [
+          "Rshb"
         ]
       ]
     ],
@@ -633,7 +695,8 @@
     "order": "roar",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 1,
@@ -679,7 +742,7 @@
         ]
       ],
       [
-        "amat",
+        "alig",
         3,
         0,
         [
@@ -687,7 +750,7 @@
         ]
       ],
       [
-        "alig",
+        "amat",
         3,
         0,
         [
@@ -702,7 +765,7 @@
     ],
     "key": "G",
     "icon": "Icon_Sasuke_ShishiRendan.BLP",
-    "animation": "Stand Ready",
+    "animation": "Attack 3",
     "audio_index": 76,
     "implementation": "Independent adaptation; original trigger mechanics not copied",
     "slot": 2,
@@ -710,7 +773,8 @@
     "order": "chainlightning",
     "target_mode": 1,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 1,
@@ -766,7 +830,7 @@
         3,
         0,
         [
-          "Abilities\\Weapons\\FarseerMissile\\FarseerMissile.mdl"
+          ""
         ]
       ],
       [
@@ -774,7 +838,7 @@
         0,
         0,
         [
-          1800
+          0
         ]
       ]
     ],
@@ -785,7 +849,7 @@
     ],
     "key": "W",
     "icon": "Icon_Sasuke_Chidori.BLP",
-    "animation": "Stand Ready",
+    "animation": "Spell Attack",
     "audio_index": 130,
     "implementation": "Independent adaptation; original trigger mechanics not copied",
     "slot": 3,
@@ -793,7 +857,8 @@
     "order": "thunderbolt",
     "target_mode": 1,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 1,
@@ -872,7 +937,8 @@
     "order": "metamorphosis",
     "target_mode": 0,
     "mechanic": 0,
-    "passive": false
+    "passive": false,
+    "effect": ""
   },
   {
     "hero": 2,
@@ -901,7 +967,7 @@
         2,
         1,
         [
-          0.0
+          0.866
         ]
       ],
       [
@@ -933,7 +999,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -969,7 +1035,7 @@
     ],
     "key": "D",
     "icon": "Icon_KunaiThrow.BLP",
-    "animation": "Spell",
+    "animation": "Attack 2",
     "audio_index": 35,
     "implementation": "Independent adaptation of source slot",
     "order": "acidbomb",
@@ -990,7 +1056,7 @@
     ],
     "duration": 0.0,
     "radius": 0.0,
-    "effect": "Kunai.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -1023,7 +1089,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1055,7 +1121,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1091,7 +1157,7 @@
     ],
     "key": "F",
     "icon": "Icon_Sakura_Notes.blp",
-    "animation": "Spell",
+    "animation": "Attack",
     "audio_index": 42,
     "implementation": "Independent adaptation of source slot",
     "order": "banish",
@@ -1112,7 +1178,7 @@
     ],
     "duration": 0.0,
     "radius": 260.0,
-    "effect": "Note.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -1144,7 +1210,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1176,7 +1242,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1260,7 +1326,7 @@
         2,
         1,
         [
-          0.0
+          0.866
         ]
       ],
       [
@@ -1292,7 +1358,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1325,7 +1391,7 @@
     ],
     "key": "W",
     "icon": "Icon_SakuraShip_Okasho.blp",
-    "animation": "Spell",
+    "animation": "Attack 2",
     "audio_index": 78,
     "implementation": "Independent adaptation of source slot",
     "order": "drunkenhaze",
@@ -1340,7 +1406,7 @@
     ],
     "duration": 1.5,
     "radius": 320.0,
-    "effect": "Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -1370,7 +1436,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1402,7 +1468,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1435,7 +1501,7 @@
     ],
     "key": "E",
     "icon": "Icon_Shizune_ChikatsuSaisei.blp",
-    "animation": "Spell",
+    "animation": "Attack",
     "audio_index": 42,
     "implementation": "Independent adaptation of source slot",
     "order": "howlofterror",
@@ -1450,7 +1516,7 @@
     ],
     "duration": 40.0,
     "radius": 0.0,
-    "effect": "Kuchiyose.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "rz01",
     "companion_slot": 0,
@@ -1558,7 +1624,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1590,7 +1656,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1626,7 +1692,7 @@
     ],
     "key": "D",
     "icon": "Icon_Lee_KonohaSenpu2.blp",
-    "animation": "Attack walk stand spin",
+    "animation": "Attack 3",
     "audio_index": 173,
     "implementation": "Independent adaptation of source slot",
     "order": "banish",
@@ -1647,7 +1713,7 @@
     ],
     "duration": 1.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -1679,7 +1745,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1711,7 +1777,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1765,7 +1831,7 @@
     ],
     "duration": 14.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Other\\DrunkenHaze\\DrunkenHazeTarget.mdl",
+    "effect": "",
     "profile": 7,
     "summon": "",
     "companion_slot": 0,
@@ -1797,7 +1863,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1829,7 +1895,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1883,7 +1949,7 @@
     ],
     "duration": 12.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Other\\ImmolationRed\\ImmolationRedTarget.mdl",
+    "effect": "Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl",
     "profile": 44,
     "summon": "",
     "companion_slot": 0,
@@ -1916,7 +1982,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -1948,7 +2014,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -1984,7 +2050,7 @@
     ],
     "key": "D",
     "icon": "Icon_Neji_Byakugan.blp",
-    "animation": "Stand Ready",
+    "animation": "Spell",
     "audio_index": 71,
     "implementation": "Independent adaptation of source slot",
     "order": "acidbomb",
@@ -2037,7 +2103,7 @@
         2,
         1,
         [
-          0.0
+          4.0
         ]
       ],
       [
@@ -2069,7 +2135,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2123,7 +2189,7 @@
     ],
     "duration": 4.0,
     "radius": 270.0,
-    "effect": "HakkeAura.mdl",
+    "effect": "",
     "profile": 17,
     "summon": "",
     "companion_slot": 0,
@@ -2155,7 +2221,7 @@
         2,
         1,
         [
-          0.0
+          0.834
         ]
       ],
       [
@@ -2187,7 +2253,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2241,7 +2307,7 @@
     ],
     "duration": 2.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2273,7 +2339,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -2305,7 +2371,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2340,7 +2406,7 @@
     ],
     "key": "W",
     "icon": "Icon_Hyuga.blp",
-    "animation": "Attack",
+    "animation": "Attack 2",
     "audio_index": 100,
     "implementation": "Independent adaptation of source slot",
     "order": "drunkenhaze",
@@ -2359,7 +2425,7 @@
     ],
     "duration": 2.5,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2389,7 +2455,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -2421,7 +2487,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2469,7 +2535,7 @@
     ],
     "duration": 0.0,
     "radius": 180.0,
-    "effect": "WindAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2502,7 +2568,7 @@
         2,
         1,
         [
-          0.0
+          0.866
         ]
       ],
       [
@@ -2534,7 +2600,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2570,7 +2636,7 @@
     ],
     "key": "D",
     "icon": "Icon_KunaiThrow.BLP",
-    "animation": "Spell",
+    "animation": "Attack 2",
     "audio_index": 162,
     "implementation": "Independent adaptation of source slot",
     "order": "acidbomb",
@@ -2591,7 +2657,7 @@
     ],
     "duration": 0.0,
     "radius": 0.0,
-    "effect": "Kunai.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2623,7 +2689,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -2655,7 +2721,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2709,7 +2775,7 @@
     ],
     "duration": 0.0,
     "radius": 400.0,
-    "effect": "Shurikens.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2775,19 +2841,35 @@
         ]
       ],
       [
-        "amat",
-        3,
-        0,
-        [
-          "Kunai.mdl"
-        ]
-      ],
-      [
         "atar",
         3,
         0,
         [
           "ground,air,enemy,neutral"
+        ]
+      ],
+      [
+        "amat",
+        3,
+        0,
+        [
+          "Shurikens.mdl,Kunai.mdl,abilities\\weapons\\TuskarSpear\\TuskarSpear.mdl"
+        ]
+      ],
+      [
+        "amsp",
+        0,
+        0,
+        [
+          1100
+        ]
+      ],
+      [
+        "amho",
+        0,
+        0,
+        [
+          0
         ]
       ]
     ],
@@ -2849,7 +2931,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -2881,7 +2963,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -2935,7 +3017,7 @@
     ],
     "duration": 4.0,
     "radius": 350.0,
-    "effect": "Shurikens.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -2965,7 +3047,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -2997,7 +3079,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3045,7 +3127,7 @@
     ],
     "duration": 0.0,
     "radius": 220.0,
-    "effect": "Iron Wrecking Ball.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -3248,7 +3330,7 @@
         2,
         1,
         [
-          0.0
+          0.667
         ]
       ],
       [
@@ -3280,7 +3362,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3315,7 +3397,7 @@
     ],
     "key": "G",
     "icon": "Icon_Shikamaru_Kunais.blp",
-    "animation": "Spell",
+    "animation": "Attack 2",
     "audio_index": 169,
     "implementation": "Independent adaptation of source slot",
     "order": "cripple",
@@ -3334,7 +3416,7 @@
     ],
     "duration": 3.0,
     "radius": 300.0,
-    "effect": "Note.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -3441,7 +3523,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -3473,7 +3555,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3508,7 +3590,7 @@
     ],
     "key": "D",
     "icon": "Icon_Akamaru_Portrait.blp",
-    "animation": "Spell",
+    "animation": "Attack - 2",
     "audio_index": 171,
     "implementation": "Independent adaptation of source slot",
     "order": "acidbomb",
@@ -3560,7 +3642,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -3592,7 +3674,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3628,7 +3710,7 @@
     ],
     "key": "F",
     "icon": "Icon_Kiba_SmokeBomb.BLP",
-    "animation": "Spell",
+    "animation": "Attack 3",
     "audio_index": 20,
     "implementation": "Independent adaptation of source slot",
     "order": "banish",
@@ -3649,7 +3731,7 @@
     ],
     "duration": 8.0,
     "radius": 0.0,
-    "effect": "MindFog.mdl",
+    "effect": "",
     "profile": 33,
     "summon": "",
     "companion_slot": 0,
@@ -3681,7 +3763,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -3713,7 +3795,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3767,7 +3849,7 @@
     ],
     "duration": 15.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Orc\\Bloodlust\\BloodlustTarget.mdl",
+    "effect": "",
     "profile": 44,
     "summon": "",
     "companion_slot": 0,
@@ -3799,7 +3881,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -3831,7 +3913,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -3866,7 +3948,7 @@
     ],
     "key": "W",
     "icon": "Icon_Kiba_Tsuga.blp",
-    "animation": "Spell",
+    "animation": "attack walk stand spin",
     "audio_index": 109,
     "implementation": "Independent adaptation of source slot",
     "order": "drunkenhaze",
@@ -3885,7 +3967,7 @@
     ],
     "duration": 0.0,
     "radius": 160.0,
-    "effect": "WindAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -3956,7 +4038,7 @@
     ],
     "key": "E",
     "icon": "Icon_Kiba_Sotoro2.blp",
-    "animation": "Spell",
+    "animation": "Morph",
     "audio_index": 3,
     "implementation": "Independent adaptation of source slot",
     "order": "metamorphosis",
@@ -4004,7 +4086,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -4036,7 +4118,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4072,7 +4154,7 @@
     ],
     "key": "D",
     "icon": "Icon_Neji_Byakugan.blp",
-    "animation": "Stand Ready",
+    "animation": "Spell",
     "audio_index": 61,
     "implementation": "Independent adaptation of source slot",
     "order": "acidbomb",
@@ -4125,7 +4207,7 @@
         2,
         1,
         [
-          0.0
+          4.0
         ]
       ],
       [
@@ -4157,7 +4239,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4211,7 +4293,7 @@
     ],
     "duration": 4.0,
     "radius": 270.0,
-    "effect": "HakkeAura.mdl",
+    "effect": "",
     "profile": 17,
     "summon": "",
     "companion_slot": 0,
@@ -4243,7 +4325,7 @@
         2,
         1,
         [
-          0.0
+          0.834
         ]
       ],
       [
@@ -4275,7 +4357,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4329,7 +4411,7 @@
     ],
     "duration": 1.25,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -4361,7 +4443,7 @@
         2,
         1,
         [
-          0.0
+          4.0
         ]
       ],
       [
@@ -4393,7 +4475,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4477,7 +4559,7 @@
         2,
         1,
         [
-          0.0
+          1.5
         ]
       ],
       [
@@ -4509,7 +4591,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4542,7 +4624,7 @@
     ],
     "key": "E",
     "icon": "Icon_Hinata_HakuroTenbu3.blp",
-    "animation": "Spell",
+    "animation": "Attack 2",
     "audio_index": 97,
     "implementation": "Independent adaptation of source slot",
     "order": "howlofterror",
@@ -4557,7 +4639,7 @@
     ],
     "duration": 2.0,
     "radius": 0.0,
-    "effect": "Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -4623,7 +4705,15 @@
         3,
         0,
         [
-          "GaaraSand2.mdl"
+          "gaars sand.mdl"
+        ]
+      ],
+      [
+        "abuf",
+        3,
+        0,
+        [
+          "Rgac"
         ]
       ]
     ],
@@ -4635,7 +4725,7 @@
     ],
     "key": "D",
     "icon": "Icon_Gaara_SabakuKyuu.BLP",
-    "animation": "spell channel",
+    "animation": "Spell",
     "audio_index": 81,
     "implementation": "Independent adaptation of source slot",
     "order": "entanglingroots",
@@ -4702,6 +4792,14 @@
           0.5,
           0.65
         ]
+      ],
+      [
+        "abuf",
+        3,
+        0,
+        [
+          "Rgas"
+        ]
       ]
     ],
     "rank_descriptions": [
@@ -4711,7 +4809,7 @@
     ],
     "key": "F",
     "icon": "Icon_Gaara_SunaNoTate.blp",
-    "animation": "spell channel",
+    "animation": "Spell",
     "audio_index": -1,
     "implementation": "Independent adaptation of source slot",
     "order": "manashieldon",
@@ -4762,7 +4860,7 @@
         2,
         1,
         [
-          0.0
+          1.5
         ]
       ],
       [
@@ -4794,7 +4892,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -4829,7 +4927,7 @@
     ],
     "key": "G",
     "icon": "Icon_Gaara_RyuusaBakuryu.BLP",
-    "animation": "Spell Throw",
+    "animation": "spell looping",
     "audio_index": 139,
     "implementation": "Independent adaptation of source slot",
     "order": "cripple",
@@ -4848,7 +4946,7 @@
     ],
     "duration": 4.0,
     "radius": 380.0,
-    "effect": "GaaraSand2.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -4916,6 +5014,14 @@
         [
           25.0
         ]
+      ],
+      [
+        "abuf",
+        3,
+        0,
+        [
+          "Rgam"
+        ]
       ]
     ],
     "rank_descriptions": [
@@ -4974,7 +5080,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5006,7 +5112,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5039,7 +5145,7 @@
     ],
     "key": "E",
     "icon": "Icon_GaaraShip_SabakuTaiso.blp",
-    "animation": "spell channel",
+    "animation": "Spell",
     "audio_index": -1,
     "implementation": "Independent adaptation of source slot",
     "order": "howlofterror",
@@ -5054,7 +5160,7 @@
     ],
     "duration": 1.0,
     "radius": 380.0,
-    "effect": "gaars sand.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -5086,7 +5192,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5118,7 +5224,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5205,7 +5311,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5237,7 +5343,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5294,7 +5400,7 @@
     ],
     "duration": 1.0,
     "radius": 0.0,
-    "effect": "Kunai.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -5326,7 +5432,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5358,7 +5464,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5444,7 +5550,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5476,7 +5582,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5560,7 +5666,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5592,7 +5698,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -5640,7 +5746,7 @@
     ],
     "duration": 0.0,
     "radius": 250.0,
-    "effect": "Note.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -5716,7 +5822,15 @@
         3,
         0,
         [
-          "WindAttack.mdl"
+          "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl"
+        ]
+      ],
+      [
+        "amsp",
+        0,
+        0,
+        [
+          2500
         ]
       ]
     ],
@@ -5919,7 +6033,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -5951,7 +6065,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -6005,7 +6119,7 @@
     ],
     "duration": 4.0,
     "radius": 400.0,
-    "effect": "Electrical Cyclone.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,
@@ -6035,7 +6149,7 @@
         2,
         1,
         [
-          0.0
+          1.0
         ]
       ],
       [
@@ -6067,7 +6181,7 @@
         0,
         5,
         [
-          0
+          1
         ]
       ],
       [
@@ -6115,7 +6229,7 @@
     ],
     "duration": 0.0,
     "radius": 220.0,
-    "effect": "WindAttack.mdl",
+    "effect": "",
     "profile": 0,
     "summon": "",
     "companion_slot": 0,

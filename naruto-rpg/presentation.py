@@ -2,7 +2,7 @@
 import json
 from pathlib import Path
 ROOT=Path(__file__).parent
-RANGED={2:('Shurikens.mdl',700),5:('Kunai.mdl',700),6:('Shurikens.mdl',700),9:('gaars sand.mdl',700),11:('WindAttack.mdl',700)}
+RANGED={2:('Shurikens.mdl',700),5:('Shurikens.mdl',700),6:('Shurikens.mdl',700),9:('gaars sand.mdl',700),11:('WindAttack.mdl',700)}
 def combat(slot):
  mods=[('ua1c',2,2.),('ua1w',3,'normal'),('udp1',2,.4),('ubs1',2,.55),('ucs1',3,'RockHeavyBash' if slot in (4,8) else 'WoodHeavyBash')]
  if slot in RANGED:
