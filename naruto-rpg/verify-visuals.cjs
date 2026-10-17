@@ -55,6 +55,13 @@ assert.equal(get(units.vcyc,'umdl'),'Electrical Cyclone.mdl');assert.equal(get(u
 for(const [hero,points] of [[0,['hand right']],[1,['hand left']],[2,['hand left','hand right']],[3,['hand right','foot right']],[4,['hand left','hand right']],[8,['hand left','hand right']]]){
  const actual=meta.find(m=>m.path===heroes[hero].model).attachments;for(const point of points)assert(actual.includes(point),heroes[hero].name+':'+point);
 }
-const result={checkedSourceSlots:58,checkedImportedModels:67,activeSkills:52,visualActorTypes:profiles.visualUnits.length,sourceObjectsAndTriggersCompared:true,bodySequencesAndAttachmentPointsChecked:true,sourceSpecificKaitenVisibility:sphere,finiteChanneledCastPoses:true,tentenBasicProjectile:'Shurikens.mdl (explicit user preference; source basic attack is Kunai.mdl)',temariWindProjectile:sourceWind,enginePlaybackChecked:false,exactOriginalChoreography:false,skills:out};
+const generated=read('src/generated-assets.json');
+const strip=new Model();strip.load(new Uint8Array(fs.readFileSync(path.join(root,generated[0].file))));
+assert.equal(strip.version,800);assert.equal(strip.geosets[0].vertices.length,12);
+assert.equal(strip.materials[0].layers[0].filterMode,2,'Black shadow must use blend, not additive material');
+assert.equal(strip.textures[0].replaceableId,1);assert(strip.sequences.some(s=>s.name==='Stand' && s.nonLooping===0));
+assert.equal(get(units.rshd,'umdl'),'ShinobiShadowStrip.mdl');assert.equal(get(units.rshk,'umdl'),'ShikamaruKageMane.mdl');
+assert.equal(get(units.vfan,'umdl'),'Abilities\\Spells\\NightElf\\FanOfKnives\\FanOfKnivesMissile.mdl');
+const result={checkedSourceSlots:58,checkedImportedModels:68,originalModels:67,generatedShadowModel:true,activeSkills:52,visualActorTypes:profiles.visualUnits.length,sourceObjectsAndTriggersCompared:true,bodySequencesAndAttachmentPointsChecked:true,sourceSpecificKaitenVisibility:sphere,finiteChanneledCastPoses:true,tentenBasicProjectile:'Shurikens.mdl (explicit user preference; source basic attack is Kunai.mdl)',temariWindProjectile:sourceWind,enginePlaybackChecked:false,exactOriginalChoreography:false,skills:out};
 fs.writeFileSync(path.join(root,'dist/visual-verification.json'),JSON.stringify(result,null,2)+'\n');
 console.log('PASS: all 58 source visual inventories, all 67 actual MDX sequence/attachment records, 52 active cast profiles, native projectile overrides, channel durations and spin-only sphere visibility, source model scales and finite visual actors. Actual engine playback remains untested.');

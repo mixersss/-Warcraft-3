@@ -122,6 +122,12 @@ function RosterClearShadow takes integer p returns nothing
         endif
         set n=n+1
     endloop
+    if ShadowRoot[p]!=null then
+        call RemoveUnit(ShadowRoot[p])
+        set ShadowRoot[p]=null
+    endif
+    set ShadowBuffSeen[p]=false
+    set ShadowGraceUntil[p]=0.
     set ShadowUntil[p]=0.
     set ShadowTarget[p]=null
 endfunction
@@ -132,8 +138,12 @@ function RosterShadowPulse takes integer p returns nothing
     local real dx=GetUnitX(ShadowTarget[p])-x
     local real dy=GetUnitY(ShadowTarget[p])-y
     local real distance=SquareRoot(dx*dx+dy*dy)
-    local real facing=Atan2(dy,dx)*bj_RADTODEG+90.
+    local real facing=Atan2(dy,dx)*bj_RADTODEG
     local real offset=0.
+    if ShadowRoot[p]!=null then
+        call SetUnitX(ShadowRoot[p],GetUnitX(ShadowTarget[p]))
+        call SetUnitY(ShadowRoot[p],GetUnitY(ShadowTarget[p]))
+    endif
     loop
         exitwhen n>=16
         set offset=(n+.5)*50.
@@ -141,6 +151,9 @@ function RosterShadowPulse takes integer p returns nothing
             if ShadowSegment[p*16+n]==null then
                 set ShadowSegment[p*16+n]=CreateUnit(Player(p),'rshd',x,y,facing)
                 call SetUnitPathing(ShadowSegment[p*16+n],false)
+                call SetUnitFlyHeight(ShadowSegment[p*16+n],6.,0.)
+                call SetUnitVertexColor(ShadowSegment[p*16+n],12,8,18,245)
+                call SetUnitAnimation(ShadowSegment[p*16+n],"stand")
             endif
             call SetUnitX(ShadowSegment[p*16+n],x+dx*offset/distance)
             call SetUnitY(ShadowSegment[p*16+n],y+dy*offset/distance)
@@ -159,10 +172,18 @@ function RosterShadow takes integer p, integer rank, unit target returns nothing
     endif
     set ShadowTarget[p]=target
     if IsUnitType(target,UNIT_TYPE_HERO) then
-        set ShadowUntil[p]=TimeNow+1.+.5*rank
+        set ShadowDuration[p]=1.+.5*rank
     else
-        set ShadowUntil[p]=TimeNow+1.5+.5*rank
+        set ShadowDuration[p]=1.5+.5*rank
     endif
+    set ShadowUntil[p]=TimeNow+ShadowDuration[p]
+    set ShadowGraceUntil[p]=TimeNow+1.
+    set ShadowBuffSeen[p]=GetUnitAbilityLevel(target,'Rsmb')>0
+    set ShadowRoot[p]=CreateUnit(Player(p),'rshk',GetUnitX(target),GetUnitY(target),GetUnitFacing(Hero[p]))
+    call SetUnitPathing(ShadowRoot[p],false)
+    call SetUnitFlyHeight(ShadowRoot[p],8.,0.)
+    call SetUnitAnimation(ShadowRoot[p],"birth")
+    call SetUnitTimeScale(ShadowRoot[p],2.334/ShadowDuration[p])
     call RosterShadowPulse(p)
 endfunction
 function RosterGrantInnate takes integer p returns nothing
@@ -514,10 +535,18 @@ function RosterTick takes nothing returns nothing
     loop
         exitwhen p>=12
         if ShadowUntil[p]>0. then
-            if not FoundationAlive(Hero[p]) or not FoundationAlive(ShadowTarget[p]) or TimeNow>=ShadowUntil[p] or GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')==0 then
+            if not FoundationAlive(Hero[p]) or not FoundationAlive(ShadowTarget[p]) then
                 call RosterClearShadow(p)
             else
-                call RosterShadowPulse(p)
+                if not ShadowBuffSeen[p] and GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')>0 then
+                    set ShadowBuffSeen[p]=true
+                    set ShadowUntil[p]=TimeNow+ShadowDuration[p]
+                endif
+                if TimeNow>=ShadowUntil[p] or (ShadowBuffSeen[p] and GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')==0) or (not ShadowBuffSeen[p] and TimeNow>=ShadowGraceUntil[p]) then
+                    call RosterClearShadow(p)
+                else
+                    call RosterShadowPulse(p)
+                endif
             endif
         endif
         if VisionUntil[p]>0. then

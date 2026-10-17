@@ -24,6 +24,13 @@ function VisualLiftEnd takes integer p returns nothing
     endif
     set VisualVolleyLeft[p]=0
 endfunction
+// Enable vertical display once at creation, outside an active native Channel.
+function VisualPrepareHero takes integer p returns nothing
+    if HeroRole[p]==5 and Hero[p]!=null then
+        call UnitAddAbility(Hero[p],'Amrf')
+        call UnitRemoveAbility(Hero[p],'Amrf')
+    endif
+endfunction
 function VisualLiftStart takes integer p, real height, real lifetime returns nothing
     call VisualLiftEnd(p)
     if JumpUnit[p]!=null or not FoundationAlive(Hero[p]) then
@@ -34,8 +41,6 @@ function VisualLiftStart takes integer p, real height, real lifetime returns not
     set VisualLiftLife[p]=lifetime
     set VisualLiftBase[p]=GetUnitFlyHeight(Hero[p])
     set VisualLiftHeight[p]=height
-    call UnitAddAbility(Hero[p],'Amrf')
-    call UnitRemoveAbility(Hero[p],'Amrf')
 endfunction
 function VisualClearHero takes integer p returns nothing
     local integer n=0
@@ -138,6 +143,8 @@ function VisualPulse takes integer p, integer index, real x, real y returns noth
                 else
                     set raw='vkun'
                 endif
+            elseif index==26 and ModuloInteger(n,3)==0 then
+                set raw='vfan'
             elseif ModuloInteger(n,3)==1 then
                 set raw='vkun'
             elseif ModuloInteger(n,3)==2 and index==28 then
@@ -220,8 +227,9 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==24 then
         call VisualFan(p,'vcyc',x,y,80.,1,0.)
     elseif index==26 then
-        call VisualLiftStart(p,700.,SkillHold[index])
+        call VisualLiftStart(p,350.,SkillHold[index])
         set VisualVolleyLeft[p]=rank
+        set VisualVolleyFired[p]=0
         set VisualVolleyDelay[p]=.2
         set VisualVolleyX[p]=sx
         set VisualVolleyY[p]=sy
@@ -325,6 +333,11 @@ function VisualTick takes nothing returns nothing
             if not FoundationAlive(Hero[p]) then
                 set VisualVolleyLeft[p]=0
             elseif VisualVolleyDelay[p]<=0. then
+                // Reinforce the actual throw pose after the native cast transition.
+                if VisualVolleyFired[p]==0 then
+                    call SetUnitAnimationByIndex(Hero[p],SkillAnimation[26])
+                endif
+                set VisualVolleyFired[p]=VisualVolleyFired[p]+1
                 call VisualPulse(p,26,VisualVolleyX[p],VisualVolleyY[p])
                 set VisualVolleyLeft[p]=VisualVolleyLeft[p]-1
                 set VisualVolleyDelay[p]=.25

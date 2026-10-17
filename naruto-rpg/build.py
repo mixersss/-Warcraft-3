@@ -1,4 +1,4 @@
-"""Fresh 1.26 foundation: new metadata/script/objects; original models/audio only."""
+"""Fresh 1.26 foundation: new scenario, retained original imports and generated visual helpers."""
 from pathlib import Path
 import json,math,struct,hashlib
 from presentation import combat,misc,scenery
@@ -6,8 +6,9 @@ from skills import VISUALS,SKILLS,HERO_SKILLS,ability_data,summon_units,buff_dat
 from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
+GENERATED=json.loads((ROOT/'src/generated-assets.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI CHAPTER 01 ALPHA 08a'
+NAME='SHINOBI CHAPTER 01 ALPHA 08b'
 DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
@@ -131,20 +132,23 @@ def script():
 def build():
  files={row['path']:(ROOT/'assets'/row['path'].replace('\\','/')).read_bytes() for row in ASSETS}
  for row in ASSETS:assert hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
+ for row in GENERATED:
+  files[row['path']]=(ROOT/row['file']).read_bytes()
+  assert len(files[row['path']])==row['bytes'] and hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
  files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(normalize_abilities(ability_data()+__import__('story').ability_entries()),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()),'war3map.w3b':objects([]),'war3map.w3h':objects(buff_data()),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':misc(),'war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
  for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
   files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
  files['war3map.w3b']=scenery()
  files['war3map.doo']=(ROOT/'src/location/render-war3map.doo').read_bytes()
- imported=[name for name in files if name in {x['path'] for x in ASSETS}]
+ imported=[name for name in files if name in {x['path'] for x in ASSETS+GENERATED}]
  files['war3map.imp']=i(1,len(imported))+b''.join(b'\x0d'+s(name) for name in imported)
  mapdir=ROOT/'dist/map';mapdir.mkdir(parents=True,exist_ok=True)
  for old in mapdir.iterdir():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Chapter_01_Alpha_08a.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Chapter_01_Alpha_08b.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'08a global art fields, neutral Byakugan, faster Kaiten and Tenten cast choreography','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS)+len(GENERATED),'originalImportedAssets':len(ASSETS),'generatedAssets':len(GENERATED),'models':67+len(GENERATED),'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'08b reliable Tobidogu visuals and persistent Shikamaru shadow binding','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

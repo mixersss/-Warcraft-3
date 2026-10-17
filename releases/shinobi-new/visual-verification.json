@@ -1,8 +1,10 @@
 {
   "checkedSourceSlots": 58,
-  "checkedImportedModels": 67,
+  "checkedImportedModels": 68,
+  "originalModels": 67,
+  "generatedShadowModel": true,
   "activeSkills": 52,
-  "visualActorTypes": 16,
+  "visualActorTypes": 17,
   "sourceObjectsAndTriggersCompared": true,
   "bodySequencesAndAttachmentPointsChecked": true,
   "sourceSpecificKaitenVisibility": [

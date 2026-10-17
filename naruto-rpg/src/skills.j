@@ -328,6 +328,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     set HeroRole[p]=role
     set HeroType[p]=RosterHeroType[role]
     set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
+    call VisualPrepareHero(p)
     call SetHeroXP(Hero[p],xp,false)
     call RosterGrantInnate(p)
     if GetHeroLevel(Hero[p])<1 then

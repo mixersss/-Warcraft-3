@@ -16,7 +16,7 @@ const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
 const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl"].map(x=>x.toLowerCase()));
 for(const v of JSON.parse(fs.readFileSync(__dirname+'/src/skill-visuals.json')).visualUnits)if(/^(abilities|objects|doodads)\\/i.test(v.model))nativeModels.add(v.model.toLowerCase());
-const assets=new Set(JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')).map(r=>r.path.toLowerCase()));
+const assets=new Set([...JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')),...JSON.parse(fs.readFileSync(__dirname+'/src/generated-assets.json'))].map(r=>r.path.toLowerCase()));
 for(const o of units){
  assert(['rdum','rdst'].includes(o.newId) || (get(o,'uico')||'replaceabletextures\\').toLowerCase().startsWith('replaceabletextures\\') || assets.has((get(o,'uico')||'').toLowerCase()),'Missing unit portrait '+o.newId);
  if(!['rdum','rdst'].includes(o.newId))assert(((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || nativeModels.has(get(o,'umdl').toLowerCase())) || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
@@ -238,6 +238,7 @@ run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/technique-audit-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/visual-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/corrective-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/appearance-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

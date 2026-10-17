@@ -15,7 +15,7 @@ end
 -- All three Tobidogu ranks emit their volleys around the actual caster, not world origin.
 local originalCreate=CreateUnit;local created=0
 function CreateUnit(p,id,x,y,f)
- if id==raw('vshu') or id==raw('vkun') or id==raw('vnot') then created=created+1 end
+ if id==raw('vshu') or id==raw('vkun') or id==raw('vnot') or id==raw('vfan') then created=created+1 end
  return originalCreate(p,id,x,y,f)
 end
 for rank=1,3 do

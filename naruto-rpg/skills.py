@@ -56,7 +56,8 @@ def summon_units():
   ('rz0','Сидзунэ','Shizune.mdl','Icon_Sakura_Shosen.blp',1.,900,15,3)]:
   for n in range(1,2 if prefix=='rz0' else 4):
    out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
- out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,3.5),('ufoo',0,0)]))
+ out.append(('hfoo','rshk',[('unam',3,'Теневые путы'),('uhom',0,1),('umdl',3,'ShikamaruKageMane.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,2.),('ushu',3,''),('ushb',3,''),('usin',0,0),('usid',0,0),('ufoo',0,0)]))
+ out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'ShinobiShadowStrip.mdl'),('usin',0,0),('usid',0,0),('uhom',0,1),('umvt',3,'fly'),('umvh',2,6.),('umvf',2,6.),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,1.),('ufoo',0,0)]))
  out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
  for entry in VISUALS['visualUnits']:
   out.append(('hfoo',entry['id'],[('unam',3,'Графика техники'),('umdl',3,entry['model']),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,entry['scale']),('ushu',3,''),('ushb',3,''),('ussc',1,0.),('usin',0,0),('usid',0,0),('utar',3,''),('utyp',3,''),('ufoo',0,0),('ureq',3,''),('upgr',3,'')]))

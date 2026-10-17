@@ -1,0 +1,9 @@
+[
+  {
+    "path": "ShinobiShadowStrip.mdx",
+    "file": "src/generated-shadow-strip.mdx",
+    "bytes": 1324,
+    "sha256": "8569c908caa75e0bdb12b4ccb21f40efb3f414564468126342ba266728dc28d7",
+    "purpose": "Visible non-additive ground shadow, 50 by 24 units, native team-color texture tinted near black"
+  }
+]

@@ -1,10 +1,15 @@
 globals
+    unit array ShadowRoot
+    boolean array ShadowBuffSeen
+    real array ShadowGraceUntil
+    real array ShadowDuration
     unit array VisualLiftUnit
     real array VisualLiftAge
     real array VisualLiftLife
     real array VisualLiftBase
     real array VisualLiftHeight
     integer array VisualVolleyLeft
+    integer array VisualVolleyFired
     real array VisualVolleyDelay
     real array VisualVolleyX
     real array VisualVolleyY
@@ -410,6 +415,7 @@ function FoundationSpawn takes nothing returns nothing
     if GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
         set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
         if HeroRole[p]>=0 then
+            call VisualPrepareHero(p)
             call SetHeroLevel(Hero[p],1,false)
             call RosterGrantInnate(p)
             if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
