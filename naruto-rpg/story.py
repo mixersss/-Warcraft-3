@@ -10,15 +10,19 @@ ITEMS=[('rat6','Rc01','Кунай шиноби',150),('rst1','Rc02','Повяз�
 SHOP_ICONS={'rat6':'Icon_Kunai.BLP','rst1':'Icon_SoldierPills.blp','rag1':'Icon_Shuriken.BLP','rin1':'Icon_SoldierPills.blp','rde1':'Icon_GeninArmor.blp','phea':'Icon_Ramen.BLP','pman':'Icon_SoldierPills.blp'}
 def item_entries():
  return [(base,raw,[('unam',3,name),('iico',3,SHOP_ICONS[base]),('utip',3,name),('utub',3,{'rat6':'+6 к урону.','rst1':'+3 к силе.','rag1':'+3 к ловкости.','rin1':'+3 к интеллекту.','rde1':'+2 к броне.','phea':'Восстанавливает 250 здоровья.','pman':'Восстанавливает 150 маны.'}[base]),('igol',0,cost),('ilum',0,0),('isto',0,1),('istr',0,10),('isst',0,0)]) for base,raw,name,cost in ITEMS]
+def scroll_entries():
+ return [('rat6',raw,[('unam',3,name),('utip',3,name),('utub',3,'Экзамен: принесите свитки Неба и Земли к башне в последние две минуты. Один комплект на отряд.'),('iico',3,icon),('ifil',3,'ScrollRed.mdl'),('iabi',3,''),('igol',0,0),('ilum',0,0),('idrp',0,1),('idro',0,1),('ipaw',0,0),('iper',0,1),('icla',3,'Campaign')]) for raw,name,icon in [('Eshe','Свиток Неба','Icon_ScrollHeaven.BLP'),('Esea','Свиток Земли','Icon_ScrollEarth.BLP')]]
 def unit_entries():
  out=[]
- defs=[('re01','Разбойник Тумана','MistNin.mdl',650,26,128,1.05),('re02','Шиноби Дождя','RainGenin.mdl',850,32,450,1.),('re03','Хаку','haku.mdl',3800,48,550,.95),('re04','Момочи Забуза','Zabuza.mdl',8500,75,140,1.4),('re05','Водяной клон Забузы','Zabuza.mdl',1100,26,140,1.2),('rq01','Какаши — командир миссии','KakashiNew.mdl',5000,0,128,1.)]
+ defs=[('re01','Разбойник Тумана','MistNin.mdl',650,26,128,1.05),('re02','Шиноби Дождя','RainGenin.mdl',850,32,450,1.),('re03','Хаку','haku.mdl',3800,48,550,.95),('re04','Момочи Забуза','Zabuza.mdl',8500,75,140,1.4),('re05','Водяной клон Забузы','Zabuza.mdl',1100,26,140,1.2),('re06','Генин Дождя','RainGenin.mdl',1400,45,550,1.),('re07','Генин Тумана','MistNin.mdl',1750,55,140,1.05),('rq01','Какаши — командир миссии','KakashiNew.mdl',5000,0,128,1.)]
  for raw,name,model,hp,damage,ran,scale in defs:
   mods=[('unam',3,name),('umdl',3,model),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNBandit.blp'),('usca',1,scale),('uhpm',0,hp),('uhpr',2,0.),('ua1b',0,damage),('ua1d',0,1),('ua1s',0,1),('ua1c',2,1.6),('ua1r',0,ran),('umvs',0,290),('ucol',2,20.),('uabi',3,''),('upgr',3,''),('ureq',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('ulev',0,1)]
+  if raw in ('re06','re07'):mods.extend([('uabi',3,'Aens'),('umpm',0,400),('umpi',0,400),('umpr',2,3.),('ulev',0,6)])
   if ran>200:mods.extend([('ua1w',3,'missile'),('ua1m',3,'Kunai.mdl'),('ua1z',0,1400)])
   if raw=='rq01':mods += [('uaen',0,0),('uabi',3,'Avul'),('umvs',0,0)]
   out.append(('hfoo',raw,mods))
  out.append(('ngme','rqsh',[('unam',3,'Снабжение отряда'),('usei',3,','.join(x[1] for x in ITEMS)),('uabi',3,'Aneu,Apit,Avul'),('ucol',2,32.),('upgr',3,''),('ureq',3,'')]))
+ out.append(('hfoo','rean',[('unam',3,'Анко — экзаменатор'),('umdl',3,'Anko.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('upgr',3,''),('ureq',3,'')]))
  # Sand crest: persistent visible Birth animation; no attack, collision or orders.
  out.append(('hfoo','rswv',[('unam',3,'Песчаное цунами'),('umdl',3,'GaaraSand2.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('ushr',0,0),('usca',1,1.5)]))
  # Four original mentors, paused in camp until their departure timer expires.
@@ -50,6 +54,12 @@ def generated_data():
  from loot import LOOT
  for n,row in enumerate(LOOT):lines.append(f"    set StoryLootType[{n}]='{row[2]}'")
  for n,(_,raw,_,cost) in enumerate(ITEMS):lines += [f"    set StoryItem[{n}]='{raw}'",f'    set StoryPrice[{n}]={cost}']
+ exam=json.loads((ROOT/'src/exam-source.json').read_text())
+ for t,(x,y) in enumerate(exam['navigation']['entrances']):lines += [f'    set ExamSpawnX[{t}]={float(x)}',f'    set ExamSpawnY[{t}]={float(y)}']
+ for j,(x,y) in enumerate(exam['navigation']['enemies']):lines += [f'    set ExamEnemyX[{j}]={float(x)}',f'    set ExamEnemyY[{j}]={float(y)}']
+ for j,row in enumerate(json.loads((ROOT/'src/exam-questions.json').read_text())):
+  text=row['text']+' |n'+'   '.join(str(k+1)+') '+v for k,v in enumerate(row['options']))
+  lines += [f'    set ExamQuestionText[{j}]='+json.dumps(text,ensure_ascii=False),f"    set ExamCorrect[{j}]={row['answer']}"]
  return '\n'+'\n'.join(lines)
 
 def ability_entries():

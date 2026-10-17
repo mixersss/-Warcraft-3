@@ -12,6 +12,9 @@ function TreeJumpInside takes integer p, real x, real y returns boolean
     local integer t=(p-ModuloInteger(p,3))/3
     local real ox=0.
     local real oy=0.
+    if StoryStage[t]==7 then
+        return x>-16352. and x<-3808. and y>-16352. and y<-3328.
+    endif
     if ModuloInteger(t,2)==1 then
         set ox=8192.
     endif

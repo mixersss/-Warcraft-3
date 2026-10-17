@@ -1,4 +1,35 @@
 globals
+    integer ExamPhase=0
+    real ExamReadyAt=0.
+    real ExamNextAt=0.
+    real ExamOpenAt=0.
+    real ExamEndAt=0.
+    boolean ExamTowerOpen=false
+    integer ExamQuestion=0
+    integer ExamAsked=0
+    integer ExamPopulateCursor=0
+    boolean array ExamUsed
+    boolean array ExamAnswered
+    integer array ExamScore
+    real array ExamAnswerAt
+    string array ExamQuestionText
+    integer array ExamCorrect
+    real array ExamSpawnX
+    real array ExamSpawnY
+    real array ExamEnemyX
+    real array ExamEnemyY
+    unit array ExamEnemy
+    item array ExamScroll
+    boolean array ExamDropped
+    real array ExamEnemyCastAt
+    real array ExamBotOrderAt
+    unit ExamTower=null
+    real ExamTowerX=-10096.
+    real ExamTowerY=-10160.
+    trigger ExamAnswers=null
+    timer ExamClock=null
+    timerdialog ExamDialog=null
+    rect ExamRect=null
     unit array ShadowRoot
     boolean array ShadowBuffSeen
     real array ShadowGraceUntil

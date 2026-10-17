@@ -3966,6 +3966,18 @@
     "icla": {
       "type": "itemClass",
       "column": 0
+    },
+    "idrp": {
+      "type": "bool",
+      "column": 0
+    },
+    "idro": {
+      "type": "bool",
+      "column": 0
+    },
+    "ipaw": {
+      "type": "bool",
+      "column": 0
     }
   },
   "buffFields": {

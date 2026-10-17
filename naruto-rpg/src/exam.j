@@ -1,0 +1,556 @@
+// New chapter implementation: shared bounded state, original scenery, no per-unit timers.
+function ExamBroadcast takes string text returns nothing
+    local integer t=0
+    loop
+        exitwhen t>=4
+        if StoryMembers[t]>0 then
+            call StorySay(t,text)
+        endif
+        set t=t+1
+    endloop
+endfunction
+function ExamNear takes unit u, real x, real y, real radius returns boolean
+    local real dx=GetUnitX(u)-x
+    local real dy=GetUnitY(u)-y
+    return dx*dx+dy*dy<=radius*radius
+endfunction
+function ExamHas takes integer t, integer raw returns boolean
+    local integer p=t*3
+    local integer k=0
+    loop
+        exitwhen p>=t*3+3
+        if FoundationAlive(Hero[p]) then
+            set k=0
+            loop
+                exitwhen k>=6
+                if GetItemTypeId(UnitItemInSlot(Hero[p],k))==raw then
+                    return true
+                endif
+                set k=k+1
+            endloop
+        endif
+        set p=p+1
+    endloop
+    return false
+endfunction
+function ExamPair takes integer t returns boolean
+    return ExamHas(t,'Eshe') and ExamHas(t,'Esea')
+endfunction
+function ExamNearest takes integer p returns unit
+    local integer j=0
+    local integer t=StoryTeam(p)
+    local integer raw=0
+    local real best=999999999.
+    local real dx=0.
+    local real dy=0.
+    local real d=0.
+    local unit result=null
+    local boolean hasHeaven=ExamHas(t,'Eshe')
+    local boolean hasEarth=ExamHas(t,'Esea')
+    loop
+        exitwhen j>=85
+        set raw='Eshe'
+        if ModuloInteger(j,2)==1 then
+            set raw='Esea'
+        endif
+        if FoundationAlive(ExamEnemy[j]) then
+            set dx=GetUnitX(ExamEnemy[j])-GetUnitX(Hero[p])
+            set dy=GetUnitY(ExamEnemy[j])-GetUnitY(Hero[p])
+            set d=dx*dx+dy*dy
+            // Prefer carriers of the missing scroll without ignoring nearby threats.
+            if (raw=='Eshe' and not hasHeaven) or (raw=='Esea' and not hasEarth) then
+                set d=d*.35
+            endif
+            if d<best then
+                set best=d
+                set result=ExamEnemy[j]
+            endif
+        endif
+        set j=j+1
+    endloop
+    return result
+endfunction
+function ExamClearGate takes nothing returns nothing
+    local destructable d=GetEnumDestructable()
+    if GetDestructableTypeId(d)=='YTpb' then
+        call RemoveDestructable(d)
+    endif
+    set d=null
+endfunction
+function ExamFinishTeam takes integer t, boolean passed returns nothing
+    local integer p=t*3
+    local integer k=0
+    local item it=null
+    if StoryStage[t]!=7 then
+        return
+    endif
+    set StoryStage[t]=8
+    if passed then
+        loop
+            exitwhen p>=t*3+3
+            set k=0
+            loop
+                exitwhen k>=6
+                set it=UnitItemInSlot(Hero[p],k)
+                if GetItemTypeId(it)=='Eshe' or GetItemTypeId(it)=='Esea' then
+                    call RemoveItem(it)
+                endif
+                set k=k+1
+            endloop
+            set p=p+1
+        endloop
+        call StoryReward(t,350,0)
+        call StorySay(t,"Анко: Оба свитка доставлены! Отряд проходит испытание и получает 350 золота каждому. Предварительные бои будут следующим этапом.")
+    else
+        call StorySay(t,"Анко: Время истекло. Свитки не доставлены; награды нет. Экзамен завершён, ожидайте предварительных боёв.")
+    endif
+    set p=t*3
+    loop
+        exitwhen p>=t*3+3
+        if FoundationAlive(Hero[p]) then
+            call IssueImmediateOrder(Hero[p],"stop")
+            call UnitAddAbility(Hero[p],'Avul')
+            call PauseUnit(Hero[p],true)
+        endif
+        set p=p+1
+    endloop
+    set it=null
+endfunction
+function ExamClockEnd takes nothing returns nothing
+    // Progression is handled by the shared heartbeat, including load/revival states.
+endfunction
+function ExamStartForest takes nothing returns nothing
+    local integer t=0
+    local integer p=0
+    local integer k=0
+    local unit u=null
+    set ExamPhase=3
+    if ExamAnswers!=null then
+        call DestroyTrigger(ExamAnswers)
+        set ExamAnswers=null
+    endif
+    set ExamOpenAt=TimeNow+1200.
+    set ExamEndAt=TimeNow+1320.
+    set ExamPopulateCursor=0
+    set ExamRect=Rect(-16384.,-16384.,-3776.,-3296.)
+    set ExamTower=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rean',ExamTowerX,ExamTowerY,270.)
+    call PauseUnit(ExamTower,true)
+    set MusicCursor=2
+    call FoundationMusicStart()
+    set ExamClock=CreateTimer()
+    call TimerStart(ExamClock,1320.,false,function ExamClockEnd)
+    set ExamDialog=CreateTimerDialog(ExamClock)
+    call TimerDialogSetTitle(ExamDialog,"Лес смерти: до конца")
+    call TimerDialogDisplay(ExamDialog,true)
+    loop
+        exitwhen t>=4
+        if StoryMembers[t]>0 then
+            set StoryStage[t]=7
+            set StoryRetreat[t]=false
+            set StoryMarch[t]=true
+            call SetUnitPosition(StoryShop[t],ExamSpawnX[t]+128.,ExamSpawnY[t])
+            set p=t*3
+            loop
+                exitwhen p>=t*3+3
+                if Hero[p]!=null then
+                    call PauseUnit(Hero[p],false)
+                    call UnitRemoveAbility(Hero[p],'Avul')
+                    if not FoundationAlive(Hero[p]) then
+                        call ReviveHero(Hero[p],ExamSpawnX[t],ExamSpawnY[t],false)
+                    endif
+                    call SetUnitPosition(Hero[p],ExamSpawnX[t],ExamSpawnY[t])
+                    set SpawnX[p]=GetUnitX(Hero[p])
+                    set SpawnY[p]=GetUnitY(Hero[p])
+                    call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE))
+                    call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+                    call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],1.)
+                    set k=0
+                    loop
+                        exitwhen k>=3
+                        set u=Companion[p*3+k]
+                        if FoundationAlive(u) then
+                            call SetUnitPosition(u,SpawnX[p],SpawnY[p])
+                        endif
+                        set k=k+1
+                    endloop
+                endif
+                set p=p+1
+            endloop
+            // Real quest item on the ground; inventory/ownership, not a checkpoint flag.
+            if GetRandomInt(0,1)==0 then
+                set ExamScroll[85+t]=CreateItem('Eshe',ExamSpawnX[t],ExamSpawnY[t])
+            else
+                set ExamScroll[85+t]=CreateItem('Esea',ExamSpawnX[t],ExamSpawnY[t])
+            endif
+        endif
+        set t=t+1
+    endloop
+    call ExamBroadcast("Анко: Добро пожаловать в Лес смерти! У входа лежит свиток вашего отряда. Второй тип найдите у вражеских генинов. Нужны Небо и Земля. До конца 22 минуты; башня открывается на последние две. Свитки могут нести разные союзники, но оба должны подойти к башне. -quest: задача, -go/-follow: команды, -shop: снабжение.")
+    set u=null
+endfunction
+function ExamBot takes integer p, unit enemy returns nothing
+    local integer t=StoryTeam(p)
+    local integer j=0
+    local integer k=0
+    local integer free=0
+    local integer raw=0
+    local real best=999999999.
+    local real dx=0.
+    local real dy=0.
+    local item found=null
+    local item it=null
+    local unit leader=StoryLeader(t)
+    local boolean hasHeaven=ExamHas(t,'Eshe')
+    local boolean hasEarth=ExamHas(t,'Esea')
+    if StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
+        call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
+        return
+    endif
+    if ExamTowerOpen and ExamPair(t) then
+        call IssuePointOrder(Hero[p],"move",ExamTowerX,ExamTowerY)
+        return
+    endif
+    loop
+        exitwhen j>=89
+        set it=ExamScroll[j]
+        set raw=GetItemTypeId(it)
+        if it!=null and not IsItemOwned(it) and GetWidgetLife(it)>.405 and ((raw=='Eshe' and not hasHeaven) or (raw=='Esea' and not hasEarth)) then
+            set dx=GetItemX(it)-GetUnitX(Hero[p])
+            set dy=GetItemY(it)-GetUnitY(Hero[p])
+            if dx*dx+dy*dy<best then
+                set best=dx*dx+dy*dy
+                set found=it
+            endif
+        endif
+        set j=j+1
+    endloop
+    if found!=null and (enemy==null or best<900.*900.) then
+        set k=0
+        loop
+            exitwhen k>=6
+            if UnitItemInSlot(Hero[p],k)==null then
+                set free=free+1
+            endif
+            set k=k+1
+        endloop
+        if free==0 then
+            // Make one slot by dropping non-quest gear, never destroy equipment.
+            set k=5
+            loop
+                exitwhen k<0 or free>0
+                set it=UnitItemInSlot(Hero[p],k)
+                set raw=GetItemTypeId(it)
+                if it!=null and raw!='Eshe' and raw!='Esea' then
+                    call UnitRemoveItem(Hero[p],it)
+                    call SetItemPosition(it,GetUnitX(Hero[p]),GetUnitY(Hero[p]))
+                    set free=1
+                endif
+                set k=k-1
+            endloop
+        endif
+        if free>0 then
+            call IssueTargetOrder(Hero[p],"smart",found)
+        elseif enemy!=null then
+            call IssueTargetOrder(Hero[p],"attack",enemy)
+        endif
+    elseif not StoryMarch[t] and leader!=null and leader!=Hero[p] then
+        if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
+            call IssueTargetOrder(Hero[p],"attack",enemy)
+        else
+            call IssueTargetOrder(Hero[p],"follow",leader)
+        endif
+    elseif enemy!=null then
+        call IssueTargetOrder(Hero[p],"attack",enemy)
+    else
+        call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
+        if ExamNear(Hero[p],GetUnitX(StoryShop[t]),GetUnitY(StoryShop[t]),250.) then
+            call StoryBuy(p)
+        endif
+    endif
+    set found=null
+    set it=null
+    set leader=null
+endfunction
+function ExamForestTick takes nothing returns nothing
+    local integer j=0
+    local integer t=0
+    local integer p=0
+    local integer k=0
+    local integer raw=0
+    local boolean heaven=false
+    local boolean earth=false
+    local boolean active=false
+    local item it=null
+    local unit target=null
+    local real best=0.
+    local real dx=0.
+    local real dy=0.
+    // Stagger native unit creation: one actor per shared tick (85 actors total).
+    if ExamPopulateCursor<85 then
+        set j=ExamPopulateCursor
+        set raw='re06'
+        if ModuloInteger(j,2)==1 then
+            set raw='re07'
+        endif
+        set ExamEnemy[j]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,ExamEnemyX[j],ExamEnemyY[j],180.)
+        call SetUnitCreepGuard(ExamEnemy[j],false)
+        call RemoveGuardPosition(ExamEnemy[j])
+        set ExamPopulateCursor=j+1
+    endif
+    if not ExamTowerOpen and TimeNow>=ExamOpenAt then
+        set ExamTowerOpen=true
+        call EnumDestructablesInRect(ExamRect,null,function ExamClearGate)
+        call ExamBroadcast("Анко: Башня открыта! Осталось две минуты. Принесите один комплект Небо + Земля на команду. Оба носителя должны быть рядом с башней. -quest: её отметка.")
+    endif
+    set j=0
+    loop
+        exitwhen j>=ExamPopulateCursor
+        if FoundationAlive(ExamEnemy[j]) then
+            set target=null
+            set best=950.*950.
+            set p=0
+            loop
+                exitwhen p>=12
+                if StoryStage[StoryTeam(p)]==7 and FoundationAlive(Hero[p]) then
+                    set dx=GetUnitX(Hero[p])-GetUnitX(ExamEnemy[j])
+                    set dy=GetUnitY(Hero[p])-GetUnitY(ExamEnemy[j])
+                    if dx*dx+dy*dy<best then
+                        set best=dx*dx+dy*dy
+                        set target=Hero[p]
+                    endif
+                endif
+                set p=p+1
+            endloop
+            if target!=null then
+                if TimeNow>=ExamEnemyCastAt[j] and best<600.*600. and GetUnitState(ExamEnemy[j],UNIT_STATE_MANA)>=75. then
+                    if IssueTargetOrder(ExamEnemy[j],"ensnare",target) then
+                        call SetUnitAnimationByIndex(ExamEnemy[j],4+ModuloInteger(j,2))
+                        set ExamEnemyCastAt[j]=TimeNow+12.
+                    endif
+                elseif GetUnitCurrentOrder(ExamEnemy[j])==0 then
+                    call IssueTargetOrder(ExamEnemy[j],"attack",target)
+                endif
+            endif
+        elseif ExamEnemy[j]!=null and not ExamDropped[j] then
+            set ExamDropped[j]=true
+            set raw='Eshe'
+            if ModuloInteger(j,2)==1 then
+                set raw='Esea'
+            endif
+            set ExamScroll[j]=CreateItem(raw,GetUnitX(ExamEnemy[j]),GetUnitY(ExamEnemy[j]))
+        endif
+        set j=j+1
+    endloop
+    loop
+        exitwhen t>=4
+        if StoryStage[t]==7 then
+            set active=true
+            set heaven=false
+            set earth=false
+            set p=t*3
+            loop
+                exitwhen p>=t*3+3
+                if FoundationAlive(Hero[p]) and ExamNear(Hero[p],ExamTowerX,ExamTowerY,600.) then
+                    set k=0
+                    loop
+                        exitwhen k>=6
+                        set it=UnitItemInSlot(Hero[p],k)
+                        if GetItemTypeId(it)=='Eshe' then
+                            set heaven=true
+                        elseif GetItemTypeId(it)=='Esea' then
+                            set earth=true
+                        endif
+                        set k=k+1
+                    endloop
+                endif
+                set p=p+1
+            endloop
+            if ExamTowerOpen and heaven and earth then
+                call ExamFinishTeam(t,true)
+            elseif TimeNow>=ExamEndAt then
+                call ExamFinishTeam(t,false)
+            endif
+        endif
+        set t=t+1
+    endloop
+    if not active then
+        call TimerDialogDisplay(ExamDialog,false)
+        call DestroyTimerDialog(ExamDialog)
+        call PauseTimer(ExamClock)
+        call DestroyTimer(ExamClock)
+        call RemoveRect(ExamRect)
+        set ExamDialog=null
+        set ExamClock=null
+        set ExamRect=null
+        set ExamPhase=4
+        call ExamBroadcast("Ибики: Экзамен завершён. Следующая глава — предварительные поединки — будет добавлена следующим блоком.")
+    endif
+    set it=null
+    set target=null
+endfunction
+function ExamAnswer takes integer p, integer choice returns nothing
+    if ExamPhase!=2 or ExamAsked<1 or StoryStage[StoryTeam(p)]!=6 or ExamAnswered[p] or TimeNow>=ExamNextAt or choice<1 or choice>4 or Hero[p]==null then
+        return
+    endif
+    set ExamAnswered[p]=true
+    if choice==ExamCorrect[ExamQuestion] then
+        set ExamScore[p]=ExamScore[p]+1
+        call AddHeroXP(Hero[p],120,false)
+        call DisplayTimedTextToPlayer(Player(p),0.,0.,5.,"Ответ принят. Верно: +120 опыта.")
+    else
+        call DisplayTimedTextToPlayer(Player(p),0.,0.,5.,"Ответ принят. Неверно; следующая попытка — на следующем вопросе.")
+    endif
+endfunction
+function ExamChat takes nothing returns nothing
+    local integer p=GetPlayerId(GetTriggerPlayer())
+    local string text=GetEventPlayerChatString()
+    if p>=12 or GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
+        return
+    endif
+    if SubString(text,0,8)=="-answer " then
+        set text=SubString(text,8,StringLength(text))
+    endif
+    if text=="1" or text=="2" or text=="3" or text=="4" then
+        call ExamAnswer(p,S2I(text))
+    endif
+endfunction
+function ExamAsk takes nothing returns nothing
+    local integer pick=GetRandomInt(0,15)
+    local integer p=0
+    loop
+        exitwhen not ExamUsed[pick]
+        set pick=ModuloInteger(pick+1,16)
+    endloop
+    set ExamQuestion=pick
+    set ExamUsed[pick]=true
+    set ExamAsked=ExamAsked+1
+    set ExamNextAt=TimeNow+15.
+    loop
+        exitwhen p>=12
+        set ExamAnswered[p]=false
+        set ExamAnswerAt[p]=TimeNow+I2R(GetRandomInt(3,10))
+        set p=p+1
+    endloop
+    call ExamBroadcast("Ибики: Вопрос "+I2S(ExamAsked)+"/5. "+ExamQuestionText[pick]+" |nОтвет: 1, 2, 3 или 4 в чат (либо -answer 1..4). Одна попытка, 15 секунд.")
+endfunction
+function ExamStartQuiz takes nothing returns nothing
+    local integer p=0
+    local integer t=0
+    local integer k=0
+    local integer j=0
+    local trigger answers=CreateTrigger()
+    set ExamAnswers=answers
+    set ExamPhase=2
+    set ExamAsked=0
+    set ExamNextAt=TimeNow+10.
+    set MusicCursor=1
+    call FoundationMusicStart()
+    loop
+        exitwhen p>=12
+        if Hero[p]!=null then
+            call TreeJumpEnd(p)
+            call RosterReset(p)
+            call SkillsClearSharingan(p)
+            set ComboLeft[p]=0
+            set ComboTarget[p]=null
+            set ComboBurn[p]=0.
+            set ResumeAt[p]=0.
+            if BurstArt[p]!=null then
+                call DestroyEffect(BurstArt[p])
+                set BurstArt[p]=null
+            endif
+            call IssueImmediateOrder(Hero[p],"stop")
+            if not FoundationAlive(Hero[p]) then
+                call ReviveHero(Hero[p],SpawnX[p],SpawnY[p],false)
+            endif
+            call UnitAddAbility(Hero[p],'Avul')
+            call PauseUnit(Hero[p],true)
+            // Classroom from original FJ; each row is one team.
+            call SetUnitPosition(Hero[p],-15744.+I2R(ModuloInteger(p,3))*240.,-700.-I2R(StoryTeam(p))*320.)
+            call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),1.)
+            call TriggerRegisterPlayerChatEvent(answers,Player(p),"",false)
+        endif
+        set p=p+1
+    endloop
+    loop
+        exitwhen j>=72
+        if EnemyMark[j]!=null then
+            call DestroyEffect(EnemyMark[j])
+            set EnemyMark[j]=null
+        endif
+        set EnemyPending[j]=0.
+        if StoryEnemy[j]!=null then
+            call RemoveUnit(StoryEnemy[j])
+            set StoryEnemy[j]=null
+        endif
+        set j=j+1
+    endloop
+    loop
+        exitwhen t>=4
+        if StoryMembers[t]>0 then
+            set StoryStage[t]=6
+        endif
+        set t=t+1
+    endloop
+    call TriggerAddAction(answers,function ExamChat)
+    set answers=null
+    call ExamBroadcast("Ибики: Первый этап экзамена на чунина — вопросы. Пять случайных вопросов, 15 секунд на каждый. Первый ответ окончательный. За верный ответ — 120 опыта. Боты отвечают самостоятельно; их ответы не заменяют ваши. Затем все отряды отправятся в Лес смерти.")
+endfunction
+function NextChapterTick takes nothing returns nothing
+    local integer t=0
+    local integer p=0
+    local integer choice=0
+    local boolean ready=true
+    local boolean occupied=false
+    if ExamPhase==0 then
+        loop
+            exitwhen t>=4
+            if StoryMembers[t]>0 then
+                set occupied=true
+                if StoryStage[t]!=5 then
+                    set ready=false
+                endif
+            endif
+            set t=t+1
+        endloop
+        if occupied and ready then
+            set ExamPhase=1
+            set ExamReadyAt=TimeNow+20.
+            call ExamBroadcast("Какаши: Все отряды вернулись с моста. Через 20 секунд отправляемся на экзамен с вопросами. Пополните снаряжение.")
+        endif
+    elseif ExamPhase==1 and TimeNow>=ExamReadyAt then
+        call ExamStartQuiz()
+    elseif ExamPhase==2 then
+        if TimeNow>=ExamNextAt then
+            if ExamAsked>0 then
+                call ExamBroadcast("Ибики: Время. Правильный вариант: "+I2S(ExamCorrect[ExamQuestion])+".")
+            endif
+            if ExamAsked>=5 then
+                loop
+                    exitwhen p>=12
+                    if Hero[p]!=null then
+                        call DisplayTimedTextToPlayer(Player(p),0.,0.,12.,"Ибики: Верных ответов: "+I2S(ExamScore[p])+" из 5. Переходим к испытанию со свитками.")
+                    endif
+                    set p=p+1
+                endloop
+                call ExamStartForest()
+            else
+                call ExamAsk()
+            endif
+        elseif ExamAsked>0 then
+            loop
+                exitwhen p>=12
+                if Hero[p]!=null and GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and not ExamAnswered[p] and TimeNow>=ExamAnswerAt[p] then
+                    set choice=ExamCorrect[ExamQuestion]
+                    if GetRandomInt(1,100)>75 then
+                        set choice=ModuloInteger(choice,4)+1
+                    endif
+                    call ExamAnswer(p,choice)
+                endif
+                set p=p+1
+            endloop
+        endif
+    elseif ExamPhase==3 then
+        call ExamForestTick()
+    endif
+endfunction

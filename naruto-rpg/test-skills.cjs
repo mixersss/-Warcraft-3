@@ -239,6 +239,8 @@ run(fs.readFileSync(__dirname+'/technique-audit-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/visual-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/corrective-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/appearance-harness.lua','utf8'));
+for(const m of source.matchAll(/^\s*set (Exam(?:Spawn[XY]|Enemy[XY]|QuestionText|Correct)\[\d+\])=(.+)$/gm))run(m[1]+'='+m[2]);
+run(fs.readFileSync(__dirname+'/exam-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

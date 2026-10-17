@@ -54,9 +54,9 @@ const misc=fs.readFileSync(path.join(root,'dist/map/war3mapMisc.txt'),'utf8');
 assert(misc.includes('MaxHeroLevel=60'));assert(misc.includes('HeroExpRange=2000.0'));assert(misc.includes('HeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30'));
 const schema=JSON.parse(fs.readFileSync(path.join(root,'src/classic-skill-schema.json')));
 const itemFile=new ObjectParser();itemFile.load(read('war3map.w3t'));
-assert.equal(itemFile.customTable.objects.length,14);
+assert.equal(itemFile.customTable.objects.length,16);
 const field=o=>Object.fromEntries(o.modifications.map(m=>[m.id,m.value]));
-for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert(f.igol>0 && f.ilum===0);if(f.iabi)assert(schema.stockIds.abilities.includes(f.iabi) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt'].includes(f.iabi));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
+for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert((f.igol>0 || ['Eshe','Esea'].includes(item.newId)) && f.ilum===0);if(f.iabi)assert(schema.stockIds.abilities.includes(f.iabi) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt'].includes(f.iabi));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
 const assets=new Set(JSON.parse(fs.readFileSync(path.join(root,'src/asset-manifest.json'))).map(a=>a.path.toLowerCase()));
 for(const item of itemFile.customTable.objects){const f=field(item);assert(f.iico && (assets.has(f.iico.toLowerCase()) || item.newId==='Nlne'),'Item must use imported source art: '+item.newId)}
 const modelAnimations=JSON.parse(fs.readFileSync(path.join(root,'src/model-animations.json')));

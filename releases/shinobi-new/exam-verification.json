@@ -1,0 +1,13 @@
+{
+  "originalGeninPositions": 85,
+  "reachableGeninPositions": 85,
+  "originalTeamEntrances": 4,
+  "allEntrancesReachTowerAfterOpening": true,
+  "openedDestructableType": "YTpb",
+  "questionBank": 16,
+  "rounds": 5,
+  "secondsPerQuestion": 15,
+  "sourceTimerSeconds": 1320,
+  "nativeMocksIn": "test-skills.cjs / exam-harness.lua",
+  "enginePlaytest": false
+}

@@ -39,7 +39,14 @@ function StoryGoal takes integer t returns string
     elseif StoryStage[t]==4 then
         return "Миссия 4/4: победите Забузу у моста. Уклоняйтесь от водного удара; во второй фазе он атакует чаще."
     endif
-    return "Глава «Страна Волн» завершена! Следующая глава — экзамен со свитками — пока не подключена."
+    if StoryStage[t]==5 then
+        return "Мост спасён! Ждём возвращения остальных отрядов, затем экзамен с вопросами и Лес смерти. Можно купить снаряжение: -shop."
+    elseif StoryStage[t]==6 then
+        return "Экзамен Ибики: пять вопросов. Ответьте цифрой 1..4 в чат. Одна попытка на вопрос; верный ответ даёт 120 опыта."
+    elseif StoryStage[t]==7 then
+        return "Лес смерти: найдите свитки Неба и Земли. Оба носителя должны подойти к башне в последние две минуты. До конца: "+I2S(R2I(RMaxBJ(0.,ExamEndAt-TimeNow)))+" сек. -go: поиск; -follow: рядом с вами; -retreat: к входу."
+    endif
+    return "Экзамен со свитками завершён. Предварительные поединки будут следующим этапом."
 endfunction
 function StoryReward takes integer t, integer gold, integer xp returns nothing
     local integer p=t*3
@@ -385,6 +392,7 @@ function StoryActivate takes integer t, boolean march returns nothing
         set n=n+1
     endloop
 endfunction
+// NEXT_CHAPTER_RUNTIME
 function StoryCommand takes integer p, string msg returns nothing
     local integer t=StoryTeam(p)
     local integer n=0
@@ -405,7 +413,19 @@ function StoryCommand takes integer p, string msg returns nothing
         call StorySay(t,"Отряд: Отходим к наставнику, восстанавливаем здоровье и чакру.")
     elseif msg=="-quest" then
         call StorySay(t,StoryGoal(t))
-        if StoryStage[t]>0 and StoryStage[t]<5 then
+        if StoryStage[t]==7 then
+            call PingMinimapEx(ExamTowerX,ExamTowerY,5.,255,210,50,false)
+            if ExamHas(t,'Eshe') then
+                call StorySay(t,"Отряд: Свиток Неба при нас.")
+            else
+                call StorySay(t,"Отряд: Нужен свиток Неба.")
+            endif
+            if ExamHas(t,'Esea') then
+                call StorySay(t,"Отряд: Свиток Земли при нас.")
+            else
+                call StorySay(t,"Отряд: Нужен свиток Земли.")
+            endif
+        elseif StoryStage[t]>0 and StoryStage[t]<5 then
             set goal=StoryNearest(t,Hero[p])
             if goal!=null then
                 call PingMinimapEx(GetUnitX(goal),GetUnitY(goal),5.,255,210,50,false)
@@ -471,6 +491,7 @@ function StoryTick takes nothing returns nothing
     local unit enemy=null
     local unit target=null
     local boolean cast=false
+    call NextChapterTick()
     loop
         exitwhen t>=4
         if StoryMembers[t]>0 and TimeNow>=6. and StoryPopulateCursor>=64 then
@@ -575,15 +596,19 @@ function StoryTick takes nothing returns nothing
                             call SetWidgetLife(Hero[p],RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE),GetWidgetLife(Hero[p])+15.))
                             call SetUnitState(Hero[p],UNIT_STATE_MANA,RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_MANA),GetUnitState(Hero[p],UNIT_STATE_MANA)+12.))
                         endif
-                        if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and TimeNow>=BotNextCast[p] and JumpUnit[p]==null and JumpQueued[p]==null then
+                        if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and TimeNow>=BotNextCast[p] and JumpUnit[p]==null and JumpQueued[p]==null and StoryStage[t]!=6 and StoryStage[t]!=8 then
                             call SkillsLearnBot(p)
-                            set enemy=StoryNearest(t,Hero[p])
+                            if StoryStage[t]==7 then
+                                set enemy=ExamNearest(p)
+                            else
+                                set enemy=StoryNearest(t,Hero[p])
+                            endif
                             set cast=StoryLootBot(p,enemy)
                             if enemy!=null and not cast then
                                 set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
                                 set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
                                 set Dummy[t]=enemy
-                                if dx*dx+dy*dy<750.*750. and not StoryRetreat[t] then
+                                if dx*dx+dy*dy<750.*750. and not StoryRetreat[t] and not (StoryStage[t]==7 and ExamTowerOpen and ExamPair(t)) then
                                     set cast=SkillsBot(p)
                                 endif
                             endif
@@ -607,9 +632,11 @@ function StoryTick takes nothing returns nothing
                                     endif
                                     set petSlot=petSlot+1
                                 endloop
-                                if StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
+                                if StoryStage[t]==7 then
+                                    call ExamBot(p,enemy)
+                                elseif StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
                                     call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
-                                elseif not StoryStarted[t] or StoryStage[t]>=5 then
+                                elseif not StoryStarted[t] or StoryStage[t]==5 then
                                     set x=GetUnitX(StoryShop[t])
                                     set y=GetUnitY(StoryShop[t])
                                     set dx=GetUnitX(Hero[p])-x
