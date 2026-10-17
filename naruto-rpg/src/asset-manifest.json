@@ -2212,5 +2212,41 @@
     "path": "Tree3.mdx",
     "bytes": 65940,
     "sha256": "9d67bc052fc227ebf5928075059a9d9bd9968927934e903db791ff0b02ad384c"
+  },
+  {
+    "path": "Icon_GeninArmor.blp",
+    "bytes": 4380,
+    "sha256": "0bf906b7da48218b7abc12e7e922da9686ffac6a3292231674eeaa7225ea94a6",
+    "source": "original map, known item icon path"
+  },
+  {
+    "path": "Icon_ChuninArmor3.blp",
+    "bytes": 4380,
+    "sha256": "5d8f2154cba1b28071138e2d662dc244c7025c013539fb08857e11c12998f722",
+    "source": "original map, known item icon path"
+  },
+  {
+    "path": "Icon_Kunai.BLP",
+    "bytes": 5332,
+    "sha256": "12d75c3a8163a6cea59ebeca4281fbf75dcdc307668a98004f5331735062d35f",
+    "source": "original map, known item icon path"
+  },
+  {
+    "path": "Icon_Shuriken.BLP",
+    "bytes": 35543,
+    "sha256": "c1ad862e4dccba01a57d92b0638c90a577fbe2efc05398e05c1758702c85fa44",
+    "source": "original map, known item icon path"
+  },
+  {
+    "path": "Icon_Ramen.BLP",
+    "bytes": 26275,
+    "sha256": "b191181ef1a94017a251a2a407b9067bf5ecf0fb0b8226c18275d1493631b932",
+    "source": "original map, known item icon path"
+  },
+  {
+    "path": "Icon_SoldierPills.blp",
+    "bytes": 22390,
+    "sha256": "69e444ab30a6262803c26800274f3ba6380a21f66e56984fdeed2ab4ddb328ef",
+    "source": "original map, known item icon path"
   }
 ]

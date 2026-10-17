@@ -224,7 +224,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     local item carried=null
     local integer k=0
     local integer xp=0
-    if StoryStage[(p-ModuloInteger(p,3))/3]>0 then
+    if StoryStarted[(p-ModuloInteger(p,3))/3] then
         call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Выбор героя закрыт: отряд уже вышел на миссию.")
         set old=null
         return
@@ -232,6 +232,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER or not FoundationAlive(old) then
         return
     endif
+    call TreeJumpEnd(p)
     set xp=GetHeroXP(old)
     call SkillsClearSharingan(p)
     call RosterReset(p)

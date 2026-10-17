@@ -1,0 +1,143 @@
+{
+  "source": "User-provided original W3U hero lists and W3A names, not executable code",
+  "heroes": [
+    {
+      "hero": 0,
+      "sourceUnit": "H002",
+      "sourceSkills": [
+        "A00L",
+        "A001",
+        "A00R",
+        "A01P",
+        "A015"
+      ]
+    },
+    {
+      "hero": 1,
+      "sourceUnit": "H003",
+      "sourceSkills": [
+        "A01B",
+        "A01A",
+        "A033",
+        "A01D",
+        "A019"
+      ]
+    },
+    {
+      "hero": 2,
+      "sourceUnit": "H004",
+      "sourceSkills": [
+        "A005",
+        "A010",
+        "A02D",
+        "A01G",
+        "A02S"
+      ]
+    },
+    {
+      "hero": 3,
+      "sourceUnit": "H007",
+      "sourceSkills": [
+        "A02U",
+        "A00E",
+        "A00U",
+        "A029"
+      ]
+    },
+    {
+      "hero": 4,
+      "sourceUnit": "H005",
+      "sourceSkills": [
+        "A034",
+        "A006",
+        "A02L",
+        "A008",
+        "A009"
+      ]
+    },
+    {
+      "hero": 5,
+      "sourceUnit": "H006",
+      "sourceSkills": [
+        "A005",
+        "A00W",
+        "A000",
+        "A00Z",
+        "A02Z"
+      ]
+    },
+    {
+      "hero": 6,
+      "sourceUnit": "H00D",
+      "sourceSkills": [
+        "A02H",
+        "A00P",
+        "A02A",
+        "A02U"
+      ]
+    },
+    {
+      "hero": 7,
+      "sourceUnit": "H00B",
+      "sourceSkills": [
+        "A01C",
+        "A016",
+        "A01Q",
+        "A01H",
+        "A026"
+      ]
+    },
+    {
+      "hero": 8,
+      "sourceUnit": "H00J",
+      "sourceSkills": [
+        "A034",
+        "A006",
+        "A01E",
+        "A01F",
+        "A02J"
+      ]
+    },
+    {
+      "hero": 9,
+      "sourceUnit": "H008",
+      "sourceSkills": [
+        "A014",
+        "A01W",
+        "A01I",
+        "A00Y",
+        "A02N"
+      ]
+    },
+    {
+      "hero": 10,
+      "sourceUnit": "H00A",
+      "sourceSkills": [
+        "A003",
+        "A004",
+        "A011",
+        "A013",
+        "A02R"
+      ]
+    },
+    {
+      "hero": 11,
+      "sourceUnit": "H009",
+      "sourceSkills": [
+        "A00S",
+        "A00T",
+        "A01J",
+        "A00V",
+        "A027"
+      ]
+    }
+  ],
+  "leeFirstSkill": {
+    "sourceId": "A02U",
+    "sourceName": "Second Chance (E)",
+    "sourceBase": "AOre",
+    "mappedId": "R301",
+    "mappedBase": "AOre"
+  },
+  "note": "All 58 source slots mapped. Triggered skills remain independently recreated adaptations; matching IDs do not establish full mechanical equivalence."
+}

@@ -21,24 +21,33 @@ const blocked=new Uint8Array(grid.length);
 for(let y=0;y<w;y++)for(let x=0;x<w;x++)blocked[y*w+x]=x===0||y===0||x===w-1||y===w-1||[0,-1,1,-w,w].some(k=>grid[y*w+x+k]&2)?1:0;
 const script=fs.readFileSync(path.join(root,'dist/map/war3map.j'),'utf8');
 function values(name){return Object.fromEntries([...script.matchAll(new RegExp('set '+name+'\\[(\\d+)\\]=(-?[\\d.]+)','g'))].map(m=>[+m[1],+m[2]]))}
-const sx=values('SpawnX'),sy=values('SpawnY'),gx=values('StoryX'),gy=values('StoryY');
+const sx=values('SpawnX'),sy=values('SpawnY'),gx=values('StoryX'),gy=values('StoryY'),ex=values('EnemySpawnX'),ey=values('EnemySpawnY');
+const original=JSON.parse(fs.readFileSync(path.join(root,'src/original-forest-spawns.json')));
+assert(original.ninjas.every(a=>a.length===14));
 const cell=(x,y)=>Math.floor((y+16384)/32)*w+Math.floor((x+16384)/32);
 for(let t=0;t<4;t++){
  const start=cell(sx[t*3],sy[t*3]),seen=new Uint8Array(w*w),queue=new Int32Array(w*w);let head=0,tail=0;
  assert(!blocked[start],'Blocked team spawn '+t);queue[tail++]=start;seen[start]=1;
  while(head<tail){const cur=queue[head++];for(const next of [cur-1,cur+1,cur-w,cur+w])if(next>=0&&next<w*w&&!blocked[next]&&!seen[next]){seen[next]=1;queue[tail++]=next}}
  for(let n=0;n<4;n++)assert(seen[cell(gx[t*4+n],gy[t*4+n])],'Unreachable chapter stage '+t+':'+n);
+ for(let n=0;n<16;n++){
+  const [x,y]=n<14?original.ninjas[t][n]:n===14?original.haku[t]:original.zabuza[t];
+  assert.equal(ex[t*18+n],x);assert.equal(ey[t*18+n],y);
+  // Source CreateUnit may settle a colliding spawn onto adjacent clear ground.
+  let reachable=false;for(let dy=-128;dy<=128;dy+=32)for(let dx=-128;dx<=128;dx+=32)if(seen[cell(x+dx,y+dy)])reachable=true;
+  assert(reachable,'Unreachable original actor '+t+':'+n);
+ }
  for(let other=0;other<4;other++)if(other!==t)assert(!seen[cell(sx[other*3],sy[other*3])],'Unexpected cross-team forest route');
 }
 const schema=JSON.parse(fs.readFileSync(path.join(root,'src/classic-skill-schema.json')));
 const itemFile=new ObjectParser();itemFile.load(read('war3map.w3t'));
-assert.equal(itemFile.customTable.objects.length,7);
+assert.equal(itemFile.customTable.objects.length,14);
 const field=o=>Object.fromEntries(o.modifications.map(m=>[m.id,m.value]));
-for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert(f.igol>0 && f.ilum===0);for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
+for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert(f.igol>0 && f.ilum===0);if(f.iabi)assert(schema.stockIds.abilities.includes(f.iabi) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt'].includes(f.iabi));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
 const assets=new Set(JSON.parse(fs.readFileSync(path.join(root,'src/asset-manifest.json'))).map(a=>a.path.toLowerCase()));
 const modelAnimations=JSON.parse(fs.readFileSync(path.join(root,'src/model-animations.json')));
 for(const [model,index] of [['MistNin.mdx',5],['RainGenin.mdx',4],['haku.mdx',2],['Zabuza.mdx',5]])assert(modelAnimations.find(m=>m.path===model).animations[index]);
 assert(assets.has('gaarasand2.mdx'));
-const result={sourceSceneryCount:8936,terrainSize:[256,256],independentTeamRoutes:4,reachableStages:16,approximateHeroClearance:32,rectangularSceneryCollisionIncluded:true,nonRectangularFootprints:'retained original WPM; native engine test needed',nativeShopItems:7,validatedEnemyAnimationIndices:4,enginePlaytest:false};
+const result={sourceSceneryCount:8936,terrainSize:[256,256],independentTeamRoutes:4,reachableStages:16,approximateHeroClearance:32,rectangularSceneryCollisionIncluded:true,nonRectangularFootprints:'retained original WPM; native engine test needed',nativeShopItems:7,originalLootItems:7,originalNinjasPerTeam:14,originalActorPositionsVerified:64,mentorDepartureSeconds:330,validatedEnemyAnimationIndices:4,enginePlaytest:false};
 fs.writeFileSync(path.join(root,'dist/story-verification.json'),JSON.stringify(result,null,2));
-console.log('PASS: original terrain/scenery, four isolated forest routes and 16 reachable stages with conservative rectangular footprints/clearance; seven valid native shop items and enemy model animation indices.');
+console.log('PASS: original terrain/scenery, four isolated forest routes and 16 reachable stages with conservative rectangular footprints/clearance; seven valid native shop items, seven original loot types, 56 original ninja positions, Haku/Zabuza and the 330s mentor timer and enemy model animation indices.');

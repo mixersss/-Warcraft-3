@@ -43,8 +43,7 @@
     },
     "Htb1": {
       "type": "unreal",
-      "column": 1,
-      "specific": "AHtb,ANfb,Awfb,ACfb,ACcb"
+      "column": 1
     },
     "Hwe1": {
       "type": "unitCode",
@@ -68,8 +67,7 @@
     },
     "Idef": {
       "type": "int",
-      "column": 1,
-      "specific": "AIde,AId1,AId2,AId3,AId4,AId5,AIda,AIdb"
+      "column": 1
     },
     "Iint": {
       "type": "int",
@@ -278,28 +276,23 @@
     },
     "aani": {
       "type": "stringList",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aare": {
       "type": "unreal",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aart": {
       "type": "icon",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "abpx": {
       "type": "int",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "abpy": {
       "type": "int",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "abuf": {
       "type": "buffList",
@@ -313,13 +306,11 @@
     },
     "acdn": {
       "type": "unreal",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "adur": {
       "type": "unreal",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aeat": {
       "type": "modelList",
@@ -328,38 +319,31 @@
     },
     "aefl": {
       "type": "soundLabel",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aefs": {
       "type": "soundLabel",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "ahdu": {
       "type": "unreal",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aher": {
       "type": "bool",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "ahky": {
       "type": "char",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aite": {
       "type": "bool",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "alev": {
       "type": "int",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "alig": {
       "type": "lightningList",
@@ -373,23 +357,19 @@
     },
     "amat": {
       "type": "modelList",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "amcs": {
       "type": "int",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "amsp": {
       "type": "int",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "anam": {
       "type": "string",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "arac": {
       "type": "unitRace",
@@ -398,8 +378,7 @@
     },
     "aran": {
       "type": "unreal",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "arar": {
       "type": "icon",
@@ -408,8 +387,7 @@
     },
     "areq": {
       "type": "techList",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aret": {
       "type": "string",
@@ -448,8 +426,7 @@
     },
     "atar": {
       "type": "targetList",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "atat": {
       "type": "modelList",
@@ -458,13 +435,35 @@
     },
     "atp1": {
       "type": "string",
-      "column": 0,
-      "specific": ""
+      "column": 0
     },
     "aub1": {
       "type": "string",
-      "column": 0,
-      "specific": ""
+      "column": 0
+    },
+    "acas": {
+      "type": "unreal",
+      "column": 0
+    },
+    "Eat1": {
+      "type": "unreal",
+      "column": 1
+    },
+    "Eat2": {
+      "type": "unreal",
+      "column": 2
+    },
+    "Eat3": {
+      "type": "unreal",
+      "column": 3
+    },
+    "Ebl1": {
+      "type": "unreal",
+      "column": 1
+    },
+    "Ebl2": {
+      "type": "unreal",
+      "column": 2
     }
   },
   "unitFields": {
@@ -824,10 +823,12 @@
       "type": "int"
     },
     "umpi": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "umpm": {
-      "type": "int"
+      "type": "int",
+      "column": 0
     },
     "umas": {
       "type": "int"
@@ -852,7 +853,8 @@
       "column": 0
     },
     "umpr": {
-      "type": "unreal"
+      "type": "unreal",
+      "column": 0
     },
     "uhrt": {
       "type": "regenType"
@@ -3583,6 +3585,38 @@
     },
     "isst": {
       "type": "int",
+      "column": 0
+    },
+    "ides": {
+      "type": "string",
+      "column": 0
+    },
+    "iico": {
+      "type": "icon",
+      "column": 0
+    },
+    "ifil": {
+      "type": "model",
+      "column": 0
+    },
+    "iabi": {
+      "type": "abilityList",
+      "column": 0
+    },
+    "iuse": {
+      "type": "int",
+      "column": 0
+    },
+    "iprn": {
+      "type": "bool",
+      "column": 0
+    },
+    "iper": {
+      "type": "bool",
+      "column": 0
+    },
+    "icla": {
+      "type": "itemClass",
       "column": 0
     }
   }

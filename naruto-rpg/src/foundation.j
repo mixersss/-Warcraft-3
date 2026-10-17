@@ -1,4 +1,33 @@
 globals
+    integer StoryPopulateCursor=0
+    timer StoryPopulateClock=null
+    real array EnemySpawnX
+    real array EnemySpawnY
+    integer array EnemyKind
+    boolean array EnemyLootRolled
+    integer array StoryLootType
+    item array StoryLoot
+    real array BotUseItemAt
+    unit array JumpUnit
+    destructable array JumpQueued
+    real array JumpElapsed
+    real array JumpReadyAt
+    real array JumpSX
+    real array JumpSY
+    real array JumpTX
+    real array JumpTY
+    real array JumpBaseHeight
+    unit array StoryBoss
+    unit array StoryMentor
+    string array StoryMentorName
+    integer array StoryMentorType
+    unit array BossClone
+    real array EnemyBlinkAt
+    real array EnemyPrisonAt
+    boolean StoryMentorsReleased=false
+    timer StoryMentorClock=null
+    timerdialog StoryMentorDialog=null
+    boolean array StoryStarted
     integer array StoryStage
     integer array StoryMembers
     boolean array StoryHasHuman
@@ -151,6 +180,7 @@ function FoundationSound takes integer index returns nothing
     set PendingAudio=index
     call TimerStart(AudioClock,.2,false,function FoundationPlayPending)
 endfunction
+// TREE_RUNTIME
 // SKILLS_RUNTIME
 function FoundationMusicNext takes nothing returns nothing
     set MusicCursor=ModuloInteger(MusicCursor+1,MusicCount)
@@ -194,10 +224,10 @@ function FoundationChat takes nothing returns nothing
             call DisplayTimedTextToPlayer(Player(p),0,0,30.,I2S(k+1)+" — "+HeroName[k])
             set k=k+1
         endloop
-    elseif StoryStage[(p-ModuloInteger(p,3))/3]==0 and msg=="-wound" and FoundationAlive(Hero[p]) then
+    elseif not StoryStarted[(p-ModuloInteger(p,3))/3] and msg=="-wound" and FoundationAlive(Hero[p]) then
         call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.5)
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Проверка лечения до начала миссии: здоровье героя снижено до половины.")
-    elseif StoryStage[(p-ModuloInteger(p,3))/3]==0 and msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
+    elseif not StoryStarted[(p-ModuloInteger(p,3))/3] and msg=="-practice" and HeroRole[p]>=0 and FoundationAlive(Hero[p]) then
         call SetHeroLevel(Hero[p],30,false)
         call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
         call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Проверка техник перед миссией: 30-й уровень. Изучи техники кнопкой +. Мана восстановлена; перезарядки сохраняются.")
@@ -352,6 +382,7 @@ function FoundationInit takes nothing returns nothing
         set p=p+1
     endloop
     call TriggerAddAction(chat,function FoundationChat)
+    call TreeJumpInit()
     call StoryInit()
     call FogMaskEnable(false)
     call FogEnable(false)
@@ -359,7 +390,7 @@ function FoundationInit takes nothing returns nothing
     call SetTimeOfDayScale(0.)
     set MusicClock=CreateTimer()
     call FoundationMusicStart()
-    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"Глава I — Страна Волн. -heroes: список; -hero 1..12: выбор до выхода; +: изучить техники. -go: начать миссию; -follow: боты прикрывают вас; -quest: цель; -shop: снабжение. Гибель: возвращение через 20 секунд.")
+    call DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,60.,"Глава I — Страна Волн. -heroes: список; -hero 1..12: выбор до выхода; +: изучить техники. -go: начать раньше; начало автоматически через 30 секунд; ПКМ по дереву: прыжок за 50 чакры. -follow: боты прикрывают вас; -quest: цель; -shop: снабжение. Гибель: возвращение через 20 секунд.")
     set SpawnClock=CreateTimer()
     call TimerStart(SpawnClock,.35,true,function FoundationSpawn)
     call TimerStart(clock,.5,true,function FoundationTick)

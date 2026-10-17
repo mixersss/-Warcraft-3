@@ -1,10 +1,10 @@
 {
-  "filename": "Shinobi_Chapter_01_Alpha_07.w3x",
-  "bytes": 7967318,
-  "sha256": "19437217b43516444cec00de534bef0f63c393f79721a1fe613f4c9b1f959ce7",
+  "filename": "Shinobi_Chapter_01_Alpha_07a.w3x",
+  "bytes": 8063249,
+  "sha256": "18cfeecf53875a3bcb575a7e99b86ea6133ce949ccd8f68345ce01baa5eb1aed",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery only; no original units, abilities, metadata or JASS",
-  "importedAssets": 369,
+  "importedAssets": 375,
   "models": 67,
   "audioFiles": 174,
   "musicTracks": 9,
@@ -17,6 +17,11 @@
   "skillImplementation": "new independent adaptations, not original script",
   "playableHeroesWithSkills": 12,
   "sectorSize": 4096,
-  "stage": "Chapter 01: camps, Haku, Zabuza; independent per-team quests and bot cooperation",
+  "originalNinjasPerTeam": 14,
+  "nativeTreeJumpTargeting": true,
+  "mentorDepartureSeconds": 330,
+  "originalLootTypes": 7,
+  "recreatedInnateSkills": 1,
+  "stage": "Chapter 01: original forest actor placements, 330s mentors, tree jumping and item drops",
   "engineTested": false
 }

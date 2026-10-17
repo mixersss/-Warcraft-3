@@ -45,6 +45,12 @@ for(let rank=1;rank<=3;rank++){assert(unit[get(ability.Rn03,'Hwe1',rank)]);asser
 assert.equal(get(unit.rt03,'uhpm'),2800);assert.equal(get(unit.rt03,'ua1b'),110);
 for(let n=1;n<=3;n++)assert(get(ability.R902,'Nms1',n)<=(n===1?1:get(ability.R902,'Nms1',n-1)),'Higher shield ranks must not cost more mana per absorbed HP');
 assert.equal(get(ability.Rn02,'Omi1',4),5);assert.equal(get(ability.Rn04,'Htb1',3),650);assert.equal(get(ability.Rs04,'Htb1',3),800);
+const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json'));
+for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
+assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
+for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rjtr'));
+assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
+for(const id of ['Zbwp','Zbce','Zbbl','Ljkn','Ljsh','Ljnt'])assert(ability[id]);
 const info=parse(Info,'war3map.w3i');assert.equal(info.players.length,12);assert.equal(info.forces.length,4);assert.deepEqual(info.forces.map(f=>f.playerMasks),[7,56,448,3584]);
 const L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
 function run(s){if(lauxlib.luaL_dostring(L,to_luastring(s))!==lua.LUA_OK)throw Error(to_jsstring(lua.lua_tostring(L,-1)));}
@@ -196,9 +202,11 @@ assert(Hero[0].level==3 and Hero[1].level==3 and Hero[4].level==3)
 TimeNow=100;SkillsTick();assert(Effects==Destroyed)
 `);
 run(fs.readFileSync(__dirname+'/roster-harness.lua','utf8'));
-const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|StoryPrice|SpawnX|SpawnY)\[/.test(s));
+const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|StoryPrice|SpawnX|SpawnY|EnemySpawnX|EnemySpawnY|StoryMentorType|StoryMentorName|StoryLootType)\[\d+\]/.test(s));
 run(translate('function StoryFixtureData takes nothing returns nothing\n'+storyLines.join('\n')+'\nendfunction\n'));run('StoryFixtureData()');
 run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
-console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, boss telegraphs/phases, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
-fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,nativeMocks:true,enginePlaytest:false},null,2));
+run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
+console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
+console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
+fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,nativeMocks:true,enginePlaytest:false},null,2));
 console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 52 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');

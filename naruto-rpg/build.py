@@ -6,7 +6,7 @@ from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI CHAPTER 01 ALPHA 07'
+NAME='SHINOBI CHAPTER 01 ALPHA 07a'
 DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
@@ -37,7 +37,7 @@ def pathing():
 def unit_data():
  entries=[]
  for h in HEROES:
-  entries.append(('Hpal',h['id'],[('unam',3,h['name']),('upro',3,h['name']),('upru',0,1),('umdl',3,h['model'].replace('.mdx','.mdl')),('uico',3,h['icon']),('usca',1,float(h['scale'])),('uhab',3,HERO_SKILLS.get(h['slot'],'')),('uabi',3,'AInv'),('uhpm',0,1000),('umpm',0,1000),('umpi',0,1000),('umpr',2,8.),('umvs',0,320),('ucol',2,24.),('ua1b',0,20),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,128),('upgr',3,''),('ureq',3,'')]))
+  entries.append(('Hpal',h['id'],[('unam',3,h['name']),('upro',3,h['name']),('upru',0,1),('umdl',3,h['model'].replace('.mdx','.mdl')),('uico',3,h['icon']),('usca',1,float(h['scale'])),('uhab',3,HERO_SKILLS.get(h['slot'],'')),('uabi',3,'AInv,Rjtr'),('uhpm',0,1000),('umpm',0,1000),('umpi',0,1000),('umpr',2,8.),('umvs',0,320),('ucol',2,24.),('ua1b',0,20),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,128),('upgr',3,''),('ureq',3,'')]))
  for slot,raw,model in [(0,'Rnfm','Naruto.mdl'),(1,'Rsfm','SasukeCursed.mdl'),(7,'Rkfm','units\\creeps\\WhiteWolf\\WhiteWolf.mdl'),(9,'Rgfm','Shukaku.mdl')]:
   base=list(entries[slot][2]);overrides={'unam':{0:'Наруто — Кьюби',1:'Саске — проклятая печать',7:'Киба — звериная форма',9:'Гаара — Сюкаку'}[slot],'umdl':model,'ua1b':45,'ua1c':1.1,'umvs':360}
   base=[(key,kind,overrides.get(key,value)) for key,kind,value in base]
@@ -107,7 +107,7 @@ def script():
  skillfunctions.append('\n'.join(dispatch))
  skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
  from story import generated_data
- code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text())
+ code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()).replace('// TREE_RUNTIME',(ROOT/'src/tree-jump.j').read_text()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text())
  lines=['function config takes nothing returns nothing',f'    call SetMapName({q(NAME)})',f'    call SetMapDescription({q(DESC)})','    call SetPlayers(12)','    call SetTeams(4)','    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)']
  for p,(x,y) in enumerate(positions()):
   lines += [f'    call DefineStartLocation({p},{x}.,{y}.)',f'    call SetPlayerStartLocation(Player({p}),{p})',f'    call ForcePlayerStartLocation(Player({p}),{p})',f'    call SetPlayerColor(Player({p}),ConvertPlayerColor({p}))',f'    call SetPlayerRacePreference(Player({p}),RACE_PREF_HUMAN)',f'    call SetPlayerRaceSelectable(Player({p}),false)',f'    call SetPlayerController(Player({p}),MAP_CONTROL_USER)',f'    call SetPlayerTeam(Player({p}),{p//3})',f'    call SetPlayerState(Player({p}),PLAYER_STATE_ALLIED_VICTORY,1)',f'    call SetStartLocPrioCount({p},2)']
@@ -119,7 +119,7 @@ def script():
 def build():
  files={row['path']:(ROOT/'assets'/row['path'].replace('\\','/')).read_bytes() for row in ASSETS}
  for row in ASSETS:assert hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
- files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data(),True),'war3map.w3t':objects(__import__('story').item_entries()),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
+ files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data()+__import__('story').ability_entries(),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
  for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
   files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
  imported=[name for name in files if name in {x['path'] for x in ASSETS}]
@@ -129,8 +129,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07a.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'stage':'Chapter 01: camps, Haku, Zabuza; independent per-team quests and bot cooperation','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'stage':'Chapter 01: original forest actor placements, 330s mentors, tree jumping and item drops','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

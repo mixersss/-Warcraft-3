@@ -19,12 +19,40 @@ def unit_entries():
  out.append(('ngme','rqsh',[('unam',3,'Снабжение отряда'),('usei',3,','.join(x[1] for x in ITEMS)),('uabi',3,'Aneu,Apit,Avul'),('ucol',2,32.),('upgr',3,''),('ureq',3,'')]))
  # Sand crest: persistent visible Birth animation; no attack, collision or orders.
  out.append(('hfoo','rswv',[('unam',3,'Песчаное цунами'),('umdl',3,'GaaraSand2.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('ushr',0,0),('usca',1,1.5)]))
+ # Four original mentors, paused in camp until their departure timer expires.
+ mentors=json.loads((ROOT/'src/original-forest-spawns.json').read_text())['mentors']
+ template=next(mods for _,raw,mods in out if raw=='rq01')
+ for n,mentor in enumerate(mentors[1:],2):
+  mods=[(k,t,mentor['name'] if k=='unam' else mentor['model'] if k=='umdl' else v) for k,t,v in template]
+  out.append(('hfoo','rq0'+str(n),mods))
+ for base,raw,mods in out:
+  if raw.startswith('rq0'):
+   mods.extend([('uaen',0,1),('ua1b',0,65),('umvs',0,340)])
+  if raw=='re04':mods.extend([('uabi',3,'Zbwp,Zbce,Zbbl'),('umpm',0,1000),('umpi',0,1000),('umpr',2,6.)])
+ for _,_,mods in out:mods[:]=list({k:(k,t,v) for k,t,v in mods}.values())
  return out
 
 def generated_data():
  lines=[]
+ source=json.loads((ROOT/'src/original-forest-spawns.json').read_text())
  for t,(ox,oy) in enumerate(OFFSETS):
   for n,(x,y) in enumerate(NODES):
    lines += [f'    set StoryX[{t*4+n}]={float(x+ox)}',f'    set StoryY[{t*4+n}]={float(y+oy)}']
+ for t,positions in enumerate(source['ninjas']):
+  for n,(x,y) in enumerate(positions+ [source['haku'][t],source['zabuza'][t]]):
+   lines += [f'    set EnemySpawnX[{t*18+n}]={x}',f'    set EnemySpawnY[{t*18+n}]={y}']
+  lines += [f"    set StoryMentorType[{t}]='rq0{t+1}'",f'    set StoryMentorName[{t}]='+json.dumps(source['mentors'][t]['name'],ensure_ascii=False)]
+ from loot import LOOT
+ for n,row in enumerate(LOOT):lines.append(f"    set StoryLootType[{n}]='{row[2]}'")
  for n,(_,raw,_,cost) in enumerate(ITEMS):lines += [f"    set StoryItem[{n}]='{raw}'",f'    set StoryPrice[{n}]={cost}']
  return '\n'+'\n'.join(lines)
+
+def ability_entries():
+ from loot import abilities
+ out=abilities()
+ # All heroes have a non-learnable smart-tree target. Runtime cancels native eating.
+ out.append(('Aeat','Rjtr',[('anam',3,'Прыжок на дерево'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('aart',3,'UI\\Feedback\\Resources\\ResourceLumber.blp'),('atp1',3,'Прыжок на дерево [T]',1,0),('aub1',3,'ПКМ по живому дереву: прыжок в радиусе 1000. 50 чакры, перезарядка 3 сек. Дерево сохраняется.',1,0),('ahky',3,'T'),('abpx',0,2),('abpy',0,1),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,1000.,1,0),('acas',2,10.,1,0),('atar',3,'tree',1,0),('adur',2,0.,1,0),('ahdu',2,0.,1,0),('Eat1',2,0.,1,1),('Eat2',2,.1,1,2),('Eat3',2,0.,1,3),('aani',3,'walk'),('aefs',3,''),('aefl',3,'')]))
+ out.append(('AHtb','Zbwp',[('anam',3,'Суйтон: водяная тюрьма'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('Htb1',2,120.,1,1),('amcs',0,80,1,0),('acdn',2,12.,1,0),('aran',2,700.,1,0),('adur',2,2.,1,0),('ahdu',2,1.5,1,0),('atar',3,'ground,air,enemy,organic',1,0),('amat',3,'Abilities\\Weapons\\WaterElementalMissile\\WaterElementalMissile.mdl'),('amsp',0,1100,1,0),('aani',3,'spell'),('aefs',3,''),('aefl',3,'')]))
+ out.append(('ACce','Zbce',[('anam',3,'Рассекающий удар'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('aare',2,225.,1,0),('aefs',3,''),('aefl',3,'')]))
+ out.append(('AEbl','Zbbl',[('anam',3,'Рывок Скрытого Тумана'),('aher',0,0),('aite',0,0),('alev',0,1),('areq',3,''),('Ebl1',2,850.,1,1),('Ebl2',2,0.,1,2),('amcs',0,30,1,0),('acdn',2,10.,1,0),('aran',2,850.,1,0),('adur',2,.33,1,0),('aani',3,'spell'),('aefs',3,''),('aefl',3,'')]))
+ return out

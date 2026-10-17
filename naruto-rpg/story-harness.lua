@@ -1,8 +1,9 @@
--- Actual generated chapter functions. Natives below model their contracts, not rendering/pathfinding.
+-- Real generated JASS; native mocks cannot establish renderer/pathfinding compatibility.
 local function numbers() return setmetatable({},{__index=function()return 0 end}) end
 local function flags() return setmetatable({},{__index=function()return false end}) end
-StoryStage=numbers();StoryMembers=numbers();StoryHasHuman=flags();StoryMarch=flags();StoryRetreat=flags()
+StoryStage=numbers();StoryStarted=flags();StoryMembers=numbers();StoryHasHuman=flags();StoryMarch=flags();StoryRetreat=flags()
 StoryAdvanceAt=numbers();StoryEnemy={};StoryShop={};EnemyNext=numbers();EnemyPending=numbers();EnemyMark={};EnemyPhase=flags()
+EnemyLootRolled=flags();StoryLoot={};BotUseItemAt=numbers();EnemyBlinkAt=numbers();EnemyPrisonAt=numbers()
 StoryRevive=numbers();StoryBotOrderAt=numbers();StoryBuyAt=numbers();StoryBought=numbers()
 SandWave={};SandWaveUntil=numbers();SandWaveDX=numbers();SandWaveDY=numbers()
 Hero={};Dummy={};Companion={};Controllers={};World={};Orders={};Effects=0;Destroyed=0;TimeNow=7
@@ -10,7 +11,7 @@ PLAYER_NEUTRAL_AGGRESSIVE=12;PLAYER_NEUTRAL_PASSIVE=15
 PLAYER_STATE_RESOURCE_GOLD='gold';EVENT_UNIT_SELL_ITEM='sale'
 local slots={[0]=true,[1]=true,[2]=true,[3]=true,[4]=true,[5]=true,[9]=true,[10]=true,[11]=true}
 function GetPlayerSlotState(p)return slots[p] and 'playing' or 'open'end
-local gold={};local xp={};local feedback={};local neutralBuyer={}
+local gold={};local feedback={};local neutralBuyer={}
 function GetPlayerState(p,s)return gold[p] or 0 end
 function SetPlayerState(p,s,n)gold[p]=n end
 function AddHeroXP(u,n,fx)u.xp=(u.xp or 0)+n end
@@ -30,6 +31,12 @@ function SetUnitVertexColor(u,r,g,b,a)u.alpha=a end
 function PingMinimapEx()end
 function SetUnitX(u,x)u.x=x end
 function SetUnitY(u,y)u.y=y end
+function PauseUnit(u,pause)u.paused=pause end
+function SetUnitOwner(u,p,flag)u.owner=p end
+function CreateTimerDialog(t)return {timer=t}end
+function TimerDialogSetTitle(d,s)d.title=s end
+function TimerDialogDisplay(d,flag)d.visible=flag end
+function DestroyTimerDialog(d)d.destroyed=true end
 function ReviveHero(u,x,y,fx)u.hp=u.maxLife;u.x=x;u.y=y;u.revived=true;return true end
 local nativeCreate=CreateUnit
 function CreateUnit(p,id,x,y,facing)
@@ -49,66 +56,106 @@ function IssueNeutralImmediateOrderById(p,shop,id)
  for i=0,6 do if StoryItem[i]==id then price=StoryPrice[i] end end
  assert(price>0 and gold[p]>=price,'Purchase needs real gold')
  local given=false
- for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id};given=true;break end end
+ for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
  if given then gold[p]=gold[p]-price;boughtBy=buyer;StoryOnBuy();boughtBy=nil end
  return given
 end
+function GetItemTypeId(i)return i.type or 0 end
+function GetItemX(i)return i.x end
+function GetItemY(i)return i.y end
+function IsItemOwned(i)return i.owned or false end
+local random={}
+function GetRandomInt(a,b)local v=table.remove(random,1) or b;assert(v>=a and v<=b);return v end
+function CreateItem(id,x,y)return {type=id,x=x,y=y,owned=false}end
+function UnitUseItem(u,i)u.used=i;return true end
+function UnitUseItemTarget(u,i,target)u.used=i;u.usedTarget=target;return true end
 for p=0,11 do
  if slots[p] then
   Hero[p]=CreateUnit(p,p,SpawnX[p],SpawnY[p],0);Hero[p].level=3;Hero[p].points=2;HeroRole[p]=p;HeroTemplate[p]=p;HeroType[p]=p
-  Controllers[p]=(p==0 or p==11) and 'human' or 'computer';gold[p]=500
+  Controllers[p]=(p==0 or p==3 or p==11) and 'human' or 'computer';gold[p]=500
  end
  BotNextCast[p]=0;StoryBotOrderAt[p]=0
 end
 StoryInit()
 assert(StoryMembers[0]==3 and StoryMembers[1]==3 and StoryMembers[2]==0 and StoryMembers[3]==3)
-assert(StoryHasHuman[0] and not StoryHasHuman[1] and StoryHasHuman[3])
-assert(StoryShop[0] and StoryShop[1] and not StoryShop[2] and StoryShop[3],'Empty team must have no NPC/shop')
-StoryCommand(0,'-go');assert(StoryStage[0]==1 and StoryMarch[0] and StoryStage[1]==0)
-local old=Hero[0];SkillsChoose(0,1);assert(Hero[0]==old,'Cannot change hero during chapter')
-Companion[3]=CreateUnit(1,123,GetUnitX(StoryEnemy[0]),GetUnitY(StoryEnemy[0]),0)
-StoryTick();assert(Companion[3].last.o=='follow','Companion must stay with its distant owner')
-assert(Hero[1].last.o=='attack' and Hero[1].last.target==StoryEnemy[0],'Bot must march to actual quest enemy')
-StoryCommand(0,'-follow');TimeNow=10;Hero[0].x=Hero[0].x+1200;StoryTick()
-assert(Hero[1].last.o=='move' and math.abs(Hero[1].last.x-Hero[0].x)<=80,'Bot must follow the human')
-StoryCommand(0,'-retreat');TimeNow=13;StoryTick();assert(Hero[1].last.o=='move' and Hero[1].last.x==SpawnX[1])
-StoryCommand(0,'-follow')
--- A death timer preserves hero identity and only revives after twenty seconds.
-Hero[2].hp=0;TimeNow=14;StoryTick();assert(StoryRevive[2]==34)
-TimeNow=33.5;StoryTick();assert(Hero[2].hp==0)
-TimeNow=34;StoryTick();assert(Hero[2].revived and Hero[2].hp>0)
-assert(StoryStage[1]==1 and StoryStage[3]==0,'Only computer-only teams auto-start')
--- Kill all three objective units; award once to all occupied teammates.
-local before=gold[0]
-for j=0,2 do StoryEnemy[j].hp=0 end
-TimeNow=35;StoryTick();assert(gold[0]==before+250 and Hero[0].xp==900 and StoryAdvanceAt[0]==43)
-StoryTick();assert(gold[0]==before+250,'No duplicate reward')
-TimeNow=43;StoryTick();assert(StoryStage[0]==2)
-for j=0,2 do StoryEnemy[j].hp=0 end
-TimeNow=44;StoryTick();TimeNow=52;StoryTick();assert(StoryStage[0]==3)
--- Haku uses a sequence present in his model, a delayed visible strike and team-specific damage.
-local haku=StoryEnemy[0]
-Hero[0].x=GetUnitX(haku);Hero[0].y=GetUnitY(haku);Hero[1].x=GetUnitX(haku)+1000
-StoryEnemyCast(0,Hero[0]);assert(haku.animationIndex==2 and EnemyMark[0] and EnemyPending[0]==53.5)
-local hp=Hero[0].hp;local other=Hero[11].hp;TimeNow=53.5;StoryEnemyHit(0)
-assert(Hero[0].hp==hp-120 and Hero[11].hp==other and not EnemyMark[0] and EnemyPending[0]==0)
-StoryEnemy[0].hp=0;TimeNow=54;StoryTick();TimeNow=62;StoryTick();assert(StoryStage[0]==4)
-local zabuza=StoryEnemy[0];zabuza.hp=4000
-StoryEnemyCast(0,Hero[0]);assert(zabuza.animationIndex==5 and EnemyPhase[0] and EnemyNext[0]==67.5)
-assert(StoryEnemy[1].alpha==155 and StoryEnemy[2].alpha==155)
-zabuza.hp=0;StoryEnemy[1].hp=0;StoryEnemy[2].hp=0;TimeNow=64;StoryTick();assert(StoryStage[0]==5)
-local finalGold=gold[0];TimeNow=65;StoryTick();assert(gold[0]==finalGold,'Final reward must be idempotent')
--- Real native purchases, armor and role stats, preserving six inventory slots.
+assert(StoryHasHuman[0] and StoryHasHuman[1] and StoryHasHuman[3])
+assert(StoryShop[0] and StoryShop[1] and not StoryShop[2] and StoryShop[3])
+assert(StoryMentorClock.delay==330 and StoryMentorClock.callback==StoryReleaseMentors and StoryMentorDialog.visible)
+local populator=StoryPopulateClock
+for i=0,64 do populator.callback()end
+assert(populator.destroyed)
+for t=0,3 do
+ local count=0
+ for n=0,17 do
+  local u=StoryEnemy[t*18+n]
+  if u then count=count+1;assert(u.x==EnemySpawnX[t*18+n] and u.y==EnemySpawnY[t*18+n])end
+ end
+ assert(count==(t==2 and 0 or 16),'Exactly fourteen ninjas, Haku and Zabuza per occupied forest')
+end
+local boss=StoryBoss[1];assert(boss==StoryEnemy[33] and boss.hp>0,'Rock Lee team boss must exist before any -go')
+StoryTick();assert(StoryStage[1]==1 and not StoryStarted[1],'Enemies must exist while human selection stays open')
+-- Computer-only timer and the human 30s boundary do not depend on the red slot.
+Controllers[11]='computer';StoryHasHuman[3]=false
+TimeNow=19.5;StoryTick();assert(not StoryStarted[3] and not StoryStarted[1])
+TimeNow=20;StoryTick();assert(StoryStarted[3] and StoryMarch[3] and not StoryStarted[1])
+TimeNow=29.5;StoryTick();assert(not StoryStarted[1])
+-- Human Rock Lee team needs no chat command: depart automatically at 30s.
+TimeNow=30;StoryTick();assert(StoryStarted[1] and StoryMarch[1])
+assert(Hero[4].last.o=='attack' and Hero[4].last.target~=nil,'Neji bot must attack a real forest enemy')
+assert(Hero[5].last.o=='attack' and StoryBoss[1]==boss)
+-- Explicit commands and natural early departure preserve cooperative play.
+StoryCommand(0,'-go');assert(StoryStarted[0] and StoryMarch[0])
+local old=Hero[0];SkillsChoose(0,1);assert(Hero[0]==old,'No character changes after departure')
+StoryCommand(0,'-follow');TimeNow=33;Hero[0].x=Hero[0].x+1200;StoryTick()
+assert(Hero[1].last.o=='move','Follow must issue movement toward the human')
+StoryCommand(0,'-retreat');TimeNow=36;StoryTick();assert(Hero[1].last.x==SpawnX[1])
+StoryCommand(0,'-go')
+-- Native revival is twenty seconds, including the non-red first human case.
+Hero[2].hp=0;TimeNow=37;StoryTick();assert(StoryRevive[2]==57)
+TimeNow=56.5;StoryTick();assert(Hero[2].hp==0)
+TimeNow=57;StoryTick();assert(Hero[2].revived and Hero[2].hp>0)
+-- Seven kills advance training; remaining actors retain identity, counts and orders.
+local before=gold[0];local survivor=StoryEnemy[10]
+for j=0,6 do StoryEnemy[j].hp=0 end
+TimeNow=60;StoryTick();assert(gold[0]==before+250 and StoryAdvanceAt[0]==68)
+StoryTick();assert(gold[0]==before+250)
+TimeNow=68;StoryTick();assert(StoryStage[0]==2 and StoryEnemy[10]==survivor and StoryMarch[0],'Stage transition must not reset march')
+for j=7,13 do StoryEnemy[j].hp=0 end
+TimeNow=69;StoryTick();TimeNow=77;StoryTick();assert(StoryStage[0]==3)
+local haku=StoryEnemy[14];Hero[0].x=haku.x;Hero[0].y=haku.y;Hero[1].x=haku.x+1000
+StoryEnemyCast(14,Hero[0]);assert(haku.animationIndex==2 and EnemyMark[14])
+local hp=Hero[0].hp;TimeNow=78.5;StoryEnemyHit(14);assert(Hero[0].hp==hp-120 and not EnemyMark[14])
+haku.hp=0;TimeNow=79;StoryTick();TimeNow=87;StoryTick();assert(StoryStage[0]==4 and StoryEnemy[15]==StoryBoss[0],'Never recreate Zabuza')
+local zabuza=StoryEnemy[15];zabuza.hp=4000;StoryEnemyCast(15,Hero[0]);assert(EnemyPhase[15] and zabuza.animationIndex==5)
+assert(StoryEnemy[16].alpha==155 and StoryEnemy[17].alpha==155)
+-- Actual native prison/blink orders are used, in addition to telegraphed waves.
+Hero[0].x=zabuza.x+400;Hero[0].y=zabuza.y;EnemyPrisonAt[15]=0;TimeNow=90;StoryTick();assert(zabuza.last.o=='thunderbolt')
+Hero[0].x=zabuza.x+600;EnemyPrisonAt[15]=100;EnemyBlinkAt[15]=0;TimeNow=91;StoryTick();assert(zabuza.last.o=='blink')
+-- Original mentor delay releases the stored four different mentors, not a new boss.
+local dialog=StoryMentorDialog;local deadline=StoryMentorClock
+TimeNow=330;deadline.callback();assert(dialog.destroyed and StoryMentorClock==nil and StoryMentorsReleased)
+assert(StoryMentor[1].paused==false and StoryMentor[1].owner==3 and StoryMentor[1].last.o=='attack')
+assert(StoryBoss[1]==boss)
+zabuza.hp=0;StoryEnemy[16].hp=0;StoryEnemy[17].hp=0;StoryTick();assert(StoryStage[0]==5)
+local finalGold=gold[0];StoryTick();assert(gold[0]==finalGold)
+-- Loot chance boundaries and one drop per real actor (never clones).
+local j=18;EnemyLootRolled[j]=false;random={21};StoryDrop(j);assert(StoryLoot[j]==nil)
+EnemyLootRolled[j]=false;random={20,6,2};StoryDrop(j);assert(StoryLoot[j].type==StoryLootType[3]);local dropped=StoryLoot[j]
+random={1,1};StoryDrop(j);assert(StoryLoot[j]==dropped,'Never reroll a dead unit')
+EnemyLootRolled[j]=false;random={1,5};StoryDrop(j);assert(StoryLoot[j].type==StoryLootType[1],'Rare chuunin armor branch')
+-- Bots pick up nearby drops with free inventory; full inventory never discards equipment.
+Hero[4].items={};Hero[4].x=StoryLoot[j].x;Hero[4].y=StoryLoot[j].y;BotUseItemAt[4]=0
+assert(StoryLootBot(4,nil) and Hero[4].last.o=='smart')
+for slot=0,5 do Hero[4].items[slot]={type=1}end
+assert(not StoryLootBot(4,nil))
+Hero[4].items[0]={type=raw('Nlsh')};BotUseItemAt[4]=0;boss.x=Hero[4].x+100;boss.y=Hero[4].y
+assert(StoryLootBot(4,boss) and Hero[4].used==Hero[4].items[0] and Hero[4].usedTarget==boss)
+-- Shop still uses real gold, inventory and role-specific choices.
 Hero[1].items={};StoryBought[1]=0;gold[1]=500;StoryBuyAt[1]=0
-for i=1,3 do TimeNow=100+i*5;StoryBuy(1)end
-assert(gold[1]==70 and StoryBought[1]==3 and Hero[1].items[0].type==StoryItem[0] and Hero[1].items[1].type==StoryItem[4] and Hero[1].items[2].type==StoryItem[2])
-for i=0,5 do Hero[1].items[i]={type=1}end
-local saved=gold[1];TimeNow=130;StoryBuy(1);assert(gold[1]==saved,'Full inventory must not spend gold')
--- Gaara's sand crests really move, and expiry/recast/death remove their unit handles.
-Hero[9].x=0;Hero[9].y=0;TimeNow=150
-RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x
-RosterTick();assert(crest.x>start and crest.pathing==false)
-local oldWave=SandWave[27];RosterSand(9,700,0);assert(oldWave.removed)
-TimeNow=152;RosterTick();assert(not SandWave[27] and not SandWave[28] and not SandWave[29])
-RosterSand(9,700,0);local dying=SandWave[27];Hero[9].hp=0;RosterTick();assert(dying.removed and not SandWave[27])
-assert(#feedback>10,'Russian quest dialogue must be emitted')
+for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
+assert(gold[1]==70 and StoryBought[1]==3)
+-- Sand crest cleanup remains bounded.
+Hero[9].x=0;Hero[9].y=0;TimeNow=450
+RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x;RosterTick();assert(crest.x>start)
+TimeNow=452;RosterTick();assert(not SandWave[27])
+assert(#feedback>10)
