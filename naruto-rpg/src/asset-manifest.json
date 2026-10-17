@@ -2266,5 +2266,11 @@
     "bytes": 25673,
     "sha256": "16c145bad39a0c28a184d715f02122bb3e6658a083024eb25478c3af681b4d3b",
     "source": "original A012 icon"
+  },
+  {
+    "path": "Icon_ExplodingNote.BLP",
+    "bytes": 4764,
+    "sha256": "958da588ae5204f177e0e7dae627d9eb45571257d93ae6a7d2bf9af043242730",
+    "source": "original Ichiraku exploding note icon"
   }
 ]

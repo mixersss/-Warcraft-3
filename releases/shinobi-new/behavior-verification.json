@@ -7,11 +7,18 @@
   "originalNinjasPerTeam": 14,
   "mentorDepartureSeconds": 330,
   "originalLootItems": 7,
+  "campaignObjectiveDataEntries": 22,
+  "parallelCloneRooms": 8,
+  "jiraiyaSearchBarrels": 20,
+  "jiraiyaSearchSeconds": 150,
+  "invasionStreams": 8,
+  "characterBoundSasukeRole": true,
+  "campaignThroughEndingNativeMocks": true,
   "treeJumpActualJASS": true,
   "autoStartHumanTeamAtSeconds": 30,
   "skillSourceListsAudited": 12,
-  "nativeMocks": true,
-  "enginePlaytest": false,
   "commonKawarimiDataAndBotOrders": true,
-  "stageHUDDeadlinesAndHandleCleanup": true
+  "stageHUDDeadlinesAndHandleCleanup": true,
+  "nativeMocks": true,
+  "enginePlaytest": false
 }

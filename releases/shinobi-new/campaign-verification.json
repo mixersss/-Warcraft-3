@@ -1,0 +1,14 @@
+{
+  "objectives": 22,
+  "connectedObjectivePairs": 22,
+  "connectedSearchBarrels": 20,
+  "sourceDeadlinesVerified": 5,
+  "parallelClones": 8,
+  "sourceSeededNpcStatsVerified": 7,
+  "sourceShopItems": 11,
+  "nativeStatScrollBonus": 6,
+  "fullJASSBehavior": "test-skills.cjs / campaign-harness.lua",
+  "originalCinematicsIdentical": false,
+  "originalNpcJutsusComplete": false,
+  "enginePlaytest": false
+}

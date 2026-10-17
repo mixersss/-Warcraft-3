@@ -1,4 +1,5 @@
 -- Native UI surrogate: check values, deadlines and balanced item-handle releases.
+function IsUnitPaused(u)return u and u.paused or false end
 HUDItemsAcquired=0;HUDItemsReleased=0
 function CreateMultiboard()return {cells={}}end
 function MultiboardSetTitleText(b,s)b.title=s end

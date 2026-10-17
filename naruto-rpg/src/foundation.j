@@ -1,4 +1,93 @@
 globals
+    unit array CampaignClone
+    integer array CampaignCloneKind
+    real array CampaignCloneCastAt
+    boolean array CampaignClonePending
+    item array ExamGear
+    integer ExamGearCount=0
+    boolean CampaignKabutoAI=true
+    group CampaignScratch=null
+    integer CampaignThinkCursor=0
+    integer array CampaignActorRoute
+    integer array CampaignAttackerOwner
+    real array CampaignWaveAt
+    real array CampaignRouteX
+    real array CampaignRouteY
+    real array CampaignFiveX
+    real array CampaignFiveY
+    integer array CampaignFiveType
+    boolean CampaignUkonSpawned=false
+    camerasetup array CampaignCamera
+    boolean CampaignCameraApplied=false
+    integer array ExamEnemyType
+    integer array ExamRespawnType
+    real CampaignTrainingAt=0.
+    integer CampaignAttackOwner=12
+    integer ExamScrollCount=89
+    real array ExamRespawnAt
+    real ExamRepopulateAt=0.
+    real CampaignJiraiyaAt=0.
+    real CampaignKabutoAt=0.
+    real CampaignSnakeAt=0.
+    real CampaignOroAt=0.
+    unit CampaignVillageKabuto=null
+    unit CampaignVillageSnake=null
+    unit CampaignVillageOro=null
+    real CampaignSnakeGoneAt=0.
+    boolean CampaignSasukeWon=false
+    boolean array RoleChosen
+    integer CampaignSasukePlayer=-1
+    integer CampaignNarutoPlayer=-1
+    unit CampaignSasuke=null
+    unit CampaignNaruto=null
+    real CampaignSasukeGrowAt=0.
+    integer CampaignStage=0
+    integer CampaignQueued=0
+    real CampaignStartAt=0.
+    real CampaignIntroAt=0.
+    real CampaignEndAt=0.
+    real CampaignNextNPC=0.
+    real CampaignNextBot=0.
+    boolean CampaignTransition=false
+    boolean CampaignPlaced=false
+    boolean CampaignFinished=false
+    integer CampaignCount=0
+    integer CampaignLeader=0
+    integer CampaignJiraiya=0
+    boolean CampaignFound=false
+    unit array CampaignActor
+    integer array CampaignActorType
+    real array CampaignCastAt
+    real array CampaignMoveAt
+    integer array CampaignUnit
+    integer array CampaignAnimation
+    string array CampaignName
+    string array CampaignIntro
+    integer array CampaignMusic
+    real array CampaignLimit
+    real array CampaignX
+    real array CampaignY
+    real array CampaignTX
+    real array CampaignTY
+    real array CampaignMinX
+    real array CampaignMinY
+    real array CampaignMaxX
+    real array CampaignMaxY
+    real array CampaignBarrelX
+    real array CampaignBarrelY
+    boolean array CampaignPermanentDead
+    integer array CampaignQueue
+    integer array CampaignWinner
+    integer CampaignQueueCount=0
+    integer CampaignQueueCursor=0
+    integer CampaignWinnerCount=0
+    integer CampaignDuelA=-1
+    integer CampaignDuelB=-1
+    real CampaignDuelAt=0.
+    boolean CampaignDuelLive=false
+    boolean CampaignBracket=false
+    timer CampaignClock=null
+    timerdialog CampaignDialog=null
     unit array LogActor
     real array LogActorUntil
     real array LogUntil
@@ -308,7 +397,7 @@ function FoundationChat takes nothing returns nothing
     if p>=12 then
         return
     endif
-    if msg=="-go" or msg=="-follow" or msg=="-retreat" or msg=="-quest" or msg=="-shop" or msg=="-camera" then
+    if msg=="-go" or msg=="-follow" or msg=="-retreat" or msg=="-quest" or msg=="-shop" or msg=="-camera" or msg=="-kabuto" or msg=="-kabutooff" or msg=="-kabutoon" then
         call StoryCommand(p,msg)
     elseif msg=="-naruto" then
         call SkillsChoose(p,0)

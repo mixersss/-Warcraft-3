@@ -9,6 +9,8 @@ function I2S(n)return tostring(n)end
 function StopMusic()end
 function PlayMusic(path)assert(path)end
 MusicOn=false
+local forcedRolls={}
+function GetRandomInt(a,b)local n=table.remove(forcedRolls,1) or b;assert(n>=a and n<=b);return n end
 function GetItemTypeId(it)return it and it.type or 0 end
 function GetWidgetLife(w)return w and (w.hp or 1) or 0 end
 function UnitItemInSlot(u,k)return u and u.items and u.items[k] or nil end
@@ -22,7 +24,7 @@ function DestroyTrigger(t)t.destroyed=true end
 function EnumDestructablesInRect(r,filter,action)GatesOpened=(GatesOpened or 0)+1 end
 local function raw(s)local n=0;for i=1,4 do n=n*256+string.byte(s,i)end;return n end
 -- Fresh occupied/non-red teams plus one open team. Real first-answer path for humans/bots.
-ExamPhase=0;ExamReadyAt=0;ExamUsed={};ExamAnswered={};ExamScore={};ExamAnswerAt={};ExamEnemy={};ExamScroll={};ExamDropped={};ExamEnemyCastAt={}
+ExamPhase=0;ExamReadyAt=0;ExamUsed={};ExamAnswered={};ExamScore={};ExamAnswerAt={};ExamEnemy={};ExamScroll={};ExamDropped={};ExamEnemyCastAt={};ExamScrollCount=89;ExamRepopulateAt=0
 setmetatable(ExamScore,{__index=function()return 0 end});setmetatable(ExamEnemyCastAt,{__index=function()return 0 end})
 StoryMembers={[0]=3,[1]=3,[2]=0,[3]=3};StoryStage={[0]=5,[1]=4,[2]=0,[3]=5}
 Hero={};Companion={};Dummy={};StoryMentor={};StoryEnemy={};EnemyMark={};BurstArt={};StoryShop={}
@@ -30,10 +32,10 @@ for t=0,3 do StoryShop[t]=CreateUnit(15,raw('rqsh'),0,0,0)end
 for p=0,11 do
  if math.floor(p/3)~=2 then Hero[p]=CreateUnit(p,p,0,0,0);HeroRole[p]=p;HeroType[p]=p;Controllers[p]=(p==0 or p==3) and 'human' or 'computer';Hero[p].level=5;Hero[p].xp=0 end
 end
-TimeNow=1000;NextChapterTick();assert(ExamPhase==0,'Wait for every occupied team')
-StoryStage[1]=5;NextChapterTick();assert(ExamPhase==1 and ExamReadyAt==1020)
-TimeNow=1019.5;NextChapterTick();assert(ExamPhase==1)
-TimeNow=1020;NextChapterTick();assert(ExamPhase==2 and Hero[0].paused and not Hero[6] and MusicCursor==1)
+TimeNow=100;NextChapterTick();assert(ExamPhase==0,'Wait for every occupied team')
+StoryStage[1]=5;NextChapterTick();assert(ExamPhase==1 and ExamReadyAt==420)
+TimeNow=419.5;NextChapterTick();assert(ExamPhase==1)
+TimeNow=420;NextChapterTick();assert(ExamPhase==2 and Hero[0].paused and not Hero[6] and MusicCursor==1)
 ExamAnswer(0,1);assert(not ExamAnswered[0],'No answer before first question')
 for round=1,5 do
  TimeNow=ExamNextAt;NextChapterTick();assert(ExamAsked==round)
@@ -52,8 +54,9 @@ assert(ExamScroll[85] and ExamScroll[86] and not ExamScroll[87] and ExamScroll[8
 assert(not TreeJumpInside(0,1000,1000) and TreeJumpInside(0,-7000,-7000),'Exam tree jump bounds')
 for j=0,84 do ExamForestTick()end
 assert(ExamPopulateCursor==85 and ExamEnemy[84] and not ExamEnemy[85])
-ExamEnemy[0].hp=0;ExamForestTick();local dropped=ExamScroll[0];assert(dropped and dropped.type==raw('Eshe'))
-ExamForestTick();assert(ExamScroll[0]==dropped,'One scroll drop per enemy')
+for j=0,84 do assert(ExamEnemy[j].type==ExamEnemyType[j],'Original melee/ranged composition must match')end
+forcedRolls={40,1};ExamEnemy[0].hp=0;ExamForestTick();local dropped=ExamScroll[89];assert(dropped and dropped.type==raw('Eshe'))
+ExamForestTick();assert(ExamScroll[89]==dropped,'One scroll drop per enemy')
 -- Inventory is authoritative, not a global acquired flag. Bots free a slot without deleting gear.
 Hero[1].items={};Hero[1].x=dropped.x;Hero[1].y=dropped.y
 for k=0,5 do Hero[1].items[k]={type=raw('Nlga'),owned=true}end

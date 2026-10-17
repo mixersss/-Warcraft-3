@@ -28,6 +28,9 @@ function StoryLeader takes integer t returns unit
     return fallback
 endfunction
 function StoryGoal takes integer t returns string
+    if StoryStage[t]>=9 then
+        return CampaignName[StoryStage[t]]+". "+CampaignIntro[StoryStage[t]]+" |n-go: к цели; -follow: прикрытие; -retreat: отход. В убежище смерть окончательная!"
+    endif
     if StoryStage[t]==0 then
         return "Наставник: выберите героя (-heroes, -hero 1..12), изучите техники кнопкой +. Противники уже в лесу; начало через 30 секунд или раньше по -go. -shop: снабжение."
     elseif StoryStage[t]==1 then
@@ -300,6 +303,12 @@ function StoryLootBot takes integer p, unit enemy returns boolean
                         set carried=null
                         return true
                     endif
+                elseif raw=='Nnot' and FoundationAlive(enemy) then
+                    if UnitUseItemPoint(Hero[p],carried,GetUnitX(Hero[p]),GetUnitY(Hero[p])) then
+                        set BotUseItemAt[p]=TimeNow+8.
+                        set carried=null
+                        return true
+                    endif
                 elseif (raw=='Nlku' or raw=='Nlsh' or raw=='Nlne') and FoundationAlive(enemy) then
                     set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
                     set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
@@ -342,7 +351,7 @@ function StoryBuy takes integer p returns nothing
     if not StoryStarted[t] or StoryStage[t]==0 or TimeNow<60. then
         return
     endif
-    if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<120 then
+    if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<30 then
         return
     endif
     loop
@@ -366,6 +375,24 @@ function StoryBuy takes integer p returns nothing
         else
             set choice=2
         endif
+    endif
+    if choice==0 then
+        set slot=0
+        loop
+            exitwhen slot>=6
+            if GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlga' then
+                set choice=6
+            elseif GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlca' then
+                set choice=7
+                if role==1 or role==2 or role==6 or role==9 or role==10 or role==11 then
+                    set choice=8
+                elseif role==3 or role==4 or role==7 or role==8 then
+                    set choice=9
+                endif
+                exitwhen true
+            endif
+            set slot=slot+1
+        endloop
     endif
     if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[choice] then
         call IssueNeutralTargetOrder(Player(p),StoryShop[t],"neutralinteract",Hero[p])
@@ -413,7 +440,12 @@ function StoryCommand takes integer p, string msg returns nothing
         call StorySay(t,"Отряд: Отходим к наставнику, восстанавливаем здоровье и чакру.")
     elseif msg=="-quest" then
         call StorySay(t,StoryGoal(t))
-        if StoryStage[t]==7 then
+        if StoryStage[t]>=9 then
+            set goal=CampaignNearest(p)
+            if goal!=null then
+                call PingMinimapEx(GetUnitX(goal),GetUnitY(goal),5.,255,210,50,false)
+            endif
+        elseif StoryStage[t]==7 then
             call PingMinimapEx(ExamTowerX,ExamTowerY,5.,255,210,50,false)
             if ExamHas(t,'Eshe') then
                 call StorySay(t,"Отряд: Свиток Неба при нас.")
@@ -431,6 +463,18 @@ function StoryCommand takes integer p, string msg returns nothing
                 call PingMinimapEx(GetUnitX(goal),GetUnitY(goal),5.,255,210,50,false)
             endif
             set goal=null
+        endif
+    elseif msg=="-kabuto" then
+        if CampaignStage==26 and p==CampaignSasukePlayer then
+            call SelectUnitForPlayerSingle(CampaignActor[0],Player(p))
+            call PanCameraToTimedForPlayer(Player(p),GetUnitX(CampaignActor[0]),GetUnitY(CampaignActor[0]),1.)
+        elseif CampaignStage==12 and HeroRole[p]==10 and CampaignVillageKabuto!=null then
+            call SelectUnitForPlayerSingle(CampaignVillageKabuto,Player(p))
+            call PanCameraToTimedForPlayer(Player(p),GetUnitX(CampaignVillageKabuto),GetUnitY(CampaignVillageKabuto),1.)
+        endif
+    elseif msg=="-kabutooff" or msg=="-kabutoon" then
+        if (CampaignStage==26 and p==CampaignSasukePlayer) or (CampaignStage==12 and HeroRole[p]==10) then
+            set CampaignKabutoAI=msg=="-kabutoon"
         endif
     elseif msg=="-shop" then
         call SelectUnitForPlayerSingle(StoryShop[t],Player(p))
@@ -491,6 +535,7 @@ function StoryTick takes nothing returns nothing
     local unit enemy=null
     local unit target=null
     local boolean cast=false
+    call CampaignTick()
     call NextChapterTick()
     call HUDTick()
     loop
@@ -579,8 +624,8 @@ function StoryTick takes nothing returns nothing
             set p=t*3
             loop
                 exitwhen p>=t*3+3
-                if Hero[p]!=null then
-                    if not FoundationAlive(Hero[p]) then
+                if Hero[p]!=null and not CampaignPermanentDead[p] then
+                    if not FoundationAlive(Hero[p]) and not CampaignPermanentDead[p] then
                         if StoryRevive[p]==0. then
                             set StoryRevive[p]=TimeNow+20.
                             call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Наставник: Мы тебя прикроем. Возвращение в лагерь через 20 секунд.")
@@ -597,9 +642,11 @@ function StoryTick takes nothing returns nothing
                             call SetWidgetLife(Hero[p],RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE),GetWidgetLife(Hero[p])+15.))
                             call SetUnitState(Hero[p],UNIT_STATE_MANA,RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_MANA),GetUnitState(Hero[p],UNIT_STATE_MANA)+12.))
                         endif
-                        if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and TimeNow>=BotNextCast[p] and JumpUnit[p]==null and JumpQueued[p]==null and StoryStage[t]!=6 and StoryStage[t]!=8 then
+                        if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and TimeNow>=BotNextCast[p] and JumpUnit[p]==null and JumpQueued[p]==null and StoryStage[t]!=6 and StoryStage[t]!=8 and not IsUnitPaused(Hero[p]) and not CampaignTransition then
                             call SkillsLearnBot(p)
-                            if StoryStage[t]==7 then
+                            if StoryStage[t]>=9 then
+                                set enemy=CampaignNearest(p)
+                            elseif StoryStage[t]==7 then
                                 set enemy=ExamNearest(p)
                             else
                                 set enemy=StoryNearest(t,Hero[p])
@@ -612,7 +659,7 @@ function StoryTick takes nothing returns nothing
                                 set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
                                 set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
                                 set Dummy[t]=enemy
-                                if dx*dx+dy*dy<750.*750. and not StoryRetreat[t] and not (StoryStage[t]==7 and ExamTowerOpen and ExamPair(t)) then
+                                if dx*dx+dy*dy<750.*750. and not (CampaignStage==15 and p==CampaignSasukePlayer) and not StoryRetreat[t] and not (StoryStage[t]==7 and ExamTowerOpen and ExamPair(t)) then
                                     set cast=SkillsBot(p)
                                 endif
                             endif
@@ -636,7 +683,9 @@ function StoryTick takes nothing returns nothing
                                     endif
                                     set petSlot=petSlot+1
                                 endloop
-                                if StoryStage[t]==7 then
+                                if StoryStage[t]>=9 then
+                                    call CampaignBot(p,enemy)
+                                elseif StoryStage[t]==7 then
                                     call ExamBot(p,enemy)
                                 elseif StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
                                     call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
@@ -683,8 +732,8 @@ function StoryInit takes nothing returns nothing
     local trigger sell=CreateTrigger()
     local unit npc=null
     local quest journal=CreateQuest()
-    call QuestSetTitle(journal,"Глава I. Страна Волн")
-    call QuestSetDescription(journal,"Четыре отряда проходят лесные задания независимо. Задание и метка: -quest. Команды напарникам: -go, -follow, -retreat. Выберите героя до выхода на миссию. Победите дозоры, Хаку и Забузу; помогайте союзникам и покупайте снаряжение.")
+    call QuestSetTitle(journal,"Путь шиноби — сюжет и задания")
+    call QuestSetDescription(journal,"Четыре отряда проходят лесные задания независимо. Задание и метка: -quest. Команды напарникам: -go, -follow, -retreat. Выберите героя до выхода на миссию. После Хаку и Забузы: вопросы Ибики, свитки в Лесу смерти, предварительные поединки, поиск Джирайи в бочках и турнир. Далее — вторжение в деревню, Акацуки, Пятёрка Звука и погоня за Саске. Сюжетные роли привязаны к героям; игрок за Саске позже меняет сторону.")
     call QuestSetRequired(journal,true)
     call QuestSetDiscovered(journal,true)
     loop

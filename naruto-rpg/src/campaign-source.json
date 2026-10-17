@@ -1,0 +1,1329 @@
+{
+  "sourceSHA256": "ecf45e4325dcd3b4f5df4a703821c8eec2fddc7b8afb30bc7146a2fe66294a0f",
+  "format": "recovered readable original JASS",
+  "stages": [
+    {
+      "id": 9,
+      "name": "Предварительные поединки",
+      "sourceFunction": "XFO",
+      "sourceSHA256": "fb89bbffcc37174a118eafc8a1fc3d076e5f42f2a05caef382b9f54451ac2eab",
+      "sourceRegion": "XK",
+      "sourceTarget": "XK",
+      "bounds": [
+        14016.0,
+        -10176.0,
+        16384.0,
+        -8128.0
+      ],
+      "spawn": [
+        15200.0,
+        -9152.0
+      ],
+      "target": [
+        15200.0,
+        -9152.0
+      ],
+      "music": 3,
+      "seconds": 0,
+      "kind": "duel",
+      "intro": "Хокагэ: Испытание пройдено. Теперь случайные поединки один на один. Остальные смотрят с трибун. Поражение не завершает вашу игру.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "X1V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Поиск Джирайи",
+      "sourceFunction": "O8O",
+      "sourceSHA256": "df9c06c9703a3f9cc00f0c151fe6b5f77be48cb1d70f3afaf5a22b7151bd6793",
+      "sourceRegion": "ML",
+      "sourceTarget": "ML",
+      "bounds": [
+        -1056.0,
+        -13728.0,
+        13088.0,
+        -3200.0
+      ],
+      "spawn": [
+        6016.0,
+        -8464.0
+      ],
+      "target": [
+        6016.0,
+        -8464.0
+      ],
+      "music": 4,
+      "seconds": 150,
+      "kind": "barrels",
+      "intro": "Наруто: Эро-сэннин спрятался в одной из бочек! Найдём его до следующего раунда — он обещал тренировку.",
+      "sourceTimerCalls": [
+        [
+          "JV",
+          "150."
+        ]
+      ],
+      "sourceSleepCalls": [
+        "1.",
+        "4.5"
+      ],
+      "sourceMusicTriggers": [
+        "X0V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "WW"
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Финальный турнир",
+      "sourceFunction": "IIO",
+      "sourceSHA256": "b8ac40d20099bad98abd57b595c417d9435ce78cb92eb2ad3b4570316192dad0",
+      "sourceRegion": "OK",
+      "sourceTarget": "OK",
+      "bounds": [
+        13920.0,
+        -14528.0,
+        15648.0,
+        -12768.0
+      ],
+      "spawn": [
+        14784.0,
+        -13648.0
+      ],
+      "target": [
+        14784.0,
+        -13648.0
+      ],
+      "music": 5,
+      "seconds": 0,
+      "kind": "bracket",
+      "intro": "Экзаменатор: Финальные бои лучших генинов! Победитель получит снаряжение чунина. Между боями здоровье и чакра восстановятся.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "2.",
+        "1."
+      ],
+      "sourceMusicTriggers": [
+        "X1V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "TY"
+        ],
+        [
+          "PlaySoundBJ",
+          "D2"
+        ],
+        [
+          "PlaySoundBJ",
+          "F2"
+        ],
+        [
+          "StopSoundBJ",
+          "D2"
+        ],
+        [
+          "StopSoundBJ",
+          "F2"
+        ],
+        [
+          "PlaySoundBJ",
+          "D2"
+        ],
+        [
+          "PlaySoundBJ",
+          "F2"
+        ],
+        [
+          "StopSoundBJ",
+          "D2"
+        ],
+        [
+          "StopSoundBJ",
+          "F2"
+        ]
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Нападение на Коноху",
+      "sourceFunction": "N8O",
+      "sourceSHA256": "46905cebefb9ad043149251b54ea3b3f5eb6473071d74ca41736bfda54f9e66a",
+      "sourceRegion": "ML",
+      "sourceTarget": "RL",
+      "bounds": [
+        -1056.0,
+        -13728.0,
+        13088.0,
+        -3200.0
+      ],
+      "spawn": [
+        6016.0,
+        -8464.0
+      ],
+      "target": [
+        16208.0,
+        -13504.0
+      ],
+      "music": 7,
+      "seconds": 1500,
+      "kind": "invasion",
+      "intro": "Какаши: Коноха — наша семья. Отряды Листа, защитите Третьего! |nОрочимару: Отряд Песка и Звука, цель — Хокагэ!",
+      "sourceTimerCalls": [
+        [
+          "R",
+          "1500."
+        ]
+      ],
+      "sourceSleepCalls": [
+        "1.",
+        "1.",
+        "8.",
+        "2."
+      ],
+      "sourceMusicTriggers": [
+        "X4V",
+        "X2V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "RZ"
+        ],
+        [
+          "StopSoundBJ",
+          "OW"
+        ],
+        [
+          "StopSoundBJ",
+          "OW"
+        ]
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Итачи и Кисамэ",
+      "sourceFunction": "VSR",
+      "sourceSHA256": "57398cd172e0ef3d98b44a3f83afa0661929e55680836a42bf724c13103da896",
+      "sourceRegion": "YM",
+      "sourceTarget": "NL",
+      "bounds": [
+        -16384.0,
+        4064.0,
+        -12928.0,
+        6432.0
+      ],
+      "spawn": [
+        -14656.0,
+        5248.0
+      ],
+      "target": [
+        -14400.0,
+        5280.0
+      ],
+      "music": 8,
+      "seconds": 360,
+      "kind": "defend",
+      "intro": "Итачи: Я пришёл за кое-чем, Какаши. Не мешай. |nГай: Защитите наставников до прибытия АНБУ!",
+      "sourceTimerCalls": [
+        [
+          "RV",
+          "360."
+        ]
+      ],
+      "sourceSleepCalls": [
+        "7.",
+        "3.5"
+      ],
+      "sourceMusicTriggers": [
+        "X3V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "R0"
+        ]
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Поиск Пятёрки Звука",
+      "sourceFunction": "XBR",
+      "sourceSHA256": "1700841678c857e813957d3a48cd3d5c679dae8f61d29fffd3d77b084da81303",
+      "sourceRegion": "UK",
+      "sourceTarget": "FP",
+      "bounds": [
+        1536.0,
+        -3264.0,
+        16384.0,
+        4864.0
+      ],
+      "spawn": [
+        8960.0,
+        800.0
+      ],
+      "target": [
+        5232.0,
+        -2976.0
+      ],
+      "music": 2,
+      "seconds": 360,
+      "kind": "hunt",
+      "intro": "Шикамару: Саске забрала Пятёрка Звука. Найдите их прежде, чем завершится проклятая печать!",
+      "sourceTimerCalls": [
+        [
+          "LV",
+          "360."
+        ]
+      ],
+      "sourceSleepCalls": [],
+      "sourceMusicTriggers": [
+        "X_V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "XW"
+        ],
+        [
+          "StopSoundBJ",
+          "RZ"
+        ]
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Погоня за Саске",
+      "sourceFunction": "XMR",
+      "sourceSHA256": "6ffcf6b520f5144248ddc7507d5e25c635128fc5d6238e20f9b3e47a007eb942",
+      "sourceRegion": "UK",
+      "sourceTarget": "UK",
+      "bounds": [
+        1536.0,
+        -3264.0,
+        16384.0,
+        4864.0
+      ],
+      "spawn": [
+        8960.0,
+        800.0
+      ],
+      "target": [
+        8960.0,
+        800.0
+      ],
+      "music": 2,
+      "seconds": 240,
+      "kind": "chase",
+      "intro": "Шикамару: Печать раскрылась! Перехватите Саске, пока он не ушёл к Орочимару. Он пытается бежать, не дайте ему уйти!",
+      "sourceTimerCalls": [
+        [
+          "Z",
+          "240."
+        ]
+      ],
+      "sourceSleepCalls": [],
+      "sourceMusicTriggers": [],
+      "sourceDirectSoundCalls": []
+    },
+    {
+      "id": 16,
+      "name": "Долина Завершения",
+      "sourceFunction": "IRR",
+      "sourceSHA256": "f8d117a4fac2c1d226acf825cfde37fb62b7ff8de3b96504c408e149b0aff1ed",
+      "sourceRegion": "RP",
+      "sourceTarget": "RP",
+      "bounds": [
+        -13664.0,
+        -2912.0,
+        -11520.0,
+        480.0
+      ],
+      "spawn": [
+        -12592.0,
+        -1216.0
+      ],
+      "target": [
+        -12592.0,
+        -1216.0
+      ],
+      "music": 7,
+      "seconds": 0,
+      "kind": "boss",
+      "intro": "Наруто: Наконец-то я тебя нашёл, Саске! Мы вернёмся в Коноху вместе! |nСаске: Ты не понимаешь. Ради силы я выбрал другой путь.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "5.",
+        "1.",
+        "5.",
+        "1.",
+        "1."
+      ],
+      "sourceMusicTriggers": [
+        "X2V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Убежище: вход и ловушки",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "HM",
+      "sourceTarget": "MM",
+      "bounds": [
+        -11872.0,
+        1120.0,
+        -11616.0,
+        1984.0
+      ],
+      "spawn": [
+        -11744.0,
+        1552.0
+      ],
+      "target": [
+        -12544.0,
+        1536.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "assault",
+      "intro": "Шикамару: Паккун нашёл след Саске. Вход перекрыт валунами, вокруг ловушки. |nСакура: Освободим проход. Остальные прикрывают!",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Ловушка: двойник Нэдзи",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "BM",
+      "sourceTarget": "NM",
+      "bounds": [
+        -9856.0,
+        14240.0,
+        -9600.0,
+        14528.0
+      ],
+      "spawn": [
+        -9728.0,
+        14384.0
+      ],
+      "target": [
+        -9024.0,
+        14384.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Ловушка: двойник Рок Ли",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "WL",
+      "sourceTarget": "UL",
+      "bounds": [
+        -2144.0,
+        14208.0,
+        -1888.0,
+        14496.0
+      ],
+      "spawn": [
+        -2016.0,
+        14352.0
+      ],
+      "target": [
+        -2016.0,
+        15024.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Ловушка: двойник Тен-Тен",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "WP",
+      "sourceTarget": "UP",
+      "bounds": [
+        -9824.0,
+        9312.0,
+        -9568.0,
+        9600.0
+      ],
+      "spawn": [
+        -9696.0,
+        9456.0
+      ],
+      "target": [
+        -9120.0,
+        8848.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Ловушка: двойник Киба",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "JL",
+      "sourceTarget": "HL",
+      "bounds": [
+        -3648.0,
+        8192.0,
+        -3392.0,
+        8480.0
+      ],
+      "spawn": [
+        -3520.0,
+        8336.0
+      ],
+      "target": [
+        -2912.0,
+        8336.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Ловушка: двойник Хината",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "OL",
+      "sourceTarget": "XL",
+      "bounds": [
+        8768.0,
+        15104.0,
+        9024.0,
+        15392.0
+      ],
+      "spawn": [
+        8896.0,
+        15248.0
+      ],
+      "target": [
+        8320.0,
+        15824.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Ловушка: двойник Гаара",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "ZK",
+      "sourceTarget": "YK",
+      "bounds": [
+        1024.0,
+        15200.0,
+        1280.0,
+        15488.0
+      ],
+      "spawn": [
+        1152.0,
+        15344.0
+      ],
+      "target": [
+        640.0,
+        15920.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Ловушка: двойник Канкуро",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "FL",
+      "sourceTarget": "DL",
+      "bounds": [
+        3264.0,
+        14848.0,
+        3520.0,
+        15136.0
+      ],
+      "spawn": [
+        3392.0,
+        14992.0
+      ],
+      "target": [
+        3872.0,
+        15440.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Ловушка: двойник Темари",
+      "sourceFunction": "N6R",
+      "sourceSHA256": "da236b0960ff165c256b0daede22881d9112b25804c4bf353c2086bd26bc38d8",
+      "sourceRegion": "SP",
+      "sourceTarget": "QP",
+      "bounds": [
+        6272.0,
+        14976.0,
+        6528.0,
+        15264.0
+      ],
+      "spawn": [
+        6400.0,
+        15120.0
+      ],
+      "target": [
+        5888.0,
+        15696.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "clone",
+      "intro": "Шикамару: Печать снята, но она создала двойника! Победите его, чтобы пройти дальше.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2.",
+        "5.",
+        "2.5",
+        "5.",
+        "2",
+        "1.",
+        "1.",
+        "2.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        "1.",
+        ".5",
+        "1.",
+        "4.",
+        "3.",
+        "7."
+      ],
+      "sourceMusicTriggers": [
+        "XZV"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "UY"
+        ],
+        [
+          "StopSoundBJ",
+          "UW"
+        ]
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Кабуто",
+      "sourceFunction": "D0R",
+      "sourceSHA256": "050587af38f07dd3e3aa20887394f5bc8bf06dd6dbd74128b7b93cf16aaf1ed0",
+      "sourceRegion": "TM",
+      "sourceTarget": "LM",
+      "bounds": [
+        -14944.0,
+        1248.0,
+        -14528.0,
+        1920.0
+      ],
+      "spawn": [
+        -14736.0,
+        1584.0
+      ],
+      "target": [
+        -15600.0,
+        1616.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "boss",
+      "intro": "Наруто: Кабуто! |nКабуто: Дальше вы не пройдёте. Орочимару-сама недоволен вашим вторжением.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "2",
+        "2",
+        "1.",
+        ".5",
+        "2."
+      ],
+      "sourceMusicTriggers": [],
+      "sourceDirectSoundCalls": [],
+      "effectiveMusicReason": "HeavyViolence is a looping sound started in N6R; later StopMusic calls do not stop U1."
+    },
+    {
+      "id": 27,
+      "name": "Манда",
+      "sourceFunction": "D9R",
+      "sourceSHA256": "eb4aa51a5c995dfc09c6431243d16908fcb66f882a5e92e72933a05dea966c71",
+      "sourceRegion": "TM",
+      "sourceTarget": "LM",
+      "bounds": [
+        -14944.0,
+        1248.0,
+        -14528.0,
+        1920.0
+      ],
+      "spawn": [
+        -14736.0,
+        1584.0
+      ],
+      "target": [
+        -15600.0,
+        1616.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "boss",
+      "intro": "Сакура: Ты пойдёшь с нами! |nКабуто: Боюсь, что нет. Явись, Манда!",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        ".5"
+      ],
+      "sourceMusicTriggers": [],
+      "sourceDirectSoundCalls": [],
+      "effectiveMusicReason": "HeavyViolence is a looping sound started in N6R; later StopMusic calls do not stop U1."
+    },
+    {
+      "id": 28,
+      "name": "Орочимару",
+      "sourceFunction": "FTR",
+      "sourceSHA256": "f179281e85a5df2a5a9bf7bf7a4c0624b17b357232de7b32ca25abdb11e7036f",
+      "sourceRegion": "PM",
+      "sourceTarget": "QM",
+      "bounds": [
+        -12448.0,
+        4800.0,
+        -12128.0,
+        5056.0
+      ],
+      "spawn": [
+        -12288.0,
+        4928.0
+      ],
+      "target": [
+        -11872.0,
+        5984.0
+      ],
+      "music": 0,
+      "seconds": 0,
+      "kind": "boss",
+      "intro": "Орочимару: Саске пришёл ко мне сам. Я дал ему силу — и теперь он мой ученик. |nНаруто: Мы всё равно вернём его домой!",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        ".5",
+        "1.",
+        "2",
+        "1.",
+        ".5",
+        "1.",
+        "5."
+      ],
+      "sourceMusicTriggers": [],
+      "sourceDirectSoundCalls": [],
+      "effectiveMusicReason": "HeavyViolence is a looping sound started in N6R; later StopMusic calls do not stop U1."
+    },
+    {
+      "id": 29,
+      "name": "Последняя встреча с Саске",
+      "sourceFunction": "GXR",
+      "sourceSHA256": "530d8804034a347230dd5fde7becc1e970fa74636c966736ff9a2657caf6c2bc",
+      "sourceRegion": "PM",
+      "sourceTarget": "QM",
+      "bounds": [
+        -12448.0,
+        4800.0,
+        -12128.0,
+        5056.0
+      ],
+      "spawn": [
+        -12288.0,
+        4928.0
+      ],
+      "target": [
+        -11872.0,
+        5984.0
+      ],
+      "music": 8,
+      "seconds": 0,
+      "kind": "boss",
+      "intro": "Саске: Ты был лишь средством, Орочимару. Моей мести никто не помешает. |nНаруто: Мы слишком далеко зашли, чтобы снова тебя потерять!",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "1.5",
+        "3.",
+        "1.",
+        "2.",
+        ".5",
+        ".5",
+        ".5",
+        ".5",
+        ".5",
+        "1.",
+        "1."
+      ],
+      "sourceMusicTriggers": [
+        "X3V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "OW"
+        ],
+        [
+          "PlaySoundBJ",
+          "R0"
+        ],
+        [
+          "StopSoundBJ",
+          "R0"
+        ],
+        [
+          "StopSoundBJ",
+          "R0"
+        ]
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Развязка",
+      "sourceFunction": "G5R",
+      "sourceSHA256": "9ecb6d5b3d566a40f582dd424e0d2a1d94ab314fff294744c2f7834fa0257af3",
+      "sourceRegion": "PM",
+      "sourceTarget": "QM",
+      "bounds": [
+        -12448.0,
+        4800.0,
+        -12128.0,
+        5056.0
+      ],
+      "spawn": [
+        -12288.0,
+        4928.0
+      ],
+      "target": [
+        -11872.0,
+        5984.0
+      ],
+      "music": 8,
+      "seconds": 0,
+      "kind": "ending",
+      "intro": "Наруто: Наш путь ещё не окончен. |nШикамару: Миссия завершена. Возвращаемся домой, товарищи.",
+      "sourceTimerCalls": [],
+      "sourceSleepCalls": [
+        "4.",
+        "4.",
+        "4.",
+        "3.",
+        "6.",
+        "1.",
+        "1.",
+        "4.",
+        "3.",
+        "1.",
+        "1.",
+        "1.",
+        "3.",
+        "2.",
+        "8."
+      ],
+      "sourceMusicTriggers": [
+        "X4V",
+        "X3V"
+      ],
+      "sourceDirectSoundCalls": [
+        [
+          "StopSoundBJ",
+          "XW"
+        ],
+        [
+          "StopSoundBJ",
+          "OW"
+        ],
+        [
+          "StopSoundBJ",
+          "TY"
+        ],
+        [
+          "StopSoundBJ",
+          "XW"
+        ],
+        [
+          "StopSoundBJ",
+          "OW"
+        ],
+        [
+          "PlaySoundBJ",
+          "R0"
+        ],
+        [
+          "StopSoundBJ",
+          "R0"
+        ]
+      ]
+    }
+  ],
+  "firstChapterOriginalTimer": 420,
+  "mentorDeparture": 330,
+  "quizQuestionTimer": 15,
+  "forestTimers": [
+    1320,
+    1200
+  ],
+  "jiraiyaBarrels": 20,
+  "cloneRooms": [
+    [
+      "Нэдзи",
+      "N6R",
+      "BM",
+      "NM",
+      "neji.mdl"
+    ],
+    [
+      "Рок Ли",
+      "N6R",
+      "WL",
+      "UL",
+      "RockLee.mdl"
+    ],
+    [
+      "Тен-Тен",
+      "N6R",
+      "WP",
+      "UP",
+      "tenten.mdl"
+    ],
+    [
+      "Киба",
+      "N6R",
+      "JL",
+      "HL",
+      "kiba.mdl"
+    ],
+    [
+      "Хината",
+      "N6R",
+      "OL",
+      "XL",
+      "Hinata.mdl"
+    ],
+    [
+      "Гаара",
+      "N6R",
+      "ZK",
+      "YK",
+      "Gaara.mdl"
+    ],
+    [
+      "Канкуро",
+      "N6R",
+      "FL",
+      "DL",
+      "Kankuro.mdl"
+    ],
+    [
+      "Темари",
+      "N6R",
+      "SP",
+      "QP",
+      "Temari.mdl"
+    ]
+  ],
+  "equivalence": "Source chronology/regions/timer constants audited; free hero selection requires role/AI adaptations. Cinematography and combat are not established identical.",
+  "soundFivePositions": [
+    [
+      "LAV",
+      "h01B",
+      9487.3,
+      -3011.4
+    ],
+    [
+      "LNV",
+      "h017",
+      16213.2,
+      4700.1
+    ],
+    [
+      "LBV",
+      "h016",
+      1995.5,
+      -2992.1
+    ],
+    [
+      "LCV",
+      "h01A",
+      3888.5,
+      4586.0
+    ],
+    [
+      "LDV",
+      "h01D",
+      12470.0,
+      2894.2
+    ]
+  ],
+  "invasionRoutePoints": [
+    [
+      -2992.0,
+      -11840.0
+    ],
+    [
+      12672.0,
+      -11520.0
+    ],
+    [
+      1664.0,
+      -15024.0
+    ],
+    [
+      1088.0,
+      -6880.0
+    ],
+    [
+      5232.0,
+      -2976.0
+    ],
+    [
+      12640.0,
+      -6512.0
+    ],
+    [
+      5216.0,
+      -15008.0
+    ],
+    [
+      -800.0,
+      -13120.0
+    ],
+    [
+      12656.0,
+      -15024.0
+    ],
+    [
+      -768.0,
+      -10656.0
+    ],
+    [
+      6464.0,
+      -4352.0
+    ],
+    [
+      16208.0,
+      -13504.0
+    ]
+  ]
+}

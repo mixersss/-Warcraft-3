@@ -53,14 +53,14 @@ function GetBuyingUnit()return boughtBy end
 function IssueNeutralImmediateOrderById(p,shop,id)
  local buyer=neutralBuyer[p];assert(buyer==Hero[p],'Native shop buyer was not selected')
  local price=0
- for i=0,6 do if StoryItem[i]==id then price=StoryPrice[i] end end
+ for i=0,10 do if StoryItem[i]==id then price=StoryPrice[i] end end
  assert(price>0 and gold[p]>=price,'Purchase needs real gold')
  local given=false
  for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
  if given then gold[p]=gold[p]-price;boughtBy=buyer;StoryOnBuy();boughtBy=nil end
  return given
 end
-function GetItemTypeId(i)return i.type or 0 end
+function GetItemTypeId(i)return i and i.type or 0 end
 function GetItemX(i)return i.x end
 function GetItemY(i)return i.y end
 function IsItemOwned(i)return i.owned or false end
@@ -68,6 +68,7 @@ local random={}
 function GetRandomInt(a,b)local v=table.remove(random,1) or b;assert(v>=a and v<=b);return v end
 function CreateItem(id,x,y)return {type=id,x=x,y=y,owned=false}end
 function UnitUseItem(u,i)u.used=i;return true end
+function UnitUseItemPoint(u,i,x,y)u.used=i;u.usedPoint={x,y};return true end
 function UnitUseItemTarget(u,i,target)u.used=i;u.usedTarget=target;return true end
 for p=0,11 do
  if slots[p] then
@@ -157,7 +158,7 @@ assert(gold[1]==500 and StoryBought[1]==0,'No purchases during hero selection')
 StoryStarted[0]=true;StoryStage[0]=1;TimeNow=30;StoryBuy(1)
 assert(gold[1]==500 and StoryBought[1]==0,'No immediate opening purchases')
 for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
-assert(gold[1]==70 and StoryBought[1]==3)
+assert(gold[1]==165 and StoryBought[1]==3)
 -- Sand crest cleanup remains bounded.
 Hero[9].x=0;Hero[9].y=0;TimeNow=450
 RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x;RosterTick();assert(crest.x>start)

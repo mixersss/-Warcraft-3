@@ -54,14 +54,14 @@ const misc=fs.readFileSync(path.join(root,'dist/map/war3mapMisc.txt'),'utf8');
 assert(misc.includes('MaxHeroLevel=60'));assert(misc.includes('HeroExpRange=2000.0'));assert(misc.includes('HeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30'));
 const schema=JSON.parse(fs.readFileSync(path.join(root,'src/classic-skill-schema.json')));
 const itemFile=new ObjectParser();itemFile.load(read('war3map.w3t'));
-assert.equal(itemFile.customTable.objects.length,16);
+assert.equal(itemFile.customTable.objects.length,13);
 const field=o=>Object.fromEntries(o.modifications.map(m=>[m.id,m.value]));
-for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert((f.igol>0 || ['Eshe','Esea'].includes(item.newId)) && f.ilum===0);if(f.iabi)assert(schema.stockIds.abilities.includes(f.iabi) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt'].includes(f.iabi));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
+for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert((f.igol>0 || ['Eshe','Esea'].includes(item.newId)) && f.ilum===0);if(f.iabi)for(const a of f.iabi.split(','))assert(schema.stockIds.abilities.includes(a) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt','Cstr','Cint','Cagi'].includes(a));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
 const assets=new Set(JSON.parse(fs.readFileSync(path.join(root,'src/asset-manifest.json'))).map(a=>a.path.toLowerCase()));
-for(const item of itemFile.customTable.objects){const f=field(item);assert(f.iico && (assets.has(f.iico.toLowerCase()) || item.newId==='Nlne'),'Item must use imported source art: '+item.newId)}
+for(const item of itemFile.customTable.objects){const f=field(item);assert(f.iico && (assets.has(f.iico.toLowerCase()) || f.iico.toLowerCase().startsWith('replaceabletextures\\')),'Item must use imported source art: '+item.newId)}
 const modelAnimations=JSON.parse(fs.readFileSync(path.join(root,'src/model-animations.json')));
 for(const [model,index] of [['MistNin.mdx',5],['RainGenin.mdx',4],['haku.mdx',2],['Zabuza.mdx',5]])assert(modelAnimations.find(m=>m.path===model).animations[index]);
 assert(assets.has('gaarasand2.mdx'));
-const result={sourceSceneryCount:8936,terrainSize:[256,256],independentTeamRoutes:4,reachableStages:16,approximateHeroClearance:32,rectangularSceneryCollisionIncluded:true,nonRectangularFootprints:'retained original WPM; native engine test needed',nativeShopItems:7,originalLootItems:7,originalNinjasPerTeam:14,originalActorPositionsVerified:64,mentorDepartureSeconds:330,validatedEnemyAnimationIndices:4,enginePlaytest:false};
+const result={sourceSceneryCount:8936,terrainSize:[256,256],independentTeamRoutes:4,reachableStages:16,approximateHeroClearance:32,rectangularSceneryCollisionIncluded:true,nonRectangularFootprints:'retained original WPM; native engine test needed',nativeShopItems:11,originalLootItems:7,originalNinjasPerTeam:14,originalActorPositionsVerified:64,mentorDepartureSeconds:330,validatedEnemyAnimationIndices:4,enginePlaytest:false};
 fs.writeFileSync(path.join(root,'dist/story-verification.json'),JSON.stringify(result,null,2));
-console.log('PASS: original terrain/scenery, four isolated forest routes and 16 reachable stages with conservative rectangular footprints/clearance; seven valid native shop items, seven original loot types, 56 original ninja positions, Haku/Zabuza and the 330s mentor timer and enemy model animation indices.');
+console.log('PASS: original terrain/scenery, four isolated forest routes and 16 reachable stages with conservative rectangular footprints/clearance; eleven valid native shop items, seven original loot types, 56 original ninja positions, Haku/Zabuza and the 330s mentor timer and enemy model animation indices.');

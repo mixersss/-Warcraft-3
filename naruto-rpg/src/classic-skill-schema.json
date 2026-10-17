@@ -242,8 +242,8 @@
     "Osh1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AOsh,ACsh,ACst",
-      "repeat": 4
+      "repeat": 4,
+      "specific": "AOsh,ACsh,ACst"
     },
     "Osh2": {
       "type": "unreal",
@@ -592,6 +592,17 @@
     "Owk4": {
       "type": "bool",
       "column": 4,
+      "repeat": 4
+    },
+    "Wrs1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4
+    },
+    "Hea1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "Ahea,Anh1,Anh2,Anhe",
       "repeat": 4
     }
   },

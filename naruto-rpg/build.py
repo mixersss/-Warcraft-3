@@ -8,13 +8,13 @@ ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 GENERATED=json.loads((ROOT/'src/generated-assets.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI CHAPTER 01 ALPHA 10'
-DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
+NAME='SHINOBI STORY ALPHA 11'
+DESC='Наруто RPG: четыре команды по три героя. Страна Волн, вопросы Ибики, Лес смерти, арены, поиск Джирайи в бочках, вторжение, Акацуки и погоня за Саске. Русские задания; боты участвуют в сюжете. -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
  d=i(25,1,6061)+s(NAME)+s('mixersss; imported assets from ShikamaruShadow map')+s(DESC)+s('1-12; 4 teams x 3')
  d+=f(-BOUND,-BOUND,BOUND,BOUND,-BOUND,BOUND,BOUND,-BOUND)+i(0,0,0,0,SIZE,SIZE,0x60)+b'X'
- d+=i(-1)+s('')+s(DESC)+s(NAME)+s('Resource and animation test')
+ d+=i(-1)+s('')+s(DESC)+s(NAME)+s('Warcraft III TFT 1.26; сюжетная альфа')
  d+=i(2)+s('')+s('')+s('')+s('')+i(0)+f(3000,5000,.5)+bytes([0,0,0,255])+i(0)+s('Default')+b'L'+bytes([255]*4)
  d+=i(12)
  for p,(x,y) in enumerate(positions()):d+=i(p,1,1,1)+s(HEROES[p]['name'])+f(x,y)+i(0,7<<(p//3*3))
@@ -51,6 +51,7 @@ def unit_data():
  for slot in range(12):entries[slot][2].extend(combat(slot))
  from story import unit_entries
  entries.extend(unit_entries())
+ entries.extend(__import__('campaign').units())
  entries.extend(summon_units())
  entries.append(('hfoo','rdum',[('unam',3,'Тренировочный противник'),('uhpm',0,50000),('uhpr',2,30.),('uaen',0,0),('umvs',0,0),('uabi',3,''),('upgr',3,''),('ureq',3,'')]))
  for _,_,mods in entries:
@@ -120,7 +121,7 @@ def script():
  skillfunctions.append('\n'.join(dispatch))
  skills=(ROOT/'src/skills.j').read_text().replace('// ROSTER_RUNTIME',(ROOT/'src/common-skills.j').read_text()+'\n'+(ROOT/'src/visuals.j').read_text()+'\n'+(ROOT/'src/roster.j').read_text()).replace('// GENERATED_SKILL_FUNCTIONS','\n'.join(skillfunctions)).replace('// GENERATED_SKILLS','    set SkillDataClock=CreateTimer()\n    call TimerStart(SkillDataClock,.05,true,function SkillsLoadData)')
  from story import generated_data
- code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()).replace('// TREE_RUNTIME',(ROOT/'src/tree-jump.j').read_text()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text().replace('// NEXT_CHAPTER_RUNTIME',(ROOT/'src/stage-hud.j').read_text()+'\n'+(ROOT/'src/exam.j').read_text()))
+ code=(ROOT/'src/foundation.j').read_text().replace('// GENERATED_DATA','\n'.join(data)+generated_data()+__import__('campaign').generated()).replace('// TREE_RUNTIME',(ROOT/'src/tree-jump.j').read_text()).replace('// SKILLS_RUNTIME',skills).replace('// STORY_RUNTIME',(ROOT/'src/story.j').read_text().replace('// NEXT_CHAPTER_RUNTIME',(ROOT/'src/stage-hud.j').read_text()+'\n'+(ROOT/'src/exam.j').read_text()+'\n'+(ROOT/'src/campaign-cameras.j').read_text()+'\n'+(ROOT/'src/campaign.j').read_text()))
  lines=['function config takes nothing returns nothing',f'    call SetMapName({q(NAME)})',f'    call SetMapDescription({q(DESC)})','    call SetPlayers(12)','    call SetTeams(4)','    call SetGamePlacement(MAP_PLACEMENT_TEAMS_TOGETHER)']
  for p,(x,y) in enumerate(positions()):
   lines += [f'    call DefineStartLocation({p},{x}.,{y}.)',f'    call SetPlayerStartLocation(Player({p}),{p})',f'    call ForcePlayerStartLocation(Player({p}),{p})',f'    call SetPlayerColor(Player({p}),ConvertPlayerColor({p}))',f'    call SetPlayerRacePreference(Player({p}),RACE_PREF_HUMAN)',f'    call SetPlayerRaceSelectable(Player({p}),false)',f'    call SetPlayerController(Player({p}),MAP_CONTROL_USER)',f'    call SetPlayerTeam(Player({p}),{p//3})',f'    call SetPlayerState(Player({p}),PLAYER_STATE_ALLIED_VICTORY,1)',f'    call SetStartLocPrioCount({p},2)']
@@ -135,7 +136,7 @@ def build():
  for row in GENERATED:
   files[row['path']]=(ROOT/row['file']).read_bytes()
   assert len(files[row['path']])==row['bytes'] and hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
- files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(normalize_abilities(ability_data()+__import__('story').ability_entries()),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()+__import__('story').scroll_entries()),'war3map.w3b':objects([]),'war3map.w3h':objects(buff_data()),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':misc(),'war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
+ files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(normalize_abilities(ability_data()+__import__('story').ability_entries()+__import__('campaign').abilities()),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()+__import__('story').scroll_entries()),'war3map.w3b':objects([]),'war3map.w3h':objects(buff_data()),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':misc(),'war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
  for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
   files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
  files['war3map.w3b']=scenery()
@@ -147,8 +148,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Chapter_01_Alpha_10.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Story_Alpha_11.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS)+len(GENERATED),'originalImportedAssets':len(ASSETS),'generatedAssets':len(GENERATED),'models':67+len(GENERATED),'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'10 visible stage clocks and common Kawarimi substitution','commonKawarimiForAllHeroes':True,'stageTimerHUD':True,'questionBankSize':16,'questionsPerExam':5,'questionSeconds':15,'forestExamSeconds':1320,'towerOpensAfterSeconds':1200,'examGenin':85,'engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS)+len(GENERATED),'originalImportedAssets':len(ASSETS),'generatedAssets':len(GENERATED),'models':67+len(GENERATED),'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source native factors and quiz/Jiraiya rewards; independent battle encounters','stage':'11 full source-chronology campaign with character-bound Sasuke role','commonKawarimiForAllHeroes':True,'stageTimerHUD':True,'questionBankSize':16,'questionsPerExam':5,'questionSeconds':15,'forestExamSeconds':1320,'towerOpensAfterSeconds':1200,'examGenin':85,'campaignObjectives':22,'parallelCloneEncounters':8,'jiraiyaBarrels':20,'jiraiyaSearchSeconds':150,'invasionStreams':8,'invasionWaveSeconds':45,'cinematics':'simplified fades/camera transitions; not identical to original','npcTechniques':'independent generic native attacks with source models; not all original boss jutsus','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

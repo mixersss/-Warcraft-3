@@ -74,12 +74,23 @@ function HUDTick takes nothing returns nothing
                 set phase="Ибики: правила"
             endif
             set timing=HUDTime(ExamNextAt-TimeNow)+" осталось"
+        elseif stage>=9 then
+            set phase=CampaignName[stage]
+            if CampaignTransition then
+                set timing=HUDTime(CampaignIntroAt+8.-TimeNow)+" переход"
+            elseif CampaignEndAt>0. then
+                set timing=HUDTime(CampaignEndAt-TimeNow)+" осталось"
+            elseif (stage==9 or stage==11) and not CampaignDuelLive and CampaignDuelAt>TimeNow then
+                set timing=HUDTime(CampaignDuelAt-TimeNow)+" до боя"
+            else
+                set timing=HUDTime(TimeNow-CampaignStartAt)+" прошло"
+            endif
         elseif stage==7 then
             set phase="Лес смерти"
             set timing=HUDTime(ExamEndAt-TimeNow)+" до конца"
         else
             set phase="Этап завершён"
-            set timing="Ожидание арен"
+            set timing="Переход к поединкам"
         endif
         if StoryAdvanceAt[t]>TimeNow and stage<5 then
             set timing=HUDTime(StoryAdvanceAt[t]-TimeNow)+" до перехода"
@@ -91,12 +102,25 @@ function HUDTick takes nothing returns nothing
     endloop
     call HUDCell(5,0,"Общий этап")
     if ExamPhase==0 then
+        set key=2
+        set remaining=420.-TimeNow
+    endif
+    if CampaignStage>=9 or CampaignTransition then
+        call HUDCell(5,1,CampaignName[CampaignStage])
+        if CampaignTransition then
+            call HUDCell(5,2,HUDTime(CampaignIntroAt+8.-TimeNow)+" до старта")
+        elseif CampaignEndAt>0. then
+            call HUDCell(5,2,HUDTime(CampaignEndAt-TimeNow))
+        else
+            call HUDCell(5,2,HUDTime(TimeNow-CampaignStartAt)+" прошло")
+        endif
+    elseif ExamPhase==0 then
         if StoryMentorsReleased then
             call HUDCell(5,1,"Наставники в бою")
             call HUDCell(5,2,"—")
         else
-            call HUDCell(5,1,"Выход наставников")
-            call HUDCell(5,2,HUDTime(330.-TimeNow))
+            call HUDCell(5,1,"До экзамена")
+            call HUDCell(5,2,HUDTime(420.-TimeNow))
         endif
     elseif ExamPhase==1 then
         call HUDCell(5,1,"До вопросов Ибики")
@@ -124,7 +148,9 @@ function HUDTick takes nothing returns nothing
         set HUDClockKey=key
         if key>0 then
             call TimerStart(PhaseClock,RMaxBJ(.01,remaining),false,function HUDClockEnd)
-            if key==1 then
+            if key==2 then
+                call TimerDialogSetTitle(PhaseDialog,"До экзамена на чунина")
+            elseif key==1 then
                 call TimerDialogSetTitle(PhaseDialog,"До вопросов Ибики")
             elseif ExamAsked==0 then
                 call TimerDialogSetTitle(PhaseDialog,"Ибики: до первого вопроса")

@@ -9,7 +9,7 @@
   "approximateHeroClearance": 32,
   "rectangularSceneryCollisionIncluded": true,
   "nonRectangularFootprints": "retained original WPM; native engine test needed",
-  "nativeShopItems": 7,
+  "nativeShopItems": 11,
   "originalLootItems": 7,
   "originalNinjasPerTeam": 14,
   "originalActorPositionsVerified": 64,

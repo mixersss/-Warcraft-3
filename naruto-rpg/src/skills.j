@@ -81,6 +81,21 @@ function SkillsEffect takes nothing returns nothing
         endif
         set j=j+1
     endloop
+    if CampaignStage==17 and HeroRole[p]==2 and raw=='R204' then
+        set j=0
+        loop
+            exitwhen j>=2
+            if FoundationAlive(CampaignActor[j]) then
+                set x=GetUnitX(CampaignActor[j])-GetUnitX(caster)
+                set y=GetUnitY(CampaignActor[j])-GetUnitY(caster)
+                if x*x+y*y<=350.*350. then
+                    call UnitRemoveAbility(CampaignActor[j],'Avul')
+                    call KillUnit(CampaignActor[j])
+                endif
+            endif
+            set j=j+1
+        endloop
+    endif
     if raw=='Rlog' then
         call CommonLogEffect(p)
     endif
@@ -301,17 +316,15 @@ function SkillsBot takes integer p returns boolean
     set target=null
     return issued
 endfunction
-function SkillsChoose takes integer p, integer role returns nothing
+function SkillsAssignRole takes integer p, integer role returns nothing
     local unit old=Hero[p]
     local item carried=null
     local integer k=0
     local integer xp=0
-    if StoryStarted[(p-ModuloInteger(p,3))/3] then
-        call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Выбор героя закрыт: отряд уже вышел на миссию.")
-        set old=null
-        return
-    endif
-    if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER or not FoundationAlive(old) then
+    if old==null then
+        set HeroTemplate[p]=role
+        set HeroRole[p]=role
+        set HeroType[p]=RosterHeroType[role]
         return
     endif
     call TreeJumpEnd(p)
@@ -353,6 +366,28 @@ function SkillsChoose takes integer p, integer role returns nothing
     call DisplayTimedTextToPlayer(Player(p),0,0,12.,"Герой выбран. Изучи техники кнопкой +. Когда будете готовы, напиши -go.")
     set old=null
     set carried=null
+endfunction
+function SkillsChoose takes integer p, integer role returns nothing
+    local integer q=0
+    local integer oldRole=HeroRole[p]
+    if StoryStarted[(p-ModuloInteger(p,3))/3] or GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER or not FoundationAlive(Hero[p]) then
+        call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Выбор героя закрыт: отряд уже вышел или герой недоступен.")
+        return
+    endif
+    loop
+        exitwhen q>=12
+        if q!=p and GetPlayerSlotState(Player(q))==PLAYER_SLOT_STATE_PLAYING and HeroRole[q]==role then
+            if StoryStarted[(q-ModuloInteger(q,3))/3] or (RoleChosen[q] and GetPlayerController(Player(q))!=MAP_CONTROL_COMPUTER) then
+                call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Этот персонаж уже выбран другим игроком или вышел на миссию. Сюжетные роли уникальны.")
+                return
+            endif
+            call SkillsAssignRole(q,oldRole)
+            exitwhen true
+        endif
+        set q=q+1
+    endloop
+    call SkillsAssignRole(p,role)
+    set RoleChosen[p]=true
 endfunction
 // GENERATED_SKILL_FUNCTIONS
 function SkillsInit takes nothing returns nothing

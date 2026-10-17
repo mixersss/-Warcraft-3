@@ -12,6 +12,12 @@ function TreeJumpInside takes integer p, real x, real y returns boolean
     local integer t=(p-ModuloInteger(p,3))/3
     local real ox=0.
     local real oy=0.
+    if CampaignClonePending[p] then
+        return x>CampaignMinX[CampaignCloneKind[p]-2] and x<CampaignMaxX[CampaignCloneKind[p]-2] and y>CampaignMinY[CampaignCloneKind[p]-2] and y<CampaignMaxY[CampaignCloneKind[p]-2]
+    endif
+    if StoryStage[t]>=9 then
+        return x>CampaignMinX[StoryStage[t]] and x<CampaignMaxX[StoryStage[t]] and y>CampaignMinY[StoryStage[t]] and y<CampaignMaxY[StoryStage[t]]
+    endif
     if StoryStage[t]==7 then
         return x>-16352. and x<-3808. and y>-16352. and y<-3328.
     endif

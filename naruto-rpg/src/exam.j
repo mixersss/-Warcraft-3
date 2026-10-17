@@ -211,7 +211,7 @@ function ExamBot takes integer p, unit enemy returns nothing
         return
     endif
     loop
-        exitwhen j>=89
+        exitwhen j>=ExamScrollCount
         set it=ExamScroll[j]
         set raw=GetItemTypeId(it)
         if it!=null and not IsItemOwned(it) and GetWidgetLife(it)>.405 and ((raw=='Eshe' and not hasHeaven) or (raw=='Esea' and not hasEarth)) then
@@ -253,6 +253,39 @@ function ExamBot takes integer p, unit enemy returns nothing
         elseif enemy!=null then
             call IssueTargetOrder(Hero[p],"attack",enemy)
         endif
+    elseif StoryMarch[t] and ExamPair(t) and not ExamTowerOpen then
+        set j=0
+        set found=null
+        set best=650.*650.
+        loop
+            exitwhen j>=ExamGearCount
+            set it=ExamGear[j]
+            if it!=null and GetItemTypeId(it)!=0 and not IsItemOwned(it) then
+                set dx=GetItemX(it)-GetUnitX(Hero[p])
+                set dy=GetItemY(it)-GetUnitY(Hero[p])
+                if dx*dx+dy*dy<best then
+                    set best=dx*dx+dy*dy
+                    set found=it
+                endif
+            endif
+            set j=j+1
+        endloop
+        set k=0
+        set free=0
+        loop
+            exitwhen k>=6
+            if UnitItemInSlot(Hero[p],k)==null then
+                set free=free+1
+            endif
+            set k=k+1
+        endloop
+        if found!=null and free>0 then
+            call IssueTargetOrder(Hero[p],"smart",found)
+        elseif enemy!=null then
+            call IssueTargetOrder(Hero[p],"attack",enemy)
+        else
+            call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
+        endif
     elseif not StoryMarch[t] and leader!=null and leader!=Hero[p] then
         if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
             call IssueTargetOrder(Hero[p],"attack",enemy)
@@ -272,6 +305,7 @@ function ExamBot takes integer p, unit enemy returns nothing
     set leader=null
 endfunction
 function ExamForestTick takes nothing returns nothing
+    local integer count=0
     local integer j=0
     local integer t=0
     local integer p=0
@@ -288,10 +322,7 @@ function ExamForestTick takes nothing returns nothing
     // Stagger native unit creation: one actor per shared tick (85 actors total).
     if ExamPopulateCursor<85 then
         set j=ExamPopulateCursor
-        set raw='re06'
-        if ModuloInteger(j,2)==1 then
-            set raw='re07'
-        endif
+        set raw=ExamEnemyType[j]
         set ExamEnemy[j]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,ExamEnemyX[j],ExamEnemyY[j],180.)
         call SetUnitCreepGuard(ExamEnemy[j],false)
         call RemoveGuardPosition(ExamEnemy[j])
@@ -333,14 +364,95 @@ function ExamForestTick takes nothing returns nothing
             endif
         elseif ExamEnemy[j]!=null and not ExamDropped[j] then
             set ExamDropped[j]=true
-            set raw='Eshe'
-            if ModuloInteger(j,2)==1 then
+            // Source Z0X: 49% total loot; 2% Heaven + 2% Earth, no guaranteed scroll.
+            set raw=GetRandomInt(1,100)
+            if raw<=2 then
+                set raw='Nsch'
+            elseif raw<=4 then
+                set raw='Nsht'
+            elseif raw<=6 then
+                set raw='Nsta'
+            elseif raw<=11 or raw==25 then
+                set raw='Nnot'
+            elseif raw<=18 then
+                set raw='Nlra'
+            elseif raw<=24 then
+                set raw='Nlsh'
+            elseif raw<=32 then
+                set raw='Nlku'
+            elseif raw<=37 then
+                set raw='Nlpi'
+            elseif raw<=39 then
+                set raw='Nlga'
+            elseif raw<=41 then
+                set raw='Eshe'
+            elseif raw<=47 then
+                set raw='Nlne'
+            elseif raw<=49 then
                 set raw='Esea'
+            else
+                set raw=0
             endif
-            set ExamScroll[j]=CreateItem(raw,GetUnitX(ExamEnemy[j]),GetUnitY(ExamEnemy[j]))
+            if raw!=0 then
+                set it=CreateItem(raw,GetUnitX(ExamEnemy[j]),GetUnitY(ExamEnemy[j]))
+                if (raw=='Eshe' or raw=='Esea') and ExamScrollCount<8191 then
+                    set ExamScroll[ExamScrollCount]=it
+                    set ExamScrollCount=ExamScrollCount+1
+                elseif ExamGearCount<8191 then
+                    set ExamGear[ExamGearCount]=it
+                    set ExamGearCount=ExamGearCount+1
+                endif
+                set it=null
+            endif
+            if GetRandomInt(1,100)>32 then
+                set ExamRespawnAt[j]=TimeNow+1.
+            endif
+        endif
+        if ExamRespawnAt[j]>0. and TimeNow>=ExamRespawnAt[j] then
+            if ExamEnemy[j]!=null then
+                call RemoveUnit(ExamEnemy[j])
+            endif
+            set raw=GetRandomInt(0,84)
+            if ExamRespawnType[j]!=0 then
+                set ExamEnemyType[j]=ExamRespawnType[j]
+                set ExamRespawnType[j]=0
+            endif
+            set ExamEnemy[j]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),ExamEnemyType[j],ExamEnemyX[raw],ExamEnemyY[raw],180.)
+            call SetUnitCreepGuard(ExamEnemy[j],false)
+            call RemoveGuardPosition(ExamEnemy[j])
+            set ExamRespawnAt[j]=0.
+            set ExamDropped[j]=false
         endif
         set j=j+1
     endloop
+    if TimeNow>=ExamRepopulateAt and ExamPopulateCursor>=85 then
+        set count=0
+        set j=0
+        loop
+            exitwhen j>=85
+            if FoundationAlive(ExamEnemy[j]) then
+                set count=count+1
+            endif
+            set j=j+1
+        endloop
+        if count<=25 then
+            set j=0
+            set k=0
+            loop
+                exitwhen j>=85 or k>=8
+                if not FoundationAlive(ExamEnemy[j]) and ExamRespawnAt[j]==0. then
+                    set ExamRespawnAt[j]=TimeNow+1.
+                    set ExamRespawnType[j]='re06'
+                    if k<3 then
+                        set ExamRespawnType[j]='re07'
+                    endif
+                    set k=k+1
+                endif
+                set j=j+1
+            endloop
+        endif
+        set ExamRepopulateAt=TimeNow+5.
+    endif
     loop
         exitwhen t>=4
         if StoryStage[t]==7 then
@@ -523,10 +635,10 @@ function NextChapterTick takes nothing returns nothing
             endif
             set t=t+1
         endloop
-        if occupied and ready then
+        if occupied and (ready or TimeNow>=420.) then
             set ExamPhase=1
-            set ExamReadyAt=TimeNow+20.
-            call ExamBroadcast("Какаши: Все отряды вернулись с моста. Через 20 секунд отправляемся на экзамен с вопросами. Пополните снаряжение.")
+            set ExamReadyAt=RMaxBJ(TimeNow,420.)
+            call ExamBroadcast("Какаши: Все отряды вернулись с моста. Готовьтесь к экзамену с вопросами. Он начнётся по общему исходному таймеру 7 минут. Пополните снаряжение.")
         endif
     elseif ExamPhase==1 and TimeNow>=ExamReadyAt then
         call ExamStartQuiz()
