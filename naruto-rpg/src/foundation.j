@@ -1,4 +1,12 @@
 globals
+    unit array ShadowSegment
+    unit array ShadowTarget
+    real array ShadowUntil
+    real array VisionUntil
+    real array VisionRadius
+    real array VisionNext
+    fogmodifier array VisionFog
+    effect array VisionArt
     effect array SkillFlash
     real array SkillFlashUntil
     integer SkillFlashCursor=0
@@ -369,6 +377,7 @@ function FoundationSpawn takes nothing returns nothing
         set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
         if HeroRole[p]>=0 then
             call SetHeroLevel(Hero[p],1,false)
+            call RosterGrantInnate(p)
             if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
                 call SkillsLearnBot(p)
             endif

@@ -239,6 +239,8 @@ function SkillsBot takes integer p returns boolean
                 // Leave an active native mana shield enabled.
             elseif SkillMorph[role*5+k] and GetUnitTypeId(u)!=HeroType[p] then
                 // Do not re-enter a native transformation while already transformed.
+            elseif (RosterMechanic[role*5+k]==5 or (RosterMechanic[role*5+k]==2 and SkillTarget[role*5+k]==0)) and dx*dx+dy*dy>RosterRadius[role*5+k]*RosterRadius[role*5+k] then
+                // Self-centered damage is useful only inside its actual hit radius.
             elseif SkillTarget[role*5+k]==0 then
                 set issued=IssueImmediateOrder(u,SkillOrder[role*5+k])
             elseif SkillTarget[role*5+k]==1 then
@@ -289,6 +291,7 @@ function SkillsChoose takes integer p, integer role returns nothing
     set HeroType[p]=RosterHeroType[role]
     set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
     call SetHeroXP(Hero[p],xp,false)
+    call RosterGrantInnate(p)
     if GetHeroLevel(Hero[p])<1 then
         call SetHeroLevel(Hero[p],1,false)
     endif

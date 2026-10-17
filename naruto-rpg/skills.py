@@ -31,6 +31,10 @@ def ability_data():
   for field,kind,col,values in fields:
    for n,v in enumerate(values,1):mods.append((field,kind,v,n,col))
   out.append((base,raw,mods))
+ # Source A02W detection ranges; independent of the temporary combat bonuses.
+ sight=[('anam',3,'Бьякуган: обнаружение'),('aher',0,0),('alev',0,4),('abpy',0,-11)]
+ for n in range(1,5):sight += [('aran',2,200.+200.*n,n,0),('Det1',0,1,n,1),('atar',3,'enemies,vulnerable',n,0)]
+ out.append(('Atru','Rbyg',sight))
  # Hidden native stun applied by an expiring invisible caster; no PauseUnit locks.
  stun=[('anam',3,'Короткое оглушение'),('aher',0,0),('alev',0,4),('abpx',0,0),('abpy',0,-11),('amat',3,''),('aani',3,''),('acat',3,'')]
  for n in range(1,5):stun += [('amcs',0,0,n,0),('acdn',2,0.,n,0),('aran',2,2000.,n,0),('Htb1',2,0.,n,1),('adur',2,.5*n,n,0),('ahdu',2,.5*n,n,0),('amsp',0,10000,n,0),('atar',3,'ground,air,enemy,neutral,organic',n,0)]
@@ -51,5 +55,10 @@ def summon_units():
   ('rz0','Сидзунэ','Shizune.mdl','Icon_Sakura_Shosen.blp',1.,900,15,3)]:
   for n in range(1,2 if prefix=='rz0' else 4):
    out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
+ out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,3.5),('ufoo',0,0)]))
  out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
  return out
+
+
+def buff_data():
+ return [('BEer','Rsmb',[('fnam',3,'Теневое подражание'),('ftip',3,'Теневое подражание'),('fube',3,'Тень удерживает на месте.'),('fart',3,'Icon_Shikamaru_KageMane.BLP'),('ftat',3,''),('fsat',3,''),('feat',3,'')])]

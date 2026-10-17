@@ -139,5 +139,13 @@
     "mappedId": "R301",
     "mappedBase": "AOre"
   },
-  "note": "All 58 source slots mapped. Triggered skills remain independently recreated adaptations; matching IDs do not establish full mechanical equivalence."
+  "note": "All 58 source slots mapped. Triggered skills remain independently recreated adaptations; matching IDs do not establish full mechanical equivalence.",
+  "shikamaruFourthSkill": {
+    "sourceId": "A02U",
+    "sourceName": "Second Chance (E)",
+    "sourceBase": "AOre",
+    "mappedId": "R604",
+    "mappedBase": "AOre",
+    "rankOneFreeAtSpawnAndHumanSelection": true
+  }
 }

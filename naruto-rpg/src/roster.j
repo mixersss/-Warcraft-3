@@ -9,7 +9,6 @@ function RosterClearBuff takes integer p returns nothing
         call UnitRemoveAbility(Hero[p],RosterBonus[n])
         set n=n+1
     endloop
-    call UnitRemoveAbility(Hero[p],'Atru')
     set RosterBuffUntil[p]=0.
     set RosterBuffDrain[p]=0.
     if RosterBuffArt[p]!=null then
@@ -60,9 +59,120 @@ function RosterSand takes integer p, real tx, real ty returns nothing
         set n=n+1
     endloop
 endfunction
+// Independent sight state: Kaiten/combat buffs do not cancel Byakugan.
+function RosterClearVision takes integer p returns nothing
+    call UnitRemoveAbility(Hero[p],'Rbyg')
+    set VisionUntil[p]=0.
+    if VisionFog[p]!=null then
+        call FogModifierStop(VisionFog[p])
+        call DestroyFogModifier(VisionFog[p])
+        set VisionFog[p]=null
+    endif
+    if VisionArt[p]!=null then
+        call DestroyEffect(VisionArt[p])
+        set VisionArt[p]=null
+    endif
+endfunction
+function RosterVisionPulse takes integer p returns nothing
+    local unit target=null
+    local real x=GetUnitX(Hero[p])
+    local real y=GetUnitY(Hero[p])
+    if VisionFog[p]!=null then
+        call FogModifierStop(VisionFog[p])
+        call DestroyFogModifier(VisionFog[p])
+    endif
+    set VisionFog[p]=CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,x,y,VisionRadius[p],true,false)
+    call FogModifierStart(VisionFog[p])
+    call GroupEnumUnitsInRange(SkillScratch,x,y,VisionRadius[p],null)
+    loop
+        set target=FirstOfGroup(SkillScratch)
+        exitwhen target==null
+        call GroupRemoveUnit(SkillScratch,target)
+        if FoundationAlive(target) and IsUnitEnemy(target,Player(p)) and not IsUnitType(target,UNIT_TYPE_STRUCTURE) then
+            // Only UI calls are local. Handle creation and state remain synchronized.
+            if IsPlayerAlly(GetLocalPlayer(),Player(p)) then
+                call PingMinimapEx(GetUnitX(target),GetUnitY(target),1.5,100,180,255,false)
+            endif
+        endif
+    endloop
+    set VisionNext[p]=TimeNow+2.
+    set target=null
+endfunction
+function RosterVision takes integer p, integer rank returns nothing
+    call RosterClearVision(p)
+    call UnitAddAbility(Hero[p],'Rbyg')
+    call SetUnitAbilityLevel(Hero[p],'Rbyg',rank)
+    call UnitMakeAbilityPermanent(Hero[p],true,'Rbyg')
+    set VisionUntil[p]=TimeNow+15.
+    set VisionRadius[p]=200.+200.*rank
+    set VisionArt[p]=AddSpecialEffectTarget("Eye_Byakugan.mdl",Hero[p],"origin")
+    call RosterVisionPulse(p)
+endfunction
+function RosterClearShadow takes integer p returns nothing
+    local integer n=0
+    loop
+        exitwhen n>=16
+        if ShadowSegment[p*16+n]!=null then
+            call RemoveUnit(ShadowSegment[p*16+n])
+            set ShadowSegment[p*16+n]=null
+        endif
+        set n=n+1
+    endloop
+    set ShadowUntil[p]=0.
+    set ShadowTarget[p]=null
+endfunction
+function RosterShadowPulse takes integer p returns nothing
+    local integer n=0
+    local real x=GetUnitX(Hero[p])
+    local real y=GetUnitY(Hero[p])
+    local real dx=GetUnitX(ShadowTarget[p])-x
+    local real dy=GetUnitY(ShadowTarget[p])-y
+    local real distance=SquareRoot(dx*dx+dy*dy)
+    local real facing=Atan2(dy,dx)*bj_RADTODEG+90.
+    local real offset=0.
+    loop
+        exitwhen n>=16
+        set offset=(n+.5)*50.
+        if offset<distance and distance<=900. then
+            if ShadowSegment[p*16+n]==null then
+                set ShadowSegment[p*16+n]=CreateUnit(Player(p),'rshd',x,y,facing)
+                call SetUnitPathing(ShadowSegment[p*16+n],false)
+            endif
+            call SetUnitX(ShadowSegment[p*16+n],x+dx*offset/distance)
+            call SetUnitY(ShadowSegment[p*16+n],y+dy*offset/distance)
+            call SetUnitFacing(ShadowSegment[p*16+n],facing)
+        elseif ShadowSegment[p*16+n]!=null then
+            call RemoveUnit(ShadowSegment[p*16+n])
+            set ShadowSegment[p*16+n]=null
+        endif
+        set n=n+1
+    endloop
+endfunction
+function RosterShadow takes integer p, integer rank, unit target returns nothing
+    call RosterClearShadow(p)
+    if not FoundationAlive(target) then
+        return
+    endif
+    set ShadowTarget[p]=target
+    if IsUnitType(target,UNIT_TYPE_HERO) then
+        set ShadowUntil[p]=TimeNow+1.+.5*rank
+    else
+        set ShadowUntil[p]=TimeNow+1.5+.5*rank
+    endif
+    call RosterShadowPulse(p)
+endfunction
+function RosterGrantInnate takes integer p returns nothing
+    if HeroRole[p]==6 and GetUnitAbilityLevel(Hero[p],'R604')==0 then
+        call UnitAddAbility(Hero[p],'R604')
+        call SetUnitAbilityLevel(Hero[p],'R604',1)
+        call UnitMakeAbilityPermanent(Hero[p],true,'R604')
+    endif
+endfunction
 function RosterReset takes integer p returns nothing
     local integer k=0
     call RosterClearSand(p)
+    call RosterClearVision(p)
+    call RosterClearShadow(p)
     call RosterClearBuff(p)
     call RosterClearZone(p)
     loop
@@ -122,6 +232,50 @@ function RosterArea takes integer p, real x, real y, real radius, real damage, r
     endloop
     set target=null
 endfunction
+// Native placement respects collision; short sampled steps never cross a blocked wall/cliff.
+function RosterRepel takes integer p, integer rank returns nothing
+    local unit target=null
+    local real x=GetUnitX(Hero[p])
+    local real y=GetUnitY(Hero[p])
+    local real dx=0.
+    local real dy=0.
+    local real length=0.
+    local real tx=0.
+    local real ty=0.
+    local real nx=0.
+    local real ny=0.
+    local integer n=0
+    call GroupEnumUnitsInRange(SkillScratch,x,y,270.,null)
+    loop
+        set target=FirstOfGroup(SkillScratch)
+        exitwhen target==null
+        call GroupRemoveUnit(SkillScratch,target)
+        if RosterEnemy(target,Player(p)) then
+            set tx=GetUnitX(target)
+            set ty=GetUnitY(target)
+            set dx=tx-x
+            set dy=ty-y
+            set length=SquareRoot(dx*dx+dy*dy)
+            if length<1. then
+                set dx=Cos(GetUnitFacing(Hero[p])*bj_DEGTORAD)
+                set dy=Sin(GetUnitFacing(Hero[p])*bj_DEGTORAD)
+                set length=1.
+            endif
+            set n=0
+            loop
+                exitwhen n>=4+2*rank
+                set nx=tx+dx/length*20.
+                set ny=ty+dy/length*20.
+                exitwhen IsTerrainPathable(nx,ny,PATHING_TYPE_WALKABILITY) or GetTerrainCliffLevel(nx,ny)!=GetTerrainCliffLevel(tx,ty)
+                set tx=nx
+                set ty=ny
+                set n=n+1
+            endloop
+            call SetUnitPosition(target,tx,ty)
+        endif
+    endloop
+    set target=null
+endfunction
 function RosterBuff takes integer p, integer index, integer rank returns nothing
     local integer n=0
     local integer flag=1
@@ -136,17 +290,11 @@ function RosterBuff takes integer p, integer index, integer rank returns nothing
         set n=n+1
         set flag=flag*2
     endloop
-    if HeroRole[p]==4 or HeroRole[p]==8 then
-        if ModuloInteger(index,5)==0 then
-            call UnitAddAbility(Hero[p],'Atru')
-            call UnitMakeAbilityPermanent(Hero[p],true,'Atru')
-        endif
-    endif
     set RosterBuffUntil[p]=TimeNow+RosterDuration[index]
     if HeroRole[p]==3 and ModuloInteger(index,5)==3 then
         set RosterBuffDrain[p]=.02
     endif
-    if RosterVisual[index]!="" and RosterMechanic[index]==4 then
+    if RosterVisual[index]!="" and RosterMechanic[index]==4 and index!=20 and index!=40 then
         set RosterBuffArt[p]=AddSpecialEffectTarget(RosterVisual[index],Hero[p],"origin")
     endif
 endfunction
@@ -206,6 +354,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
     local real power=RosterPower[index*4+rank-1]
     local real burn=RosterBurn[index*4+rank-1]
     if kind==0 then
+        if index==30 then
+            call RosterShadow(p,rank,target)
+        endif
         return
     endif
     if SkillAnimation[index]>=0 then
@@ -249,7 +400,11 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
             call SkillsFlashTarget(RosterVisual[index],target)
         endif
     elseif kind==4 then
-        call RosterBuff(p,index,rank)
+        if index==20 or index==40 then
+            call RosterVision(p,rank)
+        else
+            call RosterBuff(p,index,rank)
+        endif
     elseif kind==5 or kind==8 then
         if index==47 then
             call RosterSand(p,GetSpellTargetX(),GetSpellTargetY())
@@ -270,6 +425,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         set ZoneUntil[p]=TimeNow+RosterDuration[index]
         set ZoneNext[p]=TimeNow+.5
         call RosterArea(p,x,y,RosterRadius[index],power,burn,0.)
+        if index==21 or index==41 then
+            call RosterRepel(p,rank)
+        endif
         if RosterVisual[index]!="" then
             if kind==5 then
                 set ZoneArt[p]=AddSpecialEffectTarget(RosterVisual[index],Hero[p],"origin")
@@ -351,6 +509,20 @@ function RosterTick takes nothing returns nothing
     set p=0
     loop
         exitwhen p>=12
+        if ShadowUntil[p]>0. then
+            if not FoundationAlive(Hero[p]) or not FoundationAlive(ShadowTarget[p]) or TimeNow>=ShadowUntil[p] or GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')==0 then
+                call RosterClearShadow(p)
+            else
+                call RosterShadowPulse(p)
+            endif
+        endif
+        if VisionUntil[p]>0. then
+            if not FoundationAlive(Hero[p]) or TimeNow>=VisionUntil[p] then
+                call RosterClearVision(p)
+            elseif TimeNow>=VisionNext[p] then
+                call RosterVisionPulse(p)
+            endif
+        endif
         if SandWaveUntil[p]>0. then
             if not FoundationAlive(Hero[p]) or TimeNow>=SandWaveUntil[p] then
                 call RosterClearSand(p)

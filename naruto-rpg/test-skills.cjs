@@ -17,10 +17,10 @@ const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
 const assets=new Set(JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')).map(r=>r.path.toLowerCase()));
 for(const o of units){
  assert(['rdum','rdst'].includes(o.newId) || (get(o,'uico')||'replaceabletextures\\').toLowerCase().startsWith('replaceabletextures\\') || assets.has((get(o,'uico')||'').toLowerCase()),'Missing unit portrait '+o.newId);
- if(!['rdum','rdst'].includes(o.newId))assert((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
+ if(!['rdum','rdst'].includes(o.newId))assert(((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || get(o,'umdl')==='Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl') || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
 }
 for(const row of rows)assert(row.icon.toLowerCase().startsWith('replaceabletextures\\') || assets.has(row.icon.toLowerCase()),'Missing spell icon');
-function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','defenseType','deathType','regenType','channelType','channelFlags','silenceFlags'].includes(t)?0:3;}
+function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','defenseType','deathType','regenType','channelType','channelFlags','silenceFlags','detectionType'].includes(t)?0:3;}
 for(const o of abilities){
  assert.equal(get(o,'aefs'),'');assert.equal(get(o,'aefl'),'');
  assert(schema.stockIds.abilities.includes(o.oldId),'Invalid native ability base '+o.oldId);
@@ -33,6 +33,9 @@ for(const o of units){
  for(const id of (get(o,'uhab')||'').split(',').filter(Boolean))assert(ability[id]);
 }
 for(let j=0;j<rows.length;j++){const pos=rows[j].slot;assert.equal(get(ability[rows[j].id],'abpy'),pos<4?2:1);assert.equal(get(ability[rows[j].id],'abpx'),pos<4?pos:1);}
+const buffs=parse(Parser,'war3map.w3h').customTable.objects;
+assert.equal(buffs.length,1);assert.equal(buffs[0].newId,'Rsmb');assert.equal(get(buffs[0],'ftat'),'');
+for(let rank=1;rank<=4;rank++){assert.equal(get(ability.R601,'abuf',rank),'Rsmb');assert.equal(get(ability.Rbyg,'aran',rank),200+200*rank);assert.equal(get(ability.Rbyg,'Det1',rank),1);}
 assert.equal(rows.length,58);assert.equal(new Set(rows.map(r=>r.id)).size,58);
 for(const r of rows){assert.equal(get(ability[r.id],'alev'),r.ranks);for(let rank=1;rank<=r.ranks;rank++){assert.equal(get(ability[r.id],'amcs',rank),r.mana[rank-1]);assert(Math.abs(get(ability[r.id],'acdn',rank)-(r.cooldowns?.[rank-1]??r.cooldown))<.01);}}
 assert.equal(get(unit.R000,'uhab'),rows.slice(0,5).map(r=>r.id).join(','));
@@ -47,7 +50,7 @@ for(let n=1;n<=3;n++)assert(get(ability.R902,'Nms1',n)<=(n===1?1:get(ability.R90
 assert.equal(get(ability.Rn02,'Omi1',4),5);assert.equal(get(ability.Rn04,'Htb1',3),650);assert.equal(get(ability.Rs04,'Htb1',3),800);
 const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json'));
 for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
-assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
+assert.equal(ability.R604.oldId,'AOre');assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
 for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Kunai.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
@@ -89,6 +92,18 @@ function RMaxBJ(a,b) return math.max(a,b) end
 function RMinBJ(a,b) return math.min(a,b) end
 function R2I(x) return math.floor(x) end
 function UnitMakeAbilityPermanent(u,flag,id) end
+FOG_OF_WAR_VISIBLE=1;UNIT_TYPE_HERO='hero';PATHING_TYPE_WALKABILITY='walk'
+function IsTerrainPathable(x,y,t)return false end
+FogCreated=0;FogDestroyed=0;Pings={};LocalPlayer=4
+function CreateFogModifierRadius(p,state,x,y,r,shared,after) FogCreated=FogCreated+1;return {owner=p,radius=r} end
+function FogModifierStart(f)f.active=true end
+function FogModifierStop(f)f.active=false end
+function DestroyFogModifier(f)assert(not f.destroyed);f.destroyed=true;FogDestroyed=FogDestroyed+1 end
+function GetTerrainCliffLevel(x,y)return 0 end
+function SetUnitPosition(u,x,y)u.x=x;u.y=y end
+function GetLocalPlayer()return LocalPlayer end
+function IsPlayerAlly(a,b)return math.floor(a/3)==math.floor(b/3)end
+function PingMinimapEx(x,y,d,r,g,b,extra)Pings[#Pings+1]={x=x,y=y}end
 function GetUnitFacing(u) return 0 end
 function Cos(x) return math.cos(x) end
 function Sin(x) return math.sin(x) end
@@ -210,6 +225,7 @@ run(translate('function StoryFixtureData takes nothing returns nothing\n'+storyL
 run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/technique-audit-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

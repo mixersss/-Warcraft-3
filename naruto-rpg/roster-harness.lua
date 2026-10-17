@@ -69,8 +69,8 @@ technique(3,17,2,nil);assert(GetUnitAbilityLevel(Hero[3],raw('Rbev'))==2 and Get
 technique(3,18,3,nil);assert(GetUnitAbilityLevel(Hero[3],raw('Rbev'))==0 and GetUnitAbilityLevel(Hero[3],raw('Rbas'))==3)
 Hero[3].hp=100;RosterNextSecond[3]=0;RosterTick();assert(Hero[3].hp==1)
 TimeNow=213;RosterTick();assert(RosterBuffUntil[3]==0 and GetUnitAbilityLevel(Hero[3],raw('Rbas'))==0)
-technique(4,20,2,nil);assert(GetUnitAbilityLevel(Hero[4],raw('Atru'))==1)
-Hero[4].hp=0;RosterTick();assert(GetUnitAbilityLevel(Hero[4],raw('Atru'))==0);Hero[4].hp=10000
+technique(4,20,2,nil);assert(GetUnitAbilityLevel(Hero[4],raw('Rbyg'))==2)
+Hero[4].hp=0;RosterTick();assert(GetUnitAbilityLevel(Hero[4],raw('Rbyg'))==0);Hero[4].hp=10000
 -- Fixed areas pulse eight times; allies/immune/structures outside valid targets survive.
 TimeNow=220;AimX=200;AimY=0;enemy.hp=10000;enemy.x=200
 local ally=make(1,200,0);local immune=make(12,200,0);immune.immune=true

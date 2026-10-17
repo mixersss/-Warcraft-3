@@ -464,6 +464,10 @@
     "Ebl2": {
       "type": "unreal",
       "column": 2
+    },
+    "Det1": {
+      "type": "detectionType",
+      "column": 1
     }
   },
   "unitFields": {
