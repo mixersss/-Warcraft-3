@@ -1,0 +1,83 @@
+[
+  {
+    "audio_index": 160,
+    "path": "war3mapImported\\HeavyViolence 32br48hz.mp3",
+    "duration_ms": 68040,
+    "chapter": 0,
+    "name": "Страна Волн",
+    "sourceTrigger": "XZV",
+    "sourceFunction": "QAX"
+  },
+  {
+    "audio_index": 82,
+    "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
+    "duration_ms": 46224,
+    "chapter": 1,
+    "name": "Письменный экзамен",
+    "sourceTrigger": "X0V",
+    "sourceFunction": "QDX"
+  },
+  {
+    "audio_index": 57,
+    "path": "war3mapImported\\m057 3.mp3",
+    "duration_ms": 67656,
+    "chapter": 2,
+    "name": "Лес смерти и свитки",
+    "sourceTrigger": "X_V",
+    "sourceFunction": "QBX"
+  },
+  {
+    "audio_index": 58,
+    "path": "war3mapImported\\m051 3.mp3",
+    "duration_ms": 42360,
+    "chapter": 3,
+    "name": "Предварительные бои",
+    "sourceTrigger": "X1V",
+    "sourceFunction": "QGX"
+  },
+  {
+    "audio_index": 82,
+    "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
+    "duration_ms": 46224,
+    "chapter": 4,
+    "name": "Поиск Джирайи",
+    "sourceTrigger": "X0V",
+    "sourceFunction": "QDX"
+  },
+  {
+    "audio_index": 58,
+    "path": "war3mapImported\\m051 3.mp3",
+    "duration_ms": 42360,
+    "chapter": 5,
+    "name": "Турнир",
+    "sourceTrigger": "X1V",
+    "sourceFunction": "QGX"
+  },
+  {
+    "audio_index": 38,
+    "path": "war3mapImported\\SOUND_0054 3.mp3",
+    "duration_ms": 71760,
+    "chapter": 6,
+    "name": "Нападение на деревню — вступление",
+    "sourceTrigger": "X4V",
+    "sourceFunction": "QPX"
+  },
+  {
+    "audio_index": 83,
+    "path": "war3mapImported\\SOUND_0045 3.mp3",
+    "duration_ms": 99888,
+    "chapter": 7,
+    "name": "Бой за деревню",
+    "sourceTrigger": "X2V",
+    "sourceFunction": "QJX"
+  },
+  {
+    "audio_index": 37,
+    "path": "war3mapImported\\SOUND_0041 3.mp3",
+    "duration_ms": 82896,
+    "chapter": 8,
+    "name": "Следующий этап после боя",
+    "sourceTrigger": "X3V",
+    "sourceFunction": "QLX"
+  }
+]

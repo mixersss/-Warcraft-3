@@ -28,6 +28,9 @@ def unit_entries():
  for base,raw,mods in out:
   if raw.startswith('rq0'):
    mods.extend([('uaen',0,1),('ua1b',0,65),('umvs',0,340)])
+  if raw in ('re01','re02'):mods.extend([('ulev',0,4)])
+  if raw=='re03':mods.extend([('ulev',0,20)])
+  if raw=='re04':mods.extend([('ulev',0,30)])
   if raw=='re04':mods.extend([('uabi',3,'Zbwp,Zbce,Zbbl'),('umpm',0,1000),('umpi',0,1000),('umpr',2,6.)])
  for _,_,mods in out:mods[:]=list({k:(k,t,v) for k,t,v in mods}.values())
  return out

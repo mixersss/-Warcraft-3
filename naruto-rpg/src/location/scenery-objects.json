@@ -1,0 +1,675 @@
+{
+  "version": 2,
+  "originalTable": {
+    "objects": [
+      {
+        "oldId": "ATg3",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 862409793
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 862409793
+          },
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 2500,
+            "u1": 862409793
+          }
+        ]
+      },
+      {
+        "oldId": "ATg1",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 828855361
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 828855361
+          },
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 2500,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "LTlt",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bfra",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.10000000149011612,
+            "u1": 1953256524
+          },
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 500,
+            "u1": 1953256524
+          },
+          {
+            "id": "bgsc",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 1953256524
+          },
+          {
+            "id": "bsel",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 5,
+            "u1": 1953256524
+          },
+          {
+            "id": "bfil",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Tree3.mdl",
+            "u1": 1953256524
+          },
+          {
+            "id": "btxi",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 32,
+            "u1": 1953256524
+          },
+          {
+            "id": "btxf",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "ReplaceableTextures\\AshenvaleTree\\AshenTree",
+            "u1": 1953256524
+          },
+          {
+            "id": "bflh",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 3.25,
+            "u1": 1953256524
+          },
+          {
+            "id": "bvar",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 1953256524
+          },
+          {
+            "id": "bvcr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 120,
+            "u1": 1953256524
+          },
+          {
+            "id": "bvcg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 220,
+            "u1": 1953256524
+          },
+          {
+            "id": "bmar",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": -50.20000076293945,
+            "u1": 1953256524
+          },
+          {
+            "id": "bmap",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": -50.099998474121094,
+            "u1": 1953256524
+          }
+        ]
+      },
+      {
+        "oldId": "CTtc",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bgsc",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 60,
+            "u1": 1668568131
+          },
+          {
+            "id": "bsel",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 80,
+            "u1": 1668568131
+          },
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 80,
+            "u1": 1668568131
+          },
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.899999976158142,
+            "u1": 1668568131
+          },
+          {
+            "id": "bvcg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 1668568131
+          },
+          {
+            "id": "bvcb",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 1668568131
+          },
+          {
+            "id": "bflh",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "bfil",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "war3mapImported\\FBLTree.mdl",
+            "u1": 1668568131
+          },
+          {
+            "id": "bvar",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 1668568131
+          },
+          {
+            "id": "bvcr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 85,
+            "u1": 1668568131
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 1668568131
+          },
+          {
+            "id": "bmar",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": -15.699999809265137,
+            "u1": 1668568131
+          },
+          {
+            "id": "bmap",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": -15.850000381469727,
+            "u1": 1668568131
+          }
+        ]
+      },
+      {
+        "oldId": "DTg5",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.6000000238418579,
+            "u1": 895964228
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.6000000238418579,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "DTg7",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.6000000238418579,
+            "u1": 0
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.6000000238418579,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "YTlb",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 500,
+            "u1": 1651266649
+          },
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 99999,
+            "u1": 1651266649
+          }
+        ]
+      },
+      {
+        "oldId": "BTtw",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bvcr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 2004112450
+          },
+          {
+            "id": "bvcg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 2004112450
+          },
+          {
+            "id": "bvcb",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 2004112450
+          },
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 2004112450
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 2004112450
+          },
+          {
+            "id": "bflh",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 2004112450
+          }
+        ]
+      },
+      {
+        "oldId": "NTtw",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bvcb",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 150,
+            "u1": 2004112462
+          },
+          {
+            "id": "bvcg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 200,
+            "u1": 2004112462
+          },
+          {
+            "id": "bflh",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "LTe1",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 828724300
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 0
+          },
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 800,
+            "u1": 0
+          },
+          {
+            "id": "bgse",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 828724300
+          }
+        ]
+      },
+      {
+        "oldId": "LTe3",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 0
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 0
+          },
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 800,
+            "u1": 862278732
+          },
+          {
+            "id": "bgse",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 862278732
+          }
+        ]
+      },
+      {
+        "oldId": "Ytlc",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 500,
+            "u1": 0
+          },
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 99999,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "YTpb",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 99999,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "YTpc",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bhps",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 99999,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "YTct",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.899999976158142,
+            "u1": 1952666713
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.2000000476837158,
+            "u1": 1952666713
+          }
+        ]
+      }
+    ]
+  },
+  "customTable": {
+    "objects": [
+      {
+        "oldId": "LTe3",
+        "newId": "B001",
+        "modifications": [
+          {
+            "id": "bmas",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 0
+          },
+          {
+            "id": "bmis",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 0
+          },
+          {
+            "id": "boch",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 800,
+            "u1": 862278732
+          },
+          {
+            "id": "bvcr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "bvcg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "bvcb",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "bgsc",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "bgse",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      }
+    ]
+  }
+}

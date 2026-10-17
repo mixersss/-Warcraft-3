@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Chapter_01_Alpha_07a.w3x",
-  "bytes": 8063249,
-  "sha256": "18cfeecf53875a3bcb575a7e99b86ea6133ce949ccd8f68345ce01baa5eb1aed",
+  "filename": "Shinobi_Chapter_01_Alpha_07b.w3x",
+  "bytes": 8062578,
+  "sha256": "b6060ac16f79aa85994e7ae1d195ebb046837cb53abcdd944591a55e2250fb41",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery only; no original units, abilities, metadata or JASS",
   "importedAssets": 375,
@@ -22,6 +22,11 @@
   "mentorDepartureSeconds": 330,
   "originalLootTypes": 7,
   "recreatedInnateSkills": 1,
-  "stage": "Chapter 01: original forest actor placements, 330s mentors, tree jumping and item drops",
+  "nativeVisibleTrees": 3377,
+  "auditedActiveSkillAnimations": 52,
+  "nativeImpactSounds": true,
+  "musicMode": "source chapter mapping; forest HeavyViolence loop",
+  "experienceProfile": "source factors, radius, creature levels and hero start/cap; no quest XP",
+  "stage": "Chapter 01 presentation/experience/music corrections",
   "engineTested": false
 }

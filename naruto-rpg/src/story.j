@@ -47,7 +47,7 @@ function StoryReward takes integer t, integer gold, integer xp returns nothing
         exitwhen p>=t*3+3
         if Hero[p]!=null then
             call SetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD,GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)+gold)
-            call AddHeroXP(Hero[p],xp,true)
+            // First forest uses native kill XP, as in the source; no synthetic quest XP.
         endif
         set p=p+1
     endloop
@@ -541,8 +541,8 @@ function StoryTick takes nothing returns nothing
             endif
             set Dummy[t]=StoryEnemy[first]
             if StoryStage[t]>0 and StoryStage[t]<5 and alive==0 and StoryAdvanceAt[t]==0. then
-                call StoryReward(t,150+StoryStage[t]*100,500+StoryStage[t]*400)
-                call StorySay(t,"Наставник: Отличная работа! Награда всему отряду: золото и опыт. Можно отдохнуть и пополнить снаряжение.")
+                call StoryReward(t,150+StoryStage[t]*100,0)
+                call StorySay(t,"Наставник: Отличная работа! Награда всему отряду: золото. Можно отдохнуть и пополнить снаряжение.")
                 if StoryStage[t]==4 then
                     set StoryStage[t]=5
                     call StorySay(t,"Тадзуна: Мост спасён! Спасибо вам, шиноби Конохи. |n"+StoryGoal(t))

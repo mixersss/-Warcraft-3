@@ -1,4 +1,10 @@
 globals
+    effect array SkillFlash
+    real array SkillFlashUntil
+    integer SkillFlashCursor=0
+    boolean array SkillPoseQueued
+    integer array SkillPoseIndex
+    integer array SkillPoseType
     integer StoryPopulateCursor=0
     timer StoryPopulateClock=null
     real array EnemySpawnX
@@ -183,7 +189,6 @@ endfunction
 // TREE_RUNTIME
 // SKILLS_RUNTIME
 function FoundationMusicNext takes nothing returns nothing
-    set MusicCursor=ModuloInteger(MusicCursor+1,MusicCount)
     if MusicOn then
         call StopMusic(false)
         call PlayMusic(AudioPath[PlaylistAudio[MusicCursor]])
@@ -198,6 +203,15 @@ function FoundationMusicStart takes nothing returns nothing
     endif
 endfunction
 // STORY_RUNTIME
+function FoundationMusicSetChapter takes integer chapter returns nothing
+    if chapter<0 or chapter>=MusicCount then
+        return
+    endif
+    set MusicCursor=chapter
+    if MusicOn then
+        call FoundationMusicStart()
+    endif
+endfunction
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
     local string msg=GetEventPlayerChatString()
@@ -288,9 +302,9 @@ function FoundationChat takes nothing returns nothing
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
     elseif msg=="-nextmusic" then
         call FoundationMusicNext()
-        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Выбран трек "+I2S(MusicCursor+1)+"/"+I2S(MusicCount)+". -music: включить/выключить музыку.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Музыка текущего сюжетного этапа начата заново. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop: магазин; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop: магазин; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
@@ -354,7 +368,7 @@ function FoundationSpawn takes nothing returns nothing
     if GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
         set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
         if HeroRole[p]>=0 then
-            call SetHeroLevel(Hero[p],3,false)
+            call SetHeroLevel(Hero[p],1,false)
             if GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER then
                 call SkillsLearnBot(p)
             endif

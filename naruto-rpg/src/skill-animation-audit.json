@@ -1,0 +1,408 @@
+[
+  {
+    "skill": "Rn01",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": true
+  },
+  {
+    "skill": "Rn02",
+    "old": "spell,loop",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "Rn03",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "Rn04",
+    "old": "spell,two",
+    "animation": "Spell Two",
+    "index": 6,
+    "passive": false
+  },
+  {
+    "skill": "Rn05",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "Rs01",
+    "old": "spell,walk",
+    "animation": "Spell Walk",
+    "index": 9,
+    "passive": false
+  },
+  {
+    "skill": "Rs02",
+    "old": "spell",
+    "animation": "Spell Stand",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "Rs03",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "Rs04",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "Rs05",
+    "old": "spell",
+    "animation": "Spell Stand",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R201",
+    "old": "attack,2,throw",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R202",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R203",
+    "old": "spell,slam",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R204",
+    "old": "attack,attack 2,slam",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R205",
+    "old": "attack",
+    "animation": "Attack",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "R301",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": true
+  },
+  {
+    "skill": "R302",
+    "old": "attack,walk,stand,spin",
+    "animation": "Attack walk stand spin",
+    "index": 10,
+    "passive": false
+  },
+  {
+    "skill": "R303",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R304",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R401",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R402",
+    "old": "spell,spin",
+    "animation": "spell spin",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "R403",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R404",
+    "old": "attack",
+    "animation": "Attack",
+    "index": 4,
+    "passive": false
+  },
+  {
+    "skill": "R405",
+    "old": "spell",
+    "animation": "spell spin",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "R501",
+    "old": "attack,2,throw",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R502",
+    "old": "spell,looping",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R503",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 1,
+    "passive": true
+  },
+  {
+    "skill": "R504",
+    "old": "spell,looping",
+    "animation": "Spell",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "R505",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R601",
+    "old": "spell,looping",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R602",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": true
+  },
+  {
+    "skill": "R603",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R604",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": true
+  },
+  {
+    "skill": "R701",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R702",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R703",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R704",
+    "old": "attack,walk,stand,spin,looping",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R705",
+    "old": "spell,slam,alternate",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R801",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R802",
+    "old": "spell,spin",
+    "animation": "spell spin",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "R803",
+    "old": "attack",
+    "animation": "Attack",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "R804",
+    "old": "stand",
+    "animation": "Stand Ready",
+    "index": 0,
+    "passive": false
+  },
+  {
+    "skill": "R805",
+    "old": "spell,slam",
+    "animation": "Spell",
+    "index": 4,
+    "passive": false
+  },
+  {
+    "skill": "R901",
+    "old": "spell",
+    "animation": "spell channel",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "R902",
+    "old": "spell",
+    "animation": "spell channel",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "R903",
+    "old": "spell throw",
+    "animation": "Spell Throw",
+    "index": 9,
+    "passive": false
+  },
+  {
+    "skill": "R904",
+    "old": "spell,channel",
+    "animation": "spell channel",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "R905",
+    "old": "spell",
+    "animation": "spell channel",
+    "index": 3,
+    "passive": false
+  },
+  {
+    "skill": "RA01",
+    "old": "spell,throw",
+    "animation": "Spell throw",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "RA02",
+    "old": "attack",
+    "animation": "Attack",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "RA03",
+    "old": "spell,throw",
+    "animation": "Spell throw",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "RA04",
+    "old": "spell,throw",
+    "animation": "Spell throw",
+    "index": 1,
+    "passive": false
+  },
+  {
+    "skill": "RA05",
+    "old": "spell,slam",
+    "animation": "Spell",
+    "index": 5,
+    "passive": false
+  },
+  {
+    "skill": "RB01",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "RB02",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 2,
+    "passive": true
+  },
+  {
+    "skill": "RB03",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "RB04",
+    "old": "spell",
+    "animation": "Spell",
+    "index": 2,
+    "passive": false
+  },
+  {
+    "skill": "RB05",
+    "old": "spell,slam",
+    "animation": "Spell",
+    "index": 2,
+    "passive": false
+  }
+]

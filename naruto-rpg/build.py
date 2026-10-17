@@ -1,12 +1,13 @@
 """Fresh 1.26 foundation: new metadata/script/objects; original models/audio only."""
 from pathlib import Path
 import json,math,struct,hashlib
+from presentation import combat,misc,scenery
 from skills import SKILLS,HERO_SKILLS,ability_data,summon_units
 from classic_formats import i,f,s,objects,archive
 ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI CHAPTER 01 ALPHA 07a'
+NAME='SHINOBI CHAPTER 01 ALPHA 07b'
 DESC='Страна Волн: первая глава новой RPG. Четыре отряда по три героя, русский сюжет, совместные задания с ботами, Хаку и Забуза. Лесные локации исходной карты. -go: начать задание; -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
@@ -46,13 +47,15 @@ def unit_data():
   if slot==9:base += [('usca',1,1.3)]
   entries.append(('Hpal',raw,base))
  # Tenten must really attack at range for native Barrage to work.
- entries[5][2].extend([('ua1w',3,'missile'),('ua1r',0,600),('ua1m',3,'Kunai.mdl'),('ua1z',0,1100)])
+ for slot in range(12):entries[slot][2].extend(combat(slot))
  from story import unit_entries
  entries.extend(unit_entries())
  entries.extend(summon_units())
  entries.append(('hfoo','rdum',[('unam',3,'Тренировочный противник'),('uhpm',0,50000),('uhpr',2,30.),('uaen',0,0),('umvs',0,0),('uabi',3,''),('upgr',3,''),('ureq',3,'')]))
  for _,_,mods in entries:
-  mods.extend([('usnd',3,''),('ucs1',3,''),('ucs2',3,'')])
+  mods.extend([('usnd',3,''),('ucs2',3,'')])
+  if not any(m[0]=='ucs1' for m in mods):mods.append(('ucs1',3,'WoodHeavyBash'))
+  mods[:]=list({k:(k,t,v) for k,t,v in mods}.values())
  return objects(entries)
 def preview():
  raw=(ROOT/'src/location/original-war3map.w3e').read_bytes()
@@ -75,7 +78,7 @@ def script():
  for j,row in enumerate(json.loads((ROOT/'src/audio-settings.json').read_text())):
   data.append(f'    set AudioDuration[{j}]={row["duration_ms"]}')
   data.append(f'    set AudioEAX[{j}]={q(row["eax"])}')
- for j,row in enumerate(json.loads((ROOT/'src/music-playlist.json').read_text())):
+ for j,row in enumerate(json.loads((ROOT/'src/chapter-music.json').read_text())):
   data.append(f"    set PlaylistAudio[{j}]={row['audio_index']}")
   data.append(f"    set PlaylistDuration[{j}]={row['duration_ms']/1000.}")
  for p,h in enumerate(HEROES):
@@ -119,9 +122,11 @@ def script():
 def build():
  files={row['path']:(ROOT/'assets'/row['path'].replace('\\','/')).read_bytes() for row in ASSETS}
  for row in ASSETS:assert hashlib.sha256(files[row['path']]).hexdigest()==row['sha256']
- files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data()+__import__('story').ability_entries(),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':b'[Misc]\nMaxHeroLevel=30\nMaxUnitSpeed=480\n','war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
+ files.update({'war3map.w3i':info(),'war3map.w3e':terrain(),'war3map.wpm':pathing(),'war3map.w3u':unit_data(),'war3map.w3a':objects(ability_data()+__import__('story').ability_entries(),True),'war3map.w3t':objects(__import__('story').item_entries()+__import__('loot').items()),'war3map.w3b':objects([]),'war3map.w3h':objects([],True),'war3map.w3q':objects([],True),'war3map.j':script().encode('utf8'),'war3mapMisc.txt':misc(),'war3map.doo':b'W3do'+i(8,11,0,0,0),'war3mapUnits.doo':b'W3do'+i(8,11,0),'war3map.w3r':i(5,0),'war3map.w3c':i(0,0),'war3map.w3s':i(1,0),'war3map.shd':bytes(SIZE*4*SIZE*4),'war3mapPreview.tga':preview(),'war3mapMap.tga':preview()})
  for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
   files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
+ files['war3map.w3b']=scenery()
+ files['war3map.doo']=(ROOT/'src/location/render-war3map.doo').read_bytes()
  imported=[name for name in files if name in {x['path'] for x in ASSETS}]
  files['war3map.imp']=i(1,len(imported))+b''.join(b'\x0d'+s(name) for name in imported)
  mapdir=ROOT/'dist/map';mapdir.mkdir(parents=True,exist_ok=True)
@@ -129,8 +134,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07a.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Chapter_01_Alpha_07b.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<8*1024*1024,'Classic 8 MiB limit'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'stage':'Chapter 01: original forest actor placements, 330s mentors, tree jumping and item drops','engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery only; no original units, abilities, metadata or JASS','importedAssets':len(ASSETS),'models':67,'audioFiles':174,'musicTracks':9,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':2,'recreatedSkillMechanics':58,'skillImplementation':'new independent adaptations, not original script','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':1,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':52,'nativeImpactSounds':True,'musicMode':'source chapter mapping; forest HeavyViolence loop','experienceProfile':'source factors, radius, creature levels and hero start/cap; no quest XP','stage':'Chapter 01 presentation/experience/music corrections','engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()

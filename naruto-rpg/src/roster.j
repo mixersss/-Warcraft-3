@@ -229,7 +229,7 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         call RosterHit(Hero[p],target,power,burn)
         call RosterStun(p,target,RosterDuration[index])
         if FoundationAlive(target) and RosterVisual[index]!="" then
-            call DestroyEffect(AddSpecialEffectTarget(RosterVisual[index],target,"origin"))
+            call SkillsFlashTarget(RosterVisual[index],target)
         endif
     elseif kind==2 then
         if SkillTarget[index]==2 then
@@ -241,12 +241,12 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         endif
         call RosterArea(p,x,y,RosterRadius[index],power,burn,RosterDuration[index])
         if RosterVisual[index]!="" then
-            call DestroyEffect(AddSpecialEffect(RosterVisual[index],x,y))
+            call SkillsFlashAt(RosterVisual[index],x,y)
         endif
     elseif kind==3 then
         if FoundationAlive(target) and not IsUnitEnemy(target,Player(p)) and not IsUnitType(target,UNIT_TYPE_STRUCTURE) then
             call SetWidgetLife(target,RMinBJ(GetUnitState(target,UNIT_STATE_MAX_LIFE),GetWidgetLife(target)+power))
-            call DestroyEffect(AddSpecialEffectTarget(RosterVisual[index],target,"origin"))
+            call SkillsFlashTarget(RosterVisual[index],target)
         endif
     elseif kind==4 then
         call RosterBuff(p,index,rank)
@@ -303,13 +303,13 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
                 set x=GetUnitX(Companion[p*3+n])
                 set y=GetUnitY(Companion[p*3+n])
                 call RosterArea(p,x,y,RosterRadius[index],power,0.,0.)
-                call DestroyEffect(AddSpecialEffect("Note.mdl",x,y))
+                call SkillsFlashAt("Note.mdl",x,y)
             endif
             set n=n+1
         endloop
         if count==0 then
             call RosterArea(p,x,y,RosterRadius[index],power,0.,0.)
-            call DestroyEffect(AddSpecialEffect("Note.mdl",x,y))
+            call SkillsFlashAt("Note.mdl",x,y)
         endif
     endif
 endfunction

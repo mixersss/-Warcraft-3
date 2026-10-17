@@ -16,6 +16,20 @@ function SkillsBurst takes integer p, string model returns nothing
     set BurstArt[p]=AddSpecialEffectTarget(model,Hero[p],"hand,right")
     set BurstUntil[p]=TimeNow+1.
 endfunction
+function SkillsHoldFlash takes effect art returns nothing
+    if SkillFlash[SkillFlashCursor]!=null then
+        call DestroyEffect(SkillFlash[SkillFlashCursor])
+    endif
+    set SkillFlash[SkillFlashCursor]=art
+    set SkillFlashUntil[SkillFlashCursor]=TimeNow+1.5
+    set SkillFlashCursor=ModuloInteger(SkillFlashCursor+1,256)
+endfunction
+function SkillsFlashAt takes string model, real x, real y returns nothing
+    call SkillsHoldFlash(AddSpecialEffect(model,x,y))
+endfunction
+function SkillsFlashTarget takes string model, unit target returns nothing
+    call SkillsHoldFlash(AddSpecialEffectTarget(model,target,"origin"))
+endfunction
 // ROSTER_RUNTIME
 function SkillsLearnBot takes integer p returns nothing
     local integer role=HeroRole[p]
@@ -68,6 +82,11 @@ function SkillsEffect takes nothing returns nothing
         set j=j+1
     endloop
     if index>=0 then
+        if not SkillPassive[index] then
+            set SkillPoseQueued[p]=true
+            set SkillPoseIndex[p]=SkillAnimation[index]
+            set SkillPoseType[p]=GetUnitTypeId(caster)
+        endif
         call RosterApply(p,index,rank,target)
     endif
     if raw=='Rn04' and FoundationAlive(target) then
@@ -102,7 +121,7 @@ function SkillsEffect takes nothing returns nothing
         set ComboBurn[p]=0.
         set ComboDamage[p]=40.+60.*rank
     elseif raw=='Rn03' then
-        call DestroyEffect(AddSpecialEffect("Kuchiyose.mdl",GetUnitX(caster),GetUnitY(caster)))
+        call SkillsFlashAt("Kuchiyose.mdl",GetUnitX(caster),GetUnitY(caster))
     endif
     set other=null
     set target=null
@@ -125,8 +144,27 @@ function SkillsTick takes nothing returns nothing
     local real dx=0.
     local real dy=0.
     loop
+        exitwhen p>=256
+        if SkillFlash[p]!=null and TimeNow>=SkillFlashUntil[p] then
+            call DestroyEffect(SkillFlash[p])
+            set SkillFlash[p]=null
+        endif
+        set p=p+1
+    endloop
+    set p=0
+    loop
         exitwhen p>=12
         set u=Hero[p]
+        if SkillPoseQueued[p] then
+            set SkillPoseQueued[p]=false
+            if FoundationAlive(u) and GetUnitTypeId(u)==SkillPoseType[p] then
+                if GetUnitTypeId(u)==HeroType[p] and SkillPoseIndex[p]>=0 then
+                    call SetUnitAnimationByIndex(u,SkillPoseIndex[p])
+                else
+                    call SetUnitAnimation(u,"attack")
+                endif
+            endif
+        endif
         if SharinganUntil[p]>0. and (TimeNow>=SharinganUntil[p] or not FoundationAlive(u)) then
             call SkillsClearSharingan(p)
         endif
@@ -251,8 +289,8 @@ function SkillsChoose takes integer p, integer role returns nothing
     set HeroType[p]=RosterHeroType[role]
     set Hero[p]=CreateUnit(Player(p),HeroType[p],SpawnX[p],SpawnY[p],90.)
     call SetHeroXP(Hero[p],xp,false)
-    if GetHeroLevel(Hero[p])<3 then
-        call SetHeroLevel(Hero[p],3,false)
+    if GetHeroLevel(Hero[p])<1 then
+        call SetHeroLevel(Hero[p],1,false)
     endif
     loop
         exitwhen k>=6

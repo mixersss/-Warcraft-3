@@ -66,18 +66,18 @@ chat('-anim');assert(Animation==0)
 chat('-music');assert(MusicStopped and not MusicOn)
 chat('-music');assert(MusicOn and MusicStarted)
 chat('-help');assert(string.find(Feedback,'-anim'))
--- Each completed track advances; only the ninth wraps to the first.
-local seen={}
-for i=1,9 do
- assert(not seen[PlaylistAudio[MusicCursor]]);seen[PlaylistAudio[MusicCursor]]=true
- assert(MusicDelay==PlaylistDuration[MusicCursor])
- local previous=MusicStarted
- MusicCallback()
- assert(MusicCursor==i%9 and MusicStarted==AudioPath[PlaylistAudio[MusicCursor]] and MusicStarted~=previous)
+-- Current chapter loops indefinitely; only an explicit chapter transition changes music.
+assert(PlaylistAudio[0]==160)
+local first=MusicStarted
+for i=1,10 do MusicCallback();assert(MusicCursor==0 and MusicStarted==first)end
+for chapter=0,8 do
+ FoundationMusicSetChapter(chapter)
+ assert(MusicStarted==AudioPath[PlaylistAudio[chapter]] and MusicDelay==PlaylistDuration[chapter])
+ MusicCallback();assert(MusicCursor==chapter)
 end
 local old=MusicStarted;chat('-music');assert(not MusicOn and MusicPaused)
-chat('-nextmusic');assert(MusicCursor==1 and MusicStarted==old,'Skipping while muted must remain silent')
-chat('-music');assert(MusicOn and MusicStarted==AudioPath[PlaylistAudio[1]])
+FoundationMusicSetChapter(2);chat('-nextmusic');assert(MusicCursor==2 and MusicStarted==old,'Muted chapter changes remain silent')
+chat('-music');assert(MusicOn and MusicStarted==AudioPath[PlaylistAudio[2]])
 local playing=MusicStarted;chat('-sound 1');assert(Played.path=='audio1' and MusicStarted==playing,'Voices must not replace background music')
 `);
-console.log('PASS: actual chat dispatch, explicit/cyclic sound, duration/cache/deferred playback, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, nine-track automatic cycling, wrap, mute/skip/resume and separate voice playback (mock natives).');
+console.log('PASS: actual chat dispatch, explicit/cyclic sound, duration/cache/deferred playback, volume/channel, voice wrap, exact animation index/wrap, invalid ranges, missing hero, source chapter music mapping, repeated forest track, chapter transitions, mute/restart/resume and separate voice playback (mock natives).');

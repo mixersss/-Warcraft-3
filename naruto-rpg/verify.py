@@ -42,7 +42,12 @@ scene=json.loads((ROOT/'src/location/provenance.json').read_text())
 for row in scene['files']:
  data=(ROOT/'src/location'/row['file']).read_bytes()
  assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256']
- assert metadata[row['file'].removeprefix('original-')]==data
+ name=row['file'].removeprefix('original-')
+ if name=='war3map.w3b':
+  from presentation import scenery
+  data=scenery()
+ elif name=='war3map.doo':data=(ROOT/'src/location/render-war3map.doo').read_bytes()
+ assert metadata[name]==data
 # Archive tables and scenario are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
 result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allImportedBytesOriginal':True,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}

@@ -39,6 +39,19 @@ for(let t=0;t<4;t++){
  }
  for(let other=0;other<4;other++)if(other!==t)assert(!seen[cell(sx[other*3],sy[other*3])],'Unexpected cross-team forest route');
 }
+const originalDoo=new Parser();originalDoo.load(new Uint8Array(fs.readFileSync(path.join(root,'src/location/original-war3map.doo'))));
+for(let i=0;i<doodads.doodads.length;i++){
+ const a=doodads.doodads[i],b=originalDoo.doodads[i];assert.equal(a.id,b.id);assert.deepEqual([...a.location],[...b.location]);assert.equal(a.flags,b.flags);assert.equal(a.life,b.life);
+ if(['LTlt','CTtc'].includes(a.id))assert.deepEqual([...a.scale],[1,1,1]);else assert.deepEqual([...a.scale],[...b.scale]);
+}
+const scenery=new ObjectParser();scenery.load(read('war3map.w3b'));
+for(const id of ['LTlt','CTtc']){
+ const mods=scenery.originalTable.objects.find(o=>o.oldId===id).modifications;
+ const get=k=>mods.find(m=>m.id===k)?.value;
+ assert.equal(get('bvar'),10);assert(get('bfil').startsWith('Doodads\\Terrain\\'));assert.equal(get('bmap'),0);assert.equal(get('bmar'),0);
+}
+const misc=fs.readFileSync(path.join(root,'dist/map/war3mapMisc.txt'),'utf8');
+assert(misc.includes('MaxHeroLevel=60'));assert(misc.includes('HeroExpRange=2000.0'));assert(misc.includes('HeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30'));
 const schema=JSON.parse(fs.readFileSync(path.join(root,'src/classic-skill-schema.json')));
 const itemFile=new ObjectParser();itemFile.load(read('war3map.w3t'));
 assert.equal(itemFile.customTable.objects.length,14);

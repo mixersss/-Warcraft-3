@@ -27,7 +27,7 @@ for(const o of abilities){
  for(const mod of o.modifications){const meta=schema.abilityFields[mod.id];assert(meta,'Unknown ability field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);if(mod.levelOrVariation>0)assert.equal(mod.dataPointer,meta.column,o.newId+':'+mod.id+' column');}
 }
 for(const o of units){
- assert.equal(get(o,'usnd'),'');assert.equal(get(o,'ucs1'),'');assert.equal(get(o,'ucs2'),'');
+ assert.equal(get(o,'usnd'),'');assert(get(o,'ucs1'),'Weapon impacts must remain audible');assert.equal(get(o,'ucs2'),'');
  assert(schema.stockIds.units.includes(o.oldId),'Invalid native unit base');
  for(const mod of o.modifications){const meta=schema.unitFields[mod.id];assert(meta,'Unknown unit field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);}
  for(const id of (get(o,'uhab')||'').split(',').filter(Boolean))assert(ability[id]);
@@ -50,6 +50,8 @@ for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map
 assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(o.oldId==='Hpal')assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
+for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Kunai.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
+assert.equal(get(unit.re01,'ulev'),4);assert.equal(get(unit.re02,'ulev'),4);assert.equal(get(unit.re03,'ulev'),20);assert.equal(get(unit.re04,'ulev'),30);
 for(const id of ['Zbwp','Zbce','Zbbl','Ljkn','Ljsh','Ljnt'])assert(ability[id]);
 const info=parse(Info,'war3map.w3i');assert.equal(info.players.length,12);assert.equal(info.forces.length,4);assert.deepEqual(info.forces.map(f=>f.playerMasks),[7,56,448,3584]);
 const L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
@@ -116,6 +118,7 @@ function FirstOfGroup(g) return g[1] end
 function GroupRemoveUnit(g,u) assert(g[1]==u);table.remove(g,1) end
 function UnitDamageTarget(c,t,amount,attack,ranged,at,dt,wt) assert(c~=t and amount>0);Hits[#Hits+1]={target=t,damage=amount};t.hp=t.hp-amount;return true end
 function SetUnitAnimation(u,a) u.animation=a end
+function SetUnitAnimationByIndex(u,n) assert(n>=0);u.animationIndex=n end
 function CreateSound(path,loop,d3,range,fi,fo,eax) return {path=path} end
 function SetSoundDuration(s,d) assert(d>0) end
 function SetSoundChannel(s,c) assert(c==0) end
@@ -197,7 +200,7 @@ Hero={};Controllers={};SpawnCursor=0
 for p=0,11 do HeroType[p]=p;HeroRole[p]=p;SpawnX[p]=p*10;SpawnY[p]=0 end
 for p=0,12 do FoundationSpawn() end
 for p=0,11 do assert((Hero[p]~=nil)==(slots[p]=='playing'),'Open slots must remain empty') end
-assert(Hero[0].level==3 and Hero[1].level==3 and Hero[4].level==3)
+assert(Hero[0].level==1 and Hero[1].level==1 and Hero[4].level==1)
 -- All started effect handles have a bounded cleanup path.
 TimeNow=100;SkillsTick();assert(Effects==Destroyed)
 `);
@@ -206,6 +209,8 @@ const storyLines=source.split('\n').filter(s=>/^\s*set (StoryX|StoryY|StoryItem|
 run(translate('function StoryFixtureData takes nothing returns nothing\n'+storyLines.join('\n')+'\nendfunction\n'));run('StoryFixtureData()');
 run(fs.readFileSync(__dirname+'/story-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
+console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
 fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,nativeMocks:true,enginePlaytest:false},null,2));
