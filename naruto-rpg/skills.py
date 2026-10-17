@@ -69,3 +69,23 @@ def buff_data():
  for base,raw,name,art in [('BUau','Rnav','Джинчурики',''),('Broa','Rshb','Шаринган',''),('BEer','Rgac','Песчаный гроб','gaars sand.mdl'),('BNms','Rgas','Песчаный щит','gaars sand.mdl'),('BEme','Rgam','Сюкаку','')]:
   out.append((base,raw,[('fnam',3,name),('ftip',3,name),('ftat',3,art),('fta0',3,'origin'),('fsat',3,''),('feat',3,'')]))
  return out
+
+
+def normalize_abilities(entries):
+ """Global art/flags must use level zero. Classic ignores fake per-rank model overrides."""
+ schema=json.loads((ROOT/'src/classic-skill-schema.json').read_text())['abilityFields']
+ normalized=[]
+ for base,raw,mods in entries:
+  unique={};global_rank_values={}
+  for mod in mods:
+   field,kind,value=mod[:3];meta=schema[field]
+   level,column=mod[3:] if len(mod)==5 else (0,0)
+   if meta['repeat']==0:
+    if len(mod)==5 and field in global_rank_values and global_rank_values[field]!=value:
+     raise ValueError(f'{raw}: conflicting global values for {field}')
+    if len(mod)==5:global_rank_values[field]=value
+    level,column=0,0
+   key=(field,level,column)
+   unique[key]=(field,kind,value,level,column)
+  normalized.append((base,raw,list(unique.values())))
+ return normalized

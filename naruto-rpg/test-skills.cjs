@@ -11,7 +11,7 @@ const schema=JSON.parse(fs.readFileSync(__dirname+'/src/classic-skill-schema.jso
 function parse(C,p){const o=new C();o.load(new Uint8Array(fs.readFileSync(base+p)));return o;}
 const abilities=parse(AbilityParser,'war3map.w3a').customTable.objects;
 const units=parse(Parser,'war3map.w3u').customTable.objects;
-const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===rank)?.value;
+const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===(schema.abilityFields[id]?.repeat===0?0:rank))?.value;
 const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
 const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl"].map(x=>x.toLowerCase()));
@@ -26,7 +26,7 @@ function kind(t){return t==='real'?1:t==='unreal'?2:['int','bool','attackBits','
 for(const o of abilities){
  assert.equal(get(o,'aefs'),'');assert.equal(get(o,'aefl'),'');
  assert(schema.stockIds.abilities.includes(o.oldId),'Invalid native ability base '+o.oldId);
- for(const mod of o.modifications){const meta=schema.abilityFields[mod.id];assert(meta,'Unknown ability field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);if(mod.levelOrVariation>0)assert.equal(mod.dataPointer,meta.column,o.newId+':'+mod.id+' column');}
+ for(const mod of o.modifications){const meta=schema.abilityFields[mod.id];assert(meta,'Unknown ability field '+mod.id);assert.equal(mod.variableType,kind(meta.type),o.newId+':'+mod.id);if(meta.repeat===0){assert.equal(mod.levelOrVariation,0,o.newId+':'+mod.id+' must be global');assert.equal(mod.dataPointer,0);}else if(mod.levelOrVariation>0)assert.equal(mod.dataPointer,meta.column,o.newId+':'+mod.id+' column');}
 }
 for(const o of units){
  assert.equal(get(o,'usnd'),'');assert(get(o,'ucs1'),'Weapon impacts must remain audible');assert.equal(get(o,'ucs2'),'');
@@ -139,7 +139,8 @@ function UnitDamageTarget(c,t,amount,attack,ranged,at,dt,wt) assert(c~=t and amo
 function AddUnitAnimationProperties(u,tag,on)u.alternate=on end
 function SetUnitTimeScale(u,s)if u then u.timeScale=s end end
 function QueueUnitAnimation(u,s)u.queuedAnimation=s end
-function SetUnitFlyHeight(u,h,s)u.height=h end
+function SetUnitFlyHeight(u,h,s)u.flyHeight=h end
+function GetUnitFlyHeight(u)return u.flyHeight or 0 end
 function SetUnitFacing(u,a)u.facing=a end
 function SetUnitAnimation(u,a) u.animation=a end
 function SetUnitAnimationByIndex(u,n) assert(n>=0);u.animationIndex=n end
@@ -236,6 +237,7 @@ run(fs.readFileSync(__dirname+'/tree-jump-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/presentation-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/technique-audit-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/visual-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/corrective-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, native boss prison/blink orders, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

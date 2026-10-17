@@ -4,474 +4,575 @@
     "Eer1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AEer,Aenr,Aenw"
+      "specific": "AEer,Aenr,Aenw",
+      "repeat": 4
     },
     "Eev1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AEev,AIev,ACev,ACes"
+      "specific": "AEev,AIev,ACev,ACes",
+      "repeat": 4
     },
     "Efk1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AEfk,Aroc"
+      "specific": "AEfk,Aroc",
+      "repeat": 4
     },
     "Efk2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AEfk,Aroc"
+      "specific": "AEfk,Aroc",
+      "repeat": 4
     },
     "Efk3": {
       "type": "int",
       "column": 3,
-      "specific": "AEfk,Aroc"
+      "specific": "AEfk,Aroc",
+      "repeat": 4
     },
     "Eme1": {
       "type": "unitCode",
       "column": 1,
-      "specific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+      "specific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3",
+      "repeat": 4
     },
     "Eme5": {
       "type": "unreal",
       "column": 5,
-      "specific": "AEme,AEIl,AEvi"
+      "specific": "AEme,AEIl,AEvi",
+      "repeat": 4
     },
     "Emeu": {
       "type": "unitCode",
       "column": 0,
-      "specific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+      "specific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3",
+      "repeat": 4
     },
     "Htb1": {
       "type": "unreal",
-      "column": 1
+      "column": 1,
+      "repeat": 4
     },
     "Hwe1": {
       "type": "unitCode",
       "column": 0,
-      "specific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm"
+      "specific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm",
+      "repeat": 4
     },
     "Hwe2": {
       "type": "int",
       "column": 1,
-      "specific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm"
+      "specific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm",
+      "repeat": 4
     },
     "Iagi": {
       "type": "int",
       "column": 1,
-      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm",
+      "repeat": 4
     },
     "Iatt": {
       "type": "int",
       "column": 1,
-      "specific": "AIat,AIt6,AIt9,AItc,AItf,AItg,AIth,AIti,AItj,AItk,AItl,AItn"
+      "specific": "AIat,AIt6,AIt9,AItc,AItf,AItg,AIth,AIti,AItj,AItk,AItl,AItn",
+      "repeat": 4
     },
     "Idef": {
       "type": "int",
-      "column": 1
+      "column": 1,
+      "repeat": 4
     },
     "Iint": {
       "type": "int",
       "column": 2,
-      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm",
+      "repeat": 4
     },
     "Imvb": {
       "type": "int",
       "column": 1,
-      "specific": "AIms"
+      "specific": "AIms",
+      "repeat": 4
     },
     "Istr": {
       "type": "int",
       "column": 3,
-      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+      "specific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm",
+      "repeat": 4
     },
     "Isx1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AIas,AIsx,AIs2"
+      "specific": "AIas,AIsx,AIs2",
+      "repeat": 4
     },
     "Nbf5": {
       "type": "unreal",
       "column": 5,
-      "specific": "ANbf,ACbc,ACbf"
+      "specific": "ANbf,ACbc,ACbf",
+      "repeat": 4
     },
     "Ncl1": {
       "type": "unreal",
       "column": 1,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Ncl2": {
       "type": "channelType",
       "column": 2,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Ncl3": {
       "type": "channelFlags",
       "column": 3,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Ncl4": {
       "type": "unreal",
       "column": 4,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Ncl5": {
       "type": "bool",
       "column": 5,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Ncl6": {
       "type": "orderString",
       "column": 6,
-      "specific": "ANcl"
+      "specific": "ANcl",
+      "repeat": 4
     },
     "Nms1": {
       "type": "unreal",
       "column": 1,
-      "specific": "ANms,ACmf"
+      "specific": "ANms,ACmf",
+      "repeat": 4
     },
     "Nms2": {
       "type": "unreal",
       "column": 2,
-      "specific": "ANms,ACmf"
+      "specific": "ANms,ACmf",
+      "repeat": 4
     },
     "Ocl1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AOcl,AOhw,ACcl,AChv,ANfl"
+      "specific": "AOcl,AOhw,ACcl,AChv,ANfl",
+      "repeat": 4
     },
     "Ocl2": {
       "type": "int",
       "column": 2,
-      "specific": "AOcl,AOhw,ACcl,AChv,ANfl"
+      "specific": "AOcl,AOhw,ACcl,AChv,ANfl",
+      "repeat": 4
     },
     "Ocl3": {
       "type": "unreal",
       "column": 3,
-      "specific": "AOcl,AOhw,ACcl,AChv"
+      "specific": "AOcl,AOhw,ACcl,AChv",
+      "repeat": 4
     },
     "Ocr1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AOcr,ACct,ANdb"
+      "specific": "AOcr,ACct,ANdb",
+      "repeat": 4
     },
     "Ocr2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AOcr,ACct,ANdb"
+      "specific": "AOcr,ACct,ANdb",
+      "repeat": 4
     },
     "Ocr3": {
       "type": "unreal",
       "column": 3,
-      "specific": "AOcr,ACct,ANdb"
+      "specific": "AOcr,ACct,ANdb",
+      "repeat": 4
     },
     "Ocr4": {
       "type": "unreal",
       "column": 4,
-      "specific": "AOcr,ACct,ANdb"
+      "specific": "AOcr,ACct,ANdb",
+      "repeat": 4
     },
     "Ocr5": {
       "type": "bool",
       "column": 5,
-      "specific": "AOcr,ACct,ANdb"
+      "specific": "AOcr,ACct,ANdb",
+      "repeat": 4
     },
     "Omi1": {
       "type": "int",
       "column": 1,
-      "specific": "AOmi"
+      "specific": "AOmi",
+      "repeat": 4
     },
     "Omi2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AOmi"
+      "specific": "AOmi",
+      "repeat": 4
     },
     "Omi3": {
       "type": "unreal",
       "column": 3,
-      "specific": "AOmi"
+      "specific": "AOmi",
+      "repeat": 4
     },
     "Omi4": {
       "type": "unreal",
       "column": 4,
-      "specific": "AOmi"
+      "specific": "AOmi",
+      "repeat": 4
     },
     "Ore1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AOre,ACrn,ANrn"
+      "specific": "AOre,ACrn,ANrn",
+      "repeat": 4
     },
     "Osh1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AOsh,ACsh,ACst"
+      "specific": "AOsh,ACsh,ACst",
+      "repeat": 4
     },
     "Osh2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AOsh,ACsh,ACst"
+      "specific": "AOsh,ACsh,ACst",
+      "repeat": 4
     },
     "Osh3": {
       "type": "unreal",
       "column": 3,
-      "specific": "AOsh,ACsh,ACst"
+      "specific": "AOsh,ACsh,ACst",
+      "repeat": 4
     },
     "Osh4": {
       "type": "unreal",
       "column": 4,
-      "specific": "AOsh,ACsh,ACst"
+      "specific": "AOsh,ACsh,ACst",
+      "repeat": 4
     },
     "Roa1": {
       "type": "unreal",
       "column": 1,
-      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht"
+      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht",
+      "repeat": 4
     },
     "Roa2": {
       "type": "int",
       "column": 2,
-      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr"
+      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr",
+      "repeat": 4
     },
     "Roa3": {
       "type": "unreal",
       "column": 3,
-      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr"
+      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr",
+      "repeat": 4
     },
     "Roa4": {
       "type": "unreal",
       "column": 4,
-      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl"
+      "specific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl",
+      "repeat": 4
     },
     "Uau1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AUau,AIau,ACua"
+      "specific": "AUau,AIau,ACua",
+      "repeat": 4
     },
     "Uau2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AUau,AIau,ACua"
+      "specific": "AUau,AIau,ACua",
+      "repeat": 4
     },
     "Uau3": {
       "type": "bool",
       "column": 3,
-      "specific": "AUau,AIau,ACua"
+      "specific": "AUau,AIau,ACua",
+      "repeat": 4
     },
     "Ucs1": {
       "type": "unreal",
       "column": 1,
-      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv"
+      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv",
+      "repeat": 4
     },
     "Ucs2": {
       "type": "unreal",
       "column": 2,
-      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv"
+      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv",
+      "repeat": 4
     },
     "Ucs3": {
       "type": "unreal",
       "column": 3,
-      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl"
+      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl",
+      "repeat": 4
     },
     "Ucs4": {
       "type": "unreal",
       "column": 4,
-      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl"
+      "specific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl",
+      "repeat": 4
     },
     "aani": {
       "type": "stringList",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "aare": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "aart": {
       "type": "icon",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "abpx": {
       "type": "int",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "abpy": {
       "type": "int",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "abuf": {
       "type": "buffList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 4
     },
     "acat": {
       "type": "modelList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "acdn": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "adur": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "aeat": {
       "type": "modelList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "aefl": {
       "type": "soundLabel",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "aefs": {
       "type": "soundLabel",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "ahdu": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "aher": {
       "type": "bool",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "ahky": {
       "type": "char",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "aite": {
       "type": "bool",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "alev": {
       "type": "int",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "alig": {
       "type": "lightningList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "alsk": {
       "type": "int",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "amat": {
       "type": "modelList",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "amcs": {
       "type": "int",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "amsp": {
       "type": "int",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "anam": {
       "type": "string",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "arac": {
       "type": "unitRace",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "aran": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "arar": {
       "type": "icon",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "areq": {
       "type": "techList",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     },
     "aret": {
       "type": "string",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "arhk": {
       "type": "char",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "arlv": {
       "type": "int",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "arpx": {
       "type": "int",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "arpy": {
       "type": "int",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "arut": {
       "type": "string",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "asat": {
       "type": "modelList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "atar": {
       "type": "targetList",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "atat": {
       "type": "modelList",
       "column": 0,
-      "specific": ""
+      "specific": "",
+      "repeat": 0
     },
     "atp1": {
       "type": "string",
-      "column": 0
+      "column": 0,
+      "repeat": 3
     },
     "aub1": {
       "type": "string",
-      "column": 0
+      "column": 0,
+      "repeat": 3
     },
     "acas": {
       "type": "unreal",
-      "column": 0
+      "column": 0,
+      "repeat": 4
     },
     "Eat1": {
       "type": "unreal",
-      "column": 1
+      "column": 1,
+      "repeat": 4
     },
     "Eat2": {
       "type": "unreal",
-      "column": 2
+      "column": 2,
+      "repeat": 4
     },
     "Eat3": {
       "type": "unreal",
-      "column": 3
+      "column": 3,
+      "repeat": 4
     },
     "Ebl1": {
       "type": "unreal",
-      "column": 1
+      "column": 1,
+      "repeat": 4
     },
     "Ebl2": {
       "type": "unreal",
-      "column": 2
+      "column": 2,
+      "repeat": 4
     },
     "Det1": {
       "type": "detectionType",
-      "column": 1
+      "column": 1,
+      "repeat": 4
     },
     "amho": {
       "type": "bool",
-      "column": 0
+      "column": 0,
+      "repeat": 0
     }
   },
   "unitFields": {

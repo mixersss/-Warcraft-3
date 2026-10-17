@@ -1,4 +1,13 @@
 globals
+    unit array VisualLiftUnit
+    real array VisualLiftAge
+    real array VisualLiftLife
+    real array VisualLiftBase
+    real array VisualLiftHeight
+    integer array VisualVolleyLeft
+    real array VisualVolleyDelay
+    real array VisualVolleyX
+    real array VisualVolleyY
     boolean array KibaFourLegs
     integer array SkillFormAnimation
     real array SkillFormPoseScale

@@ -109,8 +109,8 @@
           ]
         }
       ],
-      "channelSeconds": 4,
-      "playbackScale": 0.73325
+      "channelSeconds": 2,
+      "playbackScale": 1.4665
     },
     {
       "model": "Hinata.mdx",
@@ -170,8 +170,8 @@
           ]
         }
       ],
-      "channelSeconds": 4,
-      "playbackScale": 0.73325
+      "channelSeconds": 2,
+      "playbackScale": 1.4665
     }
   ],
   "finiteChanneledCastPoses": true,
@@ -396,8 +396,8 @@
       "sourceId": "A034",
       "sourceTriggerVisualFunctionCount": 10,
       "visualKind": "vision",
-      "animation": "spell spin",
-      "channelSeconds": 1,
+      "animation": "Stand Ready",
+      "channelSeconds": 0.5,
       "enginePlaybackChecked": false
     },
     {
@@ -408,7 +408,7 @@
       "sourceTriggerVisualFunctionCount": 4,
       "visualKind": "spin",
       "animation": "spell spin",
-      "channelSeconds": 4,
+      "channelSeconds": 2,
       "enginePlaybackChecked": false
     },
     {
@@ -605,8 +605,8 @@
       "sourceId": "A034",
       "sourceTriggerVisualFunctionCount": 10,
       "visualKind": "vision",
-      "animation": "spell spin",
-      "channelSeconds": 1,
+      "animation": "Stand Ready",
+      "channelSeconds": 0.5,
       "enginePlaybackChecked": false
     },
     {
@@ -617,7 +617,7 @@
       "sourceTriggerVisualFunctionCount": 4,
       "visualKind": "spin",
       "animation": "spell spin",
-      "channelSeconds": 4,
+      "channelSeconds": 2,
       "enginePlaybackChecked": false
     },
     {

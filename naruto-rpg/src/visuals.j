@@ -17,8 +17,29 @@ function VisualClearSlot takes integer slot returns nothing
         set VisualUnit[slot]=null
     endif
 endfunction
+function VisualLiftEnd takes integer p returns nothing
+    if VisualLiftUnit[p]!=null then
+        call SetUnitFlyHeight(VisualLiftUnit[p],VisualLiftBase[p],0.)
+        set VisualLiftUnit[p]=null
+    endif
+    set VisualVolleyLeft[p]=0
+endfunction
+function VisualLiftStart takes integer p, real height, real lifetime returns nothing
+    call VisualLiftEnd(p)
+    if JumpUnit[p]!=null or not FoundationAlive(Hero[p]) then
+        return
+    endif
+    set VisualLiftUnit[p]=Hero[p]
+    set VisualLiftAge[p]=0.
+    set VisualLiftLife[p]=lifetime
+    set VisualLiftBase[p]=GetUnitFlyHeight(Hero[p])
+    set VisualLiftHeight[p]=height
+    call UnitAddAbility(Hero[p],'Amrf')
+    call UnitRemoveAbility(Hero[p],'Amrf')
+endfunction
 function VisualClearHero takes integer p returns nothing
     local integer n=0
+    call VisualLiftEnd(p)
     loop
         exitwhen n>=256
         if VisualUnit[n]!=null and VisualOwner[n]==p then
@@ -124,7 +145,7 @@ function VisualPulse takes integer p, integer index, real x, real y returns noth
             else
                 set raw='vshu'
             endif
-            call VisualCreate(p,raw,GetUnitX(Hero[p]),GetUnitY(Hero[p]),x+Cos(angle)*220.,y+Sin(angle)*220.,250.,40.,.65,1)
+            call VisualCreate(p,raw,GetUnitX(Hero[p]),GetUnitY(Hero[p]),x+Cos(angle)*220.,y+Sin(angle)*220.,GetUnitFlyHeight(Hero[p])+150.,40.,.65,1)
             set n=n+1
         endloop
         set VisualPulseCount[p]=VisualPulseCount[p]+1
@@ -145,6 +166,10 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     if target!=null then
         set x=GetUnitX(target)
         set y=GetUnitY(target)
+    elseif SkillTarget[index]==0 then
+        // No-target spells have no world aim point. Never launch toward map coordinate (0,0).
+        set x=sx
+        set y=sy
     endif
     if index==1 then
         call SkillsFlashAt("Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageCaster.mdl",sx,sy)
@@ -194,8 +219,15 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         endif
     elseif index==24 then
         call VisualFan(p,'vcyc',x,y,80.,1,0.)
-    elseif index==26 or index==28 or index==32 or index==58 then
+    elseif index==26 then
+        call VisualLiftStart(p,700.,SkillHold[index])
+        set VisualVolleyLeft[p]=rank
+        set VisualVolleyDelay[p]=.2
+        set VisualVolleyX[p]=sx
+        set VisualVolleyY[p]=sy
+    elseif index==28 or index==32 or index==58 then
         if index==28 then
+            call VisualLiftStart(p,1000.,SkillHold[index])
             call SkillsFlashAt("Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl",sx,sy)
         endif
         call VisualPulse(p,index,x,y)
@@ -279,6 +311,25 @@ function VisualTick takes nothing returns nothing
     set p=0
     loop
         exitwhen p>=12
+        if VisualLiftUnit[p]!=null then
+            set VisualLiftAge[p]=VisualLiftAge[p]+.05
+            if not FoundationAlive(VisualLiftUnit[p]) or VisualLiftUnit[p]!=Hero[p] or VisualLiftAge[p]>=VisualLiftLife[p] then
+                call VisualLiftEnd(p)
+            else
+                set f=VisualLiftAge[p]/VisualLiftLife[p]
+                call SetUnitFlyHeight(VisualLiftUnit[p],VisualLiftBase[p]+4.*VisualLiftHeight[p]*f*(1.-f),0.)
+            endif
+        endif
+        if VisualVolleyLeft[p]>0 then
+            set VisualVolleyDelay[p]=VisualVolleyDelay[p]-.05
+            if not FoundationAlive(Hero[p]) then
+                set VisualVolleyLeft[p]=0
+            elseif VisualVolleyDelay[p]<=0. then
+                call VisualPulse(p,26,VisualVolleyX[p],VisualVolleyY[p])
+                set VisualVolleyLeft[p]=VisualVolleyLeft[p]-1
+                set VisualVolleyDelay[p]=.25
+            endif
+        endif
         if VisualPoseLife[p]>0. then
             set VisualPoseLife[p]=VisualPoseLife[p]-.05
             if VisualPoseLife[p]<=0. and FoundationAlive(Hero[p]) and VisualChannelUntil[p]==0. then

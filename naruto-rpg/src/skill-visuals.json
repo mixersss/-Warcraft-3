@@ -430,14 +430,14 @@
       "name": "Бьякуган",
       "sourceId": "A034",
       "kind": "vision",
-      "animation": "Spell",
-      "channelSeconds": 1.0,
+      "animation": "Stand Ready",
+      "channelSeconds": 0.5,
       "nativeArt": {},
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
-      "sequenceSeconds": 2.933,
-      "sequenceNonLooping": 1,
-      "sequencePlaybackScale": 2.933
+      "sequenceSeconds": 1.0,
+      "sequenceNonLooping": 0,
+      "sequencePlaybackScale": 2.0
     },
     {
       "index": 21,
@@ -447,13 +447,13 @@
       "sourceId": "A006",
       "kind": "spin",
       "animation": "spell spin",
-      "channelSeconds": 4.0,
+      "channelSeconds": 2.0,
       "nativeArt": {},
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
       "sequenceSeconds": 2.933,
       "sequenceNonLooping": 1,
-      "sequencePlaybackScale": 0.73325
+      "sequencePlaybackScale": 1.4665
     },
     {
       "index": 22,
@@ -739,14 +739,14 @@
       "name": "Бьякуган",
       "sourceId": "A034",
       "kind": "vision",
-      "animation": "Spell",
-      "channelSeconds": 1.0,
+      "animation": "Stand Ready",
+      "channelSeconds": 0.5,
       "nativeArt": {},
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
-      "sequenceSeconds": 2.933,
-      "sequenceNonLooping": 1,
-      "sequencePlaybackScale": 2.933
+      "sequenceSeconds": 1.0,
+      "sequenceNonLooping": 0,
+      "sequencePlaybackScale": 2.0
     },
     {
       "index": 41,
@@ -756,13 +756,13 @@
       "sourceId": "A006",
       "kind": "spin",
       "animation": "spell spin",
-      "channelSeconds": 4.0,
+      "channelSeconds": 2.0,
       "nativeArt": {},
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
       "sequenceSeconds": 2.933,
       "sequenceNonLooping": 1,
-      "sequencePlaybackScale": 0.73325
+      "sequencePlaybackScale": 1.4665
     },
     {
       "index": 42,

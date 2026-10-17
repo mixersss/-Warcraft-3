@@ -45,9 +45,9 @@ for _,p in ipairs({4,8}) do
  World={};Hero[p].abilities={};Hero[p].mana=1000000;Hero[p].hp=100000000
  cast(p,PlayableSkill[p*5+1],2,nil);SkillsTick()
  local anim=Hero[p].animationIndex
- assert(anim==(p==4 and 2 or 3) and math.abs(Hero[p].timeScale-2.933/4)<.0001)
- assert(VisualChannelUntil[p]>TimeNow+3.9 and ZoneUntil[p]>TimeNow+3.9)
- BotNextCast[p]=0;local orders=#Orders;step(2)
+ assert(anim==(p==4 and 2 or 3) and math.abs(Hero[p].timeScale-2.933/2)<.0001)
+ assert(VisualChannelUntil[p]>TimeNow+1.9 and ZoneUntil[p]>TimeNow+1.9)
+ BotNextCast[p]=0;local orders=#Orders;step(1)
  assert(not SkillsBot(p) and #Orders==orders and Hero[p].animationIndex==anim)
  Caster=Hero[p];Spell=PlayableSkill[p*5+1];SkillsEndcast()
  assert(Hero[p].timeScale==1 and ZoneUntil[p]==0 and VisualChannelUntil[p]==0 and Hero[p].animation=='stand')

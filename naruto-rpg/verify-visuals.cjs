@@ -13,7 +13,9 @@ for(const entry of meta){
 }
 function parse(C,name){let o=new C();o.load(new Uint8Array(fs.readFileSync(path.join(root,'dist/map',name))));return Object.fromEntries(o.customTable.objects.map(x=>[x.newId,x]));}
 const units=parse(ObjectParser,'war3map.w3u'),abilities=parse(AbilityParser,'war3map.w3a');
-const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===rank)?.value;
+const schema=read('src/classic-skill-schema.json');
+const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===(schema.abilityFields[id]?.repeat===0?0:rank))?.value;
+for(const a of Object.values(abilities))for(const mod of a.modifications)if(schema.abilityFields[mod.id].repeat===0)assert.equal(mod.levelOrVariation,0,a.newId+':'+mod.id+' must be a real global override');
 assert.equal(profiles.skills.length,58);assert.equal(source.skills.length,58);
 const out=[];
 for(const r of skills){
@@ -40,9 +42,13 @@ for(const name of ['neji.mdx','Hinata.mdx']){
  const m=models[name.toLowerCase()],spin=m.sequences.find(s=>s.name==='spell spin');assert.equal(spin.interval[0],3667);assert.equal(spin.interval[1],6600);
  const visibility=m.geosetAnimations.flatMap(a=>a.animations.filter(t=>t.name==='KGAO').map(t=>({geoset:a.geosetId,keys:t.frames.map((f,i)=>[f,t.values[i][0]])})));
  const shell=visibility.filter(a=>a.keys.some(([f,v])=>f===3933 && v>0) && a.keys.some(([f,v])=>f===9333 && v===0));assert(shell.length>=1,name+' sphere visibility must be keyed to spin');
- sphere.push({model:name,spinSeconds:2.933,visibleShellGeosets:shell,channelSeconds:4,playbackScale:2.933/4});
+ for(const a of shell)assert(a.keys.some(([f,v])=>f===333 && v===0),'Stand Ready must have no sphere');
+ sphere.push({model:name,spinSeconds:2.933,visibleShellGeosets:shell,channelSeconds:2,playbackScale:2.933/2});
 }
+for(const id of ['R401','R801'])assert.equal(get(abilities[id],'aani'),'Stand Ready');
 assert.equal(get(units.R005,'ua1m'),'Shurikens.mdl');
+for(const id of ['RB01','R503']){const art=abilities[id].modifications.filter(m=>m.id==='amat');assert.equal(art.length,1);assert.equal(art[0].levelOrVariation,0);}
+assert(get(abilities.R503,'amat').includes('Shurikens.mdl'));
 const sourceWind=source.skills.find(s=>s.sourceId==='A00S').abilityArt.find(f=>f.id==='amat').value;
 assert.equal(get(abilities.RB01,'amat',1),sourceWind);assert(sourceWind.includes('TornadoElemental'));
 assert.equal(get(units.vcyc,'umdl'),'Electrical Cyclone.mdl');assert.equal(get(units.vbal,'usca'),12);

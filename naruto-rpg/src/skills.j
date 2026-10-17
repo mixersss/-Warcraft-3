@@ -143,6 +143,9 @@ function SkillsEndcast takes nothing returns nothing
         set index=VisualChannelIndex[p]
         if VisualChannelUntil[p]>0. and index>=0 then
             if GetSpellAbilityId()==PlayableSkill[index] then
+                if index==26 or index==28 then
+                    call VisualLiftEnd(p)
+                endif
                 if index==21 or index==41 or index==43 then
                     call RosterClearZone(p)
                     call RosterClearBuff(p)
