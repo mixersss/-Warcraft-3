@@ -145,6 +145,8 @@ globals
     boolean CampaignFinalActive=false
     integer array CampaignFinalPlayer
     boolean array CampaignEliminated
+    timer array CampaignEventClock
+    timerdialog array CampaignEventDialog
     timer CampaignClock=null
     timerdialog CampaignDialog=null
     unit array RamenUnit

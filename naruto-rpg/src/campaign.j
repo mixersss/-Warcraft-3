@@ -88,8 +88,40 @@ function CampaignRogueAlliance takes nothing returns nothing
         set p=p+1
     endloop
 endfunction
+function CampaignEventClose takes integer slot returns nothing
+    if CampaignEventDialog[slot]!=null then
+        call TimerDialogDisplay(CampaignEventDialog[slot],false)
+        call DestroyTimerDialog(CampaignEventDialog[slot])
+        set CampaignEventDialog[slot]=null
+    endif
+    if CampaignEventClock[slot]!=null then
+        call PauseTimer(CampaignEventClock[slot])
+        call DestroyTimer(CampaignEventClock[slot])
+        set CampaignEventClock[slot]=null
+    endif
+endfunction
+function CampaignEventsClose takes nothing returns nothing
+    local integer j=0
+    loop
+        exitwhen j>=4
+        call CampaignEventClose(j)
+        set j=j+1
+    endloop
+endfunction
+function CampaignEventOpen takes integer slot, string title, real deadline returns nothing
+    call CampaignEventClose(slot)
+    if deadline<=TimeNow then
+        return
+    endif
+    set CampaignEventClock[slot]=CreateTimer()
+    call TimerStart(CampaignEventClock[slot],deadline-TimeNow,false,function HUDClockEnd)
+    set CampaignEventDialog[slot]=CreateTimerDialog(CampaignEventClock[slot])
+    call TimerDialogSetTitle(CampaignEventDialog[slot],title)
+    call TimerDialogDisplay(CampaignEventDialog[slot],true)
+endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    call CampaignEventsClose()
     loop
         exitwhen j>=2048
         if CampaignActor[j]!=null then
@@ -792,6 +824,7 @@ function CampaignSpawnStage takes nothing returns nothing
 endfunction
 function CampaignQueueStage takes integer next returns nothing
     local integer p=0
+    call CampaignEventsClose()
     call NoteClearAll()
     call CampaignVillageLandmarksClose()
     call StoryShopsClose()
@@ -857,6 +890,12 @@ function CampaignStartPlay takes nothing returns nothing
         set CampaignKabutoAt=TimeNow+400.
         set CampaignSnakeAt=TimeNow+820.
         set CampaignOroAt=TimeNow+1160.
+        call CampaignEventOpen(0,"Кабуто: до атаки",CampaignKabutoAt)
+        call CampaignEventOpen(1,"Джирайя: до подкрепления",CampaignJiraiyaAt)
+        call CampaignEventOpen(2,"Змея: до появления",CampaignSnakeAt)
+        call CampaignEventOpen(3,"Орочимару: до атаки",CampaignOroAt)
+    else
+        call CampaignEventsClose()
     endif
     set j=0
     loop
@@ -1669,6 +1708,7 @@ function CampaignTick takes nothing returns nothing
     elseif CampaignStage==12 then
         if CampaignJiraiyaAt>0. and TimeNow>=CampaignJiraiyaAt then
             set unused=CampaignAdd(33,CampaignLeader,CampaignSupportX[6],CampaignSupportY[6])
+            call CampaignEventClose(1)
             set CampaignJiraiyaAt=0.
             call ExamBroadcast("Джирайя: Я здесь! Помогу защитить деревню.")
         endif
@@ -1676,6 +1716,7 @@ function CampaignTick takes nothing returns nothing
             set owner=PLAYER_NEUTRAL_AGGRESSIVE
             set unused=CampaignAdd(11,CampaignAttackerOwner[1],CampaignSupportX[5],CampaignSupportY[5])
             set CampaignVillageKabuto=CampaignActor[unused]
+            call CampaignEventClose(0)
             set CampaignKabutoAt=0.
             call ExamBroadcast("Канкуро: Кабуто прибыл на помощь нападающим!")
         endif
@@ -1683,6 +1724,7 @@ function CampaignTick takes nothing returns nothing
             set unused=CampaignAdd(36,CampaignAttackerOwner[2],CampaignSupportX[5],CampaignSupportY[5])
             set CampaignVillageSnake=CampaignActor[unused]
             set CampaignSnakeGoneAt=TimeNow+300.
+            call CampaignEventClose(2)
             set CampaignSnakeAt=0.
             call ExamBroadcast("Темари: Призвана огромная змея! Она останется на поле пять минут.")
         endif
@@ -1696,6 +1738,7 @@ function CampaignTick takes nothing returns nothing
         if CampaignOroAt>0. and TimeNow>=CampaignOroAt then
             call SetUnitOwner(CampaignVillageOro,Player(CampaignAttackOwner),true)
             call PauseUnit(CampaignVillageOro,false)
+            call CampaignEventClose(3)
             set CampaignOroAt=0.
             call ExamBroadcast("Орочимару: Теперь я лично разберусь с Хокагэ!")
         endif

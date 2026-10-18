@@ -23,6 +23,14 @@
     30
   ],
   "invasionRoleBasedEnemyCamp": true,
+  "visibleInvasionEventTimers": 4,
+  "invasionEventCountdownSeconds": [
+    400,
+    760,
+    820,
+    1160
+  ],
+  "invasionEventTimerLifecycleNativeMocks": true,
   "leafCornerFountainSpawns": 9,
   "stationaryRearCampElites": 5,
   "spacedInvasionSpawns": 24,
