@@ -62,6 +62,11 @@ def generated():
   vals={'CampaignName':st['name'],'CampaignIntro':st['intro'],'CampaignMusic':-1 if st['music'] is None else st['music'],'CampaignLimit':float(st['seconds']),'CampaignX':float(p['spawn'][0]),'CampaignY':float(p['spawn'][1]),'CampaignTX':float(p['target'][0]),'CampaignTY':float(p['target'][1]),'CampaignMinX':float(bounds[0]),'CampaignMinY':float(bounds[1]),'CampaignMaxX':float(bounds[2]),'CampaignMaxY':float(bounds[3])}
   for key,value in vals.items():lines.append(f'    set {key}[{n}]='+json.dumps(value,ensure_ascii=False))
  for j,p in enumerate(nav['barrels']):lines += [f'    set CampaignBarrelX[{j}]={float(p[0])}',f'    set CampaignBarrelY[{j}]={float(p[1])}']
+ layout=json.loads((ROOT/'src/invasion20-layout.json').read_text())
+ for j,pos in enumerate(layout['defenders']):lines += [f'    set CampaignDefenderX[{j}]={float(pos[0])}',f'    set CampaignDefenderY[{j}]={float(pos[1])}']
+ for row in layout['reserves']:
+  j=row['kind'];pos=row['position'];lines += [f'    set CampaignReserveX[{j}]={float(pos[0])}',f'    set CampaignReserveY[{j}]={float(pos[1])}']
+ for j,pos in enumerate(layout['waveSpawns']):lines += [f'    set CampaignWaveSpawnX[{j}]={float(pos[0])}',f'    set CampaignWaveSpawnY[{j}]={float(pos[1])}']
  for j,p in enumerate(nav['routes']):lines += [f'    set CampaignRouteX[{j}]={float(p[0])}',f'    set CampaignRouteY[{j}]={float(p[1])}']
  for j,(p,kind) in enumerate(zip(nav['five'],[5,6,8,7,9])):lines += [f'    set CampaignFiveX[{j}]={float(p[0])}',f'    set CampaignFiveY[{j}]={float(p[1])}',f'    set CampaignFiveType[{j}]={kind}']
  invasion=json.loads((ROOT/'src/invasion-source.json').read_text())

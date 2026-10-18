@@ -1,0 +1,89 @@
+{
+  "defenderFountain": [
+    16128,
+    -15744
+  ],
+  "defenderSpawns": [
+    [
+      15488,
+      -15744
+    ],
+    [
+      15648,
+      -15744
+    ],
+    [
+      15808,
+      -15744
+    ],
+    [
+      15520,
+      -15584
+    ],
+    [
+      15648,
+      -15584
+    ],
+    [
+      15808,
+      -15584
+    ],
+    [
+      15488,
+      -15424
+    ],
+    [
+      15648,
+      -15424
+    ],
+    [
+      15808,
+      -15424
+    ]
+  ],
+  "reservePlacements": [
+    {
+      "kind": 5,
+      "position": [
+        5280,
+        -1888
+      ]
+    },
+    {
+      "kind": 6,
+      "position": [
+        -3280,
+        -12400
+      ]
+    },
+    {
+      "kind": 7,
+      "position": [
+        5504,
+        -1984
+      ]
+    },
+    {
+      "kind": 8,
+      "position": [
+        4960,
+        -1888
+      ]
+    },
+    {
+      "kind": 9,
+      "position": [
+        -3280,
+        -11280
+      ]
+    }
+  ],
+  "waveSpawnPositions": 24,
+  "minSpawnSpacing": 96,
+  "allPlacementsStaticallyConnected": true,
+  "waveRecoveryProbeSeconds": 8,
+  "recoveryDoesNotTeleport": true,
+  "recoveryUsesExistingSharedHeartbeat": true,
+  "sourceWaveCountsAndSchedulesUnchanged": true,
+  "enginePlaytest": false
+}

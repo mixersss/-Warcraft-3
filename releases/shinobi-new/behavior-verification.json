@@ -23,6 +23,12 @@
     30
   ],
   "invasionRoleBasedEnemyCamp": true,
+  "leafCornerFountainSpawns": 9,
+  "stationaryRearCampElites": 5,
+  "spacedInvasionSpawns": 24,
+  "waveStallRecoveryNativeMocks": true,
+  "waveRecoveryWithoutTeleport": true,
+  "recycledActorMovementStateReset": true,
   "leafWaveInterceptionNativeMocks": true,
   "leafThreeApproachRallyPoints": [
     3,

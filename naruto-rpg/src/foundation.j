@@ -50,6 +50,16 @@ globals
     integer array CampaignWaveRole
     real array CampaignWavePeriod
     real array CampaignWaveDelay
+    real array CampaignDefenderX
+    real array CampaignDefenderY
+    real array CampaignReserveX
+    real array CampaignReserveY
+    real array CampaignWaveSpawnX
+    real array CampaignWaveSpawnY
+    real array CampaignWalkX
+    real array CampaignWalkY
+    real array CampaignWalkAt
+    integer array CampaignWalkAttempt
     real array CampaignWaveAt
     real array CampaignRouteX
     real array CampaignRouteY

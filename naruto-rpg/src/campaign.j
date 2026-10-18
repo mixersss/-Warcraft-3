@@ -137,6 +137,9 @@ function CampaignSakonSplit takes nothing returns nothing
     call OrigNPC_VGI()
     set slot=CampaignAdopt(OrigNPC_KI[1],39)
 endfunction
+function CampaignReserveOnly takes integer kind returns boolean
+    return CampaignStage==12 and kind>=5 and kind<=9
+endfunction
 function CampaignAdd takes integer kind, integer owner, real x, real y returns integer
     local integer j=0
     loop
@@ -159,6 +162,16 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
     endif
     set CampaignActor[j]=CreateUnit(Player(owner),CampaignUnit[kind],x,y,180.)
     call NPCInitialize(CampaignActor[j],kind)
+    if CampaignReserveOnly(kind) then
+        call SetUnitPosition(CampaignActor[j],CampaignReserveX[kind],CampaignReserveY[kind])
+        call UnitAddAbility(CampaignActor[j],'Avul')
+        call PauseUnit(CampaignActor[j],true)
+    endif
+    set CampaignMoveAt[j]=0.
+    set CampaignWalkX[j]=GetUnitX(CampaignActor[j])
+    set CampaignWalkY[j]=GetUnitY(CampaignActor[j])
+    set CampaignWalkAt[j]=TimeNow+8.
+    set CampaignWalkAttempt[j]=0
     if kind==7 or kind==9 then
         set CampaignWatcher[j]=CreateTrigger()
         if kind==7 then
@@ -444,6 +457,45 @@ function CampaignDuelNext takes nothing returns nothing
     set CampaignDuelLive=false
     call ExamBroadcast("Экзаменатор: Команда "+I2S(StoryTeam(CampaignDuelA)+1)+" — "+HeroName[HeroRole[CampaignDuelA]]+" против "+HeroName[HeroRole[CampaignDuelB]]+"! Начало через 5 секунд. Поражение не удаляет героя из истории.")
 endfunction
+// No teleporting or collision changes: a stalled marching ninja gets a short
+// clear-ground sidestep, then resumes the same source waypoint on the next order.
+function CampaignWaveRecover takes integer slot returns boolean
+    local unit u=CampaignActor[slot]
+    local real dx=GetUnitX(u)-CampaignWalkX[slot]
+    local real dy=GetUnitY(u)-CampaignWalkY[slot]
+    local real x=0.
+    local real y=0.
+    local real angle=0.
+    local integer k=0
+    if TimeNow<CampaignWalkAt[slot] then
+        set u=null
+        return false
+    endif
+    set CampaignWalkAt[slot]=TimeNow+8.
+    set CampaignWalkX[slot]=GetUnitX(u)
+    set CampaignWalkY[slot]=GetUnitY(u)
+    if dx*dx+dy*dy>=64.*64. then
+        set CampaignWalkAttempt[slot]=0
+        set u=null
+        return false
+    endif
+    set CampaignWalkAttempt[slot]=CampaignWalkAttempt[slot]+1
+    loop
+        exitwhen k>=8
+        set angle=I2R(ModuloInteger(slot+CampaignWalkAttempt[slot]+k,8))*45.*bj_DEGTORAD
+        set x=GetUnitX(u)+Cos(angle)*(160.+I2R(ModuloInteger(CampaignWalkAttempt[slot],3))*64.)
+        set y=GetUnitY(u)+Sin(angle)*(160.+I2R(ModuloInteger(CampaignWalkAttempt[slot],3))*64.)
+        if RAbsBJ(x)<16224. and RAbsBJ(y)<16224. and not IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) then
+            call IssuePointOrder(u,"move",x,y)
+            set CampaignMoveAt[slot]=TimeNow+2.
+            set u=null
+            return true
+        endif
+        set k=k+1
+    endloop
+    set u=null
+    return false
+endfunction
 function CampaignInvasionWave takes integer lane returns nothing
     local integer n=0
     local integer slot=0
@@ -455,7 +507,7 @@ function CampaignInvasionWave takes integer lane returns nothing
     endif
     loop
         exitwhen n>=3
-        set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignRouteX[origin]+I2R(n)*24.,CampaignRouteY[origin])
+        set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignWaveSpawnX[lane*3+n],CampaignWaveSpawnY[lane*3+n])
         if slot>=0 then
             set CampaignActorRoute[slot]=destination
             call PauseUnit(CampaignActor[slot],false)
@@ -483,9 +535,14 @@ function CampaignMoveHeroes takes nothing returns nothing
             endif
             set x=CampaignX[CampaignStage]+I2R(ModuloInteger(p,3)-1)*48.
             set y=CampaignY[CampaignStage]+I2R(StoryTeam(p))*48.
-            if CampaignStage==12 and HeroRole[p]>=9 then
-                set x=-2336.
-                set y=-11840.+I2R(HeroRole[p]-10)*32.
+            if CampaignStage==12 then
+                if HeroRole[p]>=9 then
+                    set x=-2336.
+                    set y=-11840.+I2R(HeroRole[p]-10)*32.
+                else
+                    set x=CampaignDefenderX[HeroRole[p]]
+                    set y=CampaignDefenderY[HeroRole[p]]
+                endif
             endif
             call SetUnitPosition(Hero[p],x,y)
             set SpawnX[p]=GetUnitX(Hero[p])
@@ -804,7 +861,7 @@ function CampaignStartPlay takes nothing returns nothing
     set j=0
     loop
         exitwhen j>=CampaignCount
-        if CampaignActor[j]!=null and not (CampaignStage==12 and CampaignActorType[j]==13) and CampaignStage!=30 then
+        if CampaignActor[j]!=null and not CampaignReserveOnly(CampaignActorType[j]) and not (CampaignStage==12 and CampaignActorType[j]==13) and CampaignStage!=30 then
             call PauseUnit(CampaignActor[j],false)
         endif
         set j=j+1
@@ -1279,7 +1336,7 @@ function CampaignNPCTick takes nothing returns nothing
                 set candidate=FirstOfGroup(CampaignScratch)
                 exitwhen candidate==null
                 call GroupRemoveUnit(CampaignScratch,candidate)
-                if FoundationAlive(candidate) and GetUnitAbilityLevel(candidate,'Avul')==0 and not IsUnitPaused(candidate) and not IsUnitHidden(candidate) and ((CampaignActorType[j]==32 and IsUnitAlly(candidate,GetOwningPlayer(u)) and GetWidgetLife(candidate)<GetUnitState(candidate,UNIT_STATE_MAX_LIFE)*.9) or (CampaignActorType[j]!=32 and IsUnitEnemy(candidate,GetOwningPlayer(u)))) then
+                if FoundationAlive(candidate) and GetUnitAbilityLevel(candidate,'Avul')==0 and not IsUnitPaused(candidate) and not IsUnitHidden(candidate) and SkillsCanSee(candidate,GetOwningPlayer(u)) and ((CampaignActorType[j]==32 and IsUnitAlly(candidate,GetOwningPlayer(u)) and GetWidgetLife(candidate)<GetUnitState(candidate,UNIT_STATE_MAX_LIFE)*.9) or (CampaignActorType[j]!=32 and IsUnitEnemy(candidate,GetOwningPlayer(u)))) then
                     set dx=GetUnitX(candidate)-GetUnitX(u)
                     set dy=GetUnitY(candidate)-GetUnitY(u)
                     if dx*dx+dy*dy<best then
@@ -1289,7 +1346,9 @@ function CampaignNPCTick takes nothing returns nothing
                 endif
             endloop
             if target!=null then
-                if NPCUseInventory(u,CampaignActorType[j],target) or NPCTry(u,CampaignActorType[j],target) then
+                if CampaignStage==12 and CampaignActorRoute[j]>=0 and best>650.*650. and TimeNow>=CampaignMoveAt[j] and CampaignWaveRecover(j) then
+                    set CampaignMoveAt[j]=TimeNow+2.
+                elseif NPCUseInventory(u,CampaignActorType[j],target) or NPCTry(u,CampaignActorType[j],target) then
                     set CampaignMoveAt[j]=TimeNow+1.
                 elseif TimeNow>=CampaignMoveAt[j] then
                     if CampaignActorType[j]==32 then
@@ -1306,9 +1365,13 @@ function CampaignNPCTick takes nothing returns nothing
                     else
                         set CampaignActorRoute[j]=8
                     endif
+                    set CampaignWalkAt[j]=TimeNow+8.
+                    set CampaignWalkAttempt[j]=0
                 endif
-                call IssuePointOrder(u,"attack",CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]])
-                set CampaignMoveAt[j]=TimeNow+3.
+                if not CampaignWaveRecover(j) then
+                    call IssuePointOrder(u,"attack",CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]])
+                    set CampaignMoveAt[j]=TimeNow+3.
+                endif
             endif
         endif
     endloop
