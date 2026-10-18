@@ -65,6 +65,36 @@ ExamBot(1,nil);assert(not old.removed and not old.owned and Hero[1].last.target=
 UnitAddItem(Hero[1],dropped);assert(ExamHas(0,raw('Eshe')))
 Hero[1].hp=0;assert(not ExamHas(0,raw('Eshe')),'Dead carriers cannot turn in scrolls');Hero[1].hp=10000
 local earth=CreateItem(raw('Esea'),0,0);Hero[0].items={};UnitAddItem(Hero[0],earth)
+-- Regression: a completed pair must not park bots at the entrance for 20 minutes.
+do
+ local oldEnemies=ExamEnemy;local oldScrolls=ExamScroll;local oldCount=ExamScrollCount
+ local oldGear=ExamGearCount;local oldTime=TimeNow;local hx,hy=Hero[1].x,Hero[1].y
+ ExamGearCount=0;ExamTowerOpen=false;StoryMarch[0]=true;StoryRetreat[0]=false
+ Hero[1].x=-10000;Hero[1].y=-9000;ExamBotProgressAt[1]=TimeNow;ExamBotLastX[1]=Hero[1].x;ExamBotLastY[1]=Hero[1].y;ExamBotGoalItem[1]=nil
+ ExamBot(1,nil);assert(Hero[1].last.o=='attack' and Hero[1].last.x,'With a pair and closed tower, patrol instead of going home')
+ local blocked=CreateUnit(12,raw('re06'),-8000,-9000,0)
+ local alternative=CreateUnit(12,raw('re07'),-7600,-9000,0)
+ ExamEnemy={[0]=blocked,[1]=alternative};ExamBotAvoidUnit[1]=nil;ExamBotAvoidUntil[1]=0
+ TimeNow=oldTime+8;ExamBot(1,blocked)
+ assert(ExamBotAvoidUnit[1]==blocked and Hero[1].last.target==alternative,'Eight seconds with no progress must choose another genin')
+ TimeNow=TimeNow+2;assert(ExamNearest(1)==alternative,'Avoid stalled goal during recovery window')
+ blocked.x=Hero[1].x+100;ExamBotAvoidUnit[1]=nil;ExamBotAvoidUntil[1]=0;ExamBotProgressAt[1]=TimeNow-8
+ ExamBot(1,blocked);assert(Hero[1].last.target==blocked and ExamBotAvoidUnit[1]~=blocked,'Standing in a real battle is not pathfinding failure')
+ -- A failed distant smart pickup must not consume every following decision.
+ local px,py=Hero[4].x,Hero[4].y
+ Hero[4].x=-12000;Hero[4].y=-12000;Hero[4].items={};StoryMarch[1]=true;StoryRetreat[1]=false
+ local first=CreateItem(raw('Eshe'),-11500,-12000);local second=CreateItem(raw('Esea'),-11350,-12000)
+ ExamScroll={[0]=first,[1]=second};ExamScrollCount=2
+ ExamBotLastX[4]=Hero[4].x;ExamBotLastY[4]=Hero[4].y;ExamBotProgressAt[4]=TimeNow;ExamBotGoalItem[4]=nil
+ ExamBot(4,nil);assert(Hero[4].last.target==first)
+ TimeNow=TimeNow+8;ExamBot(4,nil);assert(ExamBotAvoidItem[4]==first and Hero[4].last.target==second,'Recover from an unreachable scroll without destroying it')
+ assert(not first.removed and not second.removed)
+ StoryMarch[0]=false;ExamBot(1,nil);assert(Hero[1].last.o=='follow' and Hero[1].last.target==Hero[0],'-follow still respects the human leader')
+ StoryMarch[0]=true;ExamEnemy=oldEnemies;ExamScroll=oldScrolls;ExamScrollCount=oldCount;ExamGearCount=oldGear;TimeNow=oldTime
+ Hero[1].x=hx;Hero[1].y=hy;Hero[4].x=px;Hero[4].y=py
+ ExamBotGoalItem[1]=nil;ExamBotGoalItem[4]=nil;ExamBotAvoidUnit[1]=nil;ExamBotAvoidItem[4]=nil
+end
+
 Hero[0].x=ExamTowerX;Hero[0].y=ExamTowerY;Hero[1].x=ExamTowerX;Hero[1].y=ExamTowerY
 ExamForestTick();assert(StoryStage[0]==7 and not ExamTowerOpen,'Tower is closed for first 20 minutes')
 TimeNow=ExamOpenAt;Hero[1].x=ExamTowerX+1000;ExamForestTick();assert(ExamTowerOpen and GatesOpened==1 and StoryStage[0]==7,'Both carriers must reach tower')
@@ -73,4 +103,4 @@ Hero[1].x=ExamTowerX;ExamForestTick();assert(StoryStage[0]==8 and dropped.remove
 local reward=GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD);ExamForestTick();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==reward,'No repeat reward')
 TimeNow=ExamEndAt;ExamForestTick();assert(StoryStage[1]==8 and StoryStage[3]==8,'Timeout still advances without awarding a pair')
 ExamForestTick();assert(ExamPhase==4 and ExamClock==nil and ExamDialog==nil and ExamRect==nil,'Shared clock/dialog/rect cleanup')
-print('PASS: five unique timed questions, first answers, human XP/bot answers, occupied-team barrier, preserved heroes, 85 staggered genin, one-time real scroll drops, full inventory pickup, tower timing, both carriers, one-time reward, timeout and cleanup (mock natives).')
+print('PASS: forest bots patrol with a completed pair, recover stalled genin/scroll goals, preserve close combat and follow commands; five unique timed questions, first answers, human XP/bot answers, occupied-team barrier, preserved heroes, 85 staggered genin, one-time real scroll drops, full inventory pickup, tower timing, both carriers, one-time reward, timeout and cleanup (mock natives).')

@@ -322,6 +322,33 @@ function CampaignStand takes integer p returns nothing
         call SetUnitPosition(Hero[p],CampaignX[CampaignStage]+I2R(ModuloInteger(p,3))*64.,CampaignY[CampaignStage]+300.+I2R(StoryTeam(p))*64.)
     endif
 endfunction
+// The arena is public to every participant/spectator only during tournaments.
+function CampaignArenaVisibility takes integer stage returns nothing
+    if stage==9 or stage==11 then
+        if not CampaignArenaView then
+            set CampaignSavedFog=IsFogEnabled()
+            set CampaignSavedMask=IsFogMaskEnabled()
+            set CampaignArenaView=true
+        endif
+        call FogEnable(false)
+        call FogMaskEnable(false)
+    elseif CampaignArenaView then
+        call FogEnable(CampaignSavedFog)
+        call FogMaskEnable(CampaignSavedMask)
+        set CampaignArenaView=false
+    endif
+endfunction
+function CampaignArenaCamera takes nothing returns nothing
+    local integer p=0
+    loop
+        exitwhen p>=12
+        if Hero[p]!=null then
+            call ResetToGameCameraForPlayer(Player(p),0.)
+            call PanCameraToTimedForPlayer(Player(p),CampaignTX[CampaignStage],CampaignTY[CampaignStage],0.)
+        endif
+        set p=p+1
+    endloop
+endfunction
 function CampaignDuelNext takes nothing returns nothing
     local integer p=0
     loop
@@ -361,6 +388,7 @@ function CampaignDuelNext takes nothing returns nothing
         endif
         set p=p+1
     endloop
+    call CampaignArenaCamera()
     set CampaignDuelAt=TimeNow+5.
     set CampaignDuelLive=false
     call ExamBroadcast("Экзаменатор: Команда "+I2S(StoryTeam(CampaignDuelA)+1)+" — "+HeroName[HeroRole[CampaignDuelA]]+" против "+HeroName[HeroRole[CampaignDuelB]]+"! Начало через 5 секунд. Поражение не удаляет героя из истории.")
@@ -615,6 +643,10 @@ function CampaignStartPlay takes nothing returns nothing
     local integer p=0
     local integer j=0
     set CampaignTransition=false
+    // Explicitly release any completed/pending transition filter before combat.
+    call AbortCinematicFadeBJ()
+    call DisplayCineFilter(false)
+    call CampaignArenaVisibility(CampaignStage)
     set CampaignStartAt=TimeNow
     if CampaignStage==9 or CampaignStage==11 then
         set CampaignDuelAt=TimeNow+5.
@@ -690,7 +722,11 @@ function CampaignStartPlay takes nothing returns nothing
         exitwhen p>=12
         if Hero[p]!=null then
             call ResetToGameCameraForPlayer(Player(p),1.)
-            call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),1.)
+            if CampaignStage==9 or CampaignStage==11 then
+                call PanCameraToTimedForPlayer(Player(p),CampaignTX[CampaignStage],CampaignTY[CampaignStage],0.)
+            else
+                call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),1.)
+            endif
         endif
         set p=p+1
     endloop
@@ -704,6 +740,9 @@ function CampaignFinish takes boolean victory returns nothing
         return
     endif
     set CampaignFinished=true
+    call CampaignArenaVisibility(0)
+    call AbortCinematicFadeBJ()
+    call DisplayCineFilter(false)
     call PauseTimer(CampaignClock)
     call TimerDialogDisplay(CampaignDialog,false)
     call CampaignClear()
@@ -1039,6 +1078,7 @@ function CampaignTick takes nothing returns nothing
         if not CampaignPlaced and TimeNow>=CampaignIntroAt+1.5 then
             call CampaignClear()
             set CampaignStage=CampaignQueued
+            call CampaignArenaVisibility(CampaignStage)
             set CampaignPlaced=true
             set n=CampaignStage
             call CampaignAlliances(1)

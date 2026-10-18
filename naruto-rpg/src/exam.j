@@ -53,7 +53,7 @@ function ExamNearest takes integer p returns unit
         if ModuloInteger(j,2)==1 then
             set raw='Esea'
         endif
-        if FoundationAlive(ExamEnemy[j]) then
+        if FoundationAlive(ExamEnemy[j]) and not IsUnitHidden(ExamEnemy[j]) and (ExamEnemy[j]!=ExamBotAvoidUnit[p] or TimeNow>=ExamBotAvoidUntil[p]) then
             set dx=GetUnitX(ExamEnemy[j])-GetUnitX(Hero[p])
             set dy=GetUnitY(ExamEnemy[j])-GetUnitY(Hero[p])
             set d=dx*dx+dy*dy
@@ -156,6 +156,13 @@ function ExamStartForest takes nothing returns nothing
             loop
                 exitwhen p>=t*3+3
                 if Hero[p]!=null then
+                    set ExamBotProgressAt[p]=TimeNow
+                    set ExamBotAvoidUnit[p]=null
+                    set ExamBotAvoidItem[p]=null
+                    set ExamBotGoalItem[p]=null
+                    set ExamBotItemAvoidUntil[p]=0.
+                    set ExamBotAvoidUntil[p]=0.
+                    set ExamBotPatrol[p]=0
                     call PauseUnit(Hero[p],false)
                     call UnitRemoveAbility(Hero[p],'Avul')
                     if not FoundationAlive(Hero[p]) then
@@ -164,6 +171,8 @@ function ExamStartForest takes nothing returns nothing
                     call SetUnitPosition(Hero[p],ExamSpawnX[t],ExamSpawnY[t])
                     set SpawnX[p]=GetUnitX(Hero[p])
                     set SpawnY[p]=GetUnitY(Hero[p])
+                    set ExamBotLastX[p]=SpawnX[p]
+                    set ExamBotLastY[p]=SpawnY[p]
                     call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE))
                     call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
                     call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],1.)
@@ -191,6 +200,45 @@ function ExamStartForest takes nothing returns nothing
     call ExamBroadcast("Анко: Добро пожаловать в Лес смерти! У входа лежит свиток вашего отряда. Второй тип найдите у вражеских генинов. Нужны Небо и Земля. До конца 22 минуты; башня открывается на последние две. Свитки могут нести разные союзники, но оба должны подойти к башне. -quest: задача, -go/-follow: команды, -shop: снабжение.")
     set u=null
 endfunction
+// Fixed per-player progress state; no timers, random teleport or extra units.
+function ExamBotProgress takes integer p, unit enemy returns nothing
+    local real dx=GetUnitX(Hero[p])-ExamBotLastX[p]
+    local real dy=GetUnitY(Hero[p])-ExamBotLastY[p]
+    local item it=ExamBotGoalItem[p]
+    if dx*dx+dy*dy>64.*64. then
+        set ExamBotProgressAt[p]=TimeNow
+        set ExamBotLastX[p]=GetUnitX(Hero[p])
+        set ExamBotLastY[p]=GetUnitY(Hero[p])
+    elseif TimeNow>=ExamBotProgressAt[p]+8. then
+        // Do not interrupt a stationary melee/ranged battle or nearby item pickup.
+        if it==null and enemy!=null and not ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
+            set ExamBotAvoidUnit[p]=enemy
+            set ExamBotAvoidUntil[p]=TimeNow+20.
+        endif
+        if it!=null and not IsItemOwned(it) and not ExamNear(Hero[p],GetItemX(it),GetItemY(it),160.) then
+            set ExamBotAvoidItem[p]=it
+            set ExamBotItemAvoidUntil[p]=TimeNow+20.
+        else
+            set ExamBotGoalItem[p]=null
+        endif
+        set ExamBotPatrol[p]=ModuloInteger(ExamBotPatrol[p]+1,85)
+        set ExamBotProgressAt[p]=TimeNow
+    endif
+    set it=null
+endfunction
+function ExamBotPatrolOrder takes integer p returns nothing
+    local integer tries=0
+    local integer node=0
+    loop
+        set node=ModuloInteger(p*7+ExamBotPatrol[p]*11,85)
+        exitwhen tries>=85 or (not IsTerrainPathable(ExamEnemyX[node],ExamEnemyY[node],PATHING_TYPE_WALKABILITY) and not ExamNear(Hero[p],ExamEnemyX[node],ExamEnemyY[node],200.))
+        set ExamBotPatrol[p]=ModuloInteger(ExamBotPatrol[p]+1,85)
+        set tries=tries+1
+    endloop
+    if tries<85 then
+        call IssuePointOrder(Hero[p],"attack",ExamEnemyX[node],ExamEnemyY[node])
+    endif
+endfunction
 function ExamBot takes integer p, unit enemy returns nothing
     local integer t=StoryTeam(p)
     local integer j=0
@@ -205,6 +253,11 @@ function ExamBot takes integer p, unit enemy returns nothing
     local unit leader=StoryLeader(t)
     local boolean hasHeaven=ExamHas(t,'Eshe')
     local boolean hasEarth=ExamHas(t,'Esea')
+    call ExamBotProgress(p,enemy)
+    set ExamBotGoalItem[p]=null
+    if enemy==ExamBotAvoidUnit[p] and TimeNow<ExamBotAvoidUntil[p] then
+        set enemy=ExamNearest(p)
+    endif
     if StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
         call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
         return
@@ -217,7 +270,7 @@ function ExamBot takes integer p, unit enemy returns nothing
         exitwhen j>=ExamScrollCount
         set it=ExamScroll[j]
         set raw=GetItemTypeId(it)
-        if it!=null and not IsItemOwned(it) and GetWidgetLife(it)>.405 and ((raw=='Eshe' and not hasHeaven) or (raw=='Esea' and not hasEarth)) then
+        if it!=null and not IsItemOwned(it) and GetWidgetLife(it)>.405 and (it!=ExamBotAvoidItem[p] or TimeNow>=ExamBotItemAvoidUntil[p]) and ((raw=='Eshe' and not hasHeaven) or (raw=='Esea' and not hasEarth)) then
             set dx=GetItemX(it)-GetUnitX(Hero[p])
             set dy=GetItemY(it)-GetUnitY(Hero[p])
             if dx*dx+dy*dy<best then
@@ -252,6 +305,7 @@ function ExamBot takes integer p, unit enemy returns nothing
             endloop
         endif
         if free>0 then
+            set ExamBotGoalItem[p]=found
             call IssueTargetOrder(Hero[p],"smart",found)
         elseif enemy!=null then
             call IssueTargetOrder(Hero[p],"attack",enemy)
@@ -263,7 +317,7 @@ function ExamBot takes integer p, unit enemy returns nothing
         loop
             exitwhen j>=ExamGearCount
             set it=ExamGear[j]
-            if it!=null and GetItemTypeId(it)!=0 and not IsItemOwned(it) then
+            if it!=null and GetItemTypeId(it)!=0 and not IsItemOwned(it) and (it!=ExamBotAvoidItem[p] or TimeNow>=ExamBotItemAvoidUntil[p]) then
                 set dx=GetItemX(it)-GetUnitX(Hero[p])
                 set dy=GetItemY(it)-GetUnitY(Hero[p])
                 if dx*dx+dy*dy<best then
@@ -283,11 +337,12 @@ function ExamBot takes integer p, unit enemy returns nothing
             set k=k+1
         endloop
         if found!=null and free>0 then
+            set ExamBotGoalItem[p]=found
             call IssueTargetOrder(Hero[p],"smart",found)
         elseif enemy!=null then
             call IssueTargetOrder(Hero[p],"attack",enemy)
         else
-            call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
+            call ExamBotPatrolOrder(p)
         endif
     elseif not StoryMarch[t] and leader!=null and leader!=Hero[p] then
         if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
@@ -298,10 +353,7 @@ function ExamBot takes integer p, unit enemy returns nothing
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)
     else
-        call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
-        if ExamNear(Hero[p],GetUnitX(StoryShop[t]),GetUnitY(StoryShop[t]),250.) then
-            call StoryBuy(p)
-        endif
+        call ExamBotPatrolOrder(p)
     endif
     set found=null
     set it=null

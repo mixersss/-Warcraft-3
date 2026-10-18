@@ -1,6 +1,14 @@
 -- Real JASS continuation; native graphics/combat balance are separate engine checks.
 local function raw(s)local n=0;for i=1,4 do n=n*256+string.byte(s,i)end;return n end
 local alliances={};local vision={};local outcomes={};local fades={}
+local fog=true;local mask=true;local filter=false;local pans={}
+function IsFogEnabled()return fog end
+function IsFogMaskEnabled()return mask end
+function FogEnable(v)fog=v end
+function FogMaskEnable(v)mask=v end
+function AbortCinematicFadeBJ()end
+function DisplayCineFilter(v)filter=v end
+function PanCameraToTimedForPlayer(p,x,y,t)pans[p]={x=x,y=y}end
 function SetPlayerAllianceStateAllyBJ(a,b,v)alliances[a]=alliances[a] or {};alliances[a][b]=v end
 function SetPlayerAllianceStateVisionBJ(a,b,v)vision[a]=vision[a] or {};vision[a][b]=v end
 function IsUnitEnemy(u,p)
@@ -17,7 +25,7 @@ function CreateCameraSetup()return {}end
 function CameraSetupSetField(c,k,v,t)c[k or 'field']=v end
 function CameraSetupSetDestPosition(c,x,y,t)c.position={x,y}end
 function ResetToGameCameraForPlayer()end
-function CinematicFadeBJ(kind,seconds,mask,r,g,b,a)assert(seconds>0 and string.find(mask,'Black_mask',1,true));fades[#fades+1]={kind=kind,seconds=seconds}end
+function CinematicFadeBJ(kind,seconds,mask,r,g,b,a)assert(seconds>0 and string.find(mask,'Black_mask',1,true));fades[#fades+1]={kind=kind,seconds=seconds};filter=true end
 function CustomVictoryBJ(p,dialog,score)outcomes[p]='win'end
 function CustomDefeatBJ(p,reason)assert(#reason>0);outcomes[p]='lose'end
 function GetRandomReal(a,b)return (a+b)/2 end
@@ -58,6 +66,8 @@ local function doDuels(expected)
   if CampaignDuelA>=0 then
    TimeNow=CampaignDuelAt;CampaignTick();assert(CampaignDuelLive)
    local a,b=CampaignDuelA,CampaignDuelB
+   assert(not fog and not mask and not filter,'Public arena view must remain open during every duel')
+   for p=0,11 do assert(pans[p].x==CampaignTX[CampaignStage] and pans[p].y==CampaignTY[CampaignStage],'Every spectator camera must look at the fight')end
    assert(not Hero[a].paused and not Hero[b].paused and IsUnitEnemy(Hero[a],b))
    for p=0,11 do if p~=a and p~=b then assert(Hero[p].paused,'Only two fighters are active')end end
    Hero[a].hp=0;CampaignTick();count=count+1
@@ -68,9 +78,10 @@ local function doDuels(expected)
  assert(count==expected,'Unexpected number of duels: '..count)
 end
 fresh();CampaignTick();assert(CampaignTransition and CampaignQueued==9)
-enter();assert(CampaignStage==9 and CampaignSasukePlayer==1 and CampaignNarutoPlayer==0)
+enter();assert(not fog and not mask and not filter);for p=0,11 do assert(pans[p].x==CampaignTX[9] and pans[p].y==CampaignTY[9])end
+assert(CampaignStage==9 and CampaignSasukePlayer==1 and CampaignNarutoPlayer==0)
 doDuels(6);assert(CampaignQueued==10)
-enter();assert(CampaignStage==10 and CampaignCount==20 and CampaignEndAt-TimeNow==150)
+enter();assert(fog and mask and not filter and not CampaignArenaView,'Restore exploration after arena');assert(CampaignStage==10 and CampaignCount==20 and CampaignEndAt-TimeNow==150)
 for p=0,11 do
  local target=CampaignNearest(p);assert(target and CampaignActorType[CampaignJiraiya]==18)
  CampaignBot(p,target);assert(Hero[p].last.o=='attack','Every bot participates in the barrel search')
@@ -139,5 +150,11 @@ CampaignTick();assert(CampaignFinished and outcomes[1]=='win' and outcomes[0]=='
 fresh();for t=0,3 do StoryStarted[t]=false end;Hero[0].xp=300;Hero[1].xp=300
 SkillsChoose(0,1);assert(HeroRole[0]==1 and HeroRole[1]==0 and RoleChosen[0])
 RoleChosen[1]=true;local before=HeroRole[0];SkillsChoose(0,0);assert(HeroRole[0]==before,'Cannot steal a confirmed human story role')
+-- Public arena visibility restores the exact previous options, including a mixed fog/mask state.
+CampaignArenaVisibility(0);fog=true;mask=false
+CampaignArenaVisibility(9);assert(not fog and not mask)
+CampaignArenaVisibility(9);CampaignArenaVisibility(11);assert(not fog and not mask)
+CampaignArenaVisibility(10);assert(fog and not mask and not CampaignArenaView)
+fog=true;mask=true
 assert(#fades>0,'Every stage transition must include a real cinematic fade')
-print('PASS: full continuation through 22 source-linked phases, six preliminary and eleven final duels, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')
+print('PASS: public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and eleven final duels, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')

@@ -52,6 +52,9 @@ globals
     integer array CampaignFiveType
     boolean CampaignUkonSpawned=false
     camerasetup array CampaignCamera
+    boolean CampaignArenaView=false
+    boolean CampaignSavedFog=true
+    boolean CampaignSavedMask=true
     boolean CampaignCameraApplied=false
     integer array ExamEnemyType
     integer array ExamRespawnType
@@ -163,6 +166,15 @@ globals
     boolean array ExamDropped
     real array ExamEnemyCastAt
     real array ExamBotOrderAt
+    real array ExamBotProgressAt
+    real array ExamBotLastX
+    real array ExamBotLastY
+    unit array ExamBotAvoidUnit
+    item array ExamBotGoalItem
+    real array ExamBotItemAvoidUntil
+    item array ExamBotAvoidItem
+    real array ExamBotAvoidUntil
+    integer array ExamBotPatrol
     unit array ExamFountain
     unit ExamTower=null
     real ExamTowerX=-10096.
