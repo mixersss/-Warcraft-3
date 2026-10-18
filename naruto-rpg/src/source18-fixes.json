@@ -1,0 +1,1208 @@
+{
+  "source": "Original protected map decoded object records; attack root U6/QKE/QLE; original placements QAV and user-requested 12→6→3 final",
+  "objects": {
+    "w3u": [
+      {
+        "oldId": "ngme",
+        "newId": "n000",
+        "modifications": [
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Ichiraku",
+            "u1": 0
+          },
+          {
+            "id": "usei",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "I00G,I002,gobm,I006,I008,I007,I00A,I00K,I004,I005,I003",
+            "u1": 0
+          },
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "urac",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "human",
+            "u1": 0
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Ichiraku.mdl",
+            "u1": 0
+          },
+          {
+            "id": "usca",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.75,
+            "u1": 0
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "uico",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_Ramen.BLP",
+            "u1": 0
+          },
+          {
+            "id": "utyp",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "mechanical,neutral",
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "hhou",
+        "newId": "h01P",
+        "modifications": [
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Barrel",
+            "u1": 0
+          },
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "uhpm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "uspa",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "utco",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 12,
+            "u1": 0
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Buildings\\Other\\BarrelsUnit0\\BarrelsUnit0.mdl",
+            "u1": 0
+          },
+          {
+            "id": "upgr",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "upat",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "upap",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "usca",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 2,
+            "u1": 0
+          },
+          {
+            "id": "uhom",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1,
+            "u1": 0
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 900,
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "nfnp",
+        "newId": "n007",
+        "modifications": [
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1886283374
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Fountain of Power x2",
+            "u1": 0
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl",
+            "u1": 0
+          },
+          {
+            "id": "uabi",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "A02V,ANre,Avul",
+            "u1": 0
+          },
+          {
+            "id": "ucam",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      }
+    ],
+    "w3a": [
+      {
+        "oldId": "AOw2",
+        "newId": "A006",
+        "modifications": [
+          {
+            "id": "anam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "arar",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_Neji_Kaiten.BLP",
+            "u1": 0
+          },
+          {
+            "id": "aart",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_Neji_Kaiten.BLP",
+            "u1": 0
+          },
+          {
+            "id": "acat",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "aani",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "spell,spin",
+            "u1": 0
+          },
+          {
+            "id": "aret",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "arut",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "The ultimate defense of the Hyuuga clan.",
+            "u1": 0
+          },
+          {
+            "id": "Wrs1",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 1,
+            "value": 100,
+            "u1": 0
+          },
+          {
+            "id": "Wrs1",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 1,
+            "value": 150,
+            "u1": 0
+          },
+          {
+            "id": "Wrs1",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 1,
+            "value": 200,
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "The ultimate defense of the Hyuuga clan.",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "The ultimate defense of the Hyuuga clan.",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "The ultimate defense of the Hyuuga clan.",
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 200,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 200,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 200,
+            "u1": 0
+          },
+          {
+            "id": "arlv",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 4,
+            "u1": 0
+          },
+          {
+            "id": "arhk",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "F",
+            "u1": 0
+          },
+          {
+            "id": "ahky",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "F",
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 2,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 2,
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "Kaiten (F)",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "The ultimate defense of the Hyuuga clan.",
+            "u1": 0
+          },
+          {
+            "id": "Wrs1",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 1,
+            "value": 350,
+            "u1": 0
+          },
+          {
+            "id": "aare",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 400,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 2,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 3,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 250,
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "enemies,ground,organic",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "enemies,ground,organic",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "enemies,ground,organic",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "enemies,ground,organic",
+            "u1": 0
+          },
+          {
+            "id": "arac",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "human",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "B00R",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "B00R",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "B00R",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "B00R",
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "AOmi",
+        "newId": "A001",
+        "modifications": [
+          {
+            "id": "anam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Kage Bunshin No Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "aret",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Kage Bunshin No Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "atat",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "Omi1",
+            "variableType": 0,
+            "levelOrVariation": 1,
+            "dataPointer": 1,
+            "value": 8,
+            "u1": 0
+          },
+          {
+            "id": "Omi1",
+            "variableType": 0,
+            "levelOrVariation": 2,
+            "dataPointer": 1,
+            "value": 8,
+            "u1": 0
+          },
+          {
+            "id": "Omi1",
+            "variableType": 0,
+            "levelOrVariation": 3,
+            "dataPointer": 1,
+            "value": 8,
+            "u1": 0
+          },
+          {
+            "id": "Omi3",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 3,
+            "value": 15,
+            "u1": 0
+          },
+          {
+            "id": "Omi3",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 3,
+            "value": 15,
+            "u1": 0
+          },
+          {
+            "id": "Omi2",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 2,
+            "value": 0.10999999940395355,
+            "u1": 0
+          },
+          {
+            "id": "Omi2",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 2,
+            "value": 0.11999999731779099,
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "Kage Bunshin No Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "Kage Bunshin No Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "Kage Bunshin No Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "arut",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Naruto creates numerous shadow clones that fight with him.",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "Naruto creates numerous shadow clones that fight with him.",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "Naruto creates numerous shadow clones that fight with him.",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "Naruto creates numerous shadow clones that fight with him.",
+            "u1": 0
+          },
+          {
+            "id": "arar",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_Naruto_KageBunshin.BLP",
+            "u1": 0
+          },
+          {
+            "id": "aart",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_Naruto_KageBunshin.BLP",
+            "u1": 0
+          },
+          {
+            "id": "arhk",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "F",
+            "u1": 0
+          },
+          {
+            "id": "ahky",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "F",
+            "u1": 0
+          },
+          {
+            "id": "Omi3",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 3,
+            "value": 15,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 250,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 250,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 250,
+            "u1": 0
+          },
+          {
+            "id": "arlv",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 4,
+            "u1": 0
+          },
+          {
+            "id": "aani",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "spell,loop",
+            "u1": 0
+          },
+          {
+            "id": "alev",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 4,
+            "u1": 0
+          },
+          {
+            "id": "Omi2",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 2,
+            "value": 0.12999999523162842,
+            "u1": 0
+          },
+          {
+            "id": "Omi3",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 3,
+            "value": 15,
+            "u1": 0
+          },
+          {
+            "id": "Omi1",
+            "variableType": 0,
+            "levelOrVariation": 4,
+            "dataPointer": 1,
+            "value": 8,
+            "u1": 0
+          },
+          {
+            "id": "amcs",
+            "variableType": 0,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 300,
+            "u1": 0
+          },
+          {
+            "id": "acdn",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 40,
+            "u1": 0
+          },
+          {
+            "id": "atp1",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "Taiju Kage Bunshin no Jutsu (F)",
+            "u1": 0
+          },
+          {
+            "id": "aub1",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "Naruto creates an exceptional amount of shadow clones that fight with him.",
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "ahdu",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "adur",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 30,
+            "u1": 0
+          },
+          {
+            "id": "Omi4",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 4,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "Omi4",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 4,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "Omi4",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 4,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "amsp",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "Omi4",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 4,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "Omi2",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 2,
+            "value": 0.10000000149011612,
+            "u1": 0
+          },
+          {
+            "id": "asat",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "amat",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "self",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "self",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "self",
+            "u1": 0
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "self",
+            "u1": 0
+          },
+          {
+            "id": "arac",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "human",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "B00T",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": "B00T",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": "B00T",
+            "u1": 0
+          },
+          {
+            "id": "abuf",
+            "variableType": 3,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": "B00T",
+            "u1": 0
+          },
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 125,
+            "u1": 0
+          },
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 2,
+            "dataPointer": 0,
+            "value": 125,
+            "u1": 0
+          },
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 4,
+            "dataPointer": 0,
+            "value": 200,
+            "u1": 0
+          },
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 3,
+            "dataPointer": 0,
+            "value": 150,
+            "u1": 0
+          }
+        ]
+      }
+    ]
+  },
+  "cornerShop": [
+    16192,
+    -16256
+  ],
+  "cornerFountain": [
+    16128,
+    -15744
+  ],
+  "narutoAttackRule": "U6 registers EVENT_PLAYER_UNIT_ATTACKED; QKE checks illusion hero types; QLE kills after 0.25 s. Runtime uses the same event with immediate bounded cleanup."
+}

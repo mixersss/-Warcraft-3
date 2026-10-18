@@ -155,7 +155,7 @@ StoryStarted[0]=false;TimeNow=400;StoryBuy(1)
 assert(gold[1]==500 and StoryBought[1]==0,'No purchases during hero selection')
 StoryStarted[0]=true;StoryStage[0]=1;TimeNow=30;StoryBuy(1)
 assert(gold[1]==500 and StoryBought[1]==0,'No immediate opening purchases')
-for stage=0,11 do CampaignStage=stage;TimeNow=400;StoryBuy(1);assert(gold[1]==500 and StoryBought[1]==0);assert(not StoryShopFor(1))end
+for stage=0,11 do if stage~=10 then CampaignStage=stage;TimeNow=400;StoryBuy(1);assert(gold[1]==500 and StoryBought[1]==0);assert(not StoryShopFor(1))end end
 CampaignStage=12;CampaignTransition=false;StoryShopsOpen();assert(StoryShop[0] and StoryShop[1] and StoryShop[2] and StoryShop[3])
 for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
 assert(gold[1]==165 and StoryBought[1]==3)

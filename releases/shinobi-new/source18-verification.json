@@ -1,0 +1,45 @@
+{
+  "sourceBarrelModelAndBody": true,
+  "sourceNarutoCloneRanks": 4,
+  "sourceNarutoClonesEachRank": 8,
+  "sourceKaitenDamage": [
+    100,
+    150,
+    200,
+    350
+  ],
+  "sourceInvasionStreams": 8,
+  "sourceWaveCount": 3,
+  "sourceWavePeriods": [
+    45,
+    45,
+    45,
+    30,
+    30,
+    30,
+    30,
+    30
+  ],
+  "sourceWaveFirstDelays": [
+    0,
+    15,
+    30,
+    0,
+    15,
+    0,
+    0,
+    0
+  ],
+  "sourceSandHeroCamp": [
+    -2336,
+    -11840
+  ],
+  "sourceRouteWaypoints": 12,
+  "allInvasionRouteWaypointsStaticallyConnected": true,
+  "sourceInvasionGatesOpen": 2,
+  "allWaveLanesReachHokage": true,
+  "privateArenaTerrainSight": true,
+  "finalThreePlayers": true,
+  "nativeCooldownReset": true,
+  "enginePlaytest": false
+}

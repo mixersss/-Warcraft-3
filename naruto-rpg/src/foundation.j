@@ -44,6 +44,12 @@ globals
     integer CampaignThinkCursor=0
     integer array CampaignActorRoute
     integer array CampaignAttackerOwner
+    integer array CampaignWaveOrigin
+    integer array CampaignWaveDestination
+    integer array CampaignWaveKind
+    integer array CampaignWaveRole
+    real array CampaignWavePeriod
+    real array CampaignWaveDelay
     real array CampaignWaveAt
     real array CampaignRouteX
     real array CampaignRouteY
@@ -52,6 +58,8 @@ globals
     integer array CampaignFiveType
     boolean CampaignUkonSpawned=false
     camerasetup array CampaignCamera
+    fogmodifier array CampaignArenaFog
+    integer CampaignArenaFogStage=0
     boolean CampaignArenaView=false
     boolean CampaignSavedFog=true
     boolean CampaignSavedMask=true
@@ -124,6 +132,9 @@ globals
     real CampaignDuelAt=0.
     boolean CampaignDuelLive=false
     boolean CampaignBracket=false
+    boolean CampaignFinalActive=false
+    integer array CampaignFinalPlayer
+    boolean array CampaignEliminated
     timer CampaignClock=null
     timerdialog CampaignDialog=null
     unit array RamenUnit
@@ -471,7 +482,9 @@ function FoundationChat takes nothing returns nothing
     if p>=12 then
         return
     endif
-    if msg=="-arena" or SubString(msg,0,7)=="-arena " then
+    if msg=="-village" then
+        call CampaignTestArena(p,3)
+    elseif msg=="-arena" or SubString(msg,0,7)=="-arena " then
         if msg=="-arena" or msg=="-arena 1" then
             call CampaignTestArena(p,1)
         elseif msg=="-arena 2" then
@@ -563,7 +576,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Музыка текущего сюжетного этапа начата заново. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест предварительных боёв / финального турнира (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop

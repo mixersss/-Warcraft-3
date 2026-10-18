@@ -13,7 +13,7 @@ function CampaignAlliances takes integer mode returns nothing
                 set allied=(HeroRole[p]<9 and HeroRole[q]<9) or (HeroRole[p]>=9 and HeroRole[q]>=9)
             endif
             call SetPlayerAllianceStateAllyBJ(Player(p),Player(q),allied)
-            call SetPlayerAllianceStateVisionBJ(Player(p),Player(q),allied)
+            call SetPlayerAllianceStateVisionBJ(Player(p),Player(q),allied and CampaignStage!=9 and CampaignStage!=11)
             set q=q+1
         endloop
         if mode==2 then
@@ -331,18 +331,41 @@ function CampaignStand takes integer p returns nothing
 endfunction
 // The arena is public to every participant/spectator only during tournaments.
 function CampaignArenaVisibility takes integer stage returns nothing
+    local integer p=0
     if stage==9 or stage==11 then
         if not CampaignArenaView then
             set CampaignSavedFog=IsFogEnabled()
             set CampaignSavedMask=IsFogMaskEnabled()
             set CampaignArenaView=true
         endif
-        call FogEnable(false)
-        call FogMaskEnable(false)
+        // Reveal terrain without global fog cheats or shared invisible-unit sight.
+        call FogEnable(true)
+        call FogMaskEnable(true)
+        if CampaignArenaFogStage!=stage then
+            loop
+                exitwhen p>=12
+                if CampaignArenaFog[p]!=null then
+                    call FogModifierStop(CampaignArenaFog[p])
+                    call DestroyFogModifier(CampaignArenaFog[p])
+                endif
+                set CampaignArenaFog[p]=CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,CampaignTX[stage],CampaignTY[stage],2600.,false,false)
+                call FogModifierStart(CampaignArenaFog[p])
+                set p=p+1
+            endloop
+            set CampaignArenaFogStage=stage
+        endif
     elseif CampaignArenaView then
+        loop
+            exitwhen p>=12
+            call FogModifierStop(CampaignArenaFog[p])
+            call DestroyFogModifier(CampaignArenaFog[p])
+            set CampaignArenaFog[p]=null
+            set p=p+1
+        endloop
         call FogEnable(CampaignSavedFog)
         call FogMaskEnable(CampaignSavedMask)
         set CampaignArenaView=false
+        set CampaignArenaFogStage=0
     endif
 endfunction
 function CampaignArenaCamera takes nothing returns nothing
@@ -355,6 +378,22 @@ function CampaignArenaCamera takes nothing returns nothing
         endif
         set p=p+1
     endloop
+endfunction
+function CampaignResetFighter takes integer p returns nothing
+    local integer k=0
+    call UnitResetCooldown(Hero[p])
+    loop
+        exitwhen k>=5
+        set BotReadyAt[p*5+k]=TimeNow
+        set k=k+1
+    endloop
+    set BotNextCast[p]=TimeNow
+    set BotUseItemAt[p]=TimeNow
+    set StoryBotOrderAt[p]=TimeNow
+    set LogReadyAt[p]=TimeNow
+    set JumpReadyAt[p]=TimeNow
+    set ComboLeft[p]=0
+    set ComboTarget[p]=null
 endfunction
 function CampaignDuelNext takes nothing returns nothing
     local integer p=0
@@ -382,8 +421,12 @@ function CampaignDuelNext takes nothing returns nothing
     set CampaignQueueCursor=CampaignQueueCursor+1
     call SetPlayerAllianceStateAllyBJ(Player(CampaignDuelA),Player(CampaignDuelB),false)
     call SetPlayerAllianceStateAllyBJ(Player(CampaignDuelB),Player(CampaignDuelA),false)
+    call SetPlayerAllianceStateVisionBJ(Player(CampaignDuelA),Player(CampaignDuelB),false)
+    call SetPlayerAllianceStateVisionBJ(Player(CampaignDuelB),Player(CampaignDuelA),false)
     call SetUnitPosition(Hero[CampaignDuelA],CampaignTX[CampaignStage]-220.,CampaignTY[CampaignStage])
     call SetUnitPosition(Hero[CampaignDuelB],CampaignTX[CampaignStage]+220.,CampaignTY[CampaignStage])
+    call CampaignResetFighter(CampaignDuelA)
+    call CampaignResetFighter(CampaignDuelB)
     call SetWidgetLife(Hero[CampaignDuelA],GetUnitState(Hero[CampaignDuelA],UNIT_STATE_MAX_LIFE))
     call SetWidgetLife(Hero[CampaignDuelB],GetUnitState(Hero[CampaignDuelB],UNIT_STATE_MAX_LIFE))
     call SetUnitState(Hero[CampaignDuelA],UNIT_STATE_MANA,GetUnitState(Hero[CampaignDuelA],UNIT_STATE_MAX_MANA))
@@ -400,6 +443,26 @@ function CampaignDuelNext takes nothing returns nothing
     set CampaignDuelAt=TimeNow+5.
     set CampaignDuelLive=false
     call ExamBroadcast("Экзаменатор: Команда "+I2S(StoryTeam(CampaignDuelA)+1)+" — "+HeroName[HeroRole[CampaignDuelA]]+" против "+HeroName[HeroRole[CampaignDuelB]]+"! Начало через 5 секунд. Поражение не удаляет героя из истории.")
+endfunction
+function CampaignInvasionWave takes integer lane returns nothing
+    local integer n=0
+    local integer slot=0
+    local integer owner=CampaignAttackerOwner[CampaignWaveRole[lane]]
+    local integer origin=CampaignWaveOrigin[lane]
+    local integer destination=CampaignWaveDestination[lane]
+    if CampaignStage!=12 or CampaignTransition then
+        return
+    endif
+    loop
+        exitwhen n>=3
+        set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignRouteX[origin]+I2R(n)*24.,CampaignRouteY[origin])
+        if slot>=0 then
+            set CampaignActorRoute[slot]=destination
+            call PauseUnit(CampaignActor[slot],false)
+            call IssuePointOrder(CampaignActor[slot],"attack",CampaignRouteX[destination],CampaignRouteY[destination])
+        endif
+        set n=n+1
+    endloop
 endfunction
 function CampaignMoveHeroes takes nothing returns nothing
     local integer p=0
@@ -420,6 +483,10 @@ function CampaignMoveHeroes takes nothing returns nothing
             endif
             set x=CampaignX[CampaignStage]+I2R(ModuloInteger(p,3)-1)*48.
             set y=CampaignY[CampaignStage]+I2R(StoryTeam(p))*48.
+            if CampaignStage==12 and HeroRole[p]>=9 then
+                set x=-2336.
+                set y=-11840.+I2R(HeroRole[p]-10)*32.
+            endif
             call SetUnitPosition(Hero[p],x,y)
             set SpawnX[p]=GetUnitX(Hero[p])
             set SpawnY[p]=GetUnitY(Hero[p])
@@ -514,6 +581,11 @@ function CampaignSpawnStage takes nothing returns nothing
     local item reward=null
     local real x=CampaignTX[n]
     local real y=CampaignTY[n]
+    if n>=10 and n<=12 then
+        call StoryShopsOpen()
+        call CampaignFountainsOpen()
+        call CampaignVillageLandmarksOpen()
+    endif
     if n>=14 then
         call CampaignRogueAlliance()
         if CampaignSasukePlayer>=0 then
@@ -534,9 +606,17 @@ function CampaignSpawnStage takes nothing returns nothing
     endif
     if n==9 or n==11 then
         set CampaignBracket=n==11
+        set CampaignFinalActive=false
+        set j=0
+        loop
+            exitwhen j>=12
+            set CampaignEliminated[j]=false
+            set j=j+1
+        endloop
         call CampaignQueueBuild(false)
         call CampaignDuelNext()
     elseif n==10 then
+        call ExamBroadcast("Коноха: Ичираку уже открыт. Магазин у арены: 16192, -16256; фонтан рядом: 16128, -15744. -shop / -fountain показывают ближайшую точку.")
         set CampaignJiraiya=GetRandomInt(0,19)
         set CampaignFound=false
         loop
@@ -553,9 +633,6 @@ function CampaignSpawnStage takes nothing returns nothing
         set CampaignDefenseOwner=owner
         set unused=CampaignAdd(0,owner,x,y)
         set CampaignDeployCursor=0
-        call StoryShopsOpen()
-        call CampaignFountainsOpen()
-        call CampaignVillageLandmarksOpen()
         call ExamBroadcast("Коноха: открыты четыре магазина Ичираку и четыре фонтана. Их места отмечены обзором: -shop — ближайший магазин, -fountain — ближайший фонтан.")
         if CampaignChampion>=0 then
             set reward=CreateItem('Nlca',GetUnitX(Hero[CampaignChampion]),GetUnitY(Hero[CampaignChampion]))
@@ -569,12 +646,7 @@ function CampaignSpawnStage takes nothing returns nothing
         set j=0
         loop
             exitwhen j>=8
-            set CampaignWaveAt[j]=TimeNow+45.
-            if j==1 or j==4 then
-                set CampaignWaveAt[j]=CampaignWaveAt[j]+15.
-            elseif j==2 then
-                set CampaignWaveAt[j]=CampaignWaveAt[j]+30.
-            endif
+            set CampaignWaveAt[j]=TimeNow+CampaignWavePeriod[j]+CampaignWaveDelay[j]
             set j=j+1
         endloop
         set unused=CampaignAdd(30,owner,CampaignSupportX[0],CampaignSupportY[0])
@@ -721,12 +793,7 @@ function CampaignStartPlay takes nothing returns nothing
         set j=0
         loop
             exitwhen j>=8
-            set CampaignWaveAt[j]=TimeNow+45.
-            if j==1 or j==4 then
-                set CampaignWaveAt[j]=CampaignWaveAt[j]+15.
-            elseif j==2 then
-                set CampaignWaveAt[j]=CampaignWaveAt[j]+30.
-            endif
+            set CampaignWaveAt[j]=TimeNow+CampaignWavePeriod[j]+CampaignWaveDelay[j]
             set j=j+1
         endloop
         set CampaignJiraiyaAt=TimeNow+760.
@@ -831,13 +898,116 @@ function CampaignFinish takes boolean victory returns nothing
         set p=p+1
     endloop
 endfunction
+function CampaignFinalBegin takes nothing returns nothing
+    local integer p=0
+    local integer n=0
+    local integer q=0
+    call NoteClearAll()
+    loop
+        exitwhen p>=12
+        call CampaignStand(p)
+        set p=p+1
+    endloop
+    loop
+        exitwhen n>=3
+        set p=CampaignWinner[n]
+        set CampaignFinalPlayer[n]=p
+        set CampaignEliminated[p]=false
+        call CampaignResetFighter(p)
+        call SetWidgetLife(Hero[p],GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE))
+        call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+        if n==0 then
+            call SetUnitPosition(Hero[p],CampaignTX[11]-260.,CampaignTY[11]-150.)
+        elseif n==1 then
+            call SetUnitPosition(Hero[p],CampaignTX[11]+260.,CampaignTY[11]-150.)
+        else
+            call SetUnitPosition(Hero[p],CampaignTX[11],CampaignTY[11]+240.)
+        endif
+        set n=n+1
+    endloop
+    set n=0
+    loop
+        exitwhen n>=3
+        set q=0
+        loop
+            exitwhen q>=3
+            if n!=q then
+                call SetPlayerAllianceStateAllyBJ(Player(CampaignFinalPlayer[n]),Player(CampaignFinalPlayer[q]),false)
+                call SetPlayerAllianceStateVisionBJ(Player(CampaignFinalPlayer[n]),Player(CampaignFinalPlayer[q]),false)
+            endif
+            set q=q+1
+        endloop
+        set n=n+1
+    endloop
+    set CampaignFinalActive=true
+    set CampaignDuelA=-1
+    set CampaignDuelB=-1
+    set CampaignDuelLive=false
+    set CampaignDuelAt=TimeNow+5.
+    call CampaignArenaCamera()
+    call ExamBroadcast("Экзаменатор: Остались трое! Финальный бой — каждый сам за себя. Проигравшие остаются на трибунах. Начало через 5 секунд.")
+endfunction
+function CampaignFinalTick takes nothing returns nothing
+    local integer n=0
+    local integer p=0
+    local integer alive=0
+    local integer winner=-1
+    if not CampaignDuelLive then
+        if TimeNow>=CampaignDuelAt then
+            set CampaignDuelLive=true
+            loop
+                exitwhen n>=3
+                set p=CampaignFinalPlayer[n]
+                call PauseUnit(Hero[p],false)
+                call UnitRemoveAbility(Hero[p],'Avul')
+                call IssuePointOrder(Hero[p],"attack",CampaignTX[11],CampaignTY[11])
+                set n=n+1
+            endloop
+            call ExamBroadcast("Экзаменатор: Финал втроём — бой!")
+        endif
+        return
+    endif
+    loop
+        exitwhen n>=3
+        set p=CampaignFinalPlayer[n]
+        if not CampaignEliminated[p] then
+            if FoundationAlive(Hero[p]) then
+                set alive=alive+1
+                set winner=p
+            else
+                set CampaignEliminated[p]=true
+                call CampaignStand(p)
+            endif
+        endif
+        set n=n+1
+    endloop
+    if alive<=1 then
+        set CampaignFinalActive=false
+        set CampaignDuelLive=false
+        if alive==1 then
+            set CampaignChampion=winner
+            call CampaignStand(winner)
+            call ExamBroadcast("Экзаменатор: Чемпион — "+HeroName[HeroRole[winner]]+"! Коноха ждёт вас всех.")
+        else
+            set CampaignChampion=-1
+            call ExamBroadcast("Экзаменатор: Все финалисты выбыли одновременно. Финал завершён вничью. Коноха ждёт вас всех.")
+        endif
+        call CampaignQueueStage(12)
+    endif
+endfunction
 function CampaignDuelTick takes nothing returns nothing
     local integer winner=-1
     local integer loser=-1
     local item reward=null
+    if CampaignFinalActive then
+        call CampaignFinalTick()
+        return
+    endif
     if CampaignDuelA<0 then
         if CampaignQueueCursor<CampaignQueueCount then
             call CampaignDuelNext()
+        elseif CampaignBracket and CampaignWinnerCount==3 then
+            call CampaignFinalBegin()
         elseif CampaignBracket and CampaignWinnerCount>1 then
             call CampaignQueueBuild(true)
             call CampaignDuelNext()
@@ -875,6 +1045,9 @@ function CampaignDuelTick takes nothing returns nothing
     if winner>=0 then
         set CampaignWinner[CampaignWinnerCount]=winner
         set CampaignWinnerCount=CampaignWinnerCount+1
+        if CampaignBracket then
+            set CampaignEliminated[loser]=true
+        endif
         call CampaignStand(winner)
         call CampaignStand(loser)
         call SetPlayerAllianceStateAllyBJ(Player(winner),Player(loser),true)
@@ -897,9 +1070,36 @@ function CampaignNearest takes integer p returns unit
         return CampaignClone[p]
     endif
     if CampaignStage==9 or CampaignStage==11 then
-        if p==CampaignDuelA and CampaignDuelLive then
+        if CampaignFinalActive and CampaignDuelLive and not CampaignEliminated[p] then
+            loop
+                exitwhen j>=3
+                if CampaignFinalPlayer[j]==p then
+                    set allowed=false
+                endif
+                set j=j+1
+            endloop
+            if allowed then
+                return null
+            endif
+            set j=0
+            loop
+                exitwhen j>=3
+                set target=Hero[CampaignFinalPlayer[j]]
+                if CampaignFinalPlayer[j]!=p and not CampaignEliminated[CampaignFinalPlayer[j]] and FoundationAlive(target) and SkillsCanSee(target,Player(p)) then
+                    set dx=GetUnitX(target)-GetUnitX(Hero[p])
+                    set dy=GetUnitY(target)-GetUnitY(Hero[p])
+                    if dx*dx+dy*dy<best then
+                        set best=dx*dx+dy*dy
+                        set result=target
+                    endif
+                endif
+                set j=j+1
+            endloop
+            set target=null
+            return result
+        elseif p==CampaignDuelA and CampaignDuelLive and SkillsCanSee(Hero[CampaignDuelB],Player(p)) then
             return Hero[CampaignDuelB]
-        elseif p==CampaignDuelB and CampaignDuelLive then
+        elseif p==CampaignDuelB and CampaignDuelLive and SkillsCanSee(Hero[CampaignDuelA],Player(p)) then
             return Hero[CampaignDuelA]
         endif
         return null
@@ -953,7 +1153,7 @@ function CampaignBot takes integer p, unit enemy returns nothing
         set leader=null
         return
     endif
-    if shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]==0. and GetWidgetLife(Hero[p])>GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.45 then
+    if shop!=null and (CampaignStage!=10 or ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),650.)) and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]==0. and GetWidgetLife(Hero[p])>GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.45 then
         if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[StoryChooseItem(p)] and StoryHasItemSpace(p) then
             set StoryShopTripUntil[p]=TimeNow+45.
         else
@@ -1069,7 +1269,11 @@ function CampaignNPCTick takes nothing returns nothing
                 endif
             elseif CampaignStage==12 and CampaignActorRoute[j]>=0 and TimeNow>=CampaignMoveAt[j] then
                 if ExamNear(u,CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]],220.) then
-                    set CampaignActorRoute[j]=11
+                    if CampaignActorRoute[j]==8 or CampaignActorRoute[j]==11 then
+                        set CampaignActorRoute[j]=11
+                    else
+                        set CampaignActorRoute[j]=8
+                    endif
                 endif
                 call IssuePointOrder(u,"attack",CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]])
                 set CampaignMoveAt[j]=TimeNow+3.
@@ -1105,8 +1309,8 @@ endfunction
 function CampaignTestArena takes integer sender, integer arena returns nothing
     local integer p=0
     local integer j=0
-    if arena!=1 and arena!=2 then
-        call DisplayTimedTextToPlayer(Player(sender),0.,0.,12.,"Тест: -arena 1 — предварительные бои; -arena 2 — финальный турнир.")
+    if arena!=1 and arena!=2 and arena!=3 then
+        call DisplayTimedTextToPlayer(Player(sender),0.,0.,12.,"Тест: -arena 1 — предварительные бои; -arena 2 — финальный турнир; -village — нападение на Коноху.")
         return
     endif
     loop
@@ -1213,10 +1417,12 @@ function CampaignTestArena takes integer sender, integer arena returns nothing
     call CampaignPrepare()
     if arena==1 then
         call CampaignQueueStage(9)
-    else
+    elseif arena==2 then
         call CampaignQueueStage(11)
+    else
+        call CampaignQueueStage(12)
     endif
-    call ExamBroadcast("ТЕСТ АРЕНЫ: предыдущие задания пропущены без наград. Переход к поединкам; навыки, уровень и снаряжение героев сохранены.")
+    call ExamBroadcast("ТЕСТ ЭТАПА: предыдущие задания пропущены без наград. Навыки, уровень и снаряжение героев сохранены.")
 endfunction
 function CampaignTick takes nothing returns nothing
     local integer n=CampaignStage
@@ -1417,50 +1623,8 @@ function CampaignTick takes nothing returns nothing
         loop
             exitwhen lane>=8 or CampaignTransition
             if TimeNow>=CampaignWaveAt[lane] then
-                set origin=0
-                set destination=1
-                set waveKind=16
-                if lane==1 then
-                    set destination=2
-                elseif lane==2 then
-                    set destination=3
-                elseif lane==3 or lane==4 then
-                    set origin=4
-                    set destination=5
-                    set waveKind=15
-                    if lane==4 then
-                        set destination=6
-                    endif
-                elseif lane==5 then
-                    set origin=7
-                    set destination=8
-                elseif lane==6 then
-                    set origin=9
-                    set destination=8
-                    set waveKind=15
-                elseif lane==7 then
-                    set origin=10
-                    set destination=8
-                    set waveKind=15
-                endif
-                if lane==0 or lane==3 or lane==5 then
-                    set owner=CampaignAttackerOwner[0]
-                elseif lane==1 or lane==4 or lane==6 then
-                    set owner=CampaignAttackerOwner[1]
-                else
-                    set owner=CampaignAttackerOwner[2]
-                endif
-                set k=0
-                loop
-                    exitwhen k>=3
-                    set unused=CampaignAdd(waveKind,owner,CampaignRouteX[origin]+I2R(k)*24.,CampaignRouteY[origin])
-                    if unused>=0 then
-                        set CampaignActorRoute[unused]=destination
-                        call IssuePointOrder(CampaignActor[unused],"attack",CampaignRouteX[destination],CampaignRouteY[destination])
-                    endif
-                    set k=k+1
-                endloop
-                set CampaignWaveAt[lane]=CampaignWaveAt[lane]+45.
+                call CampaignInvasionWave(lane)
+                set CampaignWaveAt[lane]=CampaignWaveAt[lane]+CampaignWavePeriod[lane]
             endif
             set lane=lane+1
         endloop

@@ -25,7 +25,7 @@ center.x=500;center.y=0;assert(StoryLootBot(0,center));assert(Hero[0].usedPoint[
 CampaignStage=12;CampaignTransition=false;Hero={};HeroRole={}
 for p=0,11 do Hero[p]=CreateUnit(p,raw('R000')+p,6096,-8528,0);HeroRole[p]=p end
 CampaignAlliances(2);StoryShopsOpen();CampaignFountainsOpen()
-local before=FogCreated-FogDestroyed;CampaignVillageLandmarksOpen();assert(FogCreated-FogDestroyed==before+96)
+CampaignVillageLandmarksClose();local before=FogCreated-FogDestroyed;CampaignVillageLandmarksOpen();assert(FogCreated-FogDestroyed==before+96)
 for p=0,11 do for j=0,7 do assert(VillageLandmarkFog[p*8+j]and VillageLandmarkFog[p*8+j].active)end end
 for j=0,3 do assert(StoryShop[j]and StoryShop[j].owner==14,'Supply stays neutral to defenders and attackers')end
 StoryCommand(0,'-shop');assert(Selected==StoryShopFor(0))

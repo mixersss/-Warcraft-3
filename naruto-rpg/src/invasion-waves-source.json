@@ -1,0 +1,107 @@
+{
+  "source": "Original N8O, WUO/WZO/W1O/W4O/W7O/YVO/YOO/YAO, timer registrations A_V..A6V and redirects A7V..NXV",
+  "attackerHeroRegion": "FM",
+  "attackerHeroCenter": [
+    -2336,
+    -11840
+  ],
+  "lanes": [
+    {
+      "lane": 0,
+      "origin": 0,
+      "destination": 1,
+      "kind": 16,
+      "role": 0,
+      "period": 45,
+      "delay": 0,
+      "count": 3,
+      "sourceFunction": "WUO"
+    },
+    {
+      "lane": 1,
+      "origin": 0,
+      "destination": 2,
+      "kind": 16,
+      "role": 1,
+      "period": 45,
+      "delay": 15,
+      "count": 3,
+      "sourceFunction": "WZO"
+    },
+    {
+      "lane": 2,
+      "origin": 0,
+      "destination": 3,
+      "kind": 16,
+      "role": 2,
+      "period": 45,
+      "delay": 30,
+      "count": 3,
+      "sourceFunction": "W1O"
+    },
+    {
+      "lane": 3,
+      "origin": 4,
+      "destination": 5,
+      "kind": 15,
+      "role": 0,
+      "period": 30,
+      "delay": 0,
+      "count": 3,
+      "sourceFunction": "W4O"
+    },
+    {
+      "lane": 4,
+      "origin": 4,
+      "destination": 6,
+      "kind": 15,
+      "role": 1,
+      "period": 30,
+      "delay": 15,
+      "count": 3,
+      "sourceFunction": "W7O"
+    },
+    {
+      "lane": 5,
+      "origin": 7,
+      "destination": 8,
+      "kind": 16,
+      "role": 0,
+      "period": 30,
+      "delay": 0,
+      "count": 3,
+      "sourceFunction": "YVO"
+    },
+    {
+      "lane": 6,
+      "origin": 9,
+      "destination": 8,
+      "kind": 15,
+      "role": 1,
+      "period": 30,
+      "delay": 0,
+      "count": 3,
+      "sourceFunction": "YOO"
+    },
+    {
+      "lane": 7,
+      "origin": 10,
+      "destination": 8,
+      "kind": 15,
+      "role": 2,
+      "period": 30,
+      "delay": 0,
+      "count": 3,
+      "sourceFunction": "YAO"
+    }
+  ],
+  "redirects": {
+    "1": 8,
+    "2": 8,
+    "3": 8,
+    "5": 8,
+    "6": 8,
+    "8": 11,
+    "11": 11
+  }
+}

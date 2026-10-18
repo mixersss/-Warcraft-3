@@ -348,7 +348,7 @@ function StoryShopFor takes integer p returns unit
     local real best=999999999.
     local real dx=0.
     local real dy=0.
-    if CampaignStage!=12 or CampaignTransition then
+    if (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
         return null
     endif
     loop
@@ -435,7 +435,7 @@ function StoryBuy takes integer p returns nothing
     local boolean full=true
     local unit shop=StoryShopFor(p)
     // Preparation must leave every hero inventory empty; purchases begin during play.
-    if shop==null or CampaignStage!=12 or CampaignTransition then
+    if shop==null or (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
         return
     endif
     if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<30 then
@@ -469,7 +469,7 @@ function StoryOnBuy takes nothing returns nothing
 endfunction
 function StoryShopsOpen takes nothing returns nothing
     local integer j=0
-    if CampaignStage!=12 then
+    if CampaignStage!=10 and CampaignStage!=11 and CampaignStage!=12 then
         return
     endif
     call StoryShopsClose()
@@ -501,7 +501,7 @@ function StoryFountainFor takes integer p returns unit
     local real best=999999999.
     local real dx=0.
     local real dy=0.
-    if CampaignStage!=12 or CampaignTransition then
+    if (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
         return null
     endif
     loop
@@ -583,7 +583,7 @@ function StoryCommand takes integer p, string msg returns nothing
             call PingMinimapEx(GetUnitX(goal),GetUnitY(goal),5.,80,200,255,false)
             call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Фонтан Конохи: подведите героя для восстановления HP и чакры. -camera: вернуться к герою.")
         else
-            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Фонтаны Конохи доступны во время вторжения. В Лесу смерти работают два отдельных фонтана.")
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Фонтаны Конохи доступны при поиске Джирайи и во время вторжения. В Лесу смерти работают два отдельных фонтана.")
         endif
         set goal=null
     elseif msg=="-shop" then
@@ -593,7 +593,7 @@ function StoryCommand takes integer p, string msg returns nothing
             call PanCameraToTimedForPlayer(Player(p),GetUnitX(goal),GetUnitY(goal),1.)
             call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Снабжение Конохи: подведите своего героя и купите предмет кнопкой магазина. -camera: вернуться к герою.")
         else
-            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Магазины доступны только во время нападения на деревню. До этого снаряжение можно найти у побеждённых врагов.")
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Магазины Конохи открыты при поиске Джирайи и во время вторжения. До посещения города снаряжение выпадает с врагов.")
         endif
         set goal=null
     elseif msg=="-camera" and Hero[p]!=null then

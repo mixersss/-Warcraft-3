@@ -498,7 +498,11 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         set ZoneBurn[p]=burn
         set ZoneUntil[p]=TimeNow+RosterDuration[index]
         set ZoneNext[p]=TimeNow+.5
-        call RosterArea(p,x,y,RosterRadius[index],power,burn,0.)
+        if (index==21 or index==41) and rank==4 then
+            call RosterArea(p,x,y,400.,power,burn,0.)
+        else
+            call RosterArea(p,x,y,RosterRadius[index],power,burn,0.)
+        endif
         if index==21 or index==41 then
             call RosterRepel(p,rank)
         endif
@@ -633,7 +637,9 @@ function RosterTick takes nothing returns nothing
                     set ZoneX[p]=GetUnitX(Hero[p])
                     set ZoneY[p]=GetUnitY(Hero[p])
                 endif
-                call RosterArea(p,ZoneX[p],ZoneY[p],ZoneRadius[p],ZonePower[p],ZoneBurn[p],0.)
+                if VisualZoneIndex[p]!=21 and VisualZoneIndex[p]!=41 then
+                    call RosterArea(p,ZoneX[p],ZoneY[p],ZoneRadius[p],ZonePower[p],ZoneBurn[p],0.)
+                endif
                 call VisualPulse(p,VisualZoneIndex[p],ZoneX[p],ZoneY[p])
                 set ZoneNext[p]=TimeNow+.5
             elseif ZoneUntil[p]>0. and TimeNow>=ZoneUntil[p] then

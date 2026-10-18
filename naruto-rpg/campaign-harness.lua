@@ -42,7 +42,7 @@ function PlayMusic(path)LastCampaignMusic=path end
 function StopMusic()end
 MusicOn=false
 local function fresh()
- CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0
+ CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0;CampaignFinalActive=false
  CampaignClone={};CampaignClonePending={};CampaignCloneKind={};CampaignCloneCastAt=setmetatable({},{__index=function()return 0 end})
  CampaignActor={};CampaignActorType={};CampaignPermanentDead={};CampaignCastAt={};CampaignMoveAt={};CampaignActorRoute={}
  setmetatable(CampaignCastAt,{__index=function()return 0 end});setmetatable(CampaignMoveAt,{__index=function()return 0 end})
@@ -61,14 +61,40 @@ local function killEnemies()
 end
 local function doDuels(expected)
  local count=0
+ local finals=0
  while not CampaignTransition do
   CampaignTick()
-  if CampaignDuelA>=0 then
+  if CampaignFinalActive then
+   assert(CampaignStage==11 and CampaignDuelA<0)
+   TimeNow=CampaignDuelAt;CampaignTick();assert(CampaignDuelLive)
+   local a,b,c=CampaignFinalPlayer[0],CampaignFinalPlayer[1],CampaignFinalPlayer[2]
+   assert(a~=b and b~=c and a~=c)
+   for _,p in ipairs({a,b,c})do
+    assert(not Hero[p].paused and not CampaignEliminated[p] and Hero[p].cooldownResets>0)
+    for k=0,4 do assert(BotReadyAt[p*5+k]<=TimeNow)end
+   end
+   assert(IsUnitEnemy(Hero[a],b)and IsUnitEnemy(Hero[b],c)and IsUnitEnemy(Hero[c],a))
+   for p=0,11 do if p~=a and p~=b and p~=c then assert(CampaignEliminated[p]and Hero[p].paused,'Eliminated heroes must not re-enter the final')end end
+   Hero[a].hp=0;CampaignTick();assert(CampaignFinalActive and CampaignEliminated[a]and Hero[a].paused)
+   assert(CampaignNearest(b)==Hero[c]and CampaignNearest(c)==Hero[b],'Final AI targets only surviving finalists')
+   Hero[b].hp=0;CampaignTick();assert(not CampaignFinalActive and CampaignChampion==c and CampaignQueued==12)
+   finals=finals+1
+  elseif CampaignDuelA>=0 then
    TimeNow=CampaignDuelAt;CampaignTick();assert(CampaignDuelLive)
    local a,b=CampaignDuelA,CampaignDuelB
-   assert(not fog and not mask and not filter,'Public arena view must remain open during every duel')
+   assert(fog and mask and not filter,'Reveal only arena terrain without global fog disabling')
+   for p=0,11 do assert(CampaignArenaFog[p]and CampaignArenaFog[p].active and CampaignArenaFog[p].radius==2600)end
    for p=0,11 do assert(pans[p].x==CampaignTX[CampaignStage] and pans[p].y==CampaignTY[CampaignStage],'Every spectator camera must look at the fight')end
    assert(not Hero[a].paused and not Hero[b].paused and IsUnitEnemy(Hero[a],b))
+   assert(Hero[a].cooldownResets>0 and Hero[b].cooldownResets>0)
+   assert(not vision[a][b]and not vision[b][a],'Fighters must not share invisible unit sight')
+   for p=0,11 do for q=0,11 do assert(not vision[p][q],'Spectators must not relay sight to a fighter')end end
+   if CampaignBracket then assert(not CampaignEliminated[a]and not CampaignEliminated[b],'Losers never re-enter elimination rounds')end
+   for k=0,4 do assert(BotReadyAt[a*5+k]<=TimeNow and BotReadyAt[b*5+k]<=TimeNow,'Bot cooldown bookkeeping resets too')end
+   Hero[b].invisible=true;assert(CampaignNearest(a)==nil,'No scripted target through invisibility')
+   local oldDummy=Dummy[math.floor(a/3)];Dummy[math.floor(a/3)]=Hero[b];assert(not SkillsBot(a),'No targeted spells through invisibility');Dummy[math.floor(a/3)]=oldDummy
+   Hero[b].detected=true;assert(CampaignNearest(a)==Hero[b],'Real detection still sees the opponent')
+   Hero[b].invisible=false;Hero[b].detected=false
    for p=0,11 do if p~=a and p~=b then
     assert(Hero[p].paused,'Only two fighters are active')
     local seat=p+(CampaignStage==11 and 12 or 0)
@@ -86,28 +112,33 @@ local function doDuels(expected)
   assert(count<30,'Duel bracket must terminate')
  end
  assert(count==expected,'Unexpected number of duels: '..count)
+ assert(finals==(CampaignBracket and 1 or 0),'Exactly one three-way final after elimination rounds')
 end
 fresh();CampaignTick();assert(CampaignTransition and CampaignQueued==9)
-enter();assert(not fog and not mask and not filter);for p=0,11 do assert(pans[p].x==CampaignTX[9] and pans[p].y==CampaignTY[9])end
+enter();assert(fog and mask and not filter);for p=0,11 do assert(pans[p].x==CampaignTX[9] and pans[p].y==CampaignTY[9])end
 assert(CampaignStage==9 and CampaignSasukePlayer==1 and CampaignNarutoPlayer==0)
 doDuels(6);assert(CampaignQueued==10)
 enter();assert(fog and mask and not filter and not CampaignArenaView,'Restore exploration after arena');assert(CampaignStage==10 and CampaignCount==20 and CampaignEndAt-TimeNow==150)
+assert(vision[0][1]and StoryShop[0]and VillageFountain[0],'City restores shared vision and opens source supply')
+assert(StoryShop[0].x==16192 and StoryShop[0].y==-16256 and VillageFountain[0].x==16128 and VillageFountain[0].y==-15744,'Source corner beside arena')
 for p=0,11 do
  local target=CampaignNearest(p);assert(target and CampaignActorType[CampaignJiraiya]==18)
  CampaignBot(p,target);assert(Hero[p].last.o=='attack','Every bot participates in the barrel search')
 end
 local trainingXP=Hero[0].xp or 0;CampaignActor[CampaignJiraiya].hp=0;CampaignTick();assert(CampaignFound and not CampaignDialog.visible and Hero[0].xp==trainingXP+2200)
 TimeNow=CampaignTrainingAt;CampaignTick();assert(CampaignQueued==11)
-enter();doDuels(11);assert(CampaignQueued==12)
+enter();doDuels(9);assert(CampaignQueued==12)
 enter();assert(CampaignStage==12 and CampaignEndAt-TimeNow==1500)
 local counts={};for j=0,CampaignCount-1 do local k=CampaignActorType[j];counts[k]=(counts[k]or 0)+1 end
 assert(counts[17]==140 and counts[34]==102 and counts[32]==6,'All 248 source village ninja/medic placements must exist')
 for t=0,3 do assert(StoryShop[t],'All four original village shops exist during invasion')end
 local waveStart=TimeNow;local initial=CampaignCount
-TimeNow=waveStart+45;CampaignTick();assert(CampaignCount==initial+15,'Five immediate streams x three units')
-TimeNow=waveStart+60;CampaignTick();assert(CampaignCount==initial+21,'Two delayed streams x three units')
--- Source schedule: one stream at +30 (75), two at +15 (60). Account for actual lane pattern below.
-TimeNow=waveStart+75;CampaignTick();assert(CampaignCount==initial+24)
+for _,p in ipairs({9,10,11})do assert(math.abs(Hero[p].x+2336)<1 and math.abs(Hero[p].y+11840)<=32,'Sand starts at the source enemy camp')end
+TimeNow=waveStart+30;CampaignTick();assert(CampaignCount==initial+12,'Four immediate 30-second streams x three')
+TimeNow=waveStart+45;CampaignTick();assert(CampaignCount==initial+18,'Sand first wave plus delayed Sound')
+TimeNow=waveStart+60;CampaignTick();assert(CampaignCount==initial+33)
+TimeNow=waveStart+75;CampaignTick();assert(CampaignCount==initial+39)
+for j=initial,CampaignCount-1 do local u=CampaignActor[j];assert(not u.paused and u.last.o=='attack' and CampaignActorRoute[j]>=0,'Every invader is active and marching to its source waypoint')end
 TimeNow=CampaignKabutoAt;CampaignTick();assert(CampaignVillageKabuto and CampaignVillageKabuto.owner==10)
 TimeNow=CampaignJiraiyaAt;CampaignTick();local jiraiyaPresent=false;for j=0,CampaignCount-1 do if CampaignActorType[j]==33 then jiraiyaPresent=true end end;assert(jiraiyaPresent,'Jiraiya joins the village defense')
 TimeNow=CampaignSnakeAt;CampaignTick();assert(CampaignVillageSnake and CampaignVillageSnake.owner==11 and CampaignSnakeGoneAt-TimeNow==300)
@@ -162,8 +193,8 @@ SkillsChoose(0,1);assert(HeroRole[0]==1 and HeroRole[1]==0 and RoleChosen[0])
 RoleChosen[1]=true;local before=HeroRole[0];SkillsChoose(0,0);assert(HeroRole[0]==before,'Cannot steal a confirmed human story role')
 -- Public arena visibility restores the exact previous options, including a mixed fog/mask state.
 CampaignArenaVisibility(0);fog=true;mask=false
-CampaignArenaVisibility(9);assert(not fog and not mask)
-CampaignArenaVisibility(9);CampaignArenaVisibility(11);assert(not fog and not mask)
+CampaignArenaVisibility(9);assert(fog and mask)
+CampaignArenaVisibility(9);CampaignArenaVisibility(11);assert(fog and mask)
 CampaignArenaVisibility(10);assert(fog and not mask and not CampaignArenaView)
 fog=true;mask=true
 -- Exercise actual chat dispatch, safe startup/host gates, early-chapter cleanup and re-entry.
@@ -195,15 +226,17 @@ do
  assert(Hero[0]==identity and Hero[0].level==level and GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==gold,'No hero reroll or skipped quest reward')
  local clock,dialog,scratch=CampaignClock,CampaignDialog,CampaignScratch
  ChatText='-arena 1';FoundationChat();assert(CampaignQueued==11,'An in-progress transition cannot be overwritten')
- enter();assert(CampaignStage==11 and CampaignDuelA>=0 and not fog and not mask and not filter)
+ enter();assert(CampaignStage==11 and CampaignDuelA>=0 and fog and mask and not filter)
  ChatText='-arena';FoundationChat();assert(CampaignQueued==9 and CampaignTransition)
  assert(CampaignClock==clock and CampaignDialog==dialog and CampaignScratch==scratch,'Repeated shortcut reuses campaign handles')
  enter();assert(CampaignStage==9 and CampaignDuelA>=0)
  CampaignStage=12;ChatText='-arena 2';FoundationChat();assert(not CampaignTransition,'Do not rewind active invasion/source NPC timers')
  CampaignStage=9;Controllers[0]='computer';ChatPlayer=1;FoundationChat();assert(CampaignTransition and CampaignQueued==11,'Support non-red first human')
  enter();CampaignArenaVisibility(0);fog=true;mask=true
+ fresh();StoryPopulateCursor=64;SpawnClock=nil;ChatPlayer=0;ChatText='-village';FoundationChat();assert(CampaignTransition and CampaignQueued==12)
+ enter();assert(CampaignStage==12 and Hero[9].x==-2336 and StoryShop[0] and VillageFountain[0],'The real village shortcut builds the full invasion')
  PauseTimer,DestroyTimer=timersPaused,timersDestroyed
 end
 
 assert(#fades>0,'Every stage transition must include a real cinematic fade')
-print('PASS: actual -arena chat dispatch, startup/host/transition guards, early-chapter producer cleanup, repeated and non-red host jumps; public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and eleven final duels, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')
+print('PASS: actual -arena chat dispatch, startup/host/transition guards, early-chapter producer cleanup, repeated and non-red host jumps; public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and nine elimination duels and one three-way final, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')

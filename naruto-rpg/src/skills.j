@@ -181,6 +181,18 @@ function SkillsEndcast takes nothing returns nothing
     endif
     set caster=null
 endfunction
+// Source U6/QLE removes Naruto illusions on an attack, independently of their copied HP.
+function SkillsFragileClone takes nothing returns nothing
+    local unit u=GetTriggerUnit()
+    if IsUnitIllusion(u) and (GetUnitTypeId(u)=='R000' or GetUnitTypeId(u)=='Rnfm') and FoundationAlive(u) then
+        call DestroyEffect(AddSpecialEffect("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",GetUnitX(u),GetUnitY(u)))
+        call KillUnit(u)
+    endif
+    set u=null
+endfunction
+function SkillsCanSee takes unit u, player viewer returns boolean
+    return u!=null and IsUnitVisible(u,viewer) and (not IsUnitInvisible(u,viewer) or IsUnitDetected(u,viewer))
+endfunction
 function SkillsSummoned takes nothing returns nothing
     local unit summoner=GetSummoningUnit()
     local unit summoned=GetSummonedUnit()
@@ -270,7 +282,7 @@ function SkillsBot takes integer p returns boolean
     local boolean issued=false
     local real dx=0.
     local real dy=0.
-    if not SkillDataReady or role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 or TimeNow<VisualChannelUntil[p] then
+    if not SkillDataReady or role<0 or not FoundationAlive(u) or not FoundationAlive(target) or TimeNow<BotNextCast[p] or ComboLeft[p]>0 or TimeNow<VisualChannelUntil[p] or ((CampaignStage==9 or CampaignStage==11) and not SkillsCanSee(target,Player(p))) then
         set u=null
         set target=null
         return false
@@ -411,6 +423,7 @@ function SkillsInit takes nothing returns nothing
     local trigger ended=CreateTrigger()
     local trigger items=CreateTrigger()
     local trigger levels=CreateTrigger()
+    local trigger fragile=CreateTrigger()
     local timer visualclock=CreateTimer()
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
@@ -434,8 +447,10 @@ function SkillsInit takes nothing returns nothing
     loop
         exitwhen p>=16
         call TriggerRegisterPlayerUnitEvent(items,Player(p),EVENT_PLAYER_UNIT_USE_ITEM,null)
+        call TriggerRegisterPlayerUnitEvent(fragile,Player(p),EVENT_PLAYER_UNIT_ATTACKED,null)
         set p=p+1
     endloop
+    call TriggerAddAction(fragile,function SkillsFragileClone)
     call TriggerAddAction(items,function RamenUse)
     call TriggerAddAction(levels,function SkillsLevel)
     call TriggerAddAction(spells,function NoteCast)
@@ -444,6 +459,7 @@ function SkillsInit takes nothing returns nothing
     call TimerStart(visualclock,.05,true,function VisualTick)
     call TriggerAddAction(summons,function SkillsSummoned)
     call TimerStart(clock,.25,true,function SkillsTick)
+    set fragile=null
     set levels=null
     set items=null
     set ended=null

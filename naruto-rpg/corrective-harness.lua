@@ -46,8 +46,8 @@ for _,p in ipairs({4,8})do
  cast(p,PlayableSkill[p*5+1],1,nil);SkillsTick();assert(math.abs(Hero[p].timeScale-2.933/2)<.0001)
  local started=TimeNow
  step(2.05)
- assert(ZoneUntil[p]==0 and math.abs(enemy.hp-(100000000-360))<.01,'Faster Kaiten must preserve rank-one complete damage')
+ assert(ZoneUntil[p]==0 and math.abs(enemy.hp-(100000000-100))<.01,'Kaiten must apply source rank-one damage once before push')
  assert(TimeNow-started<2.1)
  Caster=Hero[p];Spell=PlayableSkill[p*5+1];SkillsEndcast();RosterReset(p)
 end
-print('PASS: neutral Byakugan without spin, Tenten ranks/volley destinations/aerial lifecycle and two-second Kaiten with preserved complete damage (mock natives).')
+print('PASS: neutral Byakugan without spin, Tenten ranks/volley destinations/aerial lifecycle and two-second Kaiten with source instant damage (mock natives).')

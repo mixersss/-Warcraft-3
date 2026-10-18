@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 ROOT=Path(__file__).parent
 DATA=json.loads((ROOT/'src/campaign-source.json').read_text())
-MODELS=[('Хирузен Сарутоби','Sandaime.mdl',90000,160),('Какаши','KakashiNew.mdl',30000,120),('Майто Гай','Gai.mdl',30000,140),('Итачи','Itachi.mdl',55000,170),('Кисамэ','Kisame.mdl',60000,180),('Дзиробо','Jiroubu.mdl',30000,140),('Кидомару','Kidoumaru.mdl',26000,110),('Сакон','Sakon.mdl',30000,130),('Тауюя','Tayuya.mdl',26000,110),('Кимимаро','Kimimaro.mdl',40000,170),('Саске — проклятая печать','SasukeCursed.mdl',60000,180),('Кабуто','Kabuto.mdl',65000,170),('Манда','Manda.mdl',120000,220),('Орочимару','Orochimaru.mdl',100000,210),('Джирайя','Jiraiya.mdl',20000,130),('Ниндзя Звука','SoundJounin.mdl',2200,65),('Ниндзя Песка','SandJounin.mdl',2400,65),('Ниндзя Листа','LeafJounin.mdl',2600,70),('Бочка','Doodads\\LordaeronSummer\\Props\\Barrel\\Barrel.mdl',120,0),('Валун','Doodads\\Terrain\\RockChunks\\RockChunks0.mdl',5000,0)]
+MODELS=[('Хирузен Сарутоби','Sandaime.mdl',90000,160),('Какаши','KakashiNew.mdl',30000,120),('Майто Гай','Gai.mdl',30000,140),('Итачи','Itachi.mdl',55000,170),('Кисамэ','Kisame.mdl',60000,180),('Дзиробо','Jiroubu.mdl',30000,140),('Кидомару','Kidoumaru.mdl',26000,110),('Сакон','Sakon.mdl',30000,130),('Тауюя','Tayuya.mdl',26000,110),('Кимимаро','Kimimaro.mdl',40000,170),('Саске — проклятая печать','SasukeCursed.mdl',60000,180),('Кабуто','Kabuto.mdl',65000,170),('Манда','Manda.mdl',120000,220),('Орочимару','Orochimaru.mdl',100000,210),('Джирайя','Jiraiya.mdl',20000,130),('Ниндзя Звука','SoundJounin.mdl',2200,65),('Ниндзя Песка','SandJounin.mdl',2400,65),('Ниндзя Листа','LeafJounin.mdl',2600,70),('Бочка','Buildings\\Other\\BarrelsUnit0\\BarrelsUnit0.mdl',120,0),('Валун','Doodads\\Terrain\\RockChunks\\RockChunks0.mdl',5000,0)]
 MODELS += [('Двойник: '+name,model,5000,70) for name,fn,a,b,model in DATA['cloneRooms']]
 MODELS += [('Наруто — сюжетный персонаж','Naruto.mdl',50000,160)]
 MODELS += [('Асумa','AsumaNew.mdl',20000,149),('Куренай','KurenaiNew.mdl',20000,149),('Анко','Anko.mdl',20000,149),('Медик Листа','LeafJounin.mdl',3000,0),('Джирайя','Jiraiya.mdl',60000,349),('АНБУ','ANBU_2.mdl',5000,149),('Баки','SandJounin.mdl',10000,149),('Трёхголовая змея','Manda.mdl',30000,499),('Какаши — Акацуки','KakashiNew.mdl',10000,299),('Гай — Акацуки','Gai.mdl',10000,299),('Укон','Sakon.mdl',60000,349)]
@@ -18,6 +18,7 @@ def units():
   scale=.8 if n!=12 else 1.2
   mods=[('unam',3,name),('umdl',3,model),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp'),('usca',1,scale),('uhpm',0,hp),('uhpr',2,0.),('ua1b',0,damage),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.5),('ua1r',0,140),('umvs',0,310),('ucol',2,24.),('udef',0,6),('umpm',0,3000),('umpi',0,3000),('umpr',2,10.),('uabi',3,'Cbol,Cwav,Cstm'),('uaen',0,1),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,''),('ulev',0,10),('ufoo',0,0),('upgr',3,''),('ureq',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0)]
   if n in (0,18,19):mods.extend([('umvs',0,0),('uabi',3,''),('uaen',0,0 if n>=18 else 1),('ucol',2,16.)])
+  if n==18:mods.extend([('usca',1,2.),('uhpm',0,100),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNBarrel.blp')])
   if n==32:mods.extend([('uabi',3,'Cmed'),('uaen',0,0)])
   if n==14:mods.extend([('uabi',3,'Avul'),('uaen',0,0)])
   if n in (6,8,15,16):mods.extend([('ua1w',3,'missile'),('ua1r',0,550),('ua1m',3,'Kunai.mdl'),('ua1z',0,1100)])
@@ -52,6 +53,10 @@ def generated():
   for p,seat in enumerate(seats):
    n=p+(12 if int(stage)==11 else 0)
    lines.extend([f"    set ArenaSeatX[{n}]={float(seat['x'])}",f"    set ArenaSeatY[{n}]={float(seat['y'])}"])
+ for wave in json.loads((ROOT/'src/invasion-waves-source.json').read_text())['lanes']:
+  for key in ['origin','destination','kind','role','period','delay']:
+   value=float(wave[key])if key in ['period','delay']else wave[key]
+   lines.append(f"    set CampaignWave{key.title()}[{wave['lane']}]={value}")
  for st in DATA['stages']:
   n=st['id'];p=nav[str(n)];bounds=p['bounds']
   vals={'CampaignName':st['name'],'CampaignIntro':st['intro'],'CampaignMusic':-1 if st['music'] is None else st['music'],'CampaignLimit':float(st['seconds']),'CampaignX':float(p['spawn'][0]),'CampaignY':float(p['spawn'][1]),'CampaignTX':float(p['target'][0]),'CampaignTY':float(p['target'][1]),'CampaignMinX':float(bounds[0]),'CampaignMinY':float(bounds[1]),'CampaignMaxX':float(bounds[2]),'CampaignMaxY':float(bounds[3])}
