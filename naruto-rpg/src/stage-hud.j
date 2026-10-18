@@ -28,6 +28,7 @@ function HUDInit takes nothing returns nothing
     call MultiboardDisplay(StageBoard,true)
     call MultiboardMinimize(StageBoard,false)
     set PhaseClock=CreateTimer()
+    call TimerStart(PhaseClock,RMaxBJ(.01,420.-TimeNow),false,function HUDClockEnd)
     set PhaseDialog=CreateTimerDialog(PhaseClock)
     call TimerDialogDisplay(PhaseDialog,false)
 endfunction

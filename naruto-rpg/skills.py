@@ -38,8 +38,10 @@ def ability_data():
  out.append(('Atru','Rbyg',sight))
  # Hidden native stun applied by an expiring invisible caster; no PauseUnit locks.
  stun=[('anam',3,'Короткое оглушение'),('aher',0,0),('alev',0,4),('abpx',0,0),('abpy',0,-11),('amat',3,''),('aani',3,''),('acat',3,'')]
- for n in range(1,5):stun += [('amcs',0,0,n,0),('acdn',2,0.,n,0),('aran',2,2000.,n,0),('Htb1',2,0.,n,1),('adur',2,.5*n,n,0),('ahdu',2,.5*n,n,0),('amsp',0,10000,n,0),('atar',3,'ground,air,enemy,neutral,organic',n,0)]
+ for n in range(1,5):stun += [('amcs',0,0,n,0),('acdn',2,0.,n,0),('aran',2,2000.,n,0),('Htb1',2,0.,n,1),('adur',2,.5*n,n,0),('ahdu',2,.25*n,n,0),('amsp',0,10000,n,0),('atar',3,'ground,air,enemy,neutral,organic',n,0)]
  out.append(('ANsb','Rstn',stun))
+ micro=[('anam',3,'Микрооглушение Кайтэна'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amat',3,''),('aani',3,''),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('Htb1',2,0.,1,1),('adur',2,.2,1,0),('ahdu',2,.1,1,0),('atar',3,'ground,air,enemy,neutral,organic',1,0)]
+ out.append(('AHtb','Rmic',micro))
  for _,_,mods in out:
   if not any(m[0]=='aefs' for m in mods):mods.extend([('aefs',3,''),('aefl',3,'')])
  return out
@@ -58,7 +60,7 @@ def summon_units():
    out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
  out.append(('hfoo','rshk',[('unam',3,'Теневые путы'),('uhom',0,1),('umdl',3,'ShikamaruKageMane.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,2.),('ushu',3,''),('ushb',3,''),('usin',0,0),('usid',0,0),('ufoo',0,0)]))
  out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'ShinobiShadowStrip.mdl'),('usin',0,0),('usid',0,0),('uhom',0,1),('umvt',3,'fly'),('umvh',2,6.),('umvf',2,6.),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,1.),('ufoo',0,0)]))
- out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
+ out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('ucpt',2,0.),('ucbs',2,0.),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
  for entry in VISUALS['visualUnits']:
   out.append(('hfoo',entry['id'],[('unam',3,'Графика техники'),('umdl',3,entry['model']),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,entry['scale']),('ushu',3,''),('ushb',3,''),('ussc',1,0.),('usin',0,0),('usid',0,0),('utar',3,''),('utyp',3,''),('ufoo',0,0),('ureq',3,''),('upgr',3,'')]))
  return out

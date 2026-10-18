@@ -1,0 +1,1040 @@
+{
+  "sourceScriptSHA256": "a9c3b260a65c0ff571cd488ae3f7742888ead2a6b2fa5ef72501a7cbd731aec4",
+  "firstForest": {
+    "function": "QOV",
+    "rolls": {
+      "I007": 10,
+      "I006": 10,
+      "I002": 7,
+      "gobm": 8,
+      "I00G": 8,
+      "I00A": 2,
+      "I008": 10,
+      "none": 45
+    }
+  },
+  "deathForest": {
+    "function": "Z0X",
+    "rolls": {
+      "I003": 2,
+      "I004": 2,
+      "I005": 2,
+      "gobm": 6,
+      "I007": 7,
+      "I002": 6,
+      "I00G": 7,
+      "I006": 5,
+      "I00A": 2,
+      "I000": 2,
+      "I008": 6,
+      "I001": 2,
+      "none": 51
+    }
+  },
+  "respawn": {
+    "condition": "Y5X",
+    "spawn": "Y8X",
+    "timer": "O1V",
+    "periodSeconds": 8,
+    "livingThreshold": 25,
+    "mistBatch": 3,
+    "rainBatch": 5,
+    "immediateRespawn": "GetRandomInt(1,100)>32; 1 second; original source death handler",
+    "bounds": [
+      -16384,
+      -16384,
+      -3776,
+      -3296
+    ]
+  },
+  "fountains": [
+    {
+      "sourceType": "nfnp",
+      "x": -4608,
+      "y": -15232,
+      "facing": 270
+    },
+    {
+      "sourceType": "nfnp",
+      "x": -15616,
+      "y": -4224,
+      "facing": 270
+    }
+  ],
+  "sourceFountainBody": {
+    "oldId": "nfnp",
+    "newId": "\u0000\u0000\u0000\u0000",
+    "modifications": [
+      {
+        "id": "uubs",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "",
+        "u1": 1886283374
+      },
+      {
+        "id": "usid",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 0,
+        "u1": 1886283374
+      },
+      {
+        "id": "usin",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 0,
+        "u1": 0
+      },
+      {
+        "id": "unbm",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 0,
+        "u1": 1886283374
+      },
+      {
+        "id": "uclr",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 175,
+        "u1": 1886283374
+      },
+      {
+        "id": "uclg",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 175,
+        "u1": 0
+      }
+    ]
+  },
+  "sourceScrolls": [
+    {
+      "oldId": "ledg",
+      "newId": "I000",
+      "modifications": [
+        {
+          "id": "unam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Heaven Scroll",
+          "u1": 0
+        },
+        {
+          "id": "ides",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "utub",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "One pair of scrolls, Earth and Heaven, are needed for your team to enter the center tower when the countdown reaches below two minutes.",
+          "u1": 0
+        },
+        {
+          "id": "ihtp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 999999,
+          "u1": 0
+        },
+        {
+          "id": "iico",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_ScrollEarth.BLP",
+          "u1": 0
+        },
+        {
+          "id": "icla",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Permanent",
+          "u1": 0
+        },
+        {
+          "id": "ifil",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "ScrollRed.mdl",
+          "u1": 0
+        },
+        {
+          "id": "idrp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "utip",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "ledg",
+      "newId": "I001",
+      "modifications": [
+        {
+          "id": "unam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Earth Scroll",
+          "u1": 0
+        },
+        {
+          "id": "ides",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "utub",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "One pair of scrolls, Earth and Heaven, are needed for your team to enter the center tower when the countdown reaches below two minutes.",
+          "u1": 0
+        },
+        {
+          "id": "ihtp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 999999,
+          "u1": 0
+        },
+        {
+          "id": "iico",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_ScrollHeaven.BLP",
+          "u1": 0
+        },
+        {
+          "id": "icla",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Permanent",
+          "u1": 0
+        },
+        {
+          "id": "ifil",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "ScrollRed.mdl",
+          "u1": 0
+        },
+        {
+          "id": "idrp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "utip",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        }
+      ]
+    }
+  ],
+  "sourceKunai": {
+    "oldId": "AHtb",
+    "newId": "A005",
+    "modifications": [
+      {
+        "id": "anam",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "amat",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Kunai.MDX",
+        "u1": 0
+      },
+      {
+        "id": "aart",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Icon_KunaiThrow.BLP",
+        "u1": 0
+      },
+      {
+        "id": "arar",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Icon_KunaiThrow.BLP",
+        "u1": 0
+      },
+      {
+        "id": "aret",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "arut",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 150,
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 150,
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 150,
+        "u1": 0
+      },
+      {
+        "id": "arhk",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "D",
+        "u1": 0
+      },
+      {
+        "id": "ahky",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "D",
+        "u1": 0
+      },
+      {
+        "id": "Htb1",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 1,
+        "value": 150,
+        "u1": 0
+      },
+      {
+        "id": "Htb1",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 1,
+        "value": 250,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 25,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 25,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 25,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 0.75,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 0.75,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 0.75,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 1.25,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 1.25,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 1.25,
+        "u1": 0
+      },
+      {
+        "id": "amsp",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 1500,
+        "u1": 0
+      },
+      {
+        "id": "aani",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "attack,2,throw",
+        "u1": 0
+      },
+      {
+        "id": "alev",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 4,
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": "Kunai Toss (D)",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+        "u1": 0
+      },
+      {
+        "id": "Htb1",
+        "variableType": 2,
+        "levelOrVariation": 4,
+        "dataPointer": 1,
+        "value": 400,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": 0.75,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": 1.25,
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": 200,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": 35,
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "enemies,organic",
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "enemies,organic",
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "enemies,organic",
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 4,
+        "dataPointer": 0,
+        "value": "enemies,organic",
+        "u1": 0
+      }
+    ]
+  },
+  "sourceSoshoryu": {
+    "oldId": "ANc3",
+    "newId": "A00Z",
+    "modifications": [
+      {
+        "id": "anam",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Soshoryu (W)",
+        "u1": 0
+      },
+      {
+        "id": "amat",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Shurikens.MDX,Kunai.MDX,Note.MDX",
+        "u1": 0
+      },
+      {
+        "id": "arar",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Icon_Tenten_Soshoryu2.blp",
+        "u1": 0
+      },
+      {
+        "id": "aart",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Icon_Tenten_Soshoryu2.blp",
+        "u1": 0
+      },
+      {
+        "id": "arlv",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 35,
+        "u1": 0
+      },
+      {
+        "id": "aret",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Soshoryu (W)",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "Soshoryu (W)",
+        "u1": 0
+      },
+      {
+        "id": "arut",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "Twin Rising Dragons: While jumping high into the air while spinning, Tenten unravels two of her scrolls. From here she summons many weapons in a quick succession, causing unavoidable widespread damage..",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "Twin Rising Dragons: While jumping high into the air while spinning, Tenten unravels two of her scrolls. From here she summons many weapons in a quick succession, causing unavoidable widespread damage..",
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 500,
+        "u1": 0
+      },
+      {
+        "id": "Ncs3",
+        "variableType": 0,
+        "levelOrVariation": 1,
+        "dataPointer": 3,
+        "value": 20,
+        "u1": 0
+      },
+      {
+        "id": "Ncs4",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 4,
+        "value": 99999,
+        "u1": 0
+      },
+      {
+        "id": "Ncs1",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 1,
+        "value": 70,
+        "u1": 0
+      },
+      {
+        "id": "Ncs6",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 6,
+        "value": 3,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 5,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 6,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 120,
+        "u1": 0
+      },
+      {
+        "id": "arhk",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "W",
+        "u1": 0
+      },
+      {
+        "id": "ahky",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "W",
+        "u1": 0
+      },
+      {
+        "id": "abpx",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 3,
+        "u1": 0
+      },
+      {
+        "id": "arpx",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 3,
+        "u1": 0
+      },
+      {
+        "id": "amsp",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 2000,
+        "u1": 0
+      },
+      {
+        "id": "arac",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "human",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "Soshoryu (W)",
+        "u1": 0
+      },
+      {
+        "id": "atp1",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "Soshoryu (W)",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "Twin Rising Dragons: While jumping high into the air while spinning, Tenten unravels two of her scrolls. From here she summons many weapons in a quick succession, causing unavoidable widespread damage..",
+        "u1": 0
+      },
+      {
+        "id": "aub1",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "Twin Rising Dragons: While jumping high into the air while spinning, Tenten unravels two of her scrolls. From here she summons many weapons in a quick succession, causing unavoidable widespread damage..",
+        "u1": 0
+      },
+      {
+        "id": "Ncs1",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 1,
+        "value": 100,
+        "u1": 0
+      },
+      {
+        "id": "Ncs1",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 1,
+        "value": 125,
+        "u1": 0
+      },
+      {
+        "id": "Ncs6",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 6,
+        "value": 3,
+        "u1": 0
+      },
+      {
+        "id": "Ncs6",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 6,
+        "value": 3,
+        "u1": 0
+      },
+      {
+        "id": "Ncs3",
+        "variableType": 0,
+        "levelOrVariation": 2,
+        "dataPointer": 3,
+        "value": 30,
+        "u1": 0
+      },
+      {
+        "id": "Ncs3",
+        "variableType": 0,
+        "levelOrVariation": 3,
+        "dataPointer": 3,
+        "value": 40,
+        "u1": 0
+      },
+      {
+        "id": "Ncs4",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 4,
+        "value": 99999,
+        "u1": 0
+      },
+      {
+        "id": "Ncs4",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 4,
+        "value": 99999,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 120,
+        "u1": 0
+      },
+      {
+        "id": "acdn",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 120,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 5,
+        "u1": 0
+      },
+      {
+        "id": "ahdu",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 5,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 6,
+        "u1": 0
+      },
+      {
+        "id": "adur",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 6,
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 500,
+        "u1": 0
+      },
+      {
+        "id": "amcs",
+        "variableType": 0,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 500,
+        "u1": 0
+      },
+      {
+        "id": "aani",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "spell,looping",
+        "u1": 0
+      },
+      {
+        "id": "aefl",
+        "variableType": 3,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": "MetalHeavyBashMetal",
+        "u1": 0
+      },
+      {
+        "id": "aare",
+        "variableType": 2,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": 300,
+        "u1": 0
+      },
+      {
+        "id": "aare",
+        "variableType": 2,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": 500,
+        "u1": 0
+      },
+      {
+        "id": "aare",
+        "variableType": 2,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": 700,
+        "u1": 0
+      },
+      {
+        "id": "amho",
+        "variableType": 0,
+        "levelOrVariation": 0,
+        "dataPointer": 0,
+        "value": 0,
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 1,
+        "dataPointer": 0,
+        "value": "enemies,ground,organic",
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 2,
+        "dataPointer": 0,
+        "value": "enemies,ground,organic",
+        "u1": 0
+      },
+      {
+        "id": "atar",
+        "variableType": 3,
+        "levelOrVariation": 3,
+        "dataPointer": 0,
+        "value": "enemies,ground,organic",
+        "u1": 0
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+const fs=require('fs'),path=require('path'),assert=require('assert/strict');
+const U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default,A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default,D=require('mdx-m3-viewer/dist/cjs/parsers/w3x/doo/file').default;
+const root=__dirname,read=n=>JSON.parse(fs.readFileSync(path.join(root,n)));
+function parse(P,n){const p=new P();p.load(new Uint8Array(fs.readFileSync(path.join(root,'dist/map',n))));return p;}
+const units=Object.fromEntries(parse(U,'war3map.w3u').customTable.objects.map(o=>[o.newId,o])),abilities=Object.fromEntries(parse(A,'war3map.w3a').customTable.objects.map(o=>[o.newId,o])),items=Object.fromEntries(parse(U,'war3map.w3t').customTable.objects.map(o=>[o.newId,o]));
+const get=(o,k,l=0)=>o.modifications.find(m=>m.id===k&&(m.levelOrVariation||0)===l)?.value;
+const source=read('src/forest-corrections-source.json'),map=fs.readFileSync(path.join(root,'dist/map/war3map.j'),'utf8');
+assert.equal(get(units.refn,'uabi'),'ACnr,ANre,Avul');assert.equal(units.refn.oldId,'nfnp');
+for(const f of source.fountains)assert(map.includes(`'refn',${f.x}.,${f.y}.,270.`),'Exact source fountain coordinate');
+const scenery=parse(U,'war3map.w3b').originalTable.objects.find(o=>o.oldId==='CTtc');assert.equal(get(scenery,'bfil'),'war3mapImported\\FBLTree.mdl');assert.equal(get(scenery,'bvar'),1);assert.equal(get(scenery,'btxi'),32);
+const trees=parse(D,'war3map.doo').doodads.filter(d=>d.id==='CTtc'&&d.location[0]<-3776&&d.location[1]<-3296);assert.equal(trees.length,445);assert(trees.every(d=>d.life===100));
+for(const [id,label,original]of [['Eshe','Heaven','Icon_ScrollEarth.BLP'],['Esea','Earth','Icon_ScrollHeaven.BLP']]){
+ assert.equal(items[id].oldId,'ledg');assert.equal(get(items[id],'icla'),'Permanent');assert.equal(get(items[id],'iico'),`ReplaceableTextures\\CommandButtons\\BTNExam${label}.blp`);
+ for(const prefix of ['BTN','DISBTN'])assert(fs.readFileSync(path.join(root,'src/generated-icons',prefix+'Exam'+label+'.blp')).equals(fs.readFileSync(path.join(root,'assets',original))),'Icon aliases preserve original artwork');
+}
+for(const id of ['R201','R501','Ljkn','Ljsh']){assert.equal(abilities[id].oldId,'AHtb');for(let l=1;l<=get(abilities[id],'alev');l++){assert.equal(get(abilities[id],'adur',l),.5);assert.equal(get(abilities[id],'ahdu',l),.25);assert(get(abilities[id],'Htb1',l)>0);}}
+assert.equal(abilities.R302.oldId,'ANfb');for(let l=1;l<=4;l++){assert.equal(get(abilities.R302,'adur',l),.75);assert.equal(get(abilities.R302,'ahdu',l),.25);}
+assert.equal(abilities.R504.oldId,source.sourceSoshoryu.oldId);
+for(const m of source.sourceSoshoryu.modifications.filter(m=>['Ncs1','Ncs3','Ncs4','Ncs6','aare'].includes(m.id)))assert.equal(get(abilities.R504,m.id,m.levelOrVariation),m.value,'Source rocket damage/count/radius/duration');
+assert.equal(abilities.Lrmn.oldId,'ANcl');assert.equal(get(items.Nlra,'iabi'),'Lrmn');assert.equal(get(items.Nlra,'iuse'),2);assert.equal(get(abilities.Rmic,'adur',1),Math.fround(.2));assert.equal(get(abilities.Rmic,'ahdu',1),Math.fround(.1));
+assert.equal(get(abilities.Rjtr,'abpy'),-11);assert.equal(get(abilities.Rlog,'abpx'),2);assert.equal(get(abilities.Rlog,'abpy'),1);for(const h of read('src/heroes.json')){const occupied=new Set(['2,1']);for(const r of read('src/playable-skills.json').filter(r=>r.hero===h.slot)){const a=abilities[r.id],pos=get(a,'abpx')+','+get(a,'abpy');assert.notEqual(pos,'3,1','Leave the stock hero-learning button free');assert(!occupied.has(pos),'No command-card slot collisions');occupied.add(pos);}}assert.equal(get(units.rdst,'ucpt'),0);assert(map.includes('call FogMaskEnable(true)')&&map.includes('call FogEnable(true)'));assert(!map.includes('call FogEnable(false)'));
+const mana=read('src/hero-mana-source.json');for(const h of mana){const o=units['R'+h.hero.toString(16).toUpperCase().padStart(3,'0')];for(const [f,k]of [['umpm','manaBase'],['uint','intelligence'],['uinp','intelligencePerLevel'],['umpr','manaRegenBase'],['upra','primaryAttribute']])assert.equal(get(o,f),typeof h[k]==='number'?Math.fround(h[k]):h[k]);assert.equal(h.startMaxMana,1000);}
+const levels=read('src/skill-levels-source.json');for(const row of levels.skills){assert.equal(get(abilities[row.id],'arlv'),row.requiredLevel);assert.equal(get(abilities[row.id],'alsk'),row.levelSkip);assert.equal(row.levelSkip,5);}
+assert(map.indexOf('call TimerStart(StoryMentorClock,330.')<map.indexOf('set StoryMentorDialog=CreateTimerDialog(StoryMentorClock)'));
+for(const table of [source.firstForest.rolls,source.deathForest.rolls])assert.equal(Object.values(table).reduce((a,b)=>a+b,0),100);
+const report={sourceFountains:2,sourceDeathForestTrees:445,sourceLootTables:2,sourceManaAndPrimaryAttributeHeroes:12,sourceSkillUnlocks:58,nativeDamagingWeaponSpells:['R201','R501','R302','R504','Ljkn','Ljsh'],shortKaitenStun:true,ramenIndependentPoolsAndDamageInterruptNativeMocks:true,treeJumpHiddenButton:true,fogOfWarEnabled:true,normalAndDisabledScrollArtAliases:4,enginePlaytest:false};
+fs.writeFileSync(path.join(root,'dist/forest-fixes-verification.json'),JSON.stringify(report,null,2));console.log('PASS: source fountains/445 trees, source loot tables, source mana/primary attributes and 58 unlock levels; native weapon damage/stun fields and original rocket parameters. Engine playback untested.');

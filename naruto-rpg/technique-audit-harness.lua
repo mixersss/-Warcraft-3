@@ -11,7 +11,8 @@ SetUnitAbilityLevel(Hero[6],raw('R604'),3);RosterGrantInnate(6)
 assert(GetUnitAbilityLevel(Hero[6],raw('R604'))==3 and Hero[6].points==4)
 RosterGrantInnate(3);assert(GetUnitAbilityLevel(Hero[3],raw('R604'))==0)
 Controllers[0]='human';Hero[0].xp=0;Hero[0].points=1;SkillsChoose(0,6)
-assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==1 and Hero[0].points==1)
+assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==0 and Hero[0].points==1,'Second chance must wait for source level 50')
+Hero[0].level=50;Caster=Hero[0];SkillsLevel();assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==1,'Source level unlock also applies to manual players')
 function PingMinimapEx(x,y,d,r,g,b,extra)Pings[#Pings+1]={x=x,y=y}end
 -- Both Hyuuga: source 400/600/800/1000 radius; allies/structures/outside enemies not marked.
 local near=CreateUnit(12,111,350,0,0)

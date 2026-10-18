@@ -122,6 +122,11 @@ globals
     boolean CampaignBracket=false
     timer CampaignClock=null
     timerdialog CampaignDialog=null
+    unit array RamenUnit
+    real array RamenUntil
+    real array RamenLast
+    trigger array RamenDamage
+    effect array RamenArt
     unit array LogActor
     real array LogActorUntil
     real array LogUntil
@@ -153,9 +158,11 @@ globals
     real array ExamEnemyY
     unit array ExamEnemy
     item array ExamScroll
+    boolean array ExamEngaged
     boolean array ExamDropped
     real array ExamEnemyCastAt
     real array ExamBotOrderAt
+    unit array ExamFountain
     unit ExamTower=null
     real ExamTowerX=-10096.
     real ExamTowerY=-10160.
@@ -589,6 +596,7 @@ function FoundationSpawn takes nothing returns nothing
                 call SkillsLearnBot(p)
             endif
         endif
+        call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
         call SetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD,500)
         call SelectUnitForPlayerSingle(Hero[p],Player(p))
         call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],0.)
@@ -614,8 +622,8 @@ function FoundationInit takes nothing returns nothing
     call TriggerAddAction(chat,function FoundationChat)
     call TreeJumpInit()
     call StoryInit()
-    call FogMaskEnable(false)
-    call FogEnable(false)
+    call FogMaskEnable(true)
+    call FogEnable(true)
     call SetTimeOfDay(12.)
     call SetTimeOfDayScale(0.)
     set MusicClock=CreateTimer()

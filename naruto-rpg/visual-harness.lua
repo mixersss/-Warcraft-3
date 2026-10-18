@@ -52,12 +52,9 @@ for _,p in ipairs({4,8}) do
  Caster=Hero[p];Spell=PlayableSkill[p*5+1];SkillsEndcast()
  assert(Hero[p].timeScale==1 and ZoneUntil[p]==0 and VisualChannelUntil[p]==0 and Hero[p].animation=='stand')
 end
--- Weapons really travel: start near Tenten, then advance to a target rather than flash in place.
+-- Kunai flight is now native AHtb: do not overlay a second, non-damaging missile.
 local p=5;Hero[p].x=0;Hero[p].y=0;AimX=600;AimY=0
-VisualApply(p,25,1,enemy);local first=nil
-for n=0,255 do if VisualUnit[n] and VisualUnit[n].type==raw('vkun') then first=VisualUnit[n] end end
-assert(first and first.x==0);step(.2);assert(first.x>0 and first.x<enemy.x and first.flyHeight<100)
-step(.6);assert(first.removed)
+local beforeKunai=countRaw('vkun');VisualApply(p,25,1,enemy);assert(countRaw('vkun')==beforeKunai,'Native kunai owns its projectile; avoid a duplicate cosmetic flight')
 -- Both weapon barrages contain visible shuriken trajectories; the long one also includes notes.
 VisualPulse(5,26,500,0);assert(countRaw('vshu')>0 and countRaw('vkun')>0)
 clear(5);VisualPulse(5,28,500,0);assert(countRaw('vnot')>0 and countRaw('vshu')>0)

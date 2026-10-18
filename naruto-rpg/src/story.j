@@ -225,27 +225,34 @@ function StoryNearest takes integer t, unit actor returns unit
     return result
 endfunction
 function StoryDrop takes integer j returns nothing
-    local integer chance=20
-    local integer choice=0
+    local integer roll=0
+    local integer raw=0
     if EnemyLootRolled[j] or StoryEnemy[j]==null then
         return
     endif
     set EnemyLootRolled[j]=true
-    if EnemyKind[j]==3 then
-        set chance=60
-    elseif EnemyKind[j]==4 then
-        set chance=100
+    // QOV is attached to first-forest ordinary ninjas, not Haku/Zabuza/clones.
+    if EnemyKind[j]!=1 and EnemyKind[j]!=2 then
+        return
     endif
-    if GetRandomInt(1,100)<=chance then
-        if GetRandomInt(1,100)<=5 then
-            set choice=1
-        else
-            set choice=GetRandomInt(0,5)
-            if choice>=1 then
-                set choice=choice+1
-            endif
-        endif
-        set StoryLoot[j]=CreateItem(StoryLootType[choice],GetUnitX(StoryEnemy[j]),GetUnitY(StoryEnemy[j]))
+    set roll=GetRandomInt(1,100)
+    if roll<=10 then
+        set raw='Nlra'
+    elseif roll<=20 then
+        set raw='Nlpi'
+    elseif roll<=27 then
+        set raw='Nlsh'
+    elseif roll<=35 then
+        set raw='Nnot'
+    elseif roll<=43 then
+        set raw='Nlku'
+    elseif roll<=45 then
+        set raw='Nlga'
+    elseif roll<=55 then
+        set raw='Nlne'
+    endif
+    if raw!=0 then
+        set StoryLoot[j]=CreateItem(raw,GetUnitX(StoryEnemy[j]),GetUnitY(StoryEnemy[j]))
     endif
 endfunction
 function StoryLootBot takes integer p, unit enemy returns boolean
@@ -789,9 +796,9 @@ function StoryInit takes nothing returns nothing
     set StoryPopulateClock=CreateTimer()
     call TimerStart(StoryPopulateClock,.05,true,function StoryPopulate)
     set StoryMentorClock=CreateTimer()
+    call TimerStart(StoryMentorClock,330.,false,function StoryReleaseMentors)
     set StoryMentorDialog=CreateTimerDialog(StoryMentorClock)
     call TimerDialogSetTitle(StoryMentorDialog,"До выхода наставников")
-    call TimerStart(StoryMentorClock,330.,false,function StoryReleaseMentors)
     call TimerDialogDisplay(StoryMentorDialog,true)
     call HUDInit()
     call HUDTick()

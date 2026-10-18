@@ -1,0 +1,21 @@
+{
+  "sourceFountains": 2,
+  "sourceDeathForestTrees": 445,
+  "sourceLootTables": 2,
+  "sourceManaAndPrimaryAttributeHeroes": 12,
+  "sourceSkillUnlocks": 58,
+  "nativeDamagingWeaponSpells": [
+    "R201",
+    "R501",
+    "R302",
+    "R504",
+    "Ljkn",
+    "Ljsh"
+  ],
+  "shortKaitenStun": true,
+  "ramenIndependentPoolsAndDamageInterruptNativeMocks": true,
+  "treeJumpHiddenButton": true,
+  "fogOfWarEnabled": true,
+  "normalAndDisabledScrollArtAliases": 4,
+  "enginePlaytest": false
+}

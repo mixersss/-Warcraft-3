@@ -132,6 +132,9 @@ function ExamStartForest takes nothing returns nothing
     set ExamOpenAt=TimeNow+1200.
     set ExamEndAt=TimeNow+1320.
     set ExamPopulateCursor=0
+    set ExamRepopulateAt=TimeNow+8.
+    set ExamFountain[0]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'refn',-4608.,-15232.,270.)
+    set ExamFountain[1]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'refn',-15616.,-4224.,270.)
     set ExamRect=Rect(-16384.,-16384.,-3776.,-3296.)
     set ExamTower=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rean',ExamTowerX,ExamTowerY,270.)
     call PauseUnit(ExamTower,true)
@@ -304,6 +307,24 @@ function ExamBot takes integer p, unit enemy returns nothing
     set it=null
     set leader=null
 endfunction
+function ExamRespawn takes integer raw returns unit
+    local integer attempts=0
+    local integer point=0
+    local real x=0.
+    local real y=0.
+    loop
+        set x=GetRandomReal(-16352.,-3808.)
+        set y=GetRandomReal(-16352.,-3328.)
+        exitwhen not IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) or attempts>=24
+        set attempts=attempts+1
+    endloop
+    if attempts>=24 then
+        set point=GetRandomInt(0,84)
+        set x=ExamEnemyX[point]
+        set y=ExamEnemyY[point]
+    endif
+    return CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,x,y,GetRandomReal(0.,360.))
+endfunction
 function ExamForestTick takes nothing returns nothing
     local integer count=0
     local integer j=0
@@ -353,6 +374,12 @@ function ExamForestTick takes nothing returns nothing
                 set p=p+1
             endloop
             if target!=null then
+                if not ExamEngaged[j] and best<600.*600. then
+                    set ExamEngaged[j]=true
+                    if ExamEnemyType[j]=='re06' and GetRandomInt(0,100)<=20 then
+                        call UnitAddAbility(ExamEnemy[j],'Aens')
+                    endif
+                endif
                 if TimeNow>=ExamEnemyCastAt[j] and best<600.*600. and GetUnitAbilityLevel(ExamEnemy[j],'Aens')>0 and GetUnitState(ExamEnemy[j],UNIT_STATE_MANA)>=75. then
                     if IssueTargetOrder(ExamEnemy[j],"ensnare",target) then
                         call SetUnitAnimationByIndex(ExamEnemy[j],4+ModuloInteger(j,2))
@@ -412,16 +439,16 @@ function ExamForestTick takes nothing returns nothing
             if ExamEnemy[j]!=null then
                 call RemoveUnit(ExamEnemy[j])
             endif
-            set raw=GetRandomInt(0,84)
             if ExamRespawnType[j]!=0 then
                 set ExamEnemyType[j]=ExamRespawnType[j]
                 set ExamRespawnType[j]=0
             endif
-            set ExamEnemy[j]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),ExamEnemyType[j],ExamEnemyX[raw],ExamEnemyY[raw],180.)
+            set ExamEnemy[j]=ExamRespawn(ExamEnemyType[j])
             call SetUnitCreepGuard(ExamEnemy[j],false)
             call RemoveGuardPosition(ExamEnemy[j])
             set ExamRespawnAt[j]=0.
             set ExamDropped[j]=false
+            set ExamEngaged[j]=false
         endif
         set j=j+1
     endloop
@@ -451,7 +478,7 @@ function ExamForestTick takes nothing returns nothing
                 set j=j+1
             endloop
         endif
-        set ExamRepopulateAt=TimeNow+5.
+        set ExamRepopulateAt=TimeNow+8.
     endif
     loop
         exitwhen t>=4

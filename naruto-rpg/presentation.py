@@ -11,7 +11,7 @@ def combat(slot):
  return mods
 
 def misc():
- return ('[Misc]\nMaxHeroLevel=60\nMaxUnitLevel=100\nHeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30\nHeroExpRange=2000.0\nMaxUnitSpeed=480\n').encode()
+ return ('[Misc]\nMaxHeroLevel=60\nHeroAbilityLevelSkip=5\nMaxUnitLevel=100\nHeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30\nHeroExpRange=2000.0\nMaxUnitSpeed=480\n').encode()
 
 def scenery():
  from classic_formats import objects
@@ -21,8 +21,8 @@ def scenery():
   for row in data[table]['objects']:
    mods=[(m['id'],m['variableType'],m['value']) for m in row['modifications']]
    if row['oldId'] in ('LTlt','CTtc'):
-    file='Doodads\\Terrain\\LordaeronTree\\LordaeronTree' if row['oldId']=='LTlt' else 'Doodads\\Terrain\\AshenvaleTree\\AshenvaleTree'
-    patch={'bfil':(3,file),'bvar':(0,10),'btxi':(0,31 if row['oldId']=='LTlt' else 32),'btxf':(3,'ReplaceableTextures\\LordaeronTree\\LordaeronSummerTree' if row['oldId']=='LTlt' else 'ReplaceableTextures\\AshenvaleTree\\AshenTree'),'bmis':(1,.8),'bmas':(1,1.2),'bmap':(1,0.),'bmar':(1,0.),'bvcr':(0,255),'bvcg':(0,255),'bvcb':(0,255)}
+    file='Doodads\\Terrain\\LordaeronTree\\LordaeronTree' if row['oldId']=='LTlt' else 'war3mapImported\\FBLTree.mdl'
+    patch={'bfil':(3,file),'bvar':(0,10 if row['oldId']=='LTlt' else 1),'btxi':(0,31 if row['oldId']=='LTlt' else 32),'btxf':(3,'ReplaceableTextures\\LordaeronTree\\LordaeronSummerTree' if row['oldId']=='LTlt' else 'ReplaceableTextures\\AshenvaleTree\\AshenTree'),'bmis':(1,.8),'bmas':(1,1.2),'bmap':(1,0.),'bmar':(1,0.),'bvcr':(0,255),'bvcg':(0,255),'bvcb':(0,255)}
     mods=[m for m in mods if m[0] not in patch]+[(k,t,v) for k,(t,v) in patch.items()]
    out.append((row['oldId'],row['newId'],mods))
  return objects(custom,original_entries=original)

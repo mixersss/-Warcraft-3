@@ -187,7 +187,7 @@ function RosterShadow takes integer p, integer rank, unit target returns nothing
     call RosterShadowPulse(p)
 endfunction
 function RosterGrantInnate takes integer p returns nothing
-    if HeroRole[p]==6 and GetUnitAbilityLevel(Hero[p],'R604')==0 then
+    if HeroRole[p]==6 and GetHeroLevel(Hero[p])>=50 and GetUnitAbilityLevel(Hero[p],'R604')==0 then
         call UnitAddAbility(Hero[p],'R604')
         call SetUnitAbilityLevel(Hero[p],'R604',1)
         call UnitMakeAbilityPermanent(Hero[p],true,'R604')
@@ -239,7 +239,12 @@ function RosterStun takes integer p, unit target, real duration returns nothing
     set StunDummy[StunCursor]=dummy
     set StunExpires[StunCursor]=TimeNow+1.5
     set StunCursor=ModuloInteger(StunCursor+1,128)
-    call SetUnitAbilityLevel(dummy,'Rstn',rank)
+    if duration<.5 then
+        call UnitRemoveAbility(dummy,'Rstn')
+        call UnitAddAbility(dummy,'Rmic')
+    else
+        call SetUnitAbilityLevel(dummy,'Rstn',rank)
+    endif
     call IssueTargetOrder(dummy,"thunderbolt",target)
     set dummy=null
 endfunction
@@ -278,6 +283,7 @@ function RosterRepel takes integer p, integer rank returns nothing
         exitwhen target==null
         call GroupRemoveUnit(SkillScratch,target)
         if RosterEnemy(target,Player(p)) then
+            call RosterStun(p,target,.2)
             set tx=GetUnitX(target)
             set ty=GetUnitY(target)
             set dx=tx-x
@@ -467,6 +473,7 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         set ComboTarget[p]=target
         set ComboDamage[p]=power
         set ComboBurn[p]=burn
+        call RosterStun(p,target,RosterDuration[index])
         if index==23 then
             set ComboLeft[p]=8
         elseif index==44 then

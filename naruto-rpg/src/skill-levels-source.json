@@ -1,0 +1,814 @@
+{
+  "sourceGlobalHeroAbilityLevelSkip": 5,
+  "maxHeroLevel": 60,
+  "skills": [
+    {
+      "hero": 0,
+      "id": "Rn01",
+      "sourceId": "A00L",
+      "sourceBase": "AUau",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 0,
+      "id": "Rn02",
+      "sourceId": "A001",
+      "sourceBase": "AOmi",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        4,
+        9,
+        14,
+        19
+      ]
+    },
+    {
+      "hero": 0,
+      "id": "Rn03",
+      "sourceId": "A00R",
+      "sourceBase": "AHwe",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 0,
+      "id": "Rn04",
+      "sourceId": "A01P",
+      "sourceBase": "ANsb",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 0,
+      "id": "Rn05",
+      "sourceId": "A015",
+      "sourceBase": "ANrg",
+      "requiredLevel": 60,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        60,
+        65,
+        70
+      ]
+    },
+    {
+      "hero": 1,
+      "id": "Rs01",
+      "sourceId": "A01B",
+      "sourceBase": "ANbf",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 1,
+      "id": "Rs02",
+      "sourceId": "A01A",
+      "sourceBase": "AOw2",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 1,
+      "id": "Rs03",
+      "sourceId": "A033",
+      "sourceBase": "AOcl",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 1,
+      "id": "Rs04",
+      "sourceId": "A01D",
+      "sourceBase": "ANsb",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 1,
+      "id": "Rs05",
+      "sourceId": "A019",
+      "sourceBase": "ANrg",
+      "requiredLevel": 60,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        60,
+        65,
+        70
+      ]
+    },
+    {
+      "hero": 2,
+      "id": "R201",
+      "sourceId": "A005",
+      "sourceBase": "AHtb",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 2,
+      "id": "R202",
+      "sourceId": "A010",
+      "sourceBase": "ANc3",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        4,
+        9,
+        14,
+        19
+      ]
+    },
+    {
+      "hero": 2,
+      "id": "R203",
+      "sourceId": "A02D",
+      "sourceBase": "AHdr",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 2,
+      "id": "R204",
+      "sourceId": "A01G",
+      "sourceBase": "AHtc",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        35
+      ]
+    },
+    {
+      "hero": 2,
+      "id": "R205",
+      "sourceId": "A02S",
+      "sourceBase": "ANhs",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 3,
+      "id": "R301",
+      "sourceId": "A02U",
+      "sourceBase": "AOre",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        50,
+        55,
+        60
+      ]
+    },
+    {
+      "hero": 3,
+      "id": "R302",
+      "sourceId": "A00E",
+      "sourceBase": "ANfb",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 3,
+      "id": "R303",
+      "sourceId": "A00U",
+      "sourceBase": "AOw2",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 3,
+      "id": "R304",
+      "sourceId": "A029",
+      "sourceBase": "AHtc",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 4,
+      "id": "R401",
+      "sourceId": "A034",
+      "sourceBase": "ANms",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 4,
+      "id": "R402",
+      "sourceId": "A006",
+      "sourceBase": "AOw2",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 4,
+      "id": "R403",
+      "sourceId": "A02L",
+      "sourceBase": "ANcl",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 4,
+      "id": "R404",
+      "sourceId": "A008",
+      "sourceBase": "ANfb",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 4,
+      "id": "R405",
+      "sourceId": "A009",
+      "sourceBase": "AEev",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 5,
+      "id": "R501",
+      "sourceId": "A005",
+      "sourceBase": "AHtb",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 5,
+      "id": "R502",
+      "sourceId": "A00W",
+      "sourceBase": "AEfk",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 5,
+      "id": "R503",
+      "sourceId": "A000",
+      "sourceBase": "Aroc",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 5,
+      "id": "R504",
+      "sourceId": "A00Z",
+      "sourceBase": "ANc3",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 5,
+      "id": "R505",
+      "sourceId": "A02Z",
+      "sourceBase": "ANcl",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 6,
+      "id": "R601",
+      "sourceId": "A02H",
+      "sourceBase": "ANcl",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 6,
+      "id": "R602",
+      "sourceId": "A00P",
+      "sourceBase": "AEev",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 6,
+      "id": "R603",
+      "sourceId": "A02A",
+      "sourceBase": "ANc3",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 6,
+      "id": "R604",
+      "sourceId": "A02U",
+      "sourceBase": "AOre",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        50,
+        55,
+        60
+      ]
+    },
+    {
+      "hero": 7,
+      "id": "R701",
+      "sourceId": "A01C",
+      "sourceBase": "Arsg",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        1,
+        6,
+        11
+      ]
+    },
+    {
+      "hero": 7,
+      "id": "R702",
+      "sourceId": "A016",
+      "sourceBase": "ANc3",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        4,
+        9,
+        14,
+        19
+      ]
+    },
+    {
+      "hero": 7,
+      "id": "R703",
+      "sourceId": "A01Q",
+      "sourceBase": "AEme",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 7,
+      "id": "R704",
+      "sourceId": "A01H",
+      "sourceBase": "AHtb",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 7,
+      "id": "R705",
+      "sourceId": "A026",
+      "sourceBase": "AHwe",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 8,
+      "id": "R801",
+      "sourceId": "A034",
+      "sourceBase": "ANms",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 8,
+      "id": "R802",
+      "sourceId": "A006",
+      "sourceBase": "AOw2",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 8,
+      "id": "R803",
+      "sourceId": "A01E",
+      "sourceBase": "ANsi",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 8,
+      "id": "R804",
+      "sourceId": "A01F",
+      "sourceBase": "ANc3",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 8,
+      "id": "R805",
+      "sourceId": "A02J",
+      "sourceBase": "ANcl",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 9,
+      "id": "R901",
+      "sourceId": "A014",
+      "sourceBase": "AEer",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 9,
+      "id": "R902",
+      "sourceId": "A01W",
+      "sourceBase": "ANms",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 9,
+      "id": "R903",
+      "sourceId": "A01I",
+      "sourceBase": "ANst",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 9,
+      "id": "R904",
+      "sourceId": "A00Y",
+      "sourceBase": "AHwe",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 9,
+      "id": "R905",
+      "sourceId": "A02N",
+      "sourceBase": "AEev",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 10,
+      "id": "RA01",
+      "sourceId": "A003",
+      "sourceBase": "Arsg",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        1,
+        6,
+        11
+      ]
+    },
+    {
+      "hero": 10,
+      "id": "RA02",
+      "sourceId": "A004",
+      "sourceBase": "AHtb",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        4,
+        9,
+        14,
+        19
+      ]
+    },
+    {
+      "hero": 10,
+      "id": "RA03",
+      "sourceId": "A011",
+      "sourceBase": "Arsg",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 10,
+      "id": "RA04",
+      "sourceId": "A013",
+      "sourceBase": "AUin",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 10,
+      "id": "RA05",
+      "sourceId": "A02R",
+      "sourceBase": "ANcl",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    },
+    {
+      "hero": 11,
+      "id": "RB01",
+      "sourceId": "A00S",
+      "sourceBase": "AOsh",
+      "requiredLevel": 1,
+      "levelSkip": 5,
+      "ranks": 4,
+      "rankHeroLevels": [
+        1,
+        6,
+        11,
+        16
+      ]
+    },
+    {
+      "hero": 11,
+      "id": "RB02",
+      "sourceId": "A00T",
+      "sourceBase": "AEev",
+      "requiredLevel": 4,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        4,
+        9,
+        14
+      ]
+    },
+    {
+      "hero": 11,
+      "id": "RB03",
+      "sourceId": "A01J",
+      "sourceBase": "Acyc",
+      "requiredLevel": 20,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        20,
+        25,
+        30
+      ]
+    },
+    {
+      "hero": 11,
+      "id": "RB04",
+      "sourceId": "A00V",
+      "sourceBase": "ANst",
+      "requiredLevel": 35,
+      "levelSkip": 5,
+      "ranks": 3,
+      "rankHeroLevels": [
+        35,
+        40,
+        45
+      ]
+    },
+    {
+      "hero": 11,
+      "id": "RB05",
+      "sourceId": "A027",
+      "sourceBase": "AOsh",
+      "requiredLevel": 50,
+      "levelSkip": 5,
+      "ranks": 1,
+      "rankHeroLevels": [
+        50
+      ]
+    }
+  ]
+}

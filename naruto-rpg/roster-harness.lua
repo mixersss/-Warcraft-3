@@ -32,11 +32,11 @@ for p=0,11 do
  Hero[p]=make(p,0,0);Hero[p].abilities={};Hero[p].level=10;Hero[p].points=10;HeroType[p]=0;HeroTemplate[p]=p;HeroRole[p]=p
  SkillsLearnBot(p)
  for j=p*5,p*5+4 do
-  if SkillRanks[j]>0 then assert(GetUnitAbilityLevel(Hero[p],PlayableSkill[j])>=1,'All source slots must be learnable at level ten')end
+  if SkillRanks[j]>0 then assert((GetUnitAbilityLevel(Hero[p],PlayableSkill[j])>=1)==(SkillRequired[j]<=10),'Each slot must respect its source unlock level')end
  end
- Hero[p].level=30;Hero[p].points=60
+ Hero[p].level=60;Hero[p].points=60
  SkillsLearnBot(p)
- for j=p*5,p*5+4 do if SkillRanks[j]>0 then assert(GetUnitAbilityLevel(Hero[p],PlayableSkill[j])==SkillRanks[j],'Bot did not learn the whole build')end end
+ for j=p*5,p*5+4 do if SkillRanks[j]>0 then assert(GetUnitAbilityLevel(Hero[p],PlayableSkill[j])==math.min(SkillRanks[j],1+math.floor((60-SkillRequired[j])/SkillSkip[j])),'Bot did not learn the source-eligible ranks')end end
 end
 Dummy[0]=make(12,100,0);Dummy[1]=make(12,100,0);Dummy[2]=make(12,100,0);Dummy[3]=make(12,100,0)
 function resetHits()Hits={}end
@@ -79,7 +79,7 @@ World={enemy,Hero[5],immune,building};resetHits()
 technique(5,28,1,nil)
 Hero[5].x=1200
 for i=1,8 do TimeNow=220+i*.5;RosterTick()end
-assert(#Hits==8 and enemy.hp==9480 and immune.hp==10000 and building.hp==10000 and ZoneUntil[5]==0 and not ZoneArt[5])
+assert(#Hits==0 and enemy.hp==10000 and immune.hp==10000 and building.hp==10000 and ZoneUntil[5]==0 and not ZoneArt[5],'Native rockets own their damage; the JASS layer must not add duplicate phantom pulses')
 -- Following area moves with the caster; the fixed one above did not.
 Hero[4].x=0;enemy.x=0;World={enemy};TimeNow=230;resetHits()
 technique(4,21,1,nil);Hero[4].x=1000;TimeNow=230.5;RosterTick();assert(#Hits==1 and ZoneX[4]==1000)
@@ -151,4 +151,5 @@ for p=0,11 do RosterReset(p)end
 TimeNow=1000;SkillsTick()
 assert(CreatedTimers==baselineTimers,'No per-cast timer allocation is allowed')
 assert(Effects==Destroyed,'A temporary visual was retained')
+technique(9,47,1,nil);assert(ZoneUntil[9]>TimeNow,'The fixed area mechanic remains exercised independently of native Soshoryu');RosterReset(9)
 for n=1,10 do assert(seen[n],'Missing mechanic test '..n)end

@@ -5,5 +5,33 @@
     "bytes": 1324,
     "sha256": "8569c908caa75e0bdb12b4ccb21f40efb3f414564468126342ba266728dc28d7",
     "purpose": "Visible non-additive ground shadow, 50 by 24 units, native team-color texture tinted near black"
+  },
+  {
+    "path": "ReplaceableTextures\\CommandButtons\\BTNExamHeaven.blp",
+    "file": "src/generated-icons/BTNExamHeaven.blp",
+    "bytes": 18372,
+    "sha256": "ef59a830ef1012f8f3f2fb3641a93325c18c8906b7547a40af812a9ca8f4e66f",
+    "source": "Byte-identical alias of original Icon_ScrollEarth.BLP"
+  },
+  {
+    "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNExamHeaven.blp",
+    "file": "src/generated-icons/DISBTNExamHeaven.blp",
+    "bytes": 18372,
+    "sha256": "ef59a830ef1012f8f3f2fb3641a93325c18c8906b7547a40af812a9ca8f4e66f",
+    "source": "Byte-identical alias of original Icon_ScrollEarth.BLP"
+  },
+  {
+    "path": "ReplaceableTextures\\CommandButtons\\BTNExamEarth.blp",
+    "file": "src/generated-icons/BTNExamEarth.blp",
+    "bytes": 18736,
+    "sha256": "daaa60b44107d20c85d87f3bbd4e4ee605ffad52611288c4abc384ee4d027b09",
+    "source": "Byte-identical alias of original Icon_ScrollHeaven.BLP"
+  },
+  {
+    "path": "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNExamEarth.blp",
+    "file": "src/generated-icons/DISBTNExamEarth.blp",
+    "bytes": 18736,
+    "sha256": "daaa60b44107d20c85d87f3bbd4e4ee605ffad52611288c4abc384ee4d027b09",
+    "source": "Byte-identical alias of original Icon_ScrollHeaven.BLP"
   }
 ]

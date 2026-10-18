@@ -137,10 +137,10 @@ assert(StoryBoss[1]==boss)
 zabuza.hp=0;StoryTick();assert(StoryStage[0]==5)
 local finalGold=gold[0];StoryTick();assert(gold[0]==finalGold)
 -- Loot chance boundaries and one drop per real actor (never clones).
-local j=18;EnemyLootRolled[j]=false;random={21};StoryDrop(j);assert(StoryLoot[j]==nil)
-EnemyLootRolled[j]=false;random={20,6,2};StoryDrop(j);assert(StoryLoot[j].type==StoryLootType[3]);local dropped=StoryLoot[j]
-random={1,1};StoryDrop(j);assert(StoryLoot[j]==dropped,'Never reroll a dead unit')
-EnemyLootRolled[j]=false;random={1,5};StoryDrop(j);assert(StoryLoot[j].type==StoryLootType[1],'Rare chuunin armor branch')
+local j=18;EnemyKind[j]=1;EnemyLootRolled[j]=false;random={56};StoryDrop(j);assert(StoryLoot[j]==nil)
+EnemyLootRolled[j]=false;random={10};StoryDrop(j);assert(StoryLoot[j].type==raw('Nlra'));local dropped=StoryLoot[j]
+random={1};StoryDrop(j);assert(StoryLoot[j]==dropped,'Never reroll a dead unit')
+EnemyLootRolled[j]=false;random={44};StoryDrop(j);assert(StoryLoot[j].type==raw('Nlga'),'Source genin armor chance, no invented chuunin drop')
 -- Bots pick up nearby drops with free inventory; full inventory never discards equipment.
 Hero[4].items={};Hero[4].x=StoryLoot[j].x;Hero[4].y=StoryLoot[j].y;BotUseItemAt[4]=0
 assert(StoryLootBot(4,nil) and Hero[4].last.o=='smart')

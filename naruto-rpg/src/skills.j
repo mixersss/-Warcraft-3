@@ -250,6 +250,7 @@ function SkillsTick takes nothing returns nothing
         endif
         set p=p+1
     endloop
+    call RamenTick()
     call CommonLogTick()
     call RosterTick()
     set u=null
@@ -360,6 +361,7 @@ function SkillsAssignRole takes integer p, integer role returns nothing
         endif
         set k=k+1
     endloop
+    call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
     call RemoveUnit(old)
     call SelectUnitForPlayerSingle(Hero[p],Player(p))
     call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],0.)
@@ -390,11 +392,21 @@ function SkillsChoose takes integer p, integer role returns nothing
     set RoleChosen[p]=true
 endfunction
 // GENERATED_SKILL_FUNCTIONS
+function SkillsLevel takes nothing returns nothing
+    local unit u=GetTriggerUnit()
+    local integer p=GetPlayerId(GetOwningPlayer(u))
+    if p<12 and u==Hero[p] then
+        call RosterGrantInnate(p)
+    endif
+    set u=null
+endfunction
 function SkillsInit takes nothing returns nothing
     local integer p=0
     local trigger spells=CreateTrigger()
     local trigger summons=CreateTrigger()
     local trigger ended=CreateTrigger()
+    local trigger items=CreateTrigger()
+    local trigger levels=CreateTrigger()
     local timer visualclock=CreateTimer()
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
@@ -410,14 +422,25 @@ function SkillsInit takes nothing returns nothing
         call TriggerRegisterPlayerUnitEvent(spells,Player(p),EVENT_PLAYER_UNIT_SPELL_EFFECT,null)
         call TriggerRegisterPlayerUnitEvent(ended,Player(p),EVENT_PLAYER_UNIT_SPELL_ENDCAST,null)
         call TriggerRegisterPlayerUnitEvent(summons,Player(p),EVENT_PLAYER_UNIT_SUMMON,null)
+        call TriggerRegisterPlayerUnitEvent(levels,Player(p),EVENT_PLAYER_HERO_LEVEL,null)
         set HeroRole[p]=p
         set p=p+1
     endloop
+    set p=0
+    loop
+        exitwhen p>=16
+        call TriggerRegisterPlayerUnitEvent(items,Player(p),EVENT_PLAYER_UNIT_USE_ITEM,null)
+        set p=p+1
+    endloop
+    call TriggerAddAction(items,function RamenUse)
+    call TriggerAddAction(levels,function SkillsLevel)
     call TriggerAddAction(spells,function SkillsEffect)
     call TriggerAddAction(ended,function SkillsEndcast)
     call TimerStart(visualclock,.05,true,function VisualTick)
     call TriggerAddAction(summons,function SkillsSummoned)
     call TimerStart(clock,.25,true,function SkillsTick)
+    set levels=null
+    set items=null
     set ended=null
     set visualclock=null
     set spells=null

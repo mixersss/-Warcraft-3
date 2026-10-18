@@ -604,6 +604,30 @@
       "column": 1,
       "specific": "Ahea,Anh1,Anh2,Anhe",
       "repeat": 4
+    },
+    "Ncs1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "ANcs,ANc1,ANc2,ANc3",
+      "repeat": 4
+    },
+    "Ncs3": {
+      "type": "int",
+      "column": 3,
+      "specific": "ANcs,ANc1,ANc2,ANc3",
+      "repeat": 4
+    },
+    "Ncs4": {
+      "type": "unreal",
+      "column": 4,
+      "specific": "ANcs,ANc1,ANc2,ANc3",
+      "repeat": 4
+    },
+    "Ncs6": {
+      "type": "unreal",
+      "column": 6,
+      "specific": "ANcs,ANc1,ANc2,ANc3",
+      "repeat": 4
     }
   },
   "unitFields": {

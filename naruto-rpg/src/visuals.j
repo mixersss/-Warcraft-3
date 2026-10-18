@@ -200,8 +200,6 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         call SkillsFlashTarget("Abilities\\Weapons\\Bolt\\BoltImpact.mdl",target)
     elseif index==9 then
         call SkillsFlashAt("Abilities\\Spells\\Undead\\CarrionSwarm\\CarrionSwarmDamage.mdl",sx,sy)
-    elseif index==10 or index==25 then
-        call VisualFan(p,'vkun',x,y,100.,1,0.)
     elseif index==11 then
         call VisualFan(p,'vnot',x,y,100.,1,0.)
     elseif index==12 then
@@ -235,10 +233,13 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         set VisualVolleyY[p]=sy
     elseif index==28 or index==32 or index==58 then
         if index==28 then
+            call VisualPose(p,index)
             call VisualLiftStart(p,1000.,SkillHold[index])
             call SkillsFlashAt("Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl",sx,sy)
         endif
-        call VisualPulse(p,index,x,y)
+        if index!=28 then
+            call VisualPulse(p,index,x,y)
+        endif
     elseif index==29 then
         call VisualField(p,'vkuc',sx,sy,1.5)
         call SkillsFlashAt("Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl",sx,sy)
