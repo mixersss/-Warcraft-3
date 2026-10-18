@@ -23,6 +23,13 @@
     30
   ],
   "invasionRoleBasedEnemyCamp": true,
+  "leafWaveInterceptionNativeMocks": true,
+  "leafThreeApproachRallyPoints": [
+    3,
+    5,
+    8
+  ],
+  "defenseCombatOverridesShoppingAndFollow": true,
   "invasionWaypointRedirectsNativeMocks": true,
   "villageShortcutActualChatDispatch": true,
   "sourceLeafDefenders": 140,

@@ -1119,7 +1119,24 @@ function CampaignNearest takes integer p returns unit
                 endif
             endif
         endloop
-        if result==null and FoundationAlive(CampaignActor[0]) and IsUnitEnemy(CampaignActor[0],Player(p)) then
+        // Leaf intercepts visible marching waves instead of rallying at the Hokage.
+        // Ignore idle enemy camps, dead/hidden actors and units unseen by this team.
+        if result==null and HeroRole[p]<9 then
+            loop
+                exitwhen j>=CampaignCount
+                set target=CampaignActor[j]
+                if CampaignActorRoute[j]>=0 and FoundationAlive(target) and not IsUnitPaused(target) and GetUnitAbilityLevel(target,'Avul')==0 and IsUnitEnemy(target,Player(p)) and SkillsCanSee(target,Player(p)) then
+                    set dx=GetUnitX(target)-GetUnitX(Hero[p])
+                    set dy=GetUnitY(target)-GetUnitY(Hero[p])
+                    if dx*dx+dy*dy<best then
+                        set result=target
+                        set best=dx*dx+dy*dy
+                    endif
+                endif
+                set j=j+1
+            endloop
+        endif
+        if result==null and HeroRole[p]>=9 and FoundationAlive(CampaignActor[0]) and IsUnitEnemy(CampaignActor[0],Player(p)) then
             set result=CampaignActor[0]
         endif
         set target=null
@@ -1195,6 +1212,11 @@ function CampaignBot takes integer p, unit enemy returns nothing
         if shop!=null and ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
         endif
+    elseif CampaignStage==12 and HeroRole[p]<9 and enemy!=null then
+        // Combat overrides shopping and following while a wave needs interception.
+        set StoryShopTripUntil[p]=0.
+        set StoryBuyAt[p]=TimeNow+10.
+        call IssueTargetOrder(Hero[p],"attack",enemy)
     elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null then
         if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
             call IssueTargetOrder(Hero[p],"attack",enemy)
@@ -1210,6 +1232,16 @@ function CampaignBot takes integer p, unit enemy returns nothing
         endif
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)
+    elseif CampaignStage==12 and HeroRole[p]<9 then
+        // Three source approach lanes: west, north and south. Attack-move scouts
+        // the approach and engages waves even before shared vision spots them.
+        if ModuloInteger(HeroRole[p],3)==0 then
+            call IssuePointOrder(Hero[p],"attack",CampaignRouteX[3],CampaignRouteY[3])
+        elseif ModuloInteger(HeroRole[p],3)==1 then
+            call IssuePointOrder(Hero[p],"attack",CampaignRouteX[5],CampaignRouteY[5])
+        else
+            call IssuePointOrder(Hero[p],"attack",CampaignRouteX[8],CampaignRouteY[8])
+        endif
     elseif CampaignStage==12 or CampaignStage==13 then
         call IssuePointOrder(Hero[p],"attack",CampaignTX[CampaignStage],CampaignTY[CampaignStage])
     else
