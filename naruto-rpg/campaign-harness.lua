@@ -69,7 +69,17 @@ local function doDuels(expected)
    assert(not fog and not mask and not filter,'Public arena view must remain open during every duel')
    for p=0,11 do assert(pans[p].x==CampaignTX[CampaignStage] and pans[p].y==CampaignTY[CampaignStage],'Every spectator camera must look at the fight')end
    assert(not Hero[a].paused and not Hero[b].paused and IsUnitEnemy(Hero[a],b))
-   for p=0,11 do if p~=a and p~=b then assert(Hero[p].paused,'Only two fighters are active')end end
+   for p=0,11 do if p~=a and p~=b then
+    assert(Hero[p].paused,'Only two fighters are active')
+    local seat=p+(CampaignStage==11 and 12 or 0)
+    assert(Hero[p].x==ArenaSeatX[seat]and Hero[p].y==ArenaSeatY[seat],'Spectators wait on the original upper terraces')
+   end end
+   local ac,bc=Controllers[a],Controllers[b];Controllers[a]='human';Controllers[b]='human'
+   local hp,mana=Hero[a].hp,Hero[a].mana;Hero[a].hp=500;Hero[a].mana=100
+   SpawnX[a]=Hero[a].x;SpawnY[a]=Hero[a].y
+   for tick=1,5 do TimeNow=TimeNow+.5;UnitDamageTarget(Hero[b],Hero[a],40,false,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS);StoryTick()end
+   assert(Hero[a].hp==300 and Hero[a].mana==100,'Arena must not receive the camp HP/mana heartbeat')
+   Hero[a].hp=hp;Hero[a].mana=mana;Controllers[a]=ac;Controllers[b]=bc
    Hero[a].hp=0;CampaignTick();count=count+1
    assert(Hero[a].hp>0 and Hero[a].paused,'Loser remains available for later story')
   end

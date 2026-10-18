@@ -12,7 +12,7 @@
     "Ljsh"
   ],
   "shortKaitenStun": true,
-  "ramenIndependentPoolsAndDamageInterruptNativeMocks": true,
+  "ramenIndependentPoolsAndCombatRecoveryNativeMocks": true,
   "treeJumpHiddenButton": true,
   "fogOfWarEnabled": true,
   "normalAndDisabledScrollArtAliases": 4,

@@ -32,21 +32,25 @@ ExamEnemy={};ExamRespawnAt=nums();ExamDropped=flags();ExamRepopulateAt=TimeNow
 ExamForestTick();for j=0,7 do assert(ExamRespawnAt[j]==TimeNow+1 and ExamRespawnType[j]==raw(j<3 and 're07'or're06'))end
 assert(ExamRespawnAt[8]==0 and ExamRepopulateAt==TimeNow+8)
 TimeNow=TimeNow+1;ExamForestTick();for j=0,7 do assert(FoundationAlive(ExamEnemy[j])and ExamEnemy[j].x<=-3776 and ExamEnemy[j].y<=-3296)end
--- Scripted healing: either full pool leaves the other functional; real damage cancels.
+-- Either full pool leaves the other functional; combat no longer cancels ramen.
 local drinker=CreateUnit(0,raw('R000'),0,0,0);drinker.maxLife=1000;drinker.maxMana=1000;drinker.hp=500;drinker.mana=1000
 local ramen={type=raw('Nlra')};function GetManipulatingUnit()return drinker end;function GetManipulatedItem()return ramen end
-local dmg=0;function GetEventDamage()return dmg end
-TimeNow=300000;RamenUse();local active=RamenDamage[0];TimeNow=TimeNow+10;RamenTick();assert(drinker.hp==700 and drinker.mana==1000,'Full mana must not block healing')
-TimeNow=TimeNow+10;RamenTick();assert(drinker.hp==900 and not RamenUnit[0]and active.destroyed)
+local create=CreateTrigger;local damageTriggers=0
+function CreateTrigger()damageTriggers=damageTriggers+1;return create()end
+TimeNow=300000;RamenUse();local active=RamenArt[0];TimeNow=TimeNow+10;RamenTick();assert(drinker.hp==700 and drinker.mana==1000,'Full mana must not block healing')
+TimeNow=TimeNow+10;RamenTick();assert(drinker.hp==900 and not RamenUnit[0]and not active.alive)
 drinker.hp=1000;drinker.mana=500;RamenUse();TimeNow=TimeNow+20;RamenTick();assert(drinker.hp==1000 and drinker.mana==900,'Full HP must not block mana regeneration')
-drinker.hp=500;RamenUse();active=RamenDamage[0];Caster=drinker;dmg=0;RamenInterrupted();assert(RamenUnit[0]==drinker);dmg=25;RamenInterrupted();assert(not RamenUnit[0]and active.destroyed)
-local hp=drinker.hp;TimeNow=TimeNow+5;RamenTick();assert(drinker.hp==hp,'Incoming damage really cancels remaining regeneration')
-RamenUse();local first=RamenDamage[0];RamenUse();assert(first.destroyed and RamenUnit[0]==drinker and not RamenUnit[1],'Ramen refreshes instead of stacking triggers/regen')
-drinker.hp=0;RamenTick();assert(not RamenUnit[0]and not RamenArt[0]and not RamenDamage[0],'Death releases the trigger and effect')
+drinker.hp=500;drinker.mana=500;RamenUse();TimeNow=TimeNow+5;RamenTick();assert(drinker.hp==600 and drinker.mana==600)
+local attacker=CreateUnit(12,raw('re06'),100,0,0);UnitDamageTarget(attacker,drinker,90,false,false,ATTACK_TYPE_NORMAL,DAMAGE_TYPE_MAGIC,WEAPON_TYPE_WHOKNOWS)
+TimeNow=TimeNow+5;RamenTick();assert(drinker.hp==610 and drinker.mana==700 and RamenUnit[0]==drinker,'Positive damage must not end ramen')
+RamenUse();local first=RamenArt[0];RamenUse();assert(not first.alive and RamenUnit[0]==drinker and not RamenUnit[1],'Refresh instead of stacking regen/effects')
+assert(damageTriggers==0,'Ramen must not create damage listeners')
+drinker.hp=0;RamenTick();assert(not RamenUnit[0]and not RamenArt[0],'Death releases the effect')
+CreateTrigger=create
 -- The actual Kaiten and palm-combo paths issue native stun orders to the enemy.
 Hero[4]=CreateUnit(4,raw('R004'),0,0,0);HeroRole[4]=4;Hero[4].level=60;Hero[4].hp=10000
 local victim=CreateUnit(12,raw('re06'),100,0,0);victim.hp=10000;World={victim};local cursor=StunCursor
 RosterRepel(4,1);local micro=StunDummy[cursor];assert(micro and GetUnitAbilityLevel(micro,raw('Rmic'))==1,'Kaiten must issue the real microstun ability')
 for _,index in ipairs({22,23})do cursor=StunCursor;RosterApply(4,index,1,victim);assert(StunDummy[cursor]and GetUnitAbilityLevel(StunDummy[cursor],raw('Rstn'))==4,'Palm series must issue its actual native stun, capped at two seconds')end
 GetRandomInt=oldRandom
-print('PASS: exhaustive 100-roll source tables for both forests; eight-genin replenishment and random placements; ramen with either pool full, damage interruption, refresh and death cleanup (mock natives).')
+print('PASS: exhaustive 100-roll source tables for both forests; eight-genin replenishment and random placements; ramen with either pool full, uninterrupted combat recovery, refresh and death cleanup (mock natives).')

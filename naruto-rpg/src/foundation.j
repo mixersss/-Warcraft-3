@@ -129,7 +129,14 @@ globals
     unit array RamenUnit
     real array RamenUntil
     real array RamenLast
-    trigger array RamenDamage
+    real array ArenaSeatX
+    real array ArenaSeatY
+    unit array NoteActor
+    real array NoteArmedAt
+    real array NoteExpiresAt
+    integer NoteCursor=0
+    group NoteGroup=null
+    fogmodifier array VillageLandmarkFog
     effect array RamenArt
     unit array LogActor
     real array LogActorUntil
@@ -472,7 +479,7 @@ function FoundationChat takes nothing returns nothing
         else
             call CampaignTestArena(p,0)
         endif
-    elseif msg=="-go" or msg=="-follow" or msg=="-retreat" or msg=="-quest" or msg=="-shop" or msg=="-camera" or msg=="-kabuto" or msg=="-kabutooff" or msg=="-kabutoon" then
+    elseif msg=="-go" or msg=="-follow" or msg=="-retreat" or msg=="-quest" or msg=="-shop" or msg=="-fountain" or msg=="-camera" or msg=="-kabuto" or msg=="-kabutooff" or msg=="-kabutoon" then
         call StoryCommand(p,msg)
     elseif msg=="-naruto" then
         call SkillsChoose(p,0)
@@ -556,7 +563,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Музыка текущего сюжетного этапа начата заново. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест предварительных боёв / финального турнира (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop: магазин; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест предварительных боёв / финального турнира (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop

@@ -1,0 +1,307 @@
+{
+  "source": "Original map stock object modifications; runtime uses an isolated point cast and shared trap scan",
+  "originalRecords": {
+    "w3a": [
+      {
+        "oldId": "Amnx",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "Dda2",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 2,
+            "value": 400,
+            "u1": 2020502849
+          },
+          {
+            "id": "Dda3",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 3,
+            "value": 300,
+            "u1": 2020502849
+          },
+          {
+            "id": "anam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": " Explosion Note Damage",
+            "u1": 2020502849
+          },
+          {
+            "id": "aart",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_ExplodingNote.BLP",
+            "u1": 2020502849
+          }
+        ]
+      },
+      {
+        "oldId": "Amin",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "Min1",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 1,
+            "value": 1.5,
+            "u1": 1852403009
+          },
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 300,
+            "u1": 1852403009
+          },
+          {
+            "id": "amac",
+            "variableType": 2,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0.4000000059604645,
+            "u1": 1852403009
+          },
+          {
+            "id": "anam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": " Explosion Note Timer",
+            "u1": 1852403009
+          },
+          {
+            "id": "atar",
+            "variableType": 3,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": "enemies,ground",
+            "u1": 0
+          },
+          {
+            "id": "aart",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_ExplodingNote.BLP",
+            "u1": 0
+          }
+        ]
+      },
+      {
+        "oldId": "AIpm",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "aran",
+            "variableType": 2,
+            "levelOrVariation": 1,
+            "dataPointer": 0,
+            "value": 300,
+            "u1": 1836075329
+          },
+          {
+            "id": "aart",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "ExplodingNoteIcon.BLP",
+            "u1": 1836075329
+          }
+        ]
+      }
+    ],
+    "w3u": [
+      {
+        "oldId": "nglm",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "usnd",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1835820910
+          },
+          {
+            "id": "uico",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_ExplodingNote.BLP",
+            "u1": 1835820910
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Note.mdl",
+            "u1": 1835820910
+          },
+          {
+            "id": "usca",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.5,
+            "u1": 1835820910
+          },
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Explosion Note",
+            "u1": 1835820910
+          },
+          {
+            "id": "utip",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Explosion Note",
+            "u1": 1835820910
+          },
+          {
+            "id": "utub",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "This exploding tag catches itself on fire and detonates when an enemy is nearby.",
+            "u1": 1835820910
+          }
+        ]
+      }
+    ],
+    "w3t": [
+      {
+        "oldId": "gobm",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "utip",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Explosion Note",
+            "u1": 1835167591
+          },
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Explosion Note",
+            "u1": 0
+          },
+          {
+            "id": "ides",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 0
+          },
+          {
+            "id": "uhot",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1835167591
+          },
+          {
+            "id": "utub",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "This exploding tag catches itself on fire and detonates when an enemy is nearby.",
+            "u1": 1835167591
+          },
+          {
+            "id": "igol",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 80,
+            "u1": 1835167591
+          },
+          {
+            "id": "iico",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Icon_ExplodingNote.BLP",
+            "u1": 1835167591
+          },
+          {
+            "id": "iuse",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 2,
+            "u1": 1835167591
+          },
+          {
+            "id": "isto",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 10,
+            "u1": 1835167591
+          },
+          {
+            "id": "istr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1835167591
+          },
+          {
+            "id": "ifil",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Note.mdl",
+            "u1": 1835167591
+          },
+          {
+            "id": "ihtp",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 999999,
+            "u1": 1835167591
+          },
+          {
+            "id": "isca",
+            "variableType": 1,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 1.649999976158142,
+            "u1": 1835167591
+          }
+        ]
+      }
+    ]
+  },
+  "adaptedRuntime": {
+    "armingSeconds": 1.5,
+    "triggerRadius": 300,
+    "fullDamage": 400,
+    "fullRadius": 100,
+    "outerDamage": 300,
+    "outerRadius": 300,
+    "expirySeconds": 180,
+    "maxActiveTraps": 128
+  }
+}

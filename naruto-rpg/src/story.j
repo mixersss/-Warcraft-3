@@ -303,7 +303,9 @@ function StoryLootBot takes integer p, unit enemy returns boolean
                         return true
                     endif
                 elseif raw=='Nnot' and FoundationAlive(enemy) then
-                    if UnitUseItemPoint(Hero[p],carried,GetUnitX(Hero[p]),GetUnitY(Hero[p])) then
+                    set dx=GetUnitX(enemy)-GetUnitX(Hero[p])
+                    set dy=GetUnitY(enemy)-GetUnitY(Hero[p])
+                    if dx*dx+dy*dy<550.*550. and UnitUseItemPoint(Hero[p],carried,GetUnitX(Hero[p])+dx*.5,GetUnitY(Hero[p])+dy*.5) then
                         set BotUseItemAt[p]=TimeNow+8.
                         set carried=null
                         return true
@@ -475,7 +477,7 @@ function StoryShopsOpen takes nothing returns nothing
     call TriggerAddAction(StoryShopSales,function StoryOnBuy)
     loop
         exitwhen j>=4
-        set StoryShop[j]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rqsh',StoryShopX[j],StoryShopY[j],270.)
+        set StoryShop[j]=CreateUnit(Player(14),'rqsh',StoryShopX[j],StoryShopY[j],270.)
         call TriggerRegisterUnitEvent(StoryShopSales,StoryShop[j],EVENT_UNIT_SELL_ITEM)
         set j=j+1
     endloop
@@ -493,6 +495,29 @@ function StoryActivate takes integer t, boolean march returns nothing
     endloop
 endfunction
 // NEXT_CHAPTER_RUNTIME
+function StoryFountainFor takes integer p returns unit
+    local integer j=0
+    local unit nearest=null
+    local real best=999999999.
+    local real dx=0.
+    local real dy=0.
+    if CampaignStage!=12 or CampaignTransition then
+        return null
+    endif
+    loop
+        exitwhen j>=4
+        if VillageFountain[j]!=null then
+            set dx=GetUnitX(VillageFountain[j])-GetUnitX(Hero[p])
+            set dy=GetUnitY(VillageFountain[j])-GetUnitY(Hero[p])
+            if dx*dx+dy*dy<best then
+                set best=dx*dx+dy*dy
+                set nearest=VillageFountain[j]
+            endif
+        endif
+        set j=j+1
+    endloop
+    return nearest
+endfunction
 function StoryCommand takes integer p, string msg returns nothing
     local integer t=StoryTeam(p)
     local integer n=0
@@ -550,16 +575,27 @@ function StoryCommand takes integer p, string msg returns nothing
         if (CampaignStage==26 and p==CampaignSasukePlayer) or (CampaignStage==12 and HeroRole[p]==10) then
             set CampaignKabutoAI=msg=="-kabutoon"
         endif
+    elseif msg=="-fountain" then
+        set goal=StoryFountainFor(p)
+        if goal!=null then
+            call SelectUnitForPlayerSingle(goal,Player(p))
+            call PanCameraToTimedForPlayer(Player(p),GetUnitX(goal),GetUnitY(goal),1.)
+            call PingMinimapEx(GetUnitX(goal),GetUnitY(goal),5.,80,200,255,false)
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Фонтан Конохи: подведите героя для восстановления HP и чакры. -camera: вернуться к герою.")
+        else
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Фонтаны Конохи доступны во время вторжения. В Лесу смерти работают два отдельных фонтана.")
+        endif
+        set goal=null
     elseif msg=="-shop" then
         set goal=StoryShopFor(p)
         if goal!=null then
             call SelectUnitForPlayerSingle(goal,Player(p))
             call PanCameraToTimedForPlayer(Player(p),GetUnitX(goal),GetUnitY(goal),1.)
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Снабжение Конохи: подведите своего героя и купите предмет кнопкой магазина. -camera: вернуться к герою.")
         else
             call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Магазины доступны только во время нападения на деревню. До этого снаряжение можно найти у побеждённых врагов.")
         endif
         set goal=null
-        call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Снабжение возле Наставник: подведите своего героя и купите предмет кнопкой магазина. -camera: вернуться к герою.")
     elseif msg=="-camera" and Hero[p]!=null then
         call SelectUnitForPlayerSingle(Hero[p],Player(p))
         call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),.5)
@@ -712,7 +748,7 @@ function StoryTick takes nothing returns nothing
                         set StoryRevive[p]=0.
                         set dx=GetUnitX(Hero[p])-SpawnX[p]
                         set dy=GetUnitY(Hero[p])-SpawnY[p]
-                        if dx*dx+dy*dy<700.*700. then
+                        if StoryStage[t]<9 and not CampaignTransition and dx*dx+dy*dy<700.*700. then
                             call SetWidgetLife(Hero[p],RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE),GetWidgetLife(Hero[p])+15.))
                             call SetUnitState(Hero[p],UNIT_STATE_MANA,RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_MANA),GetUnitState(Hero[p],UNIT_STATE_MANA)+12.))
                         endif

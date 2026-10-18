@@ -48,6 +48,10 @@ def generated():
   model=row[1].replace('.mdl','.mdx'); seq=next((x['animations'] for x in animations if x['path'].lower()==model.lower()),[])
   cast=next((i for i,a in enumerate(seq) if (a if isinstance(a,str) else a['name']).lower().startswith('spell')),next((i for i,a in enumerate(seq) if 'attack' in (a if isinstance(a,str) else a['name']).lower()),0))
   lines += [f"    set CampaignUnit[{n}]='{raw(n)}'",f'    set CampaignAnimation[{n}]={cast}']
+ for stage,seats in json.loads((ROOT/'src/arena-stands-source.json').read_text())['stages'].items():
+  for p,seat in enumerate(seats):
+   n=p+(12 if int(stage)==11 else 0)
+   lines.extend([f"    set ArenaSeatX[{n}]={float(seat['x'])}",f"    set ArenaSeatY[{n}]={float(seat['y'])}"])
  for st in DATA['stages']:
   n=st['id'];p=nav[str(n)];bounds=p['bounds']
   vals={'CampaignName':st['name'],'CampaignIntro':st['intro'],'CampaignMusic':-1 if st['music'] is None else st['music'],'CampaignLimit':float(st['seconds']),'CampaignX':float(p['spawn'][0]),'CampaignY':float(p['spawn'][1]),'CampaignTX':float(p['target'][0]),'CampaignTY':float(p['target'][1]),'CampaignMinX':float(bounds[0]),'CampaignMinY':float(bounds[1]),'CampaignMaxX':float(bounds[2]),'CampaignMaxY':float(bounds[3])}

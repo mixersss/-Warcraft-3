@@ -310,7 +310,9 @@ function CampaignQueueBuild takes boolean winners returns nothing
     set CampaignWinnerCount=0
 endfunction
 function CampaignStand takes integer p returns nothing
+    local integer seat=p
     if Hero[p]!=null then
+        call RamenClearUnit(Hero[p])
         call CommonLogClear(p)
         call RosterReset(p)
         if not FoundationAlive(Hero[p]) and not CampaignPermanentDead[p] then
@@ -319,7 +321,12 @@ function CampaignStand takes integer p returns nothing
         call UnitAddAbility(Hero[p],'Avul')
         call PauseUnit(Hero[p],true)
         call IssueImmediateOrder(Hero[p],"stop")
-        call SetUnitPosition(Hero[p],CampaignX[CampaignStage]+I2R(ModuloInteger(p,3))*64.,CampaignY[CampaignStage]+300.+I2R(StoryTeam(p))*64.)
+        if CampaignStage==11 then
+            set seat=p+12
+        endif
+        call SetUnitPosition(Hero[p],ArenaSeatX[seat],ArenaSeatY[seat])
+        call SetUnitFacing(Hero[p],Atan2(CampaignTY[CampaignStage]-GetUnitY(Hero[p]),CampaignTX[CampaignStage]-GetUnitX(Hero[p]))*bj_RADTODEG)
+        call SetUnitAnimation(Hero[p],"stand")
     endif
 endfunction
 // The arena is public to every participant/spectator only during tournaments.
@@ -351,6 +358,7 @@ function CampaignArenaCamera takes nothing returns nothing
 endfunction
 function CampaignDuelNext takes nothing returns nothing
     local integer p=0
+    call NoteClearAll()
     loop
         exitwhen p>=12
         call CampaignStand(p)
@@ -456,6 +464,47 @@ function CampaignFountainsOpen takes nothing returns nothing
         set VillageFountain[3]=CreateUnit(Player(14),'rvf3',5632.,-3008.,270.)
     endif
 endfunction
+function CampaignVillageLandmarksClose takes nothing returns nothing
+    local integer n=0
+    loop
+        exitwhen n>=96
+        if VillageLandmarkFog[n]!=null then
+            call FogModifierStop(VillageLandmarkFog[n])
+            call DestroyFogModifier(VillageLandmarkFog[n])
+            set VillageLandmarkFog[n]=null
+        endif
+        set n=n+1
+    endloop
+endfunction
+function CampaignVillageLandmarksOpen takes nothing returns nothing
+    local integer p=0
+    local integer j=0
+    local integer slot=0
+    local unit landmark=null
+    call CampaignVillageLandmarksClose()
+    loop
+        exitwhen p>=12
+        if Hero[p]!=null then
+            set j=0
+            loop
+                exitwhen j>=8
+                if j<4 then
+                    set landmark=StoryShop[j]
+                else
+                    set landmark=VillageFountain[j-4]
+                endif
+                if landmark!=null then
+                    set slot=p*8+j
+                    set VillageLandmarkFog[slot]=CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,GetUnitX(landmark),GetUnitY(landmark),320.,false,false)
+                    call FogModifierStart(VillageLandmarkFog[slot])
+                endif
+                set j=j+1
+            endloop
+        endif
+        set p=p+1
+    endloop
+    set landmark=null
+endfunction
 function CampaignSpawnStage takes nothing returns nothing
     local integer n=CampaignStage
     local integer j=0
@@ -506,6 +555,8 @@ function CampaignSpawnStage takes nothing returns nothing
         set CampaignDeployCursor=0
         call StoryShopsOpen()
         call CampaignFountainsOpen()
+        call CampaignVillageLandmarksOpen()
+        call ExamBroadcast("Коноха: открыты четыре магазина Ичираку и четыре фонтана. Их места отмечены обзором: -shop — ближайший магазин, -fountain — ближайший фонтан.")
         if CampaignChampion>=0 then
             set reward=CreateItem('Nlca',GetUnitX(Hero[CampaignChampion]),GetUnitY(Hero[CampaignChampion]))
             if not UnitAddItem(Hero[CampaignChampion],reward) then
@@ -612,6 +663,8 @@ function CampaignSpawnStage takes nothing returns nothing
 endfunction
 function CampaignQueueStage takes integer next returns nothing
     local integer p=0
+    call NoteClearAll()
+    call CampaignVillageLandmarksClose()
     call StoryShopsClose()
     if NPCSourceReady and CampaignStage==12 then
         call DisableTrigger(OrigNPC_R2V)
@@ -753,6 +806,8 @@ function CampaignFinish takes boolean victory returns nothing
         return
     endif
     set CampaignFinished=true
+    call NoteClearAll()
+    call CampaignVillageLandmarksClose()
     call CampaignArenaVisibility(0)
     call AbortCinematicFadeBJ()
     call DisplayCineFilter(false)

@@ -1,0 +1,21 @@
+{
+  "upperTierSeatsVerified": 24,
+  "sourceTerraceRegions": 6,
+  "realTerrainElevationAndFootprints": true,
+  "arenaCampHealingExcluded": true,
+  "explodingNotePointCast": true,
+  "explosionDamage": [
+    400,
+    300
+  ],
+  "boundedTraps": 128,
+  "trapExpirySeconds": 180,
+  "ramenUnaffectedByDamage": true,
+  "ramenDamageTriggers": 0,
+  "villageNeutralShops": 4,
+  "villageFountains": 4,
+  "villageServiceFogRadius": 320,
+  "villageServiceFogHandlesBounded": 96,
+  "nativeMocks": "test-skills.cjs / arena-items-harness.lua / campaign-harness.lua / forest-fixes-harness.lua",
+  "enginePlaytest": false
+}

@@ -254,6 +254,7 @@ function SkillsTick takes nothing returns nothing
         set p=p+1
     endloop
     call RamenTick()
+    call NoteTick()
     call CommonLogTick()
     call RosterTick()
     set u=null
@@ -437,6 +438,7 @@ function SkillsInit takes nothing returns nothing
     endloop
     call TriggerAddAction(items,function RamenUse)
     call TriggerAddAction(levels,function SkillsLevel)
+    call TriggerAddAction(spells,function NoteCast)
     call TriggerAddAction(spells,function SkillsEffect)
     call TriggerAddAction(ended,function SkillsEndcast)
     call TimerStart(visualclock,.05,true,function VisualTick)

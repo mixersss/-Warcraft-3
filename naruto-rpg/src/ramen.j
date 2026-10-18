@@ -1,10 +1,6 @@
 // Original AIpr totals (400 HP + 400 mana / 20 s), without its full-pool gate.
-// One shared heartbeat; only active drinkers own a temporary damage trigger.
+// One shared heartbeat. Damage does not cancel recovery; refresh never stacks.
 function RamenClear takes integer slot returns nothing
-    if RamenDamage[slot]!=null then
-        call DestroyTrigger(RamenDamage[slot])
-        set RamenDamage[slot]=null
-    endif
     if RamenArt[slot]!=null then
         call DestroyEffect(RamenArt[slot])
         set RamenArt[slot]=null
@@ -12,18 +8,15 @@ function RamenClear takes integer slot returns nothing
     set RamenUnit[slot]=null
     set RamenUntil[slot]=0.
 endfunction
-function RamenInterrupted takes nothing returns nothing
+function RamenClearUnit takes unit u returns nothing
     local integer slot=0
-    if GetEventDamage()>0. then
-        loop
-            exitwhen slot>=64
-            if RamenUnit[slot]==GetTriggerUnit() then
-                call RamenClear(slot)
-                return
-            endif
-            set slot=slot+1
-        endloop
-    endif
+    loop
+        exitwhen slot>=64
+        if RamenUnit[slot]==u then
+            call RamenClear(slot)
+        endif
+        set slot=slot+1
+    endloop
 endfunction
 function RamenUse takes nothing returns nothing
     local unit u=GetManipulatingUnit()
@@ -49,9 +42,6 @@ function RamenUse takes nothing returns nothing
         set RamenUntil[free]=TimeNow+20.
         set RamenLast[free]=TimeNow
         set RamenArt[free]=AddSpecialEffectTarget("Abilities\\Spells\\Items\\ReplenishHealth\\ReplenishHealthCaster.mdl",u,"origin")
-        set RamenDamage[free]=CreateTrigger()
-        call TriggerRegisterUnitEvent(RamenDamage[free],u,EVENT_UNIT_DAMAGED)
-        call TriggerAddAction(RamenDamage[free],function RamenInterrupted)
     endif
     set u=null
 endfunction

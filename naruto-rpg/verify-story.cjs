@@ -56,7 +56,7 @@ const schema=JSON.parse(fs.readFileSync(path.join(root,'src/classic-skill-schema
 const itemFile=new ObjectParser();itemFile.load(read('war3map.w3t'));
 assert.equal(itemFile.customTable.objects.length,13);
 const field=o=>Object.fromEntries(o.modifications.map(m=>[m.id,m.value]));
-for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert((f.igol>0 || ['Eshe','Esea'].includes(item.newId)) && f.ilum===0);if(f.iabi)for(const a of f.iabi.split(','))assert(schema.stockIds.abilities.includes(a) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt','Lrmn','Cstr','Cint','Cagi'].includes(a));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
+for(const item of itemFile.customTable.objects){assert(schema.stockIds.items.includes(item.oldId),'Invalid item base');const f=field(item);assert((f.igol>0 || ['Eshe','Esea'].includes(item.newId)) && f.ilum===0);if(f.iabi)for(const a of f.iabi.split(','))assert(schema.stockIds.abilities.includes(a) || ['Lgar','Lcar','Ljkn','Ljsh','Ljnt','Lrmn','Lexp','Cstr','Cint','Cagi'].includes(a));for(const m of item.modifications)assert(schema.itemFields[m.id],'Invalid item field '+m.id)}
 const assets=new Set(JSON.parse(fs.readFileSync(path.join(root,'src/asset-manifest.json'))).map(a=>a.path.toLowerCase()));
 for(const item of itemFile.customTable.objects){const f=field(item);assert(f.iico && (assets.has(f.iico.toLowerCase()) || f.iico.toLowerCase().startsWith('replaceabletextures\\')),'Item must use imported source art: '+item.newId)}
 const modelAnimations=JSON.parse(fs.readFileSync(path.join(root,'src/model-animations.json')));
