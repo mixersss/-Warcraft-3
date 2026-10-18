@@ -156,5 +156,44 @@ CampaignArenaVisibility(9);assert(not fog and not mask)
 CampaignArenaVisibility(9);CampaignArenaVisibility(11);assert(not fog and not mask)
 CampaignArenaVisibility(10);assert(fog and not mask and not CampaignArenaView)
 fog=true;mask=true
+-- Exercise actual chat dispatch, safe startup/host gates, early-chapter cleanup and re-entry.
+do
+ fresh();CampaignArenaVisibility(0);fog=true;mask=true
+ StoryPopulateCursor=64;SpawnClock=nil;SkillDataReady=true
+ local timersPaused, timersDestroyed=PauseTimer,DestroyTimer
+ function PauseTimer(t)t.paused=true end
+ function DestroyTimer(t)t.destroyed=true end
+ ChatPlayer=0;ChatText='-arena 3';FoundationChat();assert(not CampaignTransition,'Invalid suffix must not jump')
+ ChatPlayer=1;ChatText='-arena 2';FoundationChat();assert(not CampaignTransition,'Only first occupied human may move the whole game')
+ ChatPlayer=0;SpawnClock=CreateTimer();FoundationChat();assert(not CampaignTransition,'Wait for hero creation before testing')
+ SpawnClock=nil
+ StoryPopulateClock=CreateTimer();StoryMentorClock=CreateTimer();StoryMentorDialog=CreateTimerDialog(StoryMentorClock)
+ ExamPhase=3;ExamClock=CreateTimer();ExamDialog=CreateTimerDialog(ExamClock);ExamRect=Rect(-1,-1,1,1);ExamAnswers={}
+ PhaseClock=CreateTimer();PhaseDialog=CreateTimerDialog(PhaseClock)
+ local producer,mentor,exam=StoryPopulateClock,StoryMentorClock,ExamClock
+ local answer,region=ExamAnswers,ExamRect
+ StoryEnemy[0]=CreateUnit(12,raw('re01'),0,0,0);ExamEnemy[0]=CreateUnit(12,raw('re06'),0,0,0)
+ local firstEnemy,forestEnemy=StoryEnemy[0],ExamEnemy[0]
+ local identity=Hero[0];local level=Hero[0].level;local gold=GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)
+ ChatText='-arena 2';FoundationChat()
+ assert(CampaignTransition and CampaignQueued==11 and ExamPhase==4)
+ for t=0,3 do assert(StoryStage[t]==8 and StoryAdvanceAt[t]==0 and StoryStarted[t],'No skipped quest can complete during fade')end
+ TimeNow=TimeNow+.5;StoryTick();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==gold,'No reward during transition heartbeat')
+ assert(producer.paused and producer.destroyed and mentor.paused and mentor.destroyed and exam.paused and exam.destroyed)
+ assert(StoryPopulateClock==nil and StoryMentorClock==nil and StoryMentorDialog==nil and ExamClock==nil and ExamDialog==nil)
+ assert(answer.destroyed and region.removed and firstEnemy.removed and forestEnemy.removed)
+ assert(Hero[0]==identity and Hero[0].level==level and GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==gold,'No hero reroll or skipped quest reward')
+ local clock,dialog,scratch=CampaignClock,CampaignDialog,CampaignScratch
+ ChatText='-arena 1';FoundationChat();assert(CampaignQueued==11,'An in-progress transition cannot be overwritten')
+ enter();assert(CampaignStage==11 and CampaignDuelA>=0 and not fog and not mask and not filter)
+ ChatText='-arena';FoundationChat();assert(CampaignQueued==9 and CampaignTransition)
+ assert(CampaignClock==clock and CampaignDialog==dialog and CampaignScratch==scratch,'Repeated shortcut reuses campaign handles')
+ enter();assert(CampaignStage==9 and CampaignDuelA>=0)
+ CampaignStage=12;ChatText='-arena 2';FoundationChat();assert(not CampaignTransition,'Do not rewind active invasion/source NPC timers')
+ CampaignStage=9;Controllers[0]='computer';ChatPlayer=1;FoundationChat();assert(CampaignTransition and CampaignQueued==11,'Support non-red first human')
+ enter();CampaignArenaVisibility(0);fog=true;mask=true
+ PauseTimer,DestroyTimer=timersPaused,timersDestroyed
+end
+
 assert(#fades>0,'Every stage transition must include a real cinematic fade')
-print('PASS: public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and eleven final duels, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')
+print('PASS: actual -arena chat dispatch, startup/host/transition guards, early-chapter producer cleanup, repeated and non-red host jumps; public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and eleven final duels, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')

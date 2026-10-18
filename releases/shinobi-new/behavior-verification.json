@@ -24,6 +24,8 @@
   "alliedBotsDrawEnemyAggroNativeMocks": true,
   "openingTimerDeferredNativeMocks": true,
   "primaryHeroFamilies": 12,
+  "arenaTestShortcutActualChatDispatch": true,
+  "arenaTestEarlyChapterCleanupAndReentry": true,
   "arenaFogAndMaskDisabledOnlyDuringDuels": true,
   "arenaSpectatorCameraAndFilterRecovery": true,
   "forestBotPairPatrolAndStalledGoalRecovery": true,

@@ -639,6 +639,19 @@ function CampaignQueueStage takes integer next returns nothing
         call PauseTimer(CampaignClock)
     endif
 endfunction
+function CampaignPrepare takes nothing returns nothing
+    call CampaignBindRoles()
+    if CampaignCamera[0]==null then
+        call CampaignCamerasInit()
+    endif
+    if CampaignScratch==null then
+        set CampaignScratch=CreateGroup()
+    endif
+    if CampaignClock==null then
+        set CampaignClock=CreateTimer()
+        set CampaignDialog=CreateTimerDialog(CampaignClock)
+    endif
+endfunction
 function CampaignStartPlay takes nothing returns nothing
     local integer p=0
     local integer j=0
@@ -1033,6 +1046,123 @@ function CampaignDeploy takes nothing returns nothing
         set processed=processed+1
     endloop
 endfunction
+// Explicit test shortcut, invoked synchronously by the first occupied human.
+function CampaignTestArena takes integer sender, integer arena returns nothing
+    local integer p=0
+    local integer j=0
+    if arena!=1 and arena!=2 then
+        call DisplayTimedTextToPlayer(Player(sender),0.,0.,12.,"Тест: -arena 1 — предварительные бои; -arena 2 — финальный турнир.")
+        return
+    endif
+    loop
+        exitwhen p>=12 or (GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING and GetPlayerController(Player(p))!=MAP_CONTROL_COMPUTER)
+        set p=p+1
+    endloop
+    if sender!=p then
+        call DisplayTimedTextToPlayer(Player(sender),0.,0.,10.,"Тестовые переходы доступны первому игроку-человеку в списке слотов.")
+        return
+    endif
+    if CampaignFinished or CampaignStage>11 or CampaignTransition then
+        call DisplayTimedTextToPlayer(Player(sender),0.,0.,12.,"Для теста начните новую игру или дождитесь окончания текущего перехода. Команда доступна до вторжения в Коноху.")
+        return
+    endif
+    if not SkillDataReady or SpawnClock!=null or StoryPopulateCursor<64 then
+        call DisplayTimedTextToPlayer(Player(sender),0.,0.,10.,"Герои ещё создаются. Повторите команду через несколько секунд.")
+        return
+    endif
+    if CampaignStage==0 then
+        // Stop early-chapter producers before leaving their maps; do not award skipped quests.
+        set ExamPhase=4
+        set StoryMentorsReleased=true
+        if StoryMentorClock!=null then
+            call PauseTimer(StoryMentorClock)
+            call DestroyTimer(StoryMentorClock)
+            set StoryMentorClock=null
+        endif
+        if StoryMentorDialog!=null then
+            call DestroyTimerDialog(StoryMentorDialog)
+            set StoryMentorDialog=null
+        endif
+        if StoryPopulateClock!=null then
+            call PauseTimer(StoryPopulateClock)
+            call DestroyTimer(StoryPopulateClock)
+            set StoryPopulateClock=null
+        endif
+        if ExamAnswers!=null then
+            call DestroyTrigger(ExamAnswers)
+            set ExamAnswers=null
+        endif
+        if ExamClock!=null then
+            call PauseTimer(ExamClock)
+            call DestroyTimer(ExamClock)
+            set ExamClock=null
+        endif
+        if ExamDialog!=null then
+            call DestroyTimerDialog(ExamDialog)
+            set ExamDialog=null
+        endif
+        if PhaseDialog!=null then
+            call TimerDialogDisplay(PhaseDialog,false)
+        endif
+        if PhaseClock!=null then
+            call PauseTimer(PhaseClock)
+        endif
+        loop
+            exitwhen j>=85
+            if j<72 and StoryEnemy[j]!=null then
+                call RemoveUnit(StoryEnemy[j])
+                set StoryEnemy[j]=null
+            endif
+            if j<72 and EnemyMark[j]!=null then
+                call DestroyEffect(EnemyMark[j])
+                set EnemyMark[j]=null
+            endif
+            if j<72 then
+                set EnemyPending[j]=0.
+                set EnemyFocus[j]=null
+            endif
+            if ExamEnemy[j]!=null then
+                call RemoveUnit(ExamEnemy[j])
+                set ExamEnemy[j]=null
+            endif
+            set j=j+1
+        endloop
+        set j=0
+        loop
+            exitwhen j>=4
+            if StoryMentor[j]!=null then
+                call RemoveUnit(StoryMentor[j])
+                set StoryMentor[j]=null
+            endif
+            set StoryBoss[j]=null
+            set StoryStage[j]=8
+            set StoryStarted[j]=true
+            set StoryAdvanceAt[j]=0.
+            set StoryRetreat[j]=false
+            set StoryMarch[j]=true
+            if j<2 and ExamFountain[j]!=null then
+                call RemoveUnit(ExamFountain[j])
+                set ExamFountain[j]=null
+            endif
+            set j=j+1
+        endloop
+        if ExamTower!=null then
+            call RemoveUnit(ExamTower)
+            set ExamTower=null
+        endif
+        if ExamRect!=null then
+            call RemoveRect(ExamRect)
+            set ExamRect=null
+        endif
+    endif
+    call CampaignPrepare()
+    if arena==1 then
+        call CampaignQueueStage(9)
+    else
+        call CampaignQueueStage(11)
+    endif
+    call ExamBroadcast("ТЕСТ АРЕНЫ: предыдущие задания пропущены без наград. Переход к поединкам; навыки, уровень и снаряжение героев сохранены.")
+endfunction
 function CampaignTick takes nothing returns nothing
     local integer n=CampaignStage
     local integer p=0
@@ -1055,19 +1185,7 @@ function CampaignTick takes nothing returns nothing
         if ExamPhase!=4 then
             return
         endif
-        loop
-            exitwhen p>=12
-            if Hero[p]!=null then
-                set CampaignLeader=p
-                exitwhen true
-            endif
-            set p=p+1
-        endloop
-        call CampaignBindRoles()
-        call CampaignCamerasInit()
-        set CampaignScratch=CreateGroup()
-        set CampaignClock=CreateTimer()
-        set CampaignDialog=CreateTimerDialog(CampaignClock)
+        call CampaignPrepare()
         call CampaignQueueStage(9)
         return
     endif
