@@ -6,11 +6,15 @@ DATA=json.loads((ROOT/'src/campaign-source.json').read_text())
 MODELS=[('Хирузен Сарутоби','Sandaime.mdl',90000,160),('Какаши','KakashiNew.mdl',30000,120),('Майто Гай','Gai.mdl',30000,140),('Итачи','Itachi.mdl',55000,170),('Кисамэ','Kisame.mdl',60000,180),('Дзиробо','Jiroubu.mdl',30000,140),('Кидомару','Kidoumaru.mdl',26000,110),('Сакон','Sakon.mdl',30000,130),('Тауюя','Tayuya.mdl',26000,110),('Кимимаро','Kimimaro.mdl',40000,170),('Саске — проклятая печать','SasukeCursed.mdl',60000,180),('Кабуто','Kabuto.mdl',65000,170),('Манда','Manda.mdl',120000,220),('Орочимару','Orochimaru.mdl',100000,210),('Джирайя','Jiraiya.mdl',20000,130),('Ниндзя Звука','SoundJounin.mdl',2200,65),('Ниндзя Песка','SandJounin.mdl',2400,65),('Ниндзя Листа','LeafJounin.mdl',2600,70),('Бочка','Doodads\\LordaeronSummer\\Props\\Barrel\\Barrel.mdl',120,0),('Валун','Doodads\\Terrain\\RockChunks\\RockChunks0.mdl',5000,0)]
 MODELS += [('Двойник: '+name,model,5000,70) for name,fn,a,b,model in DATA['cloneRooms']]
 MODELS += [('Наруто — сюжетный персонаж','Naruto.mdl',50000,160)]
-MODELS += [('Асумa','AsumaNew.mdl',20000,149),('Куренай','KurenaiNew.mdl',20000,149),('Анко','Anko.mdl',20000,149),('Медик Листа','LeafJounin.mdl',3000,0),('Джирайя','Jiraiya.mdl',50000,249)]
-def raw(n):return 'C'+format(n,'03X')
+MODELS += [('Асумa','AsumaNew.mdl',20000,149),('Куренай','KurenaiNew.mdl',20000,149),('Анко','Anko.mdl',20000,149),('Медик Листа','LeafJounin.mdl',3000,0),('Джирайя','Jiraiya.mdl',60000,349),('АНБУ','ANBU_2.mdl',5000,149),('Баки','SandJounin.mdl',10000,149),('Трёхголовая змея','Manda.mdl',30000,499),('Какаши — Акацуки','KakashiNew.mdl',10000,299),('Гай — Акацуки','Gai.mdl',10000,299),('Укон','Sakon.mdl',60000,349)]
+def raw(n):return ('C' if 20<=n<=27 else 'c')+format(n,'03X')
 def units():
  out=[]
  for n,(name,model,hp,damage) in enumerate(MODELS):
+  native=__import__('npc_source').body(n,name)
+  if native:
+   out.append(native)
+   continue
   scale=.8 if n!=12 else 1.2
   mods=[('unam',3,name),('umdl',3,model),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp'),('usca',1,scale),('uhpm',0,hp),('uhpr',2,0.),('ua1b',0,damage),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.5),('ua1r',0,140),('umvs',0,310),('ucol',2,24.),('udef',0,6),('umpm',0,3000),('umpi',0,3000),('umpr',2,10.),('uabi',3,'Cbol,Cwav,Cstm'),('uaen',0,1),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,''),('ulev',0,10),('ufoo',0,0),('upgr',3,''),('ureq',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0)]
   if n in (0,18,19):mods.extend([('umvs',0,0),('uabi',3,''),('uaen',0,0 if n>=18 else 1),('ucol',2,16.)])
@@ -47,4 +51,12 @@ def generated():
  for j,p in enumerate(nav['barrels']):lines += [f'    set CampaignBarrelX[{j}]={float(p[0])}',f'    set CampaignBarrelY[{j}]={float(p[1])}']
  for j,p in enumerate(nav['routes']):lines += [f'    set CampaignRouteX[{j}]={float(p[0])}',f'    set CampaignRouteY[{j}]={float(p[1])}']
  for j,(p,kind) in enumerate(zip(nav['five'],[5,6,8,7,9])):lines += [f'    set CampaignFiveX[{j}]={float(p[0])}',f'    set CampaignFiveY[{j}]={float(p[1])}',f'    set CampaignFiveType[{j}]={kind}']
+ invasion=json.loads((ROOT/'src/invasion-source.json').read_text())
+ for key,name in [('leafDefenders','Leaf'),('anbuDefenders','Anbu')]:
+  for n,row in enumerate(invasion[key]):
+   for suffix,field in [('X','x'),('Y','y'),('Facing','facing')]:lines.append(f'    set Campaign{name}{suffix}[{n}]={float(row[field])}')
+ for n,row in enumerate(invasion['villageShops']):lines.extend([f"    set StoryShopX[{n}]={row['x']}",f"    set StoryShopY[{n}]={row['y']}"])
+ for n,b in enumerate(invasion['medicRegions'].values()):lines.extend([f'    set CampaignMedicX[{n}]={(b[0]+b[2])/2}',f'    set CampaignMedicY[{n}]={(b[1]+b[3])/2}'])
+ for n,key in enumerate(['SL','UJ','WQ','YQ','FM','DP','VM']):
+  b=invasion['deploymentRegions'][key];lines.extend([f'    set CampaignSupportX[{n}]={(b[0]+b[2])/2}',f'    set CampaignSupportY[{n}]={(b[1]+b[3])/2}'])
  return '\n'+'\n'.join(lines)

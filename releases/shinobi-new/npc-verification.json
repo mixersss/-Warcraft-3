@@ -1,0 +1,22 @@
+{
+  "sourceNPCBodies": 35,
+  "sourceFirstBattleBodies": 3,
+  "sourceExamEnemyTypes": 2,
+  "nativeAbilities": 119,
+  "sourceCallbackFunctions": 912,
+  "sourceEventRoots": 112,
+  "sourceDependencies": 171,
+  "fieldsComparedToSource": 7059,
+  "leafDefenders": 140,
+  "anbuDefenders": 102,
+  "medics": 6,
+  "sourceVillageShops": 4,
+  "pricesAndStockVerified": 11,
+  "shopsOnlyDuringInvasion": true,
+  "sourceSakonSplitThreshold": 15000,
+  "sourceKimimaroBoneThreshold": 25000,
+  "sourceTayuyaSleepThreshold": 5000,
+  "targetSelectionAI": "adapted for bots",
+  "fullOriginalScenarioIdentical": false,
+  "enginePlaytest": false
+}

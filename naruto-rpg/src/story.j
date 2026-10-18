@@ -76,10 +76,7 @@ function StoryPopulate takes nothing returns nothing
     endif
     if StoryMembers[t]>0 then
         set EnemyKind[j]=1
-        if n<14 and ModuloInteger(n,2)==1 then
-            set raw='re02'
-            set EnemyKind[j]=2
-        elseif n==14 then
+        if n==14 then
             set raw='re03'
             set EnemyKind[j]=3
         elseif n==15 then
@@ -87,6 +84,9 @@ function StoryPopulate takes nothing returns nothing
             set EnemyKind[j]=4
         endif
         set u=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,EnemySpawnX[j],EnemySpawnY[j],180.)
+        if n==14 then
+            call NPCSourceInit()
+        endif
         call SetUnitCreepGuard(u,false)
         call RemoveGuardPosition(u)
         set StoryEnemy[j]=u
@@ -133,55 +133,22 @@ function StoryEnemyTarget takes integer t, unit enemy, unit leader returns unit
     return leader
 endfunction
 function StoryEnemyCast takes integer j, unit target returns nothing
-    local integer t=(j-ModuloInteger(j,18))/18
-    local integer stage=EnemyKind[j]
     local unit u=StoryEnemy[j]
-    local unit clone=null
-    local integer n=1
-    set EnemyX[j]=GetUnitX(target)
-    set EnemyY[j]=GetUnitY(target)
-    set EnemyPending[j]=TimeNow+1.5
-    set EnemyMark[j]=AddSpecialEffect("Abilities\\Spells\\Human\\Blizzard\\BlizzardTarget.mdl",EnemyX[j],EnemyY[j])
-    call IssueImmediateOrder(u,"stop")
-    call SetUnitFacing(u,bj_RADTODEG*Atan2(EnemyY[j]-GetUnitY(u),EnemyX[j]-GetUnitX(u)))
-    if stage==3 then
-        // Haku has no Spell sequence: use the actual second Attack sequence.
-        call SetUnitAnimationByIndex(u,2)
-    elseif stage==4 then
-        call SetUnitAnimationByIndex(u,5)
-    elseif stage==1 then
-        call SetUnitAnimationByIndex(u,5)
-    else
-        call SetUnitAnimationByIndex(u,4)
+    local real dx=GetUnitX(target)-GetUnitX(u)
+    local real dy=GetUnitY(target)-GetUnitY(u)
+    if EnemyKind[j]==3 then
+        call NPCFirstHaku(u)
     endif
-    set EnemyNext[j]=TimeNow+9.
-    if stage>=3 and GetWidgetLife(u)<GetUnitState(u,UNIT_STATE_MAX_LIFE)*.5 then
-        set EnemyNext[j]=TimeNow+5.5
-        if not EnemyPhase[j] then
-            set EnemyPhase[j]=true
-            if stage==4 and ModuloInteger(j,18)==15 then
-                loop
-                    exitwhen n>=3
-                    set clone=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),'re05',GetUnitX(u)+n*100.,GetUnitY(u)+100.,180.)
-                    call SetUnitVertexColor(clone,100,170,255,155)
-                    call SetUnitCreepGuard(clone,false)
-                    call RemoveGuardPosition(clone)
-                    set StoryEnemy[t*18+15+n]=clone
-                    set EnemySpawnX[t*18+15+n]=GetUnitX(clone)
-                    set EnemySpawnY[t*18+15+n]=GetUnitY(clone)
-                    set EnemyPrisonAt[t*18+15+n]=TimeNow+99999.
-                    set EnemyKind[t*18+15+n]=4
-                    set EnemyNext[t*18+15+n]=TimeNow+99999.
-                    set EnemyLootRolled[t*18+15+n]=true
-                    call IssueTargetOrder(clone,"attack",target)
-                    set n=n+1
-                endloop
-                call StorySay(t,"Забуза: Техника водяных клонов! |nНаставник: Клоны хрупкие — разберите их вместе, затем сосредоточьтесь на настоящем Забузе!")
-            endif
-            call StorySay(t,"Наставник: Противник усиливает натиск! Не стойте рядом друг с другом и берегите чакру.")
+    if EnemyKind[j]==4 and TimeNow>=EnemyBlinkAt[j] and dx*dx+dy*dy>500.*500. and GetUnitState(u,UNIT_STATE_MANA)>=10. then
+        if IssuePointOrder(u,"blink",GetUnitX(target),GetUnitY(target)) then
+            set EnemyBlinkAt[j]=TimeNow+5.
+            set EnemyNext[j]=TimeNow+1.
+            set u=null
+            return
         endif
     endif
-    set clone=null
+    call IssueTargetOrder(u,"attack",target)
+    set EnemyNext[j]=TimeNow+3.
     set u=null
 endfunction
 function StoryEnemyHit takes integer j returns nothing
@@ -341,29 +308,59 @@ function StoryLootBot takes integer p, unit enemy returns boolean
     set carried=null
     return false
 endfunction
-function StoryBuy takes integer p returns nothing
-    local integer t=StoryTeam(p)
-    local integer slot=0
-    local integer choice=0
-    local integer role=HeroRole[p]
-    local boolean full=true
-    // Preparation must leave every hero inventory empty; purchases begin during play.
-    if not StoryStarted[t] or StoryStage[t]==0 or TimeNow<60. then
-        return
-    endif
-    if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<30 then
-        return
+function StoryShopFor takes integer p returns unit
+    local integer j=0
+    local unit result=null
+    local real best=999999999.
+    local real dx=0.
+    local real dy=0.
+    if CampaignStage!=12 or CampaignTransition then
+        return null
     endif
     loop
-        exitwhen slot>=6
-        if UnitItemInSlot(Hero[p],slot)==null then
-            set full=false
+        exitwhen j>=4
+        if StoryShop[j]!=null then
+            set dx=GetUnitX(Hero[p])-GetUnitX(StoryShop[j])
+            set dy=GetUnitY(Hero[p])-GetUnitY(StoryShop[j])
+            if dx*dx+dy*dy<best then
+                set result=StoryShop[j]
+                set best=dx*dx+dy*dy
+            endif
         endif
-        set slot=slot+1
+        set j=j+1
     endloop
-    if full then
-        return
+    return result
+endfunction
+function StoryShopsClose takes nothing returns nothing
+    local integer j=0
+    loop
+        exitwhen j>=4
+        if StoryShop[j]!=null then
+            call RemoveUnit(StoryShop[j])
+            set StoryShop[j]=null
+        endif
+        set j=j+1
+    endloop
+    if StoryShopSales!=null then
+        call DestroyTrigger(StoryShopSales)
+        set StoryShopSales=null
     endif
+endfunction
+function StoryHasItemSpace takes integer p returns boolean
+    local integer k=0
+    loop
+        exitwhen k>=6
+        if UnitItemInSlot(Hero[p],k)==null then
+            return true
+        endif
+        set k=k+1
+    endloop
+    return false
+endfunction
+function StoryChooseItem takes integer p returns integer
+    local integer choice=0
+    local integer slot=0
+    local integer role=HeroRole[p]
     set choice=ModuloInteger(StoryBought[p],3)
     if choice==1 then
         set choice=4
@@ -394,11 +391,39 @@ function StoryBuy takes integer p returns nothing
             set slot=slot+1
         endloop
     endif
+    return choice
+endfunction
+function StoryBuy takes integer p returns nothing
+    local integer t=StoryTeam(p)
+    local integer slot=0
+    local integer choice=0
+    local integer role=HeroRole[p]
+    local boolean full=true
+    local unit shop=StoryShopFor(p)
+    // Preparation must leave every hero inventory empty; purchases begin during play.
+    if shop==null or CampaignStage!=12 or CampaignTransition then
+        return
+    endif
+    if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<30 then
+        return
+    endif
+    loop
+        exitwhen slot>=6
+        if UnitItemInSlot(Hero[p],slot)==null then
+            set full=false
+        endif
+        set slot=slot+1
+    endloop
+    if full then
+        return
+    endif
+    set choice=StoryChooseItem(p)
     if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[choice] then
-        call IssueNeutralTargetOrder(Player(p),StoryShop[t],"neutralinteract",Hero[p])
-        call IssueNeutralImmediateOrderById(Player(p),StoryShop[t],StoryItem[choice])
+        call IssueNeutralTargetOrder(Player(p),shop,"neutralinteract",Hero[p])
+        call IssueNeutralImmediateOrderById(Player(p),shop,StoryItem[choice])
         set StoryBuyAt[p]=TimeNow+4.
     endif
+    set shop=null
 endfunction
 function StoryOnBuy takes nothing returns nothing
     local unit buyer=GetBuyingUnit()
@@ -408,6 +433,22 @@ function StoryOnBuy takes nothing returns nothing
     endif
     set buyer=null
 endfunction
+function StoryShopsOpen takes nothing returns nothing
+    local integer j=0
+    if CampaignStage!=12 then
+        return
+    endif
+    call StoryShopsClose()
+    set StoryShopSales=CreateTrigger()
+    call TriggerAddAction(StoryShopSales,function StoryOnBuy)
+    loop
+        exitwhen j>=4
+        set StoryShop[j]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rqsh',StoryShopX[j],StoryShopY[j],270.)
+        call TriggerRegisterUnitEvent(StoryShopSales,StoryShop[j],EVENT_UNIT_SELL_ITEM)
+        set j=j+1
+    endloop
+endfunction
+
 function StoryActivate takes integer t, boolean march returns nothing
     local integer n=t*3
     set StoryStarted[t]=true
@@ -424,6 +465,7 @@ function StoryCommand takes integer p, string msg returns nothing
     local integer t=StoryTeam(p)
     local integer n=0
     local unit goal=null
+    local unit shop=null
     if msg=="-go" then
         if StoryStage[t]==0 then
             call StoryStartStage(t)
@@ -477,8 +519,14 @@ function StoryCommand takes integer p, string msg returns nothing
             set CampaignKabutoAI=msg=="-kabutoon"
         endif
     elseif msg=="-shop" then
-        call SelectUnitForPlayerSingle(StoryShop[t],Player(p))
-        call PanCameraToTimedForPlayer(Player(p),GetUnitX(StoryShop[t]),GetUnitY(StoryShop[t]),1.)
+        set goal=StoryShopFor(p)
+        if goal!=null then
+            call SelectUnitForPlayerSingle(goal,Player(p))
+            call PanCameraToTimedForPlayer(Player(p),GetUnitX(goal),GetUnitY(goal),1.)
+        else
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Магазины доступны только во время нападения на деревню. До этого снаряжение можно найти у побеждённых врагов.")
+        endif
+        set goal=null
         call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Снабжение возле Наставник: подведите своего героя и купите предмет кнопкой магазина. -camera: вернуться к герою.")
     elseif msg=="-camera" and Hero[p]!=null then
         call SelectUnitForPlayerSingle(Hero[p],Player(p))
@@ -583,17 +631,7 @@ function StoryTick takes nothing returns nothing
                         set dx=GetUnitX(target)-GetUnitX(StoryEnemy[j])
                         set dy=GetUnitY(target)-GetUnitY(StoryEnemy[j])
                         if dx*dx+dy*dy<850.*850. then
-                            if EnemyKind[j]==4 and ModuloInteger(j,18)==15 and TimeNow>=EnemyPrisonAt[j] and dx*dx+dy*dy<=700.*700. and GetUnitState(StoryEnemy[j],UNIT_STATE_MANA)>=80. then
-                                if IssueTargetOrder(StoryEnemy[j],"thunderbolt",target) then
-                                    set EnemyPrisonAt[j]=TimeNow+12.
-                                    set EnemyNext[j]=RMaxBJ(EnemyNext[j],TimeNow+2.)
-                                endif
-                            elseif EnemyKind[j]==4 and ModuloInteger(j,18)==15 and TimeNow>=EnemyBlinkAt[j] and dx*dx+dy*dy>500.*500. and GetUnitState(StoryEnemy[j],UNIT_STATE_MANA)>=30. then
-                                if IssuePointOrder(StoryEnemy[j],"blink",GetUnitX(target),GetUnitY(target)) then
-                                    set EnemyBlinkAt[j]=TimeNow+10.
-                                    set EnemyNext[j]=RMaxBJ(EnemyNext[j],TimeNow+1.)
-                                endif
-                            elseif TimeNow>=EnemyNext[j] then
+                            if TimeNow>=EnemyNext[j] then
                                 call StoryEnemyCast(j,target)
                             elseif EnemyPending[j]==0. and GetUnitCurrentOrder(StoryEnemy[j])==0 then
                                 call IssueTargetOrder(StoryEnemy[j],"attack",target)
@@ -690,15 +728,7 @@ function StoryTick takes nothing returns nothing
                                 elseif StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
                                     call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
                                 elseif not StoryStarted[t] or StoryStage[t]==5 then
-                                    set x=GetUnitX(StoryShop[t])
-                                    set y=GetUnitY(StoryShop[t])
-                                    set dx=GetUnitX(Hero[p])-x
-                                    set dy=GetUnitY(Hero[p])-y
-                                    if dx*dx+dy*dy<200.*200. then
-                                        call StoryBuy(p)
-                                    else
-                                        call IssuePointOrder(Hero[p],"move",x,y)
-                                    endif
+                                    call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
                                 elseif enemy!=null then
                                     set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
                                     set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
@@ -729,7 +759,6 @@ function StoryInit takes nothing returns nothing
     local integer t=0
     local integer p=0
     local integer n=0
-    local trigger sell=CreateTrigger()
     local unit npc=null
     local quest journal=CreateQuest()
     call QuestSetTitle(journal,"Путь шиноби — сюжет и задания")
@@ -753,8 +782,6 @@ function StoryInit takes nothing returns nothing
             set npc=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),StoryMentorType[t],SpawnX[t*3]+180.,SpawnY[t*3]+180.,0.)
             set StoryMentor[t]=npc
             call PauseUnit(npc,true)
-            set StoryShop[t]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rqsh',SpawnX[t*3]+280.,SpawnY[t*3]-180.,0.)
-            call TriggerRegisterUnitEvent(sell,StoryShop[t],EVENT_UNIT_SELL_ITEM)
             call StorySay(t,"Наставник: Наша миссия — защитить строителя моста в Стране Волн. Дорогу перекрыли шиноби Тумана. Подготовьтесь, затем отправляемся вместе. |n"+StoryGoal(t))
         endif
         set t=t+1
@@ -768,8 +795,6 @@ function StoryInit takes nothing returns nothing
     call TimerDialogDisplay(StoryMentorDialog,true)
     call HUDInit()
     call HUDTick()
-    call TriggerAddAction(sell,function StoryOnBuy)
     set npc=null
     set journal=null
-    set sell=null
 endfunction

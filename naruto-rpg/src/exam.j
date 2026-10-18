@@ -353,7 +353,7 @@ function ExamForestTick takes nothing returns nothing
                 set p=p+1
             endloop
             if target!=null then
-                if TimeNow>=ExamEnemyCastAt[j] and best<600.*600. and GetUnitState(ExamEnemy[j],UNIT_STATE_MANA)>=75. then
+                if TimeNow>=ExamEnemyCastAt[j] and best<600.*600. and GetUnitAbilityLevel(ExamEnemy[j],'Aens')>0 and GetUnitState(ExamEnemy[j],UNIT_STATE_MANA)>=75. then
                     if IssueTargetOrder(ExamEnemy[j],"ensnare",target) then
                         call SetUnitAnimationByIndex(ExamEnemy[j],4+ModuloInteger(j,2))
                         set ExamEnemyCastAt[j]=TimeNow+12.

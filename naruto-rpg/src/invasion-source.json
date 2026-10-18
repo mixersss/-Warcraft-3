@@ -1,0 +1,1909 @@
+{
+  "originalMapSHA256": "a0350ca172f1049bf3a9472bcdfad7d08dc6551df965b4c5191c538890490533",
+  "leafDefenders": [
+    {
+      "x": 812.4,
+      "y": -12219.7,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1036.2,
+      "y": -12240.0,
+      "facing": 174.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 591.4,
+      "y": -12221.6,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 790.0,
+      "y": -11593.0,
+      "facing": 178.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 815.2,
+      "y": -11777.9,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 828.2,
+      "y": -12009.5,
+      "facing": 170.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1016.8,
+      "y": -11583.8,
+      "facing": 177.781,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1022.1,
+      "y": -11780.8,
+      "facing": 174.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1036.2,
+      "y": -11990.6,
+      "facing": 171.701,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5560.1,
+      "y": -5734.8,
+      "facing": 97.526,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5352.5,
+      "y": -5748.1,
+      "facing": 92.456,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5130.2,
+      "y": -5742.4,
+      "facing": 87.023,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4936.2,
+      "y": -5748.5,
+      "facing": 82.337,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5566.0,
+      "y": -5900.0,
+      "facing": 97.167,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5331.3,
+      "y": -5894.4,
+      "facing": 91.824,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5136.8,
+      "y": -5895.8,
+      "facing": 87.357,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4964.0,
+      "y": -5903.2,
+      "facing": 83.433,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 585.1,
+      "y": -11598.3,
+      "facing": 178.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 594.3,
+      "y": -11779.2,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 602.5,
+      "y": -11982.0,
+      "facing": 170.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5555.9,
+      "y": -5577.4,
+      "facing": 97.526,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5348.3,
+      "y": -5590.7,
+      "facing": 92.456,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5126.0,
+      "y": -5585.0,
+      "facing": 87.023,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4931.9,
+      "y": -5591.1,
+      "facing": 82.337,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3090.5,
+      "y": -9017.7,
+      "facing": 158.241,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3072.4,
+      "y": -10015.1,
+      "facing": 122.315,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3853.0,
+      "y": -11609.3,
+      "facing": 110.328,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3857.1,
+      "y": -11411.3,
+      "facing": 209.318,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5025.3,
+      "y": -11544.0,
+      "facing": 182.068,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5078.5,
+      "y": -11784.1,
+      "facing": 147.489,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5133.2,
+      "y": -11367.4,
+      "facing": 204.379,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5333.6,
+      "y": -11372.7,
+      "facing": 189.03,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5325.6,
+      "y": -11778.9,
+      "facing": 164.103,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5421.5,
+      "y": -11548.6,
+      "facing": 172.513,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 7550.2,
+      "y": -7379.6,
+      "facing": 171.579,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 7601.0,
+      "y": -8963.3,
+      "facing": 211.175,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9641.0,
+      "y": -8939.7,
+      "facing": 139.937,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 7551.0,
+      "y": -10868.9,
+      "facing": 114.668,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9478.1,
+      "y": -11528.1,
+      "facing": 171.535,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10891.9,
+      "y": -11521.1,
+      "facing": 241.663,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12595.4,
+      "y": -11255.2,
+      "facing": 211.8,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12519.6,
+      "y": -11423.0,
+      "facing": 194.487,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12772.1,
+      "y": -11315.4,
+      "facing": 198.297,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12900.9,
+      "y": -11534.6,
+      "facing": 177.975,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12799.8,
+      "y": -11795.2,
+      "facing": 155.042,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12606.7,
+      "y": -11801.1,
+      "facing": 145.295,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12481.0,
+      "y": -11623.5,
+      "facing": 158.886,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11652.1,
+      "y": -6677.0,
+      "facing": 152.872,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11705.0,
+      "y": -6257.6,
+      "facing": 186.453,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11940.1,
+      "y": -6240.5,
+      "facing": 185.887,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12111.2,
+      "y": -6364.3,
+      "facing": 178.675,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12158.2,
+      "y": -6462.6,
+      "facing": 173.926,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12053.7,
+      "y": -6612.1,
+      "facing": 162.697,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11901.4,
+      "y": -6717.9,
+      "facing": 157.051,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11660.1,
+      "y": -6480.0,
+      "facing": 169.932,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12801.1,
+      "y": -14964.0,
+      "facing": 144.459,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12593.7,
+      "y": -14770.1,
+      "facing": 152.549,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12748.8,
+      "y": -15143.0,
+      "facing": 128.232,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12586.0,
+      "y": -15193.6,
+      "facing": 112.593,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12762.1,
+      "y": -14793.1,
+      "facing": 160.228,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12475.9,
+      "y": -15063.5,
+      "facing": 105.724,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12488.2,
+      "y": -14872.2,
+      "facing": 119.968,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10561.4,
+      "y": -14960.9,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11307.0,
+      "y": -14957.5,
+      "facing": 27.631,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10537.1,
+      "y": -13848.6,
+      "facing": 194.585,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11513.5,
+      "y": -13476.3,
+      "facing": 48.605,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 8372.4,
+      "y": -14942.1,
+      "facing": 152.044,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 6986.8,
+      "y": -15000.2,
+      "facing": 70.66,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5421.5,
+      "y": -14771.5,
+      "facing": 216.737,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5188.6,
+      "y": -14713.1,
+      "facing": 214.484,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5525.3,
+      "y": -14937.4,
+      "facing": 179.482,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5050.8,
+      "y": -15093.3,
+      "facing": 162.511,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5292.1,
+      "y": -15246.7,
+      "facing": 158.719,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5068.2,
+      "y": -14844.4,
+      "facing": 207.753,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5457.1,
+      "y": -15166.6,
+      "facing": 137.592,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1990.1,
+      "y": -14950.7,
+      "facing": 153.229,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1781.0,
+      "y": -15011.3,
+      "facing": 134.931,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1723.4,
+      "y": -14723.8,
+      "facing": 156.672,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1607.0,
+      "y": -14946.5,
+      "facing": 125.816,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1768.8,
+      "y": -15197.7,
+      "facing": 124.669,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1090.0,
+      "y": -8825.8,
+      "facing": 302.487,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1268.4,
+      "y": -8683.3,
+      "facing": 277.759,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1285.4,
+      "y": -8984.3,
+      "facing": 253.441,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 946.1,
+      "y": -8996.5,
+      "facing": 279.371,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 918.3,
+      "y": -8642.5,
+      "facing": 289.705,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4470.8,
+      "y": -10004.5,
+      "facing": 171.282,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5309.8,
+      "y": -7897.0,
+      "facing": 228.402,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5290.1,
+      "y": -9094.1,
+      "facing": 79.28,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 7924.7,
+      "y": -11543.5,
+      "facing": 336.59,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12085.4,
+      "y": -8963.1,
+      "facing": 240.037,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 6463.4,
+      "y": -11597.4,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 2061.3,
+      "y": -11539.0,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1046.1,
+      "y": -10361.4,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1100.2,
+      "y": -6908.8,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 8508.9,
+      "y": -6409.9,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9775.6,
+      "y": -5950.6,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4536.1,
+      "y": -12585.3,
+      "facing": 357.145,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15251.9,
+      "y": -15701.5,
+      "facing": 270.0,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14300.3,
+      "y": -15722.8,
+      "facing": 270.0,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -980.2,
+      "y": -4460.7,
+      "facing": 271.695,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -580.3,
+      "y": -4442.2,
+      "facing": 268.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -407.9,
+      "y": -4447.1,
+      "facing": 260.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -782.7,
+      "y": -4610.4,
+      "facing": 271.712,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -764.4,
+      "y": -4407.1,
+      "facing": 267.781,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -367.7,
+      "y": -4637.2,
+      "facing": 260.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -591.7,
+      "y": -4632.3,
+      "facing": 268.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -991.6,
+      "y": -4650.9,
+      "facing": 271.695,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15956.8,
+      "y": -4130.8,
+      "facing": 181.695,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15968.5,
+      "y": -4324.7,
+      "facing": 178.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16132.6,
+      "y": -4509.6,
+      "facing": 170.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16121.9,
+      "y": -4124.9,
+      "facing": 181.712,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16114.8,
+      "y": -4346.0,
+      "facing": 177.781,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -1002.7,
+      "y": -16002.0,
+      "facing": 88.305,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15977.1,
+      "y": -4491.7,
+      "facing": 170.84,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16124.5,
+      "y": -4653.5,
+      "facing": 178.053,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15974.5,
+      "y": -4666.8,
+      "facing": 181.695,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -836.8,
+      "y": -16011.1,
+      "facing": 91.947,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -445.0,
+      "y": -16155.5,
+      "facing": 99.16,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -984.0,
+      "y": -16185.9,
+      "facing": 88.288,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -815.6,
+      "y": -16157.4,
+      "facing": 92.219,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -455.5,
+      "y": -16004.2,
+      "facing": 99.16,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -637.8,
+      "y": -16163.1,
+      "facing": 91.947,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -638.5,
+      "y": -16003.5,
+      "facing": 88.305,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -603.3,
+      "y": -14412.6,
+      "facing": 95.462,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -938.6,
+      "y": -14412.6,
+      "facing": 95.832,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -468.9,
+      "y": -14391.8,
+      "facing": 95.462,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -1047.5,
+      "y": -14405.2,
+      "facing": 95.832,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -569.9,
+      "y": -8948.5,
+      "facing": 264.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -861.2,
+      "y": -8915.7,
+      "facing": 264.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -436.3,
+      "y": -8973.3,
+      "facing": 264.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": -1014.8,
+      "y": -8959.9,
+      "facing": 264.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9947.9,
+      "y": -4524.3,
+      "facing": 174.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9953.9,
+      "y": -4226.2,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9930.4,
+      "y": -4676.8,
+      "facing": 174.538,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 9943.9,
+      "y": -4098.3,
+      "facing": 174.168,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1093.8,
+      "y": -8603.5,
+      "facing": 289.705,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1104.1,
+      "y": -9028.8,
+      "facing": 289.705,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 2647.5,
+      "y": -14946.7,
+      "facing": 166.572,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3559.9,
+      "y": -14931.2,
+      "facing": 161.387,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    },
+    {
+      "x": 6486.6,
+      "y": -11396.6,
+      "facing": 148.386,
+      "sourceType": "h00Z",
+      "sourceOwner": 12
+    }
+  ],
+  "medicRegions": {
+    "BL": [
+      15744.0,
+      -12736.0,
+      15936.0,
+      -12544.0
+    ],
+    "VM": [
+      12352.0,
+      -15328.0,
+      12960.0,
+      -14720.0
+    ],
+    "YL": [
+      4928.0,
+      -15296.0,
+      5504.0,
+      -14720.0
+    ],
+    "XM": [
+      12320.0,
+      -6848.0,
+      12960.0,
+      -6176.0
+    ],
+    "SQ": [
+      4832.0,
+      -11904.0,
+      4992.0,
+      -11744.0
+    ],
+    "TQ": [
+      4672.0,
+      -5824.0,
+      4832.0,
+      -5664.0
+    ]
+  },
+  "villageShops": [
+    {
+      "x": 16192.0,
+      "y": -16256.0,
+      "facing": 270.0
+    },
+    {
+      "x": -2432.0,
+      "y": -11008.0,
+      "facing": 270.0
+    },
+    {
+      "x": 5760.0,
+      "y": -11008.0,
+      "facing": 270.0
+    },
+    {
+      "x": 4800.0,
+      "y": -7296.0,
+      "facing": 270.0
+    }
+  ],
+  "shopStockSourceIds": [
+    "I00G",
+    "I002",
+    "gobm",
+    "I006",
+    "I008",
+    "I007",
+    "I00A",
+    "I00K",
+    "I004",
+    "I005",
+    "I003"
+  ],
+  "shopGoldPrices": {
+    "gobm": 80,
+    "I00A": 200,
+    "I00G": 35,
+    "I00K": 450,
+    "I002": 60,
+    "I003": 125,
+    "I004": 125,
+    "I005": 125,
+    "I006": 30,
+    "I007": 75,
+    "I008": 30
+  },
+  "deploymentRegions": {
+    "RL": [
+      16160.0,
+      -13568.0,
+      16256.0,
+      -13440.0
+    ],
+    "SL": [
+      13216.0,
+      -11616.0,
+      13376.0,
+      -11456.0
+    ],
+    "UJ": [
+      5920.0,
+      -15072.0,
+      6080.0,
+      -14912.0
+    ],
+    "WQ": [
+      12576.0,
+      -12192.0,
+      12736.0,
+      -12032.0
+    ],
+    "YQ": [
+      -2176.0,
+      -11904.0,
+      -2048.0,
+      -11776.0
+    ],
+    "DP": [
+      -3200.0,
+      -12064.0,
+      -2784.0,
+      -11616.0
+    ],
+    "FP": [
+      5056.0,
+      -3168.0,
+      5408.0,
+      -2784.0
+    ],
+    "GP": [
+      -896.0,
+      -13248.0,
+      -704.0,
+      -12992.0
+    ],
+    "HP": [
+      -864.0,
+      -10784.0,
+      -672.0,
+      -10528.0
+    ],
+    "JP": [
+      6368.0,
+      -4480.0,
+      6560.0,
+      -4224.0
+    ],
+    "VM": [
+      12352.0,
+      -15328.0,
+      12960.0,
+      -14720.0
+    ],
+    "FM": [
+      -2400.0,
+      -11904.0,
+      -2272.0,
+      -11776.0
+    ],
+    "SQ": [
+      4832.0,
+      -11904.0,
+      4992.0,
+      -11744.0
+    ]
+  },
+  "anbuDefenders": [
+    {
+      "x": 15615.7,
+      "y": -14926.1,
+      "facing": 169.862,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15998.9,
+      "y": -14533.6,
+      "facing": 201.904,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15877.4,
+      "y": -14635.2,
+      "facing": 197.932,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15748.0,
+      "y": -14800.7,
+      "facing": 185.476,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15905.5,
+      "y": -13900.9,
+      "facing": 326.707,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16255.2,
+      "y": -13906.4,
+      "facing": 221.121,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15906.0,
+      "y": -13388.8,
+      "facing": 71.644,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16255.6,
+      "y": -13394.3,
+      "facing": 140.351,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -911.1,
+      "y": -14565.5,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12758.1,
+      "y": -15882.9,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -601.1,
+      "y": -14573.2,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -854.9,
+      "y": -8776.5,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12873.9,
+      "y": -15814.2,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -577.3,
+      "y": -8763.6,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10115.3,
+      "y": -4264.7,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12947.3,
+      "y": -15922.7,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10127.8,
+      "y": -4520.8,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1199.5,
+      "y": -12142.5,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12832.7,
+      "y": -15994.7,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12688.8,
+      "y": -16073.5,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12625.8,
+      "y": -15952.9,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13001.6,
+      "y": -15734.0,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13084.6,
+      "y": -15848.7,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13138.7,
+      "y": -15970.9,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13012.0,
+      "y": -16035.9,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12885.5,
+      "y": -16105.0,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12743.8,
+      "y": -16177.9,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12695.9,
+      "y": -15782.0,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12811.7,
+      "y": -15713.3,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12563.6,
+      "y": -15852.0,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12939.4,
+      "y": -15633.1,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14961.2,
+      "y": -16037.9,
+      "facing": 174.154,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14820.3,
+      "y": -16032.3,
+      "facing": 173.661,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14703.4,
+      "y": -16032.3,
+      "facing": 172.848,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14592.3,
+      "y": -16029.5,
+      "facing": 170.648,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16083.3,
+      "y": -14514.0,
+      "facing": 201.097,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15961.9,
+      "y": -14615.6,
+      "facing": 197.405,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15832.4,
+      "y": -14781.0,
+      "facing": 186.521,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1185.3,
+      "y": -11642.8,
+      "facing": 209.884,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1205.9,
+      "y": -11990.9,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 4976.8,
+      "y": -6152.9,
+      "facing": 83.02,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5349.0,
+      "y": -6162.8,
+      "facing": 105.171,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5141.1,
+      "y": -11496.5,
+      "facing": 177.764,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 11878.9,
+      "y": -6480.0,
+      "facing": 168.07,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12654.6,
+      "y": -11589.7,
+      "facing": 170.848,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12654.8,
+      "y": -15021.3,
+      "facing": 128.413,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14832.5,
+      "y": -15954.0,
+      "facing": 173.661,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14715.5,
+      "y": -15954.0,
+      "facing": 172.848,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14604.4,
+      "y": -15951.2,
+      "facing": 170.648,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 14973.3,
+      "y": -15959.6,
+      "facing": 174.154,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15700.2,
+      "y": -14906.4,
+      "facing": 173.805,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5196.4,
+      "y": -15013.1,
+      "facing": 85.141,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5151.5,
+      "y": -6152.9,
+      "facing": 83.02,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5555.0,
+      "y": -6148.0,
+      "facing": 105.171,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 1199.5,
+      "y": -11812.5,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -568.8,
+      "y": -4194.2,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -633.4,
+      "y": -16297.5,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -752.3,
+      "y": -4201.1,
+      "facing": 280.123,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -390.4,
+      "y": -4187.8,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -954.8,
+      "y": -4196.8,
+      "facing": 280.123,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16275.8,
+      "y": -4466.6,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16268.9,
+      "y": -4283.1,
+      "facing": 190.123,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16282.2,
+      "y": -4645.0,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 16274.7,
+      "y": -4094.3,
+      "facing": 190.123,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -816.9,
+      "y": -16290.6,
+      "facing": 79.877,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -455.0,
+      "y": -16303.9,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -1019.4,
+      "y": -16295.0,
+      "facing": 79.877,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -1031.6,
+      "y": -14580.4,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -462.3,
+      "y": -14584.2,
+      "facing": 101.806,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -998.9,
+      "y": -8784.7,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": -429.7,
+      "y": -8780.9,
+      "facing": 258.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10119.1,
+      "y": -4114.1,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 10122.9,
+      "y": -4683.4,
+      "facing": 168.194,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 2981.6,
+      "y": -5557.2,
+      "facing": 229.362,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 2975.5,
+      "y": -5739.3,
+      "facing": 202.44,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 2978.9,
+      "y": -5901.6,
+      "facing": 164.319,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3093.4,
+      "y": -5903.9,
+      "facing": 168.941,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3089.6,
+      "y": -5738.0,
+      "facing": 195.677,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 3102.0,
+      "y": -5559.8,
+      "facing": 217.505,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13150.8,
+      "y": -5547.6,
+      "facing": 2.665,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13144.7,
+      "y": -5729.7,
+      "facing": 3.433,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13148.1,
+      "y": -5892.0,
+      "facing": 2.339,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13262.6,
+      "y": -5894.3,
+      "facing": 3.616,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13258.8,
+      "y": -5728.5,
+      "facing": 4.575,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 13271.2,
+      "y": -5550.2,
+      "facing": 4.994,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 388.5,
+      "y": -13251.4,
+      "facing": 292.494,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 570.5,
+      "y": -13257.5,
+      "facing": 263.707,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 732.9,
+      "y": -13254.1,
+      "facing": 239.95,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 735.1,
+      "y": -13139.6,
+      "facing": 117.166,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 569.3,
+      "y": -13143.4,
+      "facing": 101.951,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 391.0,
+      "y": -13131.0,
+      "facing": 108.951,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15656.0,
+      "y": -12378.4,
+      "facing": 180.036,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15571.5,
+      "y": -12398.0,
+      "facing": 177.526,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15806.5,
+      "y": -12499.5,
+      "facing": 169.96,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 15722.1,
+      "y": -12519.2,
+      "facing": 166.778,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5285.2,
+      "y": -11474.8,
+      "facing": 177.764,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5178.5,
+      "y": -11622.9,
+      "facing": 177.764,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5298.9,
+      "y": -11614.7,
+      "facing": 179.209,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5322.3,
+      "y": -14997.2,
+      "facing": 152.267,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 5257.7,
+      "y": -14876.9,
+      "facing": 226.503,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12649.5,
+      "y": -11455.9,
+      "facing": 170.848,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    },
+    {
+      "x": 12763.7,
+      "y": -11535.5,
+      "facing": 170.848,
+      "sourceType": "h00G",
+      "sourceOwner": 12
+    }
+  ],
+  "initialSoundFive": [
+    {
+      "alias": "LPV",
+      "kind": 5,
+      "sourceType": "h01B",
+      "x": 5407.0,
+      "y": -2754.7,
+      "facing": 270.0
+    },
+    {
+      "alias": "LLV",
+      "kind": 6,
+      "sourceType": "h017",
+      "x": -2337.9,
+      "y": -12081.0,
+      "facing": 0.0
+    },
+    {
+      "alias": "KMV",
+      "kind": 7,
+      "sourceType": "h01A",
+      "x": 5191.3,
+      "y": -2715.4,
+      "facing": 270.0
+    },
+    {
+      "alias": "LMV",
+      "kind": 8,
+      "sourceType": "h016",
+      "x": 4963.6,
+      "y": -2733.3,
+      "facing": 270.0
+    },
+    {
+      "alias": "LKV",
+      "kind": 9,
+      "sourceType": "h01D",
+      "x": -2340.7,
+      "y": -11625.9,
+      "facing": 0.0
+    }
+  ]
+}

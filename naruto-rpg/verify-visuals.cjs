@@ -15,7 +15,7 @@ function parse(C,name){let o=new C();o.load(new Uint8Array(fs.readFileSync(path.
 const units=parse(ObjectParser,'war3map.w3u'),abilities=parse(AbilityParser,'war3map.w3a');
 const schema=read('src/classic-skill-schema.json');
 const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id && (m.levelOrVariation||0)===(schema.abilityFields[id]?.repeat===0?0:rank))?.value;
-for(const a of Object.values(abilities))for(const mod of a.modifications)if(schema.abilityFields[mod.id].repeat===0)assert.equal(mod.levelOrVariation,0,a.newId+':'+mod.id+' must be a real global override');
+for(const a of Object.values(abilities))for(const mod of a.modifications)if(schema.abilityFields[mod.id]?.repeat===0)assert.equal(mod.levelOrVariation,0,a.newId+':'+mod.id+' must be a real global override');
 assert.equal(profiles.skills.length,58);assert.equal(source.skills.length,58);
 const out=[];
 for(const r of skills){

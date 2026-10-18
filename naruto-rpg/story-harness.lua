@@ -22,6 +22,7 @@ function QuestSetDescription(q,s)q.desc=s end
 function QuestSetRequired()end
 function QuestSetDiscovered()end
 function TriggerRegisterUnitEvent()end
+function DestroyTrigger(t)if t then t.destroyed=true end end
 function DisplayTimedTextToPlayer(p,x,y,d,s)feedback[#feedback+1]={p=p,text=s}end
 function GetUnitState(u,s)return u[s] or 0 end
 function SetUnitCreepGuard(u,b)assert(not b)end
@@ -80,7 +81,7 @@ end
 StoryInit()
 assert(StoryMembers[0]==3 and StoryMembers[1]==3 and StoryMembers[2]==0 and StoryMembers[3]==3)
 assert(StoryHasHuman[0] and StoryHasHuman[1] and StoryHasHuman[3])
-assert(StoryShop[0] and StoryShop[1] and not StoryShop[2] and StoryShop[3])
+for t=0,3 do assert(not StoryShop[t],'No shops exist before village invasion')end
 assert(StoryMentorClock.delay==330 and StoryMentorClock.callback==StoryReleaseMentors and StoryMentorDialog.visible)
 local populator=StoryPopulateClock
 for i=0,64 do populator.callback()end
@@ -124,20 +125,16 @@ TimeNow=68;StoryTick();assert(StoryStage[0]==2 and StoryEnemy[10]==survivor and 
 for j=7,13 do StoryEnemy[j].hp=0 end
 TimeNow=69;StoryTick();TimeNow=77;StoryTick();assert(StoryStage[0]==3)
 local haku=StoryEnemy[14];Hero[0].x=haku.x;Hero[0].y=haku.y;Hero[1].x=haku.x+1000
-StoryEnemyCast(14,Hero[0]);assert(haku.animationIndex==2 and EnemyMark[14])
-local hp=Hero[0].hp;TimeNow=78.5;StoryEnemyHit(14);assert(Hero[0].hp==hp-120 and not EnemyMark[14])
+StoryEnemyCast(14,Hero[0]);assert(haku.last.o=='attack' and not EnemyMark[14],'No invented ice splash')
 haku.hp=0;TimeNow=79;StoryTick();TimeNow=87;StoryTick();assert(StoryStage[0]==4 and StoryEnemy[15]==StoryBoss[0],'Never recreate Zabuza')
-local zabuza=StoryEnemy[15];zabuza.hp=4000;StoryEnemyCast(15,Hero[0]);assert(EnemyPhase[15] and zabuza.animationIndex==5)
-assert(StoryEnemy[16].alpha==155 and StoryEnemy[17].alpha==155)
--- Actual native prison/blink orders are used, in addition to telegraphed waves.
-Hero[0].x=zabuza.x+400;Hero[0].y=zabuza.y;EnemyPrisonAt[15]=0;TimeNow=90;StoryTick();assert(zabuza.last.o=='thunderbolt')
-Hero[0].x=zabuza.x+600;EnemyPrisonAt[15]=100;EnemyBlinkAt[15]=0;TimeNow=91;StoryTick();assert(zabuza.last.o=='blink')
+local zabuza=StoryEnemy[15];zabuza.hp=4000;StoryEnemyCast(15,Hero[0]);assert(not StoryEnemy[16] and not StoryEnemy[17],'No invented water clones')
+Hero[0].x=zabuza.x+600;Hero[0].y=zabuza.y;EnemyBlinkAt[15]=0;TimeNow=91;EnemyNext[15]=0;StoryTick();assert(zabuza.last.o=='blink' and EnemyBlinkAt[15]==96,'Source five-second blink')
 -- Original mentor delay releases the stored four different mentors, not a new boss.
 local dialog=StoryMentorDialog;local deadline=StoryMentorClock
 TimeNow=330;deadline.callback();assert(dialog.destroyed and StoryMentorClock==nil and StoryMentorsReleased)
 assert(StoryMentor[1].paused==false and StoryMentor[1].owner==3 and StoryMentor[1].last.o=='attack')
 assert(StoryBoss[1]==boss)
-zabuza.hp=0;StoryEnemy[16].hp=0;StoryEnemy[17].hp=0;StoryTick();assert(StoryStage[0]==5)
+zabuza.hp=0;StoryTick();assert(StoryStage[0]==5)
 local finalGold=gold[0];StoryTick();assert(gold[0]==finalGold)
 -- Loot chance boundaries and one drop per real actor (never clones).
 local j=18;EnemyLootRolled[j]=false;random={21};StoryDrop(j);assert(StoryLoot[j]==nil)
@@ -151,14 +148,18 @@ for slot=0,5 do Hero[4].items[slot]={type=1}end
 assert(not StoryLootBot(4,nil))
 Hero[4].items[0]={type=raw('Nlsh')};BotUseItemAt[4]=0;boss.x=Hero[4].x+100;boss.y=Hero[4].y
 assert(StoryLootBot(4,boss) and Hero[4].used==Hero[4].items[0] and Hero[4].usedTarget==boss)
--- Shop still uses real gold, inventory and role-specific choices.
+-- No purchases or human selection of a hidden/remote shop outside invasion.
 Hero[1].items={};StoryBought[1]=0;gold[1]=500;StoryBuyAt[1]=0
 StoryStarted[0]=false;TimeNow=400;StoryBuy(1)
 assert(gold[1]==500 and StoryBought[1]==0,'No purchases during hero selection')
 StoryStarted[0]=true;StoryStage[0]=1;TimeNow=30;StoryBuy(1)
 assert(gold[1]==500 and StoryBought[1]==0,'No immediate opening purchases')
+for stage=0,11 do CampaignStage=stage;TimeNow=400;StoryBuy(1);assert(gold[1]==500 and StoryBought[1]==0);assert(not StoryShopFor(1))end
+CampaignStage=12;CampaignTransition=false;StoryShopsOpen();assert(StoryShop[0] and StoryShop[1] and StoryShop[2] and StoryShop[3])
 for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
 assert(gold[1]==165 and StoryBought[1]==3)
+StoryShopsClose();CampaignStage=13;StoryBuy(1);assert(gold[1]==165 and StoryBought[1]==3);for t=0,3 do assert(not StoryShop[t])end
+CampaignStage=0
 -- Sand crest cleanup remains bounded.
 Hero[9].x=0;Hero[9].y=0;TimeNow=450
 RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x;RosterTick();assert(crest.x>start)

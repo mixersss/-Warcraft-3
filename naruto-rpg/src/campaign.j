@@ -16,6 +16,13 @@ function CampaignAlliances takes integer mode returns nothing
             call SetPlayerAllianceStateVisionBJ(Player(p),Player(q),allied)
             set q=q+1
         endloop
+        if mode==2 then
+            call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),HeroRole[p]>=9)
+            call SetPlayerAllianceStateAllyBJ(Player(p),Player(PLAYER_NEUTRAL_PASSIVE),HeroRole[p]>=9)
+        else
+            call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),true)
+            call SetPlayerAllianceStateAllyBJ(Player(p),Player(PLAYER_NEUTRAL_PASSIVE),true)
+        endif
         set p=p+1
     endloop
 endfunction
@@ -57,6 +64,9 @@ function CampaignBindRoles takes nothing returns nothing
     if CampaignNarutoPlayer>=0 then
         set CampaignLeader=CampaignNarutoPlayer
     endif
+    if NPCSourceReady then
+        call NPCSourceHeroes()
+    endif
 endfunction
 function CampaignRogueAlliance takes nothing returns nothing
     local integer p=0
@@ -79,8 +89,18 @@ function CampaignClear takes nothing returns nothing
     loop
         exitwhen j>=2048
         if CampaignActor[j]!=null then
+            if NPCCooldowns!=null then
+                call FlushChildHashtable(NPCCooldowns,GetHandleId(CampaignActor[j]))
+                if NPCHiddenAbilities!=null then
+                    call FlushChildHashtable(NPCHiddenAbilities,GetHandleId(CampaignActor[j]))
+                endif
+            endif
             call RemoveUnit(CampaignActor[j])
             set CampaignActor[j]=null
+        endif
+        if CampaignWatcher[j]!=null then
+            call DestroyTrigger(CampaignWatcher[j])
+            set CampaignWatcher[j]=null
         endif
         set CampaignActorType[j]=-1
         set CampaignCastAt[j]=0.
@@ -90,11 +110,40 @@ function CampaignClear takes nothing returns nothing
     set CampaignCount=0
     set CampaignThinkCursor=0
 endfunction
+function CampaignAdopt takes unit u, integer kind returns integer
+    local integer j=0
+    loop
+        exitwhen j>=2048 or CampaignActor[j]==null
+        set j=j+1
+    endloop
+    if j>=2048 then
+        return -1
+    endif
+    set CampaignActor[j]=u
+    set CampaignActorType[j]=kind
+    set CampaignActorRoute[j]=-1
+    if j>=CampaignCount then
+        set CampaignCount=j+1
+    endif
+    call NPCInitialize(u,kind)
+    return j
+endfunction
+function CampaignSakonSplit takes nothing returns nothing
+    local integer slot=0
+    call OrigNPC_VGI()
+    set slot=CampaignAdopt(OrigNPC_KI[1],39)
+endfunction
 function CampaignAdd takes integer kind, integer owner, real x, real y returns integer
     local integer j=0
     loop
         exitwhen j>=2048 or CampaignActor[j]==null
         if not FoundationAlive(CampaignActor[j]) then
+            if NPCCooldowns!=null then
+                call FlushChildHashtable(NPCCooldowns,GetHandleId(CampaignActor[j]))
+                if NPCHiddenAbilities!=null then
+                    call FlushChildHashtable(NPCHiddenAbilities,GetHandleId(CampaignActor[j]))
+                endif
+            endif
             call RemoveUnit(CampaignActor[j])
             set CampaignActor[j]=null
             exitwhen true
@@ -105,6 +154,17 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
         return -1
     endif
     set CampaignActor[j]=CreateUnit(Player(owner),CampaignUnit[kind],x,y,180.)
+    call NPCInitialize(CampaignActor[j],kind)
+    if kind==7 or kind==9 then
+        set CampaignWatcher[j]=CreateTrigger()
+        if kind==7 then
+            call TriggerRegisterUnitLifeEvent(CampaignWatcher[j],CampaignActor[j],LESS_THAN,15000.)
+            call TriggerAddAction(CampaignWatcher[j],function CampaignSakonSplit)
+        else
+            call TriggerRegisterUnitLifeEvent(CampaignWatcher[j],CampaignActor[j],LESS_THAN,25000.)
+            call TriggerAddAction(CampaignWatcher[j],function OrigNPC_ZMR)
+        endif
+    endif
     set CampaignActorType[j]=kind
     set CampaignActorRoute[j]=-1
     set CampaignCastAt[j]=TimeNow+3.
@@ -155,6 +215,8 @@ function CampaignClonesSpawn takes nothing returns nothing
         endif
         if Hero[p]!=null and n>0 and not CampaignPermanentDead[p] then
             set CampaignClone[p]=CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),CampaignUnit[n+2],CampaignTX[n],CampaignTY[n],180.)
+            call SetHeroLevel(CampaignClone[p],60,false)
+            call NPCInitialize(CampaignClone[p],n+2)
             set CampaignCloneKind[p]=n+2
             set CampaignClonePending[p]=true
             call PauseUnit(CampaignClone[p],true)
@@ -195,13 +257,9 @@ function CampaignClonesTick takes nothing returns nothing
                 set SpawnY[p]=GetUnitY(Hero[p])
                 call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],1.)
                 call DisplayTimedTextToPlayer(Player(p),0.,0.,12.,"Двойник побеждён! Вы присоединились к основной группе.")
-            elseif TimeNow>=CampaignCloneCastAt[p] then
-                set dx=GetUnitX(Hero[p])-GetUnitX(clone)
-                set dy=GetUnitY(Hero[p])-GetUnitY(clone)
-                if dx*dx+dy*dy<700.*700. and GetUnitState(clone,UNIT_STATE_MANA)>=100. then
-                    call IssueTargetOrder(clone,"thunderbolt",Hero[p])
-                    call SetUnitAnimationByIndex(clone,CampaignAnimation[CampaignCloneKind[p]])
-                    set CampaignCloneCastAt[p]=TimeNow+8.
+            elseif not IsUnitPaused(clone) and not NPCBusy(clone) and TimeNow>=CampaignCloneCastAt[p] then
+                if NPCTry(clone,CampaignCloneKind[p],Hero[p]) then
+                    set CampaignCloneCastAt[p]=TimeNow+1.
                 else
                     call IssueTargetOrder(clone,"attack",Hero[p])
                     set CampaignCloneCastAt[p]=TimeNow+2.
@@ -339,13 +397,17 @@ function CampaignMoveHeroes takes nothing returns nothing
         if StoryMembers[t]>0 then
             set StoryStage[t]=CampaignStage
         endif
-        if StoryShop[t]!=null then
-            call SetUnitPosition(StoryShop[t],CampaignX[CampaignStage]-180.,CampaignY[CampaignStage]-160.)
-        endif
         set StoryRetreat[t]=false
         set StoryMarch[t]=true
         set t=t+1
     endloop
+endfunction
+function CampaignOpenSourceGate takes nothing returns nothing
+    local destructable gate=GetEnumDestructable()
+    if (GetDestructableTypeId(gate)=='LTe1' and RAbsBJ(GetDestructableX(gate)-5248.)<1. and RAbsBJ(GetDestructableY(gate)+3456.)<1.) or (GetDestructableTypeId(gate)=='LTe3' and RAbsBJ(GetDestructableX(gate)+1664.)<1. and RAbsBJ(GetDestructableY(gate)+11904.)<1.) then
+        call ModifyGateBJ(1,gate)
+    endif
+    set gate=null
 endfunction
 function CampaignSpawnStage takes nothing returns nothing
     local integer n=CampaignStage
@@ -353,6 +415,7 @@ function CampaignSpawnStage takes nothing returns nothing
     local integer k=0
     local integer owner=PLAYER_NEUTRAL_AGGRESSIVE
     local integer unused=0
+    local item reward=null
     local real x=CampaignTX[n]
     local real y=CampaignTY[n]
     if n>=14 then
@@ -391,12 +454,19 @@ function CampaignSpawnStage takes nothing returns nothing
         if HeroRole[owner]>=9 then
             set owner=PLAYER_NEUTRAL_AGGRESSIVE
         endif
+        set CampaignDefenseOwner=owner
         set unused=CampaignAdd(0,owner,x,y)
-        loop
-            exitwhen j>=12
-            set unused=CampaignAdd(17,owner,x+I2R(ModuloInteger(j,4)-2)*90.,y+I2R((j-ModuloInteger(j,4))/4)*90.)
-            set j=j+1
-        endloop
+        set CampaignDeployCursor=0
+        call StoryShopsOpen()
+        if CampaignChampion>=0 then
+            set reward=CreateItem('Nlca',GetUnitX(Hero[CampaignChampion]),GetUnitY(Hero[CampaignChampion]))
+            if not UnitAddItem(Hero[CampaignChampion],reward) then
+                call SetItemPosition(reward,GetUnitX(Hero[CampaignChampion]),GetUnitY(Hero[CampaignChampion]))
+            endif
+            set CampaignChampion=-1
+            set reward=null
+        endif
+        call EnumDestructablesInRect(bj_mapInitialPlayableArea,null,function CampaignOpenSourceGate)
         set j=0
         loop
             exitwhen j>=8
@@ -408,31 +478,40 @@ function CampaignSpawnStage takes nothing returns nothing
             endif
             set j=j+1
         endloop
-        set j=0
-        loop
-            exitwhen j>=3
-            set unused=CampaignAdd(29+j,owner,x+I2R(j-1)*150.,y-100.)
-            set j=j+1
-        endloop
-        set unused=CampaignAdd(1,owner,x-240.,y-160.)
-        set unused=CampaignAdd(2,owner,x+240.,y-160.)
+        set unused=CampaignAdd(30,owner,CampaignSupportX[0],CampaignSupportY[0])
+        set unused=CampaignAdd(29,owner,CampaignSupportX[1],CampaignSupportY[1])
+        set unused=CampaignAdd(31,owner,CampaignSupportX[2],CampaignSupportY[2])
+        set unused=CampaignAdd(35,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[3],CampaignSupportY[3])
+        set unused=CampaignAdd(1,owner,x,y)
+        set unused=CampaignAdd(2,owner,x,y)
         set j=0
         loop
             exitwhen j>=6
-            set unused=CampaignAdd(32,owner,x+I2R(j-3)*90.,y-280.)
+            set unused=CampaignAdd(32,owner,CampaignMedicX[j],CampaignMedicY[j])
+            set OrigNPC_IF[j]=CampaignActor[unused]
             set j=j+1
         endloop
+        set unused=CampaignAdd(5,PLAYER_NEUTRAL_PASSIVE,5407.0,-2754.7)
+        call SetUnitFacing(CampaignActor[unused],270.0)
+        set unused=CampaignAdd(6,PLAYER_NEUTRAL_PASSIVE,-2337.9,-12081.0)
+        call SetUnitFacing(CampaignActor[unused],0.0)
+        set unused=CampaignAdd(7,PLAYER_NEUTRAL_PASSIVE,5191.3,-2715.4)
+        call SetUnitFacing(CampaignActor[unused],270.0)
+        set unused=CampaignAdd(8,PLAYER_NEUTRAL_PASSIVE,4963.6,-2733.3)
+        call SetUnitFacing(CampaignActor[unused],270.0)
+        set unused=CampaignAdd(9,PLAYER_NEUTRAL_PASSIVE,-2340.7,-11625.9)
+        call SetUnitFacing(CampaignActor[unused],0.0)
         set CampaignNextNPC=TimeNow+45.
         set CampaignJiraiyaAt=TimeNow+760.
         set CampaignKabutoAt=TimeNow+400.
         set CampaignSnakeAt=TimeNow+820.
         set CampaignOroAt=TimeNow+1160.
-        set unused=CampaignAdd(13,PLAYER_NEUTRAL_PASSIVE,x+320.,y)
+        set unused=CampaignAdd(13,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[4],CampaignSupportY[4])
         set CampaignVillageOro=CampaignActor[unused]
         call PauseUnit(CampaignVillageOro,true)
     elseif n==13 then
-        set unused=CampaignAdd(1,CampaignLeader,x-100.,y)
-        set unused=CampaignAdd(2,CampaignLeader,x+100.,y)
+        set unused=CampaignAdd(37,CampaignLeader,x-100.,y)
+        set unused=CampaignAdd(38,CampaignLeader,x+100.,y)
         set unused=CampaignAdd(3,PLAYER_NEUTRAL_AGGRESSIVE,x-300.,y+380.)
         set unused=CampaignAdd(4,PLAYER_NEUTRAL_AGGRESSIVE,x+300.,y+380.)
     elseif n==14 then
@@ -485,6 +564,11 @@ function CampaignSpawnStage takes nothing returns nothing
 endfunction
 function CampaignQueueStage takes integer next returns nothing
     local integer p=0
+    call StoryShopsClose()
+    if NPCSourceReady and CampaignStage==12 then
+        call DisableTrigger(OrigNPC_R2V)
+        call DisableTrigger(OrigNPC_R3V)
+    endif
     set CampaignQueued=next
     set CampaignTransition=true
     set CampaignPlaced=false
@@ -633,11 +717,8 @@ function CampaignDuelTick takes nothing returns nothing
         else
             if CampaignBracket and CampaignWinnerCount==1 then
                 set winner=CampaignWinner[0]
-                set reward=CreateItem('Nlca',GetUnitX(Hero[winner]),GetUnitY(Hero[winner]))
-                if not UnitAddItem(Hero[winner],reward) then
-                    call SetItemPosition(reward,GetUnitX(Hero[winner]),GetUnitY(Hero[winner]))
-                endif
-                call ExamBroadcast("Экзаменатор: Победитель — "+HeroName[HeroRole[winner]]+"! В награду — снаряжение чунина.")
+                set CampaignChampion=winner
+                call ExamBroadcast("Экзаменатор: Победитель — "+HeroName[HeroRole[winner]]+"! Снаряжение чунина выдадут в деревне.")
             endif
             call CampaignQueueStage(CampaignStage+1)
         endif
@@ -702,7 +783,7 @@ function CampaignNearest takes integer p returns unit
             set target=FirstOfGroup(CampaignScratch)
             exitwhen target==null
             call GroupRemoveUnit(CampaignScratch,target)
-            if FoundationAlive(target) and not IsUnitPaused(target) and IsUnitEnemy(target,Player(p)) then
+            if FoundationAlive(target) and GetUnitAbilityLevel(target,'Avul')==0 and not IsUnitPaused(target) and IsUnitEnemy(target,Player(p)) then
                 set dx=GetUnitX(target)-GetUnitX(Hero[p])
                 set dy=GetUnitY(target)-GetUnitY(Hero[p])
                 if dx*dx+dy*dy<best then
@@ -740,9 +821,21 @@ endfunction
 function CampaignBot takes integer p, unit enemy returns nothing
     local integer t=StoryTeam(p)
     local unit leader=StoryLeader(t)
+    local unit shop=StoryShopFor(p)
     if CampaignTransition or CampaignPermanentDead[p] or IsUnitPaused(Hero[p]) then
         set leader=null
         return
+    endif
+    if shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]==0. and GetWidgetLife(Hero[p])>GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.45 then
+        if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[StoryChooseItem(p)] and StoryHasItemSpace(p) then
+            set StoryShopTripUntil[p]=TimeNow+45.
+        else
+            set StoryBuyAt[p]=TimeNow+10.
+        endif
+    endif
+    if StoryShopTripUntil[p]>0. and TimeNow>=StoryShopTripUntil[p] then
+        set StoryShopTripUntil[p]=0.
+        set StoryBuyAt[p]=TimeNow+20.
     endif
     if CampaignClonePending[p] then
         if enemy!=null then
@@ -772,7 +865,7 @@ function CampaignBot takes integer p, unit enemy returns nothing
         endif
     elseif StoryRetreat[t] or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2 then
         call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
-        if ExamNear(Hero[p],GetUnitX(StoryShop[t]),GetUnitY(StoryShop[t]),250.) then
+        if shop!=null and ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
         endif
     elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null then
@@ -781,17 +874,25 @@ function CampaignBot takes integer p, unit enemy returns nothing
         else
             call IssueTargetOrder(Hero[p],"follow",leader)
         endif
+    elseif shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]>TimeNow then
+        if ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
+            call StoryBuy(p)
+            set StoryShopTripUntil[p]=0.
+        else
+            call IssuePointOrder(Hero[p],"move",GetUnitX(shop),GetUnitY(shop))
+        endif
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)
     elseif CampaignStage==12 or CampaignStage==13 then
         call IssuePointOrder(Hero[p],"attack",CampaignTX[CampaignStage],CampaignTY[CampaignStage])
     else
         call IssuePointOrder(Hero[p],"move",SpawnX[p],SpawnY[p])
-        if ExamNear(Hero[p],GetUnitX(StoryShop[t]),GetUnitY(StoryShop[t]),250.) then
+        if shop!=null and ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
         endif
     endif
     set leader=null
+    set shop=null
 endfunction
 function CampaignNPCTick takes nothing returns nothing
     local integer processed=0
@@ -811,7 +912,7 @@ function CampaignNPCTick takes nothing returns nothing
         set CampaignThinkCursor=j+1
         set processed=processed+1
         set u=CampaignActor[j]
-        if FoundationAlive(u) and not IsUnitPaused(u) and CampaignActorType[j]!=18 and CampaignActorType[j]!=19 and CampaignActorType[j]!=14 and not (CampaignActorType[j]==11 and not CampaignKabutoAI) and not (CampaignStage==26 and CampaignSasukePlayer>=0 and GetPlayerController(Player(CampaignSasukePlayer))!=MAP_CONTROL_COMPUTER) and not (CampaignStage==12 and (CampaignActorType[j]==12 or CampaignActorType[j]==13) and GetPlayerController(GetOwningPlayer(u))!=MAP_CONTROL_COMPUTER and Hero[GetPlayerId(GetOwningPlayer(u))]!=null) then
+        if FoundationAlive(u) and not IsUnitPaused(u) and not NPCBusy(u) and CampaignActorType[j]!=18 and CampaignActorType[j]!=19 and CampaignActorType[j]!=14 and not (CampaignActorType[j]==11 and not CampaignKabutoAI) and not (CampaignStage==26 and CampaignSasukePlayer>=0 and GetPlayerController(Player(CampaignSasukePlayer))!=MAP_CONTROL_COMPUTER) and not (CampaignStage==12 and (CampaignActorType[j]==12 or CampaignActorType[j]==13) and GetPlayerController(GetOwningPlayer(u))!=MAP_CONTROL_COMPUTER and Hero[GetPlayerId(GetOwningPlayer(u))]!=null) then
             set target=null
             set best=1100.*1100.
             call GroupEnumUnitsInRange(CampaignScratch,GetUnitX(u),GetUnitY(u),1100.,null)
@@ -819,7 +920,7 @@ function CampaignNPCTick takes nothing returns nothing
                 set candidate=FirstOfGroup(CampaignScratch)
                 exitwhen candidate==null
                 call GroupRemoveUnit(CampaignScratch,candidate)
-                if FoundationAlive(candidate) and not IsUnitPaused(candidate) and not IsUnitHidden(candidate) and ((CampaignActorType[j]==32 and IsUnitAlly(candidate,GetOwningPlayer(u)) and GetWidgetLife(candidate)<GetUnitState(candidate,UNIT_STATE_MAX_LIFE)*.9) or (CampaignActorType[j]!=32 and IsUnitEnemy(candidate,GetOwningPlayer(u)))) then
+                if FoundationAlive(candidate) and GetUnitAbilityLevel(candidate,'Avul')==0 and not IsUnitPaused(candidate) and not IsUnitHidden(candidate) and ((CampaignActorType[j]==32 and IsUnitAlly(candidate,GetOwningPlayer(u)) and GetWidgetLife(candidate)<GetUnitState(candidate,UNIT_STATE_MAX_LIFE)*.9) or (CampaignActorType[j]!=32 and IsUnitEnemy(candidate,GetOwningPlayer(u)))) then
                     set dx=GetUnitX(candidate)-GetUnitX(u)
                     set dy=GetUnitY(candidate)-GetUnitY(u)
                     if dx*dx+dy*dy<best then
@@ -829,23 +930,14 @@ function CampaignNPCTick takes nothing returns nothing
                 endif
             endloop
             if target!=null then
-                if CampaignActorType[j]==32 then
-                    if TimeNow>=CampaignCastAt[j] and best<650.*650. then
-                        call IssueTargetOrder(u,"heal",target)
-                        set CampaignCastAt[j]=TimeNow+8.
-                    endif
-                elseif TimeNow>=CampaignCastAt[j] and best<700.*700. and GetUnitState(u,UNIT_STATE_MANA)>=100. then
-                    if best<220.*220. then
-                        call IssueImmediateOrder(u,"stomp")
-                    elseif ModuloInteger(j,2)==0 then
-                        call IssueTargetOrder(u,"thunderbolt",target)
-                    else
-                        call IssuePointOrder(u,"shockwave",GetUnitX(target),GetUnitY(target))
-                    endif
-                    call SetUnitAnimationByIndex(u,CampaignAnimation[CampaignActorType[j]])
-                    set CampaignCastAt[j]=TimeNow+8.
+                if NPCUseInventory(u,CampaignActorType[j],target) or NPCTry(u,CampaignActorType[j],target) then
+                    set CampaignMoveAt[j]=TimeNow+1.
                 elseif TimeNow>=CampaignMoveAt[j] then
-                    call IssueTargetOrder(u,"attack",target)
+                    if CampaignActorType[j]==32 then
+                        call IssueTargetOrder(u,"follow",target)
+                    else
+                        call IssueTargetOrder(u,"attack",target)
+                    endif
                     set CampaignMoveAt[j]=TimeNow+3.
                 endif
             elseif CampaignStage==12 and CampaignActorRoute[j]>=0 and TimeNow>=CampaignMoveAt[j] then
@@ -860,6 +952,27 @@ function CampaignNPCTick takes nothing returns nothing
     set target=null
     set candidate=null
     set u=null
+endfunction
+function CampaignDeploy takes nothing returns nothing
+    local integer processed=0
+    local integer j=0
+    local integer slot=0
+    loop
+        exitwhen processed>=24 or CampaignDeployCursor>=242
+        set j=CampaignDeployCursor
+        if j<140 then
+            set slot=CampaignAdd(17,CampaignDefenseOwner,CampaignLeafX[j],CampaignLeafY[j])
+            call SetUnitFacing(CampaignActor[slot],CampaignLeafFacing[j])
+            call SetUnitColor(CampaignActor[slot],ConvertPlayerColor(12))
+        else
+            set j=j-140
+            set slot=CampaignAdd(34,CampaignDefenseOwner,CampaignAnbuX[j],CampaignAnbuY[j])
+            call SetUnitFacing(CampaignActor[slot],CampaignAnbuFacing[j])
+            call SetUnitColor(CampaignActor[slot],ConvertPlayerColor(12))
+        endif
+        set CampaignDeployCursor=CampaignDeployCursor+1
+        set processed=processed+1
+    endloop
 endfunction
 function CampaignTick takes nothing returns nothing
     local integer n=CampaignStage
@@ -900,6 +1013,9 @@ function CampaignTick takes nothing returns nothing
         return
     endif
     if CampaignTransition then
+        if CampaignStage==12 and CampaignPlaced then
+            call CampaignDeploy()
+        endif
         if not CampaignPlaced and TimeNow>=CampaignIntroAt+1.5 then
             call CampaignClear()
             set CampaignStage=CampaignQueued
@@ -957,7 +1073,7 @@ function CampaignTick takes nothing returns nothing
             call ExamBroadcast(CampaignIntro[n])
             call CinematicFadeBJ(bj_CINEFADETYPE_FADEIN,1.5,"ReplaceableTextures\\CameraMasks\\Black_mask.blp",0.,0.,0.,0.)
         endif
-        if CampaignPlaced and TimeNow>=CampaignIntroAt+8. then
+        if CampaignPlaced and TimeNow>=CampaignIntroAt+8. and (CampaignStage!=12 or CampaignDeployCursor>=242) then
             call CampaignStartPlay()
             if CampaignStage==12 then
                 set MusicCursor=7
@@ -1018,19 +1134,19 @@ function CampaignTick takes nothing returns nothing
         endif
     elseif CampaignStage==12 then
         if CampaignJiraiyaAt>0. and TimeNow>=CampaignJiraiyaAt then
-            set unused=CampaignAdd(33,CampaignLeader,CampaignTX[12]-240.,CampaignTY[12]+100.)
+            set unused=CampaignAdd(33,CampaignLeader,CampaignSupportX[6],CampaignSupportY[6])
             set CampaignJiraiyaAt=0.
             call ExamBroadcast("Джирайя: Я здесь! Помогу защитить деревню.")
         endif
         if CampaignKabutoAt>0. and TimeNow>=CampaignKabutoAt then
             set owner=PLAYER_NEUTRAL_AGGRESSIVE
-            set unused=CampaignAdd(11,CampaignAttackerOwner[1],CampaignTX[12]+350.,CampaignTY[12]+300.)
+            set unused=CampaignAdd(11,CampaignAttackerOwner[1],CampaignSupportX[5],CampaignSupportY[5])
             set CampaignVillageKabuto=CampaignActor[unused]
             set CampaignKabutoAt=0.
             call ExamBroadcast("Канкуро: Кабуто прибыл на помощь нападающим!")
         endif
         if CampaignSnakeAt>0. and TimeNow>=CampaignSnakeAt then
-            set unused=CampaignAdd(12,CampaignAttackerOwner[2],CampaignTX[12]+250.,CampaignTY[12]+400.)
+            set unused=CampaignAdd(36,CampaignAttackerOwner[2],CampaignSupportX[5],CampaignSupportY[5])
             set CampaignVillageSnake=CampaignActor[unused]
             set CampaignSnakeGoneAt=TimeNow+300.
             set CampaignSnakeAt=0.

@@ -10,7 +10,7 @@ ITEMS=[('rde1','Nlga','Снаряжение генина',200),('crdt','Nlku','�
 def item_entries():
  out=[]
  for base,raw,name,icon,ability in [('tst2','Nsht','Свиток здоровья +6','ReplaceableTextures\\CommandButtons\\BTNSnazzyScroll.blp','Cstr'),('tst2','Nsch','Свиток чакры +6','ReplaceableTextures\\CommandButtons\\BTNSnazzyScrollPurple.blp','Cint'),('tst2','Nsta','Свиток тайдзюцу +6','ReplaceableTextures\\CommandButtons\\BTNSnazzyScrollGreen.blp','Cagi'),('gobm','Nnot','Взрывная печать','Icon_ExplodingNote.BLP','AIpm')]:
-  out.append((base,raw,[('unam',3,name),('utip',3,name),('utub',3,'Исходное снабжение Ичираку. Свиток даёт +6 к соответствующей характеристике.' if raw!='Nnot' else 'Установить взрывную печать: срабатывает при приближении врага.'),('iico',3,icon),('iabi',3,ability),('ifil',3,'Note.mdl' if raw=='Nnot' else 'ScrollRed.mdl'),('igol',0,80 if raw=='Nnot' else 125),('ilum',0,0),('isto',0,1),('istr',0,10),('isst',0,0)]+([('iuse',0,2)] if raw=='Nnot' else [])))
+  out.append((base,raw,[('unam',3,name),('utip',3,name),('utub',3,'Исходное снабжение Ичираку. Свиток даёт +6 к соответствующей характеристике.' if raw!='Nnot' else 'Установить взрывную печать: срабатывает при приближении врага.'),('iico',3,icon),('iabi',3,ability),('ifil',3,'Note.mdl' if raw=='Nnot' else 'ScrollRed.mdl'),('igol',0,80 if raw=='Nnot' else 125),('ilum',0,0),('isto',0,10),('istr',0,0),('isst',0,0)]+([('iuse',0,2)] if raw=='Nnot' else [])))
  return out
 
 def scroll_entries():
@@ -23,8 +23,16 @@ def unit_entries():
   if raw in ('re06','re07'):mods.extend([('uabi',3,'Aens'),('umpm',0,400),('umpi',0,400),('umpr',2,3.),('ulev',0,6)])
   if ran>200:mods.extend([('ua1w',3,'missile'),('ua1m',3,'Kunai.mdl'),('ua1z',0,1400)])
   if raw=='rq01':mods += [('uaen',0,0),('uabi',3,'Avul'),('umvs',0,0)]
-  out.append(('hfoo',raw,mods))
- out.append(('ngme','rqsh',[('unam',3,'Ичираку — снабжение'),('umdl',3,'Ichiraku.mdl'),('uico',3,'Icon_Ramen.BLP'),('usca',1,1.75),('usei',3,','.join(x[1] for x in ITEMS)),('uabi',3,'Aneu,Apit,Avul'),('ucol',2,32.),('upgr',3,''),('ureq',3,'')]))
+  native=json.loads((ROOT/'src/first-battle-source.json').read_text()).get(raw)
+  if native:
+   mods=[(m['id'],m['variableType'],m['value'])for m in native['modifications']]
+   mods.extend([('unam',3,name),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,'')])
+   if raw in ['re01','re03','re04']:mods.append(('uabi',3,{'re01':'','re03':'A00F','re04':'S028,S022'}[raw]))
+   mods=list({m[0]:m for m in mods}.values())
+   out.append((native['oldId'],raw,mods))
+  else:
+   out.append(('hfoo',raw,mods))
+ out.append(('ngme','rqsh',[('unam',3,'Ичираку — снабжение'),('umdl',3,'Ichiraku.mdl'),('uico',3,'Icon_Ramen.BLP'),('usca',1,1.75),('usei',3,'Nlku,Nlsh,Nnot,Nlpi,Nlne,Nlra,Nlga,Nlca,Nsht,Nsta,Nsch'),('uabi',3,'Aneu,Apit,Avul'),('ucol',2,32.),('upgr',3,''),('ureq',3,'')]))
  out.append(('hfoo','rlgd',[('unam',3,'Бревно замены'),('umdl',3,'Doodads\\Ashenvale\\Props\\AshenLogAngled\\AshenLogAngled.mdl'),('uico',3,'Icon_Kawarimi.blp'),('usca',1,.3),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvt',3,'fly'),('umvh',2,150.),('umvf',2,-400.),('umvs',0,0),('ucol',2,0.),('usin',0,0),('usid',0,0),('uhom',0,1),('ufoo',0,0),('ushb',3,''),('ushu',3,''),('upgr',3,''),('ureq',3,'')]))
  out.append(('hfoo','rean',[('unam',3,'Анко — экзаменатор'),('umdl',3,'Anko.mdl'),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNFarSight.blp'),('uabi',3,'Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('upgr',3,''),('ureq',3,'')]))
  # Sand crest: persistent visible Birth animation; no attack, collision or orders.
@@ -41,7 +49,7 @@ def unit_entries():
   if raw in ('re01','re02'):mods.extend([('ulev',0,4)])
   if raw=='re03':mods.extend([('ulev',0,20)])
   if raw=='re04':mods.extend([('ulev',0,30)])
-  if raw=='re04':mods.extend([('uabi',3,'Zbwp,Zbce,Zbbl'),('umpm',0,1000),('umpi',0,1000),('umpr',2,6.)])
+
  for _,_,mods in out:mods[:]=list({k:(k,t,v) for k,t,v in mods}.values())
  return out
 

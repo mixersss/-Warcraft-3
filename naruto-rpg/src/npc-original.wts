@@ -1,0 +1,196 @@
+﻿STRING 3
+{
+|cff66CCFFNaruto Ultimate RPG 4.2i|r
+}
+STRING 4
+{
+All
+}
+STRING 5
+{
+This is the entire Naruto series in one game, potentially lasting a couple hours! Choose your character and play his/her roles in completing the storyline!
+}
+STRING 6
+{
+ShikamaruShadow
+}
+STRING 20
+{
+Tenten
+}
+STRING 24
+{
+Gaara
+}
+STRING 26
+{
+Temari
+}
+STRING 28
+{
+Kankuro
+}
+STRING 136
+{
+Sasuke
+}
+STRING 1291
+{
+Naruto
+}
+STRING 1292
+{
+Sakura
+}
+STRING 1294
+{
+Neji
+}
+STRING 1296
+{
+Shikamaru
+}
+STRING 1297
+{
+Kiba
+}
+STRING 1299
+{
+Naruto/Sasuke/Sakura
+}
+STRING 1302
+{
+Gaara/Kankuro/Temari
+}
+STRING 2022
+{
+Game Commands (Capitalization necessary when included below):
+
+-cam	                Height offset of 600
+-cam1	                Height offset of 1000
+-cam2	                3rd person view of hero
+-camduel	                3rd person view of random arena unit
+-camlock                  Lock camera target to player's hero ('alt c' to unlock)
+
+-c	                 Count sand + sound jounin
+-show	                 Show names on multiboard
+-hide	                 Hide names on multiboard
+
+Naruto Only:
+-r	                Sends clones to randomly move
+-a	                Sends clones to randomly attack
+-f                              Orders clones to follow(right-click) Naruto
+-auto                        Sends clones out each time they are created
+-autof                       Orders clones to follow(right-click) Naruto each time they are created
+-off                           Turns off auto
+
+Sand Heros (During Invasion Only):
+-f                              Summons all jounin of player color to follow the hero
+-KabutoOn               Turns on Kabuto's AI controls
+-KabutoOff               Disables Kabuto's AI controls
+-GaaraOn                 Turns on Gaara's AI controls
+-GaaraOff                 Disables Gaara's AI controls
+-KankuroOn             Turns on Kankuro's AI controls
+-KankuroOff             Disables Kankuro's AI controls
+-TemariOn                Turns on Temari's AI controls
+-TemariOff                Disables Temari's AI controls
+
+Sasuke Only (While in Orochimaru's Hideout):
+
+-Kabuto                    Changes control to Sasuke
+
+Kiba Only (If he becomes glitched):
+
+-fix                        Unglitches Kiba if Shikyaku no Jutsu is permanently on
+
+Host Only:
+-mo	            Current music off
+-NoRamen           Disallows the use of ramen during tournaments.
+-ShareComp         Forces all player slots controlled by a computer to share control.
+KickName            Kicks the player of named character from the game.
+KillName               Kills the hero representing the named character.
+}
+STRING 2371
+{
+|c0066CCFFNaruto Ultimate RPG|r                       
+|cff99ffffDon't forget to get the latest version at|r 
+|cff0099FFwww.epicwar.com.|r  
+
+
+You may e-mail me with any questions or comments:
+
+|c00C0A0FFShikamaruShadow:|r    athyon@yahoo.com
+}
+STRING 2532
+{
+In this map, you will find: 
+Zabuza, Written Test, Forest of Death, Preliminary and Final Duels, Konoha War, Akatsuki Encounter, Sasuke's Escape, and More!
+}
+STRING 2673
+{
+During the Forest of Death event, a team should try to acquire one heaven and one earth scroll. One member of the team should then enter the tower ONLY during the last 2 minutes of the countdown.
+Scrolls are not necessary to continue the game. However, heros will be awarded +3 levels for accomplishing the Forest of Death.
+}
+STRING 2741
+{
+Hinata
+}
+STRING 2766
+{
+Shikamaru/Kiba/Hinata
+}
+STRING 4054
+{
+ShikamaruShadow presents
+}
+STRING 4055
+{
+|cff66CCFFNaruto Ultimate RPG |cff0099FF4.2i|r
+}
+STRING 4174
+{
+Lee
+}
+STRING 4349
+{
+|cff32cd32You have activated Neji's Hyuuga Bloodline. To turn off, just click the ability again or hit D.
+(You are now able to see enemy invisible units as well as distant enemies with chakra. Your allies receive pings of their locations).|r
+}
+STRING 4485
+{
+Lee/Neji/Tenten
+}
+STRING 4499
+{
+|cff99ffffThis is the entire Naruto series in one game, potentially lasting a couple hours! Choose your character and play his/her roles in completing the storyline! Special thanks to Darkness47.|r
+}
+STRING 4922
+{
+|cff32cd32Since Gaara has left the game, he will now be AI-controlled. To turn this off, type -GaaraOff. 
+To turn this back on, type -GaaraOn. Capitalization is required.|r
+}
+STRING 4923
+{
+|cff32cd32Since Kankuro has left the game, he will now be AI-controlled. To turn this off, type -KankuroOff. 
+To turn this back on, type -KankuroOn. Capitalization is required.|r
+}
+STRING 4924
+{
+|cff32cd32Since Temari has left the game, she will now be AI-controlled. To turn this off, type -TemariOff. 
+To turn this back on, type -TemariOn. Capitalization is required.|r
+}
+STRING 5336
+{
+|cff32cd32You have activated Neji's Hyuuga Bloodline. To turn off, just click the ability again or hit D.
+(You are now able to see enemy invisible units as well as distant enemies with chakra. Your allies receive pings of their locations).|r
+}
+STRING 5680
+{
+|cff32cd32Host! There are new commands, for host only: Kill and Kick|r
+
+|cff32cd32To kill a hero, type Kill[HeroName]   (Ex: KillNaruto)|r
+
+|cff32cd32To kick a player, type Kick[HeroName]   (Ex: KickNaruto)|r
+
+|cff32cd32To remove the use of ramen during duels, type -noramen.|r
+}

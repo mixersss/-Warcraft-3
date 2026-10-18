@@ -4,9 +4,9 @@ local alliances={};local vision={};local outcomes={};local fades={}
 function SetPlayerAllianceStateAllyBJ(a,b,v)alliances[a]=alliances[a] or {};alliances[a][b]=v end
 function SetPlayerAllianceStateVisionBJ(a,b,v)vision[a]=vision[a] or {};vision[a][b]=v end
 function IsUnitEnemy(u,p)
- if not u or u.owner==p or u.owner==15 then return false end
+ if not u or u.owner==p then return false end
  if alliances[u.owner] and alliances[u.owner][p]~=nil then return not alliances[u.owner][p]end
- return u.owner~=p
+ return u.owner~=p and u.owner~=15
 end
 function ShowUnit(u,v)u.hidden=not v end
 function IsUnitAlly(u,p)return not IsUnitEnemy(u,p)end
@@ -39,14 +39,14 @@ local function fresh()
  CampaignActor={};CampaignActorType={};CampaignPermanentDead={};CampaignCastAt={};CampaignMoveAt={};CampaignActorRoute={}
  setmetatable(CampaignCastAt,{__index=function()return 0 end});setmetatable(CampaignMoveAt,{__index=function()return 0 end})
  Hero={};HeroRole={};HeroType={};HeroTemplate={};Companion={};Dummy={};World={};RoleChosen={};StoryShop={};StoryStage={};StoryMembers={};StoryStarted={};StoryMarch={};StoryRetreat={};StoryRevive={}
- for t=0,3 do StoryMembers[t]=3;StoryStage[t]=8;StoryStarted[t]=true;StoryMarch[t]=true;StoryRetreat[t]=false;StoryShop[t]=CreateUnit(15,raw('rqsh'),0,0,0)end
+ for t=0,3 do StoryMembers[t]=3;StoryStage[t]=8;StoryStarted[t]=true;StoryMarch[t]=true;StoryRetreat[t]=false end
  for p=0,11 do Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);Hero[p].maxLife=10000;Hero[p].hp=10000;Hero[p].level=20;Hero[p].points=20;HeroRole[p]=p;HeroType[p]=Hero[p].type;HeroTemplate[p]=p;Controllers[p]='computer';StoryRevive[p]=0;LogUntil[p]=0;LogReadyAt[p]=0;ComboLeft[p]=0;BotNextCast[p]=0;VisualChannelUntil[p]=0 end
  Controllers[0]='human';Controllers[1]='human';ExamPhase=4;TimeNow=20000;outcomes={}
 end
 local function enter()
  assert(CampaignTransition);local start=CampaignIntroAt
  TimeNow=start+1.5;CampaignTick();assert(CampaignPlaced)
- TimeNow=start+8;CampaignTick();assert(not CampaignTransition)
+ for n=4,16 do TimeNow=start+n*.5;CampaignTick()end;assert(not CampaignTransition)
 end
 local function killEnemies()
  for j=0,CampaignCount-1 do local u=CampaignActor[j];if u and IsUnitEnemy(u,CampaignLeader)then u.hp=0 end end
@@ -79,6 +79,9 @@ local trainingXP=Hero[0].xp or 0;CampaignActor[CampaignJiraiya].hp=0;CampaignTic
 TimeNow=CampaignTrainingAt;CampaignTick();assert(CampaignQueued==11)
 enter();doDuels(11);assert(CampaignQueued==12)
 enter();assert(CampaignStage==12 and CampaignEndAt-TimeNow==1500)
+local counts={};for j=0,CampaignCount-1 do local k=CampaignActorType[j];counts[k]=(counts[k]or 0)+1 end
+assert(counts[17]==140 and counts[34]==102 and counts[32]==6,'All 248 source village ninja/medic placements must exist')
+for t=0,3 do assert(StoryShop[t],'All four original village shops exist during invasion')end
 local waveStart=TimeNow;local initial=CampaignCount
 TimeNow=waveStart+45;CampaignTick();assert(CampaignCount==initial+15,'Five immediate streams x three units')
 TimeNow=waveStart+60;CampaignTick();assert(CampaignCount==initial+21,'Two delayed streams x three units')
@@ -89,10 +92,15 @@ TimeNow=CampaignJiraiyaAt;CampaignTick();local jiraiyaPresent=false;for j=0,Camp
 TimeNow=CampaignSnakeAt;CampaignTick();assert(CampaignVillageSnake and CampaignVillageSnake.owner==11 and CampaignSnakeGoneAt-TimeNow==300)
 TimeNow=CampaignOroAt;CampaignTick();assert(CampaignVillageOro.owner==9 and not CampaignVillageOro.paused)
 CampaignActor[0].hp=0;CampaignTick();assert(CampaignQueued==13)
-enter();assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==10000 and CampaignActor[2].maxLife==375000)
+enter();for t=0,3 do assert(not StoryShop[t],'Shops are removed after invasion')end;assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==10000 and CampaignActor[2].maxLife==375000)
 TimeNow=CampaignEndAt;CampaignTick();assert(CampaignQueued==14)
 enter();assert(CampaignStage==14 and CampaignEndAt-TimeNow==360 and Hero[1].hidden and Hero[1].paused)
 assert(not CampaignNearest(0) or CampaignNearest(0)~=Hero[1],'Hidden sealed Sasuke cannot distract allies from Sound Five')
+local sakonSlot=nil
+for j=0,CampaignCount-1 do if CampaignActorType[j]==7 then sakonSlot=j end end
+assert(sakonSlot and CampaignWatcher[sakonSlot].threshold==15000,'Original Sakon split threshold')
+Caster=CampaignActor[sakonSlot];Caster.hp=14999;NativeCurrentTrigger=CampaignWatcher[sakonSlot]
+local beforeSplit=CampaignCount;CampaignSakonSplit();assert(CampaignCount==beforeSplit+1 and CampaignActorType[CampaignCount-1]==39,'Source Ukon is adopted into objective and cleanup tracking')
 killEnemies();CampaignTick();assert(CampaignQueued==15)
 enter();assert(CampaignStage==15 and CampaignEndAt-TimeNow==240 and not Hero[1].hidden and not Hero[1].paused and IsUnitEnemy(Hero[0],1) and Hero[1].level==60)
 assert(CampaignSasuke==Hero[1],'The selected human keeps Sasuke instead of being replaced by an NPC')
@@ -108,7 +116,7 @@ Hero[2].x=CampaignTX[17]-100;Hero[2].y=CampaignTY[17];CampaignBot(2,nil);assert(
 Caster=Hero[2];Spell=raw('R204');Target=nil;Hero[2].x=CampaignTX[17];Hero[2].y=CampaignTY[17];Hero[2].abilities[Spell]=1
 SkillsEffect();assert(CampaignActor[0].hp==0 and CampaignActor[1].hp==0)
 local cloneCount=0
-for p=0,11 do if CampaignClonePending[p] then cloneCount=cloneCount+1;assert(CampaignNearest(p)==CampaignClone[p]);CampaignBot(p,CampaignClone[p]);assert(Hero[p].last.target==CampaignClone[p])end end
+for p=0,11 do if CampaignClonePending[p] then cloneCount=cloneCount+1;assert(CampaignClone[p].level==60,'Source clone level 60');assert(CampaignNearest(p)==CampaignClone[p]);CampaignBot(p,CampaignClone[p]);assert(Hero[p].last.target==CampaignClone[p])end end
 assert(cloneCount==8,'Eight parallel clone rooms, no sequential teleport of every hero')
 local cloneX,cloneY=Hero[3].x,Hero[3].y
 killEnemies();CampaignTick();assert(CampaignQueued==26,'Main party continues while clone fights remain active')

@@ -1,4 +1,38 @@
 globals
+    // NPC_SOURCE_GLOBALS
+    integer CampaignChampion=-1
+    integer CampaignDefenseOwner=12
+    real array StoryShopTripUntil
+    trigger array CampaignWatcher
+    group NPCFirstGroup=null
+    boolean NPCSourceReady=false
+    trigger NPCEndHook=null
+    boolean array NPCChannelGuard
+    hashtable NPCHiddenAbilities=null
+    hashtable NPCCooldowns=null
+    integer array NPCSpellCount
+    integer array NPCSourceTypeDummy
+    integer array NPCOrderId
+    integer array NPCRank
+    integer array NPCAbility
+    string array NPCOrder
+    integer array NPCTarget
+    real array NPCRange
+    real array NPCRadius
+    real array NPCCost
+    real array NPCCooldown
+    real array NPCHold
+    real array CampaignLeafX
+    real array CampaignLeafY
+    real array CampaignLeafFacing
+    real array CampaignAnbuX
+    real array CampaignAnbuY
+    real array CampaignAnbuFacing
+    real array CampaignMedicX
+    real array CampaignMedicY
+    real array CampaignSupportX
+    real array CampaignSupportY
+    integer CampaignDeployCursor=242
     unit array CampaignClone
     integer array CampaignCloneKind
     real array CampaignCloneCastAt
@@ -220,6 +254,9 @@ globals
     real array StoryX
     real array StoryY
     unit array StoryEnemy
+    trigger StoryShopSales=null
+    real array StoryShopX
+    real array StoryShopY
     unit array StoryShop
     real array EnemyNext
     real array EnemyPending

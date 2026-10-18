@@ -11,7 +11,7 @@ LOOT=[
 def items():
  out=[]
  for source,base,raw,name,icon,model,ability,charges,price,desc in LOOT:
-  out.append((base,raw,[('unam',3,name),('utip',3,name),('utub',3,desc),('ides',3,desc),('iico',3,icon),('ifil',3,model),('iabi',3,ability),('igol',0,price),('ilum',0,0),('iuse',0,charges),('iprn',0,int(charges>0)),('iper',0,1),('icla',3,'Charged' if charges else 'Permanent')]))
+  out.append((base,raw,[('unam',3,name),('utip',3,name),('utub',3,desc),('ides',3,desc),('iico',3,icon),('ifil',3,model),('iabi',3,ability),('igol',0,price),('ilum',0,0),('isto',0,10),('istr',0,0),('isst',0,0),('iuse',0,charges),('iprn',0,int(charges>0)),('iper',0,1),('icla',3,'Charged' if charges else 'Permanent')]))
  return out
 
 def abilities():
