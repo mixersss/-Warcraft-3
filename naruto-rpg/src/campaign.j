@@ -23,6 +23,10 @@ function CampaignAlliances takes integer mode returns nothing
             call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),true)
             call SetPlayerAllianceStateAllyBJ(Player(p),Player(PLAYER_NEUTRAL_PASSIVE),true)
         endif
+        call SetPlayerAllianceStateAllyBJ(Player(14),Player(p),true)
+        call SetPlayerAllianceStateAllyBJ(Player(p),Player(14),true)
+        call SetPlayerAllianceStateVisionBJ(Player(14),Player(p),false)
+        call SetPlayerAllianceStateVisionBJ(Player(p),Player(14),false)
         set p=p+1
     endloop
 endfunction
@@ -409,6 +413,21 @@ function CampaignOpenSourceGate takes nothing returns nothing
     endif
     set gate=null
 endfunction
+// Original QAV positions and LTX owner. Persistent scenery, not disposable combat NPCs.
+function CampaignFountainsOpen takes nothing returns nothing
+    if VillageFountain[0]==null then
+        set VillageFountain[0]=CreateUnit(Player(14),'rvf0',16128.,-15744.,270.)
+    endif
+    if VillageFountain[1]==null then
+        set VillageFountain[1]=CreateUnit(Player(14),'rvf1',4672.,-12096.,270.)
+    endif
+    if VillageFountain[2]==null then
+        set VillageFountain[2]=CreateUnit(Player(14),'rvf2',-2624.,-11840.,270.)
+    endif
+    if VillageFountain[3]==null then
+        set VillageFountain[3]=CreateUnit(Player(14),'rvf3',5632.,-3008.,270.)
+    endif
+endfunction
 function CampaignSpawnStage takes nothing returns nothing
     local integer n=CampaignStage
     local integer j=0
@@ -458,6 +477,7 @@ function CampaignSpawnStage takes nothing returns nothing
         set unused=CampaignAdd(0,owner,x,y)
         set CampaignDeployCursor=0
         call StoryShopsOpen()
+        call CampaignFountainsOpen()
         if CampaignChampion>=0 then
             set reward=CreateItem('Nlca',GetUnitX(Hero[CampaignChampion]),GetUnitY(Hero[CampaignChampion]))
             if not UnitAddItem(Hero[CampaignChampion],reward) then

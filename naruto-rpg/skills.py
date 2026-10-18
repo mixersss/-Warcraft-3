@@ -42,6 +42,7 @@ def ability_data():
  out.append(('ANsb','Rstn',stun))
  micro=[('anam',3,'Микрооглушение Кайтэна'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amat',3,''),('aani',3,''),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('Htb1',2,0.,1,1),('adur',2,.2,1,0),('ahdu',2,.1,1,0),('atar',3,'ground,air,enemy,neutral,organic',1,0)]
  out.append(('AHtb','Rmic',micro))
+ out.append(('AHtb','Rkst',[('anam',3,'Оглушение куная'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('acas',2,0.,1,0),('Htb1',2,0.,1,1),('adur',2,1.25,1,0),('ahdu',2,.75,1,0),('abuf',3,'Rksb',1,0),('amat',3,''),('aani',3,''),('atar',3,'ground,air,enemy,neutral,organic',1,0)]))
  for _,_,mods in out:
   if not any(m[0]=='aefs' for m in mods):mods.extend([('aefs',3,''),('aefl',3,'')])
  return out
@@ -60,14 +61,14 @@ def summon_units():
    out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
  out.append(('hfoo','rshk',[('unam',3,'Теневые путы'),('uhom',0,1),('umdl',3,'ShikamaruKageMane.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,2.),('ushu',3,''),('ushb',3,''),('usin',0,0),('usid',0,0),('ufoo',0,0)]))
  out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'ShinobiShadowStrip.mdl'),('usin',0,0),('usid',0,0),('uhom',0,1),('umvt',3,'fly'),('umvh',2,6.),('umvf',2,6.),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,1.),('ufoo',0,0)]))
- out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('ucpt',2,0.),('ucbs',2,0.),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
+ out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('usin',0,0),('usid',0,0),('ucpt',2,0.),('ucbs',2,0.),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
  for entry in VISUALS['visualUnits']:
   out.append(('hfoo',entry['id'],[('unam',3,'Графика техники'),('umdl',3,entry['model']),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,entry['scale']),('ushu',3,''),('ushb',3,''),('ussc',1,0.),('usin',0,0),('usid',0,0),('utar',3,''),('utyp',3,''),('ufoo',0,0),('ureq',3,''),('upgr',3,'')]))
  return out
 
 
 def buff_data():
- out=[('BEer','Rsmb',[('fnam',3,'Теневое подражание'),('ftip',3,'Теневое подражание'),('fube',3,'Тень удерживает на месте.'),('fart',3,'Icon_Shikamaru_KageMane.BLP'),('ftat',3,''),('fsat',3,''),('feat',3,'')])]
+ out=[('BPSE','Rksb',[('fnam',3,'Оглушение кунаем'),('ftip',3,'Оглушение'),('fube',3,'Кунай временно оглушил цель.'),('fart',3,'ReplaceableTextures\\CommandButtons\\BTNStormBolt.blp'),('ftat',3,'Abilities\\Spells\\Human\\Thunderclap\\ThunderclapTarget.mdl'),('fta0',3,'overhead')]),('BEer','Rsmb',[('fnam',3,'Теневое подражание'),('ftip',3,'Теневое подражание'),('fube',3,'Тень удерживает на месте.'),('fart',3,'Icon_Shikamaru_KageMane.BLP'),('ftat',3,''),('fsat',3,''),('feat',3,'')])]
 
  for base,raw,name,art in [('BUau','Rnav','Джинчурики',''),('Broa','Rshb','Шаринган',''),('BEer','Rgac','Песчаный гроб','gaars sand.mdl'),('BNms','Rgas','Песчаный щит','gaars sand.mdl'),('BEme','Rgam','Сюкаку','')]:
   out.append((base,raw,[('fnam',3,name),('ftip',3,name),('ftat',3,art),('fta0',3,'origin'),('fsat',3,''),('feat',3,'')]))

@@ -64,9 +64,21 @@ function RosterSand takes integer p, real tx, real ty returns nothing
     endloop
 endfunction
 // Independent sight state: Kaiten/combat buffs do not cancel Byakugan.
+function RosterClearVisionMarks takes integer p returns nothing
+    local integer n=0
+    loop
+        exitwhen n>=VisionMarkCount[p]
+        call FogModifierStop(VisionMarkFog[p*128+n])
+        call DestroyFogModifier(VisionMarkFog[p*128+n])
+        set VisionMarkFog[p*128+n]=null
+        set n=n+1
+    endloop
+    set VisionMarkCount[p]=0
+endfunction
 function RosterClearVision takes integer p returns nothing
     call UnitRemoveAbility(Hero[p],'Rbyg')
     set VisionUntil[p]=0.
+    call RosterClearVisionMarks(p)
     if VisionFog[p]!=null then
         call FogModifierStop(VisionFog[p])
         call DestroyFogModifier(VisionFog[p])
@@ -77,10 +89,15 @@ function RosterClearVision takes integer p returns nothing
         set VisionArt[p]=null
     endif
 endfunction
+function RosterVisionHero takes nothing returns boolean
+    return IsUnitType(GetFilterUnit(),UNIT_TYPE_HERO)
+endfunction
 function RosterVisionPulse takes integer p returns nothing
     local unit target=null
     local real x=GetUnitX(Hero[p])
     local real y=GetUnitY(Hero[p])
+    local integer slot=0
+    call RosterClearVisionMarks(p)
     if VisionFog[p]!=null then
         call FogModifierStop(VisionFog[p])
         call DestroyFogModifier(VisionFog[p])
@@ -92,10 +109,32 @@ function RosterVisionPulse takes integer p returns nothing
         set target=FirstOfGroup(SkillScratch)
         exitwhen target==null
         call GroupRemoveUnit(SkillScratch,target)
-        if FoundationAlive(target) and IsUnitEnemy(target,Player(p)) and not IsUnitType(target,UNIT_TYPE_STRUCTURE) then
+        if FoundationAlive(target) and IsUnitEnemy(target,Player(p)) and not IsUnitType(target,UNIT_TYPE_STRUCTURE) and not IsUnitType(target,UNIT_TYPE_HERO) then
             // Only UI calls are local. Handle creation and state remain synchronized.
             if IsPlayerAlly(GetLocalPlayer(),Player(p)) then
                 call PingMinimapEx(GetUnitX(target),GetUnitY(target),1.5,100,180,255,false)
+            endif
+        endif
+    endloop
+    // Every real living enemy hero, at any distance, including through fog/invisibility.
+    // Fog handles are synchronized; only minimap UI is filtered per allied client.
+    if VisionHeroFilter==null then
+        set VisionHeroFilter=Condition(function RosterVisionHero)
+    endif
+    call GroupEnumUnitsInRect(SkillScratch,bj_mapInitialPlayableArea,VisionHeroFilter)
+    loop
+        set target=FirstOfGroup(SkillScratch)
+        exitwhen target==null
+        call GroupRemoveUnit(SkillScratch,target)
+        if IsUnitType(target,UNIT_TYPE_HERO) and FoundationAlive(target) and not IsUnitIllusion(target) and not IsUnitHidden(target) and IsUnitEnemy(target,Player(p)) then
+            if VisionMarkCount[p]<128 then
+                set slot=p*128+VisionMarkCount[p]
+                set VisionMarkFog[slot]=CreateFogModifierRadius(Player(p),FOG_OF_WAR_VISIBLE,GetUnitX(target),GetUnitY(target),192.,true,false)
+                call FogModifierStart(VisionMarkFog[slot])
+                set VisionMarkCount[p]=VisionMarkCount[p]+1
+            endif
+            if IsPlayerAlly(GetLocalPlayer(),Player(p)) then
+                call PingMinimapEx(GetUnitX(target),GetUnitY(target),2.25,100,180,255,false)
             endif
         endif
     endloop
@@ -195,6 +234,7 @@ function RosterGrantInnate takes integer p returns nothing
 endfunction
 function RosterReset takes integer p returns nothing
     local integer k=0
+    call KunaiClear(p)
     call CommonLogClear(p)
     call VisualClearHero(p)
     call RosterClearSand(p)

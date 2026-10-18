@@ -114,23 +114,48 @@ function StoryStartStage takes integer t returns nothing
     endif
     call StorySay(t,StoryGoal(t)+" |n-go: боты идут к цели; -follow: прикрывают вас; -retreat: отход; -quest: задание.")
 endfunction
+function StoryEnemyCandidate takes unit enemy, unit candidate returns boolean
+    return FoundationAlive(candidate) and not IsUnitHidden(candidate) and not IsUnitPaused(candidate) and GetUnitAbilityLevel(candidate,'Avul')==0 and IsUnitEnemy(candidate,GetOwningPlayer(enemy))
+endfunction
 function StoryEnemyTarget takes integer t, unit enemy, unit leader returns unit
+    local integer p=t*3
+    local integer n=0
+    local unit candidate=null
     local real dx=0.
     local real dy=0.
     local real distance=999999999.
-    if leader!=null then
-        set dx=GetUnitX(leader)-GetUnitX(enemy)
-        set dy=GetUnitY(leader)-GetUnitY(enemy)
-        set distance=dx*dx+dy*dy
-    endif
-    if StoryMentorsReleased and FoundationAlive(StoryMentor[t]) then
+    set StoryTargetResult=null
+    loop
+        exitwhen p>=t*3+3
+        set n=-1
+        loop
+            exitwhen n>=3
+            if n<0 then
+                set candidate=Hero[p]
+            else
+                set candidate=Companion[p*3+n]
+            endif
+            if StoryEnemyCandidate(enemy,candidate) then
+                set dx=GetUnitX(candidate)-GetUnitX(enemy)
+                set dy=GetUnitY(candidate)-GetUnitY(enemy)
+                if dx*dx+dy*dy<distance then
+                    set distance=dx*dx+dy*dy
+                    set StoryTargetResult=candidate
+                endif
+            endif
+            set n=n+1
+        endloop
+        set p=p+1
+    endloop
+    if StoryMentorsReleased and StoryEnemyCandidate(enemy,StoryMentor[t]) then
         set dx=GetUnitX(StoryMentor[t])-GetUnitX(enemy)
         set dy=GetUnitY(StoryMentor[t])-GetUnitY(enemy)
         if dx*dx+dy*dy<distance then
-            return StoryMentor[t]
+            set StoryTargetResult=StoryMentor[t]
         endif
     endif
-    return leader
+    set candidate=null
+    return StoryTargetResult
 endfunction
 function StoryEnemyCast takes integer j, unit target returns nothing
     local unit u=StoryEnemy[j]
@@ -638,10 +663,14 @@ function StoryTick takes nothing returns nothing
                         set dx=GetUnitX(target)-GetUnitX(StoryEnemy[j])
                         set dy=GetUnitY(target)-GetUnitY(StoryEnemy[j])
                         if dx*dx+dy*dy<850.*850. then
-                            if TimeNow>=EnemyNext[j] then
-                                call StoryEnemyCast(j,target)
-                            elseif EnemyPending[j]==0. and GetUnitCurrentOrder(StoryEnemy[j])==0 then
-                                call IssueTargetOrder(StoryEnemy[j],"attack",target)
+                            if not IsUnitPaused(StoryEnemy[j]) then
+                                if TimeNow>=EnemyNext[j] then
+                                    call StoryEnemyCast(j,target)
+                                    set EnemyFocus[j]=target
+                                elseif EnemyPending[j]==0. and (GetUnitCurrentOrder(StoryEnemy[j])==0 or EnemyFocus[j]!=target) then
+                                    call IssueTargetOrder(StoryEnemy[j],"attack",target)
+                                    set EnemyFocus[j]=target
+                                endif
                             endif
                         elseif GetUnitCurrentOrder(StoryEnemy[j])==0 and StoryStage[t]>0 then
                             call IssuePointOrder(StoryEnemy[j],"move",EnemySpawnX[j],EnemySpawnY[j])
@@ -797,11 +826,7 @@ function StoryInit takes nothing returns nothing
     call TimerStart(StoryPopulateClock,.05,true,function StoryPopulate)
     set StoryMentorClock=CreateTimer()
     call TimerStart(StoryMentorClock,330.,false,function StoryReleaseMentors)
-    set StoryMentorDialog=CreateTimerDialog(StoryMentorClock)
-    call TimerDialogSetTitle(StoryMentorDialog,"До выхода наставников")
-    call TimerDialogDisplay(StoryMentorDialog,true)
-    call HUDInit()
-    call HUDTick()
+    // Timer dialogs and the board are created by HUDTick after game UI is ready.
     set npc=null
     set journal=null
 endfunction

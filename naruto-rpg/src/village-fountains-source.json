@@ -1,0 +1,575 @@
+{
+  "sourceScriptSHA256": "a9c3b260a65c0ff571cd488ae3f7742888ead2a6b2fa5ef72501a7cbd731aec4",
+  "placementFunction": "QAV",
+  "ownershipFunction": "LTX",
+  "fountains": [
+    {
+      "sourceAlias": "MNV",
+      "sourceType": "n007",
+      "newId": "rvf0",
+      "x": 16128,
+      "y": -15744,
+      "facing": 270,
+      "owner": 14,
+      "sourceObject": {
+        "oldId": "nfnp",
+        "newId": "n007",
+        "modifications": [
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1886283374
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Fountain of Power x2",
+            "u1": 0
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl",
+            "u1": 0
+          },
+          {
+            "id": "uabi",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "A02V,ANre,Avul",
+            "u1": 0
+          },
+          {
+            "id": "ucam",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      },
+      "effectiveModifications": [
+        {
+          "id": "uubs",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 1886283374
+        },
+        {
+          "id": "usid",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "usin",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "unbm",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclr",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclg",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 0
+        },
+        {
+          "id": "unam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Fountain of Power x2",
+          "u1": 0
+        },
+        {
+          "id": "umdl",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl",
+          "u1": 0
+        },
+        {
+          "id": "uabi",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "A02V,ANre,Avul",
+          "u1": 0
+        },
+        {
+          "id": "ucam",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        }
+      ],
+      "doubleHealth": true
+    },
+    {
+      "sourceAlias": "KHV",
+      "sourceType": "n006",
+      "newId": "rvf1",
+      "x": 4672,
+      "y": -12096,
+      "facing": 270,
+      "owner": 14,
+      "sourceObject": {
+        "oldId": "nfnp",
+        "newId": "n006",
+        "modifications": [
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1886283374
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "umdl",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl",
+            "u1": 0
+          },
+          {
+            "id": "ucam",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          }
+        ]
+      },
+      "effectiveModifications": [
+        {
+          "id": "uubs",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 1886283374
+        },
+        {
+          "id": "usid",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "usin",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "unbm",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclr",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclg",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 0
+        },
+        {
+          "id": "umdl",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl",
+          "u1": 0
+        },
+        {
+          "id": "ucam",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        }
+      ],
+      "doubleHealth": false
+    },
+    {
+      "sourceAlias": "KRV",
+      "sourceType": "n008",
+      "newId": "rvf2",
+      "x": -2624,
+      "y": -11840,
+      "facing": 270,
+      "owner": 14,
+      "sourceObject": {
+        "oldId": "nfnp",
+        "newId": "n008",
+        "modifications": [
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1886283374
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "uclr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 175,
+            "u1": 1886283374
+          },
+          {
+            "id": "uclg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 175,
+            "u1": 0
+          },
+          {
+            "id": "unam",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "Fountain of Power x2",
+            "u1": 0
+          },
+          {
+            "id": "ucam",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "uabi",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "A02V,ANre,Avul",
+            "u1": 0
+          }
+        ]
+      },
+      "effectiveModifications": [
+        {
+          "id": "uubs",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 1886283374
+        },
+        {
+          "id": "usid",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "usin",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "unbm",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclr",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclg",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 0
+        },
+        {
+          "id": "unam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Fountain of Power x2",
+          "u1": 0
+        },
+        {
+          "id": "ucam",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "uabi",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "A02V,ANre,Avul",
+          "u1": 0
+        }
+      ],
+      "doubleHealth": true
+    },
+    {
+      "sourceAlias": "LQV",
+      "sourceType": "nfnp",
+      "newId": "rvf3",
+      "x": 5632,
+      "y": -3008,
+      "facing": 270,
+      "owner": 14,
+      "sourceObject": {
+        "oldId": "nfnp",
+        "newId": "\u0000\u0000\u0000\u0000",
+        "modifications": [
+          {
+            "id": "uubs",
+            "variableType": 3,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": "",
+            "u1": 1886283374
+          },
+          {
+            "id": "usid",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "usin",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 0
+          },
+          {
+            "id": "unbm",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 0,
+            "u1": 1886283374
+          },
+          {
+            "id": "uclr",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 175,
+            "u1": 1886283374
+          },
+          {
+            "id": "uclg",
+            "variableType": 0,
+            "levelOrVariation": 0,
+            "dataPointer": 0,
+            "value": 175,
+            "u1": 0
+          }
+        ]
+      },
+      "effectiveModifications": [
+        {
+          "id": "uubs",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 1886283374
+        },
+        {
+          "id": "usid",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "usin",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "unbm",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclr",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 1886283374
+        },
+        {
+          "id": "uclg",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 175,
+          "u1": 0
+        }
+      ],
+      "doubleHealth": false
+    }
+  ]
+}

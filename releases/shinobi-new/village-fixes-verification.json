@@ -1,0 +1,21 @@
+{
+  "sourceVillageFountains": 4,
+  "exactOriginalCoordinates": true,
+  "originalNeutralOwner": 14,
+  "sourceDoubleHPFountains": 2,
+  "primaryAttributesAndStockFamiliesVerified": 12,
+  "normalAttackTypeHeroVerified": 12,
+  "alternateFormAttackTypesVerified": 4,
+  "globalAlliedByakugan": true,
+  "byakuganMarksEverySeconds": 2,
+  "byakuganFogHandlesBounded": 128,
+  "kunaiHomingDamageOnceOnImpact": true,
+  "kunaiIndependentNativeStun": {
+    "ordinarySeconds": 1.25,
+    "heroSeconds": 0.75
+  },
+  "enemyTargetingAlliedBotsAndSummons": true,
+  "openingUIAfterFirstHeartbeat": true,
+  "nativeMocks": "test-skills.cjs / village-fixes-harness.lua",
+  "enginePlaytest": false
+}

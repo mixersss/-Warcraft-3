@@ -16,7 +16,7 @@ const unit=Object.fromEntries(units.map(o=>[o.newId,o]));
 const ability=Object.fromEntries(abilities.map(o=>[o.newId,o]));
 const nativeNPC=JSON.parse(fs.readFileSync(__dirname+'/src/npc-native-source.json'));
 const nativeSourceAbilities=Object.fromEntries(nativeNPC.abilities.map(o=>[o.newId,o]));
-const nativeModels=new Set(["Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl", "Doodads\\Ashenvale\\Props\\AshenLogAngled\\AshenLogAngled.mdl"].map(x=>x.toLowerCase()));
+const nativeModels=new Set(["Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl","Abilities\\Weapons\\AvengerMissile\\AvengerMissile.mdl", "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl", "Doodads\\Cinematic\\TownBurningFireEmitter\\TownBurningFireEmitter.mdl", "Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl", "Doodads\\Ashenvale\\Props\\AshenLogAngled\\AshenLogAngled.mdl"].map(x=>x.toLowerCase()));
 for(const v of JSON.parse(fs.readFileSync(__dirname+'/src/skill-visuals.json')).visualUnits)if(/^(abilities|objects|doodads)\\/i.test(v.model))nativeModels.add(v.model.toLowerCase());
 for(const o of nativeNPC.units){const m=o.modifications.find(m=>m.id==='umdl')?.value;if(m && /^(abilities|objects|doodads|sharedmodels)\\/i.test(m) || m==='none.mdl')nativeModels.add(m.toLowerCase());}
 for(const nativeModel of ["Doodads\\LordaeronSummer\\Props\\Barrel\\Barrel.mdl","Doodads\\Terrain\\RockChunks\\RockChunks0.mdl"])nativeModels.add(nativeModel.toLowerCase());
@@ -40,7 +40,7 @@ for(const o of units){
 }
 for(let j=0;j<rows.length;j++){const pos=rows[j].slot;assert.equal(get(ability[rows[j].id],'abpy'),pos<4?2:1);assert.equal(get(ability[rows[j].id],'abpx'),pos<4?pos:1);}
 const buffs=parse(Parser,'war3map.w3h').customTable.objects;
-assert.equal(buffs.length,6+nativeNPC.buffs.length);assert.equal(buffs[0].newId,'Rsmb');assert.equal(get(buffs[0],'ftat'),'');
+assert.equal(buffs.length,7+nativeNPC.buffs.length);assert.equal(get(buffs.find(b=>b.newId==='Rsmb'),'ftat'),'');assert(buffs.some(b=>b.newId==='Rksb'&&b.oldId==='BPSE'));
 for(const buff of buffs){assert(schema.stockIds.buffs.includes(buff.oldId),'Invalid native buff base '+buff.oldId);for(const mod of buff.modifications){assert(schema.buffFields[mod.id]);assert.equal(mod.variableType,kind(schema.buffFields[mod.id].type));}}
 for(let rank=1;rank<=4;rank++){assert.equal(get(ability.R601,'abuf',rank),'Rsmb');assert.equal(get(ability.Rbyg,'aran',rank),200+200*rank);assert.equal(get(ability.Rbyg,'Det1',rank),1);}
 assert.equal(rows.length,58);assert.equal(new Set(rows.map(r=>r.id)).size,58);
@@ -58,9 +58,9 @@ assert.equal(get(ability.Rn02,'Omi1',4),5);assert.equal(get(ability.Rn04,'Htb1',
 const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json'));
 for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
 assert.equal(ability.Rlog.oldId,'AOwk');assert.equal(get(ability.Rlog,'aher'),0);assert.equal(get(ability.Rlog,'amcs',1),150);assert.equal(get(ability.Rlog,'acdn',1),8);assert.equal(get(ability.Rlog,'adur',1),3);assert.equal(get(ability.Rlog,'ahdu',1),3);assert.equal(get(ability.Rlog,'Owk1',1),0);assert(Math.abs(get(ability.Rlog,'Owk2',1)-.2)<.001);assert.equal(get(ability.Rlog,'Owk3',1),50);assert.equal(get(ability.Rlog,'abuf',1),'BOwk');assert.equal(get(ability.Rlog,'aart'),'Icon_Kawarimi.blp');assert.equal(get(ability.Rlog,'ahky'),'R');assert.equal(get(ability.Rlog,'abpx'),2);assert.equal(get(ability.Rlog,'abpy'),1);
-for(const o of units)if(o.oldId==='Hpal' && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rlog'),'Every base/morph hero has the common skill');
+for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rlog'),'Every base/morph hero has the common skill');
 assert.equal(ability.R604.oldId,'AOre');assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
-for(const o of units)if(o.oldId==='Hpal' && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rjtr'));
+for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
 for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Shurikens.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
 assert.equal(get(unit.re01,'ulev'),4);assert.equal(get(unit.re02,'ulev'),4);assert.equal(get(unit.re03,'ulev'),20);assert.equal(get(unit.re04,'ulev'),30);
@@ -93,7 +93,11 @@ function UnitRemoveAbility(u,id) if u then u.abilities[id]=nil end end
 function SetUnitAbilityLevel(u,id,n) u.abilities[id]=n end
 function IsUnitIllusion(u) return u.illusion or false end
 function IsUnitEnemy(u,p) return math.floor(u.owner/3)~=math.floor(p/3) end
-function IsUnitType(u,t) return u[t] or false end
+function IsUnitType(u,t) return u and (u[t] or false) or false end
+function IsUnitHidden(u)return u and u.hidden or false end
+function IsUnitPaused(u)return u and u.paused or false end
+function Condition(f)return f end
+function GroupEnumUnitsInRect(g,r,f) for _,u in ipairs(World)do g[#g+1]=u end end
 function GetUnitX(u) return u.x end
 function GetUnitY(u) return u.y end
 function GetUnitState(u,s) return u[s] end
@@ -262,8 +266,9 @@ run(translate('function NPCFixtureData takes nothing returns nothing\n'+npcLines
 run(fs.readFileSync(__dirname+'/campaign-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/npc-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/forest-fixes-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/village-fixes-harness.lua','utf8'));
 console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
-fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,campaignObjectiveDataEntries:22,parallelCloneRooms:8,jiraiyaSearchBarrels:20,jiraiyaSearchSeconds:150,invasionStreams:8,sourceLeafDefenders:140,sourceAnbuDefenders:102,sourceVillageMedics:6,sourceNPCSpellObjects:nativeNPC.abilities.length,sourceNPCFunctions:Object.keys(JSON.parse(fs.readFileSync(__dirname+'/src/npc-source-audit.json')).sourceFunctions).length,shopsOnlyDuringInvasion:true,characterBoundSasukeRole:true,campaignThroughEndingNativeMocks:true,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,commonKawarimiDataAndBotOrders:true,stageHUDDeadlinesAndHandleCleanup:true,nativeMocks:true,enginePlaytest:false},null,2));
+fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,campaignObjectiveDataEntries:22,parallelCloneRooms:8,jiraiyaSearchBarrels:20,jiraiyaSearchSeconds:150,invasionStreams:8,sourceLeafDefenders:140,sourceAnbuDefenders:102,sourceVillageMedics:6,sourceNPCSpellObjects:nativeNPC.abilities.length,sourceNPCFunctions:Object.keys(JSON.parse(fs.readFileSync(__dirname+'/src/npc-source-audit.json')).sourceFunctions).length,shopsOnlyDuringInvasion:true,sourceVillageFountains:4,globalTeamByakuganNativeMocks:true,tentenKunaiImpactNativeMocks:true,alliedBotsDrawEnemyAggroNativeMocks:true,openingTimerDeferredNativeMocks:true,primaryHeroFamilies:12,characterBoundSasukeRole:true,campaignThroughEndingNativeMocks:true,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,commonKawarimiDataAndBotOrders:true,stageHUDDeadlinesAndHandleCleanup:true,nativeMocks:true,enginePlaytest:false},null,2));
 console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 52 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');

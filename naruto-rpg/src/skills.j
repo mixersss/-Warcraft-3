@@ -107,6 +107,9 @@ function SkillsEffect takes nothing returns nothing
             set SkillPoseIndex[p]=SkillAnimation[index]
             set SkillPoseType[p]=GetUnitTypeId(caster)
         endif
+        if raw=='R501' then
+            call KunaiLaunch(p,rank,target)
+        endif
         call RosterApply(p,index,rank,target)
         call VisualApply(p,index,rank,target)
         if SkillHold[index]>0. then

@@ -82,7 +82,8 @@ StoryInit()
 assert(StoryMembers[0]==3 and StoryMembers[1]==3 and StoryMembers[2]==0 and StoryMembers[3]==3)
 assert(StoryHasHuman[0] and StoryHasHuman[1] and StoryHasHuman[3])
 for t=0,3 do assert(not StoryShop[t],'No shops exist before village invasion')end
-assert(StoryMentorClock.delay==330 and StoryMentorClock.callback==StoryReleaseMentors and StoryMentorDialog.visible)
+assert(StoryMentorClock.delay==330 and StoryMentorClock.callback==StoryReleaseMentors and StoryMentorDialog==nil)
+HUDTick();assert(StoryMentorDialog.visible,'Opening clock is shown from a real game heartbeat')
 local populator=StoryPopulateClock
 for i=0,64 do populator.callback()end
 assert(populator.destroyed)

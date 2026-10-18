@@ -40,7 +40,10 @@ function HUDTick takes nothing returns nothing
     local string timing=""
     local real remaining=0.
     if StageBoard==null then
-        return
+        if TimeNow<.5 then
+            return
+        endif
+        call HUDInit()
     endif
     loop
         exitwhen t>=4
@@ -101,6 +104,18 @@ function HUDTick takes nothing returns nothing
         call HUDCell(t+1,2,timing)
         set t=t+1
     endloop
+    if ExamPhase==0 then
+        // A one-time init display can be dropped by Classic during map loading.
+        // Showing an existing dialog never restarts its running countdown.
+        call TimerDialogDisplay(PhaseDialog,true)
+        if StoryMentorClock!=null and not StoryMentorsReleased then
+            if StoryMentorDialog==null then
+                set StoryMentorDialog=CreateTimerDialog(StoryMentorClock)
+                call TimerDialogSetTitle(StoryMentorDialog,"Страна Волн: до наставников")
+            endif
+            call TimerDialogDisplay(StoryMentorDialog,true)
+        endif
+    endif
     call HUDCell(5,0,"Общий этап")
     if ExamPhase==0 then
         set key=2
@@ -150,7 +165,7 @@ function HUDTick takes nothing returns nothing
         if key>0 then
             call TimerStart(PhaseClock,RMaxBJ(.01,remaining),false,function HUDClockEnd)
             if key==2 then
-                call TimerDialogSetTitle(PhaseDialog,"До экзамена на чунина")
+                call TimerDialogSetTitle(PhaseDialog,"Страна Волн: до экзамена")
             elseif key==1 then
                 call TimerDialogSetTitle(PhaseDialog,"До вопросов Ибики")
             elseif ExamAsked==0 then

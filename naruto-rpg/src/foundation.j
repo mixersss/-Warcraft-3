@@ -89,6 +89,7 @@ globals
     integer CampaignLeader=0
     integer CampaignJiraiya=0
     boolean CampaignFound=false
+    unit array VillageFountain
     unit array CampaignActor
     integer array CampaignActorType
     real array CampaignCastAt
@@ -215,6 +216,9 @@ globals
     real array VisionUntil
     real array VisionRadius
     real array VisionNext
+    boolexpr VisionHeroFilter=null
+    integer array VisionMarkCount
+    fogmodifier array VisionMarkFog
     fogmodifier array VisionFog
     effect array VisionArt
     effect array SkillFlash
@@ -260,6 +264,8 @@ globals
     real array StoryAdvanceAt
     real array StoryX
     real array StoryY
+    unit StoryTargetResult=null
+    unit array EnemyFocus
     unit array StoryEnemy
     trigger StoryShopSales=null
     real array StoryShopX
@@ -302,6 +308,11 @@ globals
     real array RosterBuffUntil
     real array RosterBuffDrain
     effect array RosterBuffArt
+    unit array KunaiCaster
+    unit array KunaiTarget
+    unit array KunaiMissile
+    real array KunaiDamage
+    real array KunaiUntil
     real array ZoneUntil
     real array ZoneNext
     real array ZoneX

@@ -628,6 +628,12 @@
       "column": 6,
       "specific": "ANcs,ANc1,ANc2,ANc3",
       "repeat": 4
+    },
+    "Oar1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AOar,ACnr",
+      "repeat": 4
     }
   },
   "unitFields": {

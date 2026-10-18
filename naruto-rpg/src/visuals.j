@@ -298,6 +298,7 @@ function VisualTick takes nothing returns nothing
     local integer n=0
     local integer p=0
     local real f=0.
+    call KunaiTick()
     loop
         exitwhen n>=256
         if VisualUnit[n]!=null then

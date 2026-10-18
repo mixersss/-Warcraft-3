@@ -24,10 +24,14 @@ def units():
   seed=json.loads((ROOT/'src/campaign-npc-seeds.json').read_text()).get(str(n),{})
   mods=[(k,t,seed.get(k,v)) for k,t,v in mods]
   mods=list({m[0]:m for m in mods}.values());out.append(('hfoo',raw(n),mods))
+ for f in json.loads((ROOT/'src/village-fountains-source.json').read_text())['fountains']:
+  mods=[(m['id'],m['variableType'],m['value'].replace('\\\\','\\')if m['id']=='umdl'else m['value'])for m in f['effectiveModifications']]
+  mods.extend([('unam',3,'Фонтан силы'if f['doubleHealth']else'Фонтан восстановления'),('uabi',3,('Crg2'if f['doubleHealth']else'ACnr')+',ANre,Avul')])
+  out.append(('nfnp',f['newId'],list({m[0]:m for m in mods}.values())))
  return out
 
 def abilities():
- out=[]
+ out=[('ACnr','Crg2',[('anam',3,'Исходное восстановление здоровья x2'),('aher',0,0),('alev',0,1),('Oar1',2,.02,1,1),('areq',3,''),('aefs',3,''),('aefl',3,'')])]
  for base,rawid,name,order,mods in [
  ('Ahea','Cmed','Медицинская техника','heal',[('Hea1',2,350.,1,1),('aran',2,650.,1,0),('atar',3,'friend,ground,air,organic',1,0)]),
  ('AHtb','Cbol','Направленная техника','thunderbolt',[('Htb1',2,350.,1,1),('amat',3,'Kunai.mdl')]),

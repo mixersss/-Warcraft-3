@@ -9,7 +9,13 @@
     "manaRegenBase": 0.20000000298023224,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "STR"
+    "primaryAttribute": "STR",
+    "runtimeBase": "Hpal",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 2,
+    "agilityPerLevel": 1,
+    "attackType": "hero"
   },
   {
     "hero": 1,
@@ -21,7 +27,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "STR"
+    "primaryAttribute": "STR",
+    "runtimeBase": "Hpal",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 2,
+    "agilityPerLevel": 1.5,
+    "attackType": "hero"
   },
   {
     "hero": 2,
@@ -33,7 +45,13 @@
     "manaRegenBase": 0.10000000149011612,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT"
+    "primaryAttribute": "INT",
+    "runtimeBase": "Hblm",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 1.5,
+    "attackType": "hero"
   },
   {
     "hero": 3,
@@ -45,7 +63,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "AGI"
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 2.5,
+    "attackType": "hero"
   },
   {
     "hero": 4,
@@ -57,7 +81,13 @@
     "manaRegenBase": 0.10000000149011612,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "AGI"
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 2,
+    "attackType": "hero"
   },
   {
     "hero": 5,
@@ -69,7 +99,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "AGI"
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 2,
+    "attackType": "hero"
   },
   {
     "hero": 6,
@@ -81,7 +117,13 @@
     "manaRegenBase": 0.10000000149011612,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT"
+    "primaryAttribute": "INT",
+    "runtimeBase": "Hblm",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 1.5,
+    "attackType": "hero"
   },
   {
     "hero": 7,
@@ -93,7 +135,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "AGI"
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1.5,
+    "agilityPerLevel": 2,
+    "attackType": "hero"
   },
   {
     "hero": 8,
@@ -105,7 +153,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "AGI"
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 1.5,
+    "attackType": "hero"
   },
   {
     "hero": 9,
@@ -117,7 +171,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT"
+    "primaryAttribute": "INT",
+    "runtimeBase": "Hblm",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 1.5,
+    "attackType": "hero"
   },
   {
     "hero": 10,
@@ -129,7 +189,13 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT"
+    "primaryAttribute": "INT",
+    "runtimeBase": "Hblm",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1,
+    "agilityPerLevel": 2,
+    "attackType": "hero"
   },
   {
     "hero": 11,
@@ -141,6 +207,12 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT"
+    "primaryAttribute": "INT",
+    "runtimeBase": "Hblm",
+    "strength": 20,
+    "agility": 20,
+    "strengthPerLevel": 1.5,
+    "agilityPerLevel": 0.75,
+    "attackType": "hero"
   }
 ]
