@@ -1,0 +1,108 @@
+{
+  "filename": "FourFrontsFrenzy-0.15.0-alpha.w3x",
+  "sha256": "27d2bd55919519c8a2fc5db8fff8266d7feed9bbcc724dd8fa53f75c7b5a2b02",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteGold": [
+    100,
+    1570
+  ],
+  "nativeTransmuteFactor": 0,
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 60,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false,
+  "heroBalancePatch": "0.14.1",
+  "armyPassives": 2,
+  "resurrectionCount": [
+    6,
+    55
+  ],
+  "mirrorDamage": [
+    0.25,
+    0.8
+  ],
+  "mirrorDamageTaken": [
+    1.8,
+    1
+  ],
+  "metamorphHPFactor": 1.2,
+  "pandaPowerFactor": 1.25,
+  "tornadoDamageFactor": 1.5,
+  "factoryPowerFactor": 1.15,
+  "roboMinimumCurveStep": 2,
+  "nativeTransmuteBounty": false,
+  "galleryPatch": "0.14.2",
+  "pickerCardsPerPage": 7,
+  "pickerPages": 6,
+  "reservedNativeRallyCell": [
+    3,
+    1
+  ],
+  "all36CardCellsChecked": true,
+  "alchemistPage": 4,
+  "alchemistRow": 1,
+  "alchemistColumn": 3,
+  "combatObjectsUnchangedExceptArmyCapTooltip": "0.14.1-alpha",
+  "teamArmyCap": 180,
+  "AIRelease": "0.15.0",
+  "heroProfiles": 36,
+  "roles": 4,
+  "styleVariants": 108,
+  "economyStrategies": 5,
+  "supportGearPercent": [
+    15,
+    25
+  ],
+  "carryGearPercent": [
+    55,
+    60
+  ],
+  "minimumTroopResearchPercent": 15,
+  "teamCommands": [
+    "-follow",
+    "-defend",
+    "-push",
+    "-regroup",
+    "-free",
+    "-ai"
+  ],
+  "commandSeconds": 90,
+  "sharedPushSeconds": 22,
+  "combatScanRadius": 1100,
+  "soldierScrollRadius": 700,
+  "realNativeSupplies": true,
+  "combatObjectsByteIdenticalTo": "0.14.3-alpha",
+  "fullNpmTest": true,
+  "strictLegacyPjass": true,
+  "allRoleVariantsMockTested": 108,
+  "finiteIncomeRoleVariantsTested": 12,
+  "commandsAndEmergenciesMockTested": true,
+  "suppliesRealPriceAndProtectedFundsMockTested": true
+}

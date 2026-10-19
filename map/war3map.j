@@ -98,6 +98,23 @@ globals
     integer array GearProgress
     integer array GearSavings
     integer array BotTactic
+    integer array BotStyle
+    boolean array BotStyleReady
+    real array BotAlliedPower
+    real array BotEnemyPower
+    integer array BotNearbyTroops
+    integer array BotHurtTroops
+    boolean array BotTowerDanger
+    unit array TeamFocus
+    integer array TeamFocusUntil
+    integer array TeamPushUntil
+    integer array TeamPushReady
+    integer array TeamPlanAt
+    integer array TeamOrder
+    integer array TeamOrderUntil
+    integer array TeamLeader
+    unit array BotAttackTarget
+    integer array BotSupplyAt
     integer array GearFraction
     integer array TierFraction
 endglobals
@@ -145,9 +162,18 @@ function AddGold takes integer p, integer amount returns nothing
     endif
 endfunction
 
+function ApplyBotHeroProfile takes integer p returns nothing
+    if Bot[p] and BotStyleReady[p] then
+        set BotTactic[p] = BotRoleTactic[HeroBotRole[HeroKind[p]]*3+BotStyle[p]]
+        call SetPlayerName(Player(p),"Bot "+I2S(p+1)+" ["+BotRoleName[HeroBotRole[HeroKind[p]]]+" / "+BotTacticName[BotTactic[p]]+"]")
+    endif
+endfunction
+
 function AssignBotTactic takes integer p returns nothing
     // Synchronized once per bot; never reroll on death, purchase or revival.
     set BotTactic[p] = GetRandomInt(0,2)
+    set BotStyle[p] = BotTactic[p]
+    set BotStyleReady[p] = true
 endfunction
 
 function EnemyNear takes integer p, real x, real y, real radius returns unit
@@ -410,13 +436,18 @@ function LearnHero takes integer p returns nothing
     local integer level = GetHeroLevel(Hero[p])
     local integer slot = 0
     local integer index = HeroKind[p]*4
+    local integer learnSlot
     call GrantHeroPoints(p)
     if level >= 6 then
         call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+3]))
     endif
     loop
         exitwhen slot == 3
-        call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+slot]))
+        set learnSlot = slot
+        if Bot[p] then
+            set learnSlot = HeroLearnOrder[HeroKind[p]*3+slot]
+        endif
+        call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+learnSlot]))
         set slot = slot+1
     endloop
     if GetUnitAbilityLevel(Hero[p], 'Fatr') < R2I(I2R(level)/12.0) or (GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+1])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+2])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+3])) >= ULTIMATE_SKILL_MAX) then
@@ -431,6 +462,7 @@ function CreateHero takes integer p, integer kind returns nothing
     set HeroQueued[p] = false
     set HeroLearnQueued[p] = false
     set HeroKind[p] = kind
+    call ApplyBotHeroProfile(p)
     set SkillLevel[p] = 1
     set Hero[p] = CreateUnit(Player(p), HeroType[kind], HomeX[p], HomeY[p]-240, 270)
     if Hero[p] == null then
@@ -449,6 +481,7 @@ endfunction
 function QueueHero takes integer p, integer kind returns nothing
     set ScheduledHero[p] = kind
     set HeroKind[p] = kind
+    call ApplyBotHeroProfile(p)
     set HeroQueued[p] = true
     set HeroLearnQueued[p] = false
 endfunction
@@ -1142,61 +1175,101 @@ function TryBotSpell takes integer p, unit enemy returns boolean
     return false
 endfunction
 
+// BOT_AI_MODULE
+
 function BotHero takes integer p returns nothing
     local unit h = Hero[p]
-    local unit enemy
+    local unit enemy = null
+    local unit anchor = null
     local real health
     local integer team = TeamOf(p)
+    local integer role = HeroBotRole[HeroKind[p]]
+    local real threshold = BotRetreatHP[role]
+    local boolean danger
     if not Alive(h) then
         set h = null
         return
     endif
-    if CastUntil[p] <= Seconds then
-        call LearnHero(p)
+    set health = GetWidgetLife(h)/GetUnitState(h,UNIT_STATE_MAX_LIFE)
+    // Protect channelled spells; only a critical health emergency interrupts them.
+    if CastUntil[p] > Seconds and health >= .20 then
+        set h = null
+        return
     endif
-    set health = GetWidgetLife(h) / GetUnitState(h, UNIT_STATE_MAX_LIFE)
-    set enemy = EnemyNear(p, GetUnitX(h), GetUnitY(h), 750)
-    if Alive(Base[p]) and (health < 0.28 or (RetreatUntil[p] > Seconds and health < 0.85)) then
-        set RetreatUntil[p] = Seconds+8
+    call LearnHero(p)
+    set enemy = BotCombatScan(p)
+    call PlanBotTeam(team)
+    if BotStyle[p] == 1 then
+        set threshold = threshold+.04
+    elseif BotStyle[p] == 2 then
+        set threshold = threshold-.03
+    endif
+    set danger = BotEnemyPower[p] > BotAlliedPower[p]*BotDangerRatio[role] and BotEnemyPower[p] > 7.
+    if BotUseSupplies(p) then
+        set h = null
+        set enemy = null
+        return
+    endif
+    if health < threshold or (RetreatUntil[p] > Seconds and health < .85) or danger then
+        set BotAttackTarget[p] = null
+        set RetreatUntil[p] = Seconds+6
+        set anchor = BotAllyAnchor(p)
         if HeroKind[p] == 0 then
-            call IssueImmediateOrder(h, "divineshield")
+            call IssueImmediateOrder(h,"divineshield")
         elseif HeroKind[p] == 4 then
-            call IssueImmediateOrder(h, "windwalk")
+            call IssueImmediateOrder(h,"windwalk")
         endif
-        call IssuePointOrder(h, "move", HomeX[p], HomeY[p]-260)
-        if DistanceSq(GetUnitX(h), GetUnitY(h), HomeX[p], HomeY[p]) < 500000 and health < 0.5 then
-            call Buy(p, 5)
-        endif
-        set h = null
-        set enemy = null
-        return
-    endif
-    if CastUntil[p] > Seconds then
-        set h = null
-        set enemy = null
-        return
-    endif
-    // Enemies at center must not prevent every scheduled shopping trip.
-    if health >= 0.5 and TryBotShopping(p) then
-        set h = null
-        set enemy = null
-        return
-    endif
-    if TryBotSpell(p, enemy) then
-        set h = null
-        set enemy = null
-        return
-    endif
-    if enemy == null then
-        if Defending[team] and DistanceSq(GetUnitX(h), GetUnitY(h), HomeX[p], HomeY[p]) < 4000000 then
-            call IssuePointOrder(h, "attack", RallyX[team], RallyY[team])
-        elseif Seconds > WARMUP_SECONDS+180 and ModuloInteger(Seconds+p*7, 120) < 20 then
-            call IssuePointOrder(h, "attack", RallyX[team], RallyY[team])
+        if health >= threshold+.15 and anchor != null and not BotTowerDanger[p] and (enemy == null or DistanceSq(GetUnitX(anchor),GetUnitY(anchor),GetUnitX(enemy),GetUnitY(enemy)) > DistanceSq(GetUnitX(h),GetUnitY(h),GetUnitX(enemy),GetUnitY(enemy))) then
+            call IssuePointOrder(h,"move",GetUnitX(anchor),GetUnitY(anchor))
+        elseif health >= threshold+.15 and BotTowerDanger[p] and DistanceSq(GetUnitX(h),GetUnitY(h),0,0) > 4840000 then
+            call IssuePointOrder(h,"move",0,0)
         else
-            call IssuePointOrder(h, "attack", 0, 0)
+            call IssuePointOrder(h,"move",FortressX[team],FortressY[team])
         endif
-    elseif GetUnitCurrentOrder(h) == 0 then
-        call IssueTargetOrder(h, "attack", enemy)
+        if Alive(Base[p]) and DistanceSq(GetUnitX(h),GetUnitY(h),HomeX[p],HomeY[p]) < 500000 and health < .5 then
+            call Buy(p,5)
+        endif
+        set h = null
+        set enemy = null
+        set anchor = null
+        return
+    endif
+    // A timed human instruction temporarily postpones shopping, not emergencies.
+    if health >= .5 and TeamOrderUntil[team] <= Seconds and not Defending[team] and (BotBuySupplies(p) or TryBotShopping(p)) then
+        set BotAttackTarget[p] = null
+        set h = null
+        set enemy = null
+        return
+    endif
+    if TryBotSpell(p,enemy) then
+        set h = null
+        set enemy = null
+        return
+    endif
+    if enemy != null then
+        if BotAttackTarget[p] != enemy or GetUnitCurrentOrder(h) == 0 then
+            call IssueTargetOrder(h,"attack",enemy)
+            set BotAttackTarget[p] = enemy
+        endif
+    else
+        set BotAttackTarget[p] = null
+        if Defending[team] then
+            call IssuePointOrder(h,"attack",RallyX[team],RallyY[team])
+        elseif TeamOrderUntil[team] > Seconds then
+            if TeamOrder[team] == 1 and Alive(Hero[TeamLeader[team]]) then
+                call IssuePointOrder(h,"attack",GetUnitX(Hero[TeamLeader[team]]),GetUnitY(Hero[TeamLeader[team]]))
+            elseif TeamOrder[team] == 2 then
+                call IssuePointOrder(h,"attack",FortressX[team],FortressY[team])
+            elseif TeamOrder[team] == 3 then
+                call IssuePointOrder(h,"attack",RallyX[team],RallyY[team])
+            else
+                call IssuePointOrder(h,"attack",0,0)
+            endif
+        elseif TeamPushUntil[team] > Seconds then
+            call IssuePointOrder(h,"attack",RallyX[team],RallyY[team])
+        else
+            call IssuePointOrder(h,"attack",0,0)
+        endif
     endif
     set h = null
     set enemy = null
@@ -1396,6 +1469,7 @@ function OnLeave takes nothing returns nothing
             call AssignBotTactic(p)
         endif
         set Bot[p] = true
+    call ApplyBotHeroProfile(p)
         set AutoArmy[p] = true
         call SetPlayerController(Player(p), MAP_CONTROL_COMPUTER)
         call Say(GetPlayerName(Player(p)) + ": bot has taken over.")
@@ -1459,6 +1533,19 @@ function OnChat takes nothing returns nothing
         else
             call Tell(p, "Army auto-orders OFF. New waves still rally to battle.")
         endif
+    elseif command == "-follow" then
+        call BotTeamCommand(p,1)
+    elseif command == "-defend" then
+        call BotTeamCommand(p,2)
+    elseif command == "-push" then
+        call BotTeamCommand(p,3)
+    elseif command == "-regroup" then
+        call BotTeamCommand(p,4)
+    elseif command == "-free" then
+        call BotTeamCommand(p,0)
+        set TeamOrderUntil[TeamOf(p)] = 0
+    elseif command == "-ai" then
+        call Tell(p,"Союзные боты: -follow за мной | -defend защита | -push атака базы | -regroup сбор в центре | -free самостоятельная игра. Приказы на 90 секунд; экстренное отступление важнее.")
     elseif command == "-go" then
         call CommandArmy(p, true)
     elseif command == "-status" then

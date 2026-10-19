@@ -149,7 +149,7 @@ assert.equal(research.length, 8);
 assert.equal(balance.health_percent,0.2/3);
 assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),403);
 assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),269);
-assert.equal(balance.bot_tactics.length,3);
+assert.equal(balance.bot_tactics.length,5);
 assert.ok(balance.bot_tactics[1].gear_percent>balance.bot_tactics[0].gear_percent);
 assert.ok(balance.bot_tactics[2].gear_percent<balance.bot_tactics[0].gear_percent);
 for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rhpo'],[3,'Rfti','rhpx']]) {

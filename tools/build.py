@@ -122,7 +122,7 @@ def bastion_positions() -> list[tuple[int,int]]:
 
 
 def validate_balance(b: dict) -> None:
-    assert len(b['bot_tactics']) == 3
+    assert len(b['bot_tactics']) == 5
     for tactic in b['bot_tactics']:
         assert 10 <= tactic['tier_percent'] <= 60
         assert 10 <= tactic['gear_percent'] <= 60
@@ -412,11 +412,16 @@ def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
     fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max','transmute_gold_base','transmute_gold_step']
     generated = ['globals']
+    for key,value in b['bot_combat'].items():
+        generated.append(f'    constant integer BOT_{key.upper()} = {value}')
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
     generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}', f'    constant real KILL_GOLD_MULTIPLIER = {b["kill_gold_multiplier"]:.6f}']
     generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_CARDS_PER_PAGE = {CARDS_PER_PAGE}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/CARDS_PER_PAGE)}',
         '    integer array BotTierBudget', '    integer array BotGearBudget', '    string array BotTacticName',
+        '    integer array HeroBotRole', '    integer array BotRoleTactic', '    integer array HeroLearnOrder',
+        '    real array BotRetreatHP', '    real array BotDangerRatio', '    string array BotRoleName',
+        '    integer array BotSupplyId', '    integer array BotSupplyCost',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',
         '    string array RaceName', '    string array RaceAlias',
@@ -427,9 +432,23 @@ def script(b: dict) -> str:
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', '    integer array AdvancedArmyResearch', 'endglobals']
     source = (ROOT/'map/war3map.j').read_text()
+    source = source.replace('// BOT_AI_MODULE', (ROOT/'map/bot-ai.j').read_text())
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    profiles=json.loads((ROOT/'map/bot-profiles.json').read_text())
+    consumables={row['id']:row for row in catalog('potions')+catalog('utility')}
+    for idx,raw in enumerate(['fpH0','fpM0','fshl','fsar','fsdm']):
+        init += [f"    set BotSupplyId[{idx}] = '{raw}'",f'    set BotSupplyCost[{idx}] = {consumables[raw]["cost"]}']
+    for role in profiles['roles'].values():
+        rid=role['id']
+        init += [f'    set BotRetreatHP[{rid}] = {role["retreat_hp"]}',f'    set BotDangerRatio[{rid}] = {role["danger_ratio"]}',f'    set BotRoleName[{rid}] = "{role["name"]}"']
+        for style,tactic in enumerate(role['tactics']): init.append(f'    set BotRoleTactic[{rid*3+style}] = {tactic}')
+    for idx,hero in enumerate(heroes):
+        profile=profiles['heroes'][hero['id']]
+        init.append(f'    set HeroBotRole[{idx}] = {profiles["roles"][profile["role"]]["id"]}')
+        assert sorted(profile['skill_priority'])==[0,1,2]
+        for slot,priority in enumerate(profile['skill_priority']): init.append(f'    set HeroLearnOrder[{idx*3+slot}] = {priority}')
     for idx,tactic in enumerate(b['bot_tactics']):
         init += [f'    set BotTierBudget[{idx}] = {tactic["tier_percent"]}',
                  f'    set BotGearBudget[{idx}] = {tactic["gear_percent"]}',

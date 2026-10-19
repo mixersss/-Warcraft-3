@@ -57,6 +57,14 @@ function UnitInventorySize(u) return 6 end
 function GetItemTypeId(it) return it and it.id or 0 end
 function IMinBJ(a,b) return math.min(a,b) end
 function IMaxBJ(a,b) return math.max(a,b) end
+function RMinBJ(a,b) return math.min(a,b) end
+function SquareRoot(v) return math.sqrt(v) end
+function IsUnitVisible(u,p) return u and not u.hidden end
+function IsUnitInvisible(u,p) return u and u.invisible or false end
+function UnitUseItem(h,it)
+ for slot=0,5 do if h.inventory[slot]==it then h.inventory[slot]=nil;h.used=it.id;return true end end
+ return false
+end
 function IssueNeutralTargetOrder(p,shop,order,h)
     assert(order=='neutralinteract')
     if h.owner~=p or (h.x-shop.x)^2+(h.y-shop.y)^2>600^2 then return false end
@@ -236,6 +244,8 @@ function reset()
     HeroQueueCursor=0
     for team=0,3 do
       TeamBookShop[team]=nil
+      TeamFocus[team]=nil;TeamFocusUntil[team]=0;TeamPushUntil[team]=0;TeamPushReady[team]=0;TeamPlanAt[team]=0
+      TeamOrder[team]=0;TeamOrderUntil[team]=0;TeamLeader[team]=0
       SupremeShop[team]=CreateUnit(15,FourCC('fsup'),SuperX[team],SuperY[team],0);SupremeShop[team].structure=true
     end
     for idx=0,CORPSE_SECONDS do CorpseRing[idx]={} end
@@ -252,6 +262,8 @@ function reset()
         Players[p]={gold=STARTING_GOLD,tech={}}
         GearProgress[p],GearSavings[p]=0,0
         BotTactic[p],GearFraction[p],TierFraction[p]=0,0,0
+        BotStyleReady[p]=false;BotStyle[p]=0;BotAttackTarget[p]=nil;BotSupplyAt[p]=0
+        BotAlliedPower[p]=0;BotEnemyPower[p]=0;BotNearbyTroops[p]=0;BotHurtTroops[p]=0;BotTowerDanger[p]=false
         for k=0,2 do AdvancedUnlocked[p*3+k]=false end
         BookShop[p]=nil
         HeroPicker[p],PickerPage[p],BastionUntil[p]=nil,0,0
@@ -887,13 +899,13 @@ for tactic=0,2 do
  local p=tactic+1
  Players[p].slot=PLAYER_SLOT_STATE_PLAYING;Players[p].controller=MAP_CONTROL_COMPUTER
  RngQueue={tactic,0,0};InitSlot(p)
- assert(Bot[p] and BotTactic[p]==tactic and #RngQueue==0,'Each occupied computer independently draws tactic, race and hero')
+ assert(Bot[p] and BotStyle[p]==tactic and BotTactic[p]==BotRoleTactic[HeroBotRole[HeroKind[p]]*3+tactic] and #RngQueue==0,'Each occupied computer independently draws tactic, race and hero')
 end
 Players[0].slot=PLAYER_SLOT_STATE_PLAYING;Players[0].controller=MAP_CONTROL_USER
 RngQueue={2};InitSlot(0);assert(not Bot[0] and #RngQueue==1)
 Players[4].slot=PLAYER_SLOT_STATE_EMPTY;InitSlot(4);assert(not Bot[4] and #RngQueue==1)
-EventPlayer=0;OnLeave();assert(Bot[0] and BotTactic[0]==2 and #RngQueue==0)
-RngQueue={0};OnLeave();assert(BotTactic[0]==2 and #RngQueue==1,'Repeated departure handling never rerolls an existing bot')
+EventPlayer=0;OnLeave();assert(Bot[0] and BotStyle[0]==2 and BotTactic[0]==BotRoleTactic[HeroBotRole[HeroKind[0]]*3+2] and #RngQueue==0)
+RngQueue={0};OnLeave();assert(BotStyle[0]==2 and BotTactic[0]==BotRoleTactic[HeroBotRole[HeroKind[0]]*3+2] and #RngQueue==1,'Repeated departure handling never rerolls an existing bot')
 
 -- Native instant-use books work with six occupied slots and ordinary paid stock.
 reset();World={}
@@ -960,3 +972,5 @@ for _,level in ipairs({1,100,500}) do
  for tick=1,34 do Tick();assert(not Alive(Hero[0])) end
  Tick();assert(Alive(Hero[0]) and Hero[0].revived)
 end
+
+RunBotHero=realBotHero

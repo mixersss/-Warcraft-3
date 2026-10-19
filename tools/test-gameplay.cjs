@@ -45,7 +45,10 @@ run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.
 const abilityData=parseObjects('war3map.w3a');
 const abilities=[...abilityData.originalTable.objects,...abilityData.customTable.objects.filter(o=>get(o,'aher')===1)];
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.newId==='\0\0\0\0' ? o.oldId : o.newId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
+const profiles=require('../map/bot-profiles.json'),roster=require('../map/heroes.json');
+run('EngineBotProfiles={'+roster.map((h,i)=>{const role=profiles.roles[profiles.heroes[h.id].role];return `[${i}]={role=${role.id},tactics={${role.tactics.join(',')}}}`;}).join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch14-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch141-harness.lua'), 'utf8'));
+run(fs.readFileSync(path.join(__dirname, 'patch15-harness.lua'), 'utf8'));
 console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 21s waves, 4 races, 36 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');

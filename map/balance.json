@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.14.3-alpha",
+  "version": "0.15.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -97,13 +97,23 @@
     },
     {
       "name": "Экипировка",
-      "tier_percent": 30,
-      "gear_percent": 50
+      "tier_percent": 25,
+      "gear_percent": 60
     },
     {
       "name": "Армия",
       "tier_percent": 55,
       "gear_percent": 15
+    },
+    {
+      "name": "Керри: умеренно",
+      "tier_percent": 25,
+      "gear_percent": 55
+    },
+    {
+      "name": "Поддержка армии",
+      "tier_percent": 45,
+      "gear_percent": 25
     }
   ],
   "army_model_scale": 0.7,
@@ -213,5 +223,13 @@
     "factory_power_multiplier": 1.15,
     "robo_power_multiplier": 1.2,
     "robo_strength_step": 2
+  },
+  "bot_combat": {
+    "scan_radius": 1100,
+    "tower_radius": 1500,
+    "push_seconds": 22,
+    "push_cooldown": 110,
+    "command_seconds": 90,
+    "plan_seconds": 3
   }
 }
