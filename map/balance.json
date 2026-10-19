@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.15.0-alpha",
+  "version": "0.15.1-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -106,9 +106,9 @@
       "gear_percent": 15
     },
     {
-      "name": "Керри: умеренно",
-      "tier_percent": 25,
-      "gear_percent": 55
+      "name": "Керри",
+      "tier_percent": 15,
+      "gear_percent": 75
     },
     {
       "name": "Поддержка армии",

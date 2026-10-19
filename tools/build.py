@@ -125,8 +125,8 @@ def validate_balance(b: dict) -> None:
     assert len(b['bot_tactics']) == 5
     for tactic in b['bot_tactics']:
         assert 10 <= tactic['tier_percent'] <= 60
-        assert 10 <= tactic['gear_percent'] <= 60
-        assert tactic['tier_percent'] + tactic['gear_percent'] <= 85
+        assert 10 <= tactic['gear_percent'] <= 75
+        assert tactic['tier_percent'] + tactic['gear_percent'] <= 90
     assert len(b['tiers']) == 5
     assert 1 <= b['spawn_min_seconds'] <= b['spawn_seconds']
     assert 1 <= b['spawn_units'] <= b['army_cap'] <= 100

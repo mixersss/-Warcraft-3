@@ -14,15 +14,15 @@ for(const hero of heroes){
  assert.equal(role.tactics.length,3);
  for(const index of role.tactics){
   assert(index>=0&&index<balance.bot_tactics.length);
-  const t=balance.bot_tactics[index];assert(t.tier_percent>0&&t.gear_percent>0&&t.tier_percent+t.gear_percent<=85);
+  const t=balance.bot_tactics[index];assert(t.tier_percent>0&&t.gear_percent>0&&t.tier_percent+t.gear_percent<=90);
   if(p.role==='support')assert(t.gear_percent<=25);
-  if(p.role==='carry')assert(t.gear_percent>=55);
+  if(p.role==='carry'){assert.equal(t.gear_percent,75);assert.equal(t.tier_percent,15)};
  }
 }
 const ai=fs.readFileSync(path.join(root,'map/bot-ai.j'),'utf8');
 assert(!/\b(?:CreateGroup|CreateTimer|CreateTrigger|GetLocalPlayer)\s*\(/.test(ai),'No per-think handle allocation or local gameplay branch');
 assert.match(ai,/IsUnitVisible/);assert.match(ai,/IsUnitInvisible/);assert.match(ai,/UnitUseItem/);
 const report=read('build/verification-0142.json');
-Object.assign(report,{AIRelease:'0.15.0',heroProfiles:36,roles:4,styleVariants:108,economyStrategies:5,supportGearPercent:[15,25],carryGearPercent:[55,60],minimumTroopResearchPercent:15,teamCommands:['-follow','-defend','-push','-regroup','-free','-ai'],commandSeconds:90,sharedPushSeconds:22,combatScanRadius:1100,soldierScrollRadius:700,realNativeSupplies:true,combatObjectsByteIdenticalTo:'0.14.3-alpha',enginePlaytest:false});
+Object.assign(report,{AIRelease:balance.version,heroProfiles:36,roles:4,styleVariants:108,economyStrategies:5,supportGearPercent:[15,25],carryGearPercent:[75,75],carryTierPercent:15,minimumTroopResearchPercent:10,teamCommands:['-follow','-defend','-push','-regroup','-free','-ai'],commandSeconds:90,sharedPushSeconds:22,combatScanRadius:1100,soldierScrollRadius:700,realNativeSupplies:true,combatObjectsByteIdenticalTo:'0.14.3-alpha',enginePlaytest:false});
 fs.writeFileSync(path.join(root,'build/verification-015.json'),JSON.stringify(report,null,2)+'\n');
 console.log('PASS: 36 hero-role profiles, five funded strategies, 108 style mappings, bounded AI module and all native combat/terrain/economy objects unchanged from 0.14.3.');

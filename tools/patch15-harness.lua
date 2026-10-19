@@ -6,11 +6,11 @@ for kind=0,HERO_COUNT-1 do
   assert(HeroBotRole[kind]==EngineBotProfiles[kind].role)
   assert(BotTactic[0]==EngineBotProfiles[kind].tactics[style+1])
   if HeroBotRole[kind]==0 then assert(BotGearBudget[BotTactic[0]]<=25)end
-  if HeroBotRole[kind]==1 then assert(BotGearBudget[BotTactic[0]]>=55)end
+  if HeroBotRole[kind]==1 then assert(BotGearBudget[BotTactic[0]]==75 and BotTierBudget[BotTactic[0]]==15)end
   local expected=BotTactic[0];ProcessHeroQueue();ProcessHeroQueue()
   assert(BotTactic[0]==expected and BotStyle[0]==style,'Creation and learning cannot reroll role strategy')
   local gear=BotGearBudget[BotTactic[0]]
-  assert(gear>=15 and gear<=60 and 100-gear-BotTierBudget[BotTactic[0]]>=15,'Every profile retains troop, tier and gear income')
+  assert(gear>=15 and gear<=75 and 100-gear-BotTierBudget[BotTactic[0]]>=10,'Every profile retains troop, tier and gear income')
  end
 end
 -- A carry learns its damage skill first; a support starts with the relevant aura.
