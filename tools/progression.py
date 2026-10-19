@@ -260,7 +260,7 @@ def hero_abilities(root):
                 if field['id']=='acdn' and rawcode in OFFENSIVE_SKILLS and value>0:
                     value=round(value*cooldown_multiplier,4)
                 if field['id'] in balance['spell_damage_fields'].get(rawcode,[]):
-                    value=round(value*balance['spell_damage_multiplier'],5)
+                    value=round(value*balance.get('spell_damage_overrides',{}).get(rawcode,balance['spell_damage_multiplier']),5)
                 if (rawcode,field['id']) in (('AHhb','Hhb1'),('AUdc','Udc1'),('AEmb','Emb1')):
                     # The shared native amount would also weaken healing/mana removal.
                     # A bounded spell-effect handler separates the damage component.

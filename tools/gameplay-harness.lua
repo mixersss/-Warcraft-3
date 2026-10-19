@@ -947,7 +947,7 @@ for kind=0,2 do
  local gold=Players[0].gold;assert(purchase(0,kind));assert(Players[0].gold==gold-tenth)
  assert(AdvancedUnlocked[kind] and Players[0].techLimits[AdvancedArmyResearch[kind]]==190)
  assert(GetPlayerTechCount(0,ArmyResearch[kind])==10)
- local eleventh=({5712,5712,9288})[kind+1]
+ local eleventh=({5712,5712,2322})[kind+1]
  assert(UpgradeCost(0,kind)==eleventh)
  Players[0].gold=eleventh-1;assert(not Buy(0,kind) and not Base[0].pending)
  Players[0].gold=eleventh;assert(Buy(0,kind) and Base[0].pending==AdvancedArmyResearch[kind])

@@ -164,8 +164,8 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   const advanced=col===3 ? null : research.find(o=>o.newId===['Rfa2','Rfr2','Rfh2'][col]);
   if(advanced) {
    assert.equal(value(advanced,'glvl'),190);assert.equal(value(advanced,'gbpx'),col);
-   assert.equal(value(advanced,'gglb'),(value(upgrade,'gglb')+10*value(upgrade,'gglm'))*4);
-   assert.equal(value(advanced,'gglm'),value(upgrade,'gglm')*4);
+   assert.equal(value(advanced,'gglb'),(value(upgrade,'gglb')+10*value(upgrade,'gglm'))*(col===2?1:4));
+   assert.equal(value(advanced,'gglm'),value(upgrade,'gglm')*(col===2?1:4));
    assert.equal(value(advanced,'gef1'),effect);
   }
   for (const rank of col===3 ? [1,2,4] : [1,2,10,11,20,200]) {

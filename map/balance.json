@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.15.2-alpha",
+  "version": "0.15.3-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -364,5 +364,26 @@
     "ANdr": [
       "Ndr1"
     ]
+  },
+  "spell_damage_overrides": {
+    "AUcs": 0.49,
+    "AOsh": 0.49,
+    "ANbf": 0.49,
+    "AOcl": 0.49,
+    "AUfn": 0.49,
+    "AUim": 0.49,
+    "AOws": 0.49,
+    "AHbz": 0.49,
+    "AHfs": 0.49,
+    "AHtb": 0.49,
+    "AHtc": 0.49,
+    "AEfk": 0.49,
+    "ANcs": 0.49,
+    "ANc1": 0.49,
+    "ANc2": 0.49,
+    "ANc3": 0.49,
+    "ANfl": 0.49,
+    "ANrf": 0.49,
+    "ANvc": 0.49
   }
 }

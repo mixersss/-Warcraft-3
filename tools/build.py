@@ -387,7 +387,7 @@ def upgrades(b: dict) -> bytes:
     for column,(base,rawcode,name,effect,amount,cost,step,art,description) in enumerate(rows):
         stages=[(rawcode,4 if column==3 else b['research_soft_cap'],0,1)]
         if column<3:
-            stages.append((['Rfa2','Rfr2','Rfh2'][column],b['upgrade_max']-b['research_soft_cap'],b['research_soft_cap'],b['advanced_research_cost_multiplier']))
+            stages.append((['Rfa2','Rfr2','Rfh2'][column],b['upgrade_max']-b['research_soft_cap'],b['research_soft_cap'],1 if column==2 else b['advanced_research_cost_multiplier']))
         for raw,cap,offset,factor in stages:
             price=(cost+offset*step)*factor
             increment=step*factor
@@ -398,7 +398,7 @@ def upgrades(b: dict) -> bytes:
             for rank in range(1,cap+1):
                 total=rank+offset
                 changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {total}/{4 if column==3 else b["upgrade_max"]}]',rank,0),
-                    ('gub1',3,description+f' Цена: {price+increment*(rank-1)} золота.'+(' Продвинутое исследование: цена ×4 после 10-го уровня.' if offset or column<3 else ''),rank,0),
+                    ('gub1',3,description+f' Цена: {price+increment*(rank-1)} золота.'+(' Продвинутое исследование: цена ×4 после 10-го уровня.' if column<2 else ''),rank,0),
                     ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),
                     ('greq',3,rawcode if offset else '',rank,0),('grqc',3,str(offset) if offset else '',rank,0)]
             entries.append((base,raw,changes))

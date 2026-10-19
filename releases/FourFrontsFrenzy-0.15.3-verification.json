@@ -1,0 +1,143 @@
+{
+  "filename": "FourFrontsFrenzy-0.15.3-alpha.w3x",
+  "sha256": "1c8b853a5e22abad14813cfd185a3c787753785d1a431fee6548ed191c6a2ec2",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteGold": [
+    100,
+    1570
+  ],
+  "nativeTransmuteFactor": 0,
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 60,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false,
+  "waterRanksChecked": 200,
+  "spellDamageMultiplier": 0.7,
+  "damageFieldsChecked": 15100,
+  "hybridRanksPreserveHealingAndManaBurn": 600,
+  "troopPriceFactorApprox": 0.75,
+  "troopResearchRanksChecked": 600,
+  "buildingAndWaveCostsUnchanged": true,
+  "summonHPMultiplier": 0.85,
+  "summonDamageMultiplier": 0.85,
+  "summonUnitsChecked": 3150,
+  "summonBaseTypes": 48,
+  "waterFirstAndFinalRanksOnlyGlobalReduction": true,
+  "unrelatedUnitsAndSpellsPreserved": true,
+  "customCopy": "F090",
+  "summonCountsLifetimeCooldownArmorScaleUnchanged": true,
+  "botAndHumanSameUnits": true,
+  "samples": [
+    {
+      "rank": 1,
+      "hp": 446,
+      "baseDamage": 14,
+      "armor": 0,
+      "count": 1
+    },
+    {
+      "rank": 3,
+      "hp": 853,
+      "baseDamage": 37,
+      "armor": 3,
+      "count": 1
+    },
+    {
+      "rank": 10,
+      "hp": 1205,
+      "baseDamage": 52,
+      "armor": 5,
+      "count": 2
+    },
+    {
+      "rank": 13,
+      "hp": 1376,
+      "baseDamage": 59,
+      "armor": 6,
+      "count": 2
+    },
+    {
+      "rank": 50,
+      "hp": 4437,
+      "baseDamage": 188,
+      "armor": 17,
+      "count": 6
+    },
+    {
+      "rank": 100,
+      "hp": 11401,
+      "baseDamage": 480,
+      "armor": 32,
+      "count": 11
+    },
+    {
+      "rank": 200,
+      "hp": 35075,
+      "baseDamage": 1476,
+      "armor": 62,
+      "count": 21
+    }
+  ],
+  "version": "0.15.3-alpha",
+  "additionalBurstDamageFactor": 0.7,
+  "abilities": [
+    "AUcs",
+    "AOsh",
+    "ANbf",
+    "AOcl",
+    "AUfn",
+    "AUim",
+    "AOws",
+    "AHbz",
+    "AHfs",
+    "AHtb",
+    "AHtc",
+    "AEfk",
+    "ANcs",
+    "ANc1",
+    "ANc2",
+    "ANc3",
+    "ANfl",
+    "ANrf",
+    "ANvc"
+  ],
+  "mortarRanks": 200,
+  "damageFields": 11500,
+  "healthPriceAfterRank10": "302 + 202 * currentRank, without x4",
+  "attackArmorBuildingWavePricesUnchanged": true,
+  "summonsUnitsItemsTerrainUnchanged": true,
+  "runtimeComparisonBaseline": "0.15.1-alpha",
+  "authorizedRuntimeChanges": [
+    "hybrid damage handler from 0.15.2",
+    "updated price constants from 0.15.2",
+    "linear HP research price from 0.15.3"
+  ],
+  "strictLegacyPjass": true
+}

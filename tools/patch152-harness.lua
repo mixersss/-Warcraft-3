@@ -31,7 +31,7 @@ for _,bot in ipairs({false,true})do
    local base=ArmyResearch[kind];local advanced=AdvancedArmyResearch[kind]
    Players[0].tech[base]=math.min(10,rank);Players[0].tech[advanced]=math.max(0,rank-10);SyncArmyResearch(0)
    local costs={168,168,302};local steps={126,126,202}
-   local expected=(costs[kind+1]+rank*steps[kind+1])*(rank>=10 and 4 or 1)
+   local expected=(costs[kind+1]+rank*steps[kind+1])*(rank>=10 and kind~=2 and 4 or 1)
    local gold=Players[0].gold;assert(UpgradeCost(0,kind)==expected and Buy(0,kind))
    assert(Players[0].gold==gold-expected,'Native research debits the reduced price exactly once')
    FinishResearch(0);assert(Players[0].gold==gold-expected)
