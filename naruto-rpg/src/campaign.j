@@ -359,12 +359,13 @@ function CampaignStand takes integer p returns nothing
     if Hero[p]!=null then
         call RamenClearUnit(Hero[p])
         call CommonLogClear(p)
-        call RosterReset(p)
+        call RosterResetEffects(p)
         if not FoundationAlive(Hero[p]) and not CampaignPermanentDead[p] then
             call ReviveHero(Hero[p],CampaignX[CampaignStage],CampaignY[CampaignStage],false)
         endif
         call UnitAddAbility(Hero[p],'Avul')
         call PauseUnit(Hero[p],true)
+        call RosterSyncPets(p)
         call IssueImmediateOrder(Hero[p],"stop")
         if CampaignStage==11 then
             set seat=p+12
@@ -375,8 +376,30 @@ function CampaignStand takes integer p returns nothing
     endif
 endfunction
 // The arena is public to every participant/spectator only during tournaments.
+function CampaignFountainAuras takes integer stage returns nothing
+    local integer j=0
+    loop
+        exitwhen j>=4
+        if VillageFountain[j]!=null then
+            if stage==9 or stage==11 then
+                call UnitRemoveAbility(VillageFountain[j],'ACnr')
+                call UnitRemoveAbility(VillageFountain[j],'Crg2')
+                call UnitRemoveAbility(VillageFountain[j],'ANre')
+            else
+                if j==0 or j==2 then
+                    call UnitAddAbility(VillageFountain[j],'Crg2')
+                else
+                    call UnitAddAbility(VillageFountain[j],'ACnr')
+                endif
+                call UnitAddAbility(VillageFountain[j],'ANre')
+            endif
+        endif
+        set j=j+1
+    endloop
+endfunction
 function CampaignArenaVisibility takes integer stage returns nothing
     local integer p=0
+    call CampaignFountainAuras(stage)
     if stage==9 or stage==11 then
         if not CampaignArenaView then
             set CampaignSavedFog=IsFogEnabled()
@@ -432,6 +455,15 @@ function CampaignResetFighter takes integer p returns nothing
         set BotReadyAt[p*5+k]=TimeNow
         set k=k+1
     endloop
+    set k=0
+    loop
+        exitwhen k>=3
+        set PetCastAt[p*3+k]=TimeNow
+        if FoundationAlive(Companion[p*3+k]) then
+            call UnitResetCooldown(Companion[p*3+k])
+        endif
+        set k=k+1
+    endloop
     set BotNextCast[p]=TimeNow
     set BotUseItemAt[p]=TimeNow
     set StoryBotOrderAt[p]=TimeNow
@@ -456,6 +488,9 @@ function CampaignDuelNext takes nothing returns nothing
     set CampaignDuelA=CampaignQueue[CampaignQueueCursor]
     set CampaignQueueCursor=CampaignQueueCursor+1
     if CampaignQueueCursor>=CampaignQueueCount then
+        if CampaignStage==9 then
+            set CampaignPrelimWinner[CampaignDuelA]=true
+        endif
         set CampaignWinner[CampaignWinnerCount]=CampaignDuelA
         set CampaignWinnerCount=CampaignWinnerCount+1
         set CampaignDuelA=-1
@@ -557,7 +592,7 @@ function CampaignMoveHeroes takes nothing returns nothing
         exitwhen p>=12
         if Hero[p]!=null and not CampaignPermanentDead[p] and not CampaignClonePending[p] then
             call TreeJumpEnd(p)
-            call RosterReset(p)
+            call RosterResetEffects(p)
             call SkillsClearSharingan(p)
             set ComboLeft[p]=0
             set ComboTarget[p]=null
@@ -583,6 +618,7 @@ function CampaignMoveHeroes takes nothing returns nothing
             call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
             call UnitAddAbility(Hero[p],'Avul')
             call PauseUnit(Hero[p],true)
+            call RosterSyncPets(p)
             call PanCameraToTimedForPlayer(Player(p),CampaignTX[CampaignStage],CampaignTY[CampaignStage],2.)
             set StoryStage[StoryTeam(p)]=CampaignStage
         endif
@@ -619,6 +655,7 @@ function CampaignFountainsOpen takes nothing returns nothing
     if VillageFountain[3]==null then
         set VillageFountain[3]=CreateUnit(Player(14),'rvf3',5632.,-3008.,270.)
     endif
+    call CampaignFountainAuras(CampaignStage)
 endfunction
 function CampaignVillageLandmarksClose takes nothing returns nothing
     local integer n=0
@@ -699,10 +736,31 @@ function CampaignSpawnStage takes nothing returns nothing
         set j=0
         loop
             exitwhen j>=12
-            set CampaignEliminated[j]=false
+            set CampaignEliminated[j]=n==11 and CampaignPrelimDone and not CampaignPrelimWinner[j]
+            if n==9 then
+                set CampaignPrelimWinner[j]=false
+            endif
             set j=j+1
         endloop
-        call CampaignQueueBuild(false)
+        if n==9 then
+            set CampaignPrelimDone=false
+        endif
+        // Only direct -arena2 testing without prelim results seeds the full roster.
+        if n==11 and CampaignPrelimDone then
+            set CampaignWinnerCount=0
+            set j=0
+            loop
+                exitwhen j>=12
+                if CampaignPrelimWinner[j] and Hero[j]!=null and not CampaignPermanentDead[j] then
+                    set CampaignWinner[CampaignWinnerCount]=j
+                    set CampaignWinnerCount=CampaignWinnerCount+1
+                endif
+                set j=j+1
+            endloop
+            call CampaignQueueBuild(true)
+        else
+            call CampaignQueueBuild(false)
+        endif
         call CampaignDuelNext()
     elseif n==10 then
         call ExamBroadcast("Коноха: Ичираку уже открыт. Магазин у арены: 16192, -16256; фонтан рядом: 16128, -15744. -shop / -fountain показывают ближайшую точку.")
@@ -842,6 +900,7 @@ function CampaignQueueStage takes integer next returns nothing
             call IssueImmediateOrder(Hero[p],"stop")
             call UnitAddAbility(Hero[p],'Avul')
             call PauseUnit(Hero[p],true)
+            call RosterSyncPets(p)
         endif
         if CampaignClone[p]!=null then
             call PauseUnit(CampaignClone[p],true)
@@ -917,10 +976,13 @@ function CampaignStartPlay takes nothing returns nothing
         if Hero[p]!=null and not CampaignPermanentDead[p] and CampaignStage!=9 and CampaignStage!=11 and CampaignStage!=30 then
             if p==CampaignSasukePlayer and (CampaignStage==14 or (CampaignStage>=17 and CampaignStage<=28)) then
                 call PauseUnit(Hero[p],true)
+                call RosterSyncPets(p)
             elseif CampaignStage==16 and p!=CampaignSasukePlayer and p!=CampaignNarutoPlayer then
                 call PauseUnit(Hero[p],true)
+                call RosterSyncPets(p)
             else
                 call PauseUnit(Hero[p],false)
+                call RosterSyncPets(p)
                 call UnitRemoveAbility(Hero[p],'Avul')
             endif
             if p==CampaignSasukePlayer and CampaignStage==26 then
@@ -1055,6 +1117,7 @@ function CampaignFinalTick takes nothing returns nothing
                 exitwhen n>=3
                 set p=CampaignFinalPlayer[n]
                 call PauseUnit(Hero[p],false)
+                call RosterSyncPets(p)
                 call UnitRemoveAbility(Hero[p],'Avul')
                 call IssuePointOrder(Hero[p],"attack",CampaignTX[11],CampaignTY[11])
                 set n=n+1
@@ -1113,6 +1176,9 @@ function CampaignDuelTick takes nothing returns nothing
                 set CampaignChampion=winner
                 call ExamBroadcast("Экзаменатор: Победитель — "+HeroName[HeroRole[winner]]+"! Снаряжение чунина выдадут в деревне.")
             endif
+            if CampaignStage==9 then
+                set CampaignPrelimDone=true
+            endif
             call CampaignQueueStage(CampaignStage+1)
         endif
         set reward=null
@@ -1122,7 +1188,9 @@ function CampaignDuelTick takes nothing returns nothing
         if TimeNow>=CampaignDuelAt then
             set CampaignDuelLive=true
             call PauseUnit(Hero[CampaignDuelA],false)
+            call RosterSyncPets(CampaignDuelA)
             call PauseUnit(Hero[CampaignDuelB],false)
+            call RosterSyncPets(CampaignDuelB)
             call UnitRemoveAbility(Hero[CampaignDuelA],'Avul')
             call UnitRemoveAbility(Hero[CampaignDuelB],'Avul')
             call IssueTargetOrder(Hero[CampaignDuelA],"attack",Hero[CampaignDuelB])
@@ -1139,6 +1207,9 @@ function CampaignDuelTick takes nothing returns nothing
         set loser=CampaignDuelB
     endif
     if winner>=0 then
+        if CampaignStage==9 then
+            set CampaignPrelimWinner[winner]=true
+        endif
         set CampaignWinner[CampaignWinnerCount]=winner
         set CampaignWinnerCount=CampaignWinnerCount+1
         if CampaignBracket then
@@ -1696,6 +1767,7 @@ function CampaignTick takes nothing returns nothing
                 if Hero[p]!=null then
                     call AddHeroXP(Hero[p],2200,false)
                     call PauseUnit(Hero[p],true)
+                    call RosterSyncPets(p)
                     call UnitAddAbility(Hero[p],'Avul')
                     call PanCameraToTimedForPlayer(Player(p),GetUnitX(CampaignActor[unused]),GetUnitY(CampaignActor[unused]),2.)
                 endif

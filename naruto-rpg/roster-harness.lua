@@ -91,7 +91,7 @@ local friend=make(3,500,0);World={ahead,behind,far,edge,friend};resetHits()
 technique(4,24,1,nil);assert(#Hits==1 and Hits[1].target==ahead and Hits[1].damage==550)
 -- Real summoned types/ranks, one of each kind, safe replacement and timed-life cleanup.
 TimeNow=250;Hero[10].x=0
-technique(10,50,2,nil);local first=Companion[30];assert(first.type==raw('rc02') and first.expire==300)
+technique(10,50,2,nil);local first=Companion[30];assert(first.type==raw('rc02') and first.expire==nil)
 technique(10,50,3,nil);assert(first.removed and Companion[30].type==raw('rc03'))
 technique(10,52,2,nil);technique(10,53,1,nil)
 assert(Companion[31].type==raw('rk02') and Companion[32].type==raw('rs01'))
@@ -112,6 +112,7 @@ for p=0,11 do
  Hero[p].hp=10000;Hero[p].x=0;Hero[p].y=0;Hero[p].mana=1000;Hero[p].type=0;ComboLeft[p]=0
  for slot=0,4 do
   local index=p*5+slot
+  if RosterMechanic[index]==7 then Companion[p*3+RosterPetSlot[index]]=nil end
   if SkillRanks[index]>0 and not SkillPassive[index] then
    TimeNow=300+p*10+slot;BotNextCast[p]=0
    for s=0,4 do BotReadyAt[p*5+s]=999999 end

@@ -634,6 +634,24 @@
       "column": 1,
       "specific": "AOar,ACnr",
       "repeat": 4
+    },
+    "Nrg5": {
+      "type": "int",
+      "column": 5,
+      "specific": "ANrg,ANg1,ANg2,ANg3",
+      "repeat": 4
+    },
+    "Nrg6": {
+      "type": "int",
+      "column": 6,
+      "specific": "ANrg,ANg1,ANg2,ANg3",
+      "repeat": 4
+    },
+    "Ncs2": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "ANcs,ANc1,ANc2,ANc3",
+      "repeat": 4
     }
   },
   "unitFields": {

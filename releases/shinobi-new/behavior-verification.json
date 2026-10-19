@@ -1,4 +1,20 @@
 {
+  "corrections22NativeMocks": true,
+  "prelimWinnersOnly": true,
+  "scrollRewardLevels": 2,
+  "kawarimiCooldownSeconds": 10,
+  "sourceShieldDamagePerMana": [
+    1,
+    2,
+    3
+  ],
+  "sourceShieldAbsorption": [
+    0.5,
+    0.7,
+    0.9
+  ],
+  "permanentDogAndPuppets": true,
+  "isolatedCompanionSpellState": true,
   "sourceTechniqueSlots": 58,
   "rosterHeroes": 12,
   "activeBotOrders": 52,
@@ -72,7 +88,7 @@
     200,
     350
   ],
-  "finalEliminationDuels": 9,
+  "finalEliminationDuels": 3,
   "threeWayFinal": true,
   "cooldownsResetBeforeEveryFight": true,
   "sourceBarrelModelRestored": true,

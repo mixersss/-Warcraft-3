@@ -13,7 +13,7 @@ for(const [id,label,original]of [['Eshe','Heaven','Icon_ScrollEarth.BLP'],['Esea
  assert.equal(items[id].oldId,'ledg');assert.equal(get(items[id],'icla'),'Permanent');assert.equal(get(items[id],'iico'),`ReplaceableTextures\\CommandButtons\\BTNExam${label}.blp`);
  for(const prefix of ['BTN','DISBTN'])assert(fs.readFileSync(path.join(root,'src/generated-icons',prefix+'Exam'+label+'.blp')).equals(fs.readFileSync(path.join(root,'assets',original))),'Icon aliases preserve original artwork');
 }
-for(const id of ['R201','Ljkn','Ljsh']){assert.equal(abilities[id].oldId,'AHtb');for(let l=1;l<=get(abilities[id],'alev');l++){assert.equal(get(abilities[id],'adur',l),.5);assert.equal(get(abilities[id],'ahdu',l),.25);assert(get(abilities[id],'Htb1',l)>0);}}
+for(const id of ['R201','Ljkn','Ljsh']){assert.equal(abilities[id].oldId,'AHtb');for(let l=1;l<=get(abilities[id],'alev');l++){assert.equal(get(abilities[id],'adur',l),id==='R201'?1.25:.5);assert.equal(get(abilities[id],'ahdu',l),id==='R201'?.75:.25);assert(get(abilities[id],'Htb1',l)>0);}}
 assert.equal(abilities.R302.oldId,'ANfb');for(let l=1;l<=4;l++){assert.equal(get(abilities.R302,'adur',l),.75);assert.equal(get(abilities.R302,'ahdu',l),.25);}
 assert.equal(abilities.R504.oldId,source.sourceSoshoryu.oldId);
 for(const m of source.sourceSoshoryu.modifications.filter(m=>['Ncs1','Ncs3','Ncs4','Ncs6','aare'].includes(m.id)))assert.equal(get(abilities.R504,m.id,m.levelOrVariation),m.value,'Source rocket damage/count/radius/duration');

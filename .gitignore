@@ -2,3 +2,7 @@ build/
 __pycache__/
 .tools/
 node_modules/
+
+# Recovered original imports and reproducible Naruto build outputs.
+naruto-rpg/assets/
+naruto-rpg/dist/

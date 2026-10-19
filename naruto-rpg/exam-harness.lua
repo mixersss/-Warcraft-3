@@ -99,8 +99,9 @@ Hero[0].x=ExamTowerX;Hero[0].y=ExamTowerY;Hero[1].x=ExamTowerX;Hero[1].y=ExamTow
 ExamForestTick();assert(StoryStage[0]==7 and not ExamTowerOpen,'Tower is closed for first 20 minutes')
 TimeNow=ExamOpenAt;Hero[1].x=ExamTowerX+1000;ExamForestTick();assert(ExamTowerOpen and GatesOpened==1 and StoryStage[0]==7,'Both carriers must reach tower')
 ExamBot(1,nil);assert(Hero[1].last.o=='move' and Hero[1].last.x==ExamTowerX)
-Hero[1].x=ExamTowerX;ExamForestTick();assert(StoryStage[0]==8 and dropped.removed and earth.removed,'Consume real pair exactly once')
-local reward=GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD);ExamForestTick();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==reward,'No repeat reward')
+local oldLevels={Hero[0].level,Hero[1].level,Hero[2].level}
+Hero[1].x=ExamTowerX;ExamForestTick();for p=0,2 do assert(Hero[p].level==oldLevels[p+1]+2,"Each teammate receives two levels for the split-inventory pair")end;assert(StoryStage[0]==8 and dropped.removed and earth.removed,'Consume real pair exactly once')
+local reward=GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD);ExamForestTick();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==reward and Hero[0].level==oldLevels[1]+2,'No repeat gold/level reward')
 TimeNow=ExamEndAt;ExamForestTick();assert(StoryStage[1]==8 and StoryStage[3]==8,'Timeout still advances without awarding a pair')
 ExamForestTick();assert(ExamPhase==4 and ExamClock==nil and ExamDialog==nil and ExamRect==nil,'Shared clock/dialog/rect cleanup')
 print('PASS: forest bots patrol with a completed pair, recover stalled genin/scroll goals, preserve close combat and follow commands; five unique timed questions, first answers, human XP/bot answers, occupied-team barrier, preserved heroes, 85 staggered genin, one-time real scroll drops, full inventory pickup, tower timing, both carriers, one-time reward, timeout and cleanup (mock natives).')

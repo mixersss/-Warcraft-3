@@ -12,7 +12,7 @@ function CommonLogEffect takes integer p returns nothing
     call SetUnitFlyHeight(LogActor[p],0.,1000.)
     set LogActorUntil[p]=TimeNow+1.5
     set LogUntil[p]=TimeNow+3.
-    set LogReadyAt[p]=TimeNow+8.
+    set LogReadyAt[p]=TimeNow+10.
     call DestroyEffect(AddSpecialEffect("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",GetUnitX(Hero[p]),GetUnitY(Hero[p])))
 endfunction
 function CommonLogTick takes nothing returns nothing

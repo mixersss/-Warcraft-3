@@ -748,7 +748,7 @@ function StoryTick takes nothing returns nothing
                         set StoryRevive[p]=0.
                         set dx=GetUnitX(Hero[p])-SpawnX[p]
                         set dy=GetUnitY(Hero[p])-SpawnY[p]
-                        if StoryStage[t]<9 and not CampaignTransition and dx*dx+dy*dy<700.*700. then
+                        if CampaignStage!=9 and CampaignStage!=11 and StoryStage[t]<9 and not CampaignTransition and dx*dx+dy*dy<700.*700. then
                             call SetWidgetLife(Hero[p],RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE),GetWidgetLife(Hero[p])+15.))
                             call SetUnitState(Hero[p],UNIT_STATE_MANA,RMinBJ(GetUnitState(Hero[p],UNIT_STATE_MAX_MANA),GetUnitState(Hero[p],UNIT_STATE_MANA)+12.))
                         endif

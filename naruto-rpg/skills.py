@@ -43,9 +43,21 @@ def ability_data():
  micro=[('anam',3,'Микрооглушение Кайтэна'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amat',3,''),('aani',3,''),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('Htb1',2,0.,1,1),('adur',2,.2,1,0),('ahdu',2,.1,1,0),('atar',3,'ground,air,enemy,neutral,organic',1,0)]
  out.append(('AHtb','Rmic',micro))
  out.append(('AHtb','Rkst',[('anam',3,'Оглушение куная'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('acas',2,0.,1,0),('Htb1',2,0.,1,1),('adur',2,1.25,1,0),('ahdu',2,.75,1,0),('abuf',3,'Rksb',1,0),('amat',3,''),('aani',3,''),('atar',3,'ground,air,enemy,neutral,organic',1,0)]))
+ # A00J's native dog transformation, with the adapted companion IDs instead of original globals.
+ out.append(('ANrg','Rdog',[('anam',3,'Дзюдзин Бунсин'),('aart',3,'Icon_Akamaru_JujinBunshin.blp'),('aher',0,0),('alev',0,1),('ahky',3,'D'),('abpx',0,0),('abpy',0,2),('atp1',3,'Дзюдзин Бунсин [D]',1,0),('aub1',3,'Акамару принимает зверочеловеческий облик до отмены. 100 чакры.',1,0),('Eme1',3,'ra03',1,1),('Emeu',3,'rdgf',1,0),('Nrg5',0,0,1,5),('Nrg6',0,0,1,6),('amcs',0,100,1,0),('acdn',2,5.,1,0),('adur',2,0.,1,0),('areq',3,'')]))
+ out.append(('ANc3','Rpsm',[('anam',3,'Доку Кири'),('aart',3,'Icon_Kankuro_KarasuDokukiri2.blp'),('aher',0,0),('alev',0,1),('ahky',3,'F'),('abpx',0,1),('abpy',0,2),('atp1',3,'Доку Кири [F]',1,0),('aub1',3,'Ядовитое облако Карасу. 200 чакры; перезарядка 30 секунд.',1,0),('amcs',0,200,1,0),('acdn',2,30.,1,0),('aran',2,700.,1,0),('aare',2,300.,1,0),('Ncs1',2,25.,1,1),('Ncs2',2,1.,1,2),('Ncs3',0,1,1,3),('Ncs4',2,99999.,1,4),('Ncs6',2,4.01,1,6),('adur',2,4.01,1,0),('ahdu',2,3.01,1,0),('amat',3,'Abilities\\Weapons\\MakuraMissile\\MakuraMissile.mdl'),('atar',3,'enemies,ground,organic',1,0),('abuf',3,'',1,0),('areq',3,'')]))
+ out.append(('AHtb','Rktr',[('anam',3,'Курохиги Кики Иппацу'),('aart',3,'Icon_Kankuro_KurohigiKikiIppatsu.blp'),('aher',0,0),('alev',0,1),('ahky',3,'D'),('abpx',0,0),('abpy',0,2),('atp1',3,'Курохиги Кики Иппацу [D]',1,0),('aub1',3,'Оглушает врага на 3 секунды. Затем наносит 400/600/800 урона по рангу Куроари и уничтожает марионетку. 100 чакры.',1,0),('Htb1',2,0.,1,1),('adur',2,3.,1,0),('ahdu',2,3.,1,0),('aran',2,100.,1,0),('amcs',0,100,1,0),('acdn',2,25.,1,0),('amat',3,''),('abuf',3,'BPSE',1,0),('atar',3,'ground,air,enemy,neutral,organic',1,0),('areq',3,'')]))
  for _,_,mods in out:
   if not any(m[0]=='aefs' for m in mods):mods.extend([('aefs',3,''),('aefl',3,'')])
  return out
+
+def pet_abilities(prefix,rank):
+ # Source h00K/L/M, h00T/U/V, o000/1/2 and h023/24/h00W.
+ if prefix=='ra0':return ('ACct' if rank>=2 else '')+(',Rdog' if rank==3 else '')
+ if prefix=='rc0':return 'AEbl'+(',ACvs' if rank>=2 else '')+(',Rpsm' if rank==3 else '')
+ if prefix=='rk0':return 'Rktr'
+ if prefix=='rs0':return 'Aens'+(',Ansk' if rank>=2 else '')+(',A02E' if rank==3 else '')
+ return ''
 
 def summon_units():
  out=[]
@@ -58,7 +70,9 @@ def summon_units():
   ('rs0','Сансёо','Sanshouo.mdl','Icon_Kankuro_Sanshouo.blp',1.3,1800,40,9),
   ('rz0','Сидзунэ','Shizune.mdl','Icon_Sakura_Shosen.blp',1.,900,15,3)]:
   for n in range(1,2 if prefix=='rz0' else 4):
-   out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,'ACvs' if prefix=='rc0' else ''),('ureq',3,''),('upgr',3,'')]))
+   out.append(('hfoo',prefix+str(n),[('unam',3,name),('umdl',3,model),('uico',3,icon),('usca',1,scale),('uhpm',0,hp+(n-1)*400),('ua1b',0,dmg+(n-1)*18),('ua1d',0,1),('ua1s',0,3),('ua1c',2,1.4),('ua1r',0,140),('umvs',0,325),('ucol',2,28.),('udef',0,armor+(n-1)*2),('ufoo',0,0),('uabi',3,pet_abilities(prefix,n)),('umpm',0,600),('umpi',0,600),('umpr',2,2.),('ureq',3,''),('upgr',3,'')]))
+ base=next(x for x in out if x[1]=='ra03')
+ out.append((base[0],'rdgf',[(k,t,('kiba.mdl' if k=='umdl' else 1. if k=='usca' else v)) for k,t,v in base[2]]))
  out.append(('hfoo','rshk',[('unam',3,'Теневые путы'),('uhom',0,1),('umdl',3,'ShikamaruKageMane.mdl'),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,2.),('ushu',3,''),('ushb',3,''),('usin',0,0),('usid',0,0),('ufoo',0,0)]))
  out.append(('hfoo','rshd',[('unam',3,'Тень'),('ushu',3,''),('ushb',3,''),('umdl',3,'ShinobiShadowStrip.mdl'),('usin',0,0),('usid',0,0),('uhom',0,1),('umvt',3,'fly'),('umvh',2,6.),('umvf',2,6.),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,1.),('ufoo',0,0)]))
  out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('usin',0,0),('usid',0,0),('ucpt',2,0.),('ucbs',2,0.),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))

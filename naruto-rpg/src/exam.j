@@ -97,10 +97,13 @@ function ExamFinishTeam takes integer t, boolean passed returns nothing
                 endif
                 set k=k+1
             endloop
+            if Hero[p]!=null then
+                call SetHeroLevel(Hero[p],IMinBJ(60,GetHeroLevel(Hero[p])+2),true)
+            endif
             set p=p+1
         endloop
         call StoryReward(t,350,0)
-        call StorySay(t,"Анко: Оба свитка доставлены! Отряд проходит испытание и получает 350 золота каждому. Предварительные бои будут следующим этапом.")
+        call StorySay(t,"Анко: Оба свитка доставлены! Отряд проходит испытание и получает каждому 2 уровня и 350 золота. Далее — предварительные бои.")
     else
         call StorySay(t,"Анко: Время истекло. Свитки не доставлены; награды нет. Экзамен завершён, ожидайте предварительных боёв.")
     endif

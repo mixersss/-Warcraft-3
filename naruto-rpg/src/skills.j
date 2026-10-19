@@ -66,6 +66,7 @@ function SkillsEffect takes nothing returns nothing
     local integer index=-1
     local real x=0.
     local real y=0.
+    call RosterPetSpell(caster,target,raw)
     if p>=12 or caster!=Hero[p] or IsUnitIllusion(caster) then
         set caster=null
         set target=null
@@ -182,6 +183,49 @@ function SkillsEndcast takes nothing returns nothing
     set caster=null
 endfunction
 // Source U6/QLE removes Naruto illusions on an attack, independently of their copied HP.
+// Cosmetic arena projectiles use the bounded visual pool, independent of cliff height.
+// No extra damage is applied; the native weapon remains authoritative.
+function SkillsRosterAttack takes nothing returns nothing
+    local unit caster=GetAttacker()
+    local unit target=GetTriggerUnit()
+    local integer p=GetPlayerId(GetOwningPlayer(caster))
+    local integer rank=0
+    local integer raw=0
+    local real dx=0.
+    local real dy=0.
+    if p<12 and caster==Hero[p] and not IsUnitIllusion(caster) and FoundationAlive(caster) and FoundationAlive(target) and IsUnitEnemy(target,Player(p)) and not IsUnitPaused(caster) then
+        // Source AME/A0E: mana burn on attacks only while Byakugan is active.
+        if (HeroRole[p]==4 or HeroRole[p]==8) and TimeNow<VisionUntil[p] and not IsUnitType(target,UNIT_TYPE_STRUCTURE) then
+            if HeroRole[p]==4 then
+                set rank=GetUnitAbilityLevel(caster,'R401')
+            else
+                set rank=GetUnitAbilityLevel(caster,'R801')
+            endif
+            if rank>0 then
+                set rank=IMinBJ(4,rank)
+                call SetUnitState(target,UNIT_STATE_MANA,RMaxBJ(0.,GetUnitState(target,UNIT_STATE_MANA)-GetRandomReal(5.*rank,5.+10.*rank)))
+                call DestroyEffect(AddSpecialEffectTarget("Abilities\\Spells\\Human\\Feedback\\ArcaneTowerAttack.mdl",target,"chest"))
+            endif
+        endif
+        if (CampaignStage==9 or CampaignStage==11) and CampaignDuelLive and GetUnitTypeId(caster)==HeroType[p] and TimeNow>=ArenaAttackAt[p] then
+            if HeroRole[p]==2 or HeroRole[p]==5 or HeroRole[p]==6 then
+                set raw='vshu'
+            elseif HeroRole[p]==9 then
+                set raw='vsnd'
+            elseif HeroRole[p]==11 then
+                set raw='vwnd'
+            endif
+            if raw!=0 then
+                set dx=GetUnitX(target)-GetUnitX(caster)
+                set dy=GetUnitY(target)-GetUnitY(caster)
+                call VisualCreate(p,raw,GetUnitX(caster),GetUnitY(caster),GetUnitX(target),GetUnitY(target),GetUnitFlyHeight(caster)+100.,GetUnitFlyHeight(target)+80.,RMaxBJ(.15,SquareRoot(dx*dx+dy*dy)/1400.),1)
+                set ArenaAttackAt[p]=TimeNow+.15
+            endif
+        endif
+    endif
+    set caster=null
+    set target=null
+endfunction
 function SkillsFragileClone takes nothing returns nothing
     local unit u=GetTriggerUnit()
     if IsUnitIllusion(u) and (GetUnitTypeId(u)=='R000' or GetUnitTypeId(u)=='Rnfm') and FoundationAlive(u) then
@@ -309,12 +353,14 @@ function SkillsBot takes integer p returns boolean
             endif
             if SkillHeal[role*5+k] and target==null then
                 // Healing only spends mana when an ally actually needs it.
-            elseif SkillToggle[role*5+k] and GetUnitAbilityLevel(u,'BNms')>0 then
+            elseif SkillToggle[role*5+k] and (GetUnitAbilityLevel(u,'BNms')>0 or GetUnitAbilityLevel(u,'Rgas')>0) then
                 // Leave an active native mana shield enabled.
             elseif SkillMorph[role*5+k] and GetUnitTypeId(u)!=HeroType[p] then
                 // Do not re-enter a native transformation while already transformed.
             elseif (RosterMechanic[role*5+k]==5 or (RosterMechanic[role*5+k]==2 and SkillTarget[role*5+k]==0)) and dx*dx+dy*dy>RosterRadius[role*5+k]*RosterRadius[role*5+k] then
                 // Self-centered damage is useful only inside its actual hit radius.
+            elseif RosterMechanic[role*5+k]==7 and RosterDuration[role*5+k]<=0. and FoundationAlive(Companion[p*3+RosterPetSlot[role*5+k]]) and (GetUnitTypeId(Companion[p*3+RosterPetSlot[role*5+k]])==RosterPetType[(role*5+k)*4+rank-1] or (raw=='R701' and rank==3 and GetUnitTypeId(Companion[p*3])=='rdgf')) then
+                // Keep a living permanent companion rather than spending a summon cooldown.
             elseif SkillTarget[role*5+k]==0 then
                 set issued=IssueImmediateOrder(u,SkillOrder[role*5+k])
             elseif SkillTarget[role*5+k]==1 then
@@ -451,6 +497,7 @@ function SkillsInit takes nothing returns nothing
         set p=p+1
     endloop
     call TriggerAddAction(fragile,function SkillsFragileClone)
+    call TriggerAddAction(fragile,function SkillsRosterAttack)
     call TriggerAddAction(items,function RamenUse)
     call TriggerAddAction(levels,function SkillsLevel)
     call TriggerAddAction(spells,function NoteCast)

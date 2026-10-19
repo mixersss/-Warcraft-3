@@ -101,6 +101,12 @@
       "model": "Abilities\\Spells\\NightElf\\FanOfKnives\\FanOfKnivesMissile.mdl",
       "scale": 1.5,
       "animation": "stand"
+    },
+    {
+      "id": "vwnd",
+      "model": "WindAttack.mdl",
+      "scale": 1.0,
+      "animation": "stand"
     }
   ],
   "skills": [

@@ -42,7 +42,7 @@ function PlayMusic(path)LastCampaignMusic=path end
 function StopMusic()end
 MusicOn=false
 local function fresh()
- CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0;CampaignFinalActive=false
+ CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0;CampaignFinalActive=false;CampaignPrelimDone=false;CampaignPrelimWinner={}
  CampaignClone={};CampaignClonePending={};CampaignCloneKind={};CampaignCloneCastAt=setmetatable({},{__index=function()return 0 end})
  CampaignActor={};CampaignActorType={};CampaignPermanentDead={};CampaignCastAt={};CampaignMoveAt={};CampaignActorRoute={}
  setmetatable(CampaignCastAt,{__index=function()return 0 end});setmetatable(CampaignMoveAt,{__index=function()return 0 end})
@@ -89,7 +89,7 @@ local function doDuels(expected)
    assert(Hero[a].cooldownResets>0 and Hero[b].cooldownResets>0)
    assert(not vision[a][b]and not vision[b][a],'Fighters must not share invisible unit sight')
    for p=0,11 do for q=0,11 do assert(not vision[p][q],'Spectators must not relay sight to a fighter')end end
-   if CampaignBracket then assert(not CampaignEliminated[a]and not CampaignEliminated[b],'Losers never re-enter elimination rounds')end
+   if CampaignBracket then assert(CampaignPrelimWinner[a] and CampaignPrelimWinner[b],'Only preliminary winners enter the second arena');assert(not CampaignEliminated[a]and not CampaignEliminated[b],'Losers never re-enter elimination rounds')end
    for k=0,4 do assert(BotReadyAt[a*5+k]<=TimeNow and BotReadyAt[b*5+k]<=TimeNow,'Bot cooldown bookkeeping resets too')end
    Hero[b].invisible=true;assert(CampaignNearest(a)==nil,'No scripted target through invisibility')
    local oldDummy=Dummy[math.floor(a/3)];Dummy[math.floor(a/3)]=Hero[b];assert(not SkillsBot(a),'No targeted spells through invisibility');Dummy[math.floor(a/3)]=oldDummy
@@ -127,7 +127,7 @@ for p=0,11 do
 end
 local trainingXP=Hero[0].xp or 0;CampaignActor[CampaignJiraiya].hp=0;CampaignTick();assert(CampaignFound and not CampaignDialog.visible and Hero[0].xp==trainingXP+2200)
 TimeNow=CampaignTrainingAt;CampaignTick();assert(CampaignQueued==11)
-enter();doDuels(9);assert(CampaignQueued==12)
+enter();doDuels(3);assert(CampaignQueued==12)
 enter();assert(CampaignStage==12 and CampaignEndAt-TimeNow==1500)
 local counts={};for j=0,CampaignCount-1 do local k=CampaignActorType[j];counts[k]=(counts[k]or 0)+1 end
 assert(counts[17]==140 and counts[34]==102 and counts[32]==6,'All 248 source village ninja/medic placements must exist')
@@ -239,4 +239,4 @@ do
 end
 
 assert(#fades>0,'Every stage transition must include a real cinematic fade')
-print('PASS: actual -arena chat dispatch, startup/host/transition guards, early-chapter producer cleanup, repeated and non-red host jumps; public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and nine elimination duels and one three-way final, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')
+print('PASS: actual -arena chat dispatch, startup/host/transition guards, early-chapter producer cleanup, repeated and non-red host jumps; public arena fog/mask and spectator camera, transition filter release and exact exploration restoration; full continuation through 22 source-linked phases, six preliminary and three elimination duels and one three-way final, shared barrel search/training, exact chapter deadlines, invasion streams/secondary arrivals, human Sasuke betrayal/chase/Kabuto control/final outcomes, Sakura boulders, eight clone scenes, unique role selection and real transition calls (mock natives).')

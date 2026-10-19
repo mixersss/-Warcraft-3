@@ -137,6 +137,16 @@ globals
     integer CampaignQueueCount=0
     integer CampaignQueueCursor=0
     integer CampaignWinnerCount=0
+    boolean CampaignPrelimDone=false
+    boolean array CampaignPrelimWinner
+    real array PetCastAt
+    real array PetTrapUntil
+    unit array PetTrapVictim
+    real array PetTrapDamage
+    unit array PetTrapCaster
+    unit array PetFog
+    real array PetFogUntil
+    real array ArenaAttackAt
     integer CampaignDuelA=-1
     integer CampaignDuelB=-1
     real CampaignDuelAt=0.

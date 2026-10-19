@@ -232,7 +232,7 @@ function RosterGrantInnate takes integer p returns nothing
         call UnitMakeAbilityPermanent(Hero[p],true,'R604')
     endif
 endfunction
-function RosterReset takes integer p returns nothing
+function RosterResetEffects takes integer p returns nothing
     local integer k=0
     call KunaiClear(p)
     call CommonLogClear(p)
@@ -244,6 +244,28 @@ function RosterReset takes integer p returns nothing
     call RosterClearZone(p)
     loop
         exitwhen k>=3
+        if PetFog[p*3+k]!=null then
+            call RemoveUnit(PetFog[p*3+k])
+            set PetFog[p*3+k]=null
+        endif
+        // A trap from the previous bout must never hit the next opponent.
+        set PetTrapVictim[p*3+k]=null
+        set PetTrapCaster[p*3+k]=null
+        set k=k+1
+    endloop
+endfunction
+function RosterReset takes integer p returns nothing
+    local integer k=0
+    call RosterResetEffects(p)
+    loop
+        exitwhen k>=3
+        if PetFog[p*3+k]!=null then
+            call RemoveUnit(PetFog[p*3+k])
+            set PetFog[p*3+k]=null
+        endif
+        set PetTrapVictim[p*3+k]=null
+        set PetTrapCaster[p*3+k]=null
+        set PetCastAt[p*3+k]=0.
         if Companion[p*3+k]!=null then
             call RemoveUnit(Companion[p*3+k])
             set Companion[p*3+k]=null
@@ -378,11 +400,16 @@ endfunction
 function RosterSummon takes integer p, integer index, integer rank returns nothing
     local integer slot=p*3+RosterPetSlot[index]
     local integer raw=RosterPetType[index*4+rank-1]
+    if RosterDuration[index]<=0. and FoundationAlive(Companion[slot]) and (GetUnitTypeId(Companion[slot])==raw or (raw=='ra03' and GetUnitTypeId(Companion[slot])=='rdgf')) then
+        return
+    endif
     if Companion[slot]!=null then
         call RemoveUnit(Companion[slot])
     endif
     set Companion[slot]=CreateUnit(Player(p),raw,GetUnitX(Hero[p])+100.,GetUnitY(Hero[p]),GetUnitFacing(Hero[p]))
-    call UnitApplyTimedLife(Companion[slot],'BTLF',RosterDuration[index])
+    if RosterDuration[index]>0. then
+        call UnitApplyTimedLife(Companion[slot],'BTLF',RosterDuration[index])
+    endif
     if FoundationAlive(Dummy[(p-ModuloInteger(p,3))/3]) then
         call IssueTargetOrder(Companion[slot],"attack",Dummy[(p-ModuloInteger(p,3))/3])
     endif
@@ -569,6 +596,120 @@ function RosterFindAlly takes integer p returns nothing
         set q=q+1
     endloop
 endfunction
+function SkillsCanSeePet takes unit target, player viewer returns boolean
+    return IsUnitVisible(target,viewer) and (not IsUnitInvisible(target,viewer) or IsUnitDetected(target,viewer))
+endfunction
+// Pet availability follows the owner's actual arena/transition state, not team alliances.
+function RosterSyncPets takes integer p returns nothing
+    local integer k=0
+    local unit pet=null
+    local boolean waiting=not FoundationAlive(Hero[p]) or IsUnitPaused(Hero[p]) or IsUnitHidden(Hero[p])
+    local real dx=0.
+    local real dy=0.
+    loop
+        exitwhen k>=3
+        set pet=Companion[p*3+k]
+        if FoundationAlive(pet) then
+            if IsUnitPaused(pet)!=waiting then
+                call PauseUnit(pet,waiting)
+                if waiting then
+                    call UnitAddAbility(pet,'Avul')
+                    call IssueImmediateOrder(pet,"stop")
+                else
+                    call UnitRemoveAbility(pet,'Avul')
+                endif
+            endif
+            set dx=GetUnitX(pet)-GetUnitX(Hero[p])
+            set dy=GetUnitY(pet)-GetUnitY(Hero[p])
+            if waiting or dx*dx+dy*dy>1800.*1800. then
+                call SetUnitPosition(pet,GetUnitX(Hero[p])+64.*(k+1),GetUnitY(Hero[p]))
+            endif
+        endif
+        set k=k+1
+    endloop
+    set pet=null
+endfunction
+// Adapted A00I: native three-second stun, then source 400/600/800 damage and sacrifice.
+// Uses the existing 36 companion slots and heartbeat, never a timer per trap.
+function RosterPetSpell takes unit caster, unit target, integer raw returns nothing
+    local integer p=GetPlayerId(GetOwningPlayer(caster))
+    local integer slot=p*3+1
+    local integer rank=0
+    local integer k=0
+    if p<12 and caster==Companion[p*3] and raw=='Rpsm' then
+        loop
+            exitwhen k>=3
+            set slot=p*3+k
+            if PetFog[slot]!=null then
+                call RemoveUnit(PetFog[slot])
+            endif
+            set PetFog[slot]=CreateUnit(Player(p),'h01U',GetSpellTargetX()+(k-1)*100.,GetSpellTargetY(),0.)
+            set PetFogUntil[slot]=TimeNow+4.
+            call UnitApplyTimedLife(PetFog[slot],'BTLF',4.)
+            set k=k+1
+        endloop
+    endif
+    set slot=p*3+1
+    if p<12 and caster==Companion[slot] and raw=='Rktr' and RosterEnemy(target,Player(p)) then
+        set rank=GetUnitAbilityLevel(Hero[p],'RA03')
+        set PetTrapVictim[slot]=target
+        set PetTrapCaster[slot]=caster
+        set PetTrapUntil[slot]=TimeNow+3.
+        set PetTrapDamage[slot]=200.+200.*rank
+    endif
+endfunction
+function RosterPetThink takes integer p returns nothing
+    local integer k=0
+    local integer slot=0
+    local unit pet=null
+    local unit target=Dummy[(p-ModuloInteger(p,3))/3]
+    local real dx=0.
+    local real dy=0.
+    loop
+        exitwhen k>=3
+        set slot=p*3+k
+        set pet=Companion[slot]
+        if PetFog[slot]!=null and (TimeNow>=PetFogUntil[slot] or not FoundationAlive(Hero[p]) or IsUnitPaused(Hero[p])) then
+            call RemoveUnit(PetFog[slot])
+            set PetFog[slot]=null
+        endif
+        if PetTrapVictim[slot]!=null and not FoundationAlive(PetTrapCaster[slot]) then
+            set PetTrapVictim[slot]=null
+            set PetTrapCaster[slot]=null
+        endif
+        if PetTrapVictim[slot]!=null and TimeNow>=PetTrapUntil[slot] then
+            call RosterHit(PetTrapCaster[slot],PetTrapVictim[slot],PetTrapDamage[slot],0.)
+            call DestroyEffect(AddSpecialEffectTarget("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",PetTrapVictim[slot],"origin"))
+            call KillUnit(PetTrapCaster[slot])
+            set PetTrapVictim[slot]=null
+            set PetTrapCaster[slot]=null
+        endif
+        if FoundationAlive(pet) and not IsUnitPaused(pet) and FoundationAlive(target) and IsUnitEnemy(target,Player(p)) and SkillsCanSeePet(target,Player(p)) and TimeNow>=PetCastAt[slot] then
+            set dx=GetUnitX(pet)-GetUnitX(target)
+            set dy=GetUnitY(pet)-GetUnitY(target)
+            if GetUnitAbilityLevel(pet,'Rdog')>0 and GetUnitTypeId(pet)=='ra03' and GetUnitState(pet,UNIT_STATE_MANA)>=100. then
+                if IssueImmediateOrder(pet,"robogoblin") then
+                    set PetCastAt[slot]=TimeNow+30.
+                endif
+            elseif GetUnitAbilityLevel(pet,'Rktr')>0 and PetTrapVictim[slot]==null and dx*dx+dy*dy<=100.*100. and GetUnitState(pet,UNIT_STATE_MANA)>=100. then
+                if IssueTargetOrder(pet,"thunderbolt",target) then
+                    set PetCastAt[slot]=TimeNow+25.
+                endif
+            elseif GetUnitAbilityLevel(pet,'Rpsm')>0 and dx*dx+dy*dy<=700.*700. and GetUnitState(pet,UNIT_STATE_MANA)>=200. then
+                if IssuePointOrder(pet,"clusterrockets",GetUnitX(target),GetUnitY(target)) then
+                    set PetCastAt[slot]=TimeNow+30.
+                endif
+            elseif GetUnitAbilityLevel(pet,'Aens')>0 and dx*dx+dy*dy<=600.*600. then
+                if IssueTargetOrder(pet,"ensnare",target) then
+                    set PetCastAt[slot]=TimeNow+15.
+                endif
+            endif
+        endif
+        set k=k+1
+    endloop
+    set pet=null
+    set target=null
+endfunction
 function RosterTick takes nothing returns nothing
     local integer p=0
     local integer q=0
@@ -586,6 +727,8 @@ function RosterTick takes nothing returns nothing
     set p=0
     loop
         exitwhen p>=12
+        call RosterSyncPets(p)
+        call RosterPetThink(p)
         if ShadowUntil[p]>0. then
             if not FoundationAlive(Hero[p]) or not FoundationAlive(ShadowTarget[p]) then
                 call RosterClearShadow(p)
@@ -651,7 +794,7 @@ function RosterTick takes nothing returns nothing
                     call SetWidgetLife(Hero[p],RMaxBJ(1.,GetWidgetLife(Hero[p])-GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*RosterBuffDrain[p]))
                 endif
                 set pet=Companion[p*3]
-                if FoundationAlive(pet) and GetUnitTypeId(pet)=='rz01' then
+                if FoundationAlive(pet) and not IsUnitPaused(pet) and GetUnitTypeId(pet)=='rz01' then
                     set q=0
                     loop
                         exitwhen q>=12
