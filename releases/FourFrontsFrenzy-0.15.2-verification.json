@@ -1,0 +1,175 @@
+{
+  "filename": "FourFrontsFrenzy-0.15.2-alpha.w3x",
+  "sha256": "07824b4430568c9e9d2b3f80377351bdd4eef6086ccf3e789eec0f4ab24c539e",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteGold": [
+    100,
+    1570
+  ],
+  "nativeTransmuteFactor": 0,
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 60,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false,
+  "heroBalancePatch": "0.14.1",
+  "armyPassives": 2,
+  "resurrectionCount": [
+    6,
+    55
+  ],
+  "mirrorDamage": [
+    0.25,
+    0.8
+  ],
+  "mirrorDamageTaken": [
+    1.8,
+    1
+  ],
+  "metamorphHPFactor": 1.2,
+  "pandaPowerFactor": 1.25,
+  "tornadoDamageFactor": 1.5,
+  "factoryPowerFactor": 1.15,
+  "roboMinimumCurveStep": 2,
+  "nativeTransmuteBounty": false,
+  "galleryPatch": "0.14.2",
+  "pickerCardsPerPage": 7,
+  "pickerPages": 6,
+  "reservedNativeRallyCell": [
+    3,
+    1
+  ],
+  "all36CardCellsChecked": true,
+  "alchemistPage": 4,
+  "alchemistRow": 1,
+  "alchemistColumn": 3,
+  "combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance": "0.14.1-alpha",
+  "teamArmyCap": 180,
+  "AIRelease": "0.15.2-alpha",
+  "heroProfiles": 36,
+  "roles": 4,
+  "styleVariants": 108,
+  "economyStrategies": 5,
+  "supportGearPercent": [
+    15,
+    25
+  ],
+  "carryGearPercent": [
+    75,
+    75
+  ],
+  "carryTierPercent": 15,
+  "minimumTroopResearchPercent": 10,
+  "teamCommands": [
+    "-follow",
+    "-defend",
+    "-push",
+    "-regroup",
+    "-free",
+    "-ai"
+  ],
+  "commandSeconds": 90,
+  "sharedPushSeconds": 22,
+  "combatScanRadius": 1100,
+  "soldierScrollRadius": 700,
+  "realNativeSupplies": true,
+  "combatObjectsPreservedExceptSummonBalanceFrom": "0.14.3-alpha",
+  "waterRanksChecked": 200,
+  "spellDamageMultiplier": 0.7,
+  "damageFieldsChecked": 15100,
+  "hybridRanksPreserveHealingAndManaBurn": 600,
+  "troopPriceFactorApprox": 0.75,
+  "troopResearchRanksChecked": 600,
+  "buildingAndWaveCostsUnchanged": true,
+  "summonHPMultiplier": 0.85,
+  "summonDamageMultiplier": 0.85,
+  "summonUnitsChecked": 3150,
+  "summonBaseTypes": 48,
+  "waterFirstAndFinalRanksOnlyGlobalReduction": true,
+  "unrelatedUnitsAndSpellsPreserved": true,
+  "customCopy": "F090",
+  "summonCountsLifetimeCooldownArmorScaleUnchanged": true,
+  "botAndHumanSameUnits": true,
+  "unchangedRuntimeFrom": "0.15.1-alpha",
+  "samples": [
+    {
+      "rank": 1,
+      "hp": 446,
+      "baseDamage": 14,
+      "armor": 0,
+      "count": 1
+    },
+    {
+      "rank": 3,
+      "hp": 853,
+      "baseDamage": 37,
+      "armor": 3,
+      "count": 1
+    },
+    {
+      "rank": 10,
+      "hp": 1205,
+      "baseDamage": 52,
+      "armor": 5,
+      "count": 2
+    },
+    {
+      "rank": 13,
+      "hp": 1376,
+      "baseDamage": 59,
+      "armor": 6,
+      "count": 2
+    },
+    {
+      "rank": 50,
+      "hp": 4437,
+      "baseDamage": 188,
+      "armor": 17,
+      "count": 6
+    },
+    {
+      "rank": 100,
+      "hp": 11401,
+      "baseDamage": 480,
+      "armor": 32,
+      "count": 11
+    },
+    {
+      "rank": 200,
+      "hp": 35075,
+      "baseDamage": 1476,
+      "armor": 62,
+      "count": 21
+    }
+  ],
+  "fullNpmTest": true,
+  "strictLegacyJASS": true,
+  "hybridSpellJASSNativeMocks": true,
+  "researchNativeQueueAndSingleDebitMocks": true
+}

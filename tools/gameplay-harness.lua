@@ -942,12 +942,12 @@ for kind=0,2 do
  assert(not IssueImmediateOrderById(Base[0],AdvancedArmyResearch[kind]),'Advanced research cannot bypass its rank-ten prerequisite')
  for rank=1,9 do assert(purchase(0,kind)) end
  assert(not AdvancedUnlocked[kind])
- local tenth=({1736,1736,2824})[kind+1]
+ local tenth=({1302,1302,2120})[kind+1]
  assert(UpgradeCost(0,kind)==tenth)
  local gold=Players[0].gold;assert(purchase(0,kind));assert(Players[0].gold==gold-tenth)
  assert(AdvancedUnlocked[kind] and Players[0].techLimits[AdvancedArmyResearch[kind]]==190)
  assert(GetPlayerTechCount(0,ArmyResearch[kind])==10)
- local eleventh=({7616,7616,12372})[kind+1]
+ local eleventh=({5712,5712,9288})[kind+1]
  assert(UpgradeCost(0,kind)==eleventh)
  Players[0].gold=eleventh-1;assert(not Buy(0,kind) and not Base[0].pending)
  Players[0].gold=eleventh;assert(Buy(0,kind) and Base[0].pending==AdvancedArmyResearch[kind])

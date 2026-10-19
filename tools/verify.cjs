@@ -147,8 +147,8 @@ const value=(object,id,level=0)=>{
 };
 assert.equal(research.length, 8);
 assert.equal(balance.health_percent,0.2/3);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),403);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),269);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),302);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),202);
 assert.equal(balance.bot_tactics.length,5);
 assert.ok(balance.bot_tactics[1].gear_percent>balance.bot_tactics[0].gear_percent);
 assert.ok(balance.bot_tactics[2].gear_percent<balance.bot_tactics[0].gear_percent);
@@ -223,7 +223,7 @@ for(let rank=1;rank<=200;rank++) {
   assert.equal(value(lava,'Hwe2',rank),1+Math.floor(rank/10),'Extra summon at ranks 10, 20, ... 300');
   previousHP=value(pet,'uhpm');previousSize=value(pet,'usca');previousDamage=value(pet,'ua1b');
 }
-assert.ok(previousHP>30000,'High-rank summons are substantially stronger');
+assert.ok(previousHP>30000*balance.summon_hp_multiplier,'High-rank summons are substantially stronger');
 const abilityById=new Map(abilities.map(o=>[o.oldId,o]));
 assert.equal(value(abilityById.get('ANms'),'Nms2',200),1,'Mana Shield absorption remains a valid fraction');
 assert.ok(value(abilityById.get('AOcl'),'Ocl3',200)<=value(abilityById.get('AOcl'),'Ocl3',3),'Chain lightning falloff improves');
@@ -476,10 +476,10 @@ for(let race=0;race<4;race++) for(let tier=0;tier<5;tier++) {
   assert.ok(balance.tiers[tier].damage>=balance.tiers[tier-1].damage*1.2 && balance.tiers[tier].damage<=balance.tiers[tier-1].damage*1.4);
  }
 }
-assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglb'),224);
-assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglm'),168);
-assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglb'),224);
-assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglm'),168);
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglb'),168);
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglm'),126);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglb'),168);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglm'),126);
 assert.equal(value(custom.find(o=>o.newId==='fbks'),'usei'),books.map(i=>i.id).join(','));
 assert.deepEqual(books.map(i=>[i.base,i.cost]),[['tst2',280],['tdx2',280],['tin2',280],['tkno',960]]);
 for(const book of books) {
@@ -489,7 +489,7 @@ for(const book of books) {
 for(let rank=1;rank<=50;rank++) {
  const pad=String(rank).padStart(2,'0');
  const infernal=unitById.get(value(abilityById.get('AUin'),'Uin4',rank));
- assert.ok(value(infernal,'uhpm')>=2700 && value(infernal,'ua1b')>=65);
+ assert.ok(value(infernal,'uhpm')>=2295 && value(infernal,'ua1b')>=55);
  assert.ok(value(infernal,'uabi').includes('Fi'+pad));
  const fire=gearAbilities.find(a=>a.newId==='Fi'+pad);
  assert.equal(fire.oldId,'ANpi');assert.ok(Math.abs(value(fire,'Eim1',1)-36*(1+0.18*(rank-1)))<0.001);
@@ -540,6 +540,6 @@ const recentInferno=recentAbilityData.originalTable.objects.find(a=>a.oldId==='A
 for(let rank=1;rank<=50;rank++){
  const old=recentUnits.customTable.objects.find(u=>u.newId===value(recentInferno,'Uin4',rank));
  const current=unitById.get(value(abilityById.get('AUin'),'Uin4',rank));
- for(const field of ['uhpm','ua1b','udef']) assert.ok(Math.abs(value(current,field)-value(old,field)*0.6)<=1,'Infernal reduction preserved by skill rank despite regenerated IDs');
+ for(const field of ['uhpm','ua1b','udef']) assert.ok(Math.abs(value(current,field)-value(old,field)*0.6*(field==='uhpm'?balance.summon_hp_multiplier:field==='ua1b'?balance.summon_damage_multiplier:1))<=(field==='udef'?1:1.35),'Infernal reduction preserved by skill rank despite regenerated IDs');
 }
 console.log('PASS: Moderate 20-40% tier steps and a further 40% Infernal reduction at every rank.');

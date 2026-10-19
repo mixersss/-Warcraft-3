@@ -1,11 +1,11 @@
 {
   "name": "four-fronts-frenzy",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "private": true,
   "description": "Classic Warcraft III 4x3 arena with scripted bots",
   "scripts": {
     "build": "python3 tools/build.py",
-    "test": "python3 tools/build.py && node tools/verify.cjs && node tools/verify-014.cjs && node tools/verify-0141.cjs && node tools/verify-0142.cjs && node tools/verify-015.cjs && node tools/test-lobby.cjs && node tools/test-gameplay.cjs && python3 tools/test-pathing.py"
+    "test": "python3 tools/build.py && node tools/verify.cjs && node tools/verify-014.cjs && node tools/verify-0141.cjs && node tools/verify-0142.cjs && node tools/verify-015.cjs && node tools/verify-0152.cjs && node tools/test-lobby.cjs && node tools/test-gameplay.cjs && python3 tools/test-pathing.py"
   },
   "devDependencies": {
     "mdx-m3-viewer": "5.12.0"

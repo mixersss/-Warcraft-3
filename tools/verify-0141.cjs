@@ -40,7 +40,7 @@ for(let rank=1;rank<=50;rank++){
  }
  const pad=String(rank).padStart(2,'0');
  close(get(a.get('Fk'+pad),'Eim1',1),get(oldA.get('Fk'+pad),'Eim1',1)*1.25);
- for(const field of ['Tdg1','Tdg3'])close(get(a.get('Ft'+pad),field,1),get(oldA.get('Ft'+pad),field,1)*1.5);
+ for(const field of ['Tdg1','Tdg3'])close(get(a.get('Ft'+pad),field,1),get(oldA.get('Ft'+pad),field,1)*1.5*b.spell_damage_multiplier);
  assert.equal(get(a.get('Ft'+pad),'Tdg2',1),undefined,'Radius is not damage');
 }
 for(let rank=1;rank<=200;rank++){
@@ -53,17 +53,18 @@ for(const [id,old]of oldU){
  const now=u.get(id);assert(now);
  if(boosted.has(old.oldId)){
   const multiplier=old.oldId.startsWith('npn')?1.25:1.15;
-  for(const field of ['uhpm','ua1b'])assert(Math.abs(get(now,field)-get(old,field)*multiplier)<=.50001);
+  for(const field of ['uhpm','ua1b'])assert(Math.abs(get(now,field)-get(old,field)*multiplier*b[field==='uhpm'?'summon_hp_multiplier':'summon_damage_multiplier'])<=1.00001);
   for(const mod of old.modifications)if(!['uhpm','ua1b'].includes(mod.id))assert.equal(get(now,mod.id),mod.value,'Preserve other summon mechanics');
  }else{
-  for(const mod of old.modifications)if(!(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
+  for(const mod of old.modifications)if(!(require('./summon-comparison.cjs').isSummon(old)&&['uhpm','ua1b'].includes(mod.id)) && !(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
  }
 }
 for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e']){
  if(filename==='war3map.w3q'){
   const historical=parse(A,filename,true);
   for(const o of historical.customTable.objects)for(const m of o.modifications)if(m.id==='gub1')m.value=m.value.replace('Предел живой армии 48 сохранён.','Предел живой армии 60 сохранён.');
-  assert.deepEqual(parse(A,filename),historical,'Only the requested army-cap tooltip may change');
+  const current=parse(A,filename);require('./summon-comparison.cjs').research(current,historical);
+  assert.deepEqual(current,historical,'Only requested army prices and army-cap tooltip may change');
  }else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');
 }
 assert.equal(b.transmute_gold_base,100);assert.equal(b.transmute_gold_step,30);

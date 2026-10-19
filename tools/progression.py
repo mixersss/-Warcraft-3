@@ -118,8 +118,17 @@ def summon_catalog(root):
             factor=(1+extra*(0.60 if ultimate else 0.15))*(balance['ultimate_summon_hp_multiplier'] if ultimate else 1)
             damage_factor=1+extra*(0.45 if ultimate else 0.12)
             scale=src['scale']*balance['summon_model_scale']*(1+extra*(0.002 if ultimate else 0.0005))
+            damage_extra=extra
+            if original in ('hwat','hwt2','hwt3') and not ultimate:
+                # Keep the former maximum, but defer most growth until later ranks.
+                tuning=balance['water_elemental_growth']
+                progress=min(1.,(rank-1)/(tuning['full_growth_rank']-1))
+                growth_extra=extra*(tuning['early_fraction']+(1.-tuning['early_fraction'])*progress)
+                factor=1.+growth_extra*.15
+                damage_factor=1.+growth_extra*.12
+                damage_extra=growth_extra
             hp=round(src['hp']*factor)
-            damage=round((src['damage']*damage_factor+extra*(2 if ultimate else 1))*(balance['ultimate_summon_damage_multiplier'] if ultimate else 1))
+            damage=round((src['damage']*damage_factor+damage_extra*(2 if ultimate else 1))*(balance['ultimate_summon_damage_multiplier'] if ultimate else 1))
             armor=src['armor']+extra*(0.6 if ultimate else 0.2)
             tuning=balance['hero_skill_balance']
             boost=tuning['panda_power_multiplier'] if original in ('npn1','npn2','npn3') else tuning['factory_power_multiplier'] if original in ('ncgb','ncg1','ncg2','nfac','nfa1','nfa2') else 1
@@ -128,6 +137,9 @@ def summon_catalog(root):
                 hp=round(hp*balance['infernal_power_multiplier'])
                 damage=round(damage*balance['infernal_power_multiplier'])
                 armor*=balance['infernal_power_multiplier']
+            # Modest global reduction after all rank/type-specific tuning, including nested summons.
+            hp=max(1,round(hp*balance['summon_hp_multiplier']))
+            damage=round(damage*balance['summon_damage_multiplier'])
             units.append((original,raw,[('uhpm',0,hp),('ua1b',0,damage),('udef',0,round(armor)),
                 ('usca',1,scale),('ucol',2,min(src['collision'],24.0)),
                 ('upgr',3,''),('ufoo',0,0),('ugol',0,0),('ulum',0,0)]))
@@ -166,7 +178,7 @@ def summon_catalog(root):
         attach('hphx',rank,[rebirth,'ACmi','ACrk',fire])
         attach('hpxe',rank,[rebirth,'ACrk','ACmi'])
         tornado_boost=balance['hero_skill_balance']['tornado_damage_multiplier']
-        tornado=effect('Atdg',f'Ft{rank:02}',[('Tdg1',2,21.0*growth*tornado_boost,1,1),('Tdg3',2,150.0*growth*tornado_boost,1,3)])
+        tornado=effect('Atdg',f'Ft{rank:02}',[('Tdg1',2,21.0*growth*tornado_boost*balance['spell_damage_multiplier'],1,1),('Tdg3',2,150.0*growth*tornado_boost*balance['spell_damage_multiplier'],1,3)])
         attach('ntor',rank,[tornado,'Atsp','Atwa','Aasl'])
     return units,replacements,details,support
 
@@ -187,6 +199,12 @@ def summoned_units(root): return summon_catalog(str(root))[0]
 
 
 def summon_support_abilities(root): return summon_catalog(str(root))[3]
+
+
+def hybrid_power(root,rawcode,rank):
+    seeds=json.loads((Path(root)/'map/ability-seeds.json').read_text())
+    raw={'AHhb':'Hhb1','AUdc':'Udc1','AEmb':'Emb1'}[rawcode]
+    return scaled_value(next(f for f in seeds[rawcode]['fields'] if f['id']==raw),rank,False)
 
 
 def hero_abilities(root):
@@ -241,6 +259,12 @@ def hero_abilities(root):
                     value=round(field['values'][-1]+(floor-field['values'][-1])*progress,4)
                 if field['id']=='acdn' and rawcode in OFFENSIVE_SKILLS and value>0:
                     value=round(value*cooldown_multiplier,4)
+                if field['id'] in balance['spell_damage_fields'].get(rawcode,[]):
+                    value=round(value*balance['spell_damage_multiplier'],5)
+                if (rawcode,field['id']) in (('AHhb','Hhb1'),('AUdc','Udc1'),('AEmb','Emb1')):
+                    # The shared native amount would also weaken healing/mana removal.
+                    # A bounded spell-effect handler separates the damage component.
+                    value=0.
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
                 if aura:
                     multiplier=100 if aura['percent'] else 1
@@ -259,6 +283,12 @@ def hero_abilities(root):
             if rawcode in ('AHre','AUan'): text+=f' Поднимает до {balance["hero_skill_balance"]["resurrection_start"]+rank-1} павших бойцов (+1 за ранг).'
             if rawcode=='ANtm': text+=f' За успешное превращение: ровно {balance["transmute_gold_base"]+balance["transmute_gold_step"]*(rank-1)} золота; +30 за ранг. Не зависит от цены цели.'
             if rawcode=='ANcr': text+=f' Настоящая ускоренная форма: +{(.25+(rank-1)*2.75/(seed["cap"]-1))*100:.1f}% к частоте атак через уменьшение базового интервала.'
+            if rawcode in ('AHhb','AUdc'):
+                power=hybrid_power(root,rawcode,rank)
+                text=f'Ранг {rank}/{seed["cap"]}. Лечение: {power:g}; урон вражеской цели: {power*.5*balance["spell_damage_multiplier"]:g}.'
+            elif rawcode=='AEmb':
+                power=hybrid_power(root,rawcode,rank)
+                text=f'Ранг {rank}/{seed["cap"]}. Сжигает до {power:g} маны и наносит {balance["spell_damage_multiplier"]*100:g}% от сожжённой маны уроном.'
             if rawcode=='ANba': text+=' Цели: живые и Нежить. Убитые стрелой бойцы поднимаются скелетами.'
             changes += [('atp1',3,f'{seed["name"]} [{rank}]',rank,0),('aub1',3,text,rank,0)]
         entries.append((rawcode,'\0'*4,changes))

@@ -20,7 +20,7 @@ const timing=read('map/hero-attack-seeds.json').units;
 for(const h of heroes){const o=u.get(h.id)||originalUnits.get(h.id);for(const [field,v]of Object.entries(timing[h.base||h.id]))assert(Math.abs(get(o,field)-v*.75)<1e-5,'Actual lower base interval/animation timing for '+h.name);}
 let lastCooldown=Infinity;
 for(let rank=1;rank<=200;rank++){
- assert.equal(get(a.get('ANab'),'Nab4',rank),20+12*(rank-1));assert.equal(get(a.get('ANab'),'Nab5',rank),12+8*(rank-1));assert.equal(get(a.get('ANab'),'Nab6',rank),1);
+ assert.equal(get(a.get('ANab'),'Nab4',rank),Math.fround((20+12*(rank-1))*.7));assert.equal(get(a.get('ANab'),'Nab5',rank),Math.fround((12+8*(rank-1))*.7));assert.equal(get(a.get('ANab'),'Nab6',rank),1);
  const form=u.get(get(a.get('ANcr'),'Emeu',rank));assert(form&&get(form,'uhab').includes('Fatr'));
  const cooldown=get(form,'ua1c');assert(cooldown<lastCooldown,'Chemical Rage physically changes attack cooldown at every rank');lastCooldown=cooldown;
  const bonus=get(a.get('ANcr'),'Ncr6',rank);assert(Math.abs(cooldown-timing.Nalc.ua1c*.75/(1+bonus))<1e-5);

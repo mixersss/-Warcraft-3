@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
+from progression import hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
 from hero_picker import units as picker_units, controls as picker_controls, CARDS_PER_PAGE
 
@@ -122,6 +122,11 @@ def bastion_positions() -> list[tuple[int,int]]:
 
 
 def validate_balance(b: dict) -> None:
+    assert 0 < b['spell_damage_multiplier'] <= 1
+    assert 0 < b['summon_hp_multiplier'] <= 1
+    assert 0 < b['summon_damage_multiplier'] <= 1
+    assert 0 < b['water_elemental_growth']['early_fraction'] <= 1
+    assert b['water_elemental_growth']['full_growth_rank'] == b['basic_skill_max']
     assert len(b['bot_tactics']) == 5
     for tactic in b['bot_tactics']:
         assert 10 <= tactic['tier_percent'] <= 60
@@ -411,7 +416,7 @@ def upgrades(b: dict) -> bytes:
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
     fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max','transmute_gold_base','transmute_gold_step']
-    generated = ['globals']
+    generated = ['globals',f'    constant real SPELL_DAMAGE_MULTIPLIER = {b["spell_damage_multiplier"]}', '    real array HybridPower']
     for key,value in b['bot_combat'].items():
         generated.append(f'    constant integer BOT_{key.upper()} = {value}')
     for field in fields:
@@ -433,6 +438,13 @@ def script(b: dict) -> str:
         '    integer array ArmyResearch', '    integer array AdvancedArmyResearch', 'endglobals']
     source = (ROOT/'map/war3map.j').read_text()
     source = source.replace('// BOT_AI_MODULE', (ROOT/'map/bot-ai.j').read_text())
+    dispatch=['function HybridSpellKind takes integer raw returns integer']
+    for kind,base in enumerate(['AHhb','AUdc','AEmb']):
+        ids=[base]+[skill for hero in heroes for skill,seed in zip(hero['skills'],hero.get('skill_sources',[])) if seed==base]
+        dispatch += ['    if '+' or '.join("raw=='"+raw+"'" for raw in ids)+' then', f'        return {kind}', '    endif']
+    dispatch += ['    return -1','endfunction']
+    source = source.replace('// SPELL_BALANCE_MODULE', '\n'.join(dispatch)+'\n'+(ROOT/'map/spell-balance.j').read_text())
+
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
@@ -507,6 +519,9 @@ def script(b: dict) -> str:
     for t in range(4):
         homes = positions()[t*3:t*3+3]
         init += [f'    set TeamX[{t}] = {sum(x for x,y in homes)/3:.3f}', f'    set TeamY[{t}] = {sum(y for x,y in homes)/3:.3f}']
+    for kind,base in enumerate(['AHhb','AUdc','AEmb']):
+        for rank in range(1,b['basic_skill_max']+1):
+            init += [f'    set HybridPower[{kind*200+rank-1}] = {float(hybrid_power(ROOT,base,rank))}']
     init += ['endfunction', '', 'function InitWalls takes nothing returns nothing']
     for x, y, angle in wall_segments():
         init += [f"    call SetDestructableInvulnerable(CreateDestructable('fwll', {x:.3f}, {y:.3f}, {angle:.3f}, 1.0, 0), true)"]

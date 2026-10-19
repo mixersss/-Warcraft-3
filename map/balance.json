@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.15.1-alpha",
+  "version": "0.15.2-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -9,10 +9,10 @@
   "army_cap": 60,
   "warmup_seconds": 60,
   "upgrade_max": 200,
-  "attack_cost": 224,
-  "attack_cost_step": 168,
-  "armor_cost": 224,
-  "armor_cost_step": 168,
+  "attack_cost": 168,
+  "attack_cost_step": 126,
+  "armor_cost": 168,
+  "armor_cost_step": 126,
   "spawn_cost": 300,
   "spawn_cost_step": 200,
   "hero_power_cost": 250,
@@ -60,8 +60,8 @@
       "cost": 4800
     }
   ],
-  "health_cost": 403,
-  "health_cost_step": 269,
+  "health_cost": 302,
+  "health_cost_step": 202,
   "health_percent": 0.06666666666666667,
   "base_upgrade_cost": 1440,
   "base_upgrade_cost_step": 1120,
@@ -231,5 +231,138 @@
     "push_cooldown": 110,
     "command_seconds": 90,
     "plan_seconds": 3
+  },
+  "water_elemental_growth": {
+    "early_fraction": 0.25,
+    "full_growth_rank": 200
+  },
+  "summon_hp_multiplier": 0.85,
+  "summon_damage_multiplier": 0.85,
+  "spell_damage_multiplier": 0.7,
+  "spell_damage_fields": {
+    "AEer": [
+      "Eer1"
+    ],
+    "AEfk": [
+      "Efk1",
+      "Efk2"
+    ],
+    "AEim": [
+      "Eim1"
+    ],
+    "AEsf": [
+      "Esf1"
+    ],
+    "AEsh": [
+      "Esh1",
+      "Esh5"
+    ],
+    "AHbz": [
+      "Hbz2",
+      "Hbz5",
+      "Hbz6"
+    ],
+    "AHfs": [
+      "Hfs1",
+      "Hfs3",
+      "Hfs6"
+    ],
+    "AHtb": [
+      "Htb1"
+    ],
+    "AHtc": [
+      "Htc1",
+      "Htc2"
+    ],
+    "AHfa": [
+      "Hfa1"
+    ],
+    "ANab": [
+      "Nab4",
+      "Nab5"
+    ],
+    "ANba": [
+      "Nba1"
+    ],
+    "ANbf": [
+      "Ucs1",
+      "Ucs2",
+      "Nbf5"
+    ],
+    "ANcs": [
+      "Ncs1",
+      "Ncs4"
+    ],
+    "ANc1": [
+      "Ncs1",
+      "Ncs4"
+    ],
+    "ANc2": [
+      "Ncs1",
+      "Ncs4"
+    ],
+    "ANc3": [
+      "Ncs1",
+      "Ncs4"
+    ],
+    "ANdo": [
+      "Ndo1"
+    ],
+    "ANfa": [
+      "Hca1"
+    ],
+    "ANfl": [
+      "Ocl1"
+    ],
+    "ANrf": [
+      "Hbz2",
+      "Hbz5",
+      "Hbz6"
+    ],
+    "ANso": [
+      "Nso1"
+    ],
+    "ANst": [
+      "Nst3"
+    ],
+    "ANvc": [
+      "Nvc5"
+    ],
+    "AOcl": [
+      "Ocl1"
+    ],
+    "AOeq": [
+      "Oeq2"
+    ],
+    "AOsh": [
+      "Osh1",
+      "Osh2"
+    ],
+    "AOws": [
+      "Wrs1"
+    ],
+    "AOww": [
+      "Oww1"
+    ],
+    "AUcs": [
+      "Ucs1",
+      "Ucs2"
+    ],
+    "AUfn": [
+      "Ufn1",
+      "Ufn2"
+    ],
+    "AUim": [
+      "Uim3"
+    ],
+    "AUin": [
+      "Uin1"
+    ],
+    "AUdd": [
+      "Udd1"
+    ],
+    "ANdr": [
+      "Ndr1"
+    ]
   }
 }

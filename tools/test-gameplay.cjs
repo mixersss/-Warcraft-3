@@ -51,4 +51,16 @@ run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch14-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch141-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch15-harness.lua'), 'utf8'));
+const OldMap=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,oldMap=new OldMap();oldMap.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../releases/FourFrontsFrenzy-0.15.1-alpha.w3x'))),true);
+const hybridOld=new ObjectParser();hybridOld.load(new Uint8Array(oldMap.get('war3map.w3a').bytes()));
+const hybridValues=[],hybridCases=[];
+for(const [kind,id,field]of [[0,'AHhb','Hhb1'],[1,'AUdc','Udc1'],[2,'AEmb','Emb1']]){
+ const object=hybridOld.originalTable.objects.find(o=>o.oldId===id);
+ for(let rank=1;rank<=200;rank++)hybridValues.push(`[${kind*200+rank-1}]=${object.modifications.find(m=>m.id===field&&m.levelOrVariation===rank).value}`);
+ const ids=[id,...roster.flatMap(h=>(h.skill_sources||[]).flatMap((base,n)=>base===id?[h.skills[n]]:[]))];
+ for(const code of ids)hybridCases.push(`{kind=${kind},raw=${raw(code)}}`);
+}
+run('EngineHybridExpected={'+hybridValues.join(',')+'};EngineHybridCases={'+hybridCases.join(',')+'}');
+run(fs.readFileSync(path.join(__dirname, 'patch152-harness.lua'), 'utf8'));
+
 console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 21s waves, 4 races, 36 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');
