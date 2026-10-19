@@ -25,7 +25,7 @@ for(let rank=1;rank<=200;rank++){
  const cooldown=get(form,'ua1c');assert(cooldown<lastCooldown,'Chemical Rage physically changes attack cooldown at every rank');lastCooldown=cooldown;
  const bonus=get(a.get('ANcr'),'Ncr6',rank);assert(Math.abs(cooldown-timing.Nalc.ua1c*.75/(1+bonus))<1e-5);
 }
-for(let rank=1;rank<=50;rank++)assert.equal(get(a.get('ANtm'),'Ntm1',rank),2+.5*(rank-1));
+for(let rank=1;rank<=50;rank++)assert.equal(get(a.get('ANtm'),'Ntm1',rank),0);
 for(let race=0;race<4;race++)for(let tier=0;tier<5;tier++)assert.equal(get(u.get(`fm${race}${tier}`),'ugol'),[75,110,160,225,300][tier]);
 // Compare old prices by item identity rather than trusting the newly edited catalog.
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,oldMap=new MapFile();oldMap.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.13.2-alpha.w3x'))),true);
@@ -47,5 +47,5 @@ for(const [id,seed]of Object.entries(seeds))for(const field of seed.fields)if(su
  assert.deepEqual(actual.map(x=>u.get(x)?.oldId),base,'Same summoned creature types by skill/rank');
 }
 const csv=fs.readFileSync(path.join(root,'docs/Heroes-and-skills.csv'),'utf8');assert.equal(csv.trim().split('\n').length,145);
-fs.writeFileSync(path.join(root,'build/verification-014.json'),JSON.stringify({filename:`FourFrontsFrenzy-${balance.version}.w3x`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'build',`FourFrontsFrenzy-${balance.version}.w3x`))).digest('hex'),heroes:36,skillSlots:144,normalSkillRanks:200,ultimateRanks:50,QWER:true,chemicalForms:200,realChemicalRageCooldownGrowth:true,transmuteFactor:[2,26.5],transmuteTroopCosts:[75,110,160,225,300],itemPriceFactor:.8,researchPriceFactorApprox:.8,waveSeconds:21,startingTroops:3,waveResearchRanks:20,waveResearchCost:[2000,1000],maxWave:23,armyCap:48,barracksHP:50700,bastionHP:156000,bastionBaseDamage:1750,bastionCooldown:.2,heroBaseAttackIntervalFactor:.75,engineAttackSpeedCapModified:false,enginePlaytest:false},null,2));
+fs.writeFileSync(path.join(root,'build/verification-014.json'),JSON.stringify({filename:`FourFrontsFrenzy-${balance.version}.w3x`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'build',`FourFrontsFrenzy-${balance.version}.w3x`))).digest('hex'),heroes:36,skillSlots:144,normalSkillRanks:200,ultimateRanks:50,QWER:true,chemicalForms:200,realChemicalRageCooldownGrowth:true,transmuteGold:[100,1570],nativeTransmuteFactor:0,transmuteTroopCosts:[75,110,160,225,300],itemPriceFactor:.8,researchPriceFactorApprox:.8,waveSeconds:21,startingTroops:3,waveResearchRanks:20,waveResearchCost:[2000,1000],maxWave:23,armyCap:48,barracksHP:50700,bastionHP:156000,bastionBaseDamage:1750,bastionCooldown:.2,heroBaseAttackIntervalFactor:.75,engineAttackSpeedCapModified:false,enginePlaytest:false},null,2));
 console.log('PASS: 0.14 QWER/200-rank roster, 200 actual rage forms, poison/Transmute costs, 20% prices, wave research, tower attack timings, native utility objects and 144-skill export (structural checks).');

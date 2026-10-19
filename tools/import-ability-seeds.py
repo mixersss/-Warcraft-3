@@ -42,7 +42,11 @@ def extract(source):
             elif line.startswith('Name='): names[section] = line[5:].strip('"')
     roster = json.loads((ROOT/'map/heroes.json').read_text())
     basic_cap=json.loads((ROOT/'map/balance.json').read_text())['basic_skill_max']
-    caps = {skill: 50 if slot == 3 else basic_cap for hero in roster for slot, skill in enumerate(hero.get('skill_sources',hero['skills']))}
+    passive_ids={s['id'] for s in json.loads((ROOT/'map/hero-passives.json').read_text())}
+    caps = {skill: 50 if slot == 3 else basic_cap for hero in roster for slot, skill in enumerate(hero.get('skill_sources',hero['skills'])) if skill not in passive_ids}
+    # Retain stock seeds used by previous releases and isolated copies.
+    for raw,seed in json.loads((ROOT/'map/ability-seeds.json').read_text()).items():
+        caps.setdefault(raw,50 if seed['ultimate'] else basic_cap)
     for prefix, cap in [('ANs',basic_cap),('ANc',basic_cap),('ANg',50)]:
         for n in range(1,4): caps[prefix+str(n)] = cap
     output = {}

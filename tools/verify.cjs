@@ -52,7 +52,7 @@ const formats = {
   'war3map.w3i': 'w3i', 'war3map.w3e': 'w3e', 'war3map.wpm': 'wpm',
   'war3map.w3u': 'w3u', 'war3map.w3q': 'w3d',
   'war3map.w3a': 'w3d', 'war3map.w3b': 'w3u',
-  'war3map.w3t': 'w3u',
+  'war3map.w3t': 'w3u', 'war3map.w3h': 'w3u',
   'war3map.doo': 'doo', 'war3mapUnits.doo': 'unitsdoo',
   'war3map.w3r': 'w3r', 'war3map.w3c': 'w3c', 'war3map.w3s': 'w3s',
   'war3map.imp': 'imp',
@@ -73,7 +73,7 @@ const info = parsed['war3map.w3i'];
 // A structurally valid W3T can still crash Classic when an oldId does not exist.
 // Check emitted objects and their references against independent stock SLK IDs.
 const stockIds=require('../map/classic-object-ids.json').tables;
-const objectTables={items:'war3map.w3t',units:'war3map.w3u',abilities:'war3map.w3a',upgrades:'war3map.w3q',destructables:'war3map.w3b'};
+const objectTables={items:'war3map.w3t',units:'war3map.w3u',abilities:'war3map.w3a',upgrades:'war3map.w3q',destructables:'war3map.w3b',buffs:'war3map.w3h'};
 const knownIds={};
 for(const [kind,file] of Object.entries(objectTables)) {
   const stock=new Set(stockIds[kind]);
@@ -86,7 +86,7 @@ for(const [kind,file] of Object.entries(objectTables)) {
     knownIds[kind].add(object.newId);
   }
 }
-const referenceKinds={usei:'items',iabi:'abilities',uabi:'abilities',uhab:'abilities',utra:'units',uupt:'units',ures:'upgrades',upgr:'upgrades'};
+const referenceKinds={usei:'items',iabi:'abilities',uabi:'abilities',uhab:'abilities',utra:'units',uupt:'units',ures:'upgrades',upgr:'upgrades',abuf:'buffs'};
 for(const file of Object.values(objectTables)) for(const object of [...parsed[file].originalTable.objects,...parsed[file].customTable.objects]) {
   for(const mod of object.modifications) {
     const kind=referenceKinds[mod.id];
@@ -137,7 +137,7 @@ for (let race = 0; race < 4; race++) {
 const gear=require('../map/equipment.json');
 const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');const books=require('../map/books.json');const utility=require('../map/utility.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,427,'Passive equipment effects');
+assert.equal(gearAbilities.length,429,'Passive equipment effects');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -333,7 +333,7 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 14 binary formats, five research buttons (200/200/200/4/20), 500 hero levels, 200/50 skill caps, 61 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 15 binary formats, five research buttons (200/200/200/4/20), 500 hero levels, 200/50 skill caps, 61 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
 for(let page=0;page<5;page++) {
@@ -402,12 +402,12 @@ for(const unit of customHeroes.map(h=>unitById.get(h.id))) for(const id of ['ust
 const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.8.1-alpha.w3x'))),true);
 const PreviousAbilities=require(prefix+'w3x/w3d/file').default;
 const previousAbilities=new PreviousAbilities();previousAbilities.load(new Uint8Array(previous.get('war3map.w3a').bytes()));
-const quantities=new Set(['Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1','Ucb5','Omi1','Hre1']);
+const quantities=new Set(['Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1','Ucb5','Omi1']);
 for(const old of previousAbilities.originalTable.objects) {
  const current=abilityById.get(old.oldId);
  for(const mod of old.modifications) if(quantities.has(mod.id) && mod.levelOrVariation<=value(current,'alev')) assert.equal(value(current,mod.id,mod.levelOrVariation),mod.value,'Creature/resurrection counts must match 0.8.1');
 }
-console.log('PASS: Creature, illusion and resurrection counts match previous release at every rank.');
+console.log('PASS: Unchanged creature and illusion counts match previous release at every rank.');
 // Preserve technical flags/intervals against the historical baseline at retained ranks.
 // New 200-rank curves and targeted Alchemist changes intentionally replace magnitudes.
 const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.1-alpha.w3x'))),true);

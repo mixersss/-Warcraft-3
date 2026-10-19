@@ -1,0 +1,66 @@
+{
+  "filename": "FourFrontsFrenzy-0.14.1-alpha.w3x",
+  "sha256": "81aa15a6f1538389b605d2431861404cfd8ecb97ceb2305efc406d775daaa922",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteGold": [
+    100,
+    1570
+  ],
+  "nativeTransmuteFactor": 0,
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 48,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false,
+  "heroBalancePatch": "0.14.1",
+  "armyPassives": 2,
+  "resurrectionCount": [
+    6,
+    55
+  ],
+  "mirrorDamage": [
+    0.25,
+    0.8
+  ],
+  "mirrorDamageTaken": [
+    1.8,
+    1
+  ],
+  "metamorphHPFactor": 1.2,
+  "pandaPowerFactor": 1.25,
+  "tornadoDamageFactor": 1.5,
+  "factoryPowerFactor": 1.15,
+  "roboMinimumCurveStep": 2,
+  "nativeTransmuteBounty": false,
+  "strictLegacyPjass": true,
+  "fullNpmTest": true,
+  "transmuteMockRanksHumans": 50,
+  "transmuteMockRanksBots": 50,
+  "transmuteCastBeforeEffectCoverage": true
+}

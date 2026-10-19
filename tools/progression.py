@@ -13,7 +13,7 @@ ULTIMATE_MAGNITUDES = set('Eme5 Esf1 Etq1 Hav1 Hav2 Hav3 Ndo1 Nrg5 Nrg6 Nst3 Nvc
 ULTIMATE_RECOVERY = {'AHmt':0.7,'AHre':0.65,'AUan':0.75,'ANch':0.7,'ANtm':0.7,'AOre':0.65,'AOvd':0.75}
 
 
-def ultimate_value(ability, field, rank, value, power):
+def ultimate_value(ability, field, rank, value, power, tuning):
     raw=field['id']
     if raw in ULTIMATE_MAGNITUDES: value*=power
     if ability=='AUin' and raw=='Uin1': value=max(value,300+60*(rank-1))
@@ -23,7 +23,13 @@ def ultimate_value(ability, field, rank, value, power):
     if ability=='AHmt' and raw=='Hmt1': value=max(value,min(96,24+2*rank))
     if ability=='AHmt' and raw=='Hmt2': value=max(1.0,2.5-0.03*(rank-1))
     if ability in ('ANch','ANtm') and raw in ('Nch1','Ntm3'): value=max(value,min(100,10+2*(rank-1)))
-    if ability=='ANtm' and raw=='Ntm1': value=2.0+0.5*(rank-1)
+    # Fixed scripted reward replaces both native value conversion and bounty.
+    if ability=='ANtm' and raw in ('Ntm1','Ntm4'): value=0
+    if ability in ('AHre','AUan') and raw in ('Hre1','Uan1'):
+        value=tuning['resurrection_start']+tuning['resurrection_step']*(rank-1)
+    if ability=='AEme' and raw=='Eme5': value*=tuning['metamorph_hp_multiplier']
+    if ability in ('ANrg','ANg1','ANg2','ANg3') and raw in ('Nrg5','Nrg6'):
+        value=max(round(value*tuning['robo_power_multiplier']),round(field['values'][0]*power*tuning['robo_power_multiplier'])+(tuning['robo_strength_step']*(rank-1) if raw=='Nrg5' else (rank-1)//2))
     if ability=='AOre' and raw=='Ore1': value=max(2.0,5.0-0.07*(rank-1))
     if ability=='AOvd' and raw in ('adur','ahdu'): value=min(40.0,35.0+0.1*(rank-1))
     if ability=='ANto' and raw in ('adur','ahdu'): value*=1.5
@@ -115,6 +121,9 @@ def summon_catalog(root):
             hp=round(src['hp']*factor)
             damage=round((src['damage']*damage_factor+extra*(2 if ultimate else 1))*(balance['ultimate_summon_damage_multiplier'] if ultimate else 1))
             armor=src['armor']+extra*(0.6 if ultimate else 0.2)
+            tuning=balance['hero_skill_balance']
+            boost=tuning['panda_power_multiplier'] if original in ('npn1','npn2','npn3') else tuning['factory_power_multiplier'] if original in ('ncgb','ncg1','ncg2','nfac','nfa1','nfa2') else 1
+            hp=round(hp*boost);damage=round(damage*boost)
             if original=='ninf':
                 hp=round(hp*balance['infernal_power_multiplier'])
                 damage=round(damage*balance['infernal_power_multiplier'])
@@ -146,7 +155,7 @@ def summon_catalog(root):
         growth=1+0.18*(rank-1)
         fire=effect('ANpi',f'Fi{rank:02}',[('Eim1',2,balance['infernal_immolation_base']*growth,1,1),('aare',2,300.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
         attach('ninf',rank,['ACmi',fire,'ACrk'])
-        fire=effect('Apig',f'Fk{rank:02}',[('Eim1',2,60.0*growth,1,1),('aare',2,280.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
+        fire=effect('Apig',f'Fk{rank:02}',[('Eim1',2,60.0*growth*balance['hero_skill_balance']['panda_power_multiplier'],1,1),('aare',2,280.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
         attach('npn1',rank,[fire,'ACrk'])
         spirit=make_unit('even',rank,True)
         vengeance=effect('Avng',f'Fv{rank:02}',[('Rai3',3,spirit,1,3)])
@@ -156,7 +165,8 @@ def summon_catalog(root):
         fire=effect('Apxf',f'Fj{rank:02}',[('pxf1',2,120.0*growth,1,1),('pxf2',2,12.0*growth,1,2)])
         attach('hphx',rank,[rebirth,'ACmi','ACrk',fire])
         attach('hpxe',rank,[rebirth,'ACrk','ACmi'])
-        tornado=effect('Atdg',f'Ft{rank:02}',[('Tdg1',2,21.0*growth,1,1),('Tdg3',2,150.0*growth,1,3)])
+        tornado_boost=balance['hero_skill_balance']['tornado_damage_multiplier']
+        tornado=effect('Atdg',f'Ft{rank:02}',[('Tdg1',2,21.0*growth*tornado_boost,1,1),('Tdg3',2,150.0*growth*tornado_boost,1,3)])
         attach('ntor',rank,[tornado,'Atsp','Atwa','Aasl'])
     return units,replacements,details,support
 
@@ -201,7 +211,10 @@ def hero_abilities(root):
             for field in seed['fields']:
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
                 if ultimate:
-                    value=ultimate_value(rawcode,field,rank,value,balance['ultimate_power_multiplier'])
+                    value=ultimate_value(rawcode,field,rank,value,balance['ultimate_power_multiplier'],balance['hero_skill_balance'])
+                if rawcode=='AOmi' and field['id'] in ('Omi2','Omi3'):
+                    t=balance['hero_skill_balance'];prefix='mirror_damage' if field['id']=='Omi2' else 'mirror_taken'
+                    value=round(t[prefix+'_start']+(t[prefix+'_cap']-t[prefix+'_start'])*(rank-1)/(seed['cap']-1),6)
                 if rawcode=='ANab':
                     if field['id']=='Nab4': value=20.+12.*(rank-1)
                     elif field['id']=='Nab5': value=12.+8.*(rank-1)
@@ -243,7 +256,8 @@ def hero_abilities(root):
                 elif field['kind']!=3 and field['column']>0 and any(w in field['label'].lower() for w in ('damage','heal','bonus','evasion','chance')):
                     details.append(f'{field["label"]}: {value:g}')
             text=f'Ранг {rank}/{seed["cap"]}. '+'; '.join(details[:3])
-            if rawcode=='ANtm': text+=f' Золото: {2.+.5*(rank-1):g} × стоимости цели; у армейского бойца стоимость 75/110/160/225/300 по ступени.'
+            if rawcode in ('AHre','AUan'): text+=f' Поднимает до {balance["hero_skill_balance"]["resurrection_start"]+rank-1} павших бойцов (+1 за ранг).'
+            if rawcode=='ANtm': text+=f' За успешное превращение: ровно {balance["transmute_gold_base"]+balance["transmute_gold_step"]*(rank-1)} золота; +30 за ранг. Не зависит от цены цели.'
             if rawcode=='ANcr': text+=f' Настоящая ускоренная форма: +{(.25+(rank-1)*2.75/(seed["cap"]-1))*100:.1f}% к частоте атак через уменьшение базового интервала.'
             if rawcode=='ANba': text+=' Цели: живые и Нежить. Убитые стрелой бойцы поднимаются скелетами.'
             changes += [('atp1',3,f'{seed["name"]} [{rank}]',rank,0),('aub1',3,text,rank,0)]
@@ -277,3 +291,33 @@ def attribute_ability():
                     ('Ihid',0,0,rank,4),('atp1',3,f'Характеристики + [ранг {rank}]',rank,0),
                     ('aub1',3,f'+{rank*2} силы, ловкости и интеллекта. Каждый следующий ранг: ещё +2 ко всем.',rank,0)]
     return [('Aamk','Fatr',changes)]
+
+
+def army_passives(root):
+    result=[]
+    cap=json.loads((Path(root)/'map/balance.json').read_text())['basic_skill_max']
+    for spec in json.loads((Path(root)/'map/hero-passives.json').read_text()):
+        slot=spec['slot'];icon=spec['icon']
+        mods=[('anam',3,spec['name']),('aher',0,1),('aite',0,0),('alev',0,cap),('arlv',0,1),('alsk',0,1),
+              ('ahky',3,'QWER'[slot]),('auhk',3,'QWER'[slot]),('arhk',3,'QWER'[slot]),
+              ('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0),
+              ('aart',3,f'ReplaceableTextures\\PassiveButtons\\PASBTN{icon}.blp'),
+              ('arar',3,f'ReplaceableTextures\\CommandButtons\\BTN{icon}.blp'),
+              ('aret',3,f'Изучить {spec["name"]} [ранг %d]'),('arut',3,'Пассивная аура для армии. Каждый ранг усиливает эффект; радиус 900.')]
+        for rank in range(1,cap+1):
+            progress=((rank-1)/(rank+39))/((cap-1)/(cap+39))
+            amount=round(spec['start']+(spec['cap']-spec['start'])*progress,6)
+            mult=100 if spec['percent'] else 1;suffix='%' if spec['percent'] else ''
+            mods += [(spec['field'],spec['kind'],amount,rank,spec['column']),
+                     (spec['zero_field'],0 if spec['zero_field']=='Oar2' else 2,0,rank,spec['zero_column']),
+                     ('aare',2,float(spec['radius']),rank,0),('atar',3,spec['targets'],rank,0),('abuf',3,spec['buff'],rank,0),
+                     ('atp1',3,f'{spec["name"]} [{rank}]',rank,0),
+                     ('aub1',3,f'{spec["description"]}: +{amount*mult:.2f}{suffix}. Предел +{spec["cap"]*mult:g}{suffix}; радиус {spec["radius"]}. Действует на союзников, включая Нежить и механических бойцов.',rank,0)]
+        result.append((spec['base'],spec['id'],mods))
+    return result
+
+
+def army_aura_buffs(root):
+    # Unique buff IDs let these auras coexist with the stock hero/fountain auras.
+    return [(s['buff_base'],s['buff'],[('fnam',3,s['name']),('ftip',3,s['name']),('fube',3,s['description']),('fefs',3,''),('fefl',3,'')])
+            for s in json.loads((Path(root)/'map/hero-passives.json').read_text())]

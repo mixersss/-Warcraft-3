@@ -12,7 +12,7 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms
+from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
 from hero_picker import units as picker_units, controls as picker_controls
 
@@ -337,7 +337,7 @@ def fountain_abilities(b: dict) -> list:
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -410,7 +410,7 @@ def upgrades(b: dict) -> bytes:
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max','transmute_gold_base','transmute_gold_step']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
@@ -620,7 +620,7 @@ def build() -> Path:
         'war3map.w3i': info(b), 'war3map.w3e': terrain(), 'war3map.wpm': pathing(),
         'war3map.w3u': units(b), 'war3map.w3q': upgrades(b),
         'war3map.w3a': menu_ability(b), 'war3map.w3b': walls(),
-        'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
+        'war3map.w3h': objects(army_aura_buffs(ROOT)), 'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
         'war3map.j': script(b).encode('utf-8'),
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),
         'war3mapUnits.doo': b'W3do'+i(8, 11, 0),

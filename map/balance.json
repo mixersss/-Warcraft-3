@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.14.0-alpha",
+  "version": "0.14.1-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -197,5 +197,21 @@
     160,
     225,
     300
-  ]
+  ],
+  "transmute_gold_base": 100,
+  "transmute_gold_step": 30,
+  "hero_skill_balance": {
+    "resurrection_start": 6,
+    "resurrection_step": 1,
+    "mirror_damage_start": 0.25,
+    "mirror_damage_cap": 0.8,
+    "mirror_taken_start": 1.8,
+    "mirror_taken_cap": 1.0,
+    "metamorph_hp_multiplier": 1.2,
+    "panda_power_multiplier": 1.25,
+    "tornado_damage_multiplier": 1.5,
+    "factory_power_multiplier": 1.15,
+    "robo_power_multiplier": 1.2,
+    "robo_strength_step": 2
+  }
 }

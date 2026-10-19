@@ -30,6 +30,9 @@ globals
     boolean AllRandomMode = false
     trigger PickerTrainTrigger = null
     trigger PickerSpellTrigger = null
+    trigger TransmuteTrigger = null
+    unit array TransmuteTarget
+    integer array TransmuteReward
     trigger BaseDefenseTrigger = null
     unit array Base
     unit array Hero
@@ -1331,8 +1334,13 @@ function OnDeath takes nothing returns nothing
     endif
     if k >= 0 and k < 12 and TeamOf(k) != TeamOf(p) and reward > 0 then
         set goldReward = R2I(I2R(reward)*KILL_GOLD_MULTIPLIER)
-        call AddGold(k, goldReward)
-        call ShowGoldReward(k, dead, goldReward)
+        if dead == TransmuteTarget[k] then
+            set goldReward = 0
+        endif
+        if goldReward > 0 then
+            call AddGold(k, goldReward)
+            call ShowGoldReward(k, dead, goldReward)
+        endif
         set Kills[k] = Kills[k]+1
         // Nearby hero receives additional deterministic experience even above melee level 5.
         if Alive(Hero[k]) and DistanceSq(GetUnitX(Hero[k]), GetUnitY(Hero[k]), GetUnitX(dead), GetUnitY(dead)) < 1440000 then
@@ -1344,6 +1352,40 @@ function OnDeath takes nothing returns nothing
     endif
     set dead = null
     set killer = null
+endfunction
+
+function OnTransmute takes nothing returns nothing
+    local unit caster = GetTriggerUnit()
+    local integer p = GetPlayerId(GetOwningPlayer(caster))
+    local integer rank
+    if p >= 12 or Finished or caster != Hero[p] or GetSpellAbilityId() != 'ANtm' then
+        set caster = null
+        return
+    endif
+    if GetTriggerEventId() == EVENT_PLAYER_UNIT_SPELL_CAST then
+        // Capture before native resolution, even if removal/death precedes EFFECT.
+        set TransmuteTarget[p] = GetSpellTargetUnit()
+        set TransmuteReward[p] = 0
+    elseif GetTriggerEventId() == EVENT_PLAYER_UNIT_SPELL_EFFECT then
+        if TransmuteTarget[p] == null then
+            set TransmuteTarget[p] = GetSpellTargetUnit()
+        endif
+        set rank = GetUnitAbilityLevel(caster,'ANtm')
+        set TransmuteReward[p] = TRANSMUTE_GOLD_BASE+TRANSMUTE_GOLD_STEP*(rank-1)
+    elseif GetTriggerEventId() == EVENT_PLAYER_UNIT_SPELL_FINISH then
+        // Native Transmute removes its victim. No award for a live/invalid target.
+        if TransmuteTarget[p] != null and (GetUnitTypeId(TransmuteTarget[p]) == 0 or not Alive(TransmuteTarget[p])) and TransmuteReward[p] > 0 then
+            call AddGold(p,TransmuteReward[p])
+            call ShowGoldReward(p,caster,TransmuteReward[p])
+        endif
+        set TransmuteTarget[p] = null
+        set TransmuteReward[p] = 0
+    else
+        // ENDCAST also fires on interruption; release handles without a reward.
+        set TransmuteTarget[p] = null
+        set TransmuteReward[p] = 0
+    endif
+    set caster = null
 endfunction
 
 function OnLeave takes nothing returns nothing
@@ -1793,6 +1835,10 @@ function InitSlot takes integer p returns nothing
     call TriggerRegisterPlayerUnitEvent(ResearchTrigger, Player(p), EVENT_PLAYER_UNIT_RESEARCH_FINISH, null)
     call TriggerRegisterPlayerUnitEvent(PickerTrainTrigger, Player(p), EVENT_PLAYER_UNIT_TRAIN_FINISH, null)
     call TriggerRegisterPlayerUnitEvent(PickerSpellTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
+    call TriggerRegisterPlayerUnitEvent(TransmuteTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_EFFECT, null)
+    call TriggerRegisterPlayerUnitEvent(TransmuteTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_CAST, null)
+    call TriggerRegisterPlayerUnitEvent(TransmuteTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_FINISH, null)
+    call TriggerRegisterPlayerUnitEvent(TransmuteTrigger, Player(p), EVENT_PLAYER_UNIT_SPELL_ENDCAST, null)
     call TriggerRegisterPlayerUnitEvent(LevelTrigger, Player(p), EVENT_PLAYER_HERO_LEVEL, null)
     set j = 0
     loop
@@ -1830,6 +1876,7 @@ function InitGame takes nothing returns nothing
     set SummonTrigger = CreateTrigger()
     set PickerTrainTrigger = CreateTrigger()
     set PickerSpellTrigger = CreateTrigger()
+    set TransmuteTrigger = CreateTrigger()
     set BaseDefenseTrigger = CreateTrigger()
     call InitBalance()
     loop
@@ -1880,6 +1927,7 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(LevelTrigger, function OnHeroLevel)
     call TriggerAddAction(PickerTrainTrigger, function OnHeroPick)
     call TriggerAddAction(PickerSpellTrigger, function OnPickerSpell)
+    call TriggerAddAction(TransmuteTrigger, function OnTransmute)
     call TriggerAddAction(BaseDefenseTrigger, function OnBaseDefense)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0

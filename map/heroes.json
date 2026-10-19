@@ -5,17 +5,12 @@
     "alias": "paladin",
     "group": 0,
     "skills": [
-      "AHhb",
+      "Fhas",
       "AHad",
       "AHds",
       "AHre"
     ],
     "spells": [
-      [
-        "AHhb",
-        "holybolt",
-        3
-      ],
       [
         "AHds",
         "divineshield",
@@ -560,7 +555,7 @@
     "skills": [
       "AHfa",
       "AEar",
-      "AEst",
+      "Fmrg",
       "AEsf"
     ],
     "autocast": [
