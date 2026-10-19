@@ -1,5 +1,7 @@
-"""Classic command-card portrait picker: eight hero cards and four controls."""
+"""Classic picker: seven cards, four controls, and the native rally command."""
 import math
+
+CARDS_PER_PAGE = 7
 
 
 def controls():
@@ -19,20 +21,20 @@ def controls():
     return result
 
 
-def units(heroes):
+def units(heroes, basic_skill_max=200):
     result=[]
     for idx,hero in enumerate(heroes):
         result.append(('hpea',f'fp{idx:02d}',[
             ('unam',3,hero['name']),('uico',3,hero['icon']),
             ('utip',3,'Выбрать: '+hero['name']),
-            ('utub',3,hero.get('description','Стандартный герой Warcraft III.')+' Выбор бесплатный. Навыки до 300, ульта до 50.'),
-            ('ubpx',0,idx%4),('ubpy',0,idx%8//4),('ubld',0,1),
+            ('utub',3,hero.get('description','Стандартный герой Warcraft III.')+f' Выбор бесплатный. Навыки до {basic_skill_max}, ульта до 50.'),
+            ('ubpx',0,idx%CARDS_PER_PAGE%4),('ubpy',0,idx%CARDS_PER_PAGE//4),('ubld',0,1),
             ('ugol',0,0),('ulum',0,0),('ufoo',0,0),('ureq',3,''),('uabi',3,''),('upgr',3,''),
         ]))
-    for page in range(math.ceil(len(heroes)/8)):
+    for page in range(math.ceil(len(heroes)/CARDS_PER_PAGE)):
         result.append(('hbar',f'fpk{page}',[
-            ('unam',3,f'|cffffcc00ГАЛЕРЕЯ ГЕРОЕВ|r — {page+1}/{math.ceil(len(heroes)/8)}'),
-            ('utra',3,','.join(f'fp{idx:02d}' for idx in range(page*8,min(len(heroes),(page+1)*8)))),
+            ('unam',3,f'|cffffcc00ГАЛЕРЕЯ ГЕРОЕВ|r — {page+1}/{math.ceil(len(heroes)/CARDS_PER_PAGE)}'),
+            ('utra',3,','.join(f'fp{idx:02d}' for idx in range(page*CARDS_PER_PAGE,min(len(heroes),(page+1)*CARDS_PER_PAGE)))),
             ('uabi',3,'Fprv,Fnxt,Frnd,Fmod'),('ures',3,''),('ureq',3,''),('uupt',3,''),
             ('upat',3,''),('ucol',2,0.0),('uico',3,'ReplaceableTextures\\CommandButtons\\BTNSelectHeroOn.blp'),
             ('umdl',3,'Buildings\\Other\\Tavern\\Tavern.mdl'),('usca',1,0.65),

@@ -56,7 +56,7 @@ for(const [id,old]of oldU){
   for(const field of ['uhpm','ua1b'])assert(Math.abs(get(now,field)-get(old,field)*multiplier)<=.50001);
   for(const mod of old.modifications)if(!['uhpm','ua1b'].includes(mod.id))assert.equal(get(now,mod.id),mod.value,'Preserve other summon mechanics');
  }else{
-  for(const mod of old.modifications)if(!(['Hpal','Emoo'].includes(id)&&mod.id==='uhab'))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
+  for(const mod of old.modifications)if(!(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
  }
 }
 for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');

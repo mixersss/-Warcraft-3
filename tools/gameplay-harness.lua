@@ -531,8 +531,8 @@ assert(not Alive(Bastion[3]),'Bastions never respawn')
 
 -- Gallery callbacks and page controls, including every custom hero.
 for kind=0,HERO_COUNT-1 do
- reset();ShowHeroPicker(0,math.floor(kind/8))
- assert(PickerPage[0]==math.floor(kind/8) and Players[0].selection==HeroPicker[0])
+ reset();ShowHeroPicker(0,math.floor(kind/PICK_CARDS_PER_PAGE))
+ assert(PickerPage[0]==math.floor(kind/PICK_CARDS_PER_PAGE) and Players[0].selection==HeroPicker[0])
  local picker=HeroPicker[0];Dying=picker
  Trained=CreateUnit(0,PickToken[kind],0,0,0);OnHeroPick()
  assert(Trained.removed and HeroKind[0]==kind and Hero[0].id==HeroType[kind])
@@ -540,7 +540,7 @@ for kind=0,HERO_COUNT-1 do
 end
 reset();ShowHeroPicker(0,0);local previous=HeroPicker[0]
 Dying=previous;SpellId=FourCC('Fprv');OnPickerSpell()
-assert(PickerPage[0]==4 and previous.removed,'Previous wraps to last page')
+assert(PickerPage[0]==PICK_PAGE_COUNT-1 and previous.removed,'Previous wraps to last page')
 Dying=HeroPicker[0];SpellId=FourCC('Fnxt');OnPickerSpell();assert(PickerPage[0]==0)
 Dying=HeroPicker[0];SpellId=FourCC('Frnd');RngQueue={27};OnPickerSpell();assert(HeroKind[0]==27)
 Seconds=WARMUP_SECONDS-1;Tick();assert(HeroPicker[0]==nil,'Remove gallery before combat')

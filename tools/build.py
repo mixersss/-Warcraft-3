@@ -14,7 +14,7 @@ import struct
 import zlib
 from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
-from hero_picker import units as picker_units, controls as picker_controls
+from hero_picker import units as picker_units, controls as picker_controls, CARDS_PER_PAGE
 
 ROOT = Path(__file__).resolve().parents[1]
 SIZE = 96
@@ -237,7 +237,7 @@ def units(b: dict) -> bytes:
             entries.append((faction['units'][tier], rawcode, changes))
     entries += summoned_units(ROOT)
     entries += chemical_forms(ROOT)
-    entries += picker_units(catalog('heroes'))
+    entries += picker_units(catalog('heroes'),b['basic_skill_max'])
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
         ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti,Rfa2,Rfr2,Rfh2,Rfwn'),
@@ -415,7 +415,7 @@ def script(b: dict) -> str:
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
     generated += [f'    constant real FOUNTAIN_HP_PERCENT = {b["fountain_hp_percent"]:.6f}', f'    constant real FOUNTAIN_MANA_PERCENT = {b["fountain_mana_percent"]:.6f}', f'    constant real EXPERIENCE_MULTIPLIER = {b["experience_multiplier"]:.6f}', f'    constant real KILL_GOLD_MULTIPLIER = {b["kill_gold_multiplier"]:.6f}']
-    generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/8)}',
+    generated += [f'    constant integer HERO_COUNT = {len(heroes)}', f'    constant integer PICK_CARDS_PER_PAGE = {CARDS_PER_PAGE}', f'    constant integer PICK_PAGE_COUNT = {math.ceil(len(heroes)/CARDS_PER_PAGE)}',
         '    integer array BotTierBudget', '    integer array BotGearBudget', '    string array BotTacticName',
         '    integer array ArmyType', '    integer array TierCost',
         '    string array TierName', '    boolean array AutoArmy',

@@ -336,19 +336,37 @@ checkIdentifiers(script);
 console.log('PASS: MPQ, 15 binary formats, five research buttons (200/200/200/4/20), 500 hero levels, 200/50 skill caps, 61 shop items, 12 slots, 36 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
-for(let page=0;page<5;page++) {
+// Classic ARal reserves (3,1) even on a building with a custom ability list.
+// The user's screenshot confirmed it hid every eighth card (including Alchemist).
+const visibleCards=[];
+for(let page=0;page<6;page++) {
  const picker=custom.find(o=>o.newId===`fpk${page}`);
  assert.equal(picker.oldId,'hbar');
- assert.equal(value(picker,'utra'),heroes.slice(page*8,page*8+8).map((h,i)=>`fp${String(page*8+i).padStart(2,'0')}`).join(','));
+ assert.equal(value(picker,'utra'),heroes.slice(page*7,page*7+7).map((h,i)=>`fp${String(page*7+i).padStart(2,'0')}`).join(','));
  assert.equal(value(picker,'uabi'),'Fprv,Fnxt,Frnd,Fmod');
  assert.equal(value(picker,'upat'),'');
+ const occupied=new Set(['3,1']); // native rally point
+ for(const id of value(picker,'uabi').split(',')){
+  const control=gearAbilities.find(a=>a.newId===id);
+  const cell=`${value(control,'abpx')},${value(control,'abpy')}`;
+  assert(!occupied.has(cell),'Picker control cannot overlap a native command');occupied.add(cell);
+ }
+ for(const id of value(picker,'utra').split(',')){
+  const card=custom.find(u=>u.newId===id);
+  const cell=`${value(card,'ubpx')},${value(card,'ubpy')}`;
+  assert(!occupied.has(cell),`${id} must not be hidden by Rally or another button`);occupied.add(cell);visibleCards.push(id);
+ }
 }
+assert.equal(visibleCards.length,36);assert.equal(new Set(visibleCards).size,36);
+assert.equal(value(custom.find(u=>u.newId==='fpk3'),'utra').split(',')[2],'fp23','Alchemist visible on page4 row1 column3');
+assert.match(script,/constant integer PICK_CARDS_PER_PAGE = 7/);
+assert.match(script,/constant integer PICK_PAGE_COUNT = 6/);
 for(const [idx,hero] of heroes.entries()) {
  const card=custom.find(o=>o.newId===`fp${String(idx).padStart(2,'0')}`);
  assert.equal(card.oldId,'hpea','No native hero training limit for selection cards');
  assert.equal(value(card,'uico'),hero.icon);
  assert.equal(value(card,'ugol'),0);assert.equal(value(card,'ufoo'),0);
- assert.equal(value(card,'ubpx'),idx%4);assert.equal(value(card,'ubpy'),Math.floor(idx%8/4));
+ assert.equal(value(card,'ubpx'),idx%7%4);assert.equal(value(card,'ubpy'),Math.floor(idx%7/4));
  if(hero.base) {
   const unit=custom.find(o=>o.newId===hero.id);
   assert.equal(unit.oldId,hero.base);assert.equal(value(unit,'uhab'),[...hero.skills,'Fatr'].join(','));
