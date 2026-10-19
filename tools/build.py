@@ -109,7 +109,7 @@ def supreme_positions() -> list[tuple[int,int]]:
 
 
 def book_positions() -> list[tuple[int,int]]:
-    return [market_position(team,slot) for team in range(4) for slot in range(6,9)]
+    return [market_position(team,6) for team in range(4) for _ in range(3)]
 
 
 def bastion_positions() -> list[tuple[int,int]]:
@@ -443,7 +443,7 @@ def script(b: dict) -> str:
     for idx,(x,y) in enumerate(supreme_positions()):
         init += [f'    set SuperX[{idx}] = {x}.0',f'    set SuperY[{idx}] = {y}.0']
     for team in range(4):
-        x,y=market_position(team,9)
+        x,y=market_position(team,7)
         init += [f'    set UtilityX[{team}] = {x}.0',f'    set UtilityY[{team}] = {y}.0']
     for idx,(x,y) in enumerate(book_positions()):
         init += [f'    set BookX[{idx}] = {x}.0',f'    set BookY[{idx}] = {y}.0']

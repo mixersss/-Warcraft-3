@@ -85,6 +85,7 @@ globals
     unit PotionShop = null
     unit array SupremeShop
     unit array BookShop
+    unit array TeamBookShop
     integer array ShoppingUntil
     integer array SuperProgress
     unit EquipmentShop = null
@@ -1738,7 +1739,7 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three plus wave-size research troops per wave, now every 21 seconds; army cap 48 and summon counts preserved. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the shared team book shop. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three plus wave-size research troops per wave, now every 21 seconds; army cap 60; summon counts preserved. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1816,8 +1817,11 @@ function InitSlot takes integer p returns nothing
         set j = j+1
     endloop
     set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
-    set BookShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fbks',BookX[p],BookY[p],270)
-    call SetUnitInvulnerable(BookShop[p],true)
+    if TeamBookShop[t] == null then
+        set TeamBookShop[t] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fbks',BookX[p],BookY[p],270)
+        call SetUnitInvulnerable(TeamBookShop[t],true)
+    endif
+    set BookShop[p] = TeamBookShop[t]
     set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
     set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
     call PauseUnit(Bastion[p], true)

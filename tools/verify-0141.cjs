@@ -59,7 +59,13 @@ for(const [id,old]of oldU){
   for(const mod of old.modifications)if(!(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
  }
 }
-for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');
+for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e']){
+ if(filename==='war3map.w3q'){
+  const historical=parse(A,filename,true);
+  for(const o of historical.customTable.objects)for(const m of o.modifications)if(m.id==='gub1')m.value=m.value.replace('Предел живой армии 48 сохранён.','Предел живой армии 60 сохранён.');
+  assert.deepEqual(parse(A,filename),historical,'Only the requested army-cap tooltip may change');
+ }else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');
+}
 assert.equal(b.transmute_gold_base,100);assert.equal(b.transmute_gold_step,30);
 const report=read('build/verification-014.json');Object.assign(report,{heroBalancePatch:'0.14.1',armyPassives:2,resurrectionCount:[6,55],mirrorDamage:[.25,.8],mirrorDamageTaken:[1.8,1],metamorphHPFactor:1.2,pandaPowerFactor:1.25,tornadoDamageFactor:1.5,factoryPowerFactor:1.15,roboMinimumCurveStep:2,transmuteGold:[100,1570],nativeTransmuteBounty:false,enginePlaytest:false});
 fs.writeFileSync(path.join(root,'build/verification-0141.json'),JSON.stringify(report,null,2)+'\n');

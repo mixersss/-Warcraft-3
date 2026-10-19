@@ -410,7 +410,7 @@ for(const [id,field,flag] of [['FbHP','Oar1','Oar2'],['FbMP','Arm1','Arm2']]) {
  assert.equal(value(a,'atar',1),'ground,air,hero,friend,self,vuln,invu');
  assert.ok(Math.abs(value(a,field,1)-0.005)<1e-6);assert.equal(value(a,flag,1),1);
 }
-assert.equal(balance.army_cap,48);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,21);
+assert.equal(balance.army_cap,60);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,21);
 console.log('PASS: 36 heroes / 12 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
 for(const [id,gap] of [['AHds',8],['AHtb',1],['AEer',1],['AOhx',1]]) {
  const a=abilityById.get(id);assert.ok(value(a,'acdn',200)>=value(a,'ahdu',200)+gap-0.001,'No permanent shield/control from cooldown scaling');

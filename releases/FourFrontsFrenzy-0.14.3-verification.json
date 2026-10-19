@@ -1,0 +1,81 @@
+{
+  "filename": "FourFrontsFrenzy-0.14.3-alpha.w3x",
+  "sha256": "cb65eb1c8afe63076aa2a97b7e2550a9a5a2f57dd67615957c8973a2c23df3de",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteGold": [
+    100,
+    1570
+  ],
+  "nativeTransmuteFactor": 0,
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 60,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false,
+  "heroBalancePatch": "0.14.1",
+  "armyPassives": 2,
+  "resurrectionCount": [
+    6,
+    55
+  ],
+  "mirrorDamage": [
+    0.25,
+    0.8
+  ],
+  "mirrorDamageTaken": [
+    1.8,
+    1
+  ],
+  "metamorphHPFactor": 1.2,
+  "pandaPowerFactor": 1.25,
+  "tornadoDamageFactor": 1.5,
+  "factoryPowerFactor": 1.15,
+  "roboMinimumCurveStep": 2,
+  "nativeTransmuteBounty": false,
+  "galleryPatch": "0.14.2",
+  "pickerCardsPerPage": 7,
+  "pickerPages": 6,
+  "reservedNativeRallyCell": [
+    3,
+    1
+  ],
+  "all36CardCellsChecked": true,
+  "alchemistPage": 4,
+  "alchemistRow": 1,
+  "alchemistColumn": 3,
+  "combatObjectsUnchangedExceptArmyCapTooltip": "0.14.1-alpha",
+  "teamArmyCap": 180,
+  "fullNpmTest": true,
+  "strictLegacyPjass": true,
+  "bookShopsPerOccupiedTeam": 1,
+  "totalBookShopsWithFullLobby": 4,
+  "marketShopsPerOccupiedTeam": 8,
+  "sharedBookShopHandlesTested": true,
+  "emptyFirstSlotShopTested": true
+}

@@ -235,6 +235,7 @@ function reset()
     AutosaveCount=0
     HeroQueueCursor=0
     for team=0,3 do
+      TeamBookShop[team]=nil
       SupremeShop[team]=CreateUnit(15,FourCC('fsup'),SuperX[team],SuperY[team],0);SupremeShop[team].structure=true
     end
     for idx=0,CORPSE_SECONDS do CorpseRing[idx]={} end
@@ -895,6 +896,20 @@ EventPlayer=0;OnLeave();assert(Bot[0] and BotTactic[0]==2 and #RngQueue==0)
 RngQueue={0};OnLeave();assert(BotTactic[0]==2 and #RngQueue==1,'Repeated departure handling never rerolls an existing bot')
 
 -- Native instant-use books work with six occupied slots and ordinary paid stock.
+reset();World={}
+for p=0,11 do InitSlot(p) end
+local sharedBookCount=0
+for _,u in ipairs(World)do if u.id==FourCC('fbks')then sharedBookCount=sharedBookCount+1 end end
+assert(sharedBookCount==4,'Exactly one book shop per occupied team, not per player')
+for team=0,3 do
+ local first=team*3
+ assert(BookShop[first]==BookShop[first+1] and BookShop[first]==BookShop[first+2])
+ assert(BookShop[first]==TeamBookShop[team] and BookX[first]==BookX[first+2] and BookY[first]==BookY[first+2])
+end
+reset();World={};Players[0].slot=PLAYER_SLOT_STATE_EMPTY
+InitSlot(0);InitSlot(1);InitSlot(2)
+assert(BookShop[0]==nil and BookShop[1]==BookShop[2] and BookShop[1]==TeamBookShop[0],'First slot may be empty')
+assert(TeamBookShop[1]==nil and TeamBookShop[2]==nil and TeamBookShop[3]==nil,'Unoccupied teams do not create a book shop')
 reset();Players[0].slot=PLAYER_SLOT_STATE_PLAYING;Players[0].controller=MAP_CONTROL_USER;InitSlot(0)
 Hero[0].x,Hero[0].y=BookX[0],BookY[0];Players[0].gold=5000
 for slot=0,5 do Hero[0].inventory[slot]={id=9000+slot} end
