@@ -41,8 +41,9 @@ def extract(source):
             if line.startswith('['): section = line.strip('[]')
             elif line.startswith('Name='): names[section] = line[5:].strip('"')
     roster = json.loads((ROOT/'map/heroes.json').read_text())
-    caps = {skill: 50 if slot == 3 else 300 for hero in roster for slot, skill in enumerate(hero.get('skill_sources',hero['skills']))}
-    for prefix, cap in [('ANs',300),('ANc',300),('ANg',50)]:
+    basic_cap=json.loads((ROOT/'map/balance.json').read_text())['basic_skill_max']
+    caps = {skill: 50 if slot == 3 else basic_cap for hero in roster for slot, skill in enumerate(hero.get('skill_sources',hero['skills']))}
+    for prefix, cap in [('ANs',basic_cap),('ANc',basic_cap),('ANg',50)]:
         for n in range(1,4): caps[prefix+str(n)] = cap
     output = {}
     for rawcode, cap in sorted(caps.items()):

@@ -12,8 +12,8 @@ import math
 from pathlib import Path
 import struct
 import zlib
-from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities
-from equipment import item_effects, potion_abilities
+from progression import hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms
+from equipment import item_effects, potion_abilities, utility_abilities
 from hero_picker import units as picker_units, controls as picker_controls
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -94,31 +94,22 @@ def positions() -> list[tuple[int, int]]:
     return result
 
 
+def market_position(team: int, slot: int) -> tuple[int,int]:
+    x,y=-5200+slot*288,-5488
+    for _ in range(team):x,y=-y,x
+    return x,y
+
+
 def shop_positions() -> list[tuple[int,int]]:
-    result=[]
-    for team in range(4):
-        for x,y in [(-5050,-5100),(-5050,-2450),(-2500,-5000),(-4200,-3000),(-3100,-3200)]:
-            for _ in range(team): x,y=-y,x
-            result.append((x,y))
-    return result
+    return [market_position(team,slot) for team in range(4) for slot in range(5)]
 
 
 def supreme_positions() -> list[tuple[int,int]]:
-    result=[]
-    for team in range(4):
-        x,y=-5100,-3100
-        for _ in range(team):x,y=-y,x
-        result.append((x,y))
-    return result
+    return [market_position(team,5) for team in range(4)]
 
 
 def book_positions() -> list[tuple[int,int]]:
-    result=[]
-    for team in range(4):
-        for x,y in [(-5000,-3500),(-4100,-5100),(-2750,-4450)]:
-            for _ in range(team): x,y=-y,x
-            result.append((x,y))
-    return result
+    return [market_position(team,slot) for team in range(4) for slot in range(6,9)]
 
 
 def bastion_positions() -> list[tuple[int,int]]:
@@ -150,7 +141,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = f'4 teams x 3. One troop type per army tier, 4 races, 36 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 300, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
+    text = f'4 teams x 3. One troop type per army tier, 4 races, 36 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 200, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (open slots stay empty)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -241,18 +232,19 @@ def units(b: dict) -> bytes:
                 ('usca', 1, b['army_model_scale']), ('ucol', 2, float(b['army_collision'])),
                 ('uabi', 3, ''), ('upgr', 3, 'Rfat,Rfar,Rfhp,Rfa2,Rfr2,Rfh2'), ('ureq', 3, ''),
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
-                ('ugol', 0, 0), ('ulum', 0, 0), ('uacq', 2, 650.0),
+                ('ugol', 0, b['transmute_troop_values'][tier]), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
             entries.append((faction['units'][tier], rawcode, changes))
     entries += summoned_units(ROOT)
+    entries += chemical_forms(ROOT)
     entries += picker_units(catalog('heroes'))
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
-        ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti,Rfa2,Rfr2,Rfh2'),
+        ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti,Rfa2,Rfr2,Rfh2,Rfwn'),
         ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, f'Четыре кнопки: атака, броня, здоровье армии и развитие казармы. Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
+        ('utub', 3, f'Атака, броня, здоровье армии, развитие казармы и отдельная кнопка численности волн (+1 боец, от 2000 золота). Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, b['tower_hp']),
@@ -263,11 +255,11 @@ def units(b: dict) -> bytes:
     entries.append(('hgtw','fbst',[
         ('unam',3,'Бастионная башня'),('uhpm',0,b['bastion_hp']),('udef',0,b['bastion_armor']),
         ('uaen',0,1),('ua1b',0,b['bastion_damage']),('ua1d',0,1),('ua1s',0,2),
-        ('ua1c',2,b['bastion_cooldown']),('ua1r',0,b['bastion_range']),('uacq',2,float(b['bastion_range'])),
+        ('ua1p',2,0.05),('ua1q',2,0.0),('ua1c',2,b['bastion_cooldown']),('ua1r',0,b['bastion_range']),('uacq',2,float(b['bastion_range'])),
         ('ua1g',3,'air,ground,structure,debris,item,ward'),('ureq',3,''),('uupt',3,''),
         ('uabi',3,''),('upgr',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('uhpr',2,0.0),
         ('utip',3,'Бастионная башня'),
-        ('utub',3,f'Защищает казарму: включается на 6 секунд, когда враг бьёт базу или башню. {b["bastion_hp"]} HP, {b["bastion_armor"]} брони, {b["bastion_damage"]} базового урона, дальность {b["bastion_range"]}. Можно уничтожить; не возрождается.'),
+        ('utub',3,f'Защищает казарму: включается при приближении противника к базе или при уроне базе/башне. {b["bastion_hp"]} HP, {b["bastion_armor"]} брони, {b["bastion_damage"]} базового урона, дальность {b["bastion_range"]}. Можно уничтожить; не возрождается.'),
     ]))
     entries.append(('ngme', 'fshp', [
         ('unam',3,'Магазин экипировки'),('usei',3,','.join(row['id'] for row in catalog('items'))),
@@ -280,6 +272,11 @@ def units(b: dict) -> bytes:
             ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
             ('utub',3,'Сильная экипировка трёх ступеней. Для покупки подведи героя. Улучшенные предметы стоят дороже.'),
         ]))
+    entries.append(('ngme','futl',[
+        ('unam',3,'Походные припасы'),('usei',3,','.join([row['id'] for row in catalog('utility')]+['fpH0','fpM0'])),
+        ('ucol',2,96.),('uhpm',0,b['shop_hp']),('ureq',3,''),
+        ('utub',3,'Блинк-даггер, свитки усиления/лечения солдат и эликсиры героя. Подведите героя для покупки.'),
+    ]))
     entries.append(('nfoh','ffnt',[
         ('unam',3,'Общий фонтан жизни и маны'),('uhpm',0,b['shop_hp']),('uabi',3,'Avul,FfHP,FfMP'),
         ('upat',3,''),('ucol',2,64.0),('ureq',3,''),
@@ -294,7 +291,7 @@ def units(b: dict) -> bytes:
     entries.append(('ngme','fsup',[
         ('unam',3,'Сокровищница титанов'),('usei',3,','.join(row['id'] for row in catalog('supreme'))),
         ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
-        ('utub',3,'Высшая экипировка: огромные бонусы за 55000–60000 золота. Подведи героя, шесть мест в инвентаре.'),
+        ('utub',3,'Высшая экипировка: огромные бонусы за 44000–48000 золота. Подведи героя, шесть мест в инвентаре.'),
     ]))
     entries.append(('ngme','fpot',[
         ('unam',3,'Аптека арены'),('usei',3,','.join(row['id'] for row in catalog('potions'))),
@@ -304,9 +301,21 @@ def units(b: dict) -> bytes:
     entries.append(('ngme','fbks',[
         ('unam',3,'Лавка знаний'),('usei',3,','.join(row['id'] for row in catalog('books'))),
         ('ucol',2,48.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
-        ('utub',3,'Книги +2 силы, ловкости или интеллекта — по 350 золота; +1 уровень героя — 1200. Применяются при покупке.'),
+        ('utub',3,'Книги +2 силы, ловкости или интеллекта — по 280 золота; +1 уровень героя — 960. Применяются при покупке.'),
     ]))
+    timings=json.loads((ROOT/'map/hero-attack-seeds.json').read_text())['units']
+    speed=b['hero_attack_interval_multiplier']
     originals=[(hero['id'],'\0'*4,[('uhab',3,','.join(hero['skills']+['Fatr']))]) for hero in catalog('heroes') if 'base' not in hero]
+    original_ids={row[0] for row in originals}
+    for raw,values in timings.items():
+        mods=[(field,2,round(value*speed,5)) for field,value in values.items()]
+        normal={'Nalm':'Nalc','Nal2':'Nalc','Nal3':'Nalc','Edmm':'Edem','Nrob':'Ntin'}.get(raw)
+        if normal: mods.append(('uhab',3,','.join(next(h['skills'] for h in catalog('heroes') if h['id']==normal)+['Fatr'])))
+        if raw in original_ids: next(row[2] for row in originals if row[0]==raw).extend(mods)
+        elif raw not in {h.get('base') for h in catalog('heroes') if 'base' in h}: originals.append((raw,'\0'*4,mods))
+    for base,raw,mods in entries:
+        if raw in {h['id'] for h in catalog('heroes') if 'base' in h}:
+            mods.extend((field,2,round(value*speed,5)) for field,value in timings[base].items())
     return objects(entries,original_entries=originals)
 
 
@@ -328,11 +337,11 @@ def fountain_abilities(b: dict) -> list:
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
-    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')+catalog('books')
+    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')+catalog('books')+catalog('utility')
     stock = set(json.loads((ROOT/'map/classic-object-ids.json').read_text())['tables']['items'])
     for row in rows:
         if row['base'] not in stock:
@@ -388,12 +397,20 @@ def upgrades(b: dict) -> bytes:
                     ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),
                     ('greq',3,rawcode if offset else '',rank,0),('grqc',3,str(offset) if offset else '',rank,0)]
             entries.append((base,raw,changes))
+    changes=[('glvl',0,b['wave_upgrade_max']),('gbpx',0,0),('gbpy',0,1),
+        ('gglb',0,b['wave_upgrade_cost']),('gglm',0,b['wave_upgrade_cost_step']),('glmb',0,0),('glmm',0,0),
+        ('gtib',0,1),('gtim',0,0),('gef1',3,''),('gef2',3,''),('gef3',3,''),('gef4',3,'')]
+    for rank in range(1,b['wave_upgrade_max']+1):
+        changes += [('gnam',3,'Численность волн',rank,0),('gtp1',3,f'Ещё один воин [{rank}/{b["wave_upgrade_max"]}]',rank,0),
+            ('gub1',3,f'Следующая волна: {b["spawn_units"]+rank} бойцов. Цена {b["wave_upgrade_cost"]+(rank-1)*b["wave_upgrade_cost_step"]} золота. Предел живой армии {b["army_cap"]} сохранён.',rank,0),
+            ('gar1',3,'ReplaceableTextures\\CommandButtons\\BTNFootman.blp',rank,0),('greq',3,'',rank,0)]
+    entries.append(('Rhac','Rfwn',changes))
     return objects(entries,extended=True)
 
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max']
     generated = ['globals']
     for field in fields:
         generated.append(f'    constant integer {field.upper()} = {b[field]}')
@@ -425,6 +442,9 @@ def script(b: dict) -> str:
         init += [f'    set ShopX[{idx}] = {x}.0',f'    set ShopY[{idx}] = {y}.0']
     for idx,(x,y) in enumerate(supreme_positions()):
         init += [f'    set SuperX[{idx}] = {x}.0',f'    set SuperY[{idx}] = {y}.0']
+    for team in range(4):
+        x,y=market_position(team,9)
+        init += [f'    set UtilityX[{team}] = {x}.0',f'    set UtilityY[{team}] = {y}.0']
     for idx,(x,y) in enumerate(book_positions()):
         init += [f'    set BookX[{idx}] = {x}.0',f'    set BookY[{idx}] = {y}.0']
     for idx,row in enumerate(catalog('supreme')):

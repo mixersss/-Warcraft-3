@@ -1,0 +1,40 @@
+{
+  "filename": "FourFrontsFrenzy-0.14.0-alpha.w3x",
+  "sha256": "ef1b3b5481387e4591bd2a233f7451dbeda373f693c1ba6b5ad2d1618eb6b180",
+  "heroes": 36,
+  "skillSlots": 144,
+  "normalSkillRanks": 200,
+  "ultimateRanks": 50,
+  "QWER": true,
+  "chemicalForms": 200,
+  "realChemicalRageCooldownGrowth": true,
+  "transmuteFactor": [
+    2,
+    26.5
+  ],
+  "transmuteTroopCosts": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ],
+  "itemPriceFactor": 0.8,
+  "researchPriceFactorApprox": 0.8,
+  "waveSeconds": 21,
+  "startingTroops": 3,
+  "waveResearchRanks": 20,
+  "waveResearchCost": [
+    2000,
+    1000
+  ],
+  "maxWave": 23,
+  "armyCap": 48,
+  "barracksHP": 50700,
+  "bastionHP": 156000,
+  "bastionBaseDamage": 1750,
+  "bastionCooldown": 0.2,
+  "heroBaseAttackIntervalFactor": 0.75,
+  "engineAttackSpeedCapModified": false,
+  "enginePlaytest": false
+}

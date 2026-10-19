@@ -1,23 +1,23 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.13.2-alpha",
+  "version": "0.14.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
-  "spawn_seconds": 24,
-  "spawn_min_seconds": 24,
+  "spawn_seconds": 21,
+  "spawn_min_seconds": 21,
   "spawn_units": 3,
   "army_cap": 48,
   "warmup_seconds": 60,
   "upgrade_max": 200,
-  "attack_cost": 280,
-  "attack_cost_step": 210,
-  "armor_cost": 280,
-  "armor_cost_step": 210,
+  "attack_cost": 224,
+  "attack_cost_step": 168,
+  "armor_cost": 224,
+  "armor_cost_step": 168,
   "spawn_cost": 300,
   "spawn_cost_step": 200,
   "hero_power_cost": 250,
   "hero_power_cost_step": 150,
-  "base_hp": 39000,
+  "base_hp": 50700,
   "tiers": [
     {
       "name": "Footmen",
@@ -33,7 +33,7 @@
       "hp": 500,
       "damage": 18,
       "armor": 2,
-      "cost": 1800
+      "cost": 1440
     },
     {
       "name": "Grunts",
@@ -41,7 +41,7 @@
       "hp": 650,
       "damage": 23,
       "armor": 3,
-      "cost": 3200
+      "cost": 2560
     },
     {
       "name": "Knights",
@@ -49,7 +49,7 @@
       "hp": 850,
       "damage": 30,
       "armor": 4,
-      "cost": 4600
+      "cost": 3680
     },
     {
       "name": "Tauren",
@@ -57,27 +57,27 @@
       "hp": 1100,
       "damage": 40,
       "armor": 5,
-      "cost": 6000
+      "cost": 4800
     }
   ],
-  "health_cost": 504,
-  "health_cost_step": 336,
+  "health_cost": 403,
+  "health_cost_step": 269,
   "health_percent": 0.06666666666666667,
-  "base_upgrade_cost": 1800,
-  "base_upgrade_cost_step": 1400,
+  "base_upgrade_cost": 1440,
+  "base_upgrade_cost_step": 1120,
   "hero_max_level": 500,
-  "basic_skill_max": 300,
+  "basic_skill_max": 200,
   "ultimate_skill_max": 50,
-  "base_upgrade_hp": 19500,
+  "base_upgrade_hp": 25350,
   "tower_hp": 7800,
   "fountain_radius": 1000,
   "fountain_hp_percent": 0.015,
   "fountain_mana_percent": 0.015,
-  "bastion_hp": 78000,
-  "bastion_damage": 700,
+  "bastion_hp": 156000,
+  "bastion_damage": 1750,
   "bastion_armor": 24,
-  "bastion_range": 1000,
-  "bastion_cooldown": 0.75,
+  "bastion_range": 1400,
+  "bastion_cooldown": 0.2,
   "experience_multiplier": 0.5,
   "attack_per_rank": 3,
   "armor_per_rank": 1,
@@ -186,5 +186,16 @@
   },
   "research_soft_cap": 10,
   "advanced_research_cost_multiplier": 4,
-  "hero_respawn_seconds": 35
+  "hero_respawn_seconds": 35,
+  "wave_upgrade_cost": 2000,
+  "wave_upgrade_cost_step": 1000,
+  "wave_upgrade_max": 20,
+  "hero_attack_interval_multiplier": 0.75,
+  "transmute_troop_values": [
+    75,
+    110,
+    160,
+    225,
+    300
+  ]
 }

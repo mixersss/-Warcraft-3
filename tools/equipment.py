@@ -40,3 +40,12 @@ def potion_abilities(root):
             ('alev',0,1),('aher',0,0),('aite',0,1),(row['field'],0,row['amount'],1,1),('acdn',2,30.0,1,0),
             ('atp1',3,row['name'],1,0),('aub1',3,row['description'],1,0)]))
     return result
+
+
+def utility_abilities(root):
+    common=[('alev',0,1),('aher',0,0),('aite',0,1)]
+    return [
+      ('AIbk','Fdag',common+[('Ebl1',2,900.,1,1),('Ebl2',2,0.,1,2),('aran',2,900.,1,0),('amcs',0,0,1,0),('acdn',2,12.,1,0)]),
+      ('AIrr','Fsdm',common+[('Roa1',2,.35,1,1),('aare',2,700.,1,0),('adur',2,45.,1,0),('ahdu',2,45.,1,0),('atar',3,'ground,air,friend,nonhero',1,0)]),
+      ('AIda','Fsar',common+[('Idef',0,8,1,1),('aare',2,700.,1,0),('adur',2,45.,1,0),('ahdu',2,45.,1,0),('atar',3,'ground,air,friend,nonhero',1,0)]),
+      ('AIha','Fshl',common+[('Ihpg',0,2500,1,1),('aare',2,700.,1,0),('atar',3,'ground,air,friend,nonhero,vuln,invu',1,0)])]

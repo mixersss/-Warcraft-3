@@ -154,7 +154,7 @@ function FinishResearch(p)
 end
 function purchase(p,kind)
     local result=Buy(p,kind)
-    if result and kind<4 then FinishResearch(p) end
+    if result and (kind<4 or kind==6) then FinishResearch(p) end
     return result
 end
 function GetUnitCurrentOrder(u) return u.pending or 0 end
@@ -262,7 +262,7 @@ function reset()
         HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
-        Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p]=0,0,0,0,0,0,0,0
+        Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p],WaveRanks[p]=0,0,0,0,0,0,0,0,0
         Army[p]={}
         Shop[p]={buttons={}}
         Base[p]=CreateUnit(p,0,HomeX[p],HomeY[p],0);Base[p].structure=true;Base[p].hp=BASE_HP;Base[p].max=BASE_HP
@@ -410,10 +410,10 @@ for kind=0,HERO_COUNT-1 do
     AssignBotChoices(1)
     assert(ArmyRace[1]==kind%4 and HeroKind[1]==kind and Hero[1].id==HeroType[kind])
     SetHeroLevel(Hero[1],500)
-    for i=1,310 do LearnHero(1) end
-    assert(Hero[1].points+GetUnitAbilityLevel(Hero[1],FourCC('Fatr'))==49,'500 levels grant 999 points; 3x300 + 50 are spent')
+    for i=1,600 do LearnHero(1) end
+    assert(Hero[1].points+GetUnitAbilityLevel(Hero[1],FourCC('Fatr'))==349,'500 levels grant 999 points; 3x200 + 50 are spent')
     for slot=0,3 do
-        assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 50 or 300))
+        assert(GetUnitAbilityLevel(Hero[1],ResolvedSkill(Hero[1],HeroSkill[kind*4+slot]))==(slot==3 and 50 or 200))
     end
     Seconds=WARMUP_SECONDS+10
     Hero[1].paused=false
@@ -783,8 +783,8 @@ for slot=0,5 do Hero[0].inventory[slot]={id=9000+slot} end
 assert(not BotShop(0) and SuperProgress[0]==0 and Players[0].gold==100000)
 
 -- A funded supreme target is protected from research spending until a real purchase.
-reset();Bot[0]=true;GearProgress[0]=18;GearSavings[0]=60000;Players[0].gold=60000
-assert(not BotResearch(0,0) and Players[0].gold==60000)
+reset();Bot[0]=true;GearProgress[0]=18;local supremePrice=SuperCost[DesiredSuper(0)];GearSavings[0]=supremePrice;Players[0].gold=supremePrice
+assert(not BotResearch(0,0) and Players[0].gold==supremePrice)
 Hero[0].x=SuperX[0];Hero[0].y=SuperY[0]
 assert(BotShop(0) and SuperProgress[0]==1 and Players[0].gold==0)
 
@@ -802,7 +802,7 @@ CreateHero(0,0);Hero[0].agi=250;assert(DesiredSuper(0)==1,'Strength hero can rep
 -- Partial reserves survive frequent cheap research, long before a tier is funded.
 reset();Bot[0]=true;Players[0].gold=850;GearSavings[0]=400;TierSavings[0]=400
 assert(not BotResearch(0,0) and Players[0].gold==850,'Protect BOTH partial savings instead of capping gear reserve at current gold/4')
-Players[0].gold=2400;GearSavings[0]=600
+Players[0].gold=TierCost[1]+600;GearSavings[0]=600
 assert(BotResearch(0,3));FinishResearch(0)
 assert(Tier[0]==1 and Players[0].gold==600,'Tier purchases may spend their own reserve but preserve equipment money')
 
@@ -902,7 +902,7 @@ local strength,agility,intelligence=Hero[0].str,Hero[0].agi,Hero[0].int
 assert(IssueNeutralTargetOrder(0,BookShop[0],'neutralinteract',Hero[0]))
 for _,id in ipairs({'fbS0','fbA0','fbI0','fbL0'}) do assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC(id))) end
 assert(Hero[0].str==strength+2 and Hero[0].agi==agility+2 and Hero[0].int==intelligence+2)
-assert(Hero[0].level==2 and Hero[0].points==3 and Players[0].gold==2750,'The level book invokes the existing extra-skill-point handler exactly once')
+assert(Hero[0].level==2 and Hero[0].points==3 and Players[0].gold==3200,'The level book invokes the existing extra-skill-point handler exactly once')
 for slot=0,5 do assert(Hero[0].inventory[slot].id==9000+slot,'Instant books never replace equipment') end
 SetHeroLevel(Hero[0],499);Dying=Hero[0];OnHeroLevel()
 assert(IssueNeutralImmediateOrderById(0,BookShop[0],FourCC('fbL0')) and Hero[0].level==500)
@@ -915,12 +915,12 @@ for kind=0,2 do
  assert(not IssueImmediateOrderById(Base[0],AdvancedArmyResearch[kind]),'Advanced research cannot bypass its rank-ten prerequisite')
  for rank=1,9 do assert(purchase(0,kind)) end
  assert(not AdvancedUnlocked[kind])
- local tenth=({2170,2170,3528})[kind+1]
+ local tenth=({1736,1736,2824})[kind+1]
  assert(UpgradeCost(0,kind)==tenth)
  local gold=Players[0].gold;assert(purchase(0,kind));assert(Players[0].gold==gold-tenth)
  assert(AdvancedUnlocked[kind] and Players[0].techLimits[AdvancedArmyResearch[kind]]==190)
  assert(GetPlayerTechCount(0,ArmyResearch[kind])==10)
- local eleventh=({9520,9520,15456})[kind+1]
+ local eleventh=({7616,7616,12372})[kind+1]
  assert(UpgradeCost(0,kind)==eleventh)
  Players[0].gold=eleventh-1;assert(not Buy(0,kind) and not Base[0].pending)
  Players[0].gold=eleventh;assert(Buy(0,kind) and Base[0].pending==AdvancedArmyResearch[kind])
@@ -931,8 +931,8 @@ for kind=0,2 do
  for id,config in pairs(EngineResearch) do
   local limit=Players[0].techLimits and Players[0].techLimits[id] or config.cap
   if GetPlayerTechCount(0,id)<math.min(limit,config.cap) and (not config.requires or GetPlayerTechCount(0,config.requires)>=config.required) then
-   assert(not occupied[config.column],'Only one research stage occupies each command-card column')
-   occupied[config.column]=true
+   assert(not occupied[config.column+4*config.row],'Only one research stage occupies each command-card column')
+   occupied[config.column+4*config.row]=true
   end
  end
 end

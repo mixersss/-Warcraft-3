@@ -23,7 +23,7 @@ def ultimate_value(ability, field, rank, value, power):
     if ability=='AHmt' and raw=='Hmt1': value=max(value,min(96,24+2*rank))
     if ability=='AHmt' and raw=='Hmt2': value=max(1.0,2.5-0.03*(rank-1))
     if ability in ('ANch','ANtm') and raw in ('Nch1','Ntm3'): value=max(value,min(100,10+2*(rank-1)))
-    if ability=='ANtm' and raw=='Ntm1': value=min(2.0,max(value,1.2+0.01*(rank-1)))
+    if ability=='ANtm' and raw=='Ntm1': value=2.0+0.5*(rank-1)
     if ability=='AOre' and raw=='Ore1': value=max(2.0,5.0-0.07*(rank-1))
     if ability=='AOvd' and raw in ('adur','ahdu'): value=min(40.0,35.0+0.1*(rank-1))
     if ability=='ANto' and raw in ('adur','ahdu'): value*=1.5
@@ -43,7 +43,7 @@ def scaled_value(field, rank, ultimate):
     if field['kind'] == 3:
         return '' if raw in ('Neg3','Neg4','Neg5','Neg6') else last
     if raw == 'acdn':
-        return round(max(1.0,last*(1-0.6*extra/max(1,(50 if ultimate else 300)-len(values)))),4) if last>1 else last
+        return round(max(1.0,last*(1-0.6*extra/max(1,(50 if ultimate else 200)-len(values)))),4) if last>1 else last
     if raw == 'aare': return round(last*(1+min(extra*(0.01 if ultimate else 0.0012),0.35)),4)
     if raw in ('acas','adur','ahdu','aran','amcs'): return last
     if raw == 'Nms2': return last  # Mana Shield already absorbs 100%.
@@ -53,7 +53,7 @@ def scaled_value(field, rank, ultimate):
     if 'movement speed increase' in label: return round(min(1.0,last+0.005*extra),5)
     if 'attack speed increase' in label: return round(min(3.0,last+0.01*extra),5)
     # These are engine mechanics and identifiers, not scalable magnitudes.
-    progress=extra/max(1,(50 if ultimate else 300)-len(values))
+    progress=extra/max(1,(50 if ultimate else 200)-len(values))
     if 'chance' in label or 'evasion' in label:
         if max(values)<=0: return last
         limit=(0.75 if max(values)<=1 else 75.0) if ('evade' in label or 'evasion' in label) else (0.60 if max(values)<=1 else 60.0)
@@ -81,6 +81,7 @@ def scaled_value(field, rank, ultimate):
         step=max(abs(delta),abs(last)*(0.15 if ultimate else 0.04))
     if 'defense bonus' in label or 'armor bonus' in label:
         step=abs(last)*(0.10 if ultimate else 0.04)
+    if not ultimate: step *= (300-len(values))/max(1,200-len(values))
     value = last + (step*extra if last>=0 else -step*extra)
     if any(word in label for word in ('chance','evasion','life stolen','damage reduction','damage reflected','damage increase (%)','speed reduction')):
         value = min(value,0.80 if max(values)<=1 else 80)
@@ -107,7 +108,7 @@ def summon_catalog(root):
         key=(original,rank,ultimate)
         if key not in cache:
             raw=code(len(cache)); cache[key]=raw
-            src=stock[original]; extra=rank-1
+            src=stock[original]; extra=(rank-1)*(299/199 if not ultimate else 1)
             factor=(1+extra*(0.60 if ultimate else 0.15))*(balance['ultimate_summon_hp_multiplier'] if ultimate else 1)
             damage_factor=1+extra*(0.45 if ultimate else 0.12)
             scale=src['scale']*balance['summon_model_scale']*(1+extra*(0.002 if ultimate else 0.0005))
@@ -160,6 +161,18 @@ def summon_catalog(root):
     return units,replacements,details,support
 
 
+def chemical_forms(root):
+    balance=json.loads((Path(root)/'map/balance.json').read_text())
+    timing=json.loads((Path(root)/'map/hero-attack-seeds.json').read_text())['units']['Nalc']
+    result=[]
+    for rank in range(1,balance['basic_skill_max']+1):
+        bonus=min(3.,.25+(rank-1)*2.75/(balance['basic_skill_max']-1))
+        mods=[(field,2,round(value*balance['hero_attack_interval_multiplier']/(1+bonus),6)) for field,value in timing.items()]
+        mods.append(('uhab',3,'ANab,ANcr,ANhs,ANtm,Fatr'))
+        result.append((['Nalm','Nal2','Nal3'][min(rank,3)-1],f'Zc{rank:02x}',mods))
+    return result
+
+
 def summoned_units(root): return summon_catalog(str(root))[0]
 
 
@@ -176,6 +189,12 @@ def hero_abilities(root):
         ultimate=seed['ultimate']
         req,skip=(6,10) if ultimate else (1,1)
         changes=[('alev',0,seed['cap']),('arlv',0,req),('alsk',0,skip)]
+        slots={skill:slot for hero in json.loads((Path(root)/'map/heroes.json').read_text()) if 'base' not in hero for slot,skill in enumerate(hero['skills'])}
+        slot=slots.get(rawcode)
+        if rawcode[:3] in ('ANs','ANc','ANg') and rawcode[-1:].isdigit(): slot={'ANs':0,'ANc':1,'ANg':3}[rawcode[:3]]
+        if slot is not None:
+            key='QWER'[slot]
+            changes += [('ahky',3,key),('auhk',3,key),('arhk',3,key),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
         changes += [('aret',3,f'Изучить {seed["name"]} [уровень %d]'),('arut',3,f'{seed["name"]}. Максимальный ранг: {seed["cap"]}. Требования: уровень героя {req}, затем каждые {skip} уровней.')]
         for rank in range(1,seed['cap']+1):
             details=[]
@@ -183,6 +202,13 @@ def hero_abilities(root):
                 value=replacements.get((rawcode,rank,field['id']),scaled_value(field,rank,ultimate))
                 if ultimate:
                     value=ultimate_value(rawcode,field,rank,value,balance['ultimate_power_multiplier'])
+                if rawcode=='ANab':
+                    if field['id']=='Nab4': value=20.+12.*(rank-1)
+                    elif field['id']=='Nab5': value=12.+8.*(rank-1)
+                    elif field['id']=='Nab3': value=min(60,6+(rank-1)//4)
+                if rawcode=='ANcr':
+                    if field['id']=='Emeu': value=f'Zc{rank:02x}'
+                    elif field['id']=='Ncr6': value=round(min(3.,.25+(rank-1)*2.75/(seed['cap']-1)),6)
                 aura=balance['aura_balance'].get(rawcode,{}).get(field['id'])
                 if aura:
                     # Useful rank one, diminishing growth, exact finite rank-300 cap.
@@ -217,6 +243,8 @@ def hero_abilities(root):
                 elif field['kind']!=3 and field['column']>0 and any(w in field['label'].lower() for w in ('damage','heal','bonus','evasion','chance')):
                     details.append(f'{field["label"]}: {value:g}')
             text=f'Ранг {rank}/{seed["cap"]}. '+'; '.join(details[:3])
+            if rawcode=='ANtm': text+=f' Золото: {2.+.5*(rank-1):g} × стоимости цели; у армейского бойца стоимость 75/110/160/225/300 по ступени.'
+            if rawcode=='ANcr': text+=f' Настоящая ускоренная форма: +{(.25+(rank-1)*2.75/(seed["cap"]-1))*100:.1f}% к частоте атак через уменьшение базового интервала.'
             if rawcode=='ANba': text+=' Цели: живые и Нежить. Убитые стрелой бойцы поднимаются скелетами.'
             changes += [('atp1',3,f'{seed["name"]} [{rank}]',rank,0),('aub1',3,text,rank,0)]
         entries.append((rawcode,'\0'*4,changes))
@@ -231,7 +259,8 @@ def custom_hero_abilities(root):
     for hero in heroes:
         for slot,(raw,original) in enumerate(zip(hero['skills'],hero.get('skill_sources',[]))):
             changes=list(source[original])
-            changes += [('aher',0,1),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
+            changes += [('ahky',3,'QWER'[slot]),('auhk',3,'QWER'[slot]),('arhk',3,'QWER'[slot]),('aher',0,1),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
+            changes=list({(c[0],c[3:] if len(c)==5 else (0,0)):c for c in changes}.values())
             result.append((original,raw,changes))
     return result
 

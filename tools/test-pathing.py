@@ -77,7 +77,7 @@ for team, (cx, cy) in enumerate([(-3904,-3904),(3904,-3904),(3904,3904),(-3904,3
             x=cx-cx/length*along-cy/length*side
             y=cy-cy/length*along+cx/length*side
             assert cell(x,y) in accessible, ('Wide gate cross-section blocked',team,along,side)
-    for sx,sy in [(-5050,-5100),(-5050,-2450),(-2500,-5000),(-4200,-3000),(-3100,-3200)]:
+    for sx,sy in [(-5200+slot*288,-5488) for slot in range(5)]:
         for _ in range(team):sx,sy=-sy,sx
         assert cell(sx,sy) in accessible, ('Fortress shop unreachable',team,sx,sy)
     ex,ey=cx-cx/length*4000,cy-cy/length*4000
@@ -116,14 +116,14 @@ for along in range(1550,5800,64):
         assert data[16+cell(x,y)]&6==6
 print('PASS: Every inter-team path crosses the central arena; no outer ground/flying bypass.')
 for team in range(4):
-    sx,sy=-5100,-3100
+    sx,sy=-3760,-5488
     for _ in range(team):sx,sy=-sy,sx
     for dx in [-96,0,96]:
         for dy in [-96,0,96]:assert cell(sx+dx,sy+dy) in accessible,('Supreme shop access',team)
 for sx,sy in [(0,-640),(-160,-640),(160,-640)]:assert cell(sx,sy) in accessible
 print('PASS: New supreme shops and central potion shop are reachable.')
 for team in range(4):
-    for sx,sy in [(-5000,-3500),(-4100,-5100),(-2750,-4450)]:
+    for sx,sy in [(-5200+slot*288,-5488) for slot in range(6,9)]:
         for _ in range(team): sx,sy=-sy,sx
         for dx in [-96,0,96]:
             for dy in [-96,0,96]: assert cell(sx+dx,sy+dy) in accessible,('Book shop access',team,sx,sy)
@@ -131,3 +131,27 @@ for team in range(4):
             for _ in range(team): hx,hy=-hy,hx
             assert math.hypot(sx-hx,sy-hy)>250,'Book shop must not overlap barracks'
 print('PASS: All twelve book-shop sites have clear footprints and connect to their fortress.')
+
+market_obstacles=set(blocked)
+markets=[]
+for team in range(4):
+ for slot in range(10):
+  sx,sy=-5200+slot*288,-5488
+  for _ in range(team):sx,sy=-sy,sx
+  markets.append((sx,sy))
+  for py in range(max(0,int((sy+6144-96)//32)),min(height,int((sy+6144+96)//32)+1)):
+   for px in range(max(0,int((sx+6144-96)//32)),min(width,int((sx+6144+96)//32)+1)):
+    market_obstacles.add(py*width+px)
+market_routes=reached(center,market_obstacles)
+for team in range(4):
+ for slot in range(10):
+  sx,sy=-5200+slot*288,-5488+192
+  for _ in range(team):sx,sy=-sy,sx
+  assert cell(sx,sy) in market_routes,('Shop front blocked',team,slot)
+ for hx,hy in first:
+  for _ in range(team):hx,hy=-hy,hx
+  for n in range(23):
+   across=(n%3-1)*90;forward=220+(n//3)*90
+   dx,dy=[(across,forward),(-forward,across),(-across,-forward),(forward,-across)][team]
+   assert cell(hx+dx,hy+dy) in market_routes,('Expanded wave spawn blocked by market',team,n)
+print('PASS: All ten market-row fronts per fortress and all 23 upgraded wave sites per barracks remain connected with conservative shop footprints.')

@@ -20,6 +20,10 @@ globals
     constant string AUTOSAVE_PATH = "save\\FFFAutosave.w3z"
     unit array HeroPicker
     integer array PickerPage
+    unit array UtilityShop
+    real array UtilityX
+    real array UtilityY
+    integer array WaveRanks
     integer array BastionUntil
     integer HostPlayer = -1
     boolean ModeDialogOpen = false
@@ -168,6 +172,27 @@ function EnemyNear takes integer p, real x, real y, real radius returns unit
     return ReturnedUnit
 endfunction
 
+function UpdateBastion takes integer p returns nothing
+    local unit threat = null
+    if not Alive(Bastion[p]) or Seconds < WARMUP_SECONDS then
+        return
+    endif
+    set threat = EnemyNear(p,HomeX[p],HomeY[p],900.)
+    if threat == null then
+        set threat = EnemyNear(p,BastionX[p],BastionY[p],650.)
+    endif
+    if threat != null then
+        if Seconds >= BastionUntil[p] then
+            call PauseUnit(Bastion[p],false)
+            call IssueTargetOrder(Bastion[p],"attack",threat)
+        endif
+        set BastionUntil[p] = Seconds+6
+    elseif Seconds >= BastionUntil[p] then
+        call PauseUnit(Bastion[p],true)
+    endif
+    set threat = null
+endfunction
+
 function ChooseTarget takes integer team returns integer
     local integer p = 0
     local integer best = -1
@@ -220,6 +245,7 @@ function SyncArmyResearch takes integer p returns nothing
     set Armor[p] = GetPlayerTechCount(Player(p), 'Rfar', true)+GetPlayerTechCount(Player(p), 'Rfr2', true)
     set Vitality[p] = GetPlayerTechCount(Player(p), 'Rfhp', true)+GetPlayerTechCount(Player(p), 'Rfh2', true)
     set Tier[p] = GetPlayerTechCount(Player(p), 'Rfti', true)
+    set WaveRanks[p] = GetPlayerTechCount(Player(p), 'Rfwn', true)
     loop
         exitwhen k == 3
         if not AdvancedUnlocked[p*3+k] and GetPlayerTechCount(Player(p),ArmyResearch[k],true) >= RESEARCH_SOFT_CAP then
@@ -248,6 +274,8 @@ function UpgradeCost takes integer p, integer kind returns integer
         return TierCost[Tier[p]+1]
     elseif kind == 4 and Power[p] < 10 then
         return HERO_POWER_COST + Power[p]*HERO_POWER_COST_STEP
+    elseif kind == 6 and WaveRanks[p] < WAVE_UPGRADE_MAX then
+        return WAVE_UPGRADE_COST + WaveRanks[p]*WAVE_UPGRADE_COST_STEP
     elseif kind == 5 then
         return 150
     endif
@@ -281,7 +309,7 @@ function Buy takes integer p, integer kind returns boolean
         call Tell(p, "Maximum level reached.")
         return false
     endif
-    if kind >= 4 and not Alive(Hero[p]) then
+    if (kind == 4 or kind == 5) and not Alive(Hero[p]) then
         call Tell(p, "Wait for your hero to revive.")
         return false
     endif
@@ -293,7 +321,10 @@ function Buy takes integer p, integer kind returns boolean
         call Tell(p, "Not enough gold: " + I2S(cost) + " required.")
         return false
     endif
-    if kind < 4 then
+    if kind < 4 or kind == 6 then
+        if kind == 6 then
+            return IssueImmediateOrderById(Base[p],'Rfwn')
+        endif
         // The engine charges gold, queues research and updates existing/new units.
         // Human command-card clicks use exactly the same engine research path.
         if kind < 3 and GetPlayerTechCount(Player(p),ArmyResearch[kind],true) >= RESEARCH_SOFT_CAP then
@@ -335,7 +366,7 @@ endfunction
 function ShowShop takes integer p returns nothing
     if not Bot[p] and Alive(Base[p]) then
         call SelectUnitForPlayerSingle(Base[p], Player(p))
-        call Tell(p, "В казарме четыре кнопки: атака, броня, здоровье бойцов (до 200) и развитие базы. Цена указана на каждой кнопке.")
+        call Tell(p, "В казарме пять улучшений: атака, броня, здоровье бойцов (до 200), развитие базы и численность волн (+1 воин). Цена указана на каждой кнопке.")
     endif
 endfunction
 
@@ -384,7 +415,7 @@ function LearnHero takes integer p returns nothing
         call SelectHeroSkill(Hero[p], ResolvedSkill(Hero[p], HeroSkill[index+slot]))
         set slot = slot+1
     endloop
-    if GetUnitAbilityLevel(Hero[p], 'Fatr') < R2I(I2R(level)/12.0) then
+    if GetUnitAbilityLevel(Hero[p], 'Fatr') < R2I(I2R(level)/12.0) or (GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+1])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+2])) >= BASIC_SKILL_MAX and GetUnitAbilityLevel(Hero[p],ResolvedSkill(Hero[p],HeroSkill[index+3])) >= ULTIMATE_SKILL_MAX) then
         call SelectHeroSkill(Hero[p], 'Fatr')
     endif
     if AutoSkill[HeroKind[p]] != 0 and GetUnitAbilityLevel(Hero[p], AutoSkill[HeroKind[p]]) > 0 then
@@ -704,19 +735,38 @@ function OnResearch takes nothing returns nothing
         if Tier[p] > oldTier then
             set TierSavings[p] = IMaxBJ(0, TierSavings[p]-TierCost[Tier[p]])
         endif
-        call Tell(p, "Исследование завершено: атака " + I2S(Attack[p]) + ", броня " + I2S(Armor[p]) + ", здоровье " + I2S(Vitality[p]) + ", ступень базы " + I2S(Tier[p]+1))
+        call Tell(p, "Исследование завершено: атака " + I2S(Attack[p]) + ", броня " + I2S(Armor[p]) + ", здоровье " + I2S(Vitality[p]) + ", ступень базы " + I2S(Tier[p]+1)+", бойцов в волне "+I2S(SPAWN_UNITS+WaveRanks[p]))
     endif
 endfunction
 
 function SpawnWave takes integer p returns nothing
     local integer n = 0
     local integer count = CountUnitsInGroup(Army[p])
+    local real x
+    local real y
+    local real across
+    local real forward
+    local integer team = TeamOf(p)
     local integer id
     local unit u
     loop
-        exitwhen n >= SPAWN_UNITS or count >= ARMY_CAP
+        exitwhen n >= SPAWN_UNITS+WaveRanks[p] or count >= ARMY_CAP
         set id = ArmyType[ArmyRace[p]*5+Tier[p]]
-        set u = CreateUnit(Player(p), id, HomeX[p] + I2R(n-1)*90, HomeY[p] + 220, 270)
+        set across = I2R(ModuloInteger(n,3)-1)*90.
+        set forward = 220.+I2R(n/3)*90.
+        set x = across
+        set y = forward
+        if team == 1 then
+            set x = -forward
+            set y = across
+        elseif team == 2 then
+            set x = -across
+            set y = -forward
+        elseif team == 3 then
+            set x = forward
+            set y = -across
+        endif
+        set u = CreateUnit(Player(p), id, HomeX[p]+x, HomeY[p]+y, 270)
         // 11..15: advancing through center; 1..5: reached the center.
         call SetUnitUserData(u, Tier[p]+11)
         call GroupAddUnit(Army[p], u)
@@ -992,6 +1042,11 @@ function BotBuy takes integer p returns nothing
     // No free gold or instant upgrades: use the native research queue.
     if Tier[p] < 4 and Attack[p] >= Tier[p]+1 and Armor[p] >= Tier[p]+1 and Vitality[p] >= Tier[p]+1 then
         if BotResearch(p, 3) then
+            return
+        endif
+    endif
+    if WaveRanks[p] < IMinBJ(WAVE_UPGRADE_MAX,(Attack[p]+Armor[p]+Vitality[p])/6) then
+        if BotResearch(p,6) then
             return
         endif
     endif
@@ -1331,8 +1386,13 @@ function OnChat takes nothing returns nothing
         call Buy(p, 3)
     elseif command == "-hp" then
         call Buy(p, 2)
+    elseif command == "-wave" then
+        call Buy(p,6)
+    elseif command == "-supplies" then
+        call SelectUnitForPlayerSingle(UtilityShop[TeamOf(p)],Player(p))
+        call PanCameraToTimedForPlayer(Player(p),UtilityX[TeamOf(p)],UtilityY[TeamOf(p)],.25)
     elseif command == "-spawn" then
-        call Tell(p, "Подкрепления появляются раз в 12 секунд.")
+        call Tell(p,"Волна: "+I2S(SPAWN_UNITS+WaveRanks[p])+" бойцов раз в "+I2S(SPAWN_SECONDS)+" секунд. -wave: улучшить численность.")
     elseif command == "-items" then
         call SelectUnitForPlayerSingle(EquipmentShop, Player(p))
         call PanCameraToTimedForPlayer(Player(p), 0, 640, 0.25)
@@ -1359,7 +1419,7 @@ function OnChat takes nothing returns nothing
     elseif command == "-go" then
         call CommandArmy(p, true)
     elseif command == "-status" then
-        call Tell(p, RaceName[ArmyRace[p]] + " | " + TierName[ArmyRace[p]*5+Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | hp " + I2S(Vitality[p]) + " | spawn " + I2S(SPAWN_SECONDS) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
+        call Tell(p, RaceName[ArmyRace[p]] + " | " + TierName[ArmyRace[p]*5+Tier[p]] + " | attack " + I2S(Attack[p]) + " | armor " + I2S(Armor[p]) + " | hp " + I2S(Vitality[p]) + " | wave size "+I2S(SPAWN_UNITS+WaveRanks[p])+" | spawn " + I2S(SPAWN_SECONDS) + "s | army " + I2S(CountUnitsInGroup(Army[p])) + "/" + I2S(ARMY_CAP))
     elseif SubString(command, 0, 6) == "-race " then
         if command == "-race random" then
             call SelectArmyRace(p, GetRandomInt(0, 3))
@@ -1389,7 +1449,7 @@ function OnChat takes nothing returns nothing
             endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "Выдели казарму: 4 кнопки исследований. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 36 героев по портретам | -ar: всё наугад до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
+        call Tell(p, "Выдели казарму: 5 улучшений: атака, броня, HP, ступень и численность волн. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 36 героев по портретам | -ar: всё наугад до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -1561,9 +1621,7 @@ function Tick takes nothing returns nothing
     endif
     loop
         exitwhen p == 12
-        if Alive(Bastion[p]) and Seconds >= BastionUntil[p] then
-            call PauseUnit(Bastion[p], true)
-        endif
+        call UpdateBastion(p)
         if not Lost[p] then
             if Alive(Base[p]) then
                 call EnsureBotHero(p)
@@ -1628,17 +1686,17 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have four command-card research buttons: attack, armor, troop HP (200 ranks each), and barracks tier (four upgrades). Research affects existing and future troops. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. Troop research costs are doubled relative to 0.13.1; from rank 11 the normal next-rank price is multiplied by four. Barracks tiers strengthen future waves and give +19500 HP to the barracks. " + "Every barracks tier moderately strengthens future troops; models and collision are smaller. Waves: three identical troops of the current army tier every 24 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 78000 HP bastion tower behind its base: 700 damage, 24 armor, attacks every 0.75s; activates on enemy damage to base or tower for six seconds, range 1000. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have five command-card research buttons: attack, armor, troop HP (200 ranks each), barracks tier (four upgrades), and wave size (+1 troop, starting at 2000 gold). Research affects existing and future troops; prices are 20% lower than 0.13.2. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. From rank 11 the normal next-rank price is multiplied by four. Barracks tiers strengthen future waves and give +25350 HP to the barracks. " + "Every barracks tier moderately strengthens future troops; models and collision are smaller. Waves: three plus wave-size research troops of the current army tier every 21 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 156000 HP bastion tower behind its base: 1750 damage, 24 armor, attacks every 0.2s; activates near the base or when damaged, retaining a six-second defense window, range 1400. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: portrait selection before 60 seconds. 36 heroes including twelve custom. -mode / -ar: first occupied human chooses mode before 15s. Open slots stay empty. -attack / -armor / -hp / -tier queue research. Hero max level: 500. Three normal skills: 300 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. Five fortress shops sell weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: portrait selection before 60 seconds. 36 heroes including twelve custom. -mode / -ar: first occupied human chooses mode before 15s. Open slots stay empty. -attack / -armor / -hp / -tier / -wave queue research. -supplies selects your fortress supplies. Q/W/E/R cast hero skills. Hero max level: 500. Three normal skills: 200 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. A single fortress market row sells weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three troops per wave, now every 24 seconds; army cap 48 and summon counts preserved. 24 stock plus 12 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the book shop beside your base. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three plus wave-size research troops per wave, now every 21 seconds; army cap 48 and summon counts preserved. 24 stock plus 12 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -1721,6 +1779,7 @@ function InitSlot takes integer p returns nothing
     set Tower[p] = CreateUnit(Player(p), 'ftow', HomeX[p]*0.82, HomeY[p]*0.82, 270)
     set Bastion[p] = CreateUnit(Player(p), 'fbst', BastionX[p], BastionY[p], 270)
     call PauseUnit(Bastion[p], true)
+    call SetPlayerTechMaxAllowed(Player(p),'Rfwn',WAVE_UPGRADE_MAX)
     call TriggerRegisterUnitEvent(BaseDefenseTrigger, Base[p], EVENT_UNIT_DAMAGED)
     call TriggerRegisterUnitEvent(BaseDefenseTrigger, Bastion[p], EVENT_UNIT_DAMAGED)
     if Bot[p] then
@@ -1793,6 +1852,8 @@ function InitGame takes nothing returns nothing
     set p = 0
     loop
         exitwhen p == 4
+        set UtilityShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'futl',UtilityX[p],UtilityY[p],270)
+        call SetUnitInvulnerable(UtilityShop[p],true)
         set SupremeShop[p] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fsup',SuperX[p],SuperY[p],270)
         call SetUnitInvulnerable(SupremeShop[p],true)
         set p = p+1

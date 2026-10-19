@@ -3,7 +3,7 @@
     "id": "fl00",
     "base": "bgst",
     "name": "Сердце титана",
-    "cost": 60000,
+    "cost": 48000,
     "stats": {
       "strength": 400
     },
@@ -13,7 +13,7 @@
     "id": "fl01",
     "base": "belv",
     "name": "Душа ветра",
-    "cost": 60000,
+    "cost": 48000,
     "stats": {
       "agility": 400
     },
@@ -23,7 +23,7 @@
     "id": "fl02",
     "base": "ciri",
     "name": "Разум вечности",
-    "cost": 60000,
+    "cost": 48000,
     "stats": {
       "intelligence": 400
     },
@@ -33,7 +33,7 @@
     "id": "fl03",
     "base": "rde3",
     "name": "Панцирь бессмертного",
-    "cost": 60000,
+    "cost": 48000,
     "stats": {
       "armor": 200
     },
@@ -43,7 +43,7 @@
     "id": "fl04",
     "base": "gcel",
     "name": "Перчатки молний",
-    "cost": 55000,
+    "cost": 44000,
     "stats": {
       "attack_speed": 2.5
     },
@@ -53,7 +53,7 @@
     "id": "fl05",
     "base": "rwiz",
     "name": "Источник бездны",
-    "cost": 55000,
+    "cost": 44000,
     "stats": {
       "mana_regen": 20.0
     },
@@ -63,7 +63,7 @@
     "id": "fl06",
     "base": "rlif",
     "name": "Пульс жизни",
-    "cost": 55000,
+    "cost": 44000,
     "stats": {
       "health_regen": 200
     },

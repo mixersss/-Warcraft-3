@@ -3,7 +3,7 @@
     "id": "fpH0",
     "base": "phea",
     "name": "Великий эликсир жизни",
-    "cost": 1500,
+    "cost": 1200,
     "ability": "FpHL",
     "base_ability": "AIh1",
     "field": "Ihpg",
@@ -14,7 +14,7 @@
     "id": "fpM0",
     "base": "pman",
     "name": "Великий эликсир маны",
-    "cost": 1500,
+    "cost": 1200,
     "ability": "FpMP",
     "base_ability": "AIm1",
     "field": "Impg",
@@ -25,7 +25,7 @@
     "id": "fpS0",
     "base": "pspd",
     "name": "Зелье стремительности",
-    "cost": 1000,
+    "cost": 800,
     "ability": "AIsp",
     "description": "+60% скорости передвижения на 45 секунд. Одно применение, действует предел скорости движка."
   },
@@ -33,7 +33,7 @@
     "id": "fpV0",
     "base": "pinv",
     "name": "Зелье сокрытия",
-    "cost": 1000,
+    "cost": 800,
     "ability": "AIv1",
     "description": "Невидимость на 120 секунд либо до атаки или применения способности. Одно применение."
   }

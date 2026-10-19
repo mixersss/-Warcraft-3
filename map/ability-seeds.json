@@ -2,7 +2,7 @@
   "AEah": {
     "name": "Thorns Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -109,7 +109,7 @@
   "AEar": {
     "name": "Trueshot Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -238,7 +238,7 @@
   "AEbl": {
     "name": "Blink",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -334,7 +334,7 @@
   "AEer": {
     "name": "Entangling Roots",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -441,7 +441,7 @@
   "AEev": {
     "name": "Evasion",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -504,7 +504,7 @@
   "AEfk": {
     "name": "Fan of Knives",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -633,7 +633,7 @@
   "AEfn": {
     "name": "Force of Nature",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -762,7 +762,7 @@
   "AEim": {
     "name": "Immolation",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -891,7 +891,7 @@
   "AEmb": {
     "name": "Mana Burn",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -1232,7 +1232,7 @@
   "AEsh": {
     "name": "Shadow Strike",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -1383,7 +1383,7 @@
   "AEst": {
     "name": "Scout",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -1695,7 +1695,7 @@
   "AHab": {
     "name": "Brilliance Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -1802,7 +1802,7 @@
   "AHad": {
     "name": "Devotion Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2018,7 +2018,7 @@
   "AHbh": {
     "name": "Bash",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2147,7 +2147,7 @@
   "AHbn": {
     "name": "Banish",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2265,7 +2265,7 @@
   "AHbz": {
     "name": "Blizzard",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -2438,7 +2438,7 @@
   "AHdr": {
     "name": "Siphon Mana",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2644,7 +2644,7 @@
   "AHds": {
     "name": "Divine Shield",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2740,7 +2740,7 @@
   "AHfa": {
     "name": "Searing Arrows",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -2836,7 +2836,7 @@
   "AHfs": {
     "name": "Flame Strike",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -3020,7 +3020,7 @@
   "AHhb": {
     "name": "Holy Light",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -3401,7 +3401,7 @@
   "AHtb": {
     "name": "Storm Bolt",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -3508,7 +3508,7 @@
   "AHtc": {
     "name": "Thunder Clap",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -3648,7 +3648,7 @@
   "AHwe": {
     "name": "Summon Water Elemental",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -3755,7 +3755,7 @@
   "ANab": {
     "name": "Acid Bomb",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -3928,7 +3928,7 @@
   "ANba": {
     "name": "Black Arrow",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4068,7 +4068,7 @@
   "ANbf": {
     "name": "Breath of Fire",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4230,7 +4230,7 @@
   "ANc1": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4414,7 +4414,7 @@
   "ANc2": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4598,7 +4598,7 @@
   "ANc3": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4782,7 +4782,7 @@
   "ANca": {
     "name": "Cleaving Attack",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -4958,7 +4958,7 @@
   "ANcr": {
     "name": "Chemical Rage",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -5109,7 +5109,7 @@
   "ANcs": {
     "name": "Cluster Rockets",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -5293,7 +5293,7 @@
   "ANdb": {
     "name": "Drunken Brawler",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -5411,7 +5411,7 @@
   "ANdh": {
     "name": "Drunken Haze",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -5678,7 +5678,7 @@
   "ANdr": {
     "name": "Life Drain",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -5964,7 +5964,7 @@
   "ANeg": {
     "name": "Engineering Upgrade",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -6104,7 +6104,7 @@
   "ANfa": {
     "name": "Frost Arrows",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -6244,7 +6244,7 @@
   "ANfl": {
     "name": "Forked Lightning",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -6705,7 +6705,7 @@
   "ANhs": {
     "name": "Healing Spray",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -6889,7 +6889,7 @@
   "ANht": {
     "name": "Howl of Terror",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -7062,7 +7062,7 @@
   "ANia": {
     "name": "Incinerate",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -7158,7 +7158,7 @@
   "ANlm": {
     "name": "Summon Lava Spawn",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -7331,7 +7331,7 @@
   "ANms": {
     "name": "Mana Shield",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -7449,7 +7449,7 @@
   "ANrf": {
     "name": "Rain of Fire",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -7729,7 +7729,7 @@
   "ANs1": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -7880,7 +7880,7 @@
   "ANs2": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -8031,7 +8031,7 @@
   "ANs3": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -8182,7 +8182,7 @@
   "ANsg": {
     "name": "Summon Bear",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -8289,7 +8289,7 @@
   "ANsi": {
     "name": "Silence",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -8440,7 +8440,7 @@
   "ANso": {
     "name": "Soul Burn",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -8591,7 +8591,7 @@
   "ANsq": {
     "name": "Summon Quilbeast",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -8832,7 +8832,7 @@
   "ANsw": {
     "name": "Summon Hawk",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -8939,7 +8939,7 @@
   "ANsy": {
     "name": "Pocket Factory",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -9447,7 +9447,7 @@
   "AOae": {
     "name": "Endurance Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -9554,7 +9554,7 @@
   "AOcl": {
     "name": "Chain Lightning",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -9683,7 +9683,7 @@
   "AOcr": {
     "name": "Critical Strike",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -9946,7 +9946,7 @@
   "AOfs": {
     "name": "Far Sight",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -10053,7 +10053,7 @@
   "AOhw": {
     "name": "Healing Wave",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -10182,7 +10182,7 @@
   "AOhx": {
     "name": "Hex",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -10333,7 +10333,7 @@
   "AOmi": {
     "name": "Mirror Image",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -10535,7 +10535,7 @@
   "AOsf": {
     "name": "Feral Spirit",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -10653,7 +10653,7 @@
   "AOsh": {
     "name": "Shockwave",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -10804,7 +10804,7 @@
   "AOsw": {
     "name": "Serpent Ward",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
@@ -10991,7 +10991,7 @@
   "AOwk": {
     "name": "Wind Walk",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11120,7 +11120,7 @@
   "AOws": {
     "name": "War Stomp",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11441,7 +11441,7 @@
   "AUau": {
     "name": "Unholy Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11559,7 +11559,7 @@
   "AUav": {
     "name": "Vampiric Aura",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11655,7 +11655,7 @@
   "AUcb": {
     "name": "Carrion Beetles",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11806,7 +11806,7 @@
   "AUcs": {
     "name": "Carrion Swarm",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -11957,7 +11957,7 @@
   "AUdc": {
     "name": "Death Coil",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -12169,7 +12169,7 @@
   "AUdp": {
     "name": "Death Pact",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -12309,7 +12309,7 @@
   "AUdr": {
     "name": "Dark Ritual",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -12449,7 +12449,7 @@
   "AUfn": {
     "name": "Frost Nova",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -12578,7 +12578,7 @@
   "AUfu": {
     "name": "Frost Armor",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -12696,7 +12696,7 @@
   "AUim": {
     "name": "Impale",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -13097,7 +13097,7 @@
   "AUsl": {
     "name": "Sleep",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "atar",
@@ -13204,7 +13204,7 @@
   "AUts": {
     "name": "Spiked Carapace",
     "levels": 3,
-    "cap": 300,
+    "cap": 200,
     "fields": [
       {
         "id": "acas",
