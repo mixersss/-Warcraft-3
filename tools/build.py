@@ -146,7 +146,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = f'4 teams x 3. One troop type per army tier, 4 races, 36 heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 200, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
+    text = f'4 teams x 3. One troop type per army tier, 4 races, {len(catalog("heroes"))} heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 200, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (open slots stay empty)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -341,8 +341,16 @@ def fountain_abilities(b: dict) -> list:
     return entries
 
 
+def expansion_abilities(b):
+    tuning=b['hero_expansion']['warcry']
+    changes=[('anam',3,'Зов стаи'),('aher',0,0),('aite',0,1),('alev',0,50),('aart',3,''),('areq',3,'')]
+    for rank in range(1,51):
+        changes += [('Oae1',2,0.0,rank,1),('Oae2',2,tuning['speed_base']+tuning['speed_step']*rank,rank,2),('aare',2,tuning['radius'],rank,0),('atar',3,'air,ground,friend,self,nonhero,vuln,invu',rank,0)]
+    return [('AOae','Fxwr',changes)]
+
+
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -436,7 +444,12 @@ def script(b: dict) -> str:
         '    integer array SpellAbility', '    string array SpellOrder', '    integer array SpellMode',
         '    integer array SpellHold', '    integer array AutoSkill', '    string array AutoOrder',
         '    integer array ArmyResearch', '    integer array AdvancedArmyResearch', 'endglobals']
+    generated[-1:-1] = ['    trigger array ExpansionThinkTrigger','    constant integer EXPANSION_FIRST_HERO = 36','    integer array ExpansionSlot','    string array ExpansionEffect','    integer array ExpansionTicks','    integer array ExpansionZoneAt','    real array ExpansionX','    real array ExpansionY','    real array ExpansionDamage','    effect array ExpansionZoneArt','    effect array ExpansionCastArt','    integer array ExpansionCastUntil','    unit array ExpansionPrey','    effect array ExpansionPreyArt','    integer array ExpansionPreyUntil','    integer array ExpansionPreyRank','    integer array ExpansionCharges','    integer array ExpansionChargeUntil','    integer array ExpansionWarcryUntil','    group ExpansionGroup = null']
+    for mechanic,values in b['hero_expansion'].items():
+        for key,value in values.items():
+            generated[-1:-1] = [f"    constant {'integer' if isinstance(value,int) else 'real'} XH_{mechanic.upper()}_{key.upper()} = {value}"]
     source = (ROOT/'map/war3map.j').read_text()
+    source = source.replace('// EXPANSION_MODULE', (ROOT/'map/expansion-heroes.j').read_text())
     source = source.replace('// BOT_AI_MODULE', (ROOT/'map/bot-ai.j').read_text())
     dispatch=['function HybridSpellKind takes integer raw returns integer']
     for kind,base in enumerate(['AHhb','AUdc','AEmb']):
@@ -504,6 +517,8 @@ def script(b: dict) -> str:
         for slot,family in enumerate(hero['gear_families']):
             init += [f'    set HeroGear[{idx*6+slot}] = {family}']
         init += [f"    set HeroType[{idx}] = '{hero['id']}'", f'    set HeroName[{idx}] = "{hero["name"]}"', f'    set HeroAlias[{idx}] = "{hero["alias"]}"', f'    set HeroGroup[{idx}] = {hero["group"]}', f'    set HeroPrimary[{idx}] = {hero["primary"]}']
+        if hero.get('signature'):
+            init += [f"    set ExpansionSlot[{idx-36}] = {hero['signature']['slot']}",f"    set ExpansionEffect[{idx-36}] = {json.dumps(hero['signature']['effect'])}"]
         for slot, skill in enumerate(hero['skills']):
             init += [f"    set HeroSkill[{idx*4+slot}] = '{skill}'"]
         for slot in range(4):

@@ -84,7 +84,7 @@ assert.deepEqual(restore(abilities,previousAbilities),previousAbilities,'All non
 for(const name of ['war3map.w3h','war3map.w3t','war3map.w3b','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3r','war3map.w3c','war3map.w3s','war3map.imp','war3map.shd','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(Buffer.from(read(name)),Buffer.from(read(name,true)),name+' must remain byte-identical');
 // Only new hybrid handler, its registration/data, six cost constants and quest/version text may differ.
 const canonical=s=>s.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
-const stripped=runtime.replace(/function HybridSpellKind[\s\S]*?(?=function OnTransmute)/,'')
+const stripped=require('./roster-comparison.cjs').runtime(runtime,Buffer.from(read('war3map.j',true)).toString()).replace(/function HybridSpellKind[\s\S]*?(?=function OnTransmute)/,'')
  .replace(/^\s*(?:constant real SPELL_DAMAGE_MULTIPLIER|real array HybridPower|set HybridPower\[).*$/gm,'')
  .replace(/^.*TriggerAddAction\(TransmuteTrigger, function OnHybridSpell\).*$/gm,'');
 let expectedRuntime=Buffer.from(read('war3map.j',true)).toString().replaceAll('0.15.1-alpha',balance.version)

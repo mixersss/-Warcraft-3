@@ -238,6 +238,8 @@ local realBotHero=BotHero
 function UpdateBoard() end
 function BotHero() end
 function reset()
+    for p=0,11 do ExpansionClear(p) end
+    ExpansionInit()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
     AutosaveCount=0
@@ -751,7 +753,7 @@ Clock.callback()
 for n=1,24 do ProcessHeroQueue() end
 for p=0,11 do assert(Alive(Base[p]) and Alive(Hero[p]) and SlotActive[p]) end
 for team=0,3 do assert(Alive(TeamFountain[team]) and TeamOf(TeamFountain[team].owner)==team) end
-for kind=24,35 do
+for kind=24,HERO_COUNT-1 do
  if Hero[0] then RemoveUnit(Hero[0]) end
  CreateHero(0,kind);assert(Alive(Hero[0]) and Hero[0].id==HeroType[kind])
 end

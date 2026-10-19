@@ -1,4 +1,4 @@
-"""Export the actual 36-hero roster and QWER layout for balance review."""
+"""Export the actual hero roster and QWER layout for balance review."""
 import csv,json
 from pathlib import Path
 r=Path(__file__).resolve().parents[1]
@@ -103,15 +103,20 @@ ANtm|Трансмутация|За успешное превращение бо�
 lookup={a:(name,desc)for a,name,desc in (line.split('|',2)for line in text.splitlines())}
 heroes=json.loads((r/'map/heroes.json').read_text());seeds=json.loads((r/'map/ability-seeds.json').read_text())
 lines=['# Герои и способности Four Fronts Frenzy '+json.loads((r/'map/balance.json').read_text())['version'],'',
-'Все 36 героев из текущей карты. Q/W/E — до 200 рангов; R — до 50. Пассивные способности не требуют нажатия. Отдельный «+» характеристик сохранён: до 500 рангов, +2 силы/ловкости/интеллекта за очко.','',
-'Баланс 0.15.2: урон направленных, площадных и периодических боевых заклинаний ×0,70; здоровье/базовый урон реальных призывов ×0,85, у водных элементалей дополнительно сглажен ранний рост. Радиусы, оглушения, число призывов и откаты сохранены. Лечение и выжигание маны трёх гибридных техник сохранены отдельной обработкой SPELL_EFFECT.','',
+f'Все {len(heroes)} героев из текущей карты. Q/W/E — до 200 рангов; R — до 50. Пассивные способности не требуют нажатия. Отдельный «+» характеристик сохранён: до 500 рангов, +2 силы/ловкости/интеллекта за очко.','',
+'Баланс 0.15.3: урон волн и массовых ударов дополнительно снижен на 30%; прочий урон направленных, площадных и периодических боевых заклинаний ×0,70; здоровье/базовый урон реальных призывов ×0,85, у водных элементалей дополнительно сглажен ранний рост. Радиусы, оглушения, число призывов и откаты сохранены. Лечение и выжигание маны трёх гибридных техник сохранены отдельной обработкой SPELL_EFFECT.','',
 'Напиши имя героя и способность, которую хочешь изменить: например «Алхимик, Q — меньше урона, больше радиус». Цифры описывают механику и заданные параметры; фактический урон зависит от брони, сопротивлений и других эффектов.','',
 '| Герой | Q | W | E | R |','| --- | --- | --- | --- | --- |']
 rows=[]
 for h in heroes:
  cells=[]
  for slot,src in enumerate(h.get('skill_sources',h['skills'])):
-  name,desc=lookup[src];cells.append(f'**{name}** — {desc}')
+  name,desc=lookup[src]
+  if h.get('ability_names'):name=h['ability_names'][slot]
+  signature=h.get('signature')
+  if signature and (signature['slot']==slot or (signature['slot']==-1 and slot==0)):
+   name=signature['name'];desc+=' '+signature['description']
+  cells.append(f'**{name}** — {desc}')
   rows.append([h['name'],'QWER'[slot],name,desc,50 if slot==3 else 200,h['skills'][slot],src])
  lines.append('| '+' | '.join([h['name']]+cells)+' |')
 lines+=['','Трансмутация: 100 золота на первом ранге, 130 на втором, 1570 на пятидесятом. Нативный коэффициент цены и дополнительная награда за эту жертву отключены. Прерванный или неудачный каст не оплачивается.','',
@@ -119,5 +124,5 @@ lines+=['','Трансмутация: 100 золота на первом ран�
 (r/'docs').mkdir(exist_ok=True);(r/'docs/Heroes-and-skills.md').write_text('\n'.join(lines)+'\n')
 with (r/'docs/Heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig')as f:
  w=csv.writer(f,lineterminator="\n");w.writerow(['Герой','Клавиша','Способность','Краткое описание','Макс. ранг','ID в карте','Источник']);w.writerows(rows)
-assert len(heroes)==36 and len(rows)==144
-print('Exported 36 heroes, 144 skills: docs/Heroes-and-skills.md and .csv')
+assert len(heroes)==46 and len(rows)==184
+print(f'Exported {len(heroes)} heroes, {len(rows)} skills: docs/Heroes-and-skills.md and .csv')

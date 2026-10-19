@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.15.3-alpha",
+  "version": "0.16.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -385,5 +385,68 @@
     "ANfl": 0.49,
     "ANrf": 0.49,
     "ANvc": 0.49
+  },
+  "hero_expansion": {
+    "aftershock": {
+      "delay_seconds": 2,
+      "radius": 320.0,
+      "damage_base": 10.0,
+      "damage_step": 1.5
+    },
+    "manasteal": {
+      "base": 12.0,
+      "step": 0.8
+    },
+    "bloodpact": {
+      "hp_fraction": 0.15,
+      "mana_base": 100.0,
+      "mana_step": 8.0,
+      "heal_base": 80.0,
+      "heal_step": 8.0,
+      "radius": 550.0
+    },
+    "hunt": {
+      "seconds": 10,
+      "hp_base": 200.0,
+      "hp_step": 2.0,
+      "mana_base": 50.0,
+      "mana_step": 0.5
+    },
+    "embers": {
+      "seconds": 4,
+      "radius": 220.0,
+      "damage_base": 5.0,
+      "damage_step": 0.4
+    },
+    "cleanse": {
+      "hp_fraction": 0.05,
+      "cap_base": 50.0,
+      "cap_step": 3.0
+    },
+    "warcry": {
+      "seconds": 10,
+      "radius": 650.0,
+      "speed_base": 0.15,
+      "speed_step": 0.006,
+      "max_rank": 50
+    },
+    "overload": {
+      "casts": 3,
+      "seconds": 30,
+      "radius": 400.0,
+      "damage_base": 5.0,
+      "damage_step": 3.0
+    },
+    "pull": {
+      "radius": 320.0,
+      "distance": 64.0,
+      "min_distance": 80.0
+    },
+    "manapulse": {
+      "radius": 650.0,
+      "base": 50.0,
+      "step": 3.0,
+      "cap": 200.0
+    }
   }
 }

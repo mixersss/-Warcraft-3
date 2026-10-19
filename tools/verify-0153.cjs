@@ -8,7 +8,7 @@ function parse(name,previous=false){const p=new Parser();p.load(new Uint8Array(p
 const key=m=>m.id+':'+m.levelOrVariation+':'+m.dataPointer;
 let changed=0,mortar=0;
 for(const name of ['war3map.w3a','war3map.w3q']){
- const current=parse(name),previous=parse(name,true);
+ const current=parse(name),previous=parse(name,true);require('./roster-comparison.cjs')(current,previous);
  for(const table of ['originalTable','customTable']){
   const before=new globalThis.Map(previous[table].objects.map(o=>[o.oldId+':'+o.newId,o]));
   for(const o of current[table].objects){
@@ -31,6 +31,6 @@ for(const name of ['war3map.w3a','war3map.w3q']){
  assert.deepEqual(current,previous,'All unrelated '+name+' fields must remain identical');
 }
 assert(changed>1000 && mortar===400,'Mortar custom wave: damage/hit cap at all 200 ranks');
-for(const name of ['war3map.w3u','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(old.get(name).bytes()),name+' unchanged');
+for(const name of ['war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(old.get(name).bytes()),name+' unchanged');
 fs.writeFileSync(path.join(root,'build/verification-0153.json'),JSON.stringify({version:balance.version,additionalBurstDamageFactor:.7,abilities:Object.keys(balance.spell_damage_overrides),mortarRanks:200,damageFields:changed,healthPriceAfterRank10:'302 + 202 * currentRank, without x4',attackArmorBuildingWavePricesUnchanged:true,summonsUnitsItemsTerrainUnchanged:true,enginePlaytest:false},null,2)+'\n');
 console.log('PASS: Mortar and related burst spells -30% against published 0.15.2; only troop HP loses the rank-11 x4 surcharge; all unrelated spell/research/unit/item/terrain data preserved.');

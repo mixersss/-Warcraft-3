@@ -62,5 +62,6 @@ for(const [kind,id,field]of [[0,'AHhb','Hhb1'],[1,'AUdc','Udc1'],[2,'AEmb','Emb1
 }
 run('EngineHybridExpected={'+hybridValues.join(',')+'};EngineHybridCases={'+hybridCases.join(',')+'}');
 run(fs.readFileSync(path.join(__dirname, 'patch152-harness.lua'), 'utf8'));
+run(fs.readFileSync(path.join(__dirname, 'patch16-harness.lua'), 'utf8'));
 
-console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 21s waves, 4 races, 36 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');
+console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 21s waves, 4 races, 46 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');

@@ -30,9 +30,11 @@ for(const unit of previous.customTable.objects){
  const strip=o=>({...o,modifications:o.modifications.filter(m=>!allowed.includes(m.id))});
  assert.deepEqual(strip(now),strip(unit),'Only selector layout fields may change: '+unit.newId);
 }
-assert.equal(current.customTable.objects.length,previous.customTable.objects.length+1,'One extra selector page');
+const oldCount=current.customTable.objects.length;require('./roster-comparison.cjs')(current,{...previous,customTable:{...previous.customTable,objects:[...previous.customTable.objects,byId.get('fpk5')]}});
+assert.equal(current.customTable.objects.length,previous.customTable.objects.length+1,'One legacy extra selector page');
+assert.equal(oldCount-current.customTable.objects.length,21,'Ten heroes, ten cards, and one new picker page');
 assert(byId.has('fpk5'));
 const report=JSON.parse(fs.readFileSync(path.join(root,'build/verification-0141.json')));
-Object.assign(report,{galleryPatch:'0.14.2',pickerCardsPerPage:7,pickerPages:6,reservedNativeRallyCell:[3,1],all36CardCellsChecked:true,alchemistPage:4,alchemistRow:1,alchemistColumn:3,combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance:'0.14.1-alpha',armyCap:60,teamArmyCap:180,enginePlaytest:false});
+Object.assign(report,{galleryPatch:'0.14.2',pickerCardsPerPage:7,pickerPages:7,reservedNativeRallyCell:[3,1],all46CardCellsChecked:true,alchemistPage:4,alchemistRow:1,alchemistColumn:3,combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance:'0.14.1-alpha',armyCap:60,teamArmyCap:180,enginePlaytest:false});
 fs.writeFileSync(path.join(root,'build/verification-0142.json'),JSON.stringify(report,null,2)+'\n');
 console.log('PASS: Six-page gallery preserved; combat objects/heroes unchanged except requested army-cap tooltip and 0.15.2 summon HP/damage/tooltips.');

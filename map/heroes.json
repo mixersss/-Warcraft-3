@@ -1764,5 +1764,870 @@
       "damage": 29,
       "armor": 4
     }
+  },
+  {
+    "id": "Fx00",
+    "base": "Hmkg",
+    "name": "Осколочный колосс",
+    "alias": "shardcolossus",
+    "group": 7,
+    "primary": 0,
+    "skills": [
+      "X000",
+      "X001",
+      "X002",
+      "X003"
+    ],
+    "spells": [
+      [
+        "X003",
+        "avatar",
+        4
+      ],
+      [
+        "X000",
+        "thunderclap",
+        5
+      ],
+      [
+        "X001",
+        "thunderbolt",
+        1
+      ]
+    ],
+    "gear_role": "expansion_frontline",
+    "gear_families": [
+      2,
+      1,
+      6,
+      8,
+      0,
+      7
+    ],
+    "proper_name": "Осколочный колосс",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Раскол земли. Через 2 сек после Q земля повторно взрывается в месте применения: 10 + 1,5 × ранг урона в радиусе 320. Удар можно избежать.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNRockGolem.blp",
+    "skill_sources": [
+      "AHtc",
+      "AHtb",
+      "AHad",
+      "AHav"
+    ],
+    "model_source": "nggr",
+    "model": "units\\creeps\\RockGolem\\RockGolem.mdl",
+    "scale": 0.75,
+    "stats": {
+      "strength": 30,
+      "agility": 16,
+      "intelligence": 18,
+      "strength_growth": 2.8,
+      "agility_growth": 1.6,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 0,
+      "slot": 0,
+      "name": "Раскол земли",
+      "description": "Через 2 сек после Q земля повторно взрывается в месте применения: 10 + 1,5 × ранг урона в радиусе 320. Удар можно избежать.",
+      "effect": "Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl"
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Раскол земли",
+      "Каменный осколок",
+      "Каменная броня",
+      "Адамантовое ядро"
+    ],
+    "soundset": "RockGolem"
+  },
+  {
+    "id": "Fx01",
+    "base": "Ulic",
+    "name": "Пожиратель чар",
+    "alias": "voiddevourer",
+    "group": 7,
+    "primary": 2,
+    "skills": [
+      "X004",
+      "X005",
+      "X006",
+      "X007"
+    ],
+    "spells": [
+      [
+        "X007",
+        "deathanddecay",
+        2,
+        8
+      ],
+      [
+        "X004",
+        "frostnova",
+        1
+      ],
+      [
+        "X005",
+        "sleep",
+        1
+      ]
+    ],
+    "gear_role": "expansion_caster",
+    "gear_families": [
+      6,
+      5,
+      2,
+      1,
+      8,
+      7
+    ],
+    "proper_name": "Пожиратель чар",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Жажда пустоты. Q дополнительно крадёт до 12 + 0,8 × ранг маны у выбранного врага и передаёт её герою.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNFacelessOne.blp",
+    "skill_sources": [
+      "AUfn",
+      "AUsl",
+      "AHab",
+      "AUdd"
+    ],
+    "model_source": "nfot",
+    "model": "Units\\Creeps\\FacelessOne\\FacelessOne.mdl",
+    "scale": 0.85,
+    "stats": {
+      "strength": 20,
+      "agility": 18,
+      "intelligence": 28,
+      "strength_growth": 1.9,
+      "agility_growth": 1.6,
+      "intelligence_growth": 2.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 1,
+      "slot": 0,
+      "name": "Жажда пустоты",
+      "description": "Q дополнительно крадёт до 12 + 0,8 × ранг маны у выбранного врага и передаёт её герою.",
+      "effect": "Abilities\\Spells\\Undead\\ReplenishMana\\ReplenishManaCasterOverhead.mdl"
+    },
+    "cast_animation": "attack",
+    "attack_visual": {
+      "projectile": "Abilities\\Weapons\\NecromancerMissile\\NecromancerMissile.mdl",
+      "range": 500,
+      "speed": 900
+    },
+    "ability_names": [
+      "Жажда пустоты",
+      "Гипнотический шёпот",
+      "Чародейский голод",
+      "Разлом пустоты"
+    ],
+    "soundset": "FacelessOne"
+  },
+  {
+    "id": "Fx02",
+    "base": "Nplh",
+    "name": "Кровавый договорник",
+    "alias": "bloodpact",
+    "group": 7,
+    "primary": 2,
+    "skills": [
+      "X008",
+      "X009",
+      "X010",
+      "X011"
+    ],
+    "spells": [
+      [
+        "X011",
+        "inferno",
+        2
+      ],
+      [
+        "X008",
+        "shadowstrike",
+        1
+      ],
+      [
+        "X009",
+        "carrionswarm",
+        2
+      ]
+    ],
+    "gear_role": "expansion_caster",
+    "gear_families": [
+      6,
+      5,
+      2,
+      1,
+      8,
+      7
+    ],
+    "proper_name": "Кровавый договорник",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Кровавый договор. R жертвует 15% текущего HP героя, восстанавливает ему 100 + 8 × ранг маны и лечит союзных солдат в радиусе 550 на 80 + 8 × ранг HP.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNSatyr.blp",
+    "skill_sources": [
+      "AEsh",
+      "AUcs",
+      "AUav",
+      "AUin"
+    ],
+    "model_source": "nsth",
+    "model": "units\\creeps\\satyrhellcaller\\satyrhellcaller.mdl",
+    "scale": 0.9,
+    "stats": {
+      "strength": 24,
+      "agility": 17,
+      "intelligence": 25,
+      "strength_growth": 1.9,
+      "agility_growth": 1.6,
+      "intelligence_growth": 2.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 2,
+      "slot": 3,
+      "name": "Кровавый договор",
+      "description": "R жертвует 15% текущего HP героя, восстанавливает ему 100 + 8 × ранг маны и лечит союзных солдат в радиусе 550 на 80 + 8 × ранг HP.",
+      "effect": "Abilities\\Spells\\Human\\Heal\\HealTarget.mdl"
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Проклятый клинок",
+      "Чумная стая",
+      "Кровопийца",
+      "Кровавый договор"
+    ],
+    "soundset": "Satyr"
+  },
+  {
+    "id": "Fx03",
+    "base": "Nbst",
+    "name": "Ловчий северных морей",
+    "alias": "tuskarrhunter",
+    "group": 7,
+    "primary": 1,
+    "skills": [
+      "X012",
+      "X013",
+      "X014",
+      "X015"
+    ],
+    "spells": [
+      [
+        "X015",
+        "stampede",
+        2,
+        8
+      ],
+      [
+        "X012",
+        "thunderbolt",
+        1
+      ],
+      [
+        "X013",
+        "spiritwolf",
+        0
+      ]
+    ],
+    "gear_role": "expansion_carry",
+    "gear_families": [
+      0,
+      3,
+      2,
+      1,
+      6,
+      7
+    ],
+    "proper_name": "Ловчий северных морей",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Трофей охотника. Q помечает одну цель на 10 сек. Убийство этой цели любым союзником восстанавливает герою 200 + 2 × ранг HP и 50 + 0,5 × ранг маны.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNTuskaarGold.blp",
+    "skill_sources": [
+      "AHtb",
+      "AOsf",
+      "AEar",
+      "ANst"
+    ],
+    "model_source": "ntka",
+    "model": "Units\\Creeps\\tuskarRanged\\tuskarRanged.mdl",
+    "scale": 0.9,
+    "stats": {
+      "strength": 22,
+      "agility": 27,
+      "intelligence": 18,
+      "strength_growth": 1.9,
+      "agility_growth": 2.7,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 3,
+      "slot": 0,
+      "name": "Трофей охотника",
+      "description": "Q помечает одну цель на 10 сек. Убийство этой цели любым союзником восстанавливает герою 200 + 2 × ранг HP и 50 + 0,5 × ранг маны.",
+      "effect": "Abilities\\Spells\\Other\\TalkToMe\\TalkToMe.mdl"
+    },
+    "cast_animation": "attack",
+    "attack_visual": {
+      "projectile": "abilities\\weapons\\TuskarSpear\\TuskarSpear.mdl",
+      "range": 500,
+      "speed": 1200
+    },
+    "ability_names": [
+      "Трофей охотника",
+      "Охотничья стая",
+      "Северный прицел",
+      "Зов бегущей стаи"
+    ],
+    "soundset": "Tuskarr"
+  },
+  {
+    "id": "Fx04",
+    "base": "Otch",
+    "name": "Пепельный драконид",
+    "alias": "cinderdragon",
+    "group": 7,
+    "primary": 0,
+    "skills": [
+      "X016",
+      "X017",
+      "X018",
+      "X019"
+    ],
+    "spells": [
+      [
+        "X019",
+        "tornado",
+        2
+      ],
+      [
+        "X016",
+        "breathoffire",
+        2
+      ],
+      [
+        "X017",
+        "stomp",
+        5
+      ]
+    ],
+    "gear_role": "expansion_frontline",
+    "gear_families": [
+      2,
+      1,
+      0,
+      6,
+      8,
+      7
+    ],
+    "proper_name": "Пепельный драконид",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Угли дракона. Q оставляет в выбранной точке огненное поле радиусом 220 на 4 сек. Оно наносит врагам 5 + 0,4 × ранг урона в секунду.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNBlueDragonSpawn.blp",
+    "skill_sources": [
+      "ANbf",
+      "AOws",
+      "AUts",
+      "ANto"
+    ],
+    "model_source": "nbdw",
+    "model": "Units\\Creeps\\DragonSpawnPurple\\DragonSpawnPurple.mdl",
+    "scale": 0.65,
+    "stats": {
+      "strength": 29,
+      "agility": 18,
+      "intelligence": 20,
+      "strength_growth": 2.8,
+      "agility_growth": 1.6,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 4,
+      "slot": 0,
+      "name": "Угли дракона",
+      "description": "Q оставляет в выбранной точке огненное поле радиусом 220 на 4 сек. Оно наносит врагам 5 + 0,4 × ранг урона в секунду.",
+      "effect": "Abilities\\Spells\\Other\\BreathOfFire\\BreathOfFireDamage.mdl"
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Угли дракона",
+      "Сотрясение",
+      "Обсидиановая чешуя",
+      "Пепельный вихрь"
+    ],
+    "soundset": "DragonSpawn"
+  },
+  {
+    "id": "Fx05",
+    "base": "Nbrn",
+    "name": "Алхимическая гидра",
+    "alias": "alchemicalhydra",
+    "group": 8,
+    "primary": 1,
+    "skills": [
+      "X020",
+      "X021",
+      "X022",
+      "X023"
+    ],
+    "spells": [
+      [
+        "X023",
+        "locustswarm",
+        0
+      ],
+      [
+        "X020",
+        "acidbomb",
+        1
+      ],
+      [
+        "X021",
+        "mirrorimage",
+        0
+      ]
+    ],
+    "gear_role": "expansion_carry",
+    "gear_families": [
+      0,
+      3,
+      2,
+      6,
+      1,
+      7
+    ],
+    "proper_name": "Алхимическая гидра",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Ядовитая линька. W снимает отрицательные эффекты и лечит героя на 5% максимального HP, но не больше 50 + 3 × ранг. Иллюзии не получают это дополнительное лечение.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNGreenHydra.blp",
+    "skill_sources": [
+      "ANab",
+      "AOmi",
+      "AEev",
+      "AUls"
+    ],
+    "model_source": "nhyd",
+    "model": "Units\\Creeps\\Hydra\\Hydra.mdl",
+    "scale": 0.5,
+    "stats": {
+      "strength": 23,
+      "agility": 25,
+      "intelligence": 20,
+      "strength_growth": 1.9,
+      "agility_growth": 2.7,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 5,
+      "slot": 1,
+      "name": "Ядовитая линька",
+      "description": "W снимает отрицательные эффекты и лечит героя на 5% максимального HP, но не больше 50 + 3 × ранг. Иллюзии не получают это дополнительное лечение.",
+      "effect": "Abilities\\Spells\\Human\\DispelMagic\\DispelMagicTarget.mdl"
+    },
+    "cast_animation": "attack",
+    "attack_visual": {
+      "projectile": "Abilities\\Weapons\\ChimaeraAcidMissile\\ChimaeraAcidMissile.mdl",
+      "range": 500,
+      "speed": 900
+    },
+    "ability_names": [
+      "Едкая желчь",
+      "Ядовитая линька",
+      "Скользкая чешуя",
+      "Пожирающий рой"
+    ],
+    "soundset": "AzureDragon"
+  },
+  {
+    "id": "Fx06",
+    "base": "Obla",
+    "name": "Вожак иглогривов",
+    "alias": "razormanelord",
+    "group": 8,
+    "primary": 1,
+    "skills": [
+      "X024",
+      "X025",
+      "X026",
+      "X027"
+    ],
+    "spells": [
+      [
+        "X027",
+        "whirlwind",
+        5,
+        8
+      ],
+      [
+        "X024",
+        "summonquillbeast",
+        0
+      ],
+      [
+        "X025",
+        "shockwave",
+        2
+      ]
+    ],
+    "gear_role": "expansion_carry",
+    "gear_families": [
+      0,
+      3,
+      2,
+      1,
+      6,
+      7
+    ],
+    "proper_name": "Вожак иглогривов",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Зов стаи. После R на 10 сек появляется аура радиусом 650: союзные солдаты атакуют на 15,6–45% быстрее. Герои и здания не усиливаются; действует сильнейшая аура этого типа.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNRazorManeChief.blp",
+    "skill_sources": [
+      "ANsq",
+      "AOsh",
+      "AUav",
+      "AOww"
+    ],
+    "model_source": "nrzg",
+    "model": "units\\creeps\\RazorManeChief\\RazorManeChief.mdl",
+    "scale": 0.85,
+    "stats": {
+      "strength": 25,
+      "agility": 25,
+      "intelligence": 16,
+      "strength_growth": 1.9,
+      "agility_growth": 2.7,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 6,
+      "slot": 3,
+      "name": "Зов стаи",
+      "description": "После R на 10 сек появляется аура радиусом 650: союзные солдаты атакуют на 15,6–45% быстрее. Герои и здания не усиливаются; действует сильнейшая аура этого типа.",
+      "effect": "Abilities\\Spells\\Orc\\CommandAura\\CommandAura.mdl"
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Игольчатый спутник",
+      "Колючая волна",
+      "Жажда крови",
+      "Зов стаи"
+    ],
+    "soundset": "RazorMane"
+  },
+  {
+    "id": "Fx07",
+    "base": "Ofar",
+    "name": "Громовой ящер",
+    "alias": "stormlizard",
+    "group": 8,
+    "primary": 2,
+    "skills": [
+      "X028",
+      "X029",
+      "X030",
+      "X031"
+    ],
+    "spells": [
+      [
+        "X031",
+        "earthquake",
+        2,
+        8
+      ],
+      [
+        "X028",
+        "chainlightning",
+        1
+      ],
+      [
+        "X029",
+        "thunderclap",
+        5
+      ]
+    ],
+    "gear_role": "expansion_caster",
+    "gear_families": [
+      6,
+      5,
+      2,
+      1,
+      8,
+      7
+    ],
+    "proper_name": "Громовой ящер",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Перегрузка. Три применения активных Q/W/R за 30 сек вызывают разряд: 5 + 3 × ранг последней техники урона врагам в радиусе 400. Смерть сбрасывает заряды.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderLizard.blp",
+    "skill_sources": [
+      "AOcl",
+      "AHtc",
+      "AHab",
+      "AOeq"
+    ],
+    "model_source": "nthl",
+    "model": "units\\creeps\\ThunderLizard\\ThunderLizard.mdl",
+    "scale": 0.55,
+    "stats": {
+      "strength": 25,
+      "agility": 16,
+      "intelligence": 25,
+      "strength_growth": 1.9,
+      "agility_growth": 1.6,
+      "intelligence_growth": 2.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 7,
+      "slot": -1,
+      "name": "Перегрузка",
+      "description": "Три применения активных Q/W/R за 30 сек вызывают разряд: 5 + 3 × ранг последней техники урона врагам в радиусе 400. Смерть сбрасывает заряды.",
+      "effect": "Abilities\\Spells\\Orc\\LightningShield\\LightningShieldTarget.mdl"
+    },
+    "cast_animation": "attack",
+    "attack_visual": {
+      "projectile": "Abilities\\Weapons\\ChimaeraLightningMissile\\ChimaeraLightningMissile.mdl",
+      "range": 500,
+      "speed": 1500
+    },
+    "ability_names": [
+      "Перегрузка",
+      "Грозовой топот",
+      "Грозовой резерв",
+      "Сейсмическая буря"
+    ],
+    "soundset": "KotoBeastNoRider"
+  },
+  {
+    "id": "Fx08",
+    "base": "Otch",
+    "name": "Полярный хранитель",
+    "alias": "polarwarden",
+    "group": 8,
+    "primary": 0,
+    "skills": [
+      "X032",
+      "X033",
+      "X034",
+      "X035"
+    ],
+    "spells": [
+      [
+        "X032",
+        "stomp",
+        5
+      ],
+      [
+        "X033",
+        "healingwave",
+        6
+      ]
+    ],
+    "gear_role": "expansion_support",
+    "gear_families": [
+      2,
+      1,
+      6,
+      5,
+      8,
+      7
+    ],
+    "proper_name": "Полярный хранитель",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Ледяное притяжение. Q дополнительно подтягивает наземных врагов в радиусе 320 на 64 единицы. Не двигает здания, не действует на иммунитет к магии и не переносит сквозь стены.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNPolarFurbolgElder.blp",
+    "skill_sources": [
+      "AOws",
+      "AOhw",
+      "AUau",
+      "AOre"
+    ],
+    "model_source": "nfpu",
+    "model": "units\\creeps\\PolarFurbolg\\PolarFurbolg.mdl",
+    "scale": 0.8,
+    "stats": {
+      "strength": 29,
+      "agility": 18,
+      "intelligence": 20,
+      "strength_growth": 2.8,
+      "agility_growth": 1.6,
+      "intelligence_growth": 1.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 8,
+      "slot": 0,
+      "name": "Ледяное притяжение",
+      "description": "Q дополнительно подтягивает наземных врагов в радиусе 320 на 64 единицы. Не двигает здания, не действует на иммунитет к магии и не переносит сквозь стены.",
+      "effect": "Abilities\\Spells\\Undead\\FrostNova\\FrostNovaTarget.mdl"
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Ледяное притяжение",
+      "Северное сияние",
+      "Дыхание зимы",
+      "Сон ледника"
+    ],
+    "soundset": "Furbolg"
+  },
+  {
+    "id": "Fx09",
+    "base": "Oshd",
+    "name": "Оракул забытых духов",
+    "alias": "forgottenoracle",
+    "group": 8,
+    "primary": 2,
+    "skills": [
+      "X036",
+      "X037",
+      "X038",
+      "X039"
+    ],
+    "spells": [
+      [
+        "X039",
+        "voodoo",
+        0,
+        12
+      ],
+      [
+        "X036",
+        "ward",
+        2
+      ],
+      [
+        "X037",
+        "thunderbolt",
+        1
+      ]
+    ],
+    "gear_role": "expansion_support",
+    "gear_families": [
+      6,
+      5,
+      2,
+      1,
+      8,
+      7
+    ],
+    "proper_name": "Оракул забытых духов",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Источник духов. R восстанавливает союзным героям в радиусе 650 от 53 до 200 маны. Не создаёт постоянного фонтана.",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNDarkTrollShadowPriest.blp",
+    "skill_sources": [
+      "AOsw",
+      "AHtb",
+      "AHab",
+      "AOvd"
+    ],
+    "model_source": "ndtp",
+    "model": "units\\creeps\\DarkTrollShadowPriest\\DarkTrollShadowPriest.mdl",
+    "scale": 0.9,
+    "stats": {
+      "strength": 20,
+      "agility": 18,
+      "intelligence": 29,
+      "strength_growth": 1.9,
+      "agility_growth": 1.6,
+      "intelligence_growth": 2.8,
+      "hp": 260,
+      "mana": 170,
+      "damage": 19,
+      "armor": 3
+    },
+    "signature": {
+      "kind": 9,
+      "slot": 3,
+      "name": "Источник духов",
+      "description": "R восстанавливает союзным героям в радиусе 650 от 53 до 200 маны. Не создаёт постоянного фонтана.",
+      "effect": "Abilities\\Spells\\Items\\AIma\\AImaTarget.mdl"
+    },
+    "cast_animation": "attack",
+    "attack_visual": {
+      "projectile": "Abilities\\Weapons\\FireballMissile\\FireballMissile.mdl",
+      "range": 600,
+      "speed": 900
+    },
+    "ability_names": [
+      "Тотемы духов",
+      "Кара предков",
+      "Духовный родник",
+      "Источник духов"
+    ],
+    "soundset": "ForestTrollShadowPriest"
   }
 ]

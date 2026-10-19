@@ -48,9 +48,14 @@ def units(heroes, basic_skill_max=200):
             ('uhab',3,','.join(hero['skills']+['Fatr'])),('uabi',3,'AInv'),('ureq',3,''),('upgr',3,''),
             ('utip',3,hero['name']),('utub',3,hero['description']),
             ('uclr',0,r),('uclg',0,g),('uclb',0,b),
-            ('umdl',3,hero['model']),('umvt',3,'foot'),('usca',1,0.8),
+            ('umdl',3,hero['model']),('umvt',3,'foot'),('usca',1,hero.get('scale',0.8)),
             ('ustr',0,hero['stats']['strength']),('uagi',0,hero['stats']['agility']),('uint',0,hero['stats']['intelligence']),
             ('ustp',2,hero['stats']['strength_growth']),('uagp',2,hero['stats']['agility_growth']),('uinp',2,hero['stats']['intelligence_growth']),
             ('uhpm',0,hero['stats']['hp']),('umpm',0,hero['stats']['mana']),('ua1b',0,hero['stats']['damage']),('udef',0,hero['stats']['armor']),
         ]))
+        if hero.get('signature'):
+            result[-1][2].extend([('upra',3,['STR','AGI','INT'][hero['primary']]),('usnd',3,hero['soundset'])])
+        if hero.get('attack_visual'):
+            visual=hero['attack_visual']
+            result[-1][2].extend([('ua1w',3,'missile'),('ua1r',0,visual['range']),('ua1m',3,visual['projectile']),('ua1z',0,visual['speed'])])
     return result

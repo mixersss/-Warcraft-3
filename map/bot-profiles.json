@@ -333,6 +333,86 @@
         1,
         2
       ]
+    },
+    "Fx00": {
+      "role": "frontline",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx01": {
+      "role": "caster",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx02": {
+      "role": "caster",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx03": {
+      "role": "carry",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx04": {
+      "role": "frontline",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx05": {
+      "role": "carry",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx06": {
+      "role": "carry",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx07": {
+      "role": "caster",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fx08": {
+      "role": "support",
+      "skill_priority": [
+        2,
+        0,
+        1
+      ]
+    },
+    "Fx09": {
+      "role": "support",
+      "skill_priority": [
+        2,
+        0,
+        1
+      ]
     }
   }
 }

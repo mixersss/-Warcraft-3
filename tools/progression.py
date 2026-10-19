@@ -303,6 +303,19 @@ def custom_hero_abilities(root):
     for hero in heroes:
         for slot,(raw,original) in enumerate(zip(hero['skills'],hero.get('skill_sources',[]))):
             changes=list(source[original])
+            if hero.get('ability_names'):
+                name=hero['ability_names'][slot]
+                changes += [('anam',3,name),('aret',3,name+' [ранг %d]')]
+                for rank in range(1,(50 if slot==3 else 200)+1):
+                    changes += [('atp1',3,name+f' [{rank}]',rank,0)]
+            if hero.get('cast_animation'):
+                changes += [('aani',3,hero['cast_animation'])]
+            signature=hero.get('signature')
+            if signature and (signature['slot']==slot or (signature['slot']==-1 and slot==0)):
+                changes += [('anam',3,signature['name']),('aret',3,signature['name']+' [ранг %d]')]
+                for rank in range(1, (50 if slot==3 else 200)+1):
+                    tip=next(c[2] for c in changes if c[0]=='aub1' and len(c)==5 and c[3]==rank)
+                    changes += [('atp1',3,signature['name']+f' [{rank}]',rank,0),('aub1',3,tip+' '+signature['name']+': '+signature['description'],rank,0)]
             changes += [('ahky',3,'QWER'[slot]),('auhk',3,'QWER'[slot]),('arhk',3,'QWER'[slot]),('aher',0,1),('abpx',0,slot),('abpy',0,2),('arpx',0,slot),('arpy',0,0)]
             changes=list({(c[0],c[3:] if len(c)==5 else (0,0)):c for c in changes}.values())
             result.append((original,raw,changes))

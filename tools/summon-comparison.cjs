@@ -9,6 +9,7 @@ const summonSkills=new Set(Object.entries(require('../map/ability-seeds.json')).
 
 
 module.exports=function restoreSummonFields(current,historical,units=false){
+ require('./roster-comparison.cjs')(current,historical);
  for(const table of ['originalTable','customTable']){
   const previous=new Map(historical[table].objects.map(o=>[o.oldId+':'+o.newId,o]));
   for(const object of current[table].objects){
