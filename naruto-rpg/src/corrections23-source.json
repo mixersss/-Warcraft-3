@@ -1,0 +1,177 @@
+{
+  "release": "Shinobi Story Alpha23",
+  "originalMapSHA256": "ecf45e4325dcd3b4f5df4a703821c8eec2fddc7b8afb30bc7146a2fe66294a0f",
+  "enginePlaytest": false,
+  "visibility": {
+    "nativeBuffRemoved": "BOwk",
+    "kawarimiCooldownSeconds": 22,
+    "invisibilitySeconds": 3,
+    "cleanup": [
+      "expiration including paused arena heroes",
+      "orphan native buff",
+      "native morph",
+      "arena reset"
+    ],
+    "intentionalStoryHidingPreserved": true,
+    "sourceNPCFunction": "K3X",
+    "npcChange": "capture original caster/target and visual/location cleanup handles across sleeps; shared damage choreography is not fully rewritten"
+  },
+  "defense": {
+    "upperBotShare": 0.3,
+    "leftBotShare": 0.7,
+    "humansChooseFreely": true,
+    "overrides": [
+      "immediate self-defense",
+      "Hokage breach",
+      "critical retreat"
+    ],
+    "stationaryDefendersReturnOnFoot": true,
+    "returningNPCKinds": [
+      1,
+      2,
+      17,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34
+    ]
+  },
+  "medics": {
+    "sourceCallbacks": [
+      "GBO",
+      "GPO",
+      "GUO",
+      "G_O",
+      "G3O",
+      "G7O",
+      "HEO",
+      "HIO"
+    ],
+    "count": 6,
+    "castRange": 150,
+    "channelBreakRange": 500,
+    "pulseSeconds": 0.25,
+    "hpPerPulse": 75,
+    "manaPerPulse": 25,
+    "approach": "move into cast range instead of following outside it",
+    "castPatientThreshold": 0.9,
+    "runtime": "reuse original six periodic triggers; no temporary locations; stop on native interruption/full HP/death/stage exit"
+  },
+  "invasionEvents": {
+    "delaySeconds": {
+      "Kabuto": 400,
+      "Jiraiya": 760,
+      "snake": 820,
+      "Orochimaru": 1160
+    },
+    "actualCallbacks": "CampaignEventWake -> independent CampaignInvasionEvents thread",
+    "heartbeatFallback": true,
+    "kabutoAndSnakeFirstRoute": 3,
+    "bounty": "enable native PLAYER_STATE_GIVES_BOUNTY for invasion owners, retain unit-native bounty and restore earlier flags after stage",
+    "NPCThread": "ExecuteFunc separates crowded NPC scans from parent story/event thread"
+  },
+  "soundGuards": {
+    "posts": [
+      {
+        "alias": "LPV",
+        "kind": 5,
+        "sourceType": "h01B",
+        "x": 5407.0,
+        "y": -2754.7,
+        "facing": 270.0
+      },
+      {
+        "alias": "LLV",
+        "kind": 6,
+        "sourceType": "h017",
+        "x": -2337.9,
+        "y": -12081.0,
+        "facing": 0.0
+      },
+      {
+        "alias": "KMV",
+        "kind": 7,
+        "sourceType": "h01A",
+        "x": 5191.3,
+        "y": -2715.4,
+        "facing": 270.0
+      },
+      {
+        "alias": "LMV",
+        "kind": 8,
+        "sourceType": "h016",
+        "x": 4963.6,
+        "y": -2733.3,
+        "facing": 270.0
+      },
+      {
+        "alias": "LKV",
+        "kind": 9,
+        "sourceType": "h01D",
+        "x": -2340.7,
+        "y": -11625.9,
+        "facing": 0.0
+      }
+    ],
+    "sourceAcquisitionFunctions": [
+      "W4R",
+      "YTR",
+      "ZXR",
+      "Z9R",
+      "VTI"
+    ],
+    "heroAcquisitionRadiusByKind": {
+      "5": 250,
+      "6": 700,
+      "7": 400,
+      "8": 800,
+      "9": 400
+    },
+    "sourceRetreatFunction": "LFO",
+    "retreatAtHP": 10000,
+    "upperFountain": [
+      5632,
+      -3008
+    ],
+    "leftFountain": [
+      -2624,
+      -11840
+    ],
+    "alwaysPausedOrInvulnerable": false,
+    "joinInvasionMarch": false,
+    "existingSourceSkillProfilesPreserved": true
+  },
+  "kiba": {
+    "sourceAbility": "A01H",
+    "playableAbility": "R704",
+    "sourceActions": [
+      "KWX",
+      "KZX"
+    ],
+    "target": "enemy unit",
+    "approachSpeed": 950,
+    "hits": 5,
+    "damagePerHit": [
+      180,
+      240,
+      300
+    ],
+    "betweenHitsSeconds": 0.35,
+    "motion": "source-style alternating impacts with segment pathing and chapter bounds; blocked terrain cancels instead of crossing walls",
+    "boundedPerCasterState": 12,
+    "newPerCastTimers": 0,
+    "nativeCooldown": 20,
+    "nativeChannelMaximumSeconds": 3,
+    "animation": "existing looping spin sequence at normal speed, including Four Legs active; stock wolf form uses its own attack pose"
+  },
+  "preserved": {
+    "originalImports": 379,
+    "generatedAssets": 5,
+    "slots": 12,
+    "teams": 4,
+    "storyChapters": true,
+    "footmanUnchanged": true
+  }
+}

@@ -1684,7 +1684,9 @@
     "original type queries include isolated clone body IDs",
     "legacy Ukon order timer replaced by shared NPC AI",
     "optional NPC icon fallback within Classic 8 MiB limit",
-    "one combat notice localized to Russian"
+    "one combat notice localized to Russian",
+    "Alpha23 K3X visibility uses cast-local handles across sleeps; no shared UN/WN hide/show",
+    "Alpha23: original six medic clocks keep 75 HP / 25 mana per 0.25s; replace location allocations/double cleanup and random post-heal walking with bounded native-coordinate checks and idempotent channel cleanup."
   ],
   "originalStoryTriggersImported": false,
   "sourceStringTableSHA256": "c646753d96f8984c1fb735fe6a093e42a3d16950e2c21fc1836c22ec6dbff678"

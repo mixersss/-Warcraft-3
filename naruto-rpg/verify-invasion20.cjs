@@ -53,6 +53,8 @@ for(const p of layout.defenders)assert(Math.abs(p[0]-16128)>=288||Math.abs(p[1]+
 const recovery=script.match(/function CampaignWaveRecover takes[\s\S]*?endfunction/)[0];
 assert(!/SetUnit(?:Position|X|Y)|CreateTimer|CreateGroup/.test(recovery),'Recovery must not teleport or allocate per-unit handles');
 assert(recovery.includes('IsTerrainPathable')&&recovery.includes('exitwhen k>=8'));
-assert(script.includes('not CampaignReserveOnly(CampaignActorType[j])'));
+assert(script.includes('function CampaignSoundGuard takes'));
+const originalPosts=JSON.parse(fs.readFileSync(path.join(root,'src/invasion-source.json'))).initialSoundFive;
+for(const r of originalPosts)assert.deepEqual(layout.reserves.find(v=>v.kind===r.kind).position,[r.x,r.y]);
 const report={defenderFountain:layout.defenderFountain,defenderSpawns:layout.defenders,reservePlacements:layout.reserves,waveSpawnPositions:layout.waveSpawns.length,minSpawnSpacing:96,allPlacementsStaticallyConnected:true,waveRecoveryProbeSeconds:8,recoveryDoesNotTeleport:true,recoveryUsesExistingSharedHeartbeat:true,sourceWaveCountsAndSchedulesUnchanged:true,enginePlaytest:false};
 fs.writeFileSync(path.join(root,'dist/invasion20-verification.json'),JSON.stringify(report,null,2));console.log('PASS: nine corner-fountain spawns, five rear reserve positions, 24 separated wave spawns on statically connected clear ground; dynamic unit collision still needs an engine test.');

@@ -20,14 +20,14 @@ for j=0,CampaignCount-1 do
  local k=CampaignActorType[j];local u=CampaignActor[j]
  if k>=5 and k<=9 then
   reserves[#reserves+1]=u
-  assert(u.x==CampaignReserveX[k] and u.y==CampaignReserveY[k] and u.paused and GetUnitAbilityLevel(u,raw('Avul'))>0,'Rear story reserves stay paused and protected after combat starts')
+  assert(u.x==CampaignReserveX[k] and u.y==CampaignReserveY[k] and not u.paused and GetUnitAbilityLevel(u,raw('Avul'))==0,'Original Sound posts must be active and vulnerable after combat starts')
  end
 end
 assert(#reserves==5)
-Hero[0].x=reserves[1].x+100;Hero[0].y=reserves[1].y;World={Hero[0]}
+Hero[0].x=reserves[1].x+100;Hero[0].y=reserves[1].y;World={}
 for _,u in ipairs(reserves)do u.last=nil end
 for n=1,math.ceil(CampaignCount/24)+1 do CampaignNPCTick()end
-for _,u in ipairs(reserves)do assert(u.last==nil and u.paused,'Camp elites never receive invasion attack orders')end
+for _,u in ipairs(reserves)do assert(u.last==nil and not u.paused,'Healthy guards stay at their source posts instead of marching into the invasion')end
 World={};local first=CampaignCount
 for lane=0,7 do
  local start=CampaignCount;CampaignInvasionWave(lane);assert(CampaignCount==start+3)
@@ -58,6 +58,6 @@ TimeNow=TimeNow+9;CampaignWalkAt[first]=0;assert(not CampaignWaveRecover(first) 
 assert(CreatedTimers==timerCount,'Recovery allocates no per-unit timers')
 -- Character role, not slot number, controls the fountain spawn.
 HeroRole[0]=9;HeroRole[9]=0;CampaignMoveHeroes();assert(Hero[0].x==-2336 and Hero[9].x==CampaignDefenderX[0] and Hero[9].y==CampaignDefenderY[0])
-CampaignStage=15;CampaignTransition=false;local slot=CampaignAdd(5,15,100,200);assert(not CampaignActor[slot].paused and not CampaignReserveOnly(5),'Later story bosses remain active')
+CampaignStage=15;CampaignTransition=false;local slot=CampaignAdd(5,15,100,200);assert(not CampaignActor[slot].paused and not CampaignSoundGuard(5),'Later story bosses remain active')
 CampaignVillageLandmarksClose();StoryShopsClose()
-print('PASS: nine spaced corner-fountain arrival/revival positions and role swaps, five protected stationary rear elites, all eight separated wave formations, recycled-slot reset, stalled and unreachable-target recovery without teleport/extra timers, route resumption, moving/combat/paused/busy safeguards and later story bosses preserved (mock natives).')
+print('PASS: nine spaced corner-fountain arrival/revival positions and role swaps, five active source-post Sound guards, all eight separated wave formations, recycled-slot reset, stalled and unreachable-target recovery without teleport/extra timers, route resumption, moving/combat/paused/busy safeguards and later story bosses preserved (mock natives).')

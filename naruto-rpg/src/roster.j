@@ -234,6 +234,7 @@ function RosterGrantInnate takes integer p returns nothing
 endfunction
 function RosterResetEffects takes integer p returns nothing
     local integer k=0
+    call KibaRollEnd(p)
     call KunaiClear(p)
     call CommonLogClear(p)
     call VisualClearHero(p)
@@ -555,7 +556,11 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
     elseif kind==7 then
         call RosterSummon(p,index,rank)
     elseif kind==9 then
-        call RosterLine(p,index,rank)
+        if index==38 then
+            call KibaRollStart(p,rank,target)
+        else
+            call RosterLine(p,index,rank)
+        endif
         if RosterVisual[index]!="" then
             call SkillsBurst(p,RosterVisual[index])
         endif

@@ -586,7 +586,7 @@
       "sourceTriggerVisualFunctionCount": 1,
       "visualKind": "roll",
       "animation": "attack walk stand spin",
-      "channelSeconds": 1,
+      "channelSeconds": 3,
       "enginePlaybackChecked": false
     },
     {

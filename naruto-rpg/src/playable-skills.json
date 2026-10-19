@@ -3890,14 +3890,14 @@
     "cooldown": 20.0,
     "range": 750.0,
     "targets": "ground,air,enemy,neutral,organic",
-    "description": "Вращающийся удар волной поражает врагов вдоль линии длиной 900.",
+    "description": "Рывок к выбранному врагу и пять вращающихся ударов. Урон каждого удара: 180/240/300, как в исходной технике Цууга. Препятствия прерывают рывок.",
     "fields": [
       [
         "Ncl1",
         2,
         1,
         [
-          1.0
+          3.0
         ]
       ],
       [
@@ -3905,7 +3905,7 @@
         0,
         2,
         [
-          2
+          1
         ]
       ],
       [
@@ -3958,23 +3958,23 @@
       ]
     ],
     "rank_descriptions": [
-      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 300.",
-      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 450.",
-      "Вращающийся удар волной поражает врагов вдоль линии длиной 900. Сила эффекта: 600."
+      "Рывок и пять ударов по 180 урона (всего 900).",
+      "Рывок и пять ударов по 240 урона (всего 1200).",
+      "Рывок и пять ударов по 300 урона (всего 1500)."
     ],
     "key": "W",
     "icon": "Icon_Kiba_Tsuga.blp",
     "animation": "attack walk stand spin",
     "audio_index": 109,
-    "implementation": "Independent adaptation of source slot",
+    "implementation": "Source KWX five target impacts; per-caster bounded motion, terrain checks and interrupt cleanup",
     "order": "drunkenhaze",
-    "target_mode": 2,
+    "target_mode": 1,
     "mechanic": 9,
     "passive": false,
     "damage": [
-      300,
-      450,
-      600
+      180,
+      240,
+      300
     ],
     "burn": [
       0.0,

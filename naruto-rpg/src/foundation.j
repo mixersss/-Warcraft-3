@@ -39,7 +39,10 @@ globals
     boolean array CampaignClonePending
     item array ExamGear
     integer ExamGearCount=0
+    boolean CampaignBountyActive=false
+    integer array CampaignBountyBefore
     boolean CampaignKabutoAI=true
+    boolean array CampaignEventDue
     group CampaignScratch=null
     integer CampaignThinkCursor=0
     integer array CampaignActorRoute
@@ -50,6 +53,10 @@ globals
     integer array CampaignWaveRole
     real array CampaignWavePeriod
     real array CampaignWaveDelay
+    real array CampaignPostX
+    real array CampaignPostY
+    real array CampaignPostFacing
+    integer array CampaignDefenseLane
     real array CampaignDefenderX
     real array CampaignDefenderY
     real array CampaignReserveX
@@ -237,6 +244,12 @@ globals
     real array VisualVolleyDelay
     real array VisualVolleyX
     real array VisualVolleyY
+    unit array KibaRollTarget
+    unit array KibaRollCaster
+    real array KibaRollAge
+    real array KibaRollWait
+    integer array KibaRollHits
+    real array KibaRollDamage
     boolean array KibaFourLegs
     integer array SkillFormAnimation
     real array SkillFormPoseScale

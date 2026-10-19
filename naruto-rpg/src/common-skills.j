@@ -1,18 +1,25 @@
-function CommonLogClear takes integer p returns nothing
+function CommonLogActorClear takes integer p returns nothing
     if LogActor[p]!=null then
         call RemoveUnit(LogActor[p])
         set LogActor[p]=null
     endif
+endfunction
+function CommonLogClear takes integer p returns nothing
+    call CommonLogActorClear(p)
+    if Hero[p]!=null then
+        call UnitRemoveAbility(Hero[p],'BOwk')
+    endif
     set LogUntil[p]=0.
 endfunction
 function CommonLogEffect takes integer p returns nothing
-    call CommonLogClear(p)
+    // Native Wind Walk may already be active at SPELL_EFFECT: keep the fresh buff.
+    call CommonLogActorClear(p)
     set LogActor[p]=CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'rlgd',GetUnitX(Hero[p]),GetUnitY(Hero[p]),GetUnitFacing(Hero[p]))
     call SetUnitFlyHeight(LogActor[p],150.,0.)
     call SetUnitFlyHeight(LogActor[p],0.,1000.)
     set LogActorUntil[p]=TimeNow+1.5
     set LogUntil[p]=TimeNow+3.
-    set LogReadyAt[p]=TimeNow+10.
+    set LogReadyAt[p]=TimeNow+22.
     call DestroyEffect(AddSpecialEffect("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",GetUnitX(Hero[p]),GetUnitY(Hero[p])))
 endfunction
 function CommonLogTick takes nothing returns nothing
@@ -23,8 +30,8 @@ function CommonLogTick takes nothing returns nothing
             call RemoveUnit(LogActor[p])
             set LogActor[p]=null
         endif
-        if not FoundationAlive(Hero[p]) then
-            set LogUntil[p]=0.
+        if not FoundationAlive(Hero[p]) or (LogUntil[p]>0. and TimeNow>=LogUntil[p]) or (LogUntil[p]<=0. and Hero[p]!=null and GetUnitAbilityLevel(Hero[p],'BOwk')>0) then
+            call CommonLogClear(p)
         endif
         set p=p+1
     endloop

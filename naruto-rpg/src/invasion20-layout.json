@@ -1,5 +1,5 @@
 {
-  "note": "Alpha20 user-requested placement; clear static WPM/scenery with source invasion gates open. Dynamic collision requires a Warcraft playtest.",
+  "note": "Alpha23: original invasion posts for the five Sound guards, active local hero defense and <=10000 HP retreat to source camp fountains. Alpha20 corner arrivals and spaced invasion formations retained.",
   "defenderFountain": [
     16128,
     -15744
@@ -46,36 +46,36 @@
     {
       "kind": 5,
       "position": [
-        5280,
-        -1888
+        5407.0,
+        -2754.7
       ]
     },
     {
       "kind": 6,
       "position": [
-        -3280,
-        -12400
+        -2337.9,
+        -12081.0
       ]
     },
     {
       "kind": 7,
       "position": [
-        5504,
-        -1984
+        5191.3,
+        -2715.4
       ]
     },
     {
       "kind": 8,
       "position": [
-        4960,
-        -1888
+        4963.6,
+        -2733.3
       ]
     },
     {
       "kind": 9,
       "position": [
-        -3280,
-        -11280
+        -2340.7,
+        -11625.9
       ]
     }
   ],

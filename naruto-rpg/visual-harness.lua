@@ -90,7 +90,7 @@ print('PASS: all 52 visual cast paths, uninterrupted Kaiten pose/stop cleanup, t
 
 TimeNow=6000;Hero[7].type=HeroType[7];Hero[7].hp=100000000
 cast(7,PlayableSkill[37],1,nil);assert(KibaFourLegs[7] and Hero[7].alternate)
-VisualPose(7,38);assert(Hero[7].animationIndex==15)
+VisualPose(7,38);assert(Hero[7].animationIndex==SkillAnimation[38],'Tsuga spin must override Four Legs idle pose')
 Hero[7].type=raw('Rkfm');VisualPose(7,38);assert(Hero[7].animation=='attack','Stock wolf must never receive an out-of-range Kiba model index')
 RosterClearBuff(7);assert(not KibaFourLegs[7] and not Hero[7].alternate)
 Hero[7].type=HeroType[7]

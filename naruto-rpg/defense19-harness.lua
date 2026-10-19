@@ -4,14 +4,14 @@ CampaignVillageLandmarksClose();StoryShopsClose()
 TimeNow=950000;CampaignStage=12;CampaignTransition=false;CampaignCount=0;CampaignThinkCursor=0;CampaignActor={};CampaignActorRoute={};World={}
 for p=0,11 do
  Hero[p]=CreateUnit(p,raw('R000')+p,6096,-8528,0);Hero[p].hp=10000;Hero[p].maxLife=10000
- HeroRole[p]=p;HeroType[p]=Hero[p].type;CampaignPermanentDead[p]=false;CampaignClonePending[p]=false
+ Controllers[p]='computer';HeroRole[p]=p;HeroType[p]=Hero[p].type;CampaignPermanentDead[p]=false;CampaignClonePending[p]=false
  SpawnX[p]=6096;SpawnY[p]=-8528;StoryBuyAt[p]=TimeNow;StoryShopTripUntil[p]=0
 end
 for t=0,3 do StoryMarch[t]=true;StoryRetreat[t]=false end
-CampaignBindRoles();CampaignAlliances(2)
--- All nine Leaf heroes cover three genuine approach points, never the objective.
+CampaignBindRoles();CampaignAlliances(2);CampaignAssignDefense()
+-- All nine Leaf heroes cover two genuine approach points, 3 upper / 6 left, never the objective.
 for p=0,8 do
- local lane=({[0]=3,[1]=5,[2]=8})[p%3]
+ local lane=p<3 and 5 or 3
  assert(CampaignNearest(p)==nil)
  CampaignBot(p,nil);assert(Hero[p].last.o=='attack' and Hero[p].last.x==CampaignRouteX[lane] and Hero[p].last.y==CampaignRouteY[lane],'Idle defenders attack-move to an approach, not the Hokage')
 end
@@ -40,4 +40,4 @@ Hero[1].x=shop.x-800;Hero[1].y=shop.y;StoryBuyAt[1]=TimeNow;StoryShopTripUntil[1
 CampaignBot(1,nil);assert(Hero[1].last.o=='move' and Hero[1].last.x==shop.x and Hero[1].last.y==shop.y,'Shopping is allowed between waves')
 StoryBuyAt[9]=TimeNow+10;CampaignBot(9,nil);assert(Hero[9].last.o=='attack' and Hero[9].last.x==CampaignTX[12] and Hero[9].last.y==CampaignTY[12],'Sand keeps attacking the village objective')
 StoryShopsClose()
-print('PASS: nine Leaf heroes hold three source approaches; visible distant waves intercepted before shopping/follow, nearby combat and low-health retreat preserved, hidden/dead/paused waves ignored, breached objective defended, between-wave shopping and Sand attack preserved (mock natives).')
+print('PASS: nine Leaf heroes split 3 upper/6 left across two source approaches; visible distant waves intercepted before shopping/follow, nearby combat and low-health retreat preserved, hidden/dead/paused waves ignored, breached objective defended, between-wave shopping and Sand attack preserved (mock natives).')

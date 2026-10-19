@@ -1,7 +1,7 @@
 // Independent source-based presentation. One shared 0.05s clock, 256 visual units,
 // 48 attachment handles. Visual actors never attack, block paths or award experience.
 function VisualPose takes integer p, integer index returns nothing
-    if KibaFourLegs[p] and HeroRole[p]==7 and GetUnitTypeId(Hero[p])==HeroType[p] then
+    if index!=38 and KibaFourLegs[p] and HeroRole[p]==7 and GetUnitTypeId(Hero[p])==HeroType[p] then
         call SetUnitAnimationByIndex(Hero[p],15)
     elseif GetUnitTypeId(Hero[p])==HeroType[p] and SkillAnimation[index]>=0 then
         call SetUnitAnimationByIndex(Hero[p],SkillAnimation[index])
@@ -298,6 +298,7 @@ function VisualTick takes nothing returns nothing
     local integer n=0
     local integer p=0
     local real f=0.
+    call KibaRollTick()
     call KunaiTick()
     loop
         exitwhen n>=256

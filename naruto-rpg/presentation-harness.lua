@@ -9,7 +9,7 @@ for index=0,59 do
   Caster=Hero[p];Target=enemy;Spell=PlayableSkill[index];Caster.abilities[Spell]=1
   assert(SkillAnimation[index]>=0,'Unresolved animation')
   SkillsEffect();assert(SkillPoseQueued[p] and SkillPoseIndex[p]==SkillAnimation[index])
-  SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends')
+  SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends')
   count=count+1
  end
 end

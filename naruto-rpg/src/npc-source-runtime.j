@@ -5538,27 +5538,33 @@ function OrigNPC_K2X takes nothing returns boolean
 return(GetUnitAbilityLevelSwapped('A01T',OrigNPC_UN)==1)
 endfunction
 function OrigNPC_K3X takes nothing returns nothing
+local unit OrigNPC_K3X_visualCaster=GetTriggerUnit()
+local unit OrigNPC_K3X_visualTarget=GetSpellTargetUnit()
+local location OrigNPC_K3X_origin=null
+local effect OrigNPC_K3X_flash=null
 set OrigNPC_VB=GetUnitLoc(GetTriggerUnit())
+set OrigNPC_K3X_origin=OrigNPC_VB
 set OrigNPC_UN=GetTriggerUnit()
 set OrigNPC_WN=GetSpellTargetUnit()
 call AddSpecialEffectTargetUnitBJ("chest",OrigNPC_UN,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl")
 set OrigNPC_ZN=bj_lastCreatedEffect
+set OrigNPC_K3X_flash=OrigNPC_ZN
 call UnitAddAbility(OrigNPC_UN,'Amrf')
 call UnitRemoveAbility(OrigNPC_UN,'Amrf')
 call UnitAddAbility(OrigNPC_WN,'Amrf')
 call UnitRemoveAbility(OrigNPC_WN,'Amrf')
-call SetUnitTimeScalePercent(OrigNPC_WN,250.)
+call SetUnitTimeScalePercent(OrigNPC_K3X_visualTarget,250.)
 call SetUnitAnimation(OrigNPC_WN,"death")
-call SetUnitPathing(OrigNPC_UN,false)
-call SetUnitPathing(OrigNPC_WN,false)
-call PauseUnit(OrigNPC_UN,true)
-call PauseUnit(OrigNPC_WN,true)
-call ShowUnitHide(OrigNPC_UN)
-call SetUnitFlyHeight(OrigNPC_WN,500.,2000.)
-call SetUnitFlyHeight(OrigNPC_UN,500.,2000.)
+call SetUnitPathing(OrigNPC_K3X_visualCaster,false)
+call SetUnitPathing(OrigNPC_K3X_visualTarget,false)
+call PauseUnit(OrigNPC_K3X_visualCaster,true)
+call PauseUnit(OrigNPC_K3X_visualTarget,true)
+call ShowUnitHide(OrigNPC_K3X_visualCaster)
+call SetUnitFlyHeight(OrigNPC_K3X_visualTarget,500.,2000.)
+call SetUnitFlyHeight(OrigNPC_K3X_visualCaster,500.,2000.)
 call TriggerSleepAction(.25)
-call ShowUnitShow(OrigNPC_UN)
-call SetUnitTimeScalePercent(OrigNPC_UN,300.)
+call ShowUnitShow(OrigNPC_K3X_visualCaster)
+call SetUnitTimeScalePercent(OrigNPC_K3X_visualCaster,300.)
 if(OrigNPC_K2X())then
 call TriggerExecute(OrigNPC_XAV)
 call UnitDamageTargetBJ(OrigNPC_UN,OrigNPC_WN,150.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)
@@ -5650,30 +5656,34 @@ call UnitDamageTargetBJ(OrigNPC_UN,OrigNPC_WN,75.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_
 endif
 endif
 call TriggerSleepAction(.5)
-call SetUnitPositionLoc(OrigNPC_UN,OrigNPC_VB)
-call SetUnitPositionLoc(OrigNPC_WN,OrigNPC_VB)
-call SetUnitTimeScalePercent(OrigNPC_UN,100.)
+call SetUnitPositionLoc(OrigNPC_K3X_visualCaster,OrigNPC_K3X_origin)
+call SetUnitPositionLoc(OrigNPC_K3X_visualTarget,OrigNPC_K3X_origin)
+call SetUnitTimeScalePercent(OrigNPC_K3X_visualCaster,100.)
 call PlaySoundBJ(OrigNPC_CY)
-call SetUnitAnimationByIndex(OrigNPC_UN,0xC)
+call SetUnitAnimationByIndex(OrigNPC_K3X_visualCaster,0xC)
 call TriggerSleepAction(.01)
-call ShowUnitHide(OrigNPC_UN)
-call ShowUnitHide(OrigNPC_WN)
-call SetUnitFlyHeight(OrigNPC_UN,.0,.0)
-call SetUnitFlyHeight(OrigNPC_WN,.0,.0)
+call ShowUnitHide(OrigNPC_K3X_visualCaster)
+call ShowUnitHide(OrigNPC_K3X_visualTarget)
+call SetUnitFlyHeight(OrigNPC_K3X_visualCaster,.0,.0)
+call SetUnitFlyHeight(OrigNPC_K3X_visualTarget,.0,.0)
 call TriggerSleepAction(.5)
-call ShowUnitShow(OrigNPC_UN)
+call ShowUnitShow(OrigNPC_K3X_visualCaster)
 call TriggerSleepAction(.5)
-call ShowUnitShow(OrigNPC_WN)
-call SetUnitTimeScalePercent(OrigNPC_WN,100.)
+call ShowUnitShow(OrigNPC_K3X_visualTarget)
+call SetUnitTimeScalePercent(OrigNPC_K3X_visualTarget,100.)
 call UnitDamageTargetBJ(OrigNPC_UN,OrigNPC_WN,300.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)
 call AddSpecialEffectLocBJ(OrigNPC_VB,"Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl")
 call DestroyEffect(bj_lastCreatedEffect)
-call SetUnitPathing(OrigNPC_UN,true)
-call SetUnitPathing(OrigNPC_WN,true)
-call PauseUnit(OrigNPC_UN,false)
-call PauseUnit(OrigNPC_WN,false)
-call DestroyEffect(OrigNPC_ZN)
-call RemoveLocation(OrigNPC_VB)
+call SetUnitPathing(OrigNPC_K3X_visualCaster,true)
+call SetUnitPathing(OrigNPC_K3X_visualTarget,true)
+call PauseUnit(OrigNPC_K3X_visualCaster,false)
+call PauseUnit(OrigNPC_K3X_visualTarget,false)
+call DestroyEffect(OrigNPC_K3X_flash)
+call RemoveLocation(OrigNPC_K3X_origin)
+set OrigNPC_K3X_origin=null
+set OrigNPC_K3X_flash=null
+set OrigNPC_K3X_visualCaster=null
+set OrigNPC_K3X_visualTarget=null
 endfunction
 function OrigNPC_K5X takes nothing returns boolean
 return(GetSpellAbilityId()=='A01T')
@@ -5894,6 +5904,54 @@ call ForGroupBJ(OrigNPC_CE,function OrigNPC_V4O)
 call DestroyGroup(OrigNPC_CE)
 call RemoveLocation(OrigNPC_AE)
 endfunction
+// Six original 0.25s medic clocks; no temporary locations or random wandering.
+function NPCMedicClock takes integer j returns trigger
+    if j==0 then
+        return OrigNPC_R4V
+    elseif j==1 then
+        return OrigNPC_R5V
+    elseif j==2 then
+        return OrigNPC_R6V
+    elseif j==3 then
+        return OrigNPC_R7V
+    elseif j==4 then
+        return OrigNPC_R8V
+    endif
+    return OrigNPC_R9V
+endfunction
+function NPCMedicStop takes integer j returns nothing
+    call DisableTrigger(NPCMedicClock(j))
+    set OrigNPC_RR[j+2]=null
+    if OrigNPC_AF[j]!=null then
+        call DestroyEffect(OrigNPC_AF[j])
+        set OrigNPC_AF[j]=null
+    endif
+    if OrigNPC_IF[j]!=null then
+        call SetUnitTimeScale(OrigNPC_IF[j],1.)
+        if NPCCooldowns!=null then
+            call SaveReal(NPCCooldowns,GetHandleId(OrigNPC_IF[j]),0,0.)
+        endif
+    endif
+endfunction
+function NPCMedicPulse takes integer j returns nothing
+    local unit medic=OrigNPC_IF[j]
+    local unit target=OrigNPC_RR[j+2]
+    local real dx=GetUnitX(medic)-GetUnitX(target)
+    local real dy=GetUnitY(medic)-GetUnitY(target)
+    if FoundationAlive(medic) and FoundationAlive(target) and not IsUnitPaused(medic) and IsUnitAlly(target,GetOwningPlayer(medic)) and dx*dx+dy*dy<500.*500. and GetWidgetLife(target)<GetUnitState(target,UNIT_STATE_MAX_LIFE) and GetUnitState(medic,UNIT_STATE_MANA)>=25. and GetUnitCurrentOrder(medic)==OrderId("drain") then
+        call SetUnitTimeScale(medic,2.)
+        call SetUnitAnimation(medic,"attack")
+        call SetUnitState(medic,UNIT_STATE_MANA,GetUnitState(medic,UNIT_STATE_MANA)-25.)
+        call SetWidgetLife(target,RMinBJ(GetUnitState(target,UNIT_STATE_MAX_LIFE),GetWidgetLife(target)+75.))
+    else
+        call NPCMedicStop(j)
+        if FoundationAlive(medic) and GetUnitCurrentOrder(medic)==OrderId("drain") then
+            call IssueImmediateOrder(medic,"stop")
+        endif
+    endif
+    set medic=null
+    set target=null
+endfunction
 function OrigNPC_GVO takes nothing returns boolean
 return(NPCSourceType(GetSpellAbilityUnit())=='c020')and(GetSpellAbilityId()=='A02X')
 endfunction
@@ -5919,53 +5977,17 @@ function OrigNPC_GNO takes nothing returns boolean
 return(GetSpellAbilityUnit()==OrigNPC_IF[0])
 endfunction
 function OrigNPC_GBO takes nothing returns nothing
-if(OrigNPC_GNO())then
-set OrigNPC_LN[2]=GetUnitLoc(OrigNPC_IF[0])
-set OrigNPC_RR[2]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("hand left",OrigNPC_IF[0],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[0]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R4V)
-else
-if(OrigNPC_GAO())then
-set OrigNPC_LN[3]=GetUnitLoc(OrigNPC_IF[1])
-set OrigNPC_RR[3]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("hand left",OrigNPC_IF[1],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[1]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R5V)
-else
-if(OrigNPC_GIO())then
-set OrigNPC_LN[4]=GetUnitLoc(OrigNPC_IF[2])
-set OrigNPC_RR[4]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("weapon",OrigNPC_IF[2],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[2]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R6V)
-else
-if(OrigNPC_GRO())then
-set OrigNPC_LN[5]=GetUnitLoc(OrigNPC_IF[3])
-set OrigNPC_RR[5]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("sprite",OrigNPC_IF[3],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[3]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R7V)
-else
-if(OrigNPC_GOO())then
-set OrigNPC_LN[6]=GetUnitLoc(OrigNPC_IF[4])
-set OrigNPC_RR[6]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("sprite",OrigNPC_IF[4],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[4]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R8V)
-else
-if(OrigNPC_GXO())then
-set OrigNPC_LN[7]=GetUnitLoc(OrigNPC_IF[5])
-set OrigNPC_RR[7]=GetSpellTargetUnit()
-call AddSpecialEffectTargetUnitBJ("sprite",OrigNPC_IF[5],"Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl")
-set OrigNPC_AF[5]=bj_lastCreatedEffect
-call EnableTrigger(OrigNPC_R9V)
-endif
-endif
-endif
-endif
-endif
-endif
+    local integer j=0
+    loop
+        exitwhen j>=6
+        if GetSpellAbilityUnit()==OrigNPC_IF[j] then
+            call NPCMedicStop(j)
+            set OrigNPC_RR[j+2]=GetSpellTargetUnit()
+            set OrigNPC_AF[j]=AddSpecialEffectTarget("Abilities\\Spells\\Other\\Parasite\\ParasiteMissile.mdl",OrigNPC_IF[j],"hand left")
+            call EnableTrigger(NPCMedicClock(j))
+        endif
+        set j=j+1
+    endloop
 endfunction
 function OrigNPC_GDO takes nothing returns boolean
 return(NPCSourceType(GetSpellAbilityUnit())=='c020')and(GetSpellAbilityId()=='A02X')
@@ -5992,47 +6014,14 @@ function OrigNPC_GMO takes nothing returns boolean
 return(GetTriggerUnit()==OrigNPC_IF[0])
 endfunction
 function OrigNPC_GPO takes nothing returns nothing
-if(OrigNPC_GMO())then
-call DisableTrigger(OrigNPC_R4V)
-call DestroyEffect(OrigNPC_AF[0])
-call SetUnitTimeScalePercent(OrigNPC_IF[0],100.)
-call RemoveLocation(OrigNPC_MN[2])
-else
-if(OrigNPC_GLO())then
-call DisableTrigger(OrigNPC_R5V)
-call DestroyEffect(OrigNPC_AF[1])
-call SetUnitTimeScalePercent(OrigNPC_IF[1],100.)
-call RemoveLocation(OrigNPC_MN[3])
-else
-if(OrigNPC_GKO())then
-call DisableTrigger(OrigNPC_R6V)
-call DestroyEffect(OrigNPC_AF[2])
-call SetUnitTimeScalePercent(OrigNPC_IF[2],100.)
-call RemoveLocation(OrigNPC_MN[4])
-else
-if(OrigNPC_GJO())then
-call DisableTrigger(OrigNPC_R7V)
-call DestroyEffect(OrigNPC_AF[3])
-call SetUnitTimeScalePercent(OrigNPC_IF[3],100.)
-call RemoveLocation(OrigNPC_MN[5])
-else
-if(OrigNPC_GHO())then
-call DisableTrigger(OrigNPC_R8V)
-call DestroyEffect(OrigNPC_AF[4])
-call SetUnitTimeScalePercent(OrigNPC_IF[4],100.)
-call RemoveLocation(OrigNPC_MN[6])
-else
-if(OrigNPC_GGO())then
-call DisableTrigger(OrigNPC_R9V)
-call DestroyEffect(OrigNPC_AF[5])
-call SetUnitTimeScalePercent(OrigNPC_IF[5],100.)
-call RemoveLocation(OrigNPC_MN[7])
-endif
-endif
-endif
-endif
-endif
-endif
+    local integer j=0
+    loop
+        exitwhen j>=6
+        if GetTriggerUnit()==OrigNPC_IF[j] then
+            call NPCMedicStop(j)
+        endif
+        set j=j+1
+    endloop
 endfunction
 function OrigNPC_GSO takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[0])>24.)and(GetUnitLifePercent(OrigNPC_RR[2])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[2],OrigNPC_MN[2])<500.)and(IsUnitAliveBJ(OrigNPC_RR[2]))
@@ -6041,22 +6030,7 @@ function OrigNPC_GTO takes nothing returns boolean
 return(OrigNPC_GSO())
 endfunction
 function OrigNPC_GUO takes nothing returns nothing
-set OrigNPC_MN[2]=GetUnitLoc(OrigNPC_RR[2])
-if(OrigNPC_GTO())then
-call SetUnitTimeScalePercent(OrigNPC_IF[0],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[0],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[0],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[0])-25.))
-call SetWidgetLife(OrigNPC_RR[2],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[2])+75.))
-else
-call DestroyEffect(OrigNPC_AF[0])
-call SetUnitTimeScalePercent(OrigNPC_IF[0],100.)
-call IssueImmediateOrderById(OrigNPC_IF[0],0xD0004)
-set OrigNPC_AE=GetRandomLocInRect(OrigNPC_RL)
-call IssuePointOrderByIdLoc(OrigNPC_IF[0],0xD0012,OrigNPC_AE)
-call RemoveLocation(OrigNPC_AE)
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[2])
+    call NPCMedicPulse(0)
 endfunction
 function OrigNPC_GYO takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[1])>24.)and(GetUnitLifePercent(OrigNPC_RR[3])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[3],OrigNPC_MN[3])<500.)and(IsUnitAliveBJ(OrigNPC_RR[3]))
@@ -6065,22 +6039,7 @@ function OrigNPC_GZO takes nothing returns boolean
 return(OrigNPC_GYO())
 endfunction
 function OrigNPC_G_O takes nothing returns nothing
-set OrigNPC_MN[3]=GetUnitLoc(OrigNPC_RR[3])
-if(OrigNPC_GZO())then
-call SetUnitTimeScalePercent(OrigNPC_IF[1],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[1],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[1],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[1])-25.))
-call SetWidgetLife(OrigNPC_RR[3],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[3])+75.))
-else
-call DestroyEffect(OrigNPC_AF[1])
-call SetUnitTimeScalePercent(OrigNPC_IF[1],100.)
-call IssueImmediateOrderById(OrigNPC_IF[1],0xD0004)
-set OrigNPC_BE=GetRandomLocInRect(OrigNPC_PK)
-call IssuePointOrderByIdLoc(OrigNPC_IF[1],0xD0012,OrigNPC_BE)
-call RemoveLocation(OrigNPC_BE)
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[3])
+    call NPCMedicPulse(1)
 endfunction
 function OrigNPC_G1O takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[2])>24.)and(GetUnitLifePercent(OrigNPC_RR[4])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[4],OrigNPC_MN[4])<500.)and(IsUnitAliveBJ(OrigNPC_RR[4]))
@@ -6089,20 +6048,7 @@ function OrigNPC_G2O takes nothing returns boolean
 return(OrigNPC_G1O())
 endfunction
 function OrigNPC_G3O takes nothing returns nothing
-set OrigNPC_MN[4]=GetUnitLoc(OrigNPC_RR[4])
-if(OrigNPC_G2O())then
-call SetUnitTimeScalePercent(OrigNPC_IF[2],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[2],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[2],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[2])-25.))
-call SetWidgetLife(OrigNPC_RR[4],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[4])+75.))
-else
-call DestroyEffect(OrigNPC_AF[2])
-call SetUnitTimeScalePercent(OrigNPC_IF[2],100.)
-call IssueImmediateOrderById(OrigNPC_IF[2],0xD0004)
-call IssuePointOrderByIdLoc(OrigNPC_IF[2],0xD0012,OrigNPC_FF[2])
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[4])
+    call NPCMedicPulse(2)
 endfunction
 function OrigNPC_G5O takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[3])>24.)and(GetUnitLifePercent(OrigNPC_RR[5])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[5],OrigNPC_MN[5])<500.)and(IsUnitAliveBJ(OrigNPC_RR[5]))
@@ -6111,20 +6057,7 @@ function OrigNPC_G6O takes nothing returns boolean
 return(OrigNPC_G5O())
 endfunction
 function OrigNPC_G7O takes nothing returns nothing
-set OrigNPC_MN[5]=GetUnitLoc(OrigNPC_RR[5])
-if(OrigNPC_G6O())then
-call SetUnitTimeScalePercent(OrigNPC_IF[3],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[3],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[3],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[3])-25.))
-call SetWidgetLife(OrigNPC_RR[5],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[5])+75.))
-else
-call DestroyEffect(OrigNPC_AF[3])
-call SetUnitTimeScalePercent(OrigNPC_IF[3],100.)
-call IssueImmediateOrderById(OrigNPC_IF[3],0xD0004)
-call IssuePointOrderByIdLoc(OrigNPC_IF[3],0xD0012,OrigNPC_FF[3])
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[5])
+    call NPCMedicPulse(3)
 endfunction
 function OrigNPC_G9O takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[4])>24.)and(GetUnitLifePercent(OrigNPC_RR[6])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[6],OrigNPC_MN[6])<500.)and(IsUnitAliveBJ(OrigNPC_RR[6]))
@@ -6133,20 +6066,7 @@ function OrigNPC_HVO takes nothing returns boolean
 return(OrigNPC_G9O())
 endfunction
 function OrigNPC_HEO takes nothing returns nothing
-set OrigNPC_MN[6]=GetUnitLoc(OrigNPC_RR[6])
-if(OrigNPC_HVO())then
-call SetUnitTimeScalePercent(OrigNPC_IF[4],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[4],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[4],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[4])-25.))
-call SetWidgetLife(OrigNPC_RR[6],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[6])+75.))
-else
-call DestroyEffect(OrigNPC_AF[4])
-call SetUnitTimeScalePercent(OrigNPC_IF[4],100.)
-call IssueImmediateOrderById(OrigNPC_IF[4],0xD0004)
-call IssuePointOrderByIdLoc(OrigNPC_IF[4],0xD0012,OrigNPC_FF[4])
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[6])
+    call NPCMedicPulse(4)
 endfunction
 function OrigNPC_HOO takes nothing returns boolean
 return(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[5])>24.)and(GetUnitLifePercent(OrigNPC_RR[7])!=100.)and(DistanceBetweenPoints(OrigNPC_LN[7],OrigNPC_MN[7])<500.)and(IsUnitAliveBJ(OrigNPC_RR[7]))
@@ -6155,20 +6075,7 @@ function OrigNPC_HRO takes nothing returns boolean
 return(OrigNPC_HOO())
 endfunction
 function OrigNPC_HIO takes nothing returns nothing
-set OrigNPC_MN[7]=GetUnitLoc(OrigNPC_RR[7])
-if(OrigNPC_HRO())then
-call SetUnitTimeScalePercent(OrigNPC_IF[5],200.)
-call SetUnitAnimationWithRarity(OrigNPC_IF[5],"attack",RARITY_RARE)
-call SetUnitManaBJ(OrigNPC_IF[5],(GetUnitStateSwap(UNIT_STATE_MANA,OrigNPC_IF[5])-25.))
-call SetWidgetLife(OrigNPC_RR[7],(GetUnitStateSwap(UNIT_STATE_LIFE,OrigNPC_RR[7])+75.))
-else
-call DestroyEffect(OrigNPC_AF[5])
-call SetUnitTimeScalePercent(OrigNPC_IF[5],100.)
-call IssueImmediateOrderById(OrigNPC_IF[5],0xD0004)
-call IssuePointOrderByIdLoc(OrigNPC_IF[5],0xD0012,OrigNPC_FF[5])
-call DisableTrigger(GetTriggeringTrigger())
-endif
-call RemoveLocation(OrigNPC_MN[7])
+    call NPCMedicPulse(5)
 endfunction
 function OrigNPC_DRR takes nothing returns boolean
 return(GetSpellAbilityId()=='A01G')and(GetSpellAbilityUnit()==OrigNPC_J6V)

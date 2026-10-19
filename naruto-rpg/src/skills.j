@@ -101,6 +101,10 @@ function SkillsEffect takes nothing returns nothing
         call CommonLogEffect(p)
     endif
     if index>=0 then
+        if SkillMorph[index] then
+            // Remove Wind Walk before a native form change can retain its hidden state.
+            call CommonLogClear(p)
+        endif
         if not SkillPassive[index] then
             set SkillPoseAbility[p]=index
             set VisualPoseLife[p]=RMaxBJ(1.,SkillHold[index])+.35
@@ -165,6 +169,9 @@ function SkillsEndcast takes nothing returns nothing
         set index=VisualChannelIndex[p]
         if VisualChannelUntil[p]>0. and index>=0 then
             if GetSpellAbilityId()==PlayableSkill[index] then
+                if index==38 then
+                    call KibaRollEnd(p)
+                endif
                 if index==26 or index==28 then
                     call VisualLiftEnd(p)
                 endif

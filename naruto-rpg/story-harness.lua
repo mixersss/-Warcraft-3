@@ -8,12 +8,12 @@ StoryRevive=numbers();StoryBotOrderAt=numbers();StoryBuyAt=numbers();StoryBought
 SandWave={};SandWaveUntil=numbers();SandWaveDX=numbers();SandWaveDY=numbers()
 Hero={};Dummy={};Companion={};Controllers={};World={};Orders={};Effects=0;Destroyed=0;TimeNow=7
 PLAYER_NEUTRAL_AGGRESSIVE=12;PLAYER_NEUTRAL_PASSIVE=15
-PLAYER_STATE_RESOURCE_GOLD='gold';EVENT_UNIT_SELL_ITEM='sale'
+PLAYER_STATE_GIVES_BOUNTY='bounty';PLAYER_STATE_RESOURCE_GOLD='gold';EVENT_UNIT_SELL_ITEM='sale'
 local slots={[0]=true,[1]=true,[2]=true,[3]=true,[4]=true,[5]=true,[9]=true,[10]=true,[11]=true}
 function GetPlayerSlotState(p)return slots[p] and 'playing' or 'open'end
-local gold={};local feedback={};local neutralBuyer={}
-function GetPlayerState(p,s)return gold[p] or 0 end
-function SetPlayerState(p,s,n)gold[p]=n end
+local gold={};local bounty={};local feedback={};local neutralBuyer={}
+function GetPlayerState(p,s)if s==PLAYER_STATE_GIVES_BOUNTY then return bounty[p] or 0 end;return gold[p] or 0 end
+function SetPlayerState(p,s,n)if s==PLAYER_STATE_GIVES_BOUNTY then bounty[p]=n else gold[p]=n end end
 function AddHeroXP(u,n,fx)u.xp=(u.xp or 0)+n end
 function GetUnitCurrentOrder(u)return u.order or 0 end
 function CreateQuest()return {}end

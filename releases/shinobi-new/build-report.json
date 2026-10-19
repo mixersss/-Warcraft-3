@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Story_Alpha_22.w3x",
-  "bytes": 8383912,
-  "sha256": "efff2e8d954a2640ff6baca980c7b7cce1f30d6a8b3d582c71cee8b642cb9f56",
+  "filename": "Shinobi_Story_Alpha_23.w3x",
+  "bytes": 8386505,
+  "sha256": "aa2f7e65748b77739f012c5bfe2e43b186df3d2e88c221ccb5d2bb241641ea7c",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata",
   "importedAssets": 384,
@@ -34,7 +34,7 @@
   "nativeImpactSounds": true,
   "musicMode": "source chapter mapping; forest HeavyViolence loop",
   "experienceProfile": "source native factors and quiz/Jiraiya rewards; independent battle encounters",
-  "stage": "22 arena, permanent companions, source shield and Byakugan, prelim-winner bracket, scroll levels and 10s Kawarimi",
+  "stage": "23 visibility cleanup, 22s Kawarimi, 30/70 defense, healing medics, timed reinforcements, native bounty, source Sound posts and targeted Tsuga",
   "commonKawarimiForAllHeroes": true,
   "stageTimerHUD": true,
   "questionBankSize": 16,
@@ -83,5 +83,17 @@
   "sourceLootTables": 2,
   "ramenIndependentResourcePools": true,
   "hiddenTreeJumpButton": true,
+  "sourceSoundGuardPosts": 5,
+  "medicPulseHP": 75,
+  "medicPulseMana": 25,
+  "medicPulseSeconds": 0.25,
+  "independentReinforcementCallbacks": true,
+  "invasionNativeBounty": true,
+  "kibaTsugaHits": 5,
+  "kibaTsugaDamagePerHit": [
+    180,
+    240,
+    300
+  ],
   "engineTested": false
 }

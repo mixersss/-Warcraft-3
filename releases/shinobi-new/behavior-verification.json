@@ -1,8 +1,9 @@
 {
+  "corrections23NativeMocks": true,
   "corrections22NativeMocks": true,
   "prelimWinnersOnly": true,
   "scrollRewardLevels": 2,
-  "kawarimiCooldownSeconds": 10,
+  "kawarimiCooldownSeconds": 22,
   "sourceShieldDamagePerMana": [
     1,
     2,
@@ -48,17 +49,33 @@
   ],
   "invasionEventTimerLifecycleNativeMocks": true,
   "leafCornerFountainSpawns": 9,
-  "stationaryRearCampElites": 5,
+  "sourceSoundGuardPosts": 5,
+  "sourceSoundGuardRetreatHP": 10000,
+  "medicPulseHP": 75,
+  "medicPulseMana": 25,
+  "medicPulseSeconds": 0.25,
+  "realMedicHealingNativeMocks": true,
+  "independentReinforcementCallbacks": true,
+  "invasionNativeBountyLifecycle": true,
+  "kibaTsugaHits": 5,
+  "kibaTsugaDamagePerHit": [
+    180,
+    240,
+    300
+  ],
+  "kibaTargetedMotionAndInterruptsNativeMocks": true,
   "spacedInvasionSpawns": 24,
   "waveStallRecoveryNativeMocks": true,
   "waveRecoveryWithoutTeleport": true,
   "recycledActorMovementStateReset": true,
   "leafWaveInterceptionNativeMocks": true,
-  "leafThreeApproachRallyPoints": [
+  "leafDefenseRallyPoints": [
     3,
-    5,
-    8
+    5
   ],
+  "leafDefenseUpperShare": 0.3,
+  "windWalkNativeBuffCleanup": true,
+  "castLocalNPCVisibility": true,
   "defenseCombatOverridesShoppingAndFollow": true,
   "invasionWaypointRedirectsNativeMocks": true,
   "villageShortcutActualChatDispatch": true,

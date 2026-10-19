@@ -118,7 +118,7 @@ function NPCTry takes unit u, integer kind, unit target returns boolean
                 set issued=IssueTargetOrder(u,NPCOrder[i],target)
             elseif NPCTarget[i]==2 and distance<=NPCRange[i] and IsUnitEnemy(target,GetOwningPlayer(u)) then
                 set issued=IssuePointOrder(u,NPCOrder[i],GetUnitX(target),GetUnitY(target))
-            elseif NPCTarget[i]==3 and distance<=NPCRange[i] and IsUnitAlly(target,GetOwningPlayer(u)) and GetWidgetLife(target)<GetUnitState(target,UNIT_STATE_MAX_LIFE)*.8 then
+            elseif NPCTarget[i]==3 and distance<=NPCRange[i] and IsUnitAlly(target,GetOwningPlayer(u)) and GetWidgetLife(target)<GetUnitState(target,UNIT_STATE_MAX_LIFE)*.9 then
                 set issued=IssueTargetOrder(u,NPCOrder[i],target)
             endif
             if issued then

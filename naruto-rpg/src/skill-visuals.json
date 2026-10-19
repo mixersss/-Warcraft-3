@@ -720,13 +720,14 @@
       "sourceId": "A01H",
       "kind": "roll",
       "animation": "attack walk stand spin",
-      "channelSeconds": 1.0,
+      "channelSeconds": 3.0,
       "nativeArt": {},
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
       "sequenceSeconds": 1,
       "sequenceNonLooping": 0,
-      "sequencePlaybackScale": 1.0
+      "sequencePlaybackScale": 1.0,
+      "repeatSequenceDuringChannel": true
     },
     {
       "index": 39,

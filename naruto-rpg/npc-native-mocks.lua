@@ -61,3 +61,5 @@ function DestroyGroup(g)g.destroyed=true end
 
 function LoadInteger(t,p,c)return t[p] and t[p][c] or 0 end
 function SaveInteger(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
+
+function ExecuteFunc(name)assert(type(_G[name])=='function','Missing ExecuteFunc target: '..name);_G[name]()end
