@@ -137,7 +137,7 @@ def validate_balance(b: dict) -> None:
     assert 1 <= b['spawn_units'] <= b['army_cap'] <= 100
     assert b['upgrade_max'] <= 255
     assert 1 <= b['research_soft_cap'] < b['upgrade_max']
-    assert b['advanced_research_cost_multiplier'] >= 2
+    assert b['advanced_research_cost_multiplier'] >= 1
     assert b['warmup_seconds'] >= 10
     for tier in b['tiers']:
         assert tier['hp'] > 0 and tier['damage'] > 0
@@ -406,7 +406,7 @@ def upgrades(b: dict) -> bytes:
             for rank in range(1,cap+1):
                 total=rank+offset
                 changes += [('gnam',3,name,rank,0),('gtp1',3,f'{name} [уровень {total}/{4 if column==3 else b["upgrade_max"]}]',rank,0),
-                    ('gub1',3,description+f' Цена: {price+increment*(rank-1)} золота.'+(' Продвинутое исследование: цена ×4 после 10-го уровня.' if column<2 else ''),rank,0),
+                    ('gub1',3,description+f' Цена: {price+increment*(rank-1)} золота.',rank,0),
                     ('gar1',3,'ReplaceableTextures\\CommandButtons\\'+art,rank,0),
                     ('greq',3,rawcode if offset else '',rank,0),('grqc',3,str(offset) if offset else '',rank,0)]
             entries.append((base,raw,changes))

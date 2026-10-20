@@ -126,3 +126,29 @@ with (r/'docs/Heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig')a
  w=csv.writer(f,lineterminator="\n");w.writerow(['Герой','Клавиша','Способность','Краткое описание','Макс. ранг','ID в карте','Источник']);w.writerows(rows)
 assert len(heroes)==46 and len(rows)==184
 print(f'Exported {len(heroes)} heroes, {len(rows)} skills: docs/Heroes-and-skills.md and .csv')
+
+# Separate, compact review sheet for the ten most recent additions.
+new=['# Десять новых героев — навыки для проверки','',
+     'Q/W/E — до 200 рангов; R — до 50. Названия соответствуют текущей карте. Особая механика дополняет обычное действие способности. У всех также есть «+» характеристик: +2 силы, ловкости и интеллекта за очко.',
+     '', 'Картинки пока не приложены: штатные иконки находятся в игровых MPQ Warcraft III, которых нет в среде сборки. Модели и иконки в самой карте сохранены.','']
+review=[]
+passives={'AHad','AHab','AUav','AEar','AUts','AEev','AUau','AOre'}
+models=['каменный голем','безликий','сатир-заклинатель','клыкарр-охотник','драконид','гидра','иглогрив','громовой ящер','полярный фурболг','тёмный тролль-жрец']
+roles={'expansion_frontline':'передняя линия','expansion_caster':'маг','expansion_carry':'керри','expansion_support':'поддержка'}
+for h in heroes:
+ if not h.get('signature'):continue
+ new += ['## '+h['name'],'',f'Основной параметр: **{["сила","ловкость","интеллект"][h["primary"]]}**. Роль: {roles[h["gear_role"]]}. Облик: {models[h["signature"]["kind"]]}.','',
+         '| Клавиша | Навык | Тип | Действие |','| --- | --- | --- | --- |']
+ for slot,src in enumerate(h['skill_sources']):
+  name=h['ability_names'][slot];desc=lookup[src][1];sig=h['signature']
+  if sig['slot']==slot or (sig['slot']==-1 and slot==0):desc+=' **Дополнительно:** '+sig['description']
+  kind='Пассивный' if src in passives else 'Активный'
+  new.append('| '+' | '.join(['QWER'[slot],name,kind,desc])+' |')
+  review.append([h['name'],'QWER'[slot],name,kind,desc.replace('**',''),50 if slot==3 else 200])
+ new.append('')
+new += ['Напиши имя героя и клавишу навыка, затем что изменить: урон, лечение, призыв, длительность, радиус или особую механику.','',
+        '[Полная таблица всех 46 героев](Heroes-and-skills.md) · [Скачать таблицу новых героев для Excel](New-heroes-and-skills.csv)','']
+(r/'docs/New-heroes-and-skills.md').write_text('\n'.join(new))
+with (r/'docs/New-heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig') as f:
+ w=csv.writer(f,lineterminator='\n');w.writerow(['Герой','Клавиша','Способность','Тип','Описание','Макс. ранг']);w.writerows(review)
+assert len(review)==40

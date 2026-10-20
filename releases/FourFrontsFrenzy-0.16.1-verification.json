@@ -1,0 +1,97 @@
+{
+  "filename": "FourFrontsFrenzy-0.16.1-alpha.w3x",
+  "sha256": "f639d293e6ee6f00a6c5de9be26280b8f765f53104df034b098293ff8bec1dce",
+  "version": "0.16.1-alpha",
+  "pricing": {
+    "version": "0.16.1-alpha",
+    "checkedResearchRanks": 600,
+    "allAdvancedSurchargesRemoved": true,
+    "ordinaryPriceMultiplier": 0.5,
+    "buildingWavePricesUnchanged": true,
+    "heroesSpellsTroopsItemsTerrainByteIdentical": true,
+    "otherRuntimeIdentical": true,
+    "samples": [
+      {
+        "research": "Rfat",
+        "rank": 1,
+        "price": 84
+      },
+      {
+        "research": "Rfat",
+        "rank": 10,
+        "price": 651
+      },
+      {
+        "research": "Rfat",
+        "rank": 11,
+        "price": 714
+      },
+      {
+        "research": "Rfat",
+        "rank": 200,
+        "price": 12621
+      },
+      {
+        "research": "Rfar",
+        "rank": 1,
+        "price": 84
+      },
+      {
+        "research": "Rfar",
+        "rank": 10,
+        "price": 651
+      },
+      {
+        "research": "Rfar",
+        "rank": 11,
+        "price": 714
+      },
+      {
+        "research": "Rfar",
+        "rank": 200,
+        "price": 12621
+      },
+      {
+        "research": "Rfhp",
+        "rank": 1,
+        "price": 151
+      },
+      {
+        "research": "Rfhp",
+        "rank": 10,
+        "price": 1060
+      },
+      {
+        "research": "Rfhp",
+        "rank": 11,
+        "price": 1161
+      },
+      {
+        "research": "Rfhp",
+        "rank": 200,
+        "price": 20250
+      }
+    ],
+    "enginePlaytest": false
+  },
+  "roster": {
+    "version": "0.16.1-alpha",
+    "heroes": 46,
+    "newCustomHeroes": 10,
+    "customTotal": 22,
+    "skillSlots": 184,
+    "pickerPages": 7,
+    "uniqueModels": 22,
+    "newSkills": 40,
+    "nativeTimedAuraRanks": 50,
+    "allActiveSkillsHaveBotOrders": true,
+    "oldHeroesSpellsTerrainUnchanged": true,
+    "troopPriceChangeValidatedBy": "verify-0161",
+    "boundedPlayerState": 12,
+    "perCastTimers": 0,
+    "enginePlaytest": false
+  },
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "enginePlaytest": false
+}

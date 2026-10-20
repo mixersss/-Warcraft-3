@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.16.0-alpha",
+  "version": "0.16.1-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 21,
@@ -9,10 +9,10 @@
   "army_cap": 60,
   "warmup_seconds": 60,
   "upgrade_max": 200,
-  "attack_cost": 168,
-  "attack_cost_step": 126,
-  "armor_cost": 168,
-  "armor_cost_step": 126,
+  "attack_cost": 84,
+  "attack_cost_step": 63,
+  "armor_cost": 84,
+  "armor_cost_step": 63,
   "spawn_cost": 300,
   "spawn_cost_step": 200,
   "hero_power_cost": 250,
@@ -60,8 +60,8 @@
       "cost": 4800
     }
   ],
-  "health_cost": 302,
-  "health_cost_step": 202,
+  "health_cost": 151,
+  "health_cost_step": 101,
   "health_percent": 0.06666666666666667,
   "base_upgrade_cost": 1440,
   "base_upgrade_cost_step": 1120,
@@ -195,7 +195,7 @@
     }
   },
   "research_soft_cap": 10,
-  "advanced_research_cost_multiplier": 4,
+  "advanced_research_cost_multiplier": 1,
   "hero_respawn_seconds": 35,
   "wave_upgrade_cost": 2000,
   "wave_upgrade_cost_step": 1000,

@@ -29,9 +29,11 @@ for(const [P,name]of [[U,'war3map.w3u'],[A,'war3map.w3a']]){
  require('./roster-comparison.cjs')(current,old);assert.equal(original-current.customTable.objects.length,name.endsWith('w3u')?21:41);
  assert.deepEqual(current,old,'Every retained '+name+' field is unchanged');
 }
-for(const name of ['war3map.w3q','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(previous.get(name).bytes()),name+' unchanged');
+for(const name of ['war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(previous.get(name).bytes()),name+' unchanged');
+const research=parse(A,'war3map.w3q'),oldResearch=parse(A,'war3map.w3q',true);
+assert.deepEqual(require('./summon-comparison.cjs').research(research,oldResearch),oldResearch,'Only six troop research price records may differ');
 const moduleSource=fs.readFileSync(path.join(root,'map/expansion-heroes.j'),'utf8');
 assert(!/\b(?:CreateTimer|CreateUnit|Location|GetLocalPlayer|TriggerSleepAction)\s*\(/.test(moduleSource));
 assert(moduleSource.includes('function ExpansionOnDeath'));assert(moduleSource.includes('function ExpansionPlayerTick'));assert(moduleSource.includes('call TriggerExecute(ExpansionThinkTrigger[p])'));
-const report={version:balance.version,heroes:46,newCustomHeroes:10,customTotal:22,skillSlots:184,pickerPages:7,uniqueModels:22,newSkills:40,nativeTimedAuraRanks:50,allActiveSkillsHaveBotOrders:true,oldHeroesSpellsEconomyAndTerrainUnchanged:true,boundedPlayerState:12,perCastTimers:0,enginePlaytest:false};
-fs.writeFileSync(path.join(root,'build/verification-016.json'),JSON.stringify(report,null,2)+'\n');console.log('PASS: 46 heroes / 22 unique creature models; 10 new mechanics, 40 isolated QWER skills, capped temporary troop aura, complete AI orders and retained 0.15.3 data unchanged.');
+const report={version:balance.version,heroes:46,newCustomHeroes:10,customTotal:22,skillSlots:184,pickerPages:7,uniqueModels:22,newSkills:40,nativeTimedAuraRanks:50,allActiveSkillsHaveBotOrders:true,oldHeroesSpellsTerrainUnchanged:true,troopPriceChangeValidatedBy:"verify-0161",boundedPlayerState:12,perCastTimers:0,enginePlaytest:false};
+fs.writeFileSync(path.join(root,'build/verification-016.json'),JSON.stringify(report,null,2)+'\n');console.log('PASS: 46 heroes / 22 unique creature models; 10 new mechanics, 40 isolated QWER skills, capped temporary troop aura, complete AI orders and retained 0.15.3 mechanics unchanged; troop price differences isolated.');

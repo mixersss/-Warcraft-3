@@ -70,11 +70,11 @@ for(const [kind,id,field]of [[0,'AHhb','Hhb1'],[1,'AUdc','Udc1'],[2,'AEmb','Emb1
  assert.equal(Math.fround(hybridPowers.get(kind*200+rank-1)),get(oldA.get(id),field,rank),'Preserve original heal and mana burn magnitudes independently');
 }
 const q=parse(A,'war3map.w3q'),oldQ=parse(A,'war3map.w3q',true),qi=index(q),oldQi=index(oldQ);
-for(const [base,advanced,cost,step,oldCost,oldStep]of [['Rfat','Rfa2',168,126,224,168],['Rfar','Rfr2',168,126,224,168],['Rfhp','Rfh2',302,202,403,269]])for(let total=0;total<200;total++){
- const id=total<10?base:advanced,offset=total<10?0:10,factor=total<10||base==='Rfhp'?1:4;
+for(const [base,advanced,cost,step,oldCost,oldStep]of [['Rfat','Rfa2',84,63,224,168],['Rfar','Rfr2',84,63,224,168],['Rfhp','Rfh2',151,101,403,269]])for(let total=0;total<200;total++){
+ const id=total<10?base:advanced,offset=total<10?0:10,factor=1;
  const actual=get(qi.get(id),'gglb')+(total-offset)*get(qi.get(id),'gglm'),expected=(cost+total*step)*factor;
- assert.equal(actual,expected);assert(Math.abs(actual/((oldCost+total*oldStep)*factor)-.75)<.0011,'All 200 native research ranks approximately 25% cheaper');
- const tip=get(qi.get(id),'gub1',total-offset+1);assert(tip.includes('Цена: '+actual+' золота.'),'Command-card tooltip and native price agree');assert.equal(tip,get(oldQi.get(id),'gub1',total-offset+1).replace(/Цена: \d+ золота\./,'Цена: '+actual+' золота.').replace(base==='Rfhp'?' Продвинутое исследование: цена ×4 после 10-го уровня.':'NEVER_MATCH',''),'Only the price portion of the research tooltip may change');
+ assert.equal(actual,expected);assert(Math.abs(actual/((oldCost+total*oldStep)*factor)-.375)<.0011,'All ranks retain the cumulative price cuts; no advanced surcharge');
+ const tip=get(qi.get(id),'gub1',total-offset+1);assert(tip.includes('Цена: '+actual+' золота.'),'Command-card tooltip and native price agree');assert.equal(tip,get(oldQi.get(id),'gub1',total-offset+1).replace(/Цена: \d+ золота\./,'Цена: '+actual+' золота.').replace(' Продвинутое исследование: цена ×4 после 10-го уровня.',''),'Only the price portion of the research tooltip may change');
 }
 assert.deepEqual(require('./summon-comparison.cjs').research(q,oldQ),oldQ,'Building/wave research, effects and unlocks stay exactly unchanged');
 // Restore only the authorized fields, then require complete object equality.
@@ -89,10 +89,10 @@ const stripped=require('./roster-comparison.cjs').runtime(runtime,Buffer.from(re
  .replace(/^.*TriggerAddAction\(TransmuteTrigger, function OnHybridSpell\).*$/gm,'');
 let expectedRuntime=Buffer.from(read('war3map.j',true)).toString().replaceAll('0.15.1-alpha',balance.version)
  .replace('return TroopResearchCost(HEALTH_COST,HEALTH_COST_STEP,Vitality[p])','return HEALTH_COST+Vitality[p]*HEALTH_COST_STEP')
- .replace('From rank 11 the normal next-rank price is multiplied by four.','From rank 11 attack and armor prices are multiplied by four; troop HP keeps its normal linear price.')
- .replace('prices are 20% lower than 0.13.2','attack/armor/HP prices are a further 25% lower than 0.15.1');
-for(const [name,before,after]of [['ATTACK_COST',224,168],['ATTACK_COST_STEP',168,126],['ARMOR_COST',224,168],['ARMOR_COST_STEP',168,126],['HEALTH_COST',403,302],['HEALTH_COST_STEP',269,202]])expectedRuntime=expectedRuntime.replace('constant integer '+name+' = '+before,'constant integer '+name+' = '+after);
+ .replace('From rank 11 the normal next-rank price is multiplied by four.','Attack, armor and troop HP keep their normal linear prices at all ranks; no rank-11 surcharge.')
+ .replace('prices are 20% lower than 0.13.2','attack/armor/HP prices are 50% lower than 0.16.0');
+for(const [name,before,after]of [['ATTACK_COST',224,84],['ATTACK_COST_STEP',168,63],['ARMOR_COST',224,84],['ARMOR_COST_STEP',168,63],['HEALTH_COST',403,151],['HEALTH_COST_STEP',269,101],['ADVANCED_RESEARCH_COST_MULTIPLIER',4,1]])expectedRuntime=expectedRuntime.replace('constant integer '+name+' = '+before,'constant integer '+name+' = '+after);
 assert.equal(canonical(stripped),canonical(expectedRuntime),'Existing AI/economy/gameplay logic preserved');
 const file=`FourFrontsFrenzy-${balance.version}.w3x`;
-fs.writeFileSync(path.join(root,'build/verification-0152.json'),JSON.stringify({filename:file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'build',file))).digest('hex'),waterRanksChecked:200,spellDamageMultiplier:.7,damageFieldsChecked,hybridRanksPreserveHealingAndManaBurn:600,troopPriceFactorApprox:.75,troopResearchRanksChecked:600,buildingAndWaveCostsUnchanged:true,summonHPMultiplier:.85,summonDamageMultiplier:.85,summonUnitsChecked,summonBaseTypes:bases.size,waterFirstAndFinalRanksOnlyGlobalReduction:true,unrelatedUnitsAndSpellsPreserved:true,customCopy:'F090',summonCountsLifetimeCooldownArmorScaleUnchanged:true,botAndHumanSameUnits:true,unchangedRuntimeFrom:'0.15.1-alpha',samples,enginePlaytest:false},null,2)+'\n');
+fs.writeFileSync(path.join(root,'build/verification-0152.json'),JSON.stringify({filename:file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'build',file))).digest('hex'),waterRanksChecked:200,spellDamageMultiplier:.7,damageFieldsChecked,hybridRanksPreserveHealingAndManaBurn:600,troopLinearPriceFactorVs0151Approx:.375,troopResearchRanksChecked:600,buildingAndWaveCostsUnchanged:true,summonHPMultiplier:.85,summonDamageMultiplier:.85,summonUnitsChecked,summonBaseTypes:bases.size,waterFirstAndFinalRanksOnlyGlobalReduction:true,unrelatedUnitsAndSpellsPreserved:true,customCopy:'F090',summonCountsLifetimeCooldownArmorScaleUnchanged:true,botAndHumanSameUnits:true,unchangedRuntimeFrom:'0.15.1-alpha',samples,enginePlaytest:false},null,2)+'\n');
 console.log('PASS: all real summoned unit HP/damage -15%, 200 deferred water ranks, preserved every count/lifetime/cooldown/armor/scale; custom copy synchronized, spell damage -30% with intact utility, 600 reduced research ranks, unchanged buildings/waves and existing gameplay logic.');

@@ -147,8 +147,8 @@ const value=(object,id,level=0)=>{
 };
 assert.equal(research.length, 8);
 assert.equal(balance.health_percent,0.2/3);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),302);
-assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),202);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),151);
+assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),101);
 assert.equal(balance.bot_tactics.length,5);
 assert.ok(balance.bot_tactics[1].gear_percent>balance.bot_tactics[0].gear_percent);
 assert.ok(balance.bot_tactics[2].gear_percent<balance.bot_tactics[0].gear_percent);
@@ -164,8 +164,8 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   const advanced=col===3 ? null : research.find(o=>o.newId===['Rfa2','Rfr2','Rfh2'][col]);
   if(advanced) {
    assert.equal(value(advanced,'glvl'),190);assert.equal(value(advanced,'gbpx'),col);
-   assert.equal(value(advanced,'gglb'),(value(upgrade,'gglb')+10*value(upgrade,'gglm'))*(col===2?1:4));
-   assert.equal(value(advanced,'gglm'),value(upgrade,'gglm')*(col===2?1:4));
+   assert.equal(value(advanced,'gglb'),(value(upgrade,'gglb')+10*value(upgrade,'gglm'))*1);
+   assert.equal(value(advanced,'gglm'),value(upgrade,'gglm')*1);
    assert.equal(value(advanced,'gef1'),effect);
   }
   for (const rank of col===3 ? [1,2,4] : [1,2,10,11,20,200]) {
@@ -476,10 +476,10 @@ for(let race=0;race<4;race++) for(let tier=0;tier<5;tier++) {
   assert.ok(balance.tiers[tier].damage>=balance.tiers[tier-1].damage*1.2 && balance.tiers[tier].damage<=balance.tiers[tier-1].damage*1.4);
  }
 }
-assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglb'),168);
-assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglm'),126);
-assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglb'),168);
-assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglm'),126);
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglb'),84);
+assert.equal(value(research.find(o=>o.newId==='Rfat'),'gglm'),63);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglb'),84);
+assert.equal(value(research.find(o=>o.newId==='Rfar'),'gglm'),63);
 assert.equal(value(custom.find(o=>o.newId==='fbks'),'usei'),books.map(i=>i.id).join(','));
 assert.deepEqual(books.map(i=>[i.base,i.cost]),[['tst2',280],['tdx2',280],['tin2',280],['tkno',960]]);
 for(const book of books) {
