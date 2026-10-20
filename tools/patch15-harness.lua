@@ -92,4 +92,4 @@ BotSupplyAt[0]=0;Hero[0].inventory={};GearSavings[0]=GearCost[DesiredGear(0)]+79
 assert(not BotBuySupplies(0),'Do not spend protected equipment or tier funds')
 GearSavings[0]=10000;for slot=0,5 do Hero[0].inventory[slot]={id=9000+slot}end
 assert(not BotBuySupplies(0) and Players[0].gold==gold-800,'Full inventory does not buy or destroy gear')
-print('PASS: all46 role profiles and138 synchronized variants, skill priorities, finite-income all-parameter army/gear progression, group pushes, danger/tower retreat, visible shared focus, channel protection, allied commands, native consumables and paid surplus purchases (mock natives).')
+print('PASS: all49 role profiles and147 synchronized variants, skill priorities, finite-income all-parameter army/gear progression, group pushes, danger/tower retreat, visible shared focus, channel protection, allied commands, native consumables and paid surplus purchases (mock natives).')

@@ -53,7 +53,7 @@ def units(heroes, basic_skill_max=200):
             ('ustp',2,hero['stats']['strength_growth']),('uagp',2,hero['stats']['agility_growth']),('uinp',2,hero['stats']['intelligence_growth']),
             ('uhpm',0,hero['stats']['hp']),('umpm',0,hero['stats']['mana']),('ua1b',0,hero['stats']['damage']),('udef',0,hero['stats']['armor']),
         ]))
-        if hero.get('signature'):
+        if hero.get('signature') or hero.get('creative'):
             result[-1][2].extend([('upra',3,['STR','AGI','INT'][hero['primary']]),('usnd',3,hero['soundset'])])
         if hero.get('attack_visual'):
             visual=hero['attack_visual']

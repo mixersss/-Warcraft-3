@@ -4,6 +4,7 @@ const assert=require('node:assert/strict'),heroes=require('../map/heroes.json');
 const extra=heroes.filter(h=>h.signature);
 const ids=new Set(['Fxwr',...extra.flatMap(h=>[h.id,...h.skills]),...extra.map(h=>'fp'+String(heroes.indexOf(h)).padStart(2,'0')),'fpk6']);
 module.exports=function stripAdditions(current,previous){
+ require('./creative-comparison.cjs').objects(current,previous);
  for(const table of ['originalTable','customTable']){
   const before=new Map(previous[table].objects.map(o=>[o.oldId+':'+o.newId,o]));
   current[table].objects=current[table].objects.filter(o=>{
@@ -16,7 +17,7 @@ module.exports=function stripAdditions(current,previous){
  return current;
 };
 module.exports.runtime=function restoreRosterRuntime(current,previous){
- let s=current.replace(/\/\/ Ten creature heroes[\s\S]*?(?=function CreateHero)/,'')
+ let s=require('./creative-comparison.cjs').runtime(current,previous).replace(/\/\/ Ten creature heroes[\s\S]*?(?=function CreateHero)/,'')
  .replace(/^\s*(?:constant integer EXPANSION_FIRST_HERO|constant (?:real|integer) XH_\w+|(?:integer|real|string|effect|unit|trigger) array Expansion\w+|group ExpansionGroup|set Expansion(?:Slot|Effect)\[).*$/gm,'')
  .replace(/^\s*call (?:ExpansionClear\(p\)|ExpansionOnDeath\(dead,killer\)|ExpansionTick\(\)|ExpansionInit\(\)).*$/gm,'')
  .replace(/^.*TriggerAddAction\(TransmuteTrigger, function OnExpansionSpell\).*$/gm,'')

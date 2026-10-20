@@ -413,6 +413,30 @@
         0,
         1
       ]
+    },
+    "Fy00": {
+      "role": "caster",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fy01": {
+      "role": "support",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fy02": {
+      "role": "caster",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
     }
   }
 }

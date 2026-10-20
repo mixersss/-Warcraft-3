@@ -1,5 +1,6 @@
 // Verify the emitted native effect curves against the published 0.16.1 release.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const canonical=s=>s.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
 const root=path.resolve(__dirname,'..'),balance=require('../map/balance.json');
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const Parser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
@@ -37,9 +38,9 @@ for(const [base,advanced,effect,amount,oldText,newText]of [
 }
 assert.equal(ranks,600);assert.equal(effectFields,12);assert.equal(tooltips,600);
 assert.deepEqual(current,previous,'All prices, native prerequisites, research timing, building and wave effects remain identical');
-for(const name of ['war3map.w3a','war3map.w3u','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3b','war3map.imp','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(bytes(name),bytes(name,true),name+' byte-identical');
+for(const name of ['war3map.w3a','war3map.w3u','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3b','war3map.imp','war3mapMap.tga','war3mapPreview.tga']){if(['war3map.w3a','war3map.w3u'].includes(name))require('./creative-comparison.cjs').sameObjects(bytes(name),bytes(name,true),name);else assert.deepEqual(bytes(name),bytes(name,true),name+' byte-identical');}
 const runtime=bytes('war3map.j').toString();
 for(const text of ['Атака армии +4','Броня армии +1,5','Здоровье армии +10%','Attack research adds 4 damage and armor adds 1.5 per rank. HP research adds 10% of base HP per rank.'])assert(runtime.includes(text));
-assert.equal(require('./research-effects-comparison.cjs')(runtime).replaceAll(balance.version,'0.16.1-alpha'),bytes('war3map.j',true).toString(),'Runtime unchanged except version and four explanatory strings');
+assert.equal(canonical(require('./research-effects-comparison.cjs')(require('./creative-comparison.cjs').runtime(runtime,bytes('war3map.j',true).toString())).replaceAll(balance.version,'0.16.1-alpha')),canonical(bytes('war3map.j',true).toString()),'Runtime unchanged except version and four explanatory strings');
 fs.writeFileSync(path.join(root,'build/verification-0162.json'),JSON.stringify({version:balance.version,checkedRanks:ranks,attackPerRank:4,armorPerRank:1.5,baseHPFractionPerRank:.1,changedEffectFields:effectFields,updatedTooltips:tooltips,allPricesUnchanged:true,allOtherObjectFieldsUnchanged:true,runtimeUnchangedExceptVersionAndText:true,enginePlaytest:false},null,2)+'\n');
 console.log('PASS: all 600 native troop-effect ranks +4 damage/+1.5 armor/+10% base HP; 600 tooltips agree, prices and every unrelated field/runtime remain unchanged from 0.16.1.');

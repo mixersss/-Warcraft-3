@@ -1,6 +1,37 @@
 // Four Fronts Frenzy. Plain JASS: Warcraft III TFT 1.26+.
 // Balance globals and InitBalance are generated from balance.json.
 globals
+    integer array CreativeBookUntil
+    integer array CreativeBookRank
+    integer array CreativeBookSector
+    integer array CreativeDebtUntil
+    integer array CreativeDebtRank
+    integer array CreativeZoneTicks
+    integer array CreativeZoneAt
+    integer array CreativeZoneMode
+    integer array CreativeAUntil
+    integer array CreativeBUntil
+    real array CreativeBookX
+    real array CreativeBookY
+    real array CreativeBookHP
+    real array CreativeBookMP
+    real array CreativeDebtX
+    real array CreativeDebtY
+    real array CreativeDebtDistance
+    real array CreativeZoneX
+    real array CreativeZoneY
+    real array CreativeZonePower
+    real array CreativeEchoX
+    real array CreativeEchoY
+    real array CreativeBank
+    real array CreativeAX
+    real array CreativeAY
+    real array CreativeBX
+    real array CreativeBY
+    unit array CreativeDebt
+    effect array CreativeArtA
+    effect array CreativeArtB
+    trigger array CreativeThread
     timer HeroQueueTimer = null
     integer HeroQueueCursor = 0
     boolean array HeroQueued
@@ -459,8 +490,10 @@ function LearnHero takes integer p returns nothing
 endfunction
 
 // EXPANSION_MODULE
+// CREATIVE_MODULE
 function CreateHero takes integer p, integer kind returns nothing
     call ExpansionClear(p)
+    call CreativeClear(p)
     set HeroQueued[p] = false
     set HeroLearnQueued[p] = false
     set HeroKind[p] = kind
@@ -568,7 +601,7 @@ function ShowHeroPicker takes integer p, integer page returns nothing
     call SetUnitInvulnerable(HeroPicker[p], true)
     call SelectUnitForPlayerSingle(HeroPicker[p], Player(p))
     call PanCameraToTimedForPlayer(Player(p), HomeX[p], HomeY[p], 0.25)
-    call Tell(p, "Выбери портрет героя. Внизу — страницы и случайный герой. 24 стандартных и 22 авторских героев.")
+    call Tell(p, "Выбери портрет героя. Внизу — страницы и случайный герой. 24 стандартных и 25 авторских героев.")
 endfunction
 
 function ShowModes takes integer p returns nothing
@@ -605,7 +638,9 @@ function HeroCategory takes integer category returns string
     if category < 4 then
         return RaceName[category]
     endif
-    if category == 8 then
+    if category == 9 then
+        return "Новые механики"
+    elseif category == 8 then
         return "Авторские герои IV"
     elseif category == 7 then
         return "Авторские герои III"
@@ -623,15 +658,14 @@ function ShowHeroGroups takes integer p returns nothing
         call ShowShop(p)
         return
     endif
-    call ClearMenu(p, "ВЫБОР ГЕРОЯ: 46 героев")
+    call ClearMenu(p, "ВЫБОР ГЕРОЯ: 49 героев")
     loop
-        exitwhen k == 9
+        exitwhen k == 10
         call MenuButton(p, k, HeroCategory(k), 200+k)
         set k = k+1
     endloop
-    call MenuButton(p, 9, "Случайный герой", 399)
-    call MenuButton(p, 10, "Меню армии", 13)
-    call MenuButton(p, 11, "Закрыть", 12)
+    call MenuButton(p, 10, "Случайный герой", 399)
+    call MenuButton(p, 11, "Меню армии", 13)
     call DialogDisplay(Player(p), Shop[p], true)
 endfunction
 
@@ -759,7 +793,7 @@ function OnShop takes nothing returns nothing
         endif
         call SelectArmyRace(p, action-100)
         call ShowHeroPicker(p, 0)
-    elseif action >= 200 and action < 209 then
+    elseif action >= 200 and action < 210 then
         call ShowHeroes(p, action-200)
     elseif action == 399 then
         call SelectRosterHero(p, GetRandomInt(0, HERO_COUNT-1))
@@ -1136,6 +1170,7 @@ function FindBotAlly takes integer p, integer mode returns unit
     return ReturnedUnit
 endfunction
 
+// CREATIVE_AI
 function TryBotSpell takes integer p, unit enemy returns boolean
     local integer slot = 0
     local integer index
@@ -1144,6 +1179,10 @@ function TryBotSpell takes integer p, unit enemy returns boolean
     local boolean cast = false
     local unit h = Hero[p]
     local real health = GetWidgetLife(h)/GetUnitState(h, UNIT_STATE_MAX_LIFE)
+    if HeroKind[p] >= 46 then
+        set h = null
+        return TryCreativeBotSpell(p,enemy)
+    endif
     loop
         exitwhen slot == 4
         set index = HeroKind[p]*4+slot
@@ -1388,6 +1427,9 @@ function OnDeath takes nothing returns nothing
     local integer reward = 0
     local integer goldReward = 0
     call ExpansionOnDeath(dead,killer)
+    if IsUnitType(dead,UNIT_TYPE_HERO) and dead == Hero[GetPlayerId(GetOwningPlayer(dead))] then
+        call CreativeClear(GetPlayerId(GetOwningPlayer(dead)))
+    endif
     if Finished or p >= 12 then
         set dead = null
         set killer = null
@@ -1587,7 +1629,7 @@ function OnChat takes nothing returns nothing
             endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "Выдели казарму: 5 улучшений: атака, броня, HP, ступень и численность волн. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 46 героев по портретам | -ar: всё наугад до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
+        call Tell(p, "Выдели казарму: 5 улучшений: атака, броня, HP, ступень и численность волн. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 49 героев по портретам | -ar: всё наугад до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -1729,6 +1771,7 @@ function Tick takes nothing returns nothing
     endif
     set Seconds = Seconds+1
     call ExpansionTick()
+    call CreativeTick()
     call CleanCorpses()
     call RegenerateFortresses()
     if Seconds == 16 and HostPlayer >= 0 and ModeDialogOpen then
@@ -1830,12 +1873,12 @@ function CreateRules takes nothing returns nothing
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Commands and heroes")
-    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: portrait selection before 60 seconds. 46 heroes including twenty-two custom. -mode / -ar: first occupied human chooses mode before 15s. Open slots stay empty. -attack / -armor / -hp / -tier / -wave queue research. -supplies selects your fortress supplies. Q/W/E/R cast hero skills. Hero max level: 500. Three normal skills: 200 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. A single fortress market row sells weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
+    call QuestSetDescription(q, "-shop selects your barracks. -items selects the equipment shop near the arena center; bring your hero into range to buy items. -race / -hero: portrait selection before 60 seconds. 49 heroes including twenty-five custom. -mode / -ar: first occupied human chooses mode before 15s. Open slots stay empty. -attack / -armor / -hp / -tier / -wave queue research. -supplies selects your fortress supplies. Q/W/E/R cast hero skills. Hero max level: 500. Three normal skills: 200 ranks each, one rank per hero level. Ultimate: 50 ranks, from level 6 every 10 hero levels. Each level grants two skill points. Strength gives 30 HP and intelligence 18 mana. A single fortress market row sells weapons, armor, magic, speed and special effects. Summons grow in HP, damage and size; one extra summon every 10 skill ranks. -status: army stats. -auto: army orders. -go: rally.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()
     call QuestSetTitle(q, "Attributes, routes and autosave")
-    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the shared team book shop. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three plus wave-size research troops per wave, now every 21 seconds; army cap 60; summon counts preserved. 24 stock plus 22 custom creature heroes.")
+    call QuestSetDescription(q, "All heroes have a fifth + skill: spend one skill point for +2 strength, agility and intelligence per rank, up to 500 ranks. All inter-team routes pass through center, including hero Blink/teleport. Allied base fountains heal heroes. Passive income and kill gold are reduced by 25% versus 0.13.1. Ultimate damage/healing/bonuses and summoned creatures are stronger; secondary summon effects scale with their rank. -supreme selects high-end equipment; -potions selects central consumables; -books selects the shared team book shop. Full native autosave every 120 seconds, same file: Save/FFFAutosave.w3z. Load it through the saved-game menu. Saving may briefly pause the engine. Three plus wave-size research troops per wave, now every 21 seconds; army cap 60; summon counts preserved. 24 stock plus 25 custom creature heroes.")
     call QuestSetRequired(q, false)
     call QuestSetDiscovered(q, true)
     set q = null
@@ -2020,6 +2063,7 @@ function InitGame takes nothing returns nothing
         set p = p+1
     endloop
     call ExpansionInit()
+    call CreativeInit()
     call TriggerAddAction(SummonTrigger, function OnSummon)
     call TriggerAddAction(DeathTrigger, function OnDeath)
     call TriggerAddAction(ChatTrigger, function OnChat)
@@ -2031,6 +2075,7 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(TransmuteTrigger, function OnTransmute)
     call TriggerAddAction(TransmuteTrigger, function OnHybridSpell)
     call TriggerAddAction(TransmuteTrigger, function OnExpansionSpell)
+    call TriggerAddAction(TransmuteTrigger, function OnCreativeSpell)
     call TriggerAddAction(BaseDefenseTrigger, function OnBaseDefense)
     call TriggerAddAction(LeaveTrigger, function OnLeave)
     set t = 0
@@ -2069,7 +2114,7 @@ function InitGame takes nothing returns nothing
     call UpdateBoard()
     call MultiboardDisplay(Board, true)
     call CreateRules()
-    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (46 героев). Первый игрок: -mode или -ar до 15-й секунды. Подготовка 60 секунд: герои компьютеров загружаются по очереди. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 200/50. За каждый уровень героя — два очка навыков. Автосохранение каждые 2 минуты: Save\\FFFAutosave.w3z.")
+    call Say("Four Fronts Frenzy | 4 команды по 3 | Выбери расу и героя по портретам (49 героев). Первый игрок: -mode или -ar до 15-й секунды. Подготовка 60 секунд: герои компьютеров загружаются по очереди. Улучшения: 4 кнопки в казарме. Экипировка: магазин в центре (-items). Герой до 500, навыки до 200/50. За каждый уровень героя — два очка навыков. Автосохранение каждые 2 минуты: Save\\FFFAutosave.w3z.")
     set HeroQueueTimer = CreateTimer()
     call TimerStart(HeroQueueTimer, 0.5, true, function ProcessHeroQueue)
     call TimerStart(clock, 1, true, function Tick)

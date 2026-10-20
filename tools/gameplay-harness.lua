@@ -7,6 +7,8 @@ UNIT_TYPE_UNDEAD, UNIT_TYPE_HERO = 'undead', 'hero'
 UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
 PLAYER_STATE_RESOURCE_GOLD = 'gold'
 PLAYER_NEUTRAL_PASSIVE = 15
+function CreateGroup() return {} end
+function RAbsBJ(x) return math.abs(x) end
 Players, World = {}, {}
 function FourCC(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end
 function Player(p) return p end
@@ -240,6 +242,7 @@ function BotHero() end
 function reset()
     for p=0,11 do ExpansionClear(p) end
     ExpansionInit()
+    CreativeInit()
     Players,World,Work,Scan = {},{},{},{}
     Seconds,Finished = 0,false
     AutosaveCount=0
@@ -601,7 +604,6 @@ function GetPlayerController(p) return Players[p].controller or MAP_CONTROL_USER
 function GetPlayerSlotState(p) return Players[p].slot or PLAYER_SLOT_STATE_PLAYING end
 function SetPlayerController(p,c) Players[p].controller=c end
 function SetPlayerName(p,n) Players[p].name=n end
-function CreateGroup() return {} end
 function DialogCreate() return {buttons={}} end
 function SetPlayerAllianceStateAllyBJ() end
 function SetPlayerAlliance() end

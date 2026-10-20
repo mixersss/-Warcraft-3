@@ -111,7 +111,7 @@ rows=[]
 for h in heroes:
  cells=[]
  for slot,src in enumerate(h.get('skill_sources',h['skills'])):
-  name,desc=lookup[src]
+  name,desc=(h["creative"][slot]["name"],h["creative"][slot]["description"]) if h.get("creative") else lookup[src]
   if h.get('ability_names'):name=h['ability_names'][slot]
   signature=h.get('signature')
   if signature and (signature['slot']==slot or (signature['slot']==-1 and slot==0)):
@@ -124,7 +124,7 @@ lines+=['','Трансмутация: 100 золота на первом ран�
 (r/'docs').mkdir(exist_ok=True);(r/'docs/Heroes-and-skills.md').write_text('\n'.join(lines)+'\n')
 with (r/'docs/Heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig')as f:
  w=csv.writer(f,lineterminator="\n");w.writerow(['Герой','Клавиша','Способность','Краткое описание','Макс. ранг','ID в карте','Источник']);w.writerows(rows)
-assert len(heroes)==46 and len(rows)==184
+assert len(heroes)==49 and len(rows)==196
 print(f'Exported {len(heroes)} heroes, {len(rows)} skills: docs/Heroes-and-skills.md and .csv')
 
 # Separate, compact review sheet for the ten most recent additions.
@@ -147,8 +147,23 @@ for h in heroes:
   review.append([h['name'],'QWER'[slot],name,kind,desc.replace('**',''),50 if slot==3 else 200])
  new.append('')
 new += ['Напиши имя героя и клавишу навыка, затем что изменить: урон, лечение, призыв, длительность, радиус или особую механику.','',
-        '[Полная таблица всех 46 героев](Heroes-and-skills.md) · [Скачать таблицу новых героев для Excel](New-heroes-and-skills.csv)','']
+        '[Полная таблица всех 49 героев](Heroes-and-skills.md) · [Скачать таблицу новых героев для Excel](New-heroes-and-skills.csv)','']
 (r/'docs/New-heroes-and-skills.md').write_text('\n'.join(new))
 with (r/'docs/New-heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig') as f:
  w=csv.writer(f,lineterminator='\n');w.writerow(['Герой','Клавиша','Способность','Тип','Описание','Макс. ранг']);w.writerows(review)
 assert len(review)==40
+
+original=['# Три героя с новыми механиками','',
+'Эти 12 навыков не используют готовые боевые эффекты стандартных способностей. Кнопки, мана и откаты работают через нативный Channel, а результат полностью рассчитывают собственные JASS-обработчики. Модели, анимации и визуальные эффекты — встроенные ресурсы Warcraft III.','',
+'Q/W/E до 200 рангов, R до 50; R открывается на 6-м уровне героя и улучшается через 10 уровней. Все три героя доступны в последней странице галереи, категории «Новые механики» и случайному выбору ботов.','']
+for h in heroes:
+ if not h.get('creative'):continue
+ original += ['## '+h['name'],'',f'Основной параметр: **{["сила","ловкость","интеллект"][h["primary"]]}**.','',
+              '| Клавиша | Навык | Откат / мана | Механика |','| --- | --- | --- | --- |']
+ for slot,skill in enumerate(h['creative']):
+  original.append('| '+' | '.join(['QWER'[slot],skill['name'],f'{skill["cooldown"]} сек / {skill["mana"]}',skill['description']])+' |')
+ original.append('')
+original += ['Боты используют свои комбинации: хрономант сначала делает закладку, Швея собирает нить и выбирает лечение или урон, картограф последовательно ставит узлы и старается построить фигуру вокруг противника.','',
+             'Запасы и временные точки очищаются после смерти или смены героя. Возврат не воскрешает и не переносит через запрещённые границы территорий. Расстояние движения для «Платы за путь» измеряется раз в секунду и ограничено сверху.','',
+             'Проверено автоматическими тестами JASS с подстановкой нативных функций и строгим legacy pjass. Реальная загрузка, графика и баланс в Warcraft III 1.26 здесь не проверялись.','']
+(r/'docs/Original-heroes.md').write_text('\n'.join(original))

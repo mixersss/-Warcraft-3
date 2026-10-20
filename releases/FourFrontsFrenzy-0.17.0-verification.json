@@ -1,0 +1,36 @@
+{
+  "version": "0.17.0-alpha",
+  "filename": "FourFrontsFrenzy-0.17.0-alpha.w3x",
+  "sha256": "feb5f92c7868db003d49aec3ae6a64001487886006f166f93e7a4a668ae349ea",
+  "originalHeroes": {
+    "version": "0.17.0-alpha",
+    "heroes": 49,
+    "customHeroes": 25,
+    "newHeroes": 3,
+    "newTriggerSkills": 12,
+    "channelRanksChecked": 1950,
+    "pages": 7,
+    "newProfilesHaveAI": true,
+    "oldObjectsAndEconomyUnchanged": true,
+    "staticPlayerThreads": 12,
+    "perCastTimers": 0,
+    "perCastGroups": 0,
+    "enginePlaytest": false
+  },
+  "troopResearch": {
+    "version": "0.17.0-alpha",
+    "checkedRanks": 600,
+    "attackPerRank": 4,
+    "armorPerRank": 1.5,
+    "baseHPFractionPerRank": 0.1,
+    "changedEffectFields": 12,
+    "updatedTooltips": 600,
+    "allPricesUnchanged": true,
+    "allOtherObjectFieldsUnchanged": true,
+    "runtimeUnchangedExceptVersionAndText": true,
+    "enginePlaytest": false
+  },
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "enginePlaytest": false
+}

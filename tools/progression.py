@@ -301,6 +301,7 @@ def custom_hero_abilities(root):
     source={raw:changes for raw,_,changes in hero_abilities(root)}
     result=[]
     for hero in heroes:
+        if hero.get('creative'): continue
         for slot,(raw,original) in enumerate(zip(hero['skills'],hero.get('skill_sources',[]))):
             changes=list(source[original])
             if hero.get('ability_names'):

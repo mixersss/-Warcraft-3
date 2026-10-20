@@ -5,6 +5,7 @@ Classic formats: W3I 25, W3E 11 (7-byte vertices), objects 2, MPQ 0.
 Do not save in a modern World Editor if retaining 1.26 compatibility.
 """
 from __future__ import annotations
+from creative_heroes import abilities as creative_abilities
 
 import hashlib
 import json
@@ -350,7 +351,7 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -449,6 +450,8 @@ def script(b: dict) -> str:
         for key,value in values.items():
             generated[-1:-1] = [f"    constant {'integer' if isinstance(value,int) else 'real'} XH_{mechanic.upper()}_{key.upper()} = {value}"]
     source = (ROOT/'map/war3map.j').read_text()
+    source = source.replace('// CREATIVE_MODULE', (ROOT/'map/creative-heroes.j').read_text())
+    source = source.replace('// CREATIVE_AI', (ROOT/'map/creative-ai.j').read_text())
     source = source.replace('// EXPANSION_MODULE', (ROOT/'map/expansion-heroes.j').read_text())
     source = source.replace('// BOT_AI_MODULE', (ROOT/'map/bot-ai.j').read_text())
     dispatch=['function HybridSpellKind takes integer raw returns integer']

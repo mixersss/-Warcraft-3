@@ -32,7 +32,7 @@ for(const unit of previous.customTable.objects){
 }
 const oldCount=current.customTable.objects.length;require('./roster-comparison.cjs')(current,{...previous,customTable:{...previous.customTable,objects:[...previous.customTable.objects,byId.get('fpk5')]}});
 assert.equal(current.customTable.objects.length,previous.customTable.objects.length+1,'One legacy extra selector page');
-assert.equal(oldCount-current.customTable.objects.length,21,'Ten heroes, ten cards, and one new picker page');
+assert.equal(oldCount-current.customTable.objects.length,27,'Thirteen heroes, thirteen cards, and one new picker page');
 assert(byId.has('fpk5'));
 const report=JSON.parse(fs.readFileSync(path.join(root,'build/verification-0141.json')));
 Object.assign(report,{galleryPatch:'0.14.2',pickerCardsPerPage:7,pickerPages:7,reservedNativeRallyCell:[3,1],all46CardCellsChecked:true,alchemistPage:4,alchemistRow:1,alchemistColumn:3,combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance:'0.14.1-alpha',armyCap:60,teamArmyCap:180,enginePlaytest:false});
