@@ -229,7 +229,7 @@ assert.equal(value(abilityById.get('ANms'),'Nms2',200),1,'Mana Shield absorption
 assert.ok(value(abilityById.get('AOcl'),'Ocl3',200)<=value(abilityById.get('AOcl'),'Ocl3',3),'Chain lightning falloff improves');
 assert.ok(value(abilityById.get('AUts'),'Uts2',200)<=1,'Thorns must not increase damage received');
 assert.ok(value(abilityById.get('AOae'),'Oae2',200)>value(abilityById.get('AOae'),'Oae2',3),'Endurance Aura continues growing');
-assert.equal(balance.spawn_seconds,21);
+assert.equal(balance.spawn_seconds,18);
 const shopItems = require('../map/items.json');
 assert.equal(parsed['war3map.w3t'].customTable.objects.length,shopItems.length+gear.length+supreme.length+potions.length+books.length+utility.length);
 assert.equal(value(custom.find(o => o.newId==='fshp'),'usei'),shopItems.map(i=>i.id).join(','));
@@ -410,14 +410,14 @@ for(const [id,field,flag] of [['FbHP','Oar1','Oar2'],['FbMP','Arm1','Arm2']]) {
  assert.equal(value(a,'atar',1),'ground,air,hero,friend,self,vuln,invu');
  assert.ok(Math.abs(value(a,field,1)-0.005)<1e-6);assert.equal(value(a,flag,1),1);
 }
-assert.equal(balance.army_cap,60);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,21);
+assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,18);
 console.log('PASS: 49 heroes / 25 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
 for(const [id,gap] of [['AHds',8],['AHtb',1],['AEer',1],['AOhx',1]]) {
  const a=abilityById.get(id);assert.ok(value(a,'acdn',200)>=value(a,'ahdu',200)+gap-0.001,'No permanent shield/control from cooldown scaling');
 }
 for(const unit of customHeroes.map(h=>unitById.get(h.id))) for(const id of ['ustp','uagp','uinp']) assert.equal(unit.modifications.find(m=>m.id===id).variableType,2,'Classic hero growth uses unreal');
 // Compare shipped 0.8.1 counts independently: optimization may not reduce creatures.
-const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.8.1-alpha.w3x'))),true);
+const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.8.1-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(previous);
 const PreviousAbilities=require(prefix+'w3x/w3d/file').default;
 const previousAbilities=new PreviousAbilities();previousAbilities.load(new Uint8Array(previous.get('war3map.w3a').bytes()));
 const quantities=new Set(['Hwe2','Osf2','Efn1','Esv1','Nba2','Ndo2','Rai1','Ucb5','Omi1']);
@@ -428,7 +428,7 @@ for(const old of previousAbilities.originalTable.objects) {
 console.log('PASS: Unchanged creature and illusion counts match previous release at every rank.');
 // Preserve technical flags/intervals against the historical baseline at retained ranks.
 // New 200-rank curves and targeted Alchemist changes intentionally replace magnitudes.
-const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.1-alpha.w3x'))),true);
+const baseline=new War3Map();baseline.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.9.1-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(baseline);
 const baselineSkills=new PreviousAbilities();baselineSkills.load(new Uint8Array(baseline.get('war3map.w3a').bytes()));
 const skillSeeds=require('../map/ability-seeds.json');
 let technicalCompared=0;
@@ -533,7 +533,7 @@ console.log('PASS: Seven useful capped auras, all 200 ranks/custom copies, and t
 console.log('PASS: Seven supreme items, four consumable potions, +30% building HP and full item effect/price validation.');
 
 assert.deepEqual(balance.tiers.map(t=>[t.hp,t.damage,t.armor]),[[380,13,1],[500,18,2],[650,23,3],[850,30,4],[1100,40,5]]);
-const recentMap=new War3Map();recentMap.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.13.1-alpha.w3x'))),true);
+const recentMap=new War3Map();recentMap.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.13.1-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(recentMap);
 const recentUnits=new (require(prefix+'w3x/w3u/file').default)();recentUnits.load(new Uint8Array(recentMap.get('war3map.w3u').bytes()));
 const recentAbilityData=new PreviousAbilities();recentAbilityData.load(new Uint8Array(recentMap.get('war3map.w3a').bytes()));
 const recentInferno=recentAbilityData.originalTable.objects.find(a=>a.oldId==='AUin');

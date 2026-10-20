@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(__dirname,'..'),heroes=require('../map/heroes.json'),balance=require('../map/balance.json');
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default,U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
-const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.16.2-alpha.w3x'))),true);
+const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.16.2-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(old);
 const bytes=(name,prior=false)=>prior?Buffer.from(old.get(name).bytes()):fs.readFileSync(path.join(root,'build/map',name));
 function parse(P,name,prior=false){const p=new P();p.load(new Uint8Array(bytes(name,prior)));return p;}
 const abilities=parse(A,'war3map.w3a'),units=parse(U,'war3map.w3u');

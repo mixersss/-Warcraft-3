@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..');
 const War3Map=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const UnitFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
 const ResearchFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
-const old=new War3Map();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.1-alpha.w3x'))),true);
+const old=new War3Map();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.1-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(old);
 for(const filename of ['war3map.w3a','war3map.w3h','war3map.w3q','war3map.w3t','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo']){
  if(filename==='war3map.w3a'){
   const current=new ResearchFile(),previous=new ResearchFile();
@@ -35,6 +35,6 @@ assert.equal(current.customTable.objects.length,previous.customTable.objects.len
 assert.equal(oldCount-current.customTable.objects.length,27,'Thirteen heroes, thirteen cards, and one new picker page');
 assert(byId.has('fpk5'));
 const report=JSON.parse(fs.readFileSync(path.join(root,'build/verification-0141.json')));
-Object.assign(report,{galleryPatch:'0.14.2',pickerCardsPerPage:7,pickerPages:7,reservedNativeRallyCell:[3,1],all46CardCellsChecked:true,alchemistPage:4,alchemistRow:1,alchemistColumn:3,combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance:'0.14.1-alpha',armyCap:60,teamArmyCap:180,enginePlaytest:false});
+Object.assign(report,{galleryPatch:'0.14.2',pickerCardsPerPage:7,pickerPages:7,reservedNativeRallyCell:[3,1],all46CardCellsChecked:true,alchemistPage:4,alchemistRow:1,alchemistColumn:3,combatObjectsUnchangedExceptArmyCapTooltipAndSummonBalance:'0.14.1-alpha',armyCap:85,teamArmyCap:255,enginePlaytest:false});
 fs.writeFileSync(path.join(root,'build/verification-0142.json'),JSON.stringify(report,null,2)+'\n');
 console.log('PASS: Six-page gallery preserved; combat objects/heroes unchanged except requested army-cap tooltip and 0.15.2 summon HP/damage/tooltips.');

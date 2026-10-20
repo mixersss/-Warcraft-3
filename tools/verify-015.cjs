@@ -2,7 +2,7 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..');
 const War3Map=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
-const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.3-alpha.w3x'))),true);
+const previous=new War3Map();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.3-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(previous);
 const unchanged=['war3map.w3u','war3map.w3a','war3map.w3h','war3map.w3q','war3map.w3t','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo'];
 for(const name of unchanged){
  if(['war3map.w3u','war3map.w3a','war3map.w3q'].includes(name)){

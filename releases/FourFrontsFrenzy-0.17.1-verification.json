@@ -1,0 +1,16 @@
+{
+  "version": "0.17.1-alpha",
+  "waveSeconds": 18,
+  "previousWaveSeconds": 21,
+  "armyCapPerPlayer": 85,
+  "teamArmyCap": 255,
+  "allTwelvePlayersArmyCap": 1020,
+  "startingWave": 3,
+  "otherUnitResearchSpellItemFieldsUnchanged": true,
+  "otherRuntimeUnchanged": true,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.17.1-alpha.w3x",
+  "sha256": "5f9c82f627baecbd7e8a5520a3d43f43f4ba3f8b3af12c23d37d99eda38a710c",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true
+}

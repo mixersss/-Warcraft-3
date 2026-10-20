@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..'),read=n=>JSON.parse(fs.readFileSync(path.join(root,n)));
 const U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default,A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
-const previous=new MapFile();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.0-alpha.w3x'))),true);
+const previous=new MapFile();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.14.0-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(previous);
 function parse(P,name,old=false){const p=new P();p.load(new Uint8Array(old?previous.get(name).bytes():fs.readFileSync(path.join(root,'build/map',name))));return p;}
 function index(p){return new Map([...p.originalTable.objects.map(o=>[o.oldId,o]),...p.customTable.objects.map(o=>[o.newId,o])]);}
 const a=index(parse(A,'war3map.w3a')),oldA=index(parse(A,'war3map.w3a',true));

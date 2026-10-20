@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const root=path.resolve(__dirname,'..'),balance=require('../map/balance.json');
 const Map=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const Parser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
-const old=new Map();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.15.2-alpha.w3x'))),true);
+const old=new Map();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.15.2-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(old);
 function parse(name,previous=false){const p=new Parser();p.load(new Uint8Array(previous?old.get(name).bytes():fs.readFileSync(path.join(root,'build/map',name))));return p;}
 const key=m=>m.id+':'+m.levelOrVariation+':'+m.dataPointer;
 let changed=0,mortar=0;

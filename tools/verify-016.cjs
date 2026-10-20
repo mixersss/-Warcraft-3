@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 const root=path.resolve(__dirname,'..'),heroes=require('../map/heroes.json'),balance=require('../map/balance.json'),profiles=require('../map/bot-profiles.json');
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default,U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default;
-const previous=new MapFile();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.15.3-alpha.w3x'))),true);
+const previous=new MapFile();previous.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.15.3-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(previous);
 function parse(P,name,old=false){const p=new P();p.load(new Uint8Array(old?previous.get(name).bytes():fs.readFileSync(path.join(root,'build/map',name))));return p;}
 const unitFile=parse(U,'war3map.w3u'),abilityFile=parse(A,'war3map.w3a');
 const index=p=>new Map(p.customTable.objects.map(o=>[o.newId,o]));const units=index(unitFile),abilities=index(abilityFile);

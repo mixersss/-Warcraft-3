@@ -65,4 +65,4 @@ run(fs.readFileSync(path.join(__dirname, 'patch152-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch16-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch17-harness.lua'), 'utf8'));
 
-console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 21s waves, 4 races, 49 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');
+console.log('PASS: JASS: mixed open/computer/human startup, All Random, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 18s waves, 4 races, 49 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');

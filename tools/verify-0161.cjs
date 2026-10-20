@@ -4,7 +4,7 @@ const canonical=s=>s.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
 const root=path.resolve(__dirname,'..'),balance=require('../map/balance.json');
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const Parser=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
-const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.16.0-alpha.w3x'))),true);
+const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.16.0-alpha.w3x'))),true);require('./historical-wave-settings.cjs')(old);
 const bytes=(name,prior=false)=>prior?Buffer.from(old.get(name).bytes()):fs.readFileSync(path.join(root,'build/map',name));
 function parse(prior=false){const p=new Parser();p.load(new Uint8Array(bytes('war3map.w3q',prior)));return p;}
 const current=parse(),previous=parse(true),get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id&&m.levelOrVariation===rank)?.value;

@@ -18,7 +18,7 @@ for p=0,11 do
 end
 -- The existing army limit remains in force, including partially filled final waves.
 Army[0]={};for n=1,ARMY_CAP-1 do Army[0][n]=CreateUnit(0,ArmyType[0],0,0,0)end
-SpawnWave(0);assert(#Army[0]==60);SpawnWave(0);assert(#Army[0]==60)
+SpawnWave(0);assert(#Army[0]==85);SpawnWave(0);assert(#Army[0]==85)
 -- Bots purchase wave ranks through the same native queue and protect partial budgets.
 reset();Bot[0]=true;Players[0].gold=1000000
 for kind=0,2 do for rank=1,2 do assert(purchase(0,kind))end end
