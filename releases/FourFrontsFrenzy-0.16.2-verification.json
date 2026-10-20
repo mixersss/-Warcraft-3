@@ -1,0 +1,13 @@
+{
+  "version": "0.16.2-alpha",
+  "checkedRanks": 600,
+  "attackPerRank": 4,
+  "armorPerRank": 1.5,
+  "baseHPFractionPerRank": 0.1,
+  "changedEffectFields": 12,
+  "updatedTooltips": 600,
+  "allPricesUnchanged": true,
+  "allOtherObjectFieldsUnchanged": true,
+  "runtimeUnchangedExceptVersionAndText": true,
+  "enginePlaytest": false
+}

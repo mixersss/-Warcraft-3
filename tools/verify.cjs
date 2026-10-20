@@ -146,7 +146,7 @@ const value=(object,id,level=0)=>{
   return fieldIndex.get(object).get(id+':'+level);
 };
 assert.equal(research.length, 8);
-assert.equal(balance.health_percent,0.2/3);
+assert.equal(balance.health_percent,0.1);
 assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglb'),151);
 assert.equal(value(research.find(o=>o.newId==='Rfhp'),'gglm'),101);
 assert.equal(balance.bot_tactics.length,5);
@@ -158,7 +158,7 @@ for (const [col,id,effect] of [[0,'Rfat','ratx'],[1,'Rfar','rarm'],[2,'Rfhp','rh
   assert.equal(value(upgrade,'gbpx'),col);
   assert.equal(value(upgrade,'gbpy'),0);
   assert.equal(value(upgrade,'gef1'),effect);
-  const amount=[3,1,0.2/3,25350][col];
+  const amount=[4,1.5,0.1,25350][col];
   assert.ok(Math.abs(value(upgrade,'gba1')-amount)<1e-6);
   assert.ok(Math.abs(value(upgrade,'gmo1')-amount)<1e-6,'Every additional research rank must increase the effect');
   const advanced=col===3 ? null : research.find(o=>o.newId===['Rfa2','Rfr2','Rfh2'][col]);

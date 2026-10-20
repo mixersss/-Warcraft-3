@@ -314,11 +314,11 @@ endfunction
 
 function UpgradeName takes integer kind returns string
     if kind == 0 then
-        return "Атака армии +3"
+        return "Атака армии +4"
     elseif kind == 1 then
-        return "Броня армии +1"
+        return "Броня армии +1,5"
     elseif kind == 2 then
-        return "Здоровье армии +6,67%"
+        return "Здоровье армии +10%"
     elseif kind == 3 then
         return "Развитие казармы"
     elseif kind == 4 then
@@ -1825,7 +1825,7 @@ endfunction
 function CreateRules takes nothing returns nothing
     local quest q = CreateQuest()
     call QuestSetTitle(q, "Four Fronts: rules")
-    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have five command-card research buttons: attack, armor, troop HP (200 ranks each), barracks tier (four upgrades), and wave size (+1 troop, starting at 2000 gold). Research affects existing and future troops; attack/armor/HP prices are 50% lower than 0.16.0. Attack research adds 3 damage and armor adds 1 per rank. HP research adds 6.67% of base HP per rank. Attack, armor and troop HP keep their normal linear prices at all ranks; no rank-11 surcharge. Barracks tiers strengthen future waves and give +25350 HP to the barracks. " + "Every barracks tier moderately strengthens future troops; models and collision are smaller. Waves: three plus wave-size research troops of the current army tier every 21 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 156000 HP bastion tower behind its base: 1750 damage, 24 armor, attacks every 0.2s; activates near the base or when damaged, retaining a six-second defense window, range 1400. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
+    call QuestSetDescription(q, "4 teams of 3. Choose race and hero before 60 seconds. Barracks have five command-card research buttons: attack, armor, troop HP (200 ranks each), barracks tier (four upgrades), and wave size (+1 troop, starting at 2000 gold). Research affects existing and future troops; attack/armor/HP prices are 50% lower than 0.16.0. Attack research adds 4 damage and armor adds 1.5 per rank. HP research adds 10% of base HP per rank. Attack, armor and troop HP keep their normal linear prices at all ranks; no rank-11 surcharge. Barracks tiers strengthen future waves and give +25350 HP to the barracks. " + "Every barracks tier moderately strengthens future troops; models and collision are smaller. Waves: three plus wave-size research troops of the current army tier every 21 seconds. Destroy all occupied barracks to eliminate a team. One wide, flared tunnel per fortress. Inside each fortress allied nonhero troops regenerate 0.15% HP and 0.1% mana each second. " + "Five regular shops, a supreme shop and an allied hero fountain (0.5% HP/mana, radius 1200) per fortress. Shared fountain: native health/mana auras restore 1.5% per second to all heroes of every team within 1000, including undead. " + "Each barracks has a destructible 156000 HP bastion tower behind its base: 1750 damage, 24 armor, attacks every 0.2s; activates near the base or when damaged, retaining a six-second defense window, range 1400. Experience rate: 50%. Bots randomly choose balanced, equipment or army spending priorities for the whole match.")
     call QuestSetRequired(q, true)
     call QuestSetDiscovered(q, true)
     set q = CreateQuest()

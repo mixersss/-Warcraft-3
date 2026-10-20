@@ -33,7 +33,7 @@ module.exports.isSummon=o=>/^s[0-9a-z]{3}$/.test(o.newId)&&summonBases.has(o.old
 module.exports.research=function restoreResearch(current,historical){
  const ids=new Set(['Rfat','Rfar','Rfhp','Rfa2','Rfr2','Rfh2']);
  const previous=new Map(historical.customTable.objects.map(o=>[o.newId,o]));
- for(const o of current.customTable.objects)if(ids.has(o.newId))for(const m of o.modifications)if(['gglb','gglm','gub1'].includes(m.id)){
+ for(const o of current.customTable.objects)if(ids.has(o.newId))for(const m of o.modifications)if(['gglb','gglm','gub1','gba1','gmo1'].includes(m.id)){
   const ref=previous.get(o.newId).modifications.find(n=>n.id===m.id&&n.levelOrVariation===m.levelOrVariation&&n.dataPointer===m.dataPointer);assert(ref);m.value=ref.value;
  }
  return current;
