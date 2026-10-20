@@ -26,7 +26,12 @@ for(const h of heroes.filter(h=>h.simple)){
 }
 for(let family=0;family<3;family++)for(let rank=1;rank<=(family===2?50:200);rank++){
  const id='k'+family+(rank-1).toString(16).padStart(2,'0'),unit=u.get(id),row=pets[family];assert(unit);
- assert.equal(get(unit,'uhpm'),row.hp+row.hp_step*rank);assert.equal(get(unit,'ua1b'),row.damage+row.damage_step*rank);assert.equal(get(unit,'umvt'),'foot');assert.equal(get(unit,'ua1r'),row.range);assert.equal(get(unit,'upgr'),'');assert.equal(get(unit,'ubba'),0);assert.equal(get(unit,'ubdi'),0);petRanks++;
+ const extra=(rank-1)*299/199;
+ const round=x=>{const n=Math.floor(x);return x-n===.5?n+n%2:Math.round(x);};
+ assert.equal(get(unit,'uhpm'),Math.max(1,round(round(row.hp*(1+.15*extra))*balance.summon_hp_multiplier)));
+ assert.equal(get(unit,'ua1b'),round(round(row.damage*(1+.12*extra)+extra)*balance.summon_damage_multiplier));
+ assert.equal(get(unit,'udef'),round(row.armor+.2*extra));
+ assert(Math.abs(get(unit,'usca')-row.scale*balance.summon_model_scale*(1+.0005*extra))<1e-6);assert.equal(get(unit,'umvt'),'foot');assert.equal(get(unit,'ua1r'),row.range);assert.equal(get(unit,'upgr'),'');assert.equal(get(unit,'ubba'),0);assert.equal(get(unit,'ubdi'),0);petRanks++;
 }
 assert.equal(skillRanks,2600);assert.equal(petRanks,450);
 assert.equal(a.get('Clif').oldId,'AIva');

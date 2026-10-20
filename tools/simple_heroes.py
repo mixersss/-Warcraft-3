@@ -39,11 +39,23 @@ def abilities(root):
     result += [('AIva','Cvam',[('alev',0,1),('aher',0,0),('aite',0,1),('Ivam',2,.15,1,1)]),('AIsw','Cdet',[('alev',0,1),('aher',0,0),('aite',0,1),('amcs',0,0,1,0),('acdn',2,15.,1,0),('adur',2,180.,1,0),('ahdu',2,180.,1,0),('aran',2,500.,1,0)])]
     return result
 
+def pet_stats(row,rank,balance):
+    # Same ordinary-summon curve as Rexxar; no ultimate x4 HP/x3 damage
+    # multipliers on the beast, because its head count also grows now.
+    extra=(rank-1)*299/199
+    hp=max(1,round(round(row['hp']*(1+.15*extra))*balance['summon_hp_multiplier']))
+    damage=round(round(row['damage']*(1+.12*extra)+extra)*balance['summon_damage_multiplier'])
+    armor=round(row['armor']+.2*extra)
+    scale=row['scale']*balance['summon_model_scale']*(1+.0005*extra)
+    return hp,damage,armor,scale
+
 def units(root):
     result=[]
     models=json.loads((Path(root)/'map/simple-pets.json').read_text())
+    balance=json.loads((Path(root)/'map/balance.json').read_text())
     for family,row in enumerate(models):
         cap=50 if family==2 else 200
         for rank in range(1,cap+1):
-            result.append((row['base'],f'k{family}{rank-1:02x}',[('unam',3,row['name']),('umdl',3,row['model']),('uico',3,row['icon']),('uhpm',0,row['hp']+row['hp_step']*rank),('ua1b',0,row['damage']+row['damage_step']*rank),('ua1d',0,1),('ua1s',0,2),('ua1c',2,row['attack_seconds']),('ua1r',0,row['range']),('uabi',3,'ACce'if family==2 else''),('umvt',3,'foot'),('umvs',0,300),('usca',1,row['scale']),('ucol',2,16.),('udef',0,row['armor']),('upgr',3,''),('ufoo',0,0),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('ureq',3,''),('uupt',3,''),('uclr',0,row['tint'][0]),('uclg',0,row['tint'][1]),('uclb',0,row['tint'][2])]))
+            hp,damage,armor,scale=pet_stats(row,rank,balance)
+            result.append((row['base'],f'k{family}{rank-1:02x}',[('unam',3,row['name']),('umdl',3,row['model']),('uico',3,row['icon']),('uhpm',0,hp),('ua1b',0,damage),('ua1d',0,1),('ua1s',0,2),('ua1c',2,row['attack_seconds']),('ua1r',0,row['range']),('uabi',3,'ACce'if family==2 else''),('umvt',3,'foot'),('umvs',0,300),('usca',1,scale),('ucol',2,16.),('udef',0,armor),('upgr',3,''),('ufoo',0,0),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('ureq',3,''),('uupt',3,''),('uclr',0,row['tint'][0]),('uclg',0,row['tint'][1]),('uclb',0,row['tint'][2])]))
     return result

@@ -50,10 +50,11 @@ function CreativeSummon takes integer p, integer family, integer rank returns no
         set count = 1
         set duration = 45.
     endif
+    set count = count+R2I(I2R(rank)/10.)
     loop
         exitwhen n == count
-        set x = GetUnitX(Hero[p])+100.+I2R(n)*64.
-        set y = GetUnitY(Hero[p])+80.
+        set x = GetUnitX(Hero[p])+80.+I2R(ModuloInteger(n,4))*64.
+        set y = GetUnitY(Hero[p])-160.+I2R(R2I(I2R(n)/4.))*64.
         if IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) then
             set x = GetUnitX(Hero[p])
             set y = GetUnitY(Hero[p])

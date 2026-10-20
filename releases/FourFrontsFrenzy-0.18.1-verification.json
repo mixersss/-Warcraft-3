@@ -1,0 +1,25 @@
+{
+  "version": "0.18.1-alpha",
+  "petRanks": 450,
+  "petStatFields": 1800,
+  "summonCount": "base + floor(skillRank / 10)",
+  "ordinaryCounts": {
+    "1": 2,
+    "10": 3,
+    "20": 4,
+    "200": 22
+  },
+  "ultimateCounts": {
+    "1": 1,
+    "10": 2,
+    "50": 6
+  },
+  "growth": "Rexxar ordinary summon curve; no ultimate multipliers",
+  "otherObjectsAndRuntimePreserved": true,
+  "enginePlaytest": false,
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "filename": "FourFrontsFrenzy-0.18.1-alpha.w3x",
+  "bytes": 3329886,
+  "sha256": "3d7e0feccc6243bb6a9c7f70c4a137d7075d67f6f1277e65df80f08ef76204c5"
+}

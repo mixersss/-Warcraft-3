@@ -15,11 +15,24 @@ end
 local function enemy(x,y)
  local u=CreateUnit(3,FourCC('fm00'),x or 100,y or 0,0);u.hp=5000;u.max=5000;return u
 end
--- Real distinct ground pets, fixed requested counts, own control, ranked types and native expiry.
-local h=prep(0);local first=#World;cast(0,200);assert(#World==first+2)
-for i=first+1,#World do local u=World[i];assert(u.id==FourCC('k0c7')and u.summoned and u.owner==0 and u.timedlife==35)end
-first=#World;cast(1,1);assert(#World==first+2 and World[#World].id==FourCC('k100')and World[#World].timedlife==35)
-first=#World;cast(3,50);assert(#World==first+1 and World[#World].id==FourCC('k231')and World[#World].timedlife==45)
+-- Every count milestone uses the real spell handler, with compact terrain-safe spawns.
+local h=prep(0);local first=0
+for _,slot in ipairs({0,1,3}) do
+ local family=slot==3 and 2 or slot
+ local cap=slot==3 and 50 or 200
+ for _,rank in ipairs({1,9,10,19,20,49,50,99,100,199,200}) do
+  if rank<=cap then
+   first=#World;cast(slot,rank)
+   local count=(slot==3 and 1 or 2)+math.floor(rank/10)
+   assert(#World==first+count,'Rank milestone must add one actual pet every10 ranks')
+   local raw=FourCC(string.format('k%d%02x',family,rank-1))
+   for i=first+1,#World do local u=World[i]
+    assert(u.id==raw and u.summoned and u.owner==0 and u.timedlife==(slot==3 and 45 or 35))
+    assert(math.abs(u.x-h.x)<=300 and math.abs(u.y-h.y)<=200,'Compact formation')
+   end
+  end
+ end
+end
 cast(2,200);assert(GetUnitAbilityLevel(h,FourCC('Csum'))==200 and CreativeBuffUntil[0]==110)
 Seconds=109;CreativeTick();assert(GetUnitAbilityLevel(h,FourCC('Csum'))==200)
 Seconds=110;CreativeTick();assert(GetUnitAbilityLevel(h,FourCC('Csum'))==0)
