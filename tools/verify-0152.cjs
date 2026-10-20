@@ -81,7 +81,7 @@ assert.deepEqual(require('./summon-comparison.cjs').research(q,oldQ),oldQ,'Build
 const restore=require('./summon-comparison.cjs');
 assert.deepEqual(restore(units,previousUnits,true),previousUnits,'Every unrelated unit/stat/reference remains identical');
 assert.deepEqual(restore(abilities,previousAbilities),previousAbilities,'All non-damage utility spell fields remain identical');
-for(const name of ['war3map.w3h','war3map.w3t','war3map.w3b','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3r','war3map.w3c','war3map.w3s','war3map.imp','war3map.shd','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(Buffer.from(read(name)),Buffer.from(read(name,true)),name+' must remain byte-identical');
+for(const name of ['war3map.w3h','war3map.w3t','war3map.w3b','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3r','war3map.w3c','war3map.w3s','war3map.imp','war3map.shd','war3mapMap.tga','war3mapPreview.tga']){if(['war3map.w3h','war3map.w3t'].includes(name))require('./simple-comparison.cjs').same(read(name),read(name,true),name);else assert.deepEqual(Buffer.from(read(name)),Buffer.from(read(name,true)),name+' must remain byte-identical');}
 // Only new hybrid handler, its registration/data, six cost constants and quest/version text may differ.
 const canonical=s=>s.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
 const stripped=require('./roster-comparison.cjs').runtime(runtime,Buffer.from(read('war3map.j',true)).toString()).replace(/function HybridSpellKind[\s\S]*?(?=function OnTransmute)/,'')

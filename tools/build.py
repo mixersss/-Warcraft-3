@@ -5,7 +5,7 @@ Classic formats: W3I 25, W3E 11 (7-byte vertices), objects 2, MPQ 0.
 Do not save in a modern World Editor if retaining 1.26 compatibility.
 """
 from __future__ import annotations
-from creative_heroes import abilities as creative_abilities
+from simple_heroes import abilities as creative_abilities, units as simple_pet_units, buffs as simple_buffs
 
 import hashlib
 import json
@@ -241,6 +241,7 @@ def units(b: dict) -> bytes:
                 ('ugol', 0, b['transmute_troop_values'][tier]), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
             entries.append((faction['units'][tier], rawcode, changes))
+    entries += simple_pet_units(ROOT)
     entries += summoned_units(ROOT)
     entries += chemical_forms(ROOT)
     entries += picker_units(catalog('heroes'),b['basic_skill_max'])
@@ -322,6 +323,8 @@ def units(b: dict) -> bytes:
     for base,raw,mods in entries:
         if raw in {h['id'] for h in catalog('heroes') if 'base' in h}:
             mods.extend((field,2,round(value*speed,5)) for field,value in timings[base].items())
+    for base,raw,mods in entries:
+        if raw == "Fz03": mods[:] = [m for m in mods if m[0] not in ["ua1c","ua1p","ua1q","ua1r","ua1w"]]+[("ua1c",2,.75),("ua1p",2,.15),("ua1q",2,.25),("ua1r",0,100),("ua1w",3,"normal")]
     return objects(entries,original_entries=originals)
 
 
@@ -424,7 +427,7 @@ def upgrades(b: dict) -> bytes:
 
 def script(b: dict) -> str:
     heroes, races = catalog('heroes'), catalog('races')
-    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max','transmute_gold_base','transmute_gold_step']
+    fields = ['starting_gold', 'income_per_second', 'spawn_seconds', 'spawn_min_seconds', 'spawn_units', 'army_cap', 'warmup_seconds', 'upgrade_max', 'attack_cost', 'attack_cost_step', 'armor_cost', 'armor_cost_step', 'health_cost', 'health_cost_step', 'hero_power_cost', 'hero_power_cost_step', 'base_hp', 'hero_max_level', 'basic_skill_max', 'ultimate_skill_max', 'tower_hp', 'fountain_radius', 'corpse_seconds', 'autosave_seconds', 'research_soft_cap', 'advanced_research_cost_multiplier', 'hero_respawn_seconds','wave_upgrade_cost','wave_upgrade_cost_step','wave_upgrade_max','transmute_gold_base','transmute_gold_step','summon_kill_gold','summon_ultimate_kill_gold']
     generated = ['globals',f'    constant real SPELL_DAMAGE_MULTIPLIER = {b["spell_damage_multiplier"]}', '    real array HybridPower']
     for key,value in b['bot_combat'].items():
         generated.append(f'    constant integer BOT_{key.upper()} = {value}')
@@ -464,6 +467,8 @@ def script(b: dict) -> str:
     # JASS allows only one globals block, before any function declarations.
     source = source.replace('globals\n', '\n'.join(generated[:-1])+'\n', 1)
     init = ['function InitBalance takes nothing returns nothing']
+    for family,cap in [(0,200),(1,200),(2,50)]:
+        for rank in range(cap): init.append(f"    set CreativePetType[{family*200+rank}] = 'k{family}{rank:02x}'")
     profiles=json.loads((ROOT/'map/bot-profiles.json').read_text())
     consumables={row['id']:row for row in catalog('potions')+catalog('utility')}
     for idx,raw in enumerate(['fpH0','fpM0','fshl','fsar','fsdm']):
@@ -672,7 +677,7 @@ def build() -> Path:
         'war3map.w3i': info(b), 'war3map.w3e': terrain(), 'war3map.wpm': pathing(),
         'war3map.w3u': units(b), 'war3map.w3q': upgrades(b),
         'war3map.w3a': menu_ability(b), 'war3map.w3b': walls(),
-        'war3map.w3h': objects(army_aura_buffs(ROOT)), 'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
+        'war3map.w3h': objects(army_aura_buffs(ROOT)+simple_buffs()), 'war3map.w3t': items(), 'war3mapMisc.txt': misc(b),
         'war3map.j': script(b).encode('utf-8'),
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),
         'war3mapUnits.doo': b'W3do'+i(8, 11, 0),

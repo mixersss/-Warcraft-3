@@ -56,7 +56,7 @@ for(const [id,old]of oldU){
   for(const field of ['uhpm','ua1b'])assert(Math.abs(get(now,field)-get(old,field)*multiplier*b[field==='uhpm'?'summon_hp_multiplier':'summon_damage_multiplier'])<=1.00001);
   for(const mod of old.modifications)if(!['uhpm','ua1b'].includes(mod.id))assert.equal(get(now,mod.id),mod.value,'Preserve other summon mechanics');
  }else{
-  for(const mod of old.modifications)if(!(require('./summon-comparison.cjs').isSummon(old)&&['uhpm','ua1b'].includes(mod.id)) && !(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
+  for(const mod of old.modifications)if(!(id==='futl'&&mod.id==='usei') && !(require('./summon-comparison.cjs').isSummon(old)&&['uhpm','ua1b'].includes(mod.id)) && !(['Hpal','Emoo'].includes(id)&&mod.id==='uhab') && !(/^fp\d{2}$/.test(id)&&['ubpx','ubpy','utub'].includes(mod.id)) && !(/^fpk\d$/.test(id)&&['utra','unam'].includes(mod.id)))assert.equal(get(now,mod.id),mod.value,'Unrequested unit changes: '+id+':'+mod.id);
  }
 }
 for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e']){
@@ -65,7 +65,7 @@ for(const filename of ['war3map.w3q','war3map.w3t','war3map.wpm','war3map.w3e'])
   for(const o of historical.customTable.objects)for(const m of o.modifications)if(m.id==='gub1')m.value=m.value.replace('Предел живой армии 48 сохранён.','Предел живой армии 60 сохранён.');
   const current=parse(A,filename);require('./summon-comparison.cjs').research(current,historical);
   assert.deepEqual(current,historical,'Only requested army prices and army-cap tooltip may change');
- }else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');
+ }else if(filename==='war3map.w3t')require('./simple-comparison.cjs').same(fs.readFileSync(path.join(root,'build/map',filename)),previous.get(filename).bytes(),filename);else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(previous.get(filename).bytes()),'Preserve research/economy/terrain');
 }
 assert.equal(b.transmute_gold_base,100);assert.equal(b.transmute_gold_step,30);
 const report=read('build/verification-014.json');Object.assign(report,{heroBalancePatch:'0.14.1',armyPassives:2,resurrectionCount:[6,55],mirrorDamage:[.25,.8],mirrorDamageTaken:[1.8,1],metamorphHPFactor:1.2,pandaPowerFactor:1.25,tornadoDamageFactor:1.5,factoryPowerFactor:1.15,roboMinimumCurveStep:2,transmuteGold:[100,1570],nativeTransmuteBounty:false,enginePlaytest:false});

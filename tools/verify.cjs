@@ -122,8 +122,8 @@ for(const unit of custom) for(const mod of unit.modifications) {
   if(expected!==undefined) assert.equal(mod.variableType,expected,`${unit.newId}: Classic ${mod.id} binary type`);
 }
 assert.equal(races.length, 4);
-assert.equal(heroes.length, 49);
-assert.equal(new Set(heroes.map(h => h.id)).size, 49);
+assert.equal(heroes.length, 50);
+assert.equal(new Set(heroes.map(h => h.id)).size, 50);
 assert.deepEqual([0,1,2,3,4,5,6,7,8].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8,6,6,5,5]);
 assert.equal(custom.filter(o=>o.newId.startsWith('fm')).length,20,'Exactly one troop type per race/tier');
 assert.equal(new Set(custom.map(o => o.newId)).size,custom.length,'Unique custom rawcodes');
@@ -137,7 +137,7 @@ for (let race = 0; race < 4; race++) {
 const gear=require('../map/equipment.json');
 const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');const books=require('../map/books.json');const utility=require('../map/utility.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,482,'Equipment, 100 custom hero skills and bounded expansion aura');
+assert.equal(gearAbilities.length,493,'Equipment, 100 custom hero skills and bounded expansion aura');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -333,13 +333,13 @@ function checkIdentifiers(source) {
 }
 assert.throws(() => checkIdentifiers('function Example takes boolean force returns nothing\nendfunction'), /Parameter shadows JASS type: force/, 'Detect the 0.1.0 Classic parser regression');
 checkIdentifiers(script);
-console.log('PASS: MPQ, 15 binary formats, five research buttons (200/200/200/4/20), 500 hero levels, 200/50 skill caps, 61 shop items, 12 slots, 49 heroes and 20 army variants and rank-specific summons.');
+console.log('PASS: MPQ, 15 binary formats, five research buttons (200/200/200/4/20), 500 hero levels, 200/50 skill caps, 61 shop items, 12 slots, 50 heroes and 20 army variants and rank-specific summons.');
 
 // Native portrait picker: every card is free and appears on exactly one page.
 // Classic ARal reserves (3,1) even on a building with a custom ability list.
 // The user's screenshot confirmed it hid every eighth card (including Alchemist).
 const visibleCards=[];
-for(let page=0;page<7;page++) {
+for(let page=0;page<8;page++) {
  const picker=custom.find(o=>o.newId===`fpk${page}`);
  assert.equal(picker.oldId,'hbar');
  assert.equal(value(picker,'utra'),heroes.slice(page*7,page*7+7).map((h,i)=>`fp${String(page*7+i).padStart(2,'0')}`).join(','));
@@ -357,10 +357,10 @@ for(let page=0;page<7;page++) {
   assert(!occupied.has(cell),`${id} must not be hidden by Rally or another button`);occupied.add(cell);visibleCards.push(id);
  }
 }
-assert.equal(visibleCards.length,49);assert.equal(new Set(visibleCards).size,49);
+assert.equal(visibleCards.length,50);assert.equal(new Set(visibleCards).size,50);
 assert.equal(value(custom.find(u=>u.newId==='fpk3'),'utra').split(',')[2],'fp23','Alchemist visible on page4 row1 column3');
 assert.match(script,/constant integer PICK_CARDS_PER_PAGE = 7/);
-assert.match(script,/constant integer PICK_PAGE_COUNT = 7/);
+assert.match(script,/constant integer PICK_PAGE_COUNT = 8/);
 for(const [idx,hero] of heroes.entries()) {
  const card=custom.find(o=>o.newId===`fp${String(idx).padStart(2,'0')}`);
  assert.equal(card.oldId,'hpea','No native hero training limit for selection cards');
@@ -387,8 +387,8 @@ for(let rank=1;rank<=500;rank++) for(const field of ['Istr','Iagi','Iint']) asse
 const originalHeroes=parsed['war3map.w3u'].originalTable.objects;
 for(const h of heroes.filter(h=>!h.base)) assert.equal(value(originalHeroes.find(o=>o.oldId===h.id),'uhab'),[...h.skills,'Fatr'].join(','));
 const customHeroes=heroes.filter(h=>h.base);
-assert.equal(customHeroes.length,25);
-assert.equal(new Set(customHeroes.map(h=>h.model.toLowerCase())).size,25);
+assert.equal(customHeroes.length,26);
+assert.equal(new Set(customHeroes.map(h=>h.model.toLowerCase())).size,26);
 for(const h of customHeroes) {
  assert.ok(!heroes.filter(s=>!s.base).some(s=>s.stock_model.toLowerCase()===h.model.toLowerCase()));
  const u=unitById.get(h.id);assert.equal(value(u,'umdl'),h.model);assert.equal(value(u,'umvt'),'foot');
@@ -411,7 +411,7 @@ for(const [id,field,flag] of [['FbHP','Oar1','Oar2'],['FbMP','Arm1','Arm2']]) {
  assert.ok(Math.abs(value(a,field,1)-0.005)<1e-6);assert.equal(value(a,flag,1),1);
 }
 assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,3);assert.equal(balance.spawn_seconds,18);
-console.log('PASS: 49 heroes / 25 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
+console.log('PASS: 50 heroes / 26 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
 for(const [id,gap] of [['AHds',8],['AHtb',1],['AEer',1],['AOhx',1]]) {
  const a=abilityById.get(id);assert.ok(value(a,'acdn',200)>=value(a,'ahdu',200)+gap-0.001,'No permanent shield/control from cooldown scaling');
 }
@@ -509,7 +509,7 @@ console.log('PASS: Stronger army tiers, reviewed research effects and 20% lower 
 const auraLimits={AUau:{Uau1:[0.15,0.30],Uau2:[6,80]},AHab:{Hab1:[3,40]},AHad:{Had1:[6,35]},AOae:{Oae1:[0.15,0.30],Oae2:[0.15,0.60]},AEar:{Ear1:[0.20,0.60]},AEah:{Eah1:[0.20,0.50]},AUav:{Uav1:[0.20,0.50]}};
 for(const [id,fields] of Object.entries(auraLimits)) {
  const aura=abilityById.get(id);
- const copies=heroes.filter(h=>h.skill_sources?.includes(id)).map(h=>gearAbilities.find(a=>a.newId===h.skills[h.skill_sources.indexOf(id)]));
+ const copies=heroes.filter(h=>!h.simple&&h.skill_sources?.includes(id)).map(h=>gearAbilities.find(a=>a.newId===h.skills[h.skill_sources.indexOf(id)]));
  for(const [field,[start,cap]] of Object.entries(fields)) for(const effect of [aura,...copies]) {
   let previous=start-1;
   for(let rank=1;rank<=200;rank++) {

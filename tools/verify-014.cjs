@@ -17,7 +17,7 @@ for(const h of heroes)for(const [slot,id]of h.skills.entries()){
 for(const [prefix,key]of [['ANs','Q'],['ANc','W'],['ANg','R']])for(let level=1;level<=3;level++)assert.equal(get(a.get(prefix+level),'ahky'),key);
 for(const [id,h]of originalUnits)if(['Edmm','Nalm','Nal2','Nal3','Nrob'].includes(id))assert(get(h,'uhab').includes('Fatr'));
 const timing=read('map/hero-attack-seeds.json').units;
-for(const h of heroes){const o=u.get(h.id)||originalUnits.get(h.id);for(const [field,v]of Object.entries(timing[h.base||h.id]))assert(Math.abs(get(o,field)-v*.75)<1e-5,'Actual lower base interval/animation timing for '+h.name);}
+for(const h of heroes){const o=u.get(h.id)||originalUnits.get(h.id);for(const [field,v]of Object.entries(timing[h.base||h.id]))assert(Math.abs(get(o,field)-(h.id==='Fz03'?({ua1c:.75,ua1p:.15,ua1q:.25}[field]??v*.75):v*.75))<1e-5,'Actual lower base interval/animation timing for '+h.name);}
 let lastCooldown=Infinity;
 for(let rank=1;rank<=200;rank++){
  assert.equal(get(a.get('ANab'),'Nab4',rank),Math.fround((20+12*(rank-1))*.7));assert.equal(get(a.get('ANab'),'Nab5',rank),Math.fround((12+8*(rank-1))*.7));assert.equal(get(a.get('ANab'),'Nab6',rank),1);
@@ -38,7 +38,7 @@ assert.equal(get(u.get('fbst'),'uhpm'),156000);assert.equal(get(u.get('fbst'),'u
 assert.equal(get(a.get('Fdag'),'Ebl1',1),900);assert.equal(get(a.get('Fdag'),'amcs',1),0);assert.equal(get(a.get('Fdag'),'acdn',1),12);
 assert.equal(get(a.get('Fsdm'),'Roa1',1),Math.fround(.35));assert.equal(get(a.get('Fsar'),'Idef',1),8);assert.equal(get(a.get('Fshl'),'Ihpg',1),2500);
 for(const id of ['Fsdm','Fsar','Fshl']){assert.equal(get(a.get(id),'aare',1),700);assert(get(a.get(id),'atar',1).includes('friend'));assert(get(a.get(id),'atar',1).includes('nonhero'));assert(!get(a.get(id),'atar',1).includes('organic'));}
-assert.equal(get(u.get('futl'),'usei'),'fdgr,fsdm,fsar,fshl,fpH0,fpM0');
+assert.equal(get(u.get('futl'),'usei'),'fdgr,fsdm,fsar,fshl,fvlm,ftot,fpH0,fpM0');
 for(const o of unitFile.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId)||o.newId==='futl'))assert(get(o,'usei').split(',').length<=9,'Keep native selection/sell controls available');
 // Referenced summon types stay correct after regenerating smaller per-rank catalogs.
 const summon=new Set(['Hwe1','Osf1','Efnu','Esvu','Nbau','Ndou','Nef1','Nsy2','Nsyu','Rai3','Uin4','Ntou','Ulsu']);
@@ -48,4 +48,4 @@ for(const [id,seed]of Object.entries(seeds))for(const field of seed.fields)if(su
 }
 const csv=fs.readFileSync(path.join(root,'docs/Heroes-and-skills.csv'),'utf8');assert.equal(csv.trim().split('\n').length,heroes.length*4+1);
 fs.writeFileSync(path.join(root,'build/verification-014.json'),JSON.stringify({filename:`FourFrontsFrenzy-${balance.version}.w3x`,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'build',`FourFrontsFrenzy-${balance.version}.w3x`))).digest('hex'),heroes:heroes.length,skillSlots:heroes.length*4,normalSkillRanks:200,ultimateRanks:50,QWER:true,chemicalForms:200,realChemicalRageCooldownGrowth:true,transmuteGold:[100,1570],nativeTransmuteFactor:0,transmuteTroopCosts:[75,110,160,225,300],itemPriceFactor:.8,researchPriceFactorApprox:.8,waveSeconds:18,startingTroops:3,waveResearchRanks:20,waveResearchCost:[2000,1000],maxWave:23,armyCap:85,barracksHP:50700,bastionHP:156000,bastionBaseDamage:1750,bastionCooldown:.2,heroBaseAttackIntervalFactor:.75,engineAttackSpeedCapModified:false,enginePlaytest:false},null,2));
-console.log('PASS: 0.14 QWER/200-rank roster, 200 actual rage forms, poison/Transmute costs, 20% prices, wave research, tower attack timings, native utility objects and 196-skill export (structural checks).');
+console.log('PASS: 0.14 QWER/200-rank roster, 200 actual rage forms, poison/Transmute costs, 20% prices, wave research, tower attack timings, native utility objects and 200-skill export (structural checks).');

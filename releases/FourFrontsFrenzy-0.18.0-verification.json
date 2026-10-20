@@ -1,0 +1,32 @@
+{
+  "version": "0.18.0-alpha",
+  "heroes": 50,
+  "removedHeroes": 3,
+  "replacementHeroes": 4,
+  "pages": 8,
+  "skillRanks": 2600,
+  "petRanks": 450,
+  "newShopItems": 2,
+  "lifestealNative": "AIva for ranged/melee actual attacks",
+  "ordinaryPetGold": 12,
+  "ultimatePetGold": 60,
+  "previous46HeroesPreserved": true,
+  "allArmyPricesAndEffectsPreserved": true,
+  "waveSeconds": 18,
+  "armyCap": 85,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.18.0-alpha.w3x",
+  "sha256": "9a51164180c2ac41ba8e6e268acf0f155a210802bd61c3bd9067306cc5dbb518",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "activeBotOrdersTested": 9,
+  "nativePaidNewItemPurchasesTested": true,
+  "petGoldExclusionsTested": [
+    "expiry",
+    "allies",
+    "illusions",
+    "wards",
+    "Transmute"
+  ],
+  "supplementalPetXPAdded": false
+}

@@ -28,6 +28,6 @@ for(const name of ['war3map.w3a','war3map.w3q']){
  assert.deepEqual(current,previous,'All unrelated '+name+' fields must remain identical');
 }
 assert(changed>1000 && mortar===400,'Mortar custom wave: damage/hit cap at all 200 ranks');
-for(const name of ['war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo'])assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(old.get(name).bytes()),name+' unchanged');
+for(const name of ['war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo']){if(['war3map.w3h','war3map.w3t'].includes(name))require('./simple-comparison.cjs').same(fs.readFileSync(path.join(root,'build/map',name)),old.get(name).bytes(),name);else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(old.get(name).bytes()),name+' unchanged');}
 fs.writeFileSync(path.join(root,'build/verification-0153.json'),JSON.stringify({version:balance.version,additionalBurstDamageFactor:.7,abilities:Object.keys(balance.spell_damage_overrides),mortarRanks:200,damageFields:changed,troopPricesValidatedSeparately:'verify-0161',buildingWavePricesUnchanged:true,summonsUnitsItemsTerrainUnchanged:true,enginePlaytest:false},null,2)+'\n');
 console.log('PASS: Mortar and related burst spells -30% against published 0.15.2; troop prices checked separately by verify-0161; all unrelated spell/research/unit/item/terrain data preserved.');

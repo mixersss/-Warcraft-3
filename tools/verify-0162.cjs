@@ -38,7 +38,7 @@ for(const [base,advanced,effect,amount,oldText,newText]of [
 }
 assert.equal(ranks,600);assert.equal(effectFields,12);assert.equal(tooltips,600);
 assert.deepEqual(current,previous,'All prices, native prerequisites, research timing, building and wave effects remain identical');
-for(const name of ['war3map.w3a','war3map.w3u','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3b','war3map.imp','war3mapMap.tga','war3mapPreview.tga']){if(['war3map.w3a','war3map.w3u'].includes(name))require('./creative-comparison.cjs').sameObjects(bytes(name),bytes(name,true),name);else assert.deepEqual(bytes(name),bytes(name,true),name+' byte-identical');}
+for(const name of ['war3map.w3a','war3map.w3u','war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.w3b','war3map.imp','war3mapMap.tga','war3mapPreview.tga']){if(['war3map.w3a','war3map.w3u','war3map.w3h','war3map.w3t'].includes(name))require('./simple-comparison.cjs').same(bytes(name),bytes(name,true),name);else assert.deepEqual(bytes(name),bytes(name,true),name+' byte-identical');}
 const runtime=bytes('war3map.j').toString();
 for(const text of ['Атака армии +4','Броня армии +1,5','Здоровье армии +10%','Attack research adds 4 damage and armor adds 1.5 per rank. HP research adds 10% of base HP per rank.'])assert(runtime.includes(text));
 assert.equal(canonical(require('./research-effects-comparison.cjs')(require('./creative-comparison.cjs').runtime(runtime,bytes('war3map.j',true).toString())).replaceAll(balance.version,'0.16.1-alpha')),canonical(bytes('war3map.j',true).toString()),'Runtime unchanged except version and four explanatory strings');

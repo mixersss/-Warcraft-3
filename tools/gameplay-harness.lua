@@ -7,7 +7,10 @@ UNIT_TYPE_UNDEAD, UNIT_TYPE_HERO = 'undead', 'hero'
 UNIT_STATE_MAX_LIFE, UNIT_STATE_LIFE, UNIT_STATE_MANA, UNIT_STATE_MAX_MANA = 'max', 'hp', 'mana', 'maxmana'
 PLAYER_STATE_RESOURCE_GOLD = 'gold'
 PLAYER_NEUTRAL_PASSIVE = 15
+function UnitRemoveAbility(u,id)u.abilities[id]=nil;return true end
 function CreateGroup() return {} end
+function IsUnitIllusion(u)return u.illusion==true end
+function GetUnitDefaultMoveSpeed(u)return u.defaultspeed or 300 end
 function RAbsBJ(x) return math.abs(x) end
 Players, World = {}, {}
 function FourCC(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end

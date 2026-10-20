@@ -104,14 +104,14 @@ lookup={a:(name,desc)for a,name,desc in (line.split('|',2)for line in text.split
 heroes=json.loads((r/'map/heroes.json').read_text());seeds=json.loads((r/'map/ability-seeds.json').read_text())
 lines=['# Герои и способности Four Fronts Frenzy '+json.loads((r/'map/balance.json').read_text())['version'],'',
 f'Все {len(heroes)} героев из текущей карты. Q/W/E — до 200 рангов; R — до 50. Пассивные способности не требуют нажатия. Отдельный «+» характеристик сохранён: до 500 рангов, +2 силы/ловкости/интеллекта за очко.','',
-'Баланс 0.15.3: урон волн и массовых ударов дополнительно снижен на 30%; прочий урон направленных, площадных и периодических боевых заклинаний ×0,70; здоровье/базовый урон реальных призывов ×0,85, у водных элементалей дополнительно сглажен ранний рост. Радиусы, оглушения, число призывов и откаты сохранены. Лечение и выжигание маны трёх гибридных техник сохранены отдельной обработкой SPELL_EFFECT.','',
+'Баланс 0.15.3: урон волн и массовых ударов дополнительно снижен на 30%; прочий урон направленных, площадных и периодических боевых заклинаний ×0,70; здоровье/базовый урон реальных призывов ×0,85, у водных элементалей дополнительно сглажен ранний рост. Радиусы, оглушения, число призывов и откаты прежних героев сохранены. Новая четвёрка имеет собственные параметры, указанные в её описаниях. Лечение и выжигание маны трёх гибридных техник сохранены отдельной обработкой SPELL_EFFECT.','',
 'Напиши имя героя и способность, которую хочешь изменить: например «Алхимик, Q — меньше урона, больше радиус». Цифры описывают механику и заданные параметры; фактический урон зависит от брони, сопротивлений и других эффектов.','',
 '| Герой | Q | W | E | R |','| --- | --- | --- | --- | --- |']
 rows=[]
 for h in heroes:
  cells=[]
  for slot,src in enumerate(h.get('skill_sources',h['skills'])):
-  name,desc=(h["creative"][slot]["name"],h["creative"][slot]["description"]) if h.get("creative") else lookup[src]
+  name,desc=(h["creative"][slot]["name"],h["creative"][slot]["description"]) if h.get("creative") else (h["simple"][slot]["name"],h["simple"][slot]["description"]) if h.get("simple") else lookup[src]
   if h.get('ability_names'):name=h['ability_names'][slot]
   signature=h.get('signature')
   if signature and (signature['slot']==slot or (signature['slot']==-1 and slot==0)):
@@ -124,7 +124,7 @@ lines+=['','Трансмутация: 100 золота на первом ран�
 (r/'docs').mkdir(exist_ok=True);(r/'docs/Heroes-and-skills.md').write_text('\n'.join(lines)+'\n')
 with (r/'docs/Heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig')as f:
  w=csv.writer(f,lineterminator="\n");w.writerow(['Герой','Клавиша','Способность','Краткое описание','Макс. ранг','ID в карте','Источник']);w.writerows(rows)
-assert len(heroes)==49 and len(rows)==196
+assert len(heroes)==50 and len(rows)==200
 print(f'Exported {len(heroes)} heroes, {len(rows)} skills: docs/Heroes-and-skills.md and .csv')
 
 # Separate, compact review sheet for the ten most recent additions.
@@ -147,23 +147,19 @@ for h in heroes:
   review.append([h['name'],'QWER'[slot],name,kind,desc.replace('**',''),50 if slot==3 else 200])
  new.append('')
 new += ['Напиши имя героя и клавишу навыка, затем что изменить: урон, лечение, призыв, длительность, радиус или особую механику.','',
-        '[Полная таблица всех 49 героев](Heroes-and-skills.md) · [Скачать таблицу новых героев для Excel](New-heroes-and-skills.csv)','']
+        '[Полная таблица всех 50 героев](Heroes-and-skills.md) · [Скачать таблицу новых героев для Excel](New-heroes-and-skills.csv)','']
 (r/'docs/New-heroes-and-skills.md').write_text('\n'.join(new))
 with (r/'docs/New-heroes-and-skills.csv').open('w',newline='',encoding='utf-8-sig') as f:
  w=csv.writer(f,lineterminator='\n');w.writerow(['Герой','Клавиша','Способность','Тип','Описание','Макс. ранг']);w.writerows(review)
 assert len(review)==40
 
-original=['# Три героя с новыми механиками','',
-'Эти 12 навыков не используют готовые боевые эффекты стандартных способностей. Кнопки, мана и откаты работают через нативный Channel, а результат полностью рассчитывают собственные JASS-обработчики. Модели, анимации и визуальные эффекты — встроенные ресурсы Warcraft III.','',
-'Q/W/E до 200 рангов, R до 50; R открывается на 6-м уровне героя и улучшается через 10 уровней. Все три героя доступны в последней странице галереи, категории «Новые механики» и случайному выбору ботов.','']
+original=['# Четыре простых героя','', 'Q/W/E — 200 рангов, R — 50. Все доступны людям и ботам. Хронописец, Швея жизни и Картограф удалены из выбора.','']
 for h in heroes:
- if not h.get('creative'):continue
- original += ['## '+h['name'],'',f'Основной параметр: **{["сила","ловкость","интеллект"][h["primary"]]}**.','',
-              '| Клавиша | Навык | Откат / мана | Механика |','| --- | --- | --- | --- |']
- for slot,skill in enumerate(h['creative']):
-  original.append('| '+' | '.join(['QWER'[slot],skill['name'],f'{skill["cooldown"]} сек / {skill["mana"]}',skill['description']])+' |')
+ if not h.get('simple'):continue
+ original += ['## '+h['name'],'','| Клавиша | Навык | Тип | Действие |','| --- | --- | --- | --- |']
+ for slot,skill in enumerate(h['simple']):
+  passive=skill['base'] not in ['ANcl','AOwk']
+  original.append('| '+' | '.join(['QWER'[slot],skill['name'],'Пассивный' if passive else f'{skill["cooldown"]} сек / {skill["mana"]} маны',skill['description']])+' |')
  original.append('')
-original += ['Боты используют свои комбинации: хрономант сначала делает закладку, Швея собирает нить и выбирает лечение или урон, картограф последовательно ставит узлы и старается построить фигуру вокруг противника.','',
-             'Запасы и временные точки очищаются после смерти или смены героя. Возврат не воскрешает и не переносит через запрещённые границы территорий. Расстояние движения для «Платы за путь» измеряется раз в секунду и ограничено сверху.','',
-             'Проверено автоматическими тестами JASS с подстановкой нативных функций и строгим legacy pjass. Реальная загрузка, графика и баланс в Warcraft III 1.26 здесь не проверялись.','']
+original += ['В Походных припасах: «Знамя кровного союза» (3200 золота) и «Тотемы истинного зрения» (480 за 3 заряда). Вампиризм бойцов работает через нативный Item Life Steal, в том числе у дальних атак. Аура обновляется раз в секунду и не суммируется сама с собой.','', 'Реальные модели, графика и бой в Warcraft III 1.26 требуют проверки в игре.','']
 (r/'docs/Original-heroes.md').write_text('\n'.join(original))

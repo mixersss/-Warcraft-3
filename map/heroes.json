@@ -2631,360 +2631,473 @@
     "soundset": "ForestTrollShadowPriest"
   },
   {
-    "id": "Fy00",
+    "id": "Fz00",
     "base": "Oshd",
-    "name": "Хронописец",
-    "alias": "chronoscribe",
+    "name": "Хранитель зверей",
+    "alias": "beastkeeper",
     "group": 9,
     "primary": 2,
     "skills": [
-      "Y000",
-      "Y001",
-      "Y002",
-      "Y003"
+      "V000",
+      "V001",
+      "V002",
+      "V003"
     ],
     "spells": [
       [
-        "Y003",
-        "howlofterror",
-        0
-      ],
-      [
-        "Y000",
+        "V000",
         "berserk",
         0
       ],
       [
-        "Y001",
+        "V001",
         "roar",
-        1
+        0
       ],
       [
-        "Y002",
+        "V002",
         "taunt",
-        2
+        0
+      ],
+      [
+        "V003",
+        "howlofterror",
+        0
       ]
     ],
     "gear_role": "caster",
     "gear_families": [
-      2,
-      5,
+      4,
       6,
-      1,
+      5,
       8,
+      1,
       7
     ],
-    "proper_name": "Хронописец",
+    "proper_name": "Хранитель зверей",
     "tint": [
       255,
       255,
       255
     ],
-    "description": "Авторский герой: Закладка времени, Плата за путь, Резонанс будущего, Двоевремие.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNMedivh.blp",
+    "description": "Кристальные панцирники / Пепельные саламандры / Звериная бодрость / Древний зверь",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNFurbolgShaman.blp",
     "skill_sources": [
       "ANcl",
       "ANcl",
       "ANcl",
       "ANcl"
     ],
-    "model_source": "nmed",
-    "model": "units\\creeps\\Medivh\\Medivh.mdl",
+    "model_source": "nfre",
+    "model": "units\\creeps\\FurbolgShaman\\FurbolgShaman.mdl",
     "scale": 0.95,
     "stats": {
       "strength": 22,
-      "agility": 20,
+      "agility": 18,
       "intelligence": 26,
-      "strength_growth": 2.0,
-      "agility_growth": 1.9,
+      "strength_growth": 2.1,
+      "agility_growth": 1.7,
       "intelligence_growth": 2.6,
       "hp": 280,
-      "mana": 180,
-      "damage": 22,
+      "mana": 150,
+      "damage": 23,
       "armor": 3
     },
     "cast_animation": "attack",
+    "ability_names": [
+      "Кристальные панцирники",
+      "Пепельные саламандры",
+      "Звериная бодрость",
+      "Древний зверь"
+    ],
+    "soundset": "Furbolg",
+    "simple": [
+      {
+        "name": "Кристальные панцирники",
+        "base": "ANcl",
+        "kind": "crabs",
+        "description": "Призывает двух наземных крабов на 35 секунд. Каждый: 650 + 28 × ранг HP, 22 + 2 × ранг урона, 5 брони. Крепкие бойцы ближнего боя.",
+        "cooldown": 20,
+        "mana": 85,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNLobstrokkBlue.blp"
+      },
+      {
+        "name": "Пепельные саламандры",
+        "base": "ANcl",
+        "kind": "lizards",
+        "description": "Призывает двух наземных саламандр на 35 секунд. Каждая: 420 + 20 × ранг HP, 28 + 3 × ранг урона; огненная атака с расстояния 450.",
+        "cooldown": 22,
+        "mana": 100,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNThunderLizardSalamander.blp"
+      },
+      {
+        "name": "Звериная бодрость",
+        "base": "ANcl",
+        "kind": "petbuff",
+        "description": "На 10 секунд ускоряет атаки союзных бойцов рядом на 10%→25%. Радиус 700. Работает на солдат и призванных существ, не на героев.",
+        "cooldown": 24,
+        "mana": 65,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNSpiritWolf.blp"
+      },
+      {
+        "name": "Древний зверь",
+        "base": "ANcl",
+        "kind": "beast",
+        "description": "На 45 секунд призывает могучего наземного исполина: 2600 + 160 × ранг HP, 90 + 10 × ранг урона, 12 брони; его близкие удары задевают нескольких врагов.",
+        "cooldown": 75,
+        "mana": 180,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNWendigo.blp"
+      }
+    ],
     "attack_visual": {
       "projectile": "Abilities\\Weapons\\FireballMissile\\FireballMissile.mdl",
       "range": 600,
       "speed": 900
-    },
-    "ability_names": [
-      "Закладка времени",
-      "Плата за путь",
-      "Резонанс будущего",
-      "Двоевремие"
-    ],
-    "soundset": "Medivh",
-    "creative": [
-      {
-        "name": "Закладка времени",
-        "target": 0,
-        "cooldown": 24,
-        "mana": 80,
-        "description": "Запоминает место, HP и ману. Через 6 секунд живой герой возвращается к записи: восстанавливает не более 80 + 8 × ранг потерянного HP и 30 + 2 × ранг маны. Не воскрешает, не сбрасывает откаты и не позволяет обходить центр.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNMassTeleport.blp"
-      },
-      {
-        "name": "Плата за путь",
-        "target": 1,
-        "cooldown": 12,
-        "mana": 70,
-        "description": "На 4 секунды помечает врага. После этого наносит 25 + 4 × ранг урона плюс (8 + 0,5 × ранг) за каждые 100 пройденных единиц, учитывая не более 1200 единиц. Стоящий враг получает только основной урон.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNCripple.blp"
-      },
-      {
-        "name": "Резонанс будущего",
-        "target": 2,
-        "cooldown": 18,
-        "mana": 100,
-        "description": "Через 2 секунды выбранная точка начинает три импульса: 15 + 2 × ранг урона в радиусе 280. Последний импульс удваивается, если герой сам находится в этой области. R заменяет эту зону.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNResurrection.blp"
-      },
-      {
-        "name": "Двоевремие",
-        "target": 0,
-        "cooldown": 65,
-        "mana": 180,
-        "description": "Четыре импульса в двух местах: у сохранённой закладки Q и в месте применения R. Общие 60 + 10 × ранг урона каждого импульса разделены между двумя кругами радиусом 300. Без Q оба круга совпадают. E и R заменяют предыдущую зону.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNReincarnation.blp"
-      }
-    ]
+    }
   },
   {
-    "id": "Fy01",
-    "base": "Oshd",
-    "name": "Швея жизни",
-    "alias": "lifeseam",
+    "id": "Fz01",
+    "base": "Emoo",
+    "name": "Серебряная лучница",
+    "alias": "silverarcher",
     "group": 9,
-    "primary": 2,
+    "primary": 1,
     "skills": [
-      "Y004",
-      "Y005",
-      "Y006",
-      "Y007"
+      "V004",
+      "V005",
+      "V006",
+      "V007"
     ],
     "spells": [
       [
-        "Y007",
+        "V006",
+        "windwalk",
+        4
+      ],
+      [
+        "V007",
         "howlofterror",
-        0
-      ],
+        2
+      ]
+    ],
+    "gear_role": "carry",
+    "gear_families": [
+      3,
+      0,
+      10,
+      1,
+      5,
+      8
+    ],
+    "proper_name": "Серебряная лучница",
+    "tint": [
+      255,
+      255,
+      255
+    ],
+    "description": "Точный наконечник / Быстрая тетива / Лёгкий шаг / Серебряный дождь",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNSylvanusWindrunner.blp",
+    "skill_sources": [
+      "AOcr",
+      "AOae",
+      "AOwk",
+      "ANcl"
+    ],
+    "model_source": "Hvwd",
+    "model": "units\\creeps\\SylvanusWindrunner\\SylvanusWindrunner.mdl",
+    "scale": 0.95,
+    "stats": {
+      "strength": 14,
+      "agility": 28,
+      "intelligence": 18,
+      "strength_growth": 1.1,
+      "agility_growth": 3.0,
+      "intelligence_growth": 1.8,
+      "hp": 180,
+      "mana": 150,
+      "damage": 23,
+      "armor": 1
+    },
+    "cast_animation": "attack",
+    "ability_names": [
+      "Точный наконечник",
+      "Быстрая тетива",
+      "Лёгкий шаг",
+      "Серебряный дождь"
+    ],
+    "soundset": "Sylvanus",
+    "simple": [
+      {
+        "name": "Точный наконечник",
+        "base": "AOcr",
+        "kind": "bowcrit",
+        "description": "Пассивно: 20% шанс критического выстрела с множителем 1,6→2,3. Прирост заметен без дополнительных кнопок.",
+        "cooldown": 0,
+        "mana": 0,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNMarksmanship.blp"
+      },
+      {
+        "name": "Быстрая тетива",
+        "base": "AOae",
+        "kind": "bowspeed",
+        "description": "Пассивно: собственная скорость атаки +15%→65%. Аура действует только на лучницу.",
+        "cooldown": 0,
+        "mana": 0,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNImprovedBows.blp"
+      },
+      {
+        "name": "Лёгкий шаг",
+        "base": "AOwk",
+        "kind": "escape",
+        "description": "На 4→6 секунд даёт невидимость и +25% скорости движения; атака раскрывает героя. При применении лечит 5% максимального HP, не больше 60 + 3 × ранг. Откат 22 секунды.",
+        "cooldown": 22,
+        "mana": 65,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNWindWalkOn.blp"
+      },
+      {
+        "name": "Серебряный дождь",
+        "base": "ANcl",
+        "kind": "rain",
+        "description": "В выбранной области радиусом 400 проходят четыре залпа: каждый наносит 45 + 6 × ранг магического урона. Лучница может двигаться и атаковать.",
+        "cooldown": 60,
+        "mana": 170,
+        "target": 2,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNStarfall.blp"
+      }
+    ],
+    "attack_visual": {
+      "projectile": "Abilities\\Weapons\\Arrow\\ArrowMissile.mdl",
+      "range": 700,
+      "speed": 1000
+    }
+  },
+  {
+    "id": "Fz02",
+    "base": "Otch",
+    "name": "Знаменосец крови",
+    "alias": "bloodstandard",
+    "group": 9,
+    "primary": 0,
+    "skills": [
+      "V008",
+      "V009",
+      "V010",
+      "V011"
+    ],
+    "spells": [
       [
-        "Y004",
-        "berserk",
-        1
-      ],
-      [
-        "Y005",
-        "roar",
-        1
-      ],
-      [
-        "Y006",
-        "taunt",
+        "V011",
+        "howlofterror",
         0
       ]
     ],
     "gear_role": "support",
     "gear_families": [
-      6,
-      5,
       2,
       1,
+      5,
+      6,
       8,
       7
     ],
-    "proper_name": "Швея жизни",
+    "proper_name": "Знаменосец крови",
     "tint": [
       255,
       255,
       255
     ],
-    "description": "Авторский герой: Красная нить, Обмен выкройками, Заплатка, Распустить полотно.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNSpiderBlack.blp",
+    "description": "Кровное братство / Ритм наступления / Крепкий строй / Знамя победы",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNTuskaarBlack.blp",
     "skill_sources": [
-      "ANcl",
-      "ANcl",
-      "ANcl",
+      "AUav",
+      "AOae",
+      "AHad",
       "ANcl"
     ],
-    "model_source": "nspb",
-    "model": "units\\creeps\\SpiderBlack\\SpiderBlack.mdl",
+    "model_source": "ntkc",
+    "model": "Units\\Creeps\\tuskarLord\\tuskarLord.mdl",
     "scale": 0.95,
     "stats": {
       "strength": 22,
-      "agility": 20,
-      "intelligence": 26,
-      "strength_growth": 2.0,
-      "agility_growth": 1.9,
-      "intelligence_growth": 2.6,
+      "agility": 18,
+      "intelligence": 18,
+      "strength_growth": 2.1,
+      "agility_growth": 1.7,
+      "intelligence_growth": 1.8,
       "hp": 280,
-      "mana": 180,
-      "damage": 22,
+      "mana": 150,
+      "damage": 23,
       "armor": 3
     },
     "cast_animation": "attack",
     "ability_names": [
-      "Красная нить",
-      "Обмен выкройками",
-      "Заплатка",
-      "Распустить полотно"
+      "Кровное братство",
+      "Ритм наступления",
+      "Крепкий строй",
+      "Знамя победы"
     ],
-    "soundset": "Spider",
-    "creative": [
+    "soundset": "Tuskarr",
+    "simple": [
       {
-        "name": "Красная нить",
-        "target": 1,
-        "cooldown": 9,
-        "mana": 65,
-        "description": "Наносит 45 + 4 × ранг урона. 40% действительно потерянного целью HP собирает в запас нити. Предел запаса: 200 + 10 × уровень героя. Не действует на здания и магический иммунитет.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNCannibalize.blp"
-      },
-      {
-        "name": "Обмен выкройками",
-        "target": 1,
-        "cooldown": 16,
-        "mana": 80,
-        "description": "Союзный герой в радиусе 700 и сама Швея сближают проценты здоровья на 25,375%→100% с рангом. На 200-м ранге суммарное текущее HP делится пропорционально максимумам. На любом ранге суммарное HP сохраняется; погибших не поднимает.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNSpiritLink.blp"
-      },
-      {
-        "name": "Заплатка",
+        "name": "Кровное братство",
+        "base": "AUav",
+        "kind": "army_vamp",
+        "description": "Аура радиусом 900 даёт всем союзным солдатам и призывам 12%→30% вампиризма обычных атак. Работает на ближних, дальних, Нежить и механических бойцов; сильнейший источник этого типа, без сложения.",
+        "cooldown": 0,
+        "mana": 0,
         "target": 0,
-        "cooldown": 12,
-        "mana": 55,
-        "description": "Тратит до 60 + 4 × ранг нити на каждого раненого союзника в радиусе 500. На каждый реально восстановленный HP расходуется ровно одна нить; при пустом запасе не лечит. Здания исключены.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNHeal.blp"
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNVampiricAura.blp"
       },
       {
-        "name": "Распустить полотно",
+        "name": "Ритм наступления",
+        "base": "AOae",
+        "kind": "army_speed",
+        "description": "Пассивная аура: +10%→45% скорости атаки союзных бойцов, радиус 900. Герои не усиливаются.",
+        "cooldown": 0,
+        "mana": 0,
         "target": 0,
-        "cooldown": 60,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNDrum.blp"
+      },
+      {
+        "name": "Крепкий строй",
+        "base": "AHad",
+        "kind": "army_armor",
+        "description": "Пассивная аура: +2→18 брони и восстановление 1→8 HP/сек союзным бойцам, радиус 900. Работает на Нежить и механических; не лечит здания или героев.",
+        "cooldown": 0,
+        "mana": 0,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNDevotion.blp"
+      },
+      {
+        "name": "Знамя победы",
+        "base": "ANcl",
+        "kind": "banner",
+        "description": "На 10 секунд в радиусе 900 дополнительно даёт армии +20%→40% скорости атаки, +4→12 брони и +10% вампиризма (общий максимум 40%). Сразу лечит бойцов на 10% максимального HP, не больше 120 + 12 × ранг каждому.",
+        "cooldown": 65,
         "mana": 160,
-        "description": "Сжигает до 300 + 30 × ранг нити. Наносит врагам вокруг 80 + 8 × ранг плюс половину потраченного запаса урона. При нулевом запасе остаётся только основной урон.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNWeb.blp"
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNCommand.blp"
       }
     ]
   },
   {
-    "id": "Fy02",
-    "base": "Oshd",
-    "name": "Картограф разломов",
-    "alias": "riftcartographer",
+    "id": "Fz03",
+    "base": "Obla",
+    "name": "Кобольд-клинок",
+    "alias": "koboldblade",
     "group": 9,
     "primary": 1,
     "skills": [
-      "Y008",
-      "Y009",
-      "Y010",
-      "Y011"
+      "V012",
+      "V013",
+      "V014",
+      "V015"
     ],
     "spells": [
       [
-        "Y011",
+        "V013",
+        "windwalk",
+        4
+      ],
+      [
+        "V015",
         "howlofterror",
-        0
-      ],
-      [
-        "Y008",
-        "berserk",
-        2
-      ],
-      [
-        "Y009",
-        "roar",
-        2
-      ],
-      [
-        "Y010",
-        "taunt",
         0
       ]
     ],
-    "gear_role": "caster",
+    "gear_role": "carry",
     "gear_families": [
-      2,
-      5,
-      6,
+      3,
+      0,
+      10,
       1,
-      8,
-      7
+      5,
+      8
     ],
-    "proper_name": "Картограф разломов",
+    "proper_name": "Кобольд-клинок",
     "tint": [
       255,
       255,
       255
     ],
-    "description": "Авторский герой: Первая координата, Боевой отрезок, Сложить карту, Невозможный треугольник.",
-    "icon": "ReplaceableTextures\\CommandButtons\\BTNSatyrTrickster.blp",
+    "description": "Широкий взмах / Теневая нора / Юркий боец / Танец коротких клинков",
+    "icon": "ReplaceableTextures\\CommandButtons\\BTNKobold.blp",
     "skill_sources": [
-      "ANcl",
-      "ANcl",
-      "ANcl",
+      "ANca",
+      "AOwk",
+      "AEev",
       "ANcl"
     ],
-    "model_source": "nsat",
-    "model": "units\\creeps\\SatyrTrickster\\SatyrTrickster.mdl",
-    "scale": 0.95,
+    "model_source": "nkob",
+    "model": "units\\creeps\\Kobold\\Kobold.mdl",
+    "scale": 0.85,
     "stats": {
       "strength": 22,
-      "agility": 20,
-      "intelligence": 26,
-      "strength_growth": 2.0,
-      "agility_growth": 1.9,
-      "intelligence_growth": 2.6,
+      "agility": 28,
+      "intelligence": 18,
+      "strength_growth": 2.1,
+      "agility_growth": 3.0,
+      "intelligence_growth": 1.8,
       "hp": 280,
-      "mana": 180,
-      "damage": 22,
+      "mana": 150,
+      "damage": 23,
       "armor": 3
     },
     "cast_animation": "attack",
-    "attack_visual": {
-      "projectile": "Abilities\\Weapons\\FireballMissile\\FireballMissile.mdl",
-      "range": 600,
-      "speed": 900
-    },
     "ability_names": [
-      "Первая координата",
-      "Боевой отрезок",
-      "Сложить карту",
-      "Невозможный треугольник"
+      "Широкий взмах",
+      "Теневая нора",
+      "Юркий боец",
+      "Танец коротких клинков"
     ],
-    "soundset": "Satyr",
-    "creative": [
+    "soundset": "Kobold",
+    "simple": [
       {
-        "name": "Первая координата",
-        "target": 2,
-        "cooldown": 7,
-        "mana": 55,
-        "description": "На 14 секунд ставит узел A в выбранной точке. Наносит рядом 20 + 3 × ранг урона. Новый A удаляет прежние A и B.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNFarSight.blp"
-      },
-      {
-        "name": "Боевой отрезок",
-        "target": 2,
-        "cooldown": 11,
-        "mana": 75,
-        "description": "При активном A создаёт узел B на 12 секунд. Повреждает врагов в коридоре шириной 180 между A и B на 30 + 4 × ранг. Отрезок не длиннее 1400; линия не переносит юнитов через стены.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNChainLightning.blp"
-      },
-      {
-        "name": "Сложить карту",
+        "name": "Широкий взмах",
+        "base": "ANca",
+        "kind": "cleave",
+        "description": "Пассивно: 35%→75% урона ближней атаки задевает врагов около основной цели. Радиус 220. Похоже на Battle Fury; по зданиям не работает.",
+        "cooldown": 0,
+        "mana": 0,
         "target": 0,
-        "cooldown": 15,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNCleavingAttack.blp"
+      },
+      {
+        "name": "Теневая нора",
+        "base": "AOwk",
+        "kind": "rogueescape",
+        "description": "Снимает отрицательные эффекты и даёт невидимость на 4→8 секунд, +20% скорости движения. Первый удар раскрывает героя и добавляет 30 + 3 × ранг урона. Откат 22 секунды.",
+        "cooldown": 22,
         "mana": 60,
-        "description": "Поглощает узел B и лечит героя на 30 + 2 × ранг плюс 10% длины отрезка A–B (не более 140 HP за расстояние). Узел A остаётся для следующей комбинации.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNScrollOfTownPortal.blp"
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNWindWalkOn.blp"
       },
       {
-        "name": "Невозможный треугольник",
+        "name": "Юркий боец",
+        "base": "AEev",
+        "kind": "evasion",
+        "description": "Пассивно: уклонение от обычных атак 15%→45%. Быстрая базовая атака и ловкость помогают сражаться в ближнем бою.",
+        "cooldown": 0,
+        "mana": 0,
         "target": 0,
-        "cooldown": 65,
-        "mana": 180,
-        "description": "A, B и герой образуют треугольник. Враги строго внутри него получают 120 + 18 × ранг урона. Требует живые A и B, расстояние героя до A не более 1600 и ненулевую площадь; оба узла исчезают после взрыва.",
-        "icon": "ReplaceableTextures\\CommandButtons\\BTNPortal.blp"
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNEvasion.blp"
+      },
+      {
+        "name": "Танец коротких клинков",
+        "base": "ANcl",
+        "kind": "bladestorm",
+        "description": "На 6 секунд даёт +50%→90% скорости атаки, +15% скорости движения и раз в секунду наносит окружающим врагам 30 + 7 × ранг урона в радиусе 280. Герой продолжает обычные атаки и может двигаться.",
+        "cooldown": 60,
+        "mana": 150,
+        "target": 0,
+        "icon": "ReplaceableTextures\\CommandButtons\\BTNWhirlwind.blp"
       }
     ]
   }

@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict');
 const ids=new Set(['Fy00','Fy01','Fy02',...Array.from({length:12},(_,i)=>'Y'+String(i).padStart(3,'0')),'fp46','fp47','fp48']);
 function objects(current,previous){
+ require('./simple-comparison.cjs').objects(current,previous);
  for(const table of ['originalTable','customTable']){
   const old=new Map(previous[table].objects.map(o=>[o.oldId+':'+o.newId,o]));
   current[table].objects=current[table].objects.filter(o=>{
@@ -14,9 +15,9 @@ function objects(current,previous){
  return current;
 }
 function runtime(current,previous){
- let s=current.replace(/\/\/ Three original kits[\s\S]*?(?=function CreateHero)/,'')
- .replace(/\/\/ Combo-aware native orders[\s\S]*?(?=function TryBotSpell)/,'')
- .replace(/^\s*(?:integer|real|unit|effect|trigger) array Creative\w+.*$/gm,'')
+ let s=require('./simple-comparison.cjs').runtime(current).replace(/\/\/ (?:Three original kits|Four straightforward kits)[\s\S]*?(?=function CreateHero)/,'')
+ .replace(/\/\/ (?:Combo-aware native orders|Straightforward native orders)[\s\S]*?(?=function TryBotSpell)/,'')
+ .replace(/^\s*(?:(?:integer|real|unit|effect|trigger) array Creative\w+|group CreativeOwnerGroup).*$/gm,'')
  .replace(/^\s*call Creative(?:Clear\(p\)|Tick\(\)|Init\(\)).*$/gm,'')
  .replace(/^.*TriggerAddAction\(TransmuteTrigger, function OnCreativeSpell\).*$/gm,'')
  .replace(/    if IsUnitType\(dead,UNIT_TYPE_HERO\) and dead == Hero\[GetPlayerId\(GetOwningPlayer\(dead\)\)\] then\n        call CreativeClear\(GetPlayerId\(GetOwningPlayer\(dead\)\)\)\n    endif\n/,'')

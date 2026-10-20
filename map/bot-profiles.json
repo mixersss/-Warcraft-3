@@ -414,7 +414,7 @@
         1
       ]
     },
-    "Fy00": {
+    "Fz00": {
       "role": "caster",
       "skill_priority": [
         0,
@@ -422,7 +422,15 @@
         2
       ]
     },
-    "Fy01": {
+    "Fz01": {
+      "role": "carry",
+      "skill_priority": [
+        0,
+        1,
+        2
+      ]
+    },
+    "Fz02": {
       "role": "support",
       "skill_priority": [
         0,
@@ -430,8 +438,8 @@
         2
       ]
     },
-    "Fy02": {
-      "role": "caster",
+    "Fz03": {
+      "role": "carry",
       "skill_priority": [
         0,
         1,

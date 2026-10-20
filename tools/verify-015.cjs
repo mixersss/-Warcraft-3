@@ -11,7 +11,7 @@ for(const name of unchanged){
   if(name.endsWith('w3q'))require('./summon-comparison.cjs').research(current,old);
   else require('./summon-comparison.cjs')(current,old,name.endsWith('w3u'));
   assert.deepEqual(current,old,'Preserve native objects except 0.15.2 summon/spell damage and troop prices: '+name);
- }else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(previous.get(name).bytes()),'AI change must preserve '+name);
+ }else if(['war3map.w3h','war3map.w3t'].includes(name))require('./simple-comparison.cjs').same(fs.readFileSync(path.join(root,'build/map',name)),previous.get(name).bytes(),name);else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(previous.get(name).bytes()),'AI change must preserve '+name);
 }
 const read=name=>JSON.parse(fs.readFileSync(path.join(root,name)));
 const profiles=read('map/bot-profiles.json'),heroes=read('map/heroes.json'),balance=read('map/balance.json');
@@ -33,4 +33,4 @@ assert.match(ai,/IsUnitVisible/);assert.match(ai,/IsUnitInvisible/);assert.match
 const report=read('build/verification-0142.json');
 Object.assign(report,{AIRelease:balance.version,heroProfiles:heroes.length,roles:4,styleVariants:heroes.length*3,economyStrategies:5,supportGearPercent:[15,25],carryGearPercent:[75,75],carryTierPercent:15,minimumTroopResearchPercent:10,teamCommands:['-follow','-defend','-push','-regroup','-free','-ai'],commandSeconds:90,sharedPushSeconds:22,combatScanRadius:1100,soldierScrollRadius:700,realNativeSupplies:true,combatObjectsPreservedExceptSummonBalanceFrom:'0.14.3-alpha',enginePlaytest:false});
 fs.writeFileSync(path.join(root,'build/verification-015.json'),JSON.stringify(report,null,2)+'\n');
-console.log('PASS: 49 hero-role profiles, five funded strategies, 147 style mappings, bounded AI module and native combat/terrain/economy objects unchanged from 0.14.3 except requested 0.15.2 summon/spell/research balance.');
+console.log('PASS: 50 hero-role profiles, five funded strategies, 150 style mappings, bounded AI module and native combat/terrain/economy objects unchanged from 0.14.3 except requested 0.15.2 summon/spell/research balance.');

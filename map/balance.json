@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.17.1-alpha",
+  "version": "0.18.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 18,
@@ -448,5 +448,7 @@
       "step": 3.0,
       "cap": 200.0
     }
-  }
+  },
+  "summon_kill_gold": 12,
+  "summon_ultimate_kill_gold": 60
 }
