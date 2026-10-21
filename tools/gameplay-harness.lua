@@ -282,7 +282,9 @@ function reset()
         SlotActive[p]=true
         HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
+        ArmyDestination[p],ArmyPlanAt[p],ArmyRedirect[p],ArmyWasDefending[p]=4,0,false,false
         ArmyBranchChosen[p]=false
+        RetreatUntil[p]=0
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p],WaveRanks[p]=0,0,0,0,0,0,0,0,0
         Army[p]={}

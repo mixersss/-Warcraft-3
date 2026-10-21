@@ -1,0 +1,28 @@
+{
+  "version": "0.21.0-alpha",
+  "orderCards": 8,
+  "visiblePerBarracks": 4,
+  "perPlayerDestinations": [
+    "southwest",
+    "southeast",
+    "northeast",
+    "northwest",
+    "center"
+  ],
+  "ownBaseButton": "hold center",
+  "centerWaypointRadius": 900,
+  "botsPlanSeconds": 20,
+  "emergencyDefensePreserved": true,
+  "everyOther0201ObjectWorldFieldPreserved": true,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.21.0-alpha.w3x",
+  "bytes": 3363483,
+  "sha256": "541b32c1eaee6fda7cc09acd8c23b177da882831e3cd356199d82f5d0c4f1b4b",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "allTwelveDirectedRoutesPassed": true,
+  "nativeAndDialogOrderCallbacksPassed": true,
+  "unmarkedSummonRoutesPassed": true,
+  "botPushAndRegroupPlansPassed": true,
+  "researchQueueAndGoldPreservedInMocks": true
+}

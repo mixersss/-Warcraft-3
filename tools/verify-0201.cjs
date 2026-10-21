@@ -16,8 +16,8 @@ for(let rank=1;rank<=200;rank++){
 }
 const keeper=heroes.find(h=>h.id==='Ekee');assert.equal(keeper.skills[2],'Fent');assert.deepEqual(keeper.spells[2],['Fent','waterelemental',0]);
 assert.equal(get(u.originalTable.objects.find(o=>o.oldId==='Ekee'),'uhab'),'AEer,AEah,Fent,AEtq,Fatr');
-for(const[P,n]of[[U,'war3map.w3u'],[A,'war3map.w3a']]){const current=parse(P,n),previous=parse(P,n,true);require('./treant-comparison.cjs').objects(current);assert.deepEqual(current,previous,n+' exact0.20 except one skill and Keeper learnable list');}
+for(const[P,n]of[[U,'war3map.w3u'],[A,'war3map.w3a']]){const current=parse(P,n),previous=parse(P,n,true);require('./army-orders-comparison.cjs').objects(current);require('./treant-comparison.cjs').objects(current);assert.deepEqual(current,previous,n+' exact0.20 except one skill and Keeper learnable list');}
 for(const n of ['war3map.w3q','war3map.w3t','war3map.w3h','war3map.w3b','war3map.wpm','war3map.w3e','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.imp','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(now(n),before(n),n+' unchanged');
-assert.equal(require('./treant-comparison.cjs').runtime(now('war3map.j').toString()).replaceAll(b.version,'0.20.0-alpha'),before('war3map.j').toString(),'Only native skill/AI bindings change at runtime');
+assert.equal(require('./treant-comparison.cjs').runtime(require('./army-orders-comparison.cjs').runtime(now('war3map.j').toString(),before('war3map.j').toString())).replaceAll(b.version,'0.20.0-alpha'),before('war3map.j').toString(),'Only native skill/AI bindings change at runtime');
 fs.writeFileSync(path.join(root,'build/verification-0201.json'),JSON.stringify({version:b.version,keeperSkill:'Fent',nativeBase:'AHwe',requiresTrees:false,hotkey:'E',ranks:200,allOriginalTreantUnitsCountsDurationsManaCooldownsPreserved:true,botOrder:'waterelemental',allOther020ContentUnchanged:true,enginePlaytest:false},null,2)+'\n');
 console.log('PASS:200 native tree-free Keeper summon ranks, exact old treant/count/lifetime/cost curves, human E and bot immediate order; every other0.20 field/runtime preserved.');

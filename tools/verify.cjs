@@ -137,7 +137,7 @@ for (let race = 0; race < 4; race++) {
 const gear=require('../map/equipment.json');
 const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');const books=require('../map/books.json');const utility=require('../map/utility.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,516,'Equipment, 100 custom hero skills and bounded expansion aura');
+assert.equal(gearAbilities.length,524,'Equipment, 100 custom hero skills and bounded expansion aura');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();

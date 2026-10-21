@@ -15,6 +15,7 @@ import struct
 import zlib
 from progression import keeper_treants, hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
+from army_orders import abilities as army_order_abilities
 from army_traits import abilities as troop_abilities, unit_changes as troop_changes
 from army_branches import abilities as branch_abilities
 from hero_picker import units as picker_units, controls as picker_controls, CARDS_PER_PAGE
@@ -361,7 +362,7 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+keeper_treants(ROOT)+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+army_order_abilities()+keeper_treants(ROOT)+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:

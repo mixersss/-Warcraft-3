@@ -70,6 +70,10 @@ globals
     integer array Respawn
     integer array Kills
     integer array HeroKind
+    integer array ArmyDestination
+    integer array ArmyPlanAt
+    boolean array ArmyRedirect
+    boolean array ArmyWasDefending
     boolean array ArmyBranchChosen
     integer array ArmyRace
     integer array CastUntil
@@ -342,6 +346,19 @@ function UpgradeName takes integer kind returns string
 endfunction
 
 // Native branch cards are separate from paid development research.
+function InstallArmyOrderButtons takes integer p returns nothing
+    local integer k = 0
+    loop
+        exitwhen k == 4
+        if k == TeamOf(p) then
+            call UnitAddAbility(Base[p],'Fac0'+k)
+        else
+            call UnitAddAbility(Base[p],'Fao0'+k)
+        endif
+        set k = k+1
+    endloop
+endfunction
+
 function CommitArmyBranch takes integer p, integer choice returns nothing
     local integer k = 0
     set ArmyRace[p] = choice
@@ -352,6 +369,7 @@ function CommitArmyBranch takes integer p, integer choice returns nothing
         call UnitRemoveAbility(Base[p],'Fbr0'+k)
         set k = k+1
     endloop
+    call InstallArmyOrderButtons(p)
 endfunction
 
 function Buy takes integer p, integer kind returns boolean
@@ -931,17 +949,100 @@ function ArmyTraitCast takes unit soldier, unit enemy returns boolean
     return false
 endfunction
 
+function ArmyCornerName takes integer team returns string
+    if team == 0 then
+        return "нижняя левая база"
+    elseif team == 1 then
+        return "нижняя правая база"
+    elseif team == 2 then
+        return "верхняя правая база"
+    elseif team == 3 then
+        return "верхняя левая база"
+    endif
+    return "держать центр"
+endfunction
+
+function ArmyDestinationBase takes integer p returns integer
+    local integer destination = ArmyDestination[p]
+    local integer q
+    local integer best = -1
+    local real ratio = 2.
+    local real life
+    if destination < 0 or destination > 3 or destination == TeamOf(p) then
+        return -1
+    endif
+    set q = destination*3
+    loop
+        exitwhen q == destination*3+3
+        if SlotActive[q] and not Lost[q] and Alive(Base[q]) then
+            set life = GetWidgetLife(Base[q])/GetUnitState(Base[q],UNIT_STATE_MAX_LIFE)
+            if life < ratio then
+                set ratio = life
+                set best = q
+            endif
+        endif
+        set q = q+1
+    endloop
+    return best
+endfunction
+
+function PlanBotArmyDestination takes integer p returns nothing
+    local integer destination = 4
+    local integer target = -1
+    local integer team = TeamOf(p)
+    if not Bot[p] or Seconds < ArmyPlanAt[p] then
+        return
+    endif
+    set ArmyPlanAt[p] = Seconds+20
+    if not Defending[team] and Seconds >= WARMUP_SECONDS+90 and RetreatUntil[p] <= Seconds then
+        if not Alive(Hero[p]) or GetWidgetLife(Hero[p])/GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE) >= .4 then
+            if (TeamPushUntil[team] > Seconds or CountUnitsInGroup(Army[p]) >= 18) and (TeamOrderUntil[team] <= Seconds or TeamOrder[team] == 3) then
+                set target = ChooseTarget(team)
+                if target >= 0 then
+                    set destination = TeamOf(target)
+                endif
+            endif
+        endif
+    endif
+    if destination != ArmyDestination[p] then
+        set ArmyDestination[p] = destination
+        set ArmyRedirect[p] = true
+    endif
+endfunction
+
 function CommandArmy takes integer p, boolean forceOrder returns nothing
     local unit u
     local integer t = TeamOf(p)
+    local integer target
     local boolean arrived
     local boolean cast
+    local boolean redirect
+    local real x = 0.
+    local real y = 0.
     local unit enemy = null
-    if forceOrder or Bot[p] or AutoArmy[p] then
-        set enemy = EnemyNear(p,RallyX[t],RallyY[t],1600.)
+    call PlanBotArmyDestination(p)
+    set target = ArmyDestinationBase(p)
+    if ArmyDestination[p] != 4 and target < 0 then
+        set ArmyDestination[p] = 4
+        set ArmyRedirect[p] = true
+        if not Bot[p] then
+            call Tell(p,"В выбранной крепости больше нет вражеских баз. Армия держит центр.")
+        endif
     endif
-    // Reconcile resurrected troops as well as newly summoned elementals.
-    // Summons receive orders but do not occupy the trained-army cap.
+    if target >= 0 then
+        set x = HomeX[target]
+        set y = HomeY[target]
+    endif
+    if Defending[t] then
+        set x = RallyX[t]
+        set y = RallyY[t]
+    endif
+    set redirect = forceOrder or ArmyRedirect[p] or ArmyWasDefending[p] != Defending[t]
+    set ArmyRedirect[p] = false
+    set ArmyWasDefending[p] = Defending[t]
+    if forceOrder or Bot[p] or AutoArmy[p] then
+        set enemy = EnemyNear(p,x,y,1600.)
+    endif
     call GroupClear(Army[p])
     call GroupEnumUnitsOfPlayer(Work, Player(p), null)
     loop
@@ -953,28 +1054,109 @@ function CommandArmy takes integer p, boolean forceOrder returns nothing
                 call GroupAddUnit(Army[p], u)
             endif
             set arrived = false
-            if GetUnitUserData(u) > 10 and DistanceSq(GetUnitX(u), GetUnitY(u), 0, 0) < 2250000 then
-                call SetUnitUserData(u, GetUnitUserData(u)-10)
+            if GetUnitUserData(u) == 0 then
+                call SetUnitUserData(u,11)
+            endif
+            if redirect and GetUnitUserData(u) <= 10 and DistanceSq(GetUnitX(u),GetUnitY(u),0.,0.) > 810000. then
+                call SetUnitUserData(u,GetUnitUserData(u)+10)
+            endif
+            if GetUnitUserData(u) > 10 and DistanceSq(GetUnitX(u),GetUnitY(u),0.,0.) <= 810000. then
+                call SetUnitUserData(u,GetUnitUserData(u)-10)
                 set arrived = true
             endif
-            // Humans can override orders; -auto resumes automatic commands.
             if forceOrder or Bot[p] or AutoArmy[p] then
-                // Do not reset a swing/cast when already fighting nearby.
                 set cast = ArmyTraitCast(u,enemy)
-                if not cast and (forceOrder or arrived or Defending[t] or GetUnitCurrentOrder(u) == 0) then
+                if not cast and (redirect or arrived or Defending[t] or GetUnitCurrentOrder(u) == 0 or (ArmyDestination[p] == 4 and DistanceSq(GetUnitX(u),GetUnitY(u),0.,0.) > 810000.)) then
                     if GetUnitUserData(u) > 10 and not Defending[t] then
-                        call IssuePointOrder(u, "attack", 0, 0)
+                        call IssuePointOrder(u,"attack",0.,0.)
                     else
-                        call IssuePointOrder(u, "attack", RallyX[t], RallyY[t])
+                        call IssuePointOrder(u,"attack",x,y)
                     endif
                 endif
             endif
         else
-            call GroupRemoveUnit(Army[p], u)
+            call GroupRemoveUnit(Army[p],u)
         endif
     endloop
     set u = null
     set enemy = null
+endfunction
+
+function SetArmyDestination takes integer p, integer destination returns boolean
+    local integer previous
+    if p < 0 or p >= 12 then
+        return false
+    endif
+    if Finished or Lost[p] or not SlotActive[p] or destination < 0 or destination > 4 or destination == TeamOf(p) then
+        return false
+    endif
+    set previous = ArmyDestination[p]
+    set ArmyDestination[p] = destination
+    if destination != 4 and ArmyDestinationBase(p) < 0 then
+        set ArmyDestination[p] = previous
+        call Tell(p,"В этой крепости нет живых вражеских баз.")
+        return false
+    endif
+    set ArmyRedirect[p] = true
+    set AutoArmy[p] = true
+    call CommandArmy(p,false)
+    call Tell(p,"Приказ солдатам: "+ArmyCornerName(destination)+". Наступление проходит через центр; новые волны выполняют тот же приказ.")
+    return true
+endfunction
+
+function ShowArmyOrders takes integer p returns nothing
+    local integer team = 0
+    local integer slot = 0
+    if Bot[p] or Lost[p] or not SlotActive[p] then
+        return
+    endif
+    call ClearMenu(p,"ПРИКАЗ АРМИИ: "+ArmyCornerName(ArmyDestination[p]))
+    loop
+        exitwhen team == 4
+        if team != TeamOf(p) then
+            call MenuButton(p,slot,ArmyCornerName(team),600+team)
+            set slot = slot+1
+        endif
+        set team = team+1
+    endloop
+    call MenuButton(p,3,"Держать центр",604)
+    call MenuButton(p,4,"Закрыть",12)
+    call DialogDisplay(Player(p),Shop[p],true)
+endfunction
+
+function OnArmyOrderSpell takes nothing returns nothing
+    local unit caster = GetTriggerUnit()
+    local integer p = GetPlayerId(GetOwningPlayer(caster))
+    local integer destination = GetSpellAbilityId()-'Fao0'
+    if p < 12 and caster == Base[p] and not Bot[p] then
+        if destination >= 0 and destination < 4 then
+            call SetArmyDestination(p,destination)
+        elseif GetSpellAbilityId() == 'Fac0'+TeamOf(p) then
+            call SetArmyDestination(p,4)
+        endif
+    endif
+    set caster = null
+endfunction
+
+function OnArmyOrderDialog takes nothing returns nothing
+    local integer p = GetPlayerId(GetTriggerPlayer())
+    local integer k = 0
+    local integer action
+    if p >= 12 or Bot[p] then
+        return
+    endif
+    loop
+        exitwhen k == 12
+        if GetClickedButton() == ShopButton[p*12+k] then
+            set action = MenuAction[p*12+k]
+            if action >= 600 and action <= 604 then
+                call SetArmyDestination(p,action-600)
+                call DialogDisplay(Player(p),Shop[p],false)
+                return
+            endif
+        endif
+        set k = k+1
+    endloop
 endfunction
 
 function GearFamily takes integer p, integer slot returns integer
@@ -1626,6 +1808,8 @@ function OnChat takes nothing returns nothing
     endif
     if command == "-shop" then
         call ShowShop(p)
+    elseif command == "-orders" then
+        call ShowArmyOrders(p)
     elseif command == "-race" then
         call ShowRaces(p)
     elseif command == "-hero" then
@@ -1720,7 +1904,7 @@ function OnChat takes nothing returns nothing
             endloop
         endif
     elseif command == "-help" then
-        call Tell(p, "Выдели казарму: 5 улучшений: атака, броня, HP, ступень и численность волн. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 50 героев по портретам | -ar: случайные герои до 15 секунд | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
+        call Tell(p, "Выдели казарму: 5 улучшений: атака, броня, HP, ступень и численность волн. -shop: выбрать казарму | -items: магазин | -race: 4 расы | -hero: 50 героев по портретам | -ar: случайные герои до 15 секунд | -orders: направление солдат | -status: армия | -auto: автоприказы | F9: правила. Выбор до 60 секунд.")
     endif
 endfunction
 
@@ -2046,6 +2230,10 @@ function InitSlot takes integer p returns nothing
         call FogModifierStart(fog)
         set j = j+1
     endloop
+    set ArmyDestination[p] = 4
+    set ArmyPlanAt[p] = 0
+    set ArmyRedirect[p] = false
+    set ArmyWasDefending[p] = false
     set ArmyBranchChosen[p] = false
     set Base[p] = CreateUnit(Player(p), 'fbax', HomeX[p], HomeY[p], 270)
     if TeamBookShop[t] == null then
@@ -2169,6 +2357,8 @@ function InitGame takes nothing returns nothing
     call TriggerAddAction(PickerTrainTrigger, function OnHeroPick)
     call TriggerAddAction(PickerSpellTrigger, function OnPickerSpell)
     call TriggerAddAction(PickerSpellTrigger, function OnArmyBranchSpell)
+    call TriggerAddAction(PickerSpellTrigger, function OnArmyOrderSpell)
+    call TriggerAddAction(ShopTrigger,function OnArmyOrderDialog)
     call TriggerAddAction(TransmuteTrigger, function OnTransmute)
     call TriggerAddAction(TransmuteTrigger, function OnHybridSpell)
     call TriggerAddAction(TransmuteTrigger, function OnExpansionSpell)
