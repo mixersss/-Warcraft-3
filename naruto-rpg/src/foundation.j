@@ -1,5 +1,10 @@
 globals
     // NPC_SOURCE_GLOBALS
+    boolean array LogArenaUsed
+    rect StatLootRect=null
+    integer StatLootPlayer=0
+    item StatLootBest=null
+    real StatLootDistance=0.
     integer CampaignChampion=-1
     integer CampaignDefenseOwner=12
     real array StoryShopTripUntil

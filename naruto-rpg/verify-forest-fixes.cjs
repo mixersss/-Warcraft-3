@@ -14,7 +14,7 @@ for(const [id,label,original]of [['Eshe','Heaven','Icon_ScrollEarth.BLP'],['Esea
  for(const prefix of ['BTN','DISBTN'])assert(fs.readFileSync(path.join(root,'src/generated-icons',prefix+'Exam'+label+'.blp')).equals(fs.readFileSync(path.join(root,'assets',original))),'Icon aliases preserve original artwork');
 }
 for(const id of ['R201','Ljkn','Ljsh']){assert.equal(abilities[id].oldId,'AHtb');for(let l=1;l<=get(abilities[id],'alev');l++){assert.equal(get(abilities[id],'adur',l),id==='R201'?1.25:.5);assert.equal(get(abilities[id],'ahdu',l),id==='R201'?.75:.25);assert(get(abilities[id],'Htb1',l)>0);}}
-assert.equal(abilities.R302.oldId,'ANfb');for(let l=1;l<=4;l++){assert.equal(get(abilities.R302,'adur',l),.75);assert.equal(get(abilities.R302,'ahdu',l),.25);}
+assert.equal(abilities.R302.oldId,'AHtb');for(let l=1;l<=4;l++){assert.equal(get(abilities.R302,'adur',l),1);assert.equal(get(abilities.R302,'ahdu',l),.75);}
 assert.equal(abilities.R504.oldId,source.sourceSoshoryu.oldId);
 for(const m of source.sourceSoshoryu.modifications.filter(m=>['Ncs1','Ncs3','Ncs4','Ncs6','aare'].includes(m.id)))assert.equal(get(abilities.R504,m.id,m.levelOrVariation),m.value,'Source rocket damage/count/radius/duration');
 assert.equal(abilities.Lrmn.oldId,'ANcl');assert.equal(get(items.Nlra,'iabi'),'Lrmn');assert.equal(get(items.Nlra,'iuse'),2);assert.equal(get(abilities.Rmic,'adur',1),Math.fround(.2));assert.equal(get(abilities.Rmic,'ahdu',1),Math.fround(.1));

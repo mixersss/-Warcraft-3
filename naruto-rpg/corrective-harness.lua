@@ -46,7 +46,7 @@ for _,p in ipairs({4,8})do
  cast(p,PlayableSkill[p*5+1],1,nil);SkillsTick();assert(math.abs(Hero[p].timeScale-2.933/2)<.0001)
  local started=TimeNow
  step(2.05)
- assert(ZoneUntil[p]==0 and math.abs(enemy.hp-(100000000-100))<.01,'Kaiten must apply source rank-one damage once before push')
+ assert(ZoneUntil[p]==0 and math.abs(enemy.hp-(100000000-120))<.01,'Kaiten must apply boosted rank-one damage once before push')
  assert(TimeNow-started<2.1)
  Caster=Hero[p];Spell=PlayableSkill[p*5+1];SkillsEndcast();RosterReset(p)
 end

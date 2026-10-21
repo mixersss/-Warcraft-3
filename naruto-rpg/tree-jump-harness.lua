@@ -16,7 +16,7 @@ function SetUnitFlyHeight(u,h,speed)u.flyHeight=h end
 function SetUnitPosition(u,x,y)u.x=x;u.y=y end
 function IsTerrainPathable(x,y,p)return BlockAllLandings or false end
 function I2R(n)return n end
-function OrderId(s)return ({smart=851971,eattree=852146})[s] or 0 end
+function OrderId(s)return ({smart=851971,eattree=852146,attack=851983})[s] or 0 end
 function GetOrderedUnit()return OrderedUnit end
 function GetIssuedOrderId()return IssuedOrder end
 function GetOrderTargetDestructable()return ClickTree end

@@ -1,0 +1,45 @@
+{
+  "hinataPrimary": "AGI",
+  "temariPrimary": "AGI",
+  "leeStun": {
+    "ordinary": 1,
+    "hero": 0.75,
+    "native": "AHtb"
+  },
+  "kibaSmokeMicrostun": {
+    "radius": 300,
+    "ordinary": 0.2,
+    "hero": 0.1
+  },
+  "kaitenDamage": [
+    120,
+    180,
+    240,
+    420
+  ],
+  "arenaBotLogMaxUsesPerFight": 1,
+  "arenaBotLogHealthThreshold": 0.2,
+  "kawarimiCooldownSeconds": 22,
+  "arenaWinLevels": 1,
+  "maxHeroLevel": 60,
+  "statScrollPowerups": [
+    "Nsht",
+    "Nsta",
+    "Nsch"
+  ],
+  "statScrollStats": 6,
+  "statPickupRadius": 650,
+  "enemyPriorityRadius": 900,
+  "persistentItemRects": 1,
+  "allOtherObjectsAndRuntimePreserved": true,
+  "enginePlaytest": false,
+  "filename": "Shinobi_Story_Alpha_24.w3x",
+  "sha256": "59ec07a28e5da9a575c0da2a40a54a57a8f9cf8bb09fc2517fbc9fccc5b44590",
+  "bytes": 8388230,
+  "commandsPassed": true,
+  "allSkillsAndScenarioMocksPassed": true,
+  "allStaticStageVerifiersPassed": true,
+  "strictLegacyPjassPassed": true,
+  "originalAssetsSha256Verified": 379,
+  "generatedAssetsSha256Verified": 5
+}

@@ -42,7 +42,18 @@ function CommonLogBot takes integer p, unit enemy returns boolean
     local real length=0.
     local real x=0.
     local real y=0.
+    local boolean arena=CampaignStage==9 or CampaignStage==11
     if TimeNow<LogUntil[p] then
+        if arena then
+            // Resume the duel: an attack naturally ends Wind Walk instead of fleeing.
+            if FoundationAlive(enemy) then
+                if GetUnitCurrentOrder(Hero[p])!=OrderId("attack") then
+                    call IssueTargetOrder(Hero[p],"attack",enemy)
+                endif
+                return true
+            endif
+            return false
+        endif
         // Do not break native Wind Walk immediately with an attack or another spell.
         if FoundationAlive(enemy) then
             set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
@@ -61,10 +72,16 @@ function CommonLogBot takes integer p, unit enemy returns boolean
     if not FoundationAlive(Hero[p]) or not FoundationAlive(enemy) or TimeNow<LogReadyAt[p] or TimeNow<VisualChannelUntil[p] or ComboLeft[p]>0 or GetUnitAbilityLevel(Hero[p],'Rlog')==0 then
         return false
     endif
+    if arena and (LogArenaUsed[p] or GetWidgetLife(Hero[p])>=GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.2) then
+        return false
+    endif
     set dx=GetUnitX(Hero[p])-GetUnitX(enemy)
     set dy=GetUnitY(Hero[p])-GetUnitY(enemy)
     if dx*dx+dy*dy<=650.*650. and GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.45 and GetUnitState(Hero[p],UNIT_STATE_MANA)>=150. then
         if IssueImmediateOrder(Hero[p],"windwalk") then
+            if arena then
+                set LogArenaUsed[p]=true
+            endif
             set BotNextCast[p]=TimeNow+.75
             return true
         endif

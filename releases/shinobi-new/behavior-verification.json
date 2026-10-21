@@ -99,12 +99,17 @@
   "villageServiceVisibilityAndNeutralSupply": true,
   "narutoCloneCount": 8,
   "narutoCloneOneAttackRule": true,
-  "sourceKaitenDamage": [
-    100,
-    150,
-    200,
-    350
+  "kaitenDamage": [
+    120,
+    180,
+    240,
+    420
   ],
+  "kaitenMultiplier": 1.2,
+  "arenaVictoryLevels": 1,
+  "arenaBotLogUsesPerFight": 1,
+  "botStatScrollPickup": true,
+  "corrections24NativeMocks": true,
   "finalEliminationDuels": 3,
   "threeWayFinal": true,
   "cooldownsResetBeforeEveryFight": true,

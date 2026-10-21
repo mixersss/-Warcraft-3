@@ -9,12 +9,12 @@ end
 local real=CreateUnit(0,raw('R000'),0,0,0);Caster=real;SkillsFragileClone();assert(real.hp==10000,'Never kill the real Naruto')
 local other=CreateUnit(1,raw('R001'),0,0,0);other.illusion=true;Caster=other;SkillsFragileClone();assert(other.hp==10000,'Do not change other illusion families')
 assert(CreatedTimers==timers,'The clone rule uses one shared attack trigger, no per-clone timers')
--- Both Hyuugas get exactly one source-strength hit before the push at every rank.
+-- Both Hyuugas get exactly one source hit with requested +20% before the push at every rank.
 for _,p in ipairs({4,8})do
  Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);HeroType[p]=Hero[p].type;HeroRole[p]=p;Hero[p].level=60
- for rank,damage in ipairs({100,150,200,350})do
+ for rank,damage in ipairs({120,180,240,420})do
   RosterReset(p);local enemy=CreateUnit(12,raw('re06'),100,0,0);enemy.hp=10000;World={enemy}
-  cast(p,PlayableSkill[p*5+1],rank,nil);assert(enemy.hp==10000-damage,'Immediate source Kaiten damage before pushing target away')
+  cast(p,PlayableSkill[p*5+1],rank,nil);assert(enemy.hp==10000-damage,'Immediate boosted Kaiten damage before pushing target away')
   for i=1,5 do TimeNow=TimeNow+.5;RosterTick()end
   assert(enemy.hp==10000-damage,'Animation pulses must not duplicate source damage')
  end
@@ -30,7 +30,7 @@ CampaignStage=10;CampaignTransition=false;CampaignAlliances(1);StoryShopsOpen();
 assert(StoryShop[0].x==16192 and StoryShop[0].y==-16256 and VillageFountain[0].x==16128 and VillageFountain[0].y==-15744)
 assert(StoryShopFor(0)and StoryFountainFor(0));StoryCommand(0,'-shop');assert(Selected==StoryShopFor(0));StoryCommand(0,'-fountain');assert(Selected==StoryFountainFor(0))
 CampaignVillageLandmarksClose();StoryShopsClose()
-print('PASS: one-attack Naruto clones without killing the real hero/other illusions; both Hyuugas and all four source instant Kaiten ranks; native plus bot cooldown reset; original corner supply available during Jiraiya search (mock natives).')
+print('PASS: one-attack Naruto clones without killing the real hero/other illusions; both Hyuugas and all four boosted instant Kaiten ranks; native plus bot cooldown reset; original corner supply available during Jiraiya search (mock natives).')
 
 -- Role ownership must follow chosen characters, not the original player numbers.
 CampaignStage=12;CampaignTransition=false;CampaignCount=0;CampaignThinkCursor=0;World={}

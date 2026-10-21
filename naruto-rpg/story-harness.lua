@@ -61,6 +61,15 @@ function IssueNeutralImmediateOrderById(p,shop,id)
  if given then gold[p]=gold[p]-price;boughtBy=buyer;StoryOnBuy();boughtBy=nil end
  return given
 end
+GroundStatItems={}
+function SetRect(r,a,b,c,d)r[1]=a;r[2]=b;r[3]=c;r[4]=d end
+function EnumItemsInRect(r,filter,callback)
+ for _,it in ipairs(GroundStatItems)do if it.x>=r[1]and it.x<=r[3]and it.y>=r[2]and it.y<=r[4]then EnumStatItem=it;callback()end end
+ EnumStatItem=nil
+end
+function GetEnumItem()return EnumStatItem end
+function IsItemVisible(i)return not i.hidden end
+function IsVisibleToPlayer(x,y,p)return true end
 function GetItemTypeId(i)return i and i.type or 0 end
 function GetItemX(i)return i.x end
 function GetItemY(i)return i.y end

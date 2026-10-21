@@ -280,6 +280,58 @@ function StoryDrop takes integer j returns nothing
         set StoryLoot[j]=CreateItem(raw,GetUnitX(StoryEnemy[j]),GetUnitY(StoryEnemy[j]))
     endif
 endfunction
+// One reused spatial rect, synchronous callbacks, no tracking every dropped item.
+function StoryStatScrollScan takes nothing returns nothing
+    local item it=GetEnumItem()
+    local integer raw=GetItemTypeId(it)
+    local integer p=StatLootPlayer
+    local real dx=GetItemX(it)-GetUnitX(Hero[p])
+    local real dy=GetItemY(it)-GetUnitY(Hero[p])
+    if (raw=='Nsht' or raw=='Nsch' or raw=='Nsta') and not IsItemOwned(it) and GetWidgetLife(it)>.405 and IsItemVisible(it) and IsVisibleToPlayer(GetItemX(it),GetItemY(it),Player(p)) and TreeJumpInside(p,GetItemX(it),GetItemY(it)) and (it!=ExamBotAvoidItem[p] or TimeNow>=ExamBotItemAvoidUntil[p]) then
+        if dx*dx+dy*dy<StatLootDistance then
+            set StatLootBest=it
+            set StatLootDistance=dx*dx+dy*dy
+        endif
+    endif
+    set it=null
+endfunction
+function StoryStatLootBot takes integer p, unit enemy returns boolean
+    local real x=GetUnitX(Hero[p])
+    local real y=GetUnitY(Hero[p])
+    local real dx=0.
+    local real dy=0.
+    local item target=null
+    local boolean ordered=false
+    if not FoundationAlive(Hero[p]) or TimeNow<VisualChannelUntil[p] or ComboLeft[p]>0 or StoryRetreat[StoryTeam(p)] or CampaignTransition or CampaignStage==9 or CampaignStage==11 or (StoryStage[StoryTeam(p)]==7 and ExamTowerOpen) or GetWidgetLife(Hero[p])<GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.25 then
+        return false
+    endif
+    if FoundationAlive(enemy) then
+        set dx=GetUnitX(enemy)-x
+        set dy=GetUnitY(enemy)-y
+        if dx*dx+dy*dy<900.*900. then
+            return false
+        endif
+    endif
+    if StatLootRect==null then
+        set StatLootRect=Rect(0.,0.,0.,0.)
+    endif
+    call SetRect(StatLootRect,x-650.,y-650.,x+650.,y+650.)
+    set StatLootPlayer=p
+    set StatLootBest=null
+    set StatLootDistance=650.*650.
+    call EnumItemsInRect(StatLootRect,null,function StoryStatScrollScan)
+    set target=StatLootBest
+    set StatLootBest=null
+    if target!=null then
+        // Native tst2 powerups apply their actual +6 and work with six carried items.
+        set ordered=IssueTargetOrder(Hero[p],"smart",target)
+        if ordered then
+            set BotNextCast[p]=TimeNow+.75
+        endif
+    endif
+    set target=null
+    return ordered
+endfunction
 function StoryLootBot takes integer p, unit enemy returns boolean
     local integer n=0
     local integer t=StoryTeam(p)
@@ -762,6 +814,9 @@ function StoryTick takes nothing returns nothing
                                 set enemy=StoryNearest(t,Hero[p])
                             endif
                             set cast=CommonLogBot(p,enemy)
+                            if not cast then
+                                set cast=StoryStatLootBot(p,enemy)
+                            endif
                             if not cast then
                                 set cast=StoryLootBot(p,enemy)
                             endif

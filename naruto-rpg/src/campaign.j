@@ -480,6 +480,7 @@ function CampaignArenaCamera takes nothing returns nothing
 endfunction
 function CampaignResetFighter takes integer p returns nothing
     local integer k=0
+    set LogArenaUsed[p]=false
     call UnitResetCooldown(Hero[p])
     loop
         exitwhen k>=5
@@ -1194,6 +1195,12 @@ function CampaignFinalBegin takes nothing returns nothing
     call CampaignArenaCamera()
     call ExamBroadcast("Экзаменатор: Остались трое! Финальный бой — каждый сам за себя. Проигравшие остаются на трибунах. Начало через 5 секунд.")
 endfunction
+function CampaignArenaReward takes integer p returns nothing
+    if p>=0 and p<12 and FoundationAlive(Hero[p]) and GetHeroLevel(Hero[p])<60 then
+        call SetHeroLevel(Hero[p],GetHeroLevel(Hero[p])+1,true)
+        call DisplayTimedTextToPlayer(Player(p),0.,0.,6.,"Победа на арене: +1 уровень!")
+    endif
+endfunction
 function CampaignFinalTick takes nothing returns nothing
     local integer n=0
     local integer p=0
@@ -1234,6 +1241,7 @@ function CampaignFinalTick takes nothing returns nothing
         set CampaignDuelLive=false
         if alive==1 then
             set CampaignChampion=winner
+            call CampaignArenaReward(winner)
             call CampaignStand(winner)
             call ExamBroadcast("Экзаменатор: Чемпион — "+HeroName[HeroRole[winner]]+"! Коноха ждёт вас всех.")
         else
@@ -1296,6 +1304,7 @@ function CampaignDuelTick takes nothing returns nothing
         set loser=CampaignDuelB
     endif
     if winner>=0 then
+        call CampaignArenaReward(winner)
         if CampaignStage==9 then
             set CampaignPrelimWinner[winner]=true
         endif

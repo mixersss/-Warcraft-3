@@ -12,7 +12,7 @@ for(const [i,f]of fountains.entries()){
  if(f.sourceType==='n006'||f.sourceType==='n007')assert.equal(get(units[f.newId],'umdl'),'Doodads\\Cityscape\\Props\\City_Fountain\\City_Fountain.mdl');
 }
 assert.equal(spells.Crg2.oldId,'ACnr');assert.equal(get(spells.Crg2,'Oar1',1),Math.fround(.02));assert(map.includes('call SetPlayerAllianceStateAllyBJ(Player(14),Player(p),true)'));
-const expected={R000:'STR',R001:'STR',R002:'INT',R003:'AGI',R004:'AGI',R005:'AGI',R006:'INT',R007:'AGI',R008:'AGI',R009:'INT',R00A:'INT',R00B:'INT'};
+const expected={R000:'STR',R001:'STR',R002:'INT',R003:'AGI',R004:'AGI',R005:'AGI',R006:'INT',R007:'AGI',R008:'AGI',R009:'INT',R00A:'INT',R00B:'AGI'};
 for(const [id,primary]of Object.entries(expected)){assert.equal(get(units[id],'upra'),primary);assert.equal(get(units[id],'ua1t'),'hero');assert.equal(units[id].oldId,{STR:'Hpal',AGI:'Edem',INT:'Hblm'}[primary]);assert.equal(get(units[id],'ustr'),20);assert.equal(get(units[id],'uagi'),20);assert.equal(get(units[id],'uint'),20);}
 for(const [normal,form]of [['R000','Rnfm'],['R001','Rsfm'],['R007','Rkfm'],['R009','Rgfm']]){assert.equal(get(units[form],'ua1t'),'hero');assert.equal(units[normal].oldId,units[form].oldId);assert.equal(get(units[normal],'upra'),get(units[form],'upra'));}
 assert.equal(spells.R501.oldId,'ANcl');assert.equal(get(spells.R501,'Ncl2',1),1);assert(!spells.R501.modifications.some(m=>m.id==='Htb1'),'No duplicate native kunai damage');

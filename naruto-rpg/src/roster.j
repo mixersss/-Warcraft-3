@@ -319,7 +319,9 @@ function RosterArea takes integer p, real x, real y, real radius, real damage, r
         exitwhen target==null
         call GroupRemoveUnit(SkillScratch,target)
         if RosterEnemy(target,Player(p)) then
-            call RosterHit(Hero[p],target,damage,burn)
+            if damage>0. or burn>0. then
+                call RosterHit(Hero[p],target,damage,burn)
+            endif
             if stun>0. then
                 call RosterStun(p,target,stun)
             endif
@@ -505,6 +507,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
             call RosterVision(p,rank)
         else
             call RosterBuff(p,index,rank)
+            if index==36 then
+                call RosterArea(p,x,y,300.,0.,0.,.2)
+            endif
         endif
     elseif kind==5 or kind==8 then
         if index==47 then

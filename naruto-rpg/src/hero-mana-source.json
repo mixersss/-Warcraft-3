@@ -207,12 +207,14 @@
     "manaRegenBase": 0.01,
     "manaPerIntelligence": 15.0,
     "startMaxMana": 1000,
-    "primaryAttribute": "INT",
-    "runtimeBase": "Hblm",
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
     "strength": 20,
     "agility": 20,
     "strengthPerLevel": 1.5,
     "agilityPerLevel": 0.75,
-    "attackType": "hero"
+    "attackType": "hero",
+    "sourcePrimaryAttribute": "INT",
+    "primaryOverride": "Alpha 24: user requested agility"
   }
 ]
