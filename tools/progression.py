@@ -218,7 +218,7 @@ def hero_abilities(root):
         req,skip=(6,10) if ultimate else (1,1)
         changes=[('alev',0,seed['cap']),('arlv',0,req),('alsk',0,skip)]
         slots={skill:slot for hero in json.loads((Path(root)/'map/heroes.json').read_text()) if 'base' not in hero for slot,skill in enumerate(hero['skills'])}
-        slot=slots.get(rawcode)
+        slot=slots.get(rawcode,2 if rawcode=='AEfn' else None)
         if rawcode[:3] in ('ANs','ANc','ANg') and rawcode[-1:].isdigit(): slot={'ANs':0,'ANc':1,'ANg':3}[rawcode[:3]]
         if slot is not None:
             key='QWER'[slot]
@@ -365,3 +365,26 @@ def army_aura_buffs(root):
     # Unique buff IDs let these auras coexist with the stock hero/fountain auras.
     return [(s['buff_base'],s['buff'],[('fnam',3,s['name']),('ftip',3,s['name']),('fube',3,s['description']),('fefs',3,''),('fefl',3,'')])
             for s in json.loads((Path(root)/'map/hero-passives.json').read_text())]
+
+
+def keeper_treants(root):
+    """Native instant summon: identical ranked treants, no destructable targets."""
+    original=next(changes for raw,_,changes in hero_abilities(root) if raw=='AEfn')
+    changes=[]
+    for change in original:
+        field,kind,value,*position=change
+        if field in ('atar','Efnu','Efn1'):
+            if field=='atar':continue
+            field='Hwe1' if field=='Efnu' else 'Hwe2'
+        if field in ('aret','arut'):continue
+        if field=='atp1':value=f'Сила природы [{position[0]}]'
+        elif field=='aub1':value+=' Призывает энтов рядом с героем без деревьев; не требует выбора цели.'
+        changes.append((field,kind,value,*position))
+    changes += [('anam',3,'Сила природы'),('aher',0,1),('aite',0,0),('areq',3,''),
+                ('aart',3,'ReplaceableTextures\\CommandButtons\\BTNEnt.blp'),
+                ('arar',3,'ReplaceableTextures\\CommandButtons\\BTNEnt.blp'),
+                ('asat',3,''),('acat',3,''),('atat',3,''),
+                ('aret',3,'Изучить Силу природы [уровень %d]'),
+                ('arut',3,'Призывает энтов рядом с героем без деревьев. Рост характеристик и числа энтов сохранён. До 200 рангов.')]
+    # The inherited AHwe order is immediate and needs neither a tree nor a point.
+    return [('AHwe','Fent',list({(c[0],c[3:] if len(c)==5 else (0,0)):c for c in changes}.values()))]

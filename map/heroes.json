@@ -518,7 +518,7 @@
     "skills": [
       "AEer",
       "AEah",
-      "AEfn",
+      "Fent",
       "AEtq"
     ],
     "spells": [
@@ -532,6 +532,11 @@
         "AEer",
         "entanglingroots",
         1
+      ],
+      [
+        "Fent",
+        "waterelemental",
+        0
       ]
     ],
     "primary": 2,

@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),b=require('../map/balance.json'),traits=
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default,A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
 const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.19.0-alpha.w3x'))),true);
 const now=n=>fs.readFileSync(path.join(root,'build/map',n)),before=n=>Buffer.from(old.get(n).bytes());
-const parse=(P,n,prior=false)=>{const p=new P();p.load(new Uint8Array(prior?before(n):now(n)));return p;};
+const parse=(P,n,prior=false)=>{const p=new P();p.load(new Uint8Array(prior?before(n):now(n)));if(!prior)require('./treant-comparison.cjs').objects(p);return p;};
 const get=(o,id,rank=0)=>o.modifications.find(m=>m.id===id&&(m.levelOrVariation||0)===rank)?.value;
 const u=parse(U,'war3map.w3u'),a=parse(A,'war3map.w3a'),q=parse(A,'war3map.w3q'),units=new Map(u.customTable.objects.map(o=>[o.newId,o])),skills=new Map(a.customTable.objects.map(o=>[o.newId,o]));
 const native=['Jtev','Jtcr','Jtfb','Jtss','Jtba','Jtne','Jtdr','Jtdv','Jtdg','Jtpv','Jtpo','Jtab','Jtsk','Jtta','Jtwe','Jtpl','Jtfr','Jtfz'];
@@ -38,7 +38,7 @@ for(const[P,name]of[[U,'war3map.w3u'],[A,'war3map.w3a'],[A,'war3map.w3q']]){
 }
 for(const n of ['war3map.w3t','war3map.w3h','war3map.w3b','war3map.wpm','war3map.w3e','war3mapMisc.txt','war3map.doo','war3mapUnits.doo','war3map.imp','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(now(n),before(n),n+' unchanged');
 const functions=['AssignBotChoices','SelectArmyRace','OnChat','ShowModes','ShowRaces','SetAllRandom','SpawnWave','CommandArmy','OnLeave','InitSlot'];
-let source=now('war3map.j').toString(),prior=before('war3map.j').toString();
+let source=require('./treant-comparison.cjs').runtime(now('war3map.j').toString()),prior=before('war3map.j').toString();
 for(const name of functions){const re=new RegExp('function '+name+' takes[\\s\\S]*?endfunction');source=source.replace(re,()=>prior.match(re)[0]);}
 for(const name of ['RandomBotArmyBranch','ArmyTraitCast'])source=source.replace(new RegExp('function '+name+' takes[\\s\\S]*?endfunction\\s*'),'');
 source=source.replaceAll(b.version,'0.19.0-alpha').replace('constant integer SPAWN_UNITS = 6','constant integer SPAWN_UNITS = 4').replaceAll('Waves: six plus','Waves: four plus').replaceAll('Six plus wave-size research troops per wave','Four plus wave-size research troops per wave');

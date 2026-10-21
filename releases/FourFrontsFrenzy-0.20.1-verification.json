@@ -1,0 +1,18 @@
+{
+  "version": "0.20.1-alpha",
+  "keeperSkill": "Fent",
+  "nativeBase": "AHwe",
+  "requiresTrees": false,
+  "hotkey": "E",
+  "ranks": 200,
+  "allOriginalTreantUnitsCountsDurationsManaCooldownsPreserved": true,
+  "botOrder": "waterelemental",
+  "allOther020ContentUnchanged": true,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.20.1-alpha.w3x",
+  "bytes": 3358851,
+  "sha256": "fe57341041293407f596f36f304fe03c12dee7101d5a575522c8dd6cf535eb5e",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "keeperImmediateBotOrdersPassed": true
+}
