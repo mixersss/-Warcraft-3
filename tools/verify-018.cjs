@@ -4,6 +4,7 @@ const root=path.resolve(__dirname,'..'),heroes=require('../map/heroes.json'),bal
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
 const U=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3u/file').default,A=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
 const old=new MapFile();old.load(new Uint8Array(fs.readFileSync(path.join(root,'releases/FourFrontsFrenzy-0.17.1-alpha.w3x'))),true);
+require('./historical-wave-settings.cjs')(old);
 const bytes=(n,prior=false)=>prior?Buffer.from(old.get(n).bytes()):fs.readFileSync(path.join(root,'build/map',n));
 function parse(P,n,prior=false){const p=new P();p.load(new Uint8Array(bytes(n,prior)));return p;}
 const units=parse(U,'war3map.w3u'),abilities=parse(A,'war3map.w3a'),items=parse(U,'war3map.w3t');

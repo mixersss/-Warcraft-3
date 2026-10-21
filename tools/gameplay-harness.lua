@@ -282,6 +282,7 @@ function reset()
         SlotActive[p]=true
         HeroSector[p]=TeamOf(p);PreviousHeroX[p]=HomeX[p];PreviousHeroY[p]=HomeY[p]-240
         Bot[p],Lost[p],AutoArmy[p]=false,false,true
+        ArmyBranchChosen[p]=false
         ArmyRace[p],HeroKind[p],CastUntil[p]=0,0,0
         Tier[p],Attack[p],Armor[p],Vitality[p],Power[p],SpawnClock[p],Respawn[p],Kills[p],WaveRanks[p]=0,0,0,0,0,0,0,0,0
         Army[p]={}
@@ -466,7 +467,7 @@ reset()
 SpawnWave(0)
 local charmed=Army[0][1];charmed.owner=3
 CommandArmy(0,true);CommandArmy(3,true)
-assert(#Army[0]==2 and IsUnitInGroup(charmed,Army[3]))
+assert(#Army[0]==SPAWN_UNITS-1 and IsUnitInGroup(charmed,Army[3]))
 
 reset()
 -- A level event grants exactly one additional point per gained level to humans.
@@ -577,7 +578,7 @@ local chosen=Hero[0];assert(not SelectRosterHero(0,1) and Hero[0]==chosen);asser
 reset();Seconds=16;SetAllRandom(0);assert(not AllRandomMode)
 reset();Power[5]=1;SetAllRandom(0);assert(not AllRandomMode,'Preserve paid hero stats')
 reset();ShowModes(0);assert(ModeDialogOpen and #Shop[0].buttons==2)
-Seconds=15;Tick();assert(not ModeDialogOpen and #Shop[0].buttons==7,'Unanswered mode defaults to normal')
+Seconds=15;Tick();assert(not ModeDialogOpen and HeroPicker[0]~=nil and Players[0].selection==HeroPicker[0],'Unanswered mode opens hero gallery; army choice stays on barracks')
 
 -- Bastions defend attacked bases (and themselves), without firing on passersby.
 reset();Seconds=70;Dying=Base[0];DamageSource=Hero[3];DamageAmount=1

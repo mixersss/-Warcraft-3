@@ -15,6 +15,7 @@ import struct
 import zlib
 from progression import hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
+from army_branches import abilities as branch_abilities
 from hero_picker import units as picker_units, controls as picker_controls, CARDS_PER_PAGE
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -230,7 +231,7 @@ def units(b: dict) -> bytes:
                 ('ua1b', 0, row['damage']),
                 ('ua1d', 0, 1), ('ua1s', 0, 2), ('ua1c', 2, 1.5),
                 ('ua1r', 0, 550 if ranged else 100),
-                ('ua1t', 3, 'pierce' if ranged else 'normal'),
+                ('ua1t', 3, faction['attack_types'][tier]),
                 ('uaen', 0, 1),
             ('udef', 0, row['armor']), ('udup', 0, 1),
             ('udu1', 0, 3), ('ua1g', 3, ('air,' if ranged else '')+'ground,structure,debris,item,ward'),
@@ -240,6 +241,8 @@ def units(b: dict) -> bytes:
                 ('ufoo', 0, 0), ('ubba', 0, 0), ('ubdi', 0, 0), ('ubsi', 0, 0),
                 ('ugol', 0, b['transmute_troop_values'][tier]), ('ulum', 0, 0), ('uacq', 2, 650.0),
             ]
+            if str(tier) in faction.get('tier_projectiles',{}):
+                changes += [('ua1w',3,'missile'),('ua1m',3,faction['tier_projectiles'][str(tier)]),('ua1z',0,900)]
             entries.append((faction['units'][tier], rawcode, changes))
     entries += simple_pet_units(ROOT)
     entries += summoned_units(ROOT)
@@ -248,10 +251,10 @@ def units(b: dict) -> bytes:
     entries.append(('hbar', 'fbax', [
         ('unam', 3, 'Frenzy Barracks'), ('uhpm', 0, b['base_hp']),
         ('udef', 0, 5), ('ureq', 3, ''), ('utra', 3, ''), ('ures', 3, 'Rfat,Rfar,Rfhp,Rfti,Rfa2,Rfr2,Rfh2,Rfwn'),
-        ('uupt', 3, ''), ('uabi', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
+        ('uupt', 3, ''), ('uabi', 3, 'Fbr0,Fbr1,Fbr2,Fbr3'), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, 'Rfti'), ('uhpr', 2, 0.0),
         ('utip', 3, 'Frenzy Barracks'),
-        ('utub', 3, f'Атака, броня, здоровье армии, развитие казармы и отдельная кнопка численности волн (+1 боец, от 2000 золота). Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
+        ('utub', 3, f'Сначала выбери ветку армии четырьмя кнопками внизу. До развития базы у всех пехотинцы. Атака, броня, здоровье армии, развитие казармы и отдельная кнопка численности волн (+1 боец, от 2000 золота). Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
         ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, b['tower_hp']),
@@ -354,7 +357,7 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:

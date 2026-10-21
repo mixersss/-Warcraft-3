@@ -3,6 +3,7 @@ const assert=require('node:assert/strict');
 const helpers=['Clif','Csum','Cuba','Cubd','Crag','Cvam','Cdet','Bcbs','Bcas','Bcar','Bcsm','Bcua','Bcud','Bcrg','fvlm','ftot','fpk7'];
 const ids=new Set([...helpers,...Array.from({length:4},(_,i)=>'Fz0'+i),...Array.from({length:16},(_,i)=>'V'+String(i).padStart(3,'0')),...Array.from({length:4},(_,i)=>'fp'+(46+i)),...Array.from({length:450},(_,i)=>i<200?'k0'+i.toString(16).padStart(2,'0'):i<400?'k1'+(i-200).toString(16).padStart(2,'0'):'k2'+(i-400).toString(16).padStart(2,'0'))]);
 function objects(current,previous){
+ require('./army-branch-comparison.cjs').objects(current);
  for(const table of ['originalTable','customTable']){
   const old=new Map(previous[table].objects.map(o=>[o.oldId+':'+o.newId,o]));
   current[table].objects=current[table].objects.filter(o=>{

@@ -15,6 +15,7 @@ function objects(current,previous){
  return current;
 }
 function runtime(current,previous){
+ current=require('./army-branch-comparison.cjs').runtime(current,previous);
  let s=require('./simple-comparison.cjs').runtime(current).replace(/\/\/ (?:Three original kits|Four straightforward kits)[\s\S]*?(?=function CreateHero)/,'')
  .replace(/\/\/ (?:Combo-aware native orders|Straightforward native orders)[\s\S]*?(?=function TryBotSpell)/,'')
  .replace(/^\s*(?:(?:integer|real|unit|effect|trigger) array Creative\w+|group CreativeOwnerGroup).*$/gm,'')

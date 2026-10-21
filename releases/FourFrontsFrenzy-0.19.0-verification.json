@@ -1,0 +1,78 @@
+{
+  "version": "0.19.0-alpha",
+  "sharedStart": "hfoo",
+  "troopBranches": [
+    [
+      "hfoo",
+      "hrif",
+      "hspt",
+      "hkni",
+      "hsor"
+    ],
+    [
+      "hfoo",
+      "ogru",
+      "orai",
+      "okod",
+      "otau"
+    ],
+    [
+      "hfoo",
+      "ugho",
+      "ucry",
+      "uabo",
+      "nrvi"
+    ],
+    [
+      "hfoo",
+      "earc",
+      "esen",
+      "edry",
+      "emtg"
+    ]
+  ],
+  "collisionRadius": 8,
+  "previousCollisionRadius": 16,
+  "startingWaveSize": 4,
+  "maxWaveSize": 24,
+  "armyCap": 85,
+  "waveSeconds": 18,
+  "baseBranchCards": 4,
+  "permanentChoice": true,
+  "otherHeroesPetsItemsPricesTerrainPreserved": true,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.19.0-alpha.w3x",
+  "bytes": 3331008,
+  "sha256": "7cd7b76103757a6605178d5b1cb797edc2026ac6034cc5f083a3cca9fe9d43ae",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "branchCardCells": [
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ],
+  "reservedNativeCells": [
+    [
+      3,
+      1
+    ],
+    [
+      3,
+      2
+    ]
+  ],
+  "userConfirmedFootmen": true
+}

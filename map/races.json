@@ -7,86 +7,119 @@
       "Стрелки",
       "Ведьмаки",
       "Рыцари",
-      "Осадные машины"
+      "Боевые маги"
     ],
     "units": [
       "hfoo",
       "hrif",
       "hspt",
       "hkni",
-      "hmtt"
+      "hsor"
     ],
     "ranged_tiers": [
       1,
+      2,
       4
-    ]
+    ],
+    "attack_types": [
+      "normal",
+      "pierce",
+      "normal",
+      "normal",
+      "magic"
+    ],
+    "tier_projectiles": {
+      "4": "Abilities\\Weapons\\SorceressMissile\\SorceressMissile.mdl"
+    }
   },
   {
     "name": "Орда",
     "alias": "orc",
     "tier_names": [
+      "Пехотинцы",
       "Бугаи",
-      "Охотники за головами",
       "Налётчики",
       "Кодо",
       "Таурены"
     ],
     "units": [
+      "hfoo",
       "ogru",
-      "ohun",
       "orai",
       "okod",
       "otau"
     ],
     "ranged_tiers": [
-      1,
       3
+    ],
+    "attack_types": [
+      "normal",
+      "normal",
+      "siege",
+      "pierce",
+      "normal"
     ]
   },
   {
     "name": "Нежить",
     "alias": "undead",
     "tier_names": [
+      "Пехотинцы",
       "Вурдалаки",
       "Некроарахниды",
-      "Некроманты",
       "Мясники",
-      "Труповозки"
+      "Ледяные ревенанты"
     ],
     "units": [
+      "hfoo",
       "ugho",
       "ucry",
-      "unec",
       "uabo",
-      "umtw"
+      "nrvi"
     ],
     "ranged_tiers": [
-      1,
       2,
       4
-    ]
+    ],
+    "attack_types": [
+      "normal",
+      "normal",
+      "pierce",
+      "normal",
+      "magic"
+    ],
+    "tier_projectiles": {
+      "4": "Abilities\\Weapons\\FrostWyrmMissile\\FrostWyrmMissile.mdl"
+    }
   },
   {
     "name": "Ночные эльфы",
     "alias": "elf",
     "tier_names": [
+      "Пехотинцы",
       "Лучницы",
       "Охотницы",
       "Дриады",
-      "Друиды-медведи",
       "Горные великаны"
     ],
     "units": [
+      "hfoo",
       "earc",
       "esen",
       "edry",
-      "edcm",
       "emtg"
     ],
     "ranged_tiers": [
-      0,
       1,
-      2
+      2,
+      3
+    ],
+    "attack_types": [
+      "normal",
+      "pierce",
+      "normal",
+      "pierce",
+      "normal"
     ]
   }
 ]
