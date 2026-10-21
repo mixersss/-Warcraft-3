@@ -20,7 +20,7 @@ for(const filename of ['war3map.w3a','war3map.w3h','war3map.w3q','war3map.w3t','
  }else if(['war3map.w3h','war3map.w3t'].includes(filename))require('./simple-comparison.cjs').same(fs.readFileSync(path.join(root,'build/map',filename)),old.get(filename).bytes(),filename);else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',filename)),Buffer.from(old.get(filename).bytes()),filename+' must be unchanged');
 }
 const previous=new UnitFile();previous.load(new Uint8Array(old.get('war3map.w3u').bytes()));
-const current=new UnitFile();current.load(new Uint8Array(fs.readFileSync(path.join(root,'build/map/war3map.w3u'))));
+const current=new UnitFile();current.load(new Uint8Array(fs.readFileSync(path.join(root,'build/map/war3map.w3u'))));require('./army-traits-comparison.cjs').objects(current);
 assert.deepEqual(current.originalTable.objects,previous.originalTable.objects,'All stock heroes/forms unchanged');
 const byId=new Map(current.customTable.objects.map(o=>[o.newId,o]));
 for(const unit of previous.customTable.objects){

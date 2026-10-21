@@ -15,6 +15,7 @@ import struct
 import zlib
 from progression import hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
+from army_traits import abilities as troop_abilities, unit_changes as troop_changes
 from army_branches import abilities as branch_abilities
 from hero_picker import units as picker_units, controls as picker_controls, CARDS_PER_PAGE
 
@@ -148,7 +149,7 @@ def validate_balance(b: dict) -> None:
 
 def info(b: dict) -> bytes:
     name = f"{b['name']} {b['version']}"
-    text = f'4 teams x 3. One troop type per army tier, 4 races, {len(catalog("heroes"))} heroes. Portrait selection and All Random (-ar before 15s). Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 200, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
+    text = f'4 teams x 3. One troop type per army tier, 4 races, {len(catalog("heroes"))} heroes. Heroes: manual selection or random (-ar before 15s); army branches chosen separately. Barracks research: attack, armor, health (200 ranks each). Hero level 500, normal skills 200, ultimates 50. Powerful bastion towers. Waves every {b["spawn_seconds"]} seconds. Experience rate 50%. Hero-specific bot equipment. Classic TFT 1.26+.'
     data = i(25, 1, 6061) + s(name) + s('mixersss') + s(text) + s('1-12 (open slots stay empty)')
     data += f(-BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS, BOUNDS, BOUNDS, -BOUNDS)
     data += i(2, 2, 2, 2, SIZE-4, SIZE-4, 0x60) + b'L'
@@ -243,6 +244,9 @@ def units(b: dict) -> bytes:
             ]
             if str(tier) in faction.get('tier_projectiles',{}):
                 changes += [('ua1w',3,'missile'),('ua1m',3,faction['tier_projectiles'][str(tier)]),('ua1z',0,900)]
+            overrides=troop_changes(rawcode,row)
+            changed={m[0]for m in overrides}
+            changes=[m for m in changes if m[0]not in changed]+overrides
             entries.append((faction['units'][tier], rawcode, changes))
     entries += simple_pet_units(ROOT)
     entries += summoned_units(ROOT)
@@ -357,7 +361,7 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:

@@ -1,11 +1,11 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.19.0-alpha",
+  "version": "0.20.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 18,
   "spawn_min_seconds": 18,
-  "spawn_units": 4,
+  "spawn_units": 6,
   "army_cap": 85,
   "warmup_seconds": 60,
   "upgrade_max": 200,

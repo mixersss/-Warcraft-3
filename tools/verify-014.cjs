@@ -32,7 +32,7 @@ const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,oldMap=n
 const oldItems=new U();oldItems.load(new Uint8Array(oldMap.get('war3map.w3t').bytes()));
 for(const old of oldItems.customTable.objects)assert.equal(get(items.get(old.newId),'igol'),Math.round(get(old,'igol')*.8),'20% item price reduction');
 assert.deepEqual([get(q.get('Rfwn'),'glvl'),get(q.get('Rfwn'),'gglb'),get(q.get('Rfwn'),'gglm'),get(q.get('Rfwn'),'gbpx'),get(q.get('Rfwn'),'gbpy')],[20,2000,1000,0,1]);
-assert.equal(balance.spawn_seconds,18);assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,4);
+assert.equal(balance.spawn_seconds,18);assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,6);
 assert.equal(get(u.get('fbax'),'uhpm'),50700);assert.equal(get(q.get('Rfti'),'gba1'),25350);
 assert.equal(get(u.get('fbst'),'uhpm'),156000);assert.equal(get(u.get('fbst'),'ua1b'),1750);assert(Math.abs(get(u.get('fbst'),'ua1c')-.2)<1e-6);assert(Math.abs(get(u.get('fbst'),'ua1p')-.05)<1e-6);
 assert.equal(get(a.get('Fdag'),'Ebl1',1),900);assert.equal(get(a.get('Fdag'),'amcs',1),0);assert.equal(get(a.get('Fdag'),'acdn',1),12);

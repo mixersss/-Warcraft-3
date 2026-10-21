@@ -137,7 +137,7 @@ for (let race = 0; race < 4; race++) {
 const gear=require('../map/equipment.json');
 const supreme=require('../map/supreme.json');const potions=require('../map/potions.json');const books=require('../map/books.json');const utility=require('../map/utility.json');
 const gearAbilities=parsed['war3map.w3a'].customTable.objects;
-assert.equal(gearAbilities.length,497,'Equipment, 100 custom hero skills and bounded expansion aura');
+assert.equal(gearAbilities.length,515,'Equipment, 100 custom hero skills and bounded expansion aura');
 assert.equal(parsed['war3map.w3b'].customTable.objects[0].newId, 'fwll');
 const research = parsed['war3map.w3q'].customTable.objects;
 const fieldIndex=new WeakMap();
@@ -410,7 +410,7 @@ for(const [id,field,flag] of [['FbHP','Oar1','Oar2'],['FbMP','Arm1','Arm2']]) {
  assert.equal(value(a,'atar',1),'ground,air,hero,friend,self,vuln,invu');
  assert.ok(Math.abs(value(a,field,1)-0.005)<1e-6);assert.equal(value(a,flag,1),1);
 }
-assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,4);assert.equal(balance.spawn_seconds,18);
+assert.equal(balance.army_cap,85);assert.equal(balance.spawn_units,6);assert.equal(balance.spawn_seconds,18);
 console.log('PASS: 50 heroes / 26 unique creature models, +2 native attributes, 75% evasion, per-rank Immolation, allied native fountains and unchanged army/summon counts.');
 for(const [id,gap] of [['AHds',8],['AHtb',1],['AEer',1],['AOhx',1]]) {
  const a=abilityById.get(id);assert.ok(value(a,'acdn',200)>=value(a,'ahdu',200)+gap-0.001,'No permanent shield/control from cooldown scaling');
@@ -469,7 +469,9 @@ for(let kind=0;kind<heroes.length;kind++) {
 for(let race=0;race<4;race++) for(let tier=0;tier<5;tier++) {
  const unit=unitById.get(`fm${race}${tier}`);
  assert.ok(Math.abs(value(unit,'usca')-0.7)<1e-6);assert.equal(value(unit,'ucol'),8);
- assert.equal(value(unit,'uhpm'),balance.tiers[tier].hp);assert.equal(value(unit,'ua1b'),balance.tiers[tier].damage);
+ const traits=require('../map/army-traits.json').troops[unit.newId];
+ const pyRound=x=>{const n=Math.floor(x);return x-n===.5?n+n%2:Math.round(x);};
+ assert.equal(value(unit,'uhpm'),pyRound(balance.tiers[tier].hp*(traits?.hp_multiplier??1)));assert.equal(value(unit,'ua1b'),pyRound(balance.tiers[tier].damage*(traits?.damage_multiplier??1)));
  assert.equal(value(unit,'udup'),1);assert.equal(value(unit,'udu1'),3);
  if(tier>0) {
   assert.ok(balance.tiers[tier].hp>=balance.tiers[tier-1].hp*1.2 && balance.tiers[tier].hp<=balance.tiers[tier-1].hp*1.4);

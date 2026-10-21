@@ -5,7 +5,7 @@ for race=0,3 do
  SetPlayerTechMaxAllowed(0,FourCC('Rfti'),0)
  assert(not IssueImmediateOrderById(Base[0],FourCC('Rfti')),'Native development locked until branch choice')
  assert(purchase(0,0)and purchase(0,1)and purchase(0,2),'Troop stats available before branch choice')
- ArmyRace[0]=race;SpawnWave(0);assert(#Army[0]==4 and Army[0][1].id==ArmyType[race*5],'Shared footman tier0')
+ ArmyRace[0]=race;SpawnWave(0);assert(#Army[0]==SPAWN_UNITS and Army[0][1].id==ArmyType[race*5],'Shared footman tier0')
  local gold=Players[0].gold;Dying=Base[0];SpellId=FourCC('Fbr'..race);OnArmyBranchSpell()
  assert(ArmyBranchChosen[0] and ArmyRace[0]==race and Players[0].gold==gold,'Branch card is free and works after preparation')
  for k=0,3 do assert(GetUnitAbilityLevel(Base[0],FourCC('Fbr'..k))==0)end
@@ -13,7 +13,7 @@ for race=0,3 do
  for tier=1,4 do
   local before=Players[0].gold;assert(purchase(0,3)and Tier[0]==tier)
   assert(Players[0].gold==before-TierCost[tier],'Only native development charges gold')
-  GroupClear(Army[0]);SpawnWave(0);assert(#Army[0]==4 and Army[0][1].id==ArmyType[race*5+tier])
+  GroupClear(Army[0]);SpawnWave(0);assert(#Army[0]==SPAWN_UNITS and Army[0][1].id==ArmyType[race*5+tier])
   assert(Attack[0]==1 and Armor[0]==1 and Vitality[0]==1,'Research survives troop replacement')
  end
 end
@@ -21,7 +21,7 @@ end
 for race=0,3 do
  reset();Players[0].controller=MAP_CONTROL_COMPUTER;RngQueue={0,race,0};InitSlot(0)
  assert(Bot[0]and ArmyBranchChosen[0]and ArmyRace[0]==race and Tier[0]==0)
- SpawnWave(0);assert(#Army[0]==4 and Army[0][1].id==ArmyType[race*5])
+ SpawnWave(0);assert(#Army[0]==SPAWN_UNITS and Army[0][1].id==ArmyType[race*5])
  local selected=ArmyRace[0];Players[0].gold=1000000
  for turn=1,100 do BotBuy(0);FinishResearch(0);assert(ArmyRace[0]==selected)end
  assert(Tier[0]==4 and Attack[0]>0 and Armor[0]>0 and Vitality[0]>0,'Random branch develops with all troop stats')
@@ -34,4 +34,4 @@ SlotActive[0]=false;OnArmyBranchSpell();assert(not ArmyBranchChosen[0]);SlotActi
 Base[0].hp=0;OnArmyBranchSpell();assert(not ArmyBranchChosen[0])
 reset();Players[0].controller=MAP_CONTROL_USER;InitSlot(0)
 assert(not ArmyBranchChosen[0]and Players[0].techLimits[FourCC('Rfti')]==0,'Actual human startup waits for a card')
-print('PASS: late native branch choice, same4-footman opening, all16 paid troop transitions, one gold debit, preserved research; all4 random bot branches reach tier4 without rerolls (mock natives).')
+print('PASS: late native branch choice, shared footman opening, all16 paid troop transitions, one gold debit, preserved research; all4 random bot branches reach tier4 without rerolls (mock natives).')

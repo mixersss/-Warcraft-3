@@ -3,16 +3,16 @@ reset();Players[0].gold=1000000;Hero[0].hp=0
 local gold=Players[0].gold
 assert(Buy(0,6) and Base[0].pending==FourCC('Rfwn') and Players[0].gold==gold-2000,'Wave research works while hero is dead and debits native gold exactly once')
 FinishResearch(0);assert(WaveRanks[0]==1 and Players[0].gold==gold-2000 and UpgradeCost(0,6)==3000)
-SpawnWave(0);assert(#Army[0]==5)
+SpawnWave(0);assert(#Army[0]==SPAWN_UNITS+1)
 for rank=2,WAVE_UPGRADE_MAX do
  local expected=2000+(rank-1)*1000;local before=Players[0].gold
  assert(UpgradeCost(0,6)==expected and purchase(0,6));assert(WaveRanks[0]==rank and Players[0].gold==before-expected)
 end
 assert(not Buy(0,6) and UpgradeCost(0,6)==-1)
-Army[0]={};SpawnWave(0);assert(#Army[0]==24)
+Army[0]={};SpawnWave(0);assert(#Army[0]==SPAWN_UNITS+WAVE_UPGRADE_MAX)
 -- Four orientations keep the expanded formation facing inward, with unique sites.
 for p=0,11 do
- Army[p]={};WaveRanks[p]=WAVE_UPGRADE_MAX;SpawnWave(p);assert(#Army[p]==24)
+ Army[p]={};WaveRanks[p]=WAVE_UPGRADE_MAX;SpawnWave(p);assert(#Army[p]==SPAWN_UNITS+WAVE_UPGRADE_MAX)
  local positions={}
  for _,u in ipairs(Army[p])do local k=u.x..':'..u.y;assert(not positions[k]);positions[k]=true end
 end

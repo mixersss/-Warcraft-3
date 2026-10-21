@@ -570,11 +570,11 @@ Seconds=WARMUP_SECONDS-1;Tick();assert(HeroPicker[0]==nil,'Remove gallery before
 -- All Random is host-only, synchronized, available only in first 15 seconds.
 reset();ShowHeroPicker(0,0);local oldPicker=HeroPicker[0]
 SetAllRandom(1);assert(not AllRandomMode)
-RngQueue={};for p=0,11 do table.insert(RngQueue,p%4);table.insert(RngQueue,(p%2==0) and 0 or HERO_COUNT-1) end
+RngQueue={};for p=0,11 do ArmyRace[p]=p%4;table.insert(RngQueue,(p%2==0) and 0 or HERO_COUNT-1) end
 SetAllRandom(0);assert(AllRandomMode and oldPicker.removed)
 for n=1,24 do ProcessHeroQueue() end
 for p=0,11 do assert(ArmyRace[p]==p%4 and HeroKind[p]==((p%2==0) and 0 or HERO_COUNT-1)) end
-local chosen=Hero[0];assert(not SelectRosterHero(0,1) and Hero[0]==chosen);assert(not SelectArmyRace(0,1))
+local chosen=Hero[0];assert(not SelectRosterHero(0,1) and Hero[0]==chosen);assert(SelectArmyRace(0,1),'Random hero mode leaves army branch choice available')
 reset();Seconds=16;SetAllRandom(0);assert(not AllRandomMode)
 reset();Power[5]=1;SetAllRandom(0);assert(not AllRandomMode,'Preserve paid hero stats')
 reset();ShowModes(0);assert(ModeDialogOpen and #Shop[0].buttons==2)

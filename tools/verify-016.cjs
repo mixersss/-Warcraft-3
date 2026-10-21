@@ -26,7 +26,7 @@ const aura=abilities.get('Fxwr');assert.equal(aura.oldId,'AOae');assert.equal(ge
 for(let rank=1;rank<=50;rank++){assert.equal(get(aura,'Oae1',rank),0);assert(Math.abs(get(aura,'Oae2',rank)-(.15+.006*rank))<1e-6);assert.equal(get(aura,'aare',rank),650);assert(get(aura,'atar',rank).includes('nonhero'));}
 for(const [P,name]of [[U,'war3map.w3u'],[A,'war3map.w3a']]){
  const current=parse(P,name),old=parse(P,name,true);const original=current.customTable.objects.length;
- require('./roster-comparison.cjs')(current,old);assert.equal(original-current.customTable.objects.length,name.endsWith('w3u')?480:68);
+ require('./roster-comparison.cjs')(current,old);assert.equal(original-current.customTable.objects.length,name.endsWith('w3u')?480:86);
  assert.deepEqual(current,old,'Every retained '+name+' field is unchanged');
 }
 for(const name of ['war3map.w3t','war3map.w3h','war3map.w3e','war3map.wpm','war3mapMisc.txt','war3map.doo','war3mapUnits.doo']){if(['war3map.w3h','war3map.w3t'].includes(name))require('./simple-comparison.cjs').same(fs.readFileSync(path.join(root,'build/map',name)),previous.get(name).bytes(),name);else assert.deepEqual(fs.readFileSync(path.join(root,'build/map',name)),Buffer.from(previous.get(name).bytes()),name+' unchanged');}

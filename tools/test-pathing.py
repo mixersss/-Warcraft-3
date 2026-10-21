@@ -150,8 +150,8 @@ for team in range(4):
   assert cell(sx,sy) in market_routes,('Shop front blocked',team,slot)
  for hx,hy in first:
   for _ in range(team):hx,hy=-hy,hx
-  for n in range(24):
+  for n in range(26):
    across=(n%3-1)*90;forward=220+(n//3)*90
    dx,dy=[(across,forward),(-forward,across),(-across,-forward),(forward,-across)][team]
    assert cell(hx+dx,hy+dy) in market_routes,('Expanded wave spawn blocked by market',team,n)
-print('PASS: All eight market-row fronts per fortress and all 24 upgraded wave sites per barracks remain connected with conservative shop footprints.')
+print('PASS: All eight market-row fronts per fortress and all 26 upgraded wave sites per barracks remain connected with conservative shop footprints.')

@@ -1,0 +1,27 @@
+{
+  "version": "0.20.0-alpha",
+  "startingWave": 6,
+  "maxWave": 26,
+  "armyCap": 85,
+  "waveSeconds": 18,
+  "heroModes": [
+    "manual",
+    "randomHeroesOnly"
+  ],
+  "botRaces": "team-unique, least represented globally, synchronized random tie break",
+  "troopProfiles": 16,
+  "isolatedNativeAbilities": 18,
+  "ghoulHP": 350,
+  "ghoulAttackInterval": 0.9,
+  "otherDataPreserved": true,
+  "enginePlaytest": false,
+  "filename": "FourFrontsFrenzy-0.20.0-alpha.w3x",
+  "bytes": 3338280,
+  "sha256": "6f1d57667c66c994f4dc9252d7c67e9cfa1350ed3a444121fafc5d3eb0c5f70d",
+  "fullNpmTestPassed": true,
+  "strictLegacyPjassPassed": true,
+  "independentNativeMetadataFieldsChecked": 325,
+  "allTwelveBotAssignmentsPassed": true,
+  "nativeAutocastOrdersPassed": true,
+  "expandedWaveSpawnSitesChecked": 26
+}
