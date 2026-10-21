@@ -24,8 +24,8 @@ for(const [P,n]of [[U,'war3map.w3u'],[A,'war3map.w3a']]){
  assert.deepEqual(current,previous,'Only requested character/skill data changes: '+n);
 }
 for(const n of ['war3map.w3t','war3map.w3h','war3map.w3q','war3map.w3e','war3map.wpm','war3map.w3b','war3map.doo','war3mapUnits.doo','war3mapMisc.txt','war3map.imp','war3map.wts','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(now(n),before(n),n+' preserved');
-const source=now('war3map.j').toString(),prior=before('war3map.j').toString(),canonical=s=>s.split('\n').map(l=>l.trim()).filter(Boolean).join('\n');
-let normalized=source.replaceAll('ALPHA 24','ALPHA 23').replace('set RosterDuration[16]=1.0','set RosterDuration[16]=0.75');
+const source=now('war3map.j').toString(),prior=before('war3map.j').toString(),canonical=s=>s.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('//')).join('\n');
+let normalized=require('./visibility25-comparison.cjs').runtime(source,prior).replaceAll('ALPHA 25','ALPHA 24').replaceAll('ALPHA 24','ALPHA 23').replace('set RosterDuration[16]=1.0','set RosterDuration[16]=0.75');
 for(const fn of ['CommonLogBot','CampaignResetFighter','CampaignFinalTick','CampaignDuelTick','RosterArea','RosterApply','StoryTick']){const re=new RegExp('function '+fn+' takes[\\s\\S]*?endfunction');const ref=prior.match(re);assert(ref);normalized=normalized.replace(re,()=>ref[0]);}
 for(const fn of ['CampaignArenaReward','StoryStatScrollScan','StoryStatLootBot'])normalized=normalized.replace(new RegExp('function '+fn+' takes[\\s\\S]*?endfunction'),'');
 normalized=normalized.replace(/^.*(?:boolean array LogArenaUsed|rect StatLootRect=|integer StatLootPlayer=|item StatLootBest=|real StatLootDistance=|\/\/ One reused spatial rect).*$/gm,'');

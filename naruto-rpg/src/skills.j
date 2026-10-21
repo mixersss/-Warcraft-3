@@ -319,6 +319,7 @@ function SkillsTick takes nothing returns nothing
     call RamenTick()
     call NoteTick()
     call CommonLogTick()
+    call InvasionHeroVisibility()
     call RosterTick()
     set u=null
     set target=null

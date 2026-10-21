@@ -32,14 +32,5 @@
   "enemyPriorityRadius": 900,
   "persistentItemRects": 1,
   "allOtherObjectsAndRuntimePreserved": true,
-  "enginePlaytest": false,
-  "filename": "Shinobi_Story_Alpha_24.w3x",
-  "sha256": "59ec07a28e5da9a575c0da2a40a54a57a8f9cf8bb09fc2517fbc9fccc5b44590",
-  "bytes": 8388230,
-  "commandsPassed": true,
-  "allSkillsAndScenarioMocksPassed": true,
-  "allStaticStageVerifiersPassed": true,
-  "strictLegacyPjassPassed": true,
-  "originalAssetsSha256Verified": 379,
-  "generatedAssetsSha256Verified": 5
+  "enginePlaytest": false
 }

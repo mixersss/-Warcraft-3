@@ -1,5 +1,6 @@
 globals
     // NPC_SOURCE_GLOBALS
+    real array SasukeHiddenSince
     boolean array LogArenaUsed
     rect StatLootRect=null
     integer StatLootPlayer=0

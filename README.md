@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.19.0-alpha
 
-## Shinobi RPG — Story Alpha 24
+## Shinobi RPG — Story Alpha 25
 
-[Скачать Shinobi Story Alpha 24](releases/shinobi-new/Shinobi_Story_Alpha_24.w3x). Ловкость у Хинаты/Темари, стан Коноха Сэнпу и дымовой бомбы, Кайтэн +20%, ограничение невидимости ботов на арене, +1 уровень победителю и подбор свитков характеристик. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; автоматические проверки пройдены, требуется игровой тест Warcraft III 1.26.
+[Скачать Shinobi Story Alpha 25](releases/shinobi-new/Shinobi_Story_Alpha_25.w3x). Восстановление Саске после зависшего скрытия во время вторжения, локальная очистка NPC-техники и настоящий маршрут атаки Орочимару по таймеру. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; требуется игровой тест Warcraft III 1.26.
 
 ## Footman 0.19.0 — текущая версия
 
