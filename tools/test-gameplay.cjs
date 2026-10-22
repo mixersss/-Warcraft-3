@@ -41,13 +41,18 @@ run('EngineItems={'+itemData.customTable.objects.map(o=>`[${raw(o.newId)}]={cost
 const bookBases={tst2:'str',tdx2:'agi',tin2:'int',tkno:'level'};
 run('EngineBooks={'+itemData.customTable.objects.filter(o=>bookBases[o.oldId]).map(o=>`[${raw(o.newId)}]="${bookBases[o.oldId]}"`).join(',')+'}');
 const unitsData=new ItemParser();unitsData.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../build/map/war3map.w3u'))));
-run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId) || o.newId==='fsup' || o.newId==='fpot' || o.newId==='fbks' || o.newId==='futl').map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
+run('EngineShops={'+unitsData.customTable.objects.filter(o=>/^fs[0-4]p$/.test(o.newId) || o.newId==='fsup' || o.newId==='fpot' || o.newId==='fbks' || o.newId==='futl' || /^frs[01]$/.test(o.newId)).map(o=>`[${raw(o.newId)}]={${get(o,'usei').split(',').map(id=>`[${raw(id)}]=true`).join(',')}}`).join(',')+'}');
 run('EngineTroopTraits={'+unitsData.customTable.objects.filter(o=>/^fm[0-3][0-4]$/.test(o.newId)).map(o=>`[${raw(o.newId)}]={${(get(o,'uabi')||'').split(',').filter(Boolean).map(id=>raw(id)).join(',')}}`).join(',')+'}');
 const abilityData=parseObjects('war3map.w3a');
 const abilities=[...abilityData.originalTable.objects,...abilityData.customTable.objects.filter(o=>get(o,'aher')===1)];
 run('SkillCaps={'+abilities.map(o=>`[${raw(o.newId==='\0\0\0\0' ? o.oldId : o.newId)}]={cap=${get(o,'alev')},req=${get(o,'arlv')},skip=${get(o,'alsk')}}`).join(',')+'}');
 const profiles=require('../map/bot-profiles.json'),roster=require('../map/heroes.json');
 run('EngineBotProfiles={'+roster.map((h,i)=>{const role=profiles.roles[profiles.heroes[h.id].role];return `[${i}]={role=${role.id},tactics={${role.tactics.join(',')}}}`;}).join(',')+'}');
+if(process.argv.includes('--arena-only')){
+ const harness=fs.readFileSync(path.join(__dirname,'gameplay-harness.lua'),'utf8');
+ const end=harness.indexOf('\nreset()\nfor p=0,11 do assert(TeamOf');if(end<0)throw new Error('Mock setup boundary missing');
+ run(harness.slice(0,end));run(fs.readFileSync(path.join(__dirname,'patch23-harness.lua'),'utf8'));process.exit(0);
+}
 run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch14-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch141-harness.lua'), 'utf8'));
@@ -70,5 +75,6 @@ run(fs.readFileSync(path.join(__dirname, 'patch20-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch201-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch21-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch22-harness.lua'), 'utf8'));
+run(fs.readFileSync(path.join(__dirname, 'patch23-harness.lua'), 'utf8'));
 
 console.log('PASS: JASS: mixed open/computer/human startup, hero-only random mode, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 18s waves, 4 races, 50 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');

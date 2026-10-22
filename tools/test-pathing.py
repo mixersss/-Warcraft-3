@@ -155,3 +155,18 @@ for team in range(4):
    dx,dy=[(across,forward),(-forward,across),(-across,-forward),(forward,-across)][team]
    assert cell(hx+dx,hy+dy) in market_routes,('Expanded wave spawn blocked by market',team,n)
 print('PASS: All eight market-row fronts per fortress and all 26 upgraded wave sites per barracks remain connected with conservative shop footprints.')
+
+# Central stores have no pathing texture; conservatively reserve128x128 footprints.
+central_obstacles=set(blocked)
+for sx,sy in [(-720,320),(720,320),(0,640),(0,-640),(0,0)]:
+ for dx in range(-64,65,32):
+  for dy in range(-64,65,32):central_obstacles.add(cell(sx+dx,sy+dy))
+central_routes=reached(cell(0,192),central_obstacles)
+for sx,sy in [(-720,320),(720,320)]:
+ for dx,dy in [(0,-192),(0,192),(-192,0),(192,0)]:assert cell(sx+dx,sy+dy)in central_routes,('Central shop access',sx,sy,dx,dy)
+for x,y in first:
+ for team in range(4):
+  sx,sy=x,y
+  for _ in range(team):sx,sy=-sy,sx
+  assert cell(sx,sy)in central_routes,'New shops must not block fortress/arena access'
+print('PASS: Both central shops have four reachable fronts and preserve every fortress route with conservative footprints.')

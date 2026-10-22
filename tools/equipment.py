@@ -17,7 +17,7 @@ EFFECTS={
 
 def item_effects(root):
     abilities=[]; item_abilities={}
-    for row in json.loads((Path(root)/'map/equipment.json').read_text())+json.loads((Path(root)/'map/supreme.json').read_text()):
+    for row in json.loads((Path(root)/'map/equipment.json').read_text())+json.loads((Path(root)/'map/supreme.json').read_text())+[r for r in json.loads((Path(root)/'map/arena-items.json').read_text())if 'stats'in r]:
         ids=[]
         for stat,value in row['stats'].items():
             if stat=='critical_multiplier': continue
@@ -28,7 +28,7 @@ def item_effects(root):
             if stat=='fire_dps':
                 changes += [('aare',2,300.0,1,0),('atar',3,'ground,enemy',1,0)]
             abilities.append((base,raw,changes))
-        item_abilities[row['id']]=','.join(ids)
+        item_abilities[row['id']]=','.join(ids+([row['extra_ability']]if 'extra_ability'in row else[]))
     return abilities,item_abilities
 
 

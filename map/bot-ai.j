@@ -166,7 +166,7 @@ function BotUseSupplies takes integer p returns boolean
         set it = UnitItemInSlot(h,slot)
         if it != null then
             set id = GetItemTypeId(it)
-            if (id == 'fpH0' and health < .55) or (id == 'fpM0' and GetUnitState(h,UNIT_STATE_MAX_MANA) > 0 and GetUnitState(h,UNIT_STATE_MANA) < GetUnitState(h,UNIT_STATE_MAX_MANA)*.25) or (id == 'fshl' and BotHurtTroops[p] >= 4) or ((id == 'fsdm' or id == 'fsar') and BotNearbyTroops[p] >= 5 and BotEnemyPower[p] > 3.) then
+            if (id == 'friv' and health < .28 and BotEnemyPower[p] > 0.) or (id == 'frrs' and (health < .60 or (GetUnitState(h,UNIT_STATE_MAX_MANA) > 0 and GetUnitState(h,UNIT_STATE_MANA) < GetUnitState(h,UNIT_STATE_MAX_MANA)*.25) or BotHurtTroops[p] >= 4)) or ((id == 'frat' or id == 'frdf') and BotNearbyTroops[p] >= 5 and BotEnemyPower[p] > 3.) or (id == 'fpH0' and health < .55) or (id == 'fpM0' and GetUnitState(h,UNIT_STATE_MAX_MANA) > 0 and GetUnitState(h,UNIT_STATE_MANA) < GetUnitState(h,UNIT_STATE_MAX_MANA)*.25) or (id == 'fshl' and BotHurtTroops[p] >= 4) or ((id == 'fsdm' or id == 'fsar') and BotNearbyTroops[p] >= 5 and BotEnemyPower[p] > 3.) then
                 if UnitUseItem(h,it) then
                     set it = null
                     set h = null

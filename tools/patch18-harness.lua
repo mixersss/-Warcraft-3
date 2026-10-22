@@ -44,18 +44,18 @@ local pet=CreateUnit(1,FourCC('k000'),160,0,0);pet.summoned=true
 local illusion=CreateUnit(1,FourCC('k000'),180,0,0);illusion.summoned=true;illusion.illusion=true
 local ward=CreateUnit(1,FourCC('oeye'),200,0,0);ward.summoned=true;ward.defaultspeed=0
 local foe=enemy();CreativeTick()
-for _,u in ipairs({melee,ranged,mechanical,pet})do assert(GetUnitAbilityLevel(u,FourCC('Clif'))==320,'All real troops have32% native attack lifesteal')end
+for _,u in ipairs({melee,ranged,mechanical,pet})do assert(GetUnitAbilityLevel(u,FourCC('Clif'))==380,'All real troops have38% native attack lifesteal')end
 assert(GetUnitAbilityLevel(foe,FourCC('Clif'))==0 and GetUnitAbilityLevel(illusion,FourCC('Clif'))==0 and GetUnitAbilityLevel(ward,FourCC('Clif'))==0)
-cast(3,50);CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==420,'Banner raises total to capped42%')
-Seconds=110;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==320 and GetUnitAbilityLevel(h,FourCC('Cuba'))==0)
+cast(3,50);CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==480,'Banner raises total to capped48%')
+Seconds=110;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==380 and GetUnitAbilityLevel(h,FourCC('Cuba'))==0)
 h.x=2000;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==0,'Leaving the aura removes its native helper')
 h.x=0;CreativeTick();h.hp=0;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==0,'Dead sources do not heal or leave permanent lifesteal')
 -- Flat army regen and burst heal respect alliance, hero/building exclusions and max HP.
 h=prep(2);h.abilities[HeroSkill[48*4+2]]=200
 local soldier=CreateUnit(1,FourCC('fm00'),100,0,0);soldier.max=1000;soldier.hp=500;foe=enemy()
 Hero[1].x=100;Hero[1].y=0;Hero[1].hp=20;Hero[1].max=1000
-CreativeTick();near(soldier.hp,508);near(Hero[1].hp,20);near(foe.hp,5000)
-cast(3,1);near(soldier.hp,608);near(Hero[1].hp,20)
+CreativeTick();near(soldier.hp,510);near(Hero[1].hp,20);near(foe.hp,5000)
+cast(3,1);near(soldier.hp,610);near(Hero[1].hp,20)
 -- Archer heal fires only on EFFECT, rain has exactly4 bounded enemy-only pulses.
 h=prep(1);cast(2,200,nil,nil,EVENT_PLAYER_UNIT_SPELL_CAST);near(h.hp,500)
 cast(2,200);near(h.hp,550)

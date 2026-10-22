@@ -147,14 +147,14 @@ function CreativeCache takes nothing returns nothing
             if HeroKind[p] == 48 then
                 set rank = GetUnitAbilityLevel(Hero[p],HeroSkill[48*4])
                 if rank > 0 then
-                    set percent = .12+.20*I2R(rank-1)/199.
+                    set percent = .15+.23*I2R(rank-1)/199.
                 endif
                 if CreativeBannerUntil[p] > Seconds then
                     set percent = percent+.10
                 endif
                 set rank = GetUnitAbilityLevel(Hero[p],HeroSkill[48*4+2])
                 if rank > 0 then
-                    set CreativeRegen[p] = 1.+7.*I2R(rank-1)/199.
+                    set CreativeRegen[p] = 1.5+8.5*(I2R(rank-1)/(I2R(rank-1)+20.))/(199./219.)
                 endif
             endif
             set slot = 0
@@ -165,7 +165,7 @@ function CreativeCache takes nothing returns nothing
                 endif
                 set slot = slot+1
             endloop
-            set CreativeVamp[p] = IMinBJ(420,R2I(percent*1000.+.5))
+            set CreativeVamp[p] = IMinBJ(480,R2I(percent*1000.+.5))
         endif
         set p = p+1
     endloop

@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 BEFORE=json.loads((ROOT/'build/balance-before.json').read_text());NOW=json.loads((ROOT/'build/balance-current.json').read_text())
 HEROES=json.loads((ROOT/'map/heroes.json').read_text());SEEDS=json.loads((ROOT/'map/ability-seeds.json').read_text());CFG=json.loads((ROOT/'map/balance-profiles.json').read_text());BAL=json.loads((ROOT/'map/balance.json').read_text());NAMES=json.loads((ROOT/'map/skill-names-ru.json').read_text());BOTS=json.loads((ROOT/'map/bot-profiles.json').read_text());STOCK=json.loads((ROOT/'map/stock-hero-balance.json').read_text())['heroes']
-OUT=ROOT/'docs/balance';OUT.mkdir(exist_ok=True)
+OUT=ROOT/'docs/balance-0.23';OUT.mkdir(exist_ok=True)
 def value(data,kind,raw,field,rank=0,default=0):
  return data[kind].get(raw,{}).get('fields',{}).get(field,{}).get(str(rank),default)
 def ability(raw,field,rank=0,data=NOW,default=0):return value(data,'abilities',raw,field,rank,default)
@@ -18,7 +18,7 @@ EXCLUDE={'amcs','acas','aran','abuf','aeff','atar','alev','arlv','alsk'}
 
 def observed(h,slot,rank,data=NOW):
  raw=h['skills'][slot];original=h.get('skill_sources',h['skills'])[slot]
- if data is BEFORE and raw=='Finc':raw='ANia';original='ANia'
+ if data is BEFORE and raw=='Finc' and 'Finc'not in data['abilities']:raw='ANia';original='ANia'
  a=data['abilities'].get(raw,{});fields=a.get('fields',{});metrics={}
  if h.get('simple'):
   kind=h['simple'][slot]['kind']
@@ -26,7 +26,7 @@ def observed(h,slot,rank,data=NOW):
    family={'crabs':0,'lizards':1,'beast':2}[kind];pet='k'+str(family)+f'{rank-1:02x}';count=(1 if family==2 else 2)+rank//10
    metrics['group_hp']=count*value(data,'units',pet,'uhpm');metrics['group_damage']=count*value(data,'units',pet,'ua1b')
   elif kind=='petbuff':metrics['army_ias']=value(data,'abilities','Csum','Oae2',rank)
-  elif kind=='army_vamp':metrics['life_steal']=round((.12+(.20 if data is NOW else .18)*(rank-1)/199)*(1000 if data is NOW else 500))/(1000 if data is NOW else 500)
+  elif kind=='army_vamp':metrics['life_steal']=round(((.15+.23*(rank-1)/199)if data is NOW else(.12+.20*(rank-1)/199))*1000)/1000
   elif kind=='rain':metrics['damage']=4*(45+6*rank)
   elif kind=='banner':metrics['army_ias']=value(data,'abilities','Cuba','Oae2',rank);metrics['armor']=value(data,'abilities','Cubd','Had1',rank)
   elif kind=='bladestorm':metrics['damage']=6*(30+7*rank);metrics['self_ias']=value(data,'abilities','Crag','Oae2',rank)
@@ -90,7 +90,7 @@ with (OUT/'All-skills.csv').open('w',newline='',encoding='utf-8-sig')as f:
 text=['# Полная проверка 50 героев и 200 навыков', '',f'Версия **{BAL["version"]}**. Проверены **{checked:,}** переходов между соседними рангами. Ранг навыка и уровень героя — разные величины; максимум ульты открывается на уровне героя 496.','',
 'В таблице указаны фактические поля собранной карты и отдельные эффекты авторских триггеров. У призывов считается сумма HP/базового урона за один вызов; это не DPS, число одновременно живущих призывов или рейтинг силы. Броня, иммунитеты, длительность боя, доступность целей и действия игрока меняют результат.','',
 'У обычных навыков столбцы: **1 / 10 / 50 / 100 / 200**. У ульт: **1 / 3 / 10 / 25 / 50**. КД — секунды. Проценты в машинных полях показаны долями: 0,5 = 50%.','',
-'[CSV для Excel](All-skills.csv) · [Основной отчёт](../Balance-0.22.0.md)','']
+'[CSV для Excel](All-skills.csv) · [Основной отчёт](../Balance-0.23.0.md)','']
 for h in HEROES:
  text += ['## '+h['name'],'', 'Роль ИИ: '+BOTS['roles'][BOTS['heroes'][h['id']]['role']]['name']+'.','', '| Кнопка / навык | 1 | 10 / 3 | 50 / 10 | 100 / 25 | 200 / 50 |','|---|---|---|---|---|---|']
  for r in rows:
@@ -107,8 +107,8 @@ os.environ.setdefault('MPLCONFIGDIR','/tmp/warcraft-balance-matplotlib')
 import matplotlib;matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 fig,axes=plt.subplots(2,2,figsize=(11,7));samples=range(1,201)
-for ax,(title,raw,field)in zip(axes.flat,[('Mana shield coefficient','ANms','Nms1'),('Critical multiplier','AOcr','Ocr2'),('Blink cooldown, seconds','AEbl','acdn'),('Divine Shield duration, seconds','AHds','adur')]):
- ax.plot(samples,[ability(raw,field,r,BEFORE)for r in samples],label='0.21',color='#c34c4c');ax.plot(samples,[ability(raw,field,r)for r in samples],label='0.22',color='#287fa8');ax.set_title(title);ax.set_xlabel('Skill rank');ax.grid(alpha=.25);ax.legend()
+for ax,(title,raw,field)in zip(axes.flat,[('Devotion armor','AHad','Had1'),('Endurance attack speed','AOae','Oae2'),('Unholy HP per second','AUau','Uau2'),('Brilliance mana per second','AHab','Hab1')]):
+ ax.plot(samples,[ability(raw,field,r,BEFORE)for r in samples],label='0.22',color='#c34c4c');ax.plot(samples,[ability(raw,field,r)for r in samples],label='0.23',color='#287fa8');ax.set_title(title);ax.set_xlabel('Skill rank');ax.grid(alpha=.25);ax.legend()
 fig.tight_layout();fig.savefig(OUT/'Balance-curves.png',dpi=140);fig.savefig(OUT/'Balance-curves.svg');plt.close(fig)
 print('AUDIT:',len(rows),'skills;',checked,'adjacent rank transitions;',len(gaps),'without an observable change')
 if gaps:print(gaps[:30]);raise SystemExit(1)

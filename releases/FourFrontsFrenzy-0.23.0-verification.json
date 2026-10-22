@@ -1,0 +1,55 @@
+{
+  "version": "0.23.0-alpha",
+  "heroSlots": 200,
+  "heroes": 50,
+  "validatedNativeFields": 500531,
+  "validatedProfileRankValues": 53700,
+  "allSummonCountsPreserved": true,
+  "allResearchAndItemPricesPreserved": true,
+  "allScenarioAndRoutingPreserved": true,
+  "centralShops": 2,
+  "newItems": 8,
+  "auraValuesChecked": 2200,
+  "carryGearPercent": 55,
+  "carryArmyPercent": 45,
+  "frontTowers": {
+    "hp": 40000,
+    "damage": 250,
+    "cooldown": 0.5
+  },
+  "classicMetadataChecked": true,
+  "enginePlaytest": false,
+  "npmTestPassed": true,
+  "strictClassicPjassPassed": true,
+  "lobbyMockPassed": true,
+  "gameplayMocksPassed": true,
+  "pathingFloodFillPassed": true,
+  "audit": {
+    "version": "0.23.0-alpha",
+    "heroes": 50,
+    "mainSkills": 200,
+    "adjacentRankTransitionsChecked": 32300,
+    "ranksWithoutNumericOrScriptedProgress": [],
+    "enginePlaytest": false,
+    "winRatesMeasured": false,
+    "preserved": {
+      "waveSize": 6,
+      "waveSeconds": 18,
+      "armyCap": 85,
+      "heroLevel": 500,
+      "skillLevels": [
+        200,
+        50
+      ],
+      "autosaveSeconds": 120,
+      "respawnSeconds": 35
+    },
+    "modelLimits": [
+      "No combat engine, pathfinding or native projectile simulation.",
+      "Equal skill rank is not equal hero level or equal purchased build.",
+      "Damage/healing/group HP metrics do not represent wins or 1v1 tier lists."
+    ]
+  },
+  "mapBytes": 3513968,
+  "mapSha256": "2d4d17a822112c68a27bccee3af699e0d0b98862b1a017222de2796816417ff9"
+}

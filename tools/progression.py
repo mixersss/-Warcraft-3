@@ -247,8 +247,9 @@ def hero_abilities(root):
                     elif field['id']=='Ncr6': value=round(min(3.,.25+(rank-1)*2.75/(seed['cap']-1)),6)
                 aura=balance['aura_balance'].get(rawcode,{}).get(field['id'])
                 if aura:
-                    # Useful rank one, diminishing growth, exact finite rank-300 cap.
-                    progress=((rank-1)/(rank-1+40))/((seed['cap']-1)/(seed['cap']-1+40))
+                    # Useful rank one, diminishing growth, exact finite final-rank cap.
+                    shape=balance['aura_curve_shape']
+                    progress=((rank-1)/(rank-1+shape))/((seed['cap']-1)/(seed['cap']-1+shape))
                     value=round(min(aura['cap'],aura['start']+(aura['cap']-aura['start'])*progress),6)
                 if rawcode in ('ANba','AEim') and field['id']=='atar':
                     # Do not exclude the undead/mechanical troop categories.
@@ -353,7 +354,7 @@ def attribute_ability():
 
 def army_passives(root):
     result=[]
-    cap=json.loads((Path(root)/'map/balance.json').read_text())['basic_skill_max']
+    balance=json.loads((Path(root)/'map/balance.json').read_text());cap=balance['basic_skill_max'];shape=balance['aura_curve_shape']
     for spec in json.loads((Path(root)/'map/hero-passives.json').read_text()):
         slot=spec['slot'];icon=spec['icon']
         mods=[('anam',3,spec['name']),('aher',0,1),('aite',0,0),('alev',0,cap),('arlv',0,1),('alsk',0,1),
@@ -363,7 +364,7 @@ def army_passives(root):
               ('arar',3,f'ReplaceableTextures\\CommandButtons\\BTN{icon}.blp'),
               ('aret',3,f'Изучить {spec["name"]} [ранг %d]'),('arut',3,'Пассивная аура для армии. Каждый ранг усиливает эффект; радиус 900.')]
         for rank in range(1,cap+1):
-            progress=((rank-1)/(rank+39))/((cap-1)/(cap+39))
+            progress=((rank-1)/(rank-1+shape))/((cap-1)/(cap-1+shape))
             amount=round(spec['start']+(spec['cap']-spec['start'])*progress,6)
             mult=100 if spec['percent'] else 1;suffix='%' if spec['percent'] else ''
             mods += [(spec['field'],spec['kind'],amount,rank,spec['column']),

@@ -261,6 +261,9 @@ function reset()
     GoldTags={}
     BlockStock,BlockSale=false,false
     InitBalance()
+    ArenaStore[0]=CreateUnit(15,FourCC('frs0'),-720,320,270);ArenaStore[0].structure=true
+    ArenaStore[1]=CreateUnit(15,FourCC('frs1'),720,320,270);ArenaStore[1].structure=true
+    for p=0,11 do ArenaRelicBought[p]=false;ArenaShopAt[p]=0;ArmySavings[p]=0;ArmyFraction[p]=0 end
     for t=0,3 do TeamLost[t]=false; Defending[t]=false; RallyX[t]=0;RallyY[t]=0 end
     for shop=0,19 do
         local raw=function(t) local v=0;for i=1,#t do v=v*256+string.byte(t,i) end;return v end

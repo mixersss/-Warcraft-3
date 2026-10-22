@@ -14,6 +14,6 @@ for rank=1,200 do
  local actual=GetUnitAbilityLevel(ally,FourCC('Clif'))
  assert(actual>prior,'Every blood aura rank must increase actual attack lifesteal');prior=actual
 end
-assert(prior==320)
+assert(prior==380)
 h.hp=0;CreativeTick();assert(GetUnitAbilityLevel(ally,FourCC('Clif'))==0,'No permanent helper after source death')
 print('PASS:0.22 Firelord native passive/bot learning and200 actual lifesteal helper increments with cleanup (mock natives).')

@@ -15,6 +15,7 @@ import struct
 import zlib
 from progression import keeper_treants, hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
+from arena_market import abilities as arena_abilities
 from balance_profiles import incinerate_ability
 from army_orders import abilities as army_order_abilities
 from army_traits import abilities as troop_abilities, unit_changes as troop_changes
@@ -263,8 +264,10 @@ def units(b: dict) -> bytes:
         ('utub', 3, f'Сначала выбери ветку армии четырьмя кнопками внизу. До развития базы у всех пехотинцы. Атака, броня, здоровье армии, развитие казармы и отдельная кнопка численности волн (+1 боец, от 2000 золота). Первые три исследования до 200 уровня. Новая ступень меняет тип бойца и даёт +{b["base_upgrade_hp"]} здоровья базе. Спавн раз в {b["spawn_seconds"]} секунд.'),
     ]))
     entries.append(('hgtw', 'ftow', [
-        ('unam', 3, 'Frenzy Guard Tower'), ('uhpm', 0, b['tower_hp']),
-        ('ua1b', 0, 24), ('ua1c', 2, 1.0), ('ua1r', 0, 700),
+        ('unam',3,'Передовая башня'),('uhpm',0,b['tower_hp']),
+        ('ua1b',0,b['tower_damage']-1),('ua1d',0,1),('ua1s',0,1),('ua1c',2,b['tower_cooldown']),('ua1r',0,700),
+        ('udp1',2,.10),('ubs1',2,.15),('uacq',2,700.),
+        ('utip',3,'Передовая башня'),('utub',3,f"{b['tower_hp']} HP, {b['tower_damage']} урона без разброса. Выстрел каждые {b['tower_cooldown']} с, дальность 700."),
         ('ureq', 3, ''), ('uupt', 3, ''), ('ubba', 0, 0), ('ubdi', 0, 0),
         ('ubsi', 0, 0), ('upgr', 3, ''),
     ]))
@@ -309,6 +312,8 @@ def units(b: dict) -> bytes:
         ('ucol',2,96.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
         ('utub',3,'Высшая экипировка: огромные бонусы за 44000–48000 золота. Подведи героя, шесть мест в инвентаре.'),
     ]))
+    for market,name in enumerate(['Реликвии арены','Печати и эликсиры']):
+        entries.append(('ngme','frs'+str(market),[('unam',3,name),('usei',3,','.join(row['id']for row in catalog('arena-items')if row['shop']==market)),('ucol',2,64.),('upat',3,''),('ureq',3,''),('uhpm',0,b['shop_hp']),('utub',3,'Общий магазин арены. Предметы и временные усиления доступны всем командам.')]))
     entries.append(('ngme','fpot',[
         ('unam',3,'Аптека арены'),('usei',3,','.join(row['id'] for row in catalog('potions'))),
         ('ucol',2,64.0),('ureq',3,''),('uhpm',0,b['shop_hp']),
@@ -363,11 +368,11 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+army_order_abilities()+keeper_treants(ROOT)+incinerate_ability()+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+army_order_abilities()+keeper_treants(ROOT)+incinerate_ability()+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+arena_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
-    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')+catalog('books')+catalog('utility')
+    rows = catalog('items')+catalog('equipment')+catalog('supreme')+catalog('potions')+catalog('books')+catalog('utility')+catalog('arena-items')
     stock = set(json.loads((ROOT/'map/classic-object-ids.json').read_text())['tables']['items'])
     for row in rows:
         if row['base'] not in stock:
@@ -376,7 +381,7 @@ def items() -> bytes:
     return objects([(row['base'],row['id'],[
         ('unam',3,row['name']),('utip',3,row['name']),('utub',3,row['description']),
         ('igol',0,row['cost']),('ilum',0,0),('isto',0,12),('istr',0,2),('isst',0,0),
-    ]+([('iabi',3,row['ability'])] if 'ability' in row else [('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in rows])
+    ]+([('icid',3,row['ability'])]if row['id']in {r['id']for r in catalog('arena-items')if 'ability'in r}else[])+([('iabi',3,row['ability'])] if 'ability' in row else [('iabi',3,effects[row['id']])] if row['id'] in effects else [])) for row in rows])
 
 
 def misc(b: dict) -> bytes:
@@ -465,6 +470,7 @@ def script(b: dict) -> str:
     source = source.replace('// CREATIVE_MODULE', (ROOT/'map/creative-heroes.j').read_text())
     source = source.replace('// CREATIVE_AI', (ROOT/'map/creative-ai.j').read_text())
     source = source.replace('// EXPANSION_MODULE', (ROOT/'map/expansion-heroes.j').read_text())
+    source = source.replace('// ARENA_MARKET_MODULE',(ROOT/'map/arena-market.j').read_text())
     source = source.replace('// BOT_AI_MODULE', (ROOT/'map/bot-ai.j').read_text())
     dispatch=['function HybridSpellKind takes integer raw returns integer']
     for kind,base in enumerate(['AHhb','AUdc','AEmb']):
@@ -480,6 +486,8 @@ def script(b: dict) -> str:
         for rank in range(cap): init.append(f"    set CreativePetType[{family*200+rank}] = 'k{family}{rank:02x}'")
     profiles=json.loads((ROOT/'map/bot-profiles.json').read_text())
     consumables={row['id']:row for row in catalog('potions')+catalog('utility')}
+    for idx,row in enumerate(catalog('arena-items')):
+        init += [f"    set ArenaItemId[{idx}] = '{row['id']}'",f"    set ArenaItemCost[{idx}] = {row['cost']}"]
     for idx,raw in enumerate(['fpH0','fpM0','fshl','fsar','fsdm']):
         init += [f"    set BotSupplyId[{idx}] = '{raw}'",f'    set BotSupplyCost[{idx}] = {consumables[raw]["cost"]}']
     for role in profiles['roles'].values():

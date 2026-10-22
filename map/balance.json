@@ -1,6 +1,6 @@
 {
   "name": "Four Fronts Frenzy",
-  "version": "0.22.0-alpha",
+  "version": "0.23.0-alpha",
   "starting_gold": 500,
   "income_per_second": 3,
   "spawn_seconds": 18,
@@ -69,7 +69,7 @@
   "basic_skill_max": 200,
   "ultimate_skill_max": 50,
   "base_upgrade_hp": 25350,
-  "tower_hp": 7800,
+  "tower_hp": 40000,
   "fountain_radius": 1000,
   "fountain_hp_percent": 0.0035,
   "fountain_mana_percent": 0.004,
@@ -107,8 +107,8 @@
     },
     {
       "name": "Керри",
-      "tier_percent": 15,
-      "gear_percent": 75
+      "tier_percent": 20,
+      "gear_percent": 55
     },
     {
       "name": "Поддержка армии",
@@ -127,68 +127,68 @@
   "aura_balance": {
     "AUau": {
       "Uau1": {
-        "start": 0.15,
-        "cap": 0.3,
+        "start": 0.18,
+        "cap": 0.35,
         "label": "Скорость передвижения",
         "percent": true
       },
       "Uau2": {
-        "start": 6,
-        "cap": 80,
+        "start": 8,
+        "cap": 100,
         "label": "Восстановление HP/с",
         "percent": false
       }
     },
     "AHab": {
       "Hab1": {
-        "start": 3,
-        "cap": 40,
+        "start": 4,
+        "cap": 48,
         "label": "Восстановление маны/с",
         "percent": false
       }
     },
     "AHad": {
       "Had1": {
-        "start": 6,
-        "cap": 35,
+        "start": 8,
+        "cap": 42,
         "label": "Броня",
         "percent": false
       }
     },
     "AOae": {
       "Oae1": {
-        "start": 0.15,
-        "cap": 0.3,
+        "start": 0.18,
+        "cap": 0.35,
         "label": "Скорость передвижения",
         "percent": true
       },
       "Oae2": {
-        "start": 0.15,
-        "cap": 0.6,
+        "start": 0.18,
+        "cap": 0.72,
         "label": "Скорость атаки",
         "percent": true
       }
     },
     "AEar": {
       "Ear1": {
-        "start": 0.2,
-        "cap": 0.6,
+        "start": 0.24,
+        "cap": 0.72,
         "label": "Урон дальних атак",
         "percent": true
       }
     },
     "AEah": {
       "Eah1": {
-        "start": 0.2,
-        "cap": 0.5,
+        "start": 0.24,
+        "cap": 0.6,
         "label": "Возврат урона ближних атак",
         "percent": true
       }
     },
     "AUav": {
       "Uav1": {
-        "start": 0.2,
-        "cap": 0.5,
+        "start": 0.24,
+        "cap": 0.6,
         "label": "Вампиризм ближних атак",
         "percent": true
       }
@@ -450,5 +450,8 @@
     }
   },
   "summon_kill_gold": 12,
-  "summon_ultimate_kill_gold": 60
+  "summon_ultimate_kill_gold": 60,
+  "aura_curve_shape": 20,
+  "tower_damage": 250,
+  "tower_cooldown": 0.5
 }

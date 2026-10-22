@@ -100,6 +100,13 @@ globals
     trigger ResearchTrigger = null
     trigger LevelTrigger = null
     integer array SkillLevel
+    unit array ArenaStore
+    integer array ArenaItemId
+    integer array ArenaItemCost
+    boolean array ArenaRelicBought
+    integer array ArenaShopAt
+    integer array ArmySavings
+    integer array ArmyFraction
     unit PotionShop = null
     unit array SupremeShop
     unit array BookShop
@@ -168,12 +175,17 @@ function AddGold takes integer p, integer amount returns nothing
     local integer credit
     local integer whole = R2I(I2R(amount)/100.0)
     call SetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD, GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD) + amount)
+    if Bot[p] and BotTactic[p] == 3 and amount > 0 then
+        set credit = ModuloInteger(amount,100)*45+ArmyFraction[p]
+        set ArmySavings[p] = ArmySavings[p]+whole*45+R2I(I2R(credit)/100.0)
+        set ArmyFraction[p] = ModuloInteger(credit,100)
+    endif
     if Bot[p] and Tier[p] < 4 and amount > 0 then
         set credit = ModuloInteger(amount,100)*BotTierBudget[BotTactic[p]]+TierFraction[p]
         set TierSavings[p] = TierSavings[p]+whole*BotTierBudget[BotTactic[p]]+R2I(I2R(credit)/100.0)
         set TierFraction[p] = ModuloInteger(credit,100)
     endif
-    if Bot[p] and (GearProgress[p] < 18 or SuperProgress[p] < 6) and amount > 0 then
+    if Bot[p] and amount > 0 then
         set credit = ModuloInteger(amount,100)*BotGearBudget[BotTactic[p]]+GearFraction[p]
         set GearSavings[p] = GearSavings[p]+whole*BotGearBudget[BotTactic[p]]+R2I(I2R(credit)/100.0)
         set GearFraction[p] = ModuloInteger(credit,100)
@@ -1200,6 +1212,14 @@ endfunction
 function RegularGearCost takes integer raw returns integer
     local integer k = 0
     loop
+        exitwhen k == 4
+        if ArenaItemId[k] == raw then
+            return ArenaItemCost[k]
+        endif
+        set k = k+1
+    endloop
+    set k = 0
+    loop
         exitwhen k == 36
         if GearId[k] == raw then
             return GearCost[k]
@@ -1216,6 +1236,7 @@ function BotTierReserve takes integer p returns integer
     return 0
 endfunction
 
+// ARENA_MARKET_MODULE
 function BotSupremeShop takes integer p returns boolean
     local integer choice
     local integer team = TeamOf(p)
@@ -1280,6 +1301,8 @@ endfunction
 function BotShop takes integer p returns boolean
     local integer index
     local integer shopIndex
+    local integer cheapest = 2147480000
+    local integer price
     local integer slot = 0
     local boolean room = false
     local item old = null
@@ -1323,6 +1346,23 @@ function BotShop takes integer p returns boolean
             set room = UnitDropItemTarget(h, old, FortressShop[shopIndex])
         endif
     endif
+    // A central relic can replace an earlier tier; do not stall on the missing predecessor.
+    if not room then
+        set slot = 0
+        set old = null
+        loop
+            exitwhen slot == 6
+            set price = RegularGearCost(GetItemTypeId(UnitItemInSlot(h,slot)))
+            if price > 0 and price < GearCost[index] and price < cheapest then
+                set old = UnitItemInSlot(h,slot)
+                set cheapest = price
+            endif
+            set slot = slot+1
+        endloop
+        if old != null then
+            set room = UnitDropItemTarget(h,old,FortressShop[shopIndex])
+        endif
+    endif
     if room then
         call IssueNeutralTargetOrder(Player(p), FortressShop[shopIndex], "neutralinteract", h)
         // Native stock, gold price and item delivery also apply to bots.
@@ -1357,6 +1397,16 @@ endfunction
 
 function BotResearch takes integer p, integer kind returns boolean
     local integer reserve = 0
+    local integer cost = UpgradeCost(p,kind)
+    if BotTactic[p] == 3 then
+        if kind != 3 then
+            set reserve = BotTierReserve(p)
+        endif
+        if ArmySavings[p] < cost+reserve then
+            return false
+        endif
+    endif
+    set reserve = 0
     if GearProgress[p] < 18 then
         set reserve = IMinBJ(GearSavings[p], GearCost[DesiredGear(p)])
     elseif SuperProgress[p] < 6 then
@@ -1367,7 +1417,12 @@ function BotResearch takes integer p, integer kind returns boolean
         set reserve = reserve+BotTierReserve(p)
     endif
     if GetPlayerState(Player(p), PLAYER_STATE_RESOURCE_GOLD)-UpgradeCost(p, kind) >= reserve then
-        return Buy(p, kind)
+        if Buy(p,kind) then
+            if BotTactic[p] == 3 then
+                set ArmySavings[p] = ArmySavings[p]-cost
+            endif
+            return true
+        endif
     endif
     return false
 endfunction
@@ -1542,7 +1597,7 @@ function BotHero takes integer p returns nothing
         return
     endif
     // A timed human instruction temporarily postpones shopping, not emergencies.
-    if health >= .5 and TeamOrderUntil[team] <= Seconds and not Defending[team] and (BotBuySupplies(p) or TryBotShopping(p)) then
+    if health >= .5 and TeamOrderUntil[team] <= Seconds and not Defending[team] and (BotArenaShop(p) or BotBuySupplies(p) or TryBotShopping(p)) then
         set BotAttackTarget[p] = null
         set h = null
         set enemy = null
@@ -1841,6 +1896,10 @@ function OnChat takes nothing returns nothing
     elseif command == "-supreme" then
         call SelectUnitForPlayerSingle(SupremeShop[TeamOf(p)],Player(p))
         call PanCameraToTimedForPlayer(Player(p),SuperX[TeamOf(p)],SuperY[TeamOf(p)],0.25)
+    elseif command == "-relics" then
+        call SelectUnitForPlayerSingle(ArenaStore[0],Player(p))
+    elseif command == "-buffs" then
+        call SelectUnitForPlayerSingle(ArenaStore[1],Player(p))
     elseif command == "-potions" then
         call SelectUnitForPlayerSingle(PotionShop,Player(p))
         call PanCameraToTimedForPlayer(Player(p),0,-640,0.25)
@@ -2117,7 +2176,7 @@ function Tick takes nothing returns nothing
         set p = p+1
     endloop
     if Seconds == WARMUP_SECONDS then
-        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё пять обычных магазинов и Сокровищница титанов (-supreme). Зелья: -potions. В центре — общий фонтан жизни и маны.")
+        call Say("Бой начался! Исследования: четыре кнопки в казарме. Магазин экипировки находится в центре арены; в каждой крепости ещё пять обычных магазинов и Сокровищница титанов (-supreme). Зелья: -potions. Реликвии в центре: -relics; печати и эликсиры: -buffs. В центре — общий фонтан жизни и маны.")
         set p = 0
         loop
             exitwhen p == 12
@@ -2332,6 +2391,10 @@ function InitGame takes nothing returns nothing
         call SetUnitInvulnerable(SupremeShop[p],true)
         set p = p+1
     endloop
+    set ArenaStore[0] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'frs0',-720,320,270)
+    set ArenaStore[1] = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'frs1',720,320,270)
+    call SetUnitInvulnerable(ArenaStore[0],true)
+    call SetUnitInvulnerable(ArenaStore[1],true)
     set PotionShop = CreateUnit(Player(PLAYER_NEUTRAL_PASSIVE),'fpot',0,-640,270)
     call SetUnitInvulnerable(PotionShop,true)
     set p = 0
