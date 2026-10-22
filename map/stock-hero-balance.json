@@ -1,0 +1,245 @@
+{
+  "source": "Classic enUS1.27.1 stock unitbalance.slk; numeric model inputs only, no assets.",
+  "heroes": {
+    "Hpal": {
+      "hp": 100.0,
+      "str": 22.0,
+      "agi": 13.0,
+      "int": 17.0,
+      "strGrowth": 2.7,
+      "agiGrowth": 1.5,
+      "intGrowth": 1.8,
+      "armor": 2.0
+    },
+    "Hmkg": {
+      "hp": 100.0,
+      "str": 24.0,
+      "agi": 11.0,
+      "int": 15.0,
+      "strGrowth": 3.0,
+      "agiGrowth": 1.5,
+      "intGrowth": 1.5,
+      "armor": 1.0
+    },
+    "Hamg": {
+      "hp": 100.0,
+      "str": 14.0,
+      "agi": 17.0,
+      "int": 19.0,
+      "strGrowth": 1.8,
+      "agiGrowth": 1.0,
+      "intGrowth": 3.2,
+      "armor": 0.0
+    },
+    "Hblm": {
+      "hp": 100.0,
+      "str": 18.0,
+      "agi": 14.0,
+      "int": 19.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.0,
+      "intGrowth": 3.0,
+      "armor": 0.0
+    },
+    "Obla": {
+      "hp": 100.0,
+      "str": 18.0,
+      "agi": 24.0,
+      "int": 16.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.75,
+      "intGrowth": 2.25,
+      "armor": 0.0
+    },
+    "Ofar": {
+      "hp": 100.0,
+      "str": 15.0,
+      "agi": 18.0,
+      "int": 19.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.0,
+      "intGrowth": 3.0,
+      "armor": 0.0
+    },
+    "Otch": {
+      "hp": 100.0,
+      "str": 25.0,
+      "agi": 10.0,
+      "int": 15.0,
+      "strGrowth": 3.2,
+      "agiGrowth": 1.5,
+      "intGrowth": 1.3,
+      "armor": 1.0
+    },
+    "Oshd": {
+      "hp": 100.0,
+      "str": 15.0,
+      "agi": 20.0,
+      "int": 17.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.5,
+      "intGrowth": 2.5,
+      "armor": 0.0
+    },
+    "Udea": {
+      "hp": 100.0,
+      "str": 23.0,
+      "agi": 12.0,
+      "int": 17.0,
+      "strGrowth": 2.7,
+      "agiGrowth": 1.5,
+      "intGrowth": 1.8,
+      "armor": 1.0
+    },
+    "Ulic": {
+      "hp": 100.0,
+      "str": 15.0,
+      "agi": 14.0,
+      "int": 20.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.0,
+      "intGrowth": 3.4,
+      "armor": 0.0
+    },
+    "Udre": {
+      "hp": 100.0,
+      "str": 20.0,
+      "agi": 16.0,
+      "int": 18.0,
+      "strGrowth": 2.5,
+      "agiGrowth": 1.0,
+      "intGrowth": 2.5,
+      "armor": 0.0
+    },
+    "Ucrl": {
+      "hp": 25.0,
+      "str": 26.0,
+      "agi": 14.0,
+      "int": 14.0,
+      "strGrowth": 3.2,
+      "agiGrowth": 1.2,
+      "intGrowth": 1.6,
+      "armor": 0.0
+    },
+    "Edem": {
+      "hp": 100.0,
+      "str": 19.0,
+      "agi": 22.0,
+      "int": 16.0,
+      "strGrowth": 2.4,
+      "agiGrowth": 1.5,
+      "intGrowth": 2.1,
+      "armor": 0.0
+    },
+    "Ekee": {
+      "hp": 100.0,
+      "str": 16.0,
+      "agi": 15.0,
+      "int": 18.0,
+      "strGrowth": 1.8,
+      "agiGrowth": 1.5,
+      "intGrowth": 2.7,
+      "armor": 0.0
+    },
+    "Emoo": {
+      "hp": 100.0,
+      "str": 18.0,
+      "agi": 19.0,
+      "int": 15.0,
+      "strGrowth": 1.9,
+      "agiGrowth": 1.5,
+      "intGrowth": 2.6,
+      "armor": 0.0
+    },
+    "Ewar": {
+      "hp": 100.0,
+      "str": 18.0,
+      "agi": 20.0,
+      "int": 15.0,
+      "strGrowth": 2.4,
+      "agiGrowth": 1.6,
+      "intGrowth": 2.0,
+      "armor": 0.0
+    },
+    "Nbst": {
+      "hp": 100.0,
+      "str": 22.0,
+      "agi": 14.0,
+      "int": 15.0,
+      "strGrowth": 2.9,
+      "agiGrowth": 1.3,
+      "intGrowth": 1.8,
+      "armor": 0.0
+    },
+    "Nbrn": {
+      "hp": 100.0,
+      "str": 18.0,
+      "agi": 21.0,
+      "int": 15.0,
+      "strGrowth": 1.9,
+      "agiGrowth": 1.5,
+      "intGrowth": 2.6,
+      "armor": 0.0
+    },
+    "Npbm": {
+      "hp": 100.0,
+      "str": 22.0,
+      "agi": 14.0,
+      "int": 15.0,
+      "strGrowth": 3.0,
+      "agiGrowth": 1.5,
+      "intGrowth": 1.5,
+      "armor": 1.0
+    },
+    "Nfir": {
+      "hp": 100.0,
+      "str": 15.0,
+      "agi": 20.0,
+      "int": 18.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.6,
+      "intGrowth": 2.5,
+      "armor": 0.0
+    },
+    "Nplh": {
+      "hp": 100.0,
+      "str": 26.0,
+      "agi": 14.0,
+      "int": 14.0,
+      "strGrowth": 3.2,
+      "agiGrowth": 1.3,
+      "intGrowth": 1.5,
+      "armor": 0.0
+    },
+    "Nngs": {
+      "hp": 100.0,
+      "str": 15.0,
+      "agi": 16.0,
+      "int": 22.0,
+      "strGrowth": 2.0,
+      "agiGrowth": 1.0,
+      "intGrowth": 3.0,
+      "armor": 0.0
+    },
+    "Ntin": {
+      "hp": 100.0,
+      "str": 20.0,
+      "agi": 15.0,
+      "int": 20.0,
+      "strGrowth": 2.4,
+      "agiGrowth": 1.0,
+      "intGrowth": 2.6,
+      "armor": 2.0
+    },
+    "Nalc": {
+      "hp": 100.0,
+      "str": 25.0,
+      "agi": 10.0,
+      "int": 18.0,
+      "strGrowth": 3.3,
+      "agiGrowth": 1.0,
+      "intGrowth": 2.0,
+      "armor": 0.0
+    }
+  }
+}

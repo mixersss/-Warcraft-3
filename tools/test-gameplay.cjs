@@ -52,12 +52,12 @@ run(fs.readFileSync(path.join(__dirname, 'gameplay-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch14-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch141-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch15-harness.lua'), 'utf8'));
-const OldMap=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,oldMap=new OldMap();oldMap.load(new Uint8Array(fs.readFileSync(path.join(__dirname,'../releases/FourFrontsFrenzy-0.15.1-alpha.w3x'))),true);
-const hybridOld=new ObjectParser();hybridOld.load(new Uint8Array(oldMap.get('war3map.w3a').bytes()));
+// 0.22 rebalanced values are independently calculated from explicit start/cap profiles.
+const hybridProfiles=require('../map/balance-profiles.json').hybrid;
 const hybridValues=[],hybridCases=[];
-for(const [kind,id,field]of [[0,'AHhb','Hhb1'],[1,'AUdc','Udc1'],[2,'AEmb','Emb1']]){
- const object=hybridOld.originalTable.objects.find(o=>o.oldId===id);
- for(let rank=1;rank<=200;rank++)hybridValues.push(`[${kind*200+rank-1}]=${object.modifications.find(m=>m.id===field&&m.levelOrVariation===rank).value}`);
+for(const [kind,id]of [[0,'AHhb'],[1,'AUdc'],[2,'AEmb']]){
+ const [first,last]=hybridProfiles[id];
+ for(let rank=1;rank<=200;rank++){const t=((rank-1)/(rank-1+60))/(199/259);hybridValues.push(`[${kind*200+rank-1}]=${Math.round((first+(last-first)*t)*100000)/100000}`);}
  const ids=[id,...roster.flatMap(h=>(h.skill_sources||[]).flatMap((base,n)=>base===id?[h.skills[n]]:[]))];
  for(const code of ids)hybridCases.push(`{kind=${kind},raw=${raw(code)}}`);
 }
@@ -69,5 +69,6 @@ run(fs.readFileSync(path.join(__dirname, 'patch19-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch20-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch201-harness.lua'), 'utf8'));
 run(fs.readFileSync(path.join(__dirname, 'patch21-harness.lua'), 'utf8'));
+run(fs.readFileSync(path.join(__dirname, 'patch22-harness.lua'), 'utf8'));
 
 console.log('PASS: JASS: mixed open/computer/human startup, hero-only random mode, portrait selection, base defense, shared native research queue/prices, 200-rank caps and bot progression, 18s waves, 4 races, 50 heroes with 200/50 skills, channels, summons, charm, elimination and revival (mock natives).');

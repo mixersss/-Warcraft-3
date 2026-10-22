@@ -1,5 +1,6 @@
 """Explicit Classic skill ranks and per-skill summons, without runtime stat hacks."""
 import json
+from balance_profiles import curve as balance_curve, hybrid as balanced_hybrid, illusion_damage, summon_stats, config as balance_profiles
 from functools import lru_cache
 from pathlib import Path
 
@@ -143,6 +144,8 @@ def summon_catalog(root):
             units.append((original,raw,[('uhpm',0,hp),('ua1b',0,damage),('udef',0,round(armor)),
                 ('usca',1,scale),('ucol',2,min(src['collision'],24.0)),
                 ('upgr',3,''),('ufoo',0,0),('ugol',0,0),('ulum',0,0)]))
+            hp,damage,armor=summon_stats(original,rank,ultimate,src,balance)
+            units[-1][2][:3]=[('uhpm',0,hp),('ua1b',0,damage),('udef',0,armor)]
             details[raw]=(hp,damage,scale)
         return cache[key]
     for ability,seed in seeds.items():
@@ -164,7 +167,7 @@ def summon_catalog(root):
         changes.append(('uabi',3,','.join(abilities)))
         if auto: changes.append(('udaa',3,auto))
     for rank in range(1,51):
-        growth=1+0.18*(rank-1)
+        growth=1+(balance_profiles()['summons']['secondary_effect_factor']-1)*(rank-1)/49.
         fire=effect('ANpi',f'Fi{rank:02}',[('Eim1',2,balance['infernal_immolation_base']*growth,1,1),('aare',2,300.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
         attach('ninf',rank,['ACmi',fire,'ACrk'])
         fire=effect('Apig',f'Fk{rank:02}',[('Eim1',2,60.0*growth*balance['hero_skill_balance']['panda_power_multiplier'],1,1),('aare',2,280.0,1,0),('atar',3,'ground,air,enemy,neutral',1,0)])
@@ -188,7 +191,7 @@ def chemical_forms(root):
     timing=json.loads((Path(root)/'map/hero-attack-seeds.json').read_text())['units']['Nalc']
     result=[]
     for rank in range(1,balance['basic_skill_max']+1):
-        bonus=min(3.,.25+(rank-1)*2.75/(balance['basic_skill_max']-1))
+        bonus=balance_curve('ANcr','Ncr6',rank,balance['basic_skill_max'])
         mods=[(field,2,round(value*balance['hero_attack_interval_multiplier']/(1+bonus),6)) for field,value in timing.items()]
         mods.append(('uhab',3,'ANab,ANcr,ANhs,ANtm,Fatr'))
         result.append((['Nalm','Nal2','Nal3'][min(rank,3)-1],f'Zc{rank:02x}',mods))
@@ -204,16 +207,18 @@ def summon_support_abilities(root): return summon_catalog(str(root))[3]
 def hybrid_power(root,rawcode,rank):
     seeds=json.loads((Path(root)/'map/ability-seeds.json').read_text())
     raw={'AHhb':'Hhb1','AUdc':'Udc1','AEmb':'Emb1'}[rawcode]
-    return scaled_value(next(f for f in seeds[rawcode]['fields'] if f['id']==raw),rank,False)
+    return balanced_hybrid(rawcode,rank)
 
 
 def hero_abilities(root):
     seeds=json.loads((Path(root)/'map/ability-seeds.json').read_text())
     balance=json.loads((Path(root)/'map/balance.json').read_text())
+    names=json.loads((Path(root)/'map/skill-names-ru.json').read_text())
     cooldown_multiplier=balance['offensive_cooldown_multiplier']
     _,replacements,summon_details,_=summon_catalog(str(root))
     entries=[]
     for rawcode,seed in seeds.items():
+        seed=dict(seed,name=names.get(rawcode,seed['name']))
         ultimate=seed['ultimate']
         req,skip=(6,10) if ultimate else (1,1)
         changes=[('alev',0,seed['cap']),('arlv',0,req),('alsk',0,skip)]
@@ -265,6 +270,12 @@ def hero_abilities(root):
                     # The shared native amount would also weaken healing/mana removal.
                     # A bounded spell-effect handler separates the damage component.
                     value=0.
+                value=balance_curve(rawcode,field['id'],rank,seed['cap'],value)
+                if rawcode=='AOmi' and field['id']=='Omi2':
+                    count=scaled_value(next(f for f in seed['fields']if f['id']=='Omi1'),rank,False)
+                    value=illusion_damage(rank,count)
+                if rawcode in ('AHhb','AUdc','AEmb') and field['id']in ('Hhb1','Udc1','Emb1'):value=0.
+                if field['kind']==0:value=round(value)
                 changes.append((field['id'],field['kind'],value,rank,field['column']))
                 if aura:
                     multiplier=100 if aura['percent'] else 1
@@ -282,13 +293,16 @@ def hero_abilities(root):
             text=f'Ранг {rank}/{seed["cap"]}. '+'; '.join(details[:3])
             if rawcode in ('AHre','AUan'): text+=f' Поднимает до {balance["hero_skill_balance"]["resurrection_start"]+rank-1} павших бойцов (+1 за ранг).'
             if rawcode=='ANtm': text+=f' За успешное превращение: ровно {balance["transmute_gold_base"]+balance["transmute_gold_step"]*(rank-1)} золота; +30 за ранг. Не зависит от цены цели.'
-            if rawcode=='ANcr': text+=f' Настоящая ускоренная форма: +{(.25+(rank-1)*2.75/(seed["cap"]-1))*100:.1f}% к частоте атак через уменьшение базового интервала.'
+            if rawcode=='ANcr': text+=f' Настоящая ускоренная форма: +{balance_curve("ANcr","Ncr6",rank,seed["cap"])*100:.1f}% к частоте атак через уменьшение базового интервала.'
             if rawcode in ('AHhb','AUdc'):
                 power=hybrid_power(root,rawcode,rank)
                 text=f'Ранг {rank}/{seed["cap"]}. Лечение: {power:g}; урон вражеской цели: {power*.5*balance["spell_damage_multiplier"]:g}.'
             elif rawcode=='AEmb':
                 power=hybrid_power(root,rawcode,rank)
                 text=f'Ранг {rank}/{seed["cap"]}. Сжигает до {power:g} маны и наносит {balance["spell_damage_multiplier"]*100:g}% от сожжённой маны уроном.'
+            if rawcode=='AOmi':
+                count=scaled_value(next(f for f in seed['fields']if f['id']=='Omi1'),rank,False)
+                text+=f' Суммарный урон всех {count} копий: {count*illusion_damage(rank,count)*100:.1f}% урона героя.'
             if rawcode=='ANba': text+=' Цели: живые и Нежить. Убитые стрелой бойцы поднимаются скелетами.'
             changes += [('atp1',3,f'{seed["name"]} [{rank}]',rank,0),('aub1',3,text,rank,0)]
         entries.append((rawcode,'\0'*4,changes))

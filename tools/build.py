@@ -15,6 +15,7 @@ import struct
 import zlib
 from progression import keeper_treants, hybrid_power, hero_abilities, summoned_units, custom_hero_abilities, attribute_ability, summon_support_abilities, chemical_forms, army_passives, army_aura_buffs
 from equipment import item_effects, potion_abilities, utility_abilities
+from balance_profiles import incinerate_ability
 from army_orders import abilities as army_order_abilities
 from army_traits import abilities as troop_abilities, unit_changes as troop_changes
 from army_branches import abilities as branch_abilities
@@ -270,7 +271,7 @@ def units(b: dict) -> bytes:
     entries.append(('hgtw','fbst',[
         ('unam',3,'Бастионная башня'),('uhpm',0,b['bastion_hp']),('udef',0,b['bastion_armor']),
         ('uaen',0,1),('ua1b',0,b['bastion_damage']),('ua1d',0,1),('ua1s',0,2),
-        ('ua1p',2,0.05),('ua1q',2,0.0),('ua1c',2,b['bastion_cooldown']),('ua1r',0,b['bastion_range']),('uacq',2,float(b['bastion_range'])),
+        ('udp1',2,0.10),('ubs1',2,0.15),('ua1c',2,b['bastion_cooldown']),('ua1r',0,b['bastion_range']),('uacq',2,float(b['bastion_range'])),
         ('ua1g',3,'air,ground,structure,debris,item,ward'),('ureq',3,''),('uupt',3,''),
         ('uabi',3,''),('upgr',3,''),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('uhpr',2,0.0),
         ('utip',3,'Бастионная башня'),
@@ -332,7 +333,7 @@ def units(b: dict) -> bytes:
         if raw in {h['id'] for h in catalog('heroes') if 'base' in h}:
             mods.extend((field,2,round(value*speed,5)) for field,value in timings[base].items())
     for base,raw,mods in entries:
-        if raw == "Fz03": mods[:] = [m for m in mods if m[0] not in ["ua1c","ua1p","ua1q","ua1r","ua1w"]]+[("ua1c",2,.75),("ua1p",2,.15),("ua1q",2,.25),("ua1r",0,100),("ua1w",3,"normal")]
+        if raw == "Fz03": mods[:] = [m for m in mods if m[0] not in ["ua1c","udp1","ubs1","ua1r","ua1w"]]+[("ua1c",2,.95),("udp1",2,.15),("ubs1",2,.25),("ua1r",0,100),("ua1w",3,"normal")]
     return objects(entries,original_entries=originals)
 
 
@@ -362,7 +363,7 @@ def expansion_abilities(b):
 
 
 def menu_ability(b: dict) -> bytes:
-    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+army_order_abilities()+keeper_treants(ROOT)+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
+    return objects(item_effects(ROOT)[0]+army_passives(ROOT)+fountain_abilities(b)+branch_abilities(catalog('races'))+troop_abilities()+army_order_abilities()+keeper_treants(ROOT)+incinerate_ability()+picker_controls()+custom_hero_abilities(ROOT)+creative_abilities(ROOT)+expansion_abilities(b)+attribute_ability()+potion_abilities(ROOT)+utility_abilities(ROOT)+summon_support_abilities(ROOT), extended=True, original_entries=hero_abilities(ROOT))
 
 
 def items() -> bytes:
@@ -386,7 +387,7 @@ def misc(b: dict) -> bytes:
             f'HeroFactorXP={factor},{factor},{factor},{factor},{factor}\n'
             f'GrantHeroXP={hero_grants}\nGrantHeroXPFormulaA=1\nGrantHeroXPFormulaB=0\nGrantHeroXPFormulaC={factor}\n'
             'StrHitPointBonus=30\nIntManaBonus=18\n'
-            'MaxUnitSpeed=480\n'
+            'MaxUnitSpeed=480\nAgiDefenseBonus=0.08\nAgiDefenseBase=0\nAgiAttackSpeedBonus=0.01\nDefenseArmor=0.025\n'
             'NeedHeroXP=200\nNeedHeroXPFormulaA=1.0\nNeedHeroXPFormulaB=100\nNeedHeroXPFormulaC=0\n').encode('ascii')
 
 

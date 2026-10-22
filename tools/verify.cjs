@@ -127,6 +127,7 @@ assert.equal(new Set(heroes.map(h => h.id)).size, 50);
 assert.deepEqual([0,1,2,3,4,5,6,7,8].map(g => heroes.filter(h => h.group === g).length), [4,4,4,4,8,6,6,5,5]);
 assert.equal(custom.filter(o=>o.newId.startsWith('fm')).length,20,'Exactly one troop type per race/tier');
 assert.equal(new Set(custom.map(o => o.newId)).size,custom.length,'Unique custom rawcodes');
+if(process.argv.includes('--structure-only')){console.log('PASS: Classic MPQ sectors, full binary round trip, stock references,12 slots/4 forces/50 heroes/20 troop types and legacy formats.');process.exit(0);}
 for (let race = 0; race < 4; race++) {
   for (let tier = 0; tier < 5; tier++) {
     const troop=custom.find(o=>o.newId===`fm${race}${tier}`);

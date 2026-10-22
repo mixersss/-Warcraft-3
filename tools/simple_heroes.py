@@ -1,6 +1,7 @@
 """Four straightforward kits: isolated native passives plus explicit summon/ultimate handlers."""
 import json
 from pathlib import Path
+from balance_profiles import config as balance_profiles
 from progression import hero_abilities
 
 BUFFS=[('BOae','Bcbs'),('BOae','Bcas'),('BHad','Bcar'),('BOae','Bcsm'),('BOae','Bcua'),('BHad','Bcud'),('BOae','Bcrg')]
@@ -27,8 +28,8 @@ def abilities(root):
                 mods += [(field,typ,value,rank,ptr)for field,typ,value,ptr in v]
             mods=list({(m[0],m[3:]if len(m)==5 else(0,0)):m for m in mods}.values());result.append((base,raw,mods))
     # Hidden native item lifesteal works for actual ranged and melee attack damage.
-    mods=[('anam',3,'Кровное братство'),('alev',0,200),('aher',0,0),('aite',0,1),('aart',3,'')]
-    for rank in range(1,201):mods += [('Ivam',2,.002*rank,rank,1),('atar',3,'air,ground,enemy,neutral',rank,0)]
+    mods=[('anam',3,'Кровное братство'),('alev',0,420),('aher',0,0),('aite',0,1),('aart',3,'')]
+    for rank in range(1,421):mods += [('Ivam',2,.001*rank,rank,1),('atar',3,'air,ground,enemy,neutral',rank,0)]
     result.append(('AIva','Clif',mods))
     for raw,base,buff,cap,values,radius in [('Csum','AOae','Bcsm',200,lambda t:(0.,.10+.15*t),700.),('Cuba','AOae','Bcua',50,lambda t:(0.,.20+.20*t),900.),('Cubd','AHad','Bcud',50,lambda t:(4.+8.*t,0),900.),('Crag','AOae','Bcrg',50,lambda t:(.15,.50+.40*t),0.)]:
         mods=[('anam',3,'Временное усиление'),('alev',0,cap),('aher',0,0),('aite',0,1),('aart',3,'')]
@@ -40,14 +41,15 @@ def abilities(root):
     return result
 
 def pet_stats(row,rank,balance):
-    # Same ordinary-summon curve as Rexxar; no ultimate x4 HP/x3 damage
-    # multipliers on the beast, because its head count also grows now.
-    extra=(rank-1)*299/199
-    hp=max(1,round(round(row['hp']*(1+.15*extra))*balance['summon_hp_multiplier']))
-    damage=round(round(row['damage']*(1+.12*extra)+extra)*balance['summon_damage_multiplier'])
-    armor=round(row['armor']+.2*extra)
-    scale=row['scale']*balance['summon_model_scale']*(1+.0005*extra)
+    t=(rank-1)/(49 if row.get('ultimate') else 199)
+    cfg=balance_profiles()['summons']
+    budget=1+cfg['extra_unit_budget_weight']*(rank//10)
+    hp=max(1,round(row['hp']*(1+(cfg['simple_hp_factor']-1)*t)*balance['summon_hp_multiplier']/budget))
+    damage=round((row['damage']*(1+(cfg['simple_damage_factor']-1)*t)+rank*.15)*balance['summon_damage_multiplier']/budget)
+    armor=round(row['armor']+8*t)
+    scale=row['scale']*balance['summon_model_scale']*(1+.0005*(rank-1)*299/199)
     return hp,damage,armor,scale
+
 
 def units(root):
     result=[]
@@ -56,6 +58,6 @@ def units(root):
     for family,row in enumerate(models):
         cap=50 if family==2 else 200
         for rank in range(1,cap+1):
-            hp,damage,armor,scale=pet_stats(row,rank,balance)
+            hp,damage,armor,scale=pet_stats(dict(row,ultimate=family==2),rank,balance)
             result.append((row['base'],f'k{family}{rank-1:02x}',[('unam',3,row['name']),('umdl',3,row['model']),('uico',3,row['icon']),('uhpm',0,hp),('ua1b',0,damage),('ua1d',0,1),('ua1s',0,2),('ua1c',2,row['attack_seconds']),('ua1r',0,row['range']),('uabi',3,'ACce'if family==2 else''),('umvt',3,'foot'),('umvs',0,300),('usca',1,scale),('ucol',2,16.),('udef',0,armor),('upgr',3,''),('ufoo',0,0),('ubba',0,0),('ubdi',0,0),('ubsi',0,0),('ureq',3,''),('uupt',3,''),('uclr',0,row['tint'][0]),('uclg',0,row['tint'][1]),('uclb',0,row['tint'][2])]))
     return result

@@ -35,9 +35,9 @@
     "name": "Панцирь бессмертного",
     "cost": 48000,
     "stats": {
-      "armor": 200
+      "armor": 55
     },
-    "description": "+200 брони."
+    "description": "+55 брони."
   },
   {
     "id": "fl04",
@@ -55,9 +55,9 @@
     "name": "Источник бездны",
     "cost": 44000,
     "stats": {
-      "mana_regen": 20.0
+      "mana_regen": 3.0
     },
-    "description": "+2000% к обычной регенерации маны."
+    "description": "+300% к обычной регенерации маны."
   },
   {
     "id": "fl06",
@@ -65,8 +65,8 @@
     "name": "Пульс жизни",
     "cost": 44000,
     "stats": {
-      "health_regen": 200
+      "health_regen": 120
     },
-    "description": "+200 HP в секунду."
+    "description": "+120 HP в секунду."
   }
 ]

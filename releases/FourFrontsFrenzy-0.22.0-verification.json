@@ -1,0 +1,45 @@
+{
+  "version": "0.22.0-alpha",
+  "heroSlots": 200,
+  "heroes": 50,
+  "validatedNativeFields": 499633,
+  "validatedProfileRankValues": 53700,
+  "allSummonCountsPreserved": true,
+  "allResearchAndItemPricesPreserved": true,
+  "allScenarioAIAndRoutingPreserved": true,
+  "classicMetadataChecked": true,
+  "enginePlaytest": false,
+  "npmTestPassed": true,
+  "strictClassicPjassPassed": true,
+  "lobbyMockPassed": true,
+  "gameplayMocksPassed": true,
+  "pathingFloodFillPassed": true,
+  "audit": {
+    "version": "0.22.0-alpha",
+    "heroes": 50,
+    "mainSkills": 200,
+    "adjacentRankTransitionsChecked": 32300,
+    "ranksWithoutNumericOrScriptedProgress": [],
+    "enginePlaytest": false,
+    "winRatesMeasured": false,
+    "preserved": {
+      "waveSize": 6,
+      "waveSeconds": 18,
+      "armyCap": 85,
+      "heroLevel": 500,
+      "skillLevels": [
+        200,
+        50
+      ],
+      "autosaveSeconds": 120,
+      "respawnSeconds": 35
+    },
+    "modelLimits": [
+      "No combat engine, pathfinding or native projectile simulation.",
+      "Equal skill rank is not equal hero level or equal purchased build.",
+      "Damage/healing/group HP metrics do not represent wins or 1v1 tier lists."
+    ]
+  },
+  "mapBytes": 3511954,
+  "mapSha256": "77b7daf2481a1e1c91e0cf4b94a1b07c4df7cfc1d65d2fdf8f8d156906e43ce9"
+}

@@ -1,0 +1,6097 @@
+{
+  "source": "Classic enUS1.27.1 UnitMetaData/AbilityMetaData SLK (same Classic API family); frozen numeric metadata for reproducible validation.",
+  "unit": {
+    "iabi": {
+      "kind": 3,
+      "type": "abilityList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iarm": {
+      "kind": 3,
+      "type": "armorType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "icla": {
+      "kind": 3,
+      "type": "itemClass",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iclb": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iclg": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iclr": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "icid": {
+      "kind": 3,
+      "type": "abilCode",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "idrp": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "idro": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ifil": {
+      "kind": 3,
+      "type": "model",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "igol": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ihtp": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iicd": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ilev": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ilum": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "imor": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ilvo": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iper": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iprn": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ipow": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ipri": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "isca": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "issc": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "isel": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ipaw": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "isto": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "istr": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "isst": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iusa": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iuse": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uani": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uico": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "iico": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uaap": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ualp": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uawt": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubpr": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubsl": {
+      "kind": 3,
+      "type": "soundLabel",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubui": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubpx": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubpy": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucua": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucun": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucut": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udep": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ides": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "unsf": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhot": {
+      "kind": 3,
+      "type": "char",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulfi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulfo": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umki": {
+      "kind": 3,
+      "type": "itemList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uma1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uma2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1m": {
+      "kind": 3,
+      "type": "model",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2m": {
+      "kind": 3,
+      "type": "model",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umh1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umh2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1z": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2z": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umsl": {
+      "kind": 3,
+      "type": "soundLabel",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "unam": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upro": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ursl": {
+      "kind": 3,
+      "type": "soundLabel",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urqc": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ureq": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq1": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq2": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq3": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq4": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq5": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq6": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq7": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urq8": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urqa": {
+      "kind": 3,
+      "type": "intList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ures": {
+      "kind": 3,
+      "type": "upgradeList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urev": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utpr": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ussi": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usei": {
+      "kind": 3,
+      "type": "itemList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "useu": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uspa": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utaa": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utip": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utra": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urva": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utub": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uupt": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uabi": {
+      "kind": 3,
+      "type": "abilityList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udaa": {
+      "kind": 3,
+      "type": "abilCode",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhab": {
+      "kind": 3,
+      "type": "heroAbilityList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uagi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uagp": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubld": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubdi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubba": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubsi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulbd": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulba": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulbs": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucol": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udef": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udty": {
+      "kind": 3,
+      "type": "defenseType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udup": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ufma": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ufoo": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ugol": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ugor": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhpm": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uint": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uinp": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubdg": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulev": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulum": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulur": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umpi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umpm": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umas": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umis": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "unbr": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usin": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upap": {
+      "kind": 3,
+      "type": "pathingListPrevent",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upra": {
+      "kind": 3,
+      "type": "attributeType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhpr": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umpr": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhrt": {
+      "kind": 3,
+      "type": "regenType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urtm": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urpo": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urpg": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urpp": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urpr": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upar": {
+      "kind": 3,
+      "type": "pathingListRequire",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usid": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umvs": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usma": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usrg": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usst": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ustr": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ustp": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "util": {
+      "kind": 3,
+      "type": "tilesetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utyp": {
+      "kind": 3,
+      "type": "unitClass",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upgr": {
+      "kind": 3,
+      "type": "upgradeList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uabr": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uabt": {
+      "kind": 3,
+      "type": "aiBuffer",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucbo": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ufle": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usle": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucar": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udtm": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udea": {
+      "kind": 3,
+      "type": "deathType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulos": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ufor": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uibo": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umvf": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umvh": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umvt": {
+      "kind": 3,
+      "type": "moveType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upru": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uori": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upat": {
+      "kind": 3,
+      "type": "pathingTexture",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upoi": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upri": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uprw": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urac": {
+      "kind": 3,
+      "type": "unitRace",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "upaw": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utar": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umvr": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uarm": {
+      "kind": 3,
+      "type": "armorType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uble": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uclb": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushb": {
+      "kind": 3,
+      "type": "shadowTexture",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucam": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utcc": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udro": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uept": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uerd": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umdl": {
+      "kind": 3,
+      "type": "model",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uver": {
+      "kind": 3,
+      "type": "versionFlags",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ufrd": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uclg": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhos": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uine": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umxp": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "umxr": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usca": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "unbm": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhhb": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhhm": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhhd": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhom": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uocc": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uclr": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urun": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ussc": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uscb": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usew": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uslz": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushh": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushr": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushw": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushx": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushy": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uspe": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utco": {
+      "kind": 3,
+      "type": "teamColor",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utss": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uubs": {
+      "kind": 3,
+      "type": "uberSplat",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ushu": {
+      "kind": 3,
+      "type": "shadowImage",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usnd": {
+      "kind": 3,
+      "type": "unitSound",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uuch": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uwal": {
+      "kind": 1,
+      "type": "real",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uacq": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1t": {
+      "kind": 3,
+      "type": "attackType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2t": {
+      "kind": 3,
+      "type": "attackType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ubs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucbs": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucpt": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1c": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2c": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udl2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1d": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2d": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1b": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2b": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udp1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udp2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udu1": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "udu2": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1f": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2f": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1h": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2h": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uhd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uisz": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uimz": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulsz": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulpx": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulpy": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ulpz": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uamn": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1q": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2q": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uqd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uqd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1r": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2r": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "urb2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uwu1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uwu2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1s": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2s": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "usr2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1p": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2p": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utc1": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "utc2": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1g": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2g": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "uaen": {
+      "kind": 0,
+      "type": "attackBits",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua1w": {
+      "kind": 3,
+      "type": "weaponType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ua2w": {
+      "kind": 3,
+      "type": "weaponType",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucs1": {
+      "kind": 3,
+      "type": "combatSound",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ucs2": {
+      "kind": 3,
+      "type": "combatSound",
+      "column": 0,
+      "useSpecific": ""
+    }
+  },
+  "ability": {
+    "anam": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ansf": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aher": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aite": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arac": {
+      "kind": 3,
+      "type": "unitRace",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "abpx": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "abpy": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aubx": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "auby": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arpx": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arpy": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aart": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "auar": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arar": {
+      "kind": 3,
+      "type": "icon",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "acat": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "atat": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "asat": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aeat": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aaea": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "alig": {
+      "kind": 3,
+      "type": "lightningList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "amat": {
+      "kind": 3,
+      "type": "modelList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "amsp": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "amac": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "amho": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "atac": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata0": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata1": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata2": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata3": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata4": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ata5": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "acac": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "acap": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aca1": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aspt": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aani": {
+      "kind": 3,
+      "type": "stringList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "atp1": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aut1": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aub1": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "auu1": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aret": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arut": {
+      "kind": 3,
+      "type": "string",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arhk": {
+      "kind": 3,
+      "type": "char",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ahky": {
+      "kind": 3,
+      "type": "char",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "auhk": {
+      "kind": 3,
+      "type": "char",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "areq": {
+      "kind": 3,
+      "type": "techList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arqa": {
+      "kind": 3,
+      "type": "intList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "achd": {
+      "kind": 0,
+      "type": "bool",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "apri": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aord": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aoru": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aoro": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aorf": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aefs": {
+      "kind": 3,
+      "type": "soundLabel",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aefl": {
+      "kind": 3,
+      "type": "soundLabel",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "alev": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "arlv": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "alsk": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "atar": {
+      "kind": 3,
+      "type": "targetList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "acas": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "adur": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "ahdu": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "acdn": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "amcs": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aare": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aran": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "abuf": {
+      "kind": 3,
+      "type": "buffList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "aeff": {
+      "kind": 3,
+      "type": "effectList",
+      "column": 0,
+      "useSpecific": ""
+    },
+    "Hbz1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hbz2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hbz3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hbz4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hbz5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hbz6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "AHbz,ACbz,ANrf,ACrf"
+    },
+    "Hab1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHab,ACba,AIba"
+    },
+    "Hab2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AHab,ACba,AIba"
+    },
+    "Hmt1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AHmt,AImt"
+    },
+    "Hmt2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHmt,AImt"
+    },
+    "Hmt3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AHmt,AImt,AUds"
+    },
+    "Hwe1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm"
+    },
+    "Hwe2": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AHwe,AEst,ANsg,ANsq,ANsw,ANwm,AOsw,AOwd,Anwm,ACwe,AHpx,ACtn,ANlm"
+    },
+    "Oww1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOww"
+    },
+    "Oww2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOww"
+    },
+    "Ocr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOcr,ACct,ANdb"
+    },
+    "Ocr2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOcr,ACct,ANdb"
+    },
+    "Ocr3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOcr,ACct,ANdb"
+    },
+    "Ocr4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AOcr,ACct,ANdb"
+    },
+    "Ocr5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "AOcr,ACct,ANdb"
+    },
+    "Omi1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AOmi"
+    },
+    "Omi2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOmi"
+    },
+    "Omi3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOmi"
+    },
+    "Omi4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AOmi"
+    },
+    "Owk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOwk"
+    },
+    "Owk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOwk"
+    },
+    "Owk3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOwk"
+    },
+    "Owk4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "AOwk,ANwk"
+    },
+    "Uan1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AUan"
+    },
+    "Uan3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AUan,ACad,AIan,AInd"
+    },
+    "Udc1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUdc,ACdc"
+    },
+    "Udp1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUdp,AUdr,Aste"
+    },
+    "Udp2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUdp,AUdr,Aste"
+    },
+    "Udp3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AUdp,AUdr,Aste"
+    },
+    "Udp4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "AUdp,AUdr,Aste"
+    },
+    "Udp5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "AUdp,AUdr,Aste"
+    },
+    "Uau1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUau,AIau,ACua"
+    },
+    "Uau2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUau,AIau,ACua"
+    },
+    "Uau3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AUau,AIau,ACua"
+    },
+    "Eev1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEev,AIev,ACev,ACes"
+    },
+    "Eim1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEim,ACim,ANpi,Apmf,Apig"
+    },
+    "Eim2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEim,ACim,ANpi,Apmf,Apig"
+    },
+    "Eim3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEim,ACim,ANpi,Apmf,Apig"
+    },
+    "Emb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEmb,Amnb,Ambd"
+    },
+    "Emb2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEmb,Amnb,Ambd"
+    },
+    "Emb3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEmb,Amnb,Ambd"
+    },
+    "Eme1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 1,
+      "useSpecific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+    },
+    "Eme2": {
+      "kind": 0,
+      "type": "morphFlags",
+      "column": 2,
+      "useSpecific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+    },
+    "Eme3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+    },
+    "Eme4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,ANcr,ANrg,ANg1,ANg2,ANg3"
+    },
+    "Eme5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "AEme,AEIl,AEvi"
+    },
+    "Ncr5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANcr"
+    },
+    "Ncr6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANcr"
+    },
+    "Nrg5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "ANrg,ANg1,ANg2,ANg3"
+    },
+    "Nrg6": {
+      "kind": 0,
+      "type": "int",
+      "column": 6,
+      "useSpecific": "ANrg,ANg1,ANg2,ANg3"
+    },
+    "ave5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Aave,Astn"
+    },
+    "Emeu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AEme,AEIl,AEvi,Abrf,Arav,Amrf,Astn,Aspx,Aave,Abur,Abu2,Abu3,Aetf,Acpf,Aphx,Asb1,Asb2,Asb3,ANcr,ANrg,ANg1,ANg2,ANg3"
+    },
+    "Usl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUsl,ACsl"
+    },
+    "Uav1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUav,AIav,ACvp"
+    },
+    "Ucs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv"
+    },
+    "Ucs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv"
+    },
+    "Ucs3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl"
+    },
+    "Ucs4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AUcs,ANbf,ACbc,ACbf,ACca,ACcv,ANfl"
+    },
+    "Uin1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUin,ANin,SNin,AIin"
+    },
+    "Uin2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUin,ANin,SNin,AIin"
+    },
+    "Uin3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AUin,ANin,SNin,AIin"
+    },
+    "Uin4": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AUin,ANin,SNin,AIin"
+    },
+    "Ocl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOcl,AOhw,ACcl,AChv,ANfl"
+    },
+    "Ocl2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AOcl,AOhw,ACcl,AChv,ANfl"
+    },
+    "Ocl3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOcl,AOhw,ACcl,AChv"
+    },
+    "Oeq1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOeq,SNeq"
+    },
+    "Oeq2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOeq,SNeq"
+    },
+    "Oeq3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOeq,SNeq"
+    },
+    "Oeq4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AOeq,SNeq"
+    },
+    "Ofs1": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 1,
+      "useSpecific": "AOfs"
+    },
+    "Osf1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AOsf,ACsf,ACs9,AIsh"
+    },
+    "Osf2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AOsf,ACsf,ACs9,AIsh"
+    },
+    "Eer1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEer,Aenr,Aenw"
+    },
+    "Efn1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AEfn,ACfr"
+    },
+    "Efnu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AEfn,ACfr"
+    },
+    "Eah1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEah"
+    },
+    "Eah2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AEah"
+    },
+    "Etq1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEtq"
+    },
+    "Etq2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEtq"
+    },
+    "Etq3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEtq"
+    },
+    "Udd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUdd,SNdd"
+    },
+    "Udd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUdd,SNdd"
+    },
+    "Ufa1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUfa,AUfu,ACfa"
+    },
+    "Ufa2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUfa,AUfu,ACfa"
+    },
+    "Ufn1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUfn,ACfn"
+    },
+    "Ufn2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUfn,ACfn"
+    },
+    "Hfa1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHfa,ACsa"
+    },
+    "Esf1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEsf,AEsb,ANmo,ACmo"
+    },
+    "Esf2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEsf,AEsb,ANmo,ACmo"
+    },
+    "Esf3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEsf,AEsb,ANmo,ACmo"
+    },
+    "Ear1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEar,AIar,ACat"
+    },
+    "Ear2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AEar,AIar,ACat,ACac,AIcd,Aakb"
+    },
+    "Ear3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AEar,AIar,ACat,ACac,AIcd,Aakb"
+    },
+    "Ear4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "AEar,AIar,ACat,ACac,AIcd,Aakb"
+    },
+    "Hav1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHav"
+    },
+    "Hav2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHav"
+    },
+    "Hav3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AHav"
+    },
+    "Hav4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AHav"
+    },
+    "Hbh1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHbh,ACbh"
+    },
+    "Hbh2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHbh,ACbh"
+    },
+    "Hbh3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AHbh,ACbh"
+    },
+    "Hbh4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AHbh,ACbh"
+    },
+    "Hbh5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "AHbh,ACbh,ANbh,ANb2,AIbx"
+    },
+    "Htb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHtb,ANfb,Awfb,ACfb,ACcb"
+    },
+    "Htc1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHtc"
+    },
+    "Htc2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHtc"
+    },
+    "Htc3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AHtc"
+    },
+    "Htc4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AHtc"
+    },
+    "Had1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHad,AIad,ACav"
+    },
+    "Had2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AHad,AIad,ACav"
+    },
+    "Hds1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "AHds"
+    },
+    "Hhb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHhb"
+    },
+    "Hre1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AHre,AIrs"
+    },
+    "Hre2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AUan,AHre,ACad,AIan,AIrs,APrl,APrr"
+    },
+    "Hca1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHca,ACcw,ANfa"
+    },
+    "Hca2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHca,ACcw,ANfa"
+    },
+    "Hca3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AHca,ACcw,ANfa"
+    },
+    "Hca4": {
+      "kind": 0,
+      "type": "stackFlags",
+      "column": 4,
+      "useSpecific": "AHca,ACcw,ANfa"
+    },
+    "Oae1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOae,AIae,SCae"
+    },
+    "Oae2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOae,AIae,SCae"
+    },
+    "Ore1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOre,ACrn,ANrn"
+    },
+    "Osh1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AOsh,ACsh,ACst"
+    },
+    "Osh2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AOsh,ACsh,ACst"
+    },
+    "Osh3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AOsh,ACsh,ACst"
+    },
+    "Osh4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AOsh,ACsh,ACst"
+    },
+    "Nfd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANfd"
+    },
+    "Nfd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANfd"
+    },
+    "Nfd3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANfd"
+    },
+    "Ndp1": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 1,
+      "useSpecific": "ANdp"
+    },
+    "Ndp2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "ANdp"
+    },
+    "Ndp3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "ANdp"
+    },
+    "Nrc1": {
+      "kind": 3,
+      "type": "abilCode",
+      "column": 1,
+      "useSpecific": "ANrc"
+    },
+    "Nrc2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "ANrc"
+    },
+    "Ams1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aams,ACam"
+    },
+    "Ams2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aams,ACam"
+    },
+    "Ams3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Aams,ACam,AIxs"
+    },
+    "Ams4": {
+      "kind": 0,
+      "type": "int",
+      "column": 4,
+      "useSpecific": "Aams,ACam,AIxs,Aam2"
+    },
+    "Apl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aapl,Aap1,Aap2,Aap3,Aap4"
+    },
+    "Apl2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aapl,Aap1,Aap2,Aap3,Aap4"
+    },
+    "Apl3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aapl,Aap1,Aap2,Aap3,Aap4"
+    },
+    "Aplu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Aapl,Aap1,Aap2,Aap3,Aap4"
+    },
+    "Oar1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aoar,ACnr,Aabr"
+    },
+    "Oar2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Aoar,ACnr,Aabr"
+    },
+    "Akb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aakb"
+    },
+    "Adm1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aadm,ACdm,Adis,Adsm,Adch"
+    },
+    "Adm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aadm,ACdm,Adis,Adsm,Adch"
+    },
+    "Btl1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Abtl,Sbtl"
+    },
+    "Btl2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Abtl,Sbtl"
+    },
+    "Bli1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Abds,Abdl,Abgs,Abgl,Ablp"
+    },
+    "Bli2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Abds,Abdl,Abgs,Abgl,Ablp"
+    },
+    "Bgm1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Abgm"
+    },
+    "Bgm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Abgm"
+    },
+    "Bgm3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Abgm"
+    },
+    "Bgm4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Abgm"
+    },
+    "Blo1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Ablo,ACbl,Afzy"
+    },
+    "Blo2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Ablo,ACbl.Afzy"
+    },
+    "Blo3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Ablo,ACbl,Afzy"
+    },
+    "Can1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Acan,ACcn"
+    },
+    "Can2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Acan,ACcn"
+    },
+    "Car1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Abun,Advc,Sch2,Sch3,Sch4,Sch5,Aenc"
+    },
+    "Dev2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Advc"
+    },
+    "Dev3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Advc"
+    },
+    "Chd1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Achd"
+    },
+    "Chd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Achd"
+    },
+    "Chd3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Achd"
+    },
+    "Cha1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Acha,Sca1,Sca2,Sca3,Sca4,Sca5,Sca6,Sbsk,Srtt"
+    },
+    "Cri1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Acri,Scri,ACcr"
+    },
+    "Cri2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Acri,Scri,ACcr"
+    },
+    "Cri3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Acri,Scri,ACcr"
+    },
+    "Crs": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Acrs,ACcs"
+    },
+    "Dda1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Adda,Amnx,Amnz,Asds,Auco"
+    },
+    "Dda2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Adda,Amnx,Amnz,Asds,Auco"
+    },
+    "Dda3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Adda,Amnx,Amnz,Asds,Auco"
+    },
+    "Dda4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Adda,Amnx,Amnz,Asds,Auco"
+    },
+    "Sds1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Asds"
+    },
+    "Sds6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "Asds,Asdg,Asd2,Asd3"
+    },
+    "Uco5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Auco"
+    },
+    "Uco6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "Auco"
+    },
+    "Def1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Adef,Amdf,AIdd"
+    },
+    "Def2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Adef,Amdf,AIdd"
+    },
+    "Def3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Adef,Amdf,AIdd"
+    },
+    "Def4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Adef,Amdf,AIdd"
+    },
+    "Def5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Adef,Amdf,AIdd"
+    },
+    "Def6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "Adef,Amdf,AIdd,Aegr"
+    },
+    "Def7": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 7,
+      "useSpecific": "Adef,Amdf,AIdd,Aegr"
+    },
+    "Def8": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 8,
+      "useSpecific": "Adef,Amdf,AIdd,Aegr"
+    },
+    "Dev1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Adev,ACdv"
+    },
+    "Eat1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aeat"
+    },
+    "Eat2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aeat"
+    },
+    "Eat3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aeat"
+    },
+    "Ens1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aens,ACen,Aweb,ACwb,AIwb"
+    },
+    "Ens2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aens,ACen,Aweb,ACwb,AIwb"
+    },
+    "Ens3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aens,ACen,Aweb,ACwb,AIwb"
+    },
+    "ent1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Aent"
+    },
+    "Egm1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aegm"
+    },
+    "Egm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aegm"
+    },
+    "Fae1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Afae,Afa2,ACff"
+    },
+    "Fae2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Afae,Afa2,ACff"
+    },
+    "Fla1": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 1,
+      "useSpecific": "Afla"
+    },
+    "Fla2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Afla"
+    },
+    "Fla3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Afla"
+    },
+    "Gld1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Agld"
+    },
+    "Gld2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Agld"
+    },
+    "Gld3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Agld"
+    },
+    "Gyd1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Agyd"
+    },
+    "Gyd2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Agyd"
+    },
+    "Gyd3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Agyd"
+    },
+    "Gydu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Agyd"
+    },
+    "Har1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Ahar,Ahrl,Ahr2,Ahr3"
+    },
+    "Har2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Ahar,Ahrl,Ahr2,Ahr3"
+    },
+    "Har3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Ahar"
+    },
+    "Hea1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Ahea,Anh1,Anh2,Anhe"
+    },
+    "Inf1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Ainf,ACif"
+    },
+    "Inf2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Ainf,ACif"
+    },
+    "Inf3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Ainf,ACif"
+    },
+    "Inf4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Ainf,ACif"
+    },
+    "Lit1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Alit"
+    },
+    "Lit2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Alit"
+    },
+    "Lsh1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Alsh,ACls"
+    },
+    "Loa1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Aloa,Sloa,Slo2,Slo3"
+    },
+    "Mbt1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Ambt,Amb2"
+    },
+    "Mbt2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Ambt,Amb2"
+    },
+    "Mbt3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Ambt,Amb2"
+    },
+    "Mbt4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Ambt,Amb2"
+    },
+    "Mbt5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "Ambt,Amb2"
+    },
+    "Mil1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 1,
+      "useSpecific": "Amil"
+    },
+    "Mil2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 2,
+      "useSpecific": "Amil"
+    },
+    "Min1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Amin"
+    },
+    "Min2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Amin"
+    },
+    "Neu1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aneu,Ane2,Aall"
+    },
+    "Neu2": {
+      "kind": 3,
+      "type": "interactionFlags",
+      "column": 2,
+      "useSpecific": "Aneu,Ane2,Aall"
+    },
+    "Neu3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "Aneu,Ane2,Aall"
+    },
+    "Neu4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Aneu,Ane2,Aall"
+    },
+    "Ndt1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Andt,AAns"
+    },
+    "Ndt2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Andt,AAns"
+    },
+    "Ndt3": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 3,
+      "useSpecific": "Andt"
+    },
+    "Ans5": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 5,
+      "useSpecific": "AAns"
+    },
+    "Ans6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "AAns"
+    },
+    "Arm1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANre,Aarm"
+    },
+    "Arm2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "ANre,Aarm"
+    },
+    "Poi1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Apoi,Apo2,Aven,ACvs,ANpa"
+    },
+    "Poi2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Apoi,Apo2,Aven,ACvs,ANpa"
+    },
+    "Poi3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Apoi,Apo2,Aven,ACvs,ANpa"
+    },
+    "Poi4": {
+      "kind": 0,
+      "type": "stackFlags",
+      "column": 4,
+      "useSpecific": "Apoi,Apo2,Aven,ACvs,ANpa"
+    },
+    "Poa1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEpa"
+    },
+    "Poa2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEpa"
+    },
+    "Poa3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEpa"
+    },
+    "Poa4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AEpa"
+    },
+    "Poa5": {
+      "kind": 0,
+      "type": "stackFlags",
+      "column": 5,
+      "useSpecific": "AEpa"
+    },
+    "Ply1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aply,ACpy,AOhx,AChx"
+    },
+    "Ply2": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 2,
+      "useSpecific": "Aply,ACpy,AOhx,AChx"
+    },
+    "Ply3": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 3,
+      "useSpecific": "Aply,ACpy,AOhx,AChx"
+    },
+    "Ply4": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 4,
+      "useSpecific": "Aply,ACpy,AOhx,AChx"
+    },
+    "Ply5": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 5,
+      "useSpecific": "Aply,ACpy,AOhx,AChx"
+    },
+    "Pos1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Apos,ACps,Aps2"
+    },
+    "Pos2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aps2"
+    },
+    "Pos3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "Aps2"
+    },
+    "Pos4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Aps2"
+    },
+    "War1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Awar,ACpv"
+    },
+    "War2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Awar,ACpv"
+    },
+    "War3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Awar,ACpv"
+    },
+    "War4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Awar,ACpv"
+    },
+    "Prg1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg"
+    },
+    "Prg2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg"
+    },
+    "Prg3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg"
+    },
+    "Prg4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg"
+    },
+    "Prg5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg"
+    },
+    "Prg6": {
+      "kind": 0,
+      "type": "int",
+      "column": 6,
+      "useSpecific": "Aprg,ACpu,AIlp,AIpg,Apg2"
+    },
+    "Rai1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Arai,ACrd,AUcb,AIrd,Avng"
+    },
+    "Rai2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Arai,ACrd,AUcb,AIrd,Avng"
+    },
+    "Rai3": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 3,
+      "useSpecific": "Arai,ACrd,AUcb,AIrd,Avng"
+    },
+    "Rai4": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 4,
+      "useSpecific": "Arai,ACrd,AUcb,AIrd,Avng"
+    },
+    "Raiu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Arai,ACrd,AIrd,Avng"
+    },
+    "Ucb5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "AUcb,Avng"
+    },
+    "Ucb6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "AUcb,Avng"
+    },
+    "Rej1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Arej,ACrj,ACr2,Arpb,Arpl"
+    },
+    "Rej2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Arej,ACrj,ACr2,Arpb,Arpm"
+    },
+    "Rej3": {
+      "kind": 3,
+      "type": "fullFlags",
+      "column": 3,
+      "useSpecific": "Arej,ACrj,ACr2"
+    },
+    "Rej4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Arej,ACrj,ACr2"
+    },
+    "Rpb3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Arpb,Arpl"
+    },
+    "Rpb4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Arpb,Arpm"
+    },
+    "Rpb5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "Arpb,Arpl,Arpm"
+    },
+    "Rpb6": {
+      "kind": 0,
+      "type": "int",
+      "column": 0,
+      "useSpecific": "Arpb,Arpl,Arpm"
+    },
+    "Rep1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aren,Ahrp,Arep,Arst"
+    },
+    "Rep2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aren,Ahrp,Arep,Arst"
+    },
+    "Rep3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aren,Ahrp,Arep,Arst"
+    },
+    "Rep4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Aren,Ahrp,Arep,Arst"
+    },
+    "Rep5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Aren,Ahrp,Arep,Arst"
+    },
+    "Rtn1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "Artn,Argd,Argl,Arlm"
+    },
+    "Rtn2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Artn,Argd,Argl,Arlm"
+    },
+    "Roa1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht"
+    },
+    "Roa2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr"
+    },
+    "Roa3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr"
+    },
+    "Roa4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl"
+    },
+    "Roa5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl"
+    },
+    "Roa6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl"
+    },
+    "Roa7": {
+      "kind": 0,
+      "type": "int",
+      "column": 7,
+      "useSpecific": "Aroa,Ara2,ACro,ACr1,AIrr,ANht,ANbr,Ahnl"
+    },
+    "Nbr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANbr"
+    },
+    "Roo1": {
+      "kind": 0,
+      "type": "attackBits",
+      "column": 1,
+      "useSpecific": "Aroo,Aro1,Aro2"
+    },
+    "Roo2": {
+      "kind": 0,
+      "type": "attackBits",
+      "column": 2,
+      "useSpecific": "Aroo,Aro1,Aro2"
+    },
+    "Roo3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "Aroo,Aro1,Aro2"
+    },
+    "Roo4": {
+      "kind": 3,
+      "type": "defenseTypeInt",
+      "column": 4,
+      "useSpecific": "Aroo,Aro1,Aro2"
+    },
+    "Sal1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Asal,Auns"
+    },
+    "Sal2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Asal,Auns"
+    },
+    "Esn1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aesn"
+    },
+    "Esn2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aesn"
+    },
+    "Esn3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aesn"
+    },
+    "Esn4": {
+      "kind": 0,
+      "type": "int",
+      "column": 4,
+      "useSpecific": "Aesn"
+    },
+    "Shm1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Ashm,Sshm,Ahid"
+    },
+    "Shm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Ashm,Sshm,Ahid"
+    },
+    "Shm3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Ashm,Sshm,Ahid"
+    },
+    "Slo1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aslo,ACsw,AIos,Aasl"
+    },
+    "Slo2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aslo,ACsw,AIos,Aasl"
+    },
+    "Slo3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "Aslo,ACsw,AIos,Aasl"
+    },
+    "Spo1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aspo"
+    },
+    "Spo2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aspo"
+    },
+    "Spo3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aspo"
+    },
+    "Spo4": {
+      "kind": 0,
+      "type": "stackFlags",
+      "column": 4,
+      "useSpecific": "Aspo"
+    },
+    "Sod1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Asod,Assp,Aspd,Aspy,Aspt"
+    },
+    "Sod2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 2,
+      "useSpecific": "Asod,Assp,Aspd,Aspy,Aspt"
+    },
+    "Spa1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aspa"
+    },
+    "Sta1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Asta"
+    },
+    "Sta2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Asta"
+    },
+    "Sta3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Asta"
+    },
+    "Sta4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Asta"
+    },
+    "Stau": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Asta"
+    },
+    "Uhf1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Auhf,Suhf,ACuf"
+    },
+    "Uhf2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Auhf,Suhf,ACuf"
+    },
+    "Wha1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Awha,Awh2"
+    },
+    "Wha2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Awha,Awh2"
+    },
+    "Wha3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Awha,Awh2"
+    },
+    "Wrp1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Awrp"
+    },
+    "Wrp2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Awrp"
+    },
+    "Iagi": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+    },
+    "Iint": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+    },
+    "Istr": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+    },
+    "Ihid": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Aamk,AIab,AIa1,AIa3,AIa4,AIa6,AIx5,AIx1,AIx2,AIs1,AIs3,AIs4,AIs6,AIi1,AIi3,AIi4,AIi6,AIxm,AIam,AIim,AIsm,AIgm,AItm,AInm"
+    },
+    "Iatt": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIat,AIt6,AIt9,AItc,AItf,AItg,AIth,AIti,AItj,AItk,AItl,AItn"
+    },
+    "Idef": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIde,AId1,AId2,AId3,AId4,AId5,AIda,AIdb"
+    },
+    "Isn1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIfd,AIff,AIfr,AIfu,AIfh,AIfs,AIir,AIuw"
+    },
+    "Ist1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 3,
+      "useSpecific": "AIfd,AIff,AIfr,AIfu,AIfh,AIfs,AIir,AIuw"
+    },
+    "Isn2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIfd,AIff,AIfr,AIfu,AIfh,AIfs,AIir,AIuw"
+    },
+    "Ist2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 4,
+      "useSpecific": "AIfd,AIff,AIfr,AIfu,AIfh,AIfs,AIir,AIuw"
+    },
+    "Ixpg": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIem,AIe2"
+    },
+    "Ihpg": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIhe,AIh1,AIh2,AIh3,AIha,AIhb"
+    },
+    "Impg": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIm1,AIm2,AImr"
+    },
+    "Ihp2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIda,AIdb"
+    },
+    "Imp2": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AIda,AIdb"
+    },
+    "Ivam": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIva,SCva"
+    },
+    "Idic": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIcb,AIlb,AIpb"
+    },
+    "Iarp": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIcb"
+    },
+    "Idam": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIdf,AIfb,AIzb,AIob,AIll,AIlb,AIsb,AIpb"
+    },
+    "Iob5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "AIdf,AIcb,AIfb,AIzb,AIob,AIll,AIlb,AIsb,AIpb"
+    },
+    "Iob2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIdf,AIll,AIsb"
+    },
+    "Iob3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AIdf,AIll,AIsb"
+    },
+    "Iob4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AIdf,AIll,AIsb"
+    },
+    "Iobu": {
+      "kind": 3,
+      "type": "abilCode",
+      "column": 0,
+      "useSpecific": "AIdf,AIll,AIsb"
+    },
+    "Ilev": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIlm"
+    },
+    "Ilif": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIml,AImi,AIlf,AIl1,AIl2,AImh"
+    },
+    "Iman": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AImm,AImb,AIbm"
+    },
+    "Igol": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIgo"
+    },
+    "Ilum": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIlu"
+    },
+    "Ifa1": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 1,
+      "useSpecific": "AIfa"
+    },
+    "Idel": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIfa"
+    },
+    "Icre": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIco"
+    },
+    "Imvb": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIms"
+    },
+    "Ihpr": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Arel,Arll"
+    },
+    "Isib": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIsi"
+    },
+    "Icfd": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIcf"
+    },
+    "Icfm": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIcf"
+    },
+    "Icfx": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AIcf"
+    },
+    "Idet": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 1,
+      "useSpecific": "AIta"
+    },
+    "Idim": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIdi,AIds"
+    },
+    "Idid": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIdi,AIds"
+    },
+    "Iild": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIil"
+    },
+    "Iilw": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIil"
+    },
+    "Irec": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIrt"
+    },
+    "Imrp": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIrm,AIrn"
+    },
+    "Ircd": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIrc"
+    },
+    "irc2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIrc"
+    },
+    "irc3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AIrc"
+    },
+    "Ihps": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIre,AIra"
+    },
+    "Imps": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIre,AIra"
+    },
+    "Ispi": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIsp,AIsa"
+    },
+    "Itpm": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AItp"
+    },
+    "Itp2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AItp,AIrt"
+    },
+    "Idps": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIls"
+    },
+    "Cad1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "ACad,AIan"
+    },
+    "Cac1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ACac,AIcd"
+    },
+    "Cor1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Acor"
+    },
+    "Isx1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIas,AIsx,AIs2"
+    },
+    "Wrs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Awrs,Ahrs,Awrh,Awrg,AOws"
+    },
+    "Wrs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Awrs,Ahrs,Awrh,Awrg"
+    },
+    "Wrs3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Awrs,Ahrs,Awrh,Awrg"
+    },
+    "Ctc1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ACtc,ACt2"
+    },
+    "Ctc2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ACtc,ACt2"
+    },
+    "Ctc3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ACtc,ACt2"
+    },
+    "Ctc4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ACtc,ACt2"
+    },
+    "Ctb1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ACtb"
+    },
+    "Ibl1": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 0,
+      "useSpecific": "AIbl,AIbg,AIbt"
+    },
+    "Uds1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AUds"
+    },
+    "Uds2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUds"
+    },
+    "Ndc1": {
+      "kind": 3,
+      "type": "unitRace",
+      "column": 1,
+      "useSpecific": "ANdc,SNdc"
+    },
+    "Ndc2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANdc,SNdc"
+    },
+    "Nsl1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANsl"
+    },
+    "Chl1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Achl"
+    },
+    "Det1": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 1,
+      "useSpecific": "Adet,Adt1,Atru,Agyv,Adts,Adtg,Abdt,AIrv,AItb"
+    },
+    "Dtn1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Adtn"
+    },
+    "Dtn2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Adtn"
+    },
+    "Eth1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "Aeth"
+    },
+    "Eth2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Aeth"
+    },
+    "Gho1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "Agho,Apiv"
+    },
+    "Gho2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Agho"
+    },
+    "Gho3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "Agho"
+    },
+    "Ivs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aivs"
+    },
+    "Nmr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANmr"
+    },
+    "Nsp1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Ansp"
+    },
+    "Nsp2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Ansp"
+    },
+    "Nsp3": {
+      "kind": 0,
+      "type": "detectionType",
+      "column": 3,
+      "useSpecific": "Ansp"
+    },
+    "Ssk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Assk"
+    },
+    "Ssk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Assk"
+    },
+    "Ssk3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Assk"
+    },
+    "Ssk4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Assk"
+    },
+    "Ssk5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "Assk"
+    },
+    "Hfs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Hfs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Hfs3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Hfs4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Hfs5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Hfs6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "AHfs,ACfs,Abof"
+    },
+    "Nms1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANms,ACmf"
+    },
+    "Nms2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANms,ACmf"
+    },
+    "Uim1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUim,ACmp"
+    },
+    "Uim2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUim,ACmp"
+    },
+    "Uim3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AUim,ACmp"
+    },
+    "Uim4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AUim,ACmp"
+    },
+    "Uls1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AUls"
+    },
+    "Uls2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUls"
+    },
+    "Uls3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AUls"
+    },
+    "Uls4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AUls"
+    },
+    "Uls5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "AUls"
+    },
+    "Ulsu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AUls"
+    },
+    "Uts1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AUts,ANth"
+    },
+    "Uts2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AUts,ANth"
+    },
+    "Uts3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AUts,ANth"
+    },
+    "Nba1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANba,ANbs"
+    },
+    "Nba2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "ANba,ANbs"
+    },
+    "Nba3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANba,ANbs"
+    },
+    "Nbau": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANba,ANbs"
+    },
+    "Nch1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "ANch,ACch,Acmg"
+    },
+    "Cmg2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Acmg"
+    },
+    "Cmg3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Acmg"
+    },
+    "Ndr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANdr,AHdr"
+    },
+    "Ndr2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANdr,AHdr"
+    },
+    "Ndr3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANdr,AHdr"
+    },
+    "Ndr4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Ndr5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Ndr6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Ndr7": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 7,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Ndr8": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 8,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Ndr9": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 9,
+      "useSpecific": "ANdr,AHdr,ACdr,ACsm"
+    },
+    "Nsi1": {
+      "kind": 0,
+      "type": "silenceFlags",
+      "column": 1,
+      "useSpecific": "ANsi,ACsi,ANdh,Aclf,AIse,AIfg"
+    },
+    "Nsi2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANsi,ACsi,ANdh,Aclf,AIse,AIfg"
+    },
+    "Nsi3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANsi,ACsi,ANdh,Aclf,AIse,AIfg"
+    },
+    "Nsi4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANsi,ACsi,ANdh,Aclf,AIse,AIfg"
+    },
+    "Ntou": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANto"
+    },
+    "Tdg1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Atdg"
+    },
+    "Tdg2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Atdg"
+    },
+    "Tdg3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Atdg"
+    },
+    "Tdg4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Atdg"
+    },
+    "Tdg5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Atdg"
+    },
+    "Tsp1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Atsp"
+    },
+    "Tsp2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Atsp"
+    },
+    "Nbf5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANbf,ACbc,ACbf"
+    },
+    "Ebl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEbl"
+    },
+    "Ebl2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEbl"
+    },
+    "Efk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEfk,Aroc"
+    },
+    "Efk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEfk,Aroc"
+    },
+    "Efk3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AEfk,Aroc"
+    },
+    "Efk4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AEfk"
+    },
+    "Esh1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AEsh,ACss"
+    },
+    "Esh2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AEsh,ACss"
+    },
+    "Esh3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AEsh,ACss"
+    },
+    "Esh4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "AEsh,ACss"
+    },
+    "Esh5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "AEsh,ACss"
+    },
+    "Esv1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AEsv"
+    },
+    "Esvu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AEsv"
+    },
+    "abs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aabs"
+    },
+    "abs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aabs"
+    },
+    "bsk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Absk"
+    },
+    "bsk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Absk"
+    },
+    "bsk3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Absk"
+    },
+    "coau": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Acoa,Acoh,Aco2,Aco3"
+    },
+    "coa1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 1,
+      "useSpecific": "Acoa,Acoh,Aco2,Aco3"
+    },
+    "coa2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Aco2,Aco3"
+    },
+    "cyc1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "Acyc,ACcy,SCc1,AIcy"
+    },
+    "dcp1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 1,
+      "useSpecific": "Adec"
+    },
+    "dcp2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 2,
+      "useSpecific": "Adec"
+    },
+    "dvm1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Advm"
+    },
+    "dvm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Advm"
+    },
+    "dvm3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Advm"
+    },
+    "dvm4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Advm"
+    },
+    "dvm5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Advm"
+    },
+    "dvm6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "Advm,ACde"
+    },
+    "exh1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Aexh"
+    },
+    "exhu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Aexh"
+    },
+    "fak1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Afak"
+    },
+    "fak2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Afak"
+    },
+    "fak3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Afak"
+    },
+    "fak4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Afak"
+    },
+    "fak5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Afak"
+    },
+    "hwdu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "Ahwd,AChw,Apts,Aeye,AIhw,AIsw"
+    },
+    "inv1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AInv,Apak,Aiun"
+    },
+    "inv2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "AInv,Apak,Aiun"
+    },
+    "inv3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AInv,Apak,Aiun"
+    },
+    "inv4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "AInv,Apak,Aiun"
+    },
+    "inv5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "AInv,Apak,Aiun"
+    },
+    "liq1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aliq"
+    },
+    "liq2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aliq"
+    },
+    "liq3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aliq"
+    },
+    "liq4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "Aliq"
+    },
+    "mim1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Amim,AImx,ACmi,ACm2,ACm3"
+    },
+    "mfl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Amfl"
+    },
+    "mfl2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Amfl"
+    },
+    "mfl3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Amfl"
+    },
+    "mfl4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Amfl"
+    },
+    "mfl5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Amfl"
+    },
+    "mfl6": {
+      "kind": 0,
+      "type": "bool",
+      "column": 6,
+      "useSpecific": "Amfl"
+    },
+    "tpi1": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 1,
+      "useSpecific": "Stpm,Stpr"
+    },
+    "tpi2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 2,
+      "useSpecific": "Stpm,Stpr"
+    },
+    "spl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aspl,Aspp"
+    },
+    "spl2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Aspl"
+    },
+    "irl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIrl,AIpr,AIsl,AIpl,AIp1,AIp2,AIp3,AIp4,AIp5,AIp6"
+    },
+    "irl2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIrl,AIpr,AIsl,AIpl,AIp1,AIp2,AIp3,AIp4,AIp5,AIp6"
+    },
+    "irl3": {
+      "kind": 3,
+      "type": "fullFlags",
+      "column": 3,
+      "useSpecific": "AIrl,AIpr,AIsl,AIpl,AIp1,AIp2,AIp3,AIp4,AIp5,AIp6"
+    },
+    "irl4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "AIrl,AIpr,AIsl,AIpl,AIp1,AIp2,AIp3,AIp4,AIp5,AIp6"
+    },
+    "irl5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "AIrl,AIpr,AIsl,AIpl,AIp1,AIp2,AIp3,AIp4,AIp5,AIp6"
+    },
+    "idc1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIdc"
+    },
+    "idc2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIdc"
+    },
+    "idc3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "AIdc"
+    },
+    "imo1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AImo"
+    },
+    "imo2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AImo"
+    },
+    "imo3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "AImo"
+    },
+    "imou": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AImo"
+    },
+    "ict1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIct"
+    },
+    "ict2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "AIct"
+    },
+    "isr1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIsr"
+    },
+    "isr2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIsr"
+    },
+    "ipv1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIpv"
+    },
+    "ipv2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIpv"
+    },
+    "ipv3": {
+      "kind": 0,
+      "type": "bool",
+      "column": 3,
+      "useSpecific": "AIpv"
+    },
+    "mec1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Amec"
+    },
+    "spb1": {
+      "kind": 3,
+      "type": "abilityList",
+      "column": 1,
+      "useSpecific": "Aspb"
+    },
+    "spb2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Aspb"
+    },
+    "spb3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Aspb"
+    },
+    "spb4": {
+      "kind": 0,
+      "type": "int",
+      "column": 4,
+      "useSpecific": "Aspb"
+    },
+    "spb5": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 5,
+      "useSpecific": "Aspb"
+    },
+    "ast1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aast"
+    },
+    "ast2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aast"
+    },
+    "gra1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Agra"
+    },
+    "gra2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Agra"
+    },
+    "gra3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Agra"
+    },
+    "gra4": {
+      "kind": 0,
+      "type": "int",
+      "column": 4,
+      "useSpecific": "Agra"
+    },
+    "gra5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "Agra"
+    },
+    "ipmu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "AIpm,ANpa"
+    },
+    "Npr1": {
+      "kind": 3,
+      "type": "pickFlags",
+      "column": 1,
+      "useSpecific": "ANpr"
+    },
+    "Nsa1": {
+      "kind": 3,
+      "type": "pickFlags",
+      "column": 1,
+      "useSpecific": "ANsa"
+    },
+    "Nsa2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANsa"
+    },
+    "Nsa3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANsa"
+    },
+    "Nsa4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANsa"
+    },
+    "Nsa5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANsa"
+    },
+    "Iaa1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIaa"
+    },
+    "Ixs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AIxs"
+    },
+    "Ixs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AIxs"
+    },
+    "Nef1": {
+      "kind": 3,
+      "type": "unitList",
+      "column": 1,
+      "useSpecific": "ANef"
+    },
+    "Npa5": {
+      "kind": 0,
+      "type": "int",
+      "column": 5,
+      "useSpecific": "ANpa"
+    },
+    "Npa6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 0,
+      "useSpecific": "ANpa"
+    },
+    "Igl1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "AIgf,AIgu"
+    },
+    "Iglu": {
+      "kind": 3,
+      "type": "upgradeCode",
+      "column": 0,
+      "useSpecific": "AIgf,AIgu"
+    },
+    "Nse1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANse"
+    },
+    "Ndo1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANdo"
+    },
+    "Ndo2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "ANdo"
+    },
+    "Ndo3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANdo"
+    },
+    "Ndou": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANdo"
+    },
+    "flk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Aflk,Afsh"
+    },
+    "flk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Aflk,Afsh"
+    },
+    "flk3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Aflk,Afsh"
+    },
+    "flk4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Aflk,Afsh"
+    },
+    "flk5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Aflk,Afsh"
+    },
+    "Hbn1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "AHbn,Apsh"
+    },
+    "Hbn2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "AHbn,Apsh"
+    },
+    "fbk1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Afbk"
+    },
+    "fbk2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Afbk"
+    },
+    "fbk3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "Afbk"
+    },
+    "fbk4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "Afbk"
+    },
+    "fbk5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "Afbk,Afbt,Afbb"
+    },
+    "nca1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANca"
+    },
+    "pxf1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Apxf"
+    },
+    "pxf2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "Apxf"
+    },
+    "mls1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "Amls"
+    },
+    "sla1": {
+      "kind": 0,
+      "type": "bool",
+      "column": 1,
+      "useSpecific": "Asla"
+    },
+    "Nst1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "ANst"
+    },
+    "Nst2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANst"
+    },
+    "Nst3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANst"
+    },
+    "Nst4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANst"
+    },
+    "Nst5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANst"
+    },
+    "sla2": {
+      "kind": 0,
+      "type": "bool",
+      "column": 2,
+      "useSpecific": "Asla"
+    },
+    "Ncl1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANcl"
+    },
+    "Ncl2": {
+      "kind": 0,
+      "type": "channelType",
+      "column": 2,
+      "useSpecific": "ANcl"
+    },
+    "Ncl3": {
+      "kind": 0,
+      "type": "channelFlags",
+      "column": 3,
+      "useSpecific": "ANcl"
+    },
+    "Ncl4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANcl"
+    },
+    "Ncl5": {
+      "kind": 0,
+      "type": "bool",
+      "column": 5,
+      "useSpecific": "ANcl"
+    },
+    "Ncl6": {
+      "kind": 3,
+      "type": "orderString",
+      "column": 6,
+      "useSpecific": "ANcl"
+    },
+    "Nab1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANab"
+    },
+    "Nab2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANab"
+    },
+    "Nab3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "ANab"
+    },
+    "Nab4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANab"
+    },
+    "Nab5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANab"
+    },
+    "Nab6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANab"
+    },
+    "Nhs6": {
+      "kind": 0,
+      "type": "int",
+      "column": 6,
+      "useSpecific": "ANhs"
+    },
+    "Ntm1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANtm"
+    },
+    "Ntm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANtm"
+    },
+    "Ntm3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "ANtm"
+    },
+    "Ntm4": {
+      "kind": 0,
+      "type": "bool",
+      "column": 4,
+      "useSpecific": "ANtm"
+    },
+    "Neg1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANeg"
+    },
+    "Neg2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANeg"
+    },
+    "Neg3": {
+      "kind": 3,
+      "type": "heroAbilityList",
+      "column": 3,
+      "useSpecific": "ANeg"
+    },
+    "Neg4": {
+      "kind": 3,
+      "type": "heroAbilityList",
+      "column": 4,
+      "useSpecific": "ANeg"
+    },
+    "Neg5": {
+      "kind": 3,
+      "type": "heroAbilityList",
+      "column": 5,
+      "useSpecific": "ANeg"
+    },
+    "Neg6": {
+      "kind": 3,
+      "type": "heroAbilityList",
+      "column": 6,
+      "useSpecific": "ANeg"
+    },
+    "Ncs1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANhs,ANcs,ANc1,ANc2,ANc3"
+    },
+    "Ncs2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANhs,ANcs,ANc1,ANc2,ANc3"
+    },
+    "Ncs3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "ANhs,ANcs,ANc1,ANc2,ANc3"
+    },
+    "Ncs4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANhs,ANcs,ANc1,ANc2,ANc3"
+    },
+    "Ncs5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANhs,ANcs,ANc1,ANc2,ANc3"
+    },
+    "Ncs6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANcs,ANc1,ANc2,ANc3"
+    },
+    "Nsy1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nsy2": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 2,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nsy3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nsy4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nsy5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nsyu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANsy,ANs1,ANs2,ANs3"
+    },
+    "Nfy1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANfy"
+    },
+    "Nfy2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANfy"
+    },
+    "Nfyu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANfy"
+    },
+    "Nde1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANde,ANd1,ANd2,ANd3"
+    },
+    "Nde2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANde,ANd1,ANd2,ANd3"
+    },
+    "Nde3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANde,ANd1,ANd2,ANd3"
+    },
+    "Nde4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANde,ANd1,ANd2,ANd3"
+    },
+    "Nic1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANic"
+    },
+    "Nic2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANic"
+    },
+    "Nic3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANic"
+    },
+    "Nic4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANic"
+    },
+    "Nic5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANic"
+    },
+    "Nic6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANic"
+    },
+    "Nso1": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 1,
+      "useSpecific": "ANso"
+    },
+    "Nso2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANso"
+    },
+    "Nso3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANso"
+    },
+    "Nso4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANso"
+    },
+    "Nso5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANso"
+    },
+    "Nlm2": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 2,
+      "useSpecific": "ANlm"
+    },
+    "Nlm3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "ANlm"
+    },
+    "Nlm4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANlm"
+    },
+    "Nlm5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANlm"
+    },
+    "Nlm6": {
+      "kind": 0,
+      "type": "int",
+      "column": 6,
+      "useSpecific": "ANlm"
+    },
+    "Nvc1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "ANvc"
+    },
+    "Nvc2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "ANvc"
+    },
+    "Nvc3": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 3,
+      "useSpecific": "ANvc"
+    },
+    "Nvc4": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 4,
+      "useSpecific": "ANvc"
+    },
+    "Nvc5": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 5,
+      "useSpecific": "ANvc"
+    },
+    "Nvc6": {
+      "kind": 2,
+      "type": "unreal",
+      "column": 6,
+      "useSpecific": "ANvc"
+    },
+    "Nvcu": {
+      "kind": 3,
+      "type": "unitCode",
+      "column": 0,
+      "useSpecific": "ANvc"
+    },
+    "Tau1": {
+      "kind": 0,
+      "type": "int",
+      "column": 1,
+      "useSpecific": "Atau,ANta"
+    },
+    "Tau2": {
+      "kind": 0,
+      "type": "int",
+      "column": 2,
+      "useSpecific": "Atau,ANta"
+    },
+    "Tau3": {
+      "kind": 0,
+      "type": "int",
+      "column": 3,
+      "useSpecific": "Atau,ANta"
+    }
+  }
+}

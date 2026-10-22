@@ -44,10 +44,10 @@ local pet=CreateUnit(1,FourCC('k000'),160,0,0);pet.summoned=true
 local illusion=CreateUnit(1,FourCC('k000'),180,0,0);illusion.summoned=true;illusion.illusion=true
 local ward=CreateUnit(1,FourCC('oeye'),200,0,0);ward.summoned=true;ward.defaultspeed=0
 local foe=enemy();CreativeTick()
-for _,u in ipairs({melee,ranged,mechanical,pet})do assert(GetUnitAbilityLevel(u,FourCC('Clif'))==150,'All real troops have30% native attack lifesteal')end
+for _,u in ipairs({melee,ranged,mechanical,pet})do assert(GetUnitAbilityLevel(u,FourCC('Clif'))==320,'All real troops have32% native attack lifesteal')end
 assert(GetUnitAbilityLevel(foe,FourCC('Clif'))==0 and GetUnitAbilityLevel(illusion,FourCC('Clif'))==0 and GetUnitAbilityLevel(ward,FourCC('Clif'))==0)
-cast(3,50);CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==200,'Banner raises total to capped40%')
-Seconds=110;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==150 and GetUnitAbilityLevel(h,FourCC('Cuba'))==0)
+cast(3,50);CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==420,'Banner raises total to capped42%')
+Seconds=110;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==320 and GetUnitAbilityLevel(h,FourCC('Cuba'))==0)
 h.x=2000;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==0,'Leaving the aura removes its native helper')
 h.x=0;CreativeTick();h.hp=0;CreativeTick();assert(GetUnitAbilityLevel(ranged,FourCC('Clif'))==0,'Dead sources do not heal or leave permanent lifesteal')
 -- Flat army regen and burst heal respect alliance, hero/building exclusions and max HP.
@@ -74,7 +74,7 @@ h=prep(0);local shop=CreateUnit(15,FourCC('futl'),0,0,0);shop.structure=true;Pla
 assert(IssueNeutralTargetOrder(0,shop,'neutralinteract',h))
 assert(IssueNeutralImmediateOrderById(0,shop,FourCC('fvlm')));assert(Players[0].gold==480)
 assert(IssueNeutralImmediateOrderById(0,shop,FourCC('ftot')));assert(Players[0].gold==0)
-soldier=CreateUnit(1,FourCC('fm00'),100,0,0);CreativeTick();assert(GetUnitAbilityLevel(soldier,FourCC('Clif'))==75,'Item aura is exactly15%')
+soldier=CreateUnit(1,FourCC('fm00'),100,0,0);CreativeTick();assert(GetUnitAbilityLevel(soldier,FourCC('Clif'))==150,'Item aura is exactly15%')
 h.inventory[0]=nil;CreativeTick();assert(GetUnitAbilityLevel(soldier,FourCC('Clif'))==0,'Dropping the source removes the army aura')
 -- Pet kill gold is real income, not native bounty duplication, and does not grant extra scripted XP.
 h=prep(0);local function death(raw,killer,flags)

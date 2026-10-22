@@ -1,0 +1,1916 @@
+{
+  "version": 22,
+  "curves": {
+    "AEbl": {
+      "acdn": {
+        "start": 12,
+        "cap": 5.5,
+        "shape": 60
+      },
+      "Ebl1": {
+        "start": 650,
+        "cap": 1400,
+        "shape": 60
+      },
+      "Ebl2": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 50,
+        "cap": 35,
+        "shape": 60
+      }
+    },
+    "AEer": {
+      "acdn": {
+        "start": 13,
+        "cap": 9.5,
+        "shape": 60
+      },
+      "Eer1": {
+        "start": 18,
+        "cap": 280,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 1.25,
+        "cap": 2.5,
+        "shape": 60
+      },
+      "adur": {
+        "start": 3,
+        "cap": 6,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 70,
+        "cap": 190,
+        "shape": 60
+      }
+    },
+    "AEfk": {
+      "acdn": {
+        "start": 14,
+        "cap": 10,
+        "shape": 60
+      },
+      "Efk1": {
+        "start": 100,
+        "cap": 1200,
+        "shape": 60
+      },
+      "Efk2": {
+        "start": 600,
+        "cap": 7200,
+        "shape": 60
+      },
+      "aare": {
+        "start": 300,
+        "cap": 420,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "AEfn": {
+      "acdn": {
+        "start": 20.0,
+        "cap": 13.0,
+        "shape": 60
+      }
+    },
+    "AEmb": {
+      "acdn": {
+        "start": 14,
+        "cap": 10,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 50,
+        "cap": 150,
+        "shape": 60
+      }
+    },
+    "AEme": {
+      "acdn": {
+        "start": 160,
+        "cap": 115,
+        "shape": 0
+      },
+      "Eme5": {
+        "start": 750,
+        "cap": 9000,
+        "shape": 0
+      },
+      "adur": {
+        "start": 30,
+        "cap": 45,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 30,
+        "cap": 45,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 140,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AEsf": {
+      "acdn": {
+        "start": 150,
+        "cap": 105,
+        "shape": 0
+      },
+      "Esf1": {
+        "start": 90,
+        "cap": 520,
+        "shape": 0
+      },
+      "adur": {
+        "start": 20,
+        "cap": 26,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 20,
+        "cap": 26,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AEsh": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Esh5": {
+        "start": 90,
+        "cap": 1500,
+        "shape": 60
+      },
+      "Esh1": {
+        "start": 12,
+        "cap": 100,
+        "shape": 60
+      },
+      "Esh2": {
+        "start": 0.2,
+        "cap": 0.4,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 70,
+        "cap": 200,
+        "shape": 60
+      }
+    },
+    "AEst": {
+      "acdn": {
+        "start": 20.0,
+        "cap": 13.0,
+        "shape": 60
+      }
+    },
+    "AEsv": {
+      "acdn": {
+        "start": 180.0,
+        "cap": 125.99999999999999,
+        "shape": 0
+      }
+    },
+    "AEtq": {
+      "acdn": {
+        "start": 150,
+        "cap": 100,
+        "shape": 0
+      },
+      "Etq1": {
+        "start": 40,
+        "cap": 380,
+        "shape": 0
+      },
+      "adur": {
+        "start": 20,
+        "cap": 28,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 20,
+        "cap": 28,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 160,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AHav": {
+      "acdn": {
+        "start": 150,
+        "cap": 110,
+        "shape": 0
+      },
+      "Hav1": {
+        "start": 4,
+        "cap": 18,
+        "shape": 0
+      },
+      "Hav2": {
+        "start": 650,
+        "cap": 7000,
+        "shape": 0
+      },
+      "Hav3": {
+        "start": 25,
+        "cap": 400,
+        "shape": 0
+      },
+      "adur": {
+        "start": 25,
+        "cap": 35,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 25,
+        "cap": 35,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 140,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AHbz": {
+      "acdn": {
+        "start": 20,
+        "cap": 15,
+        "shape": 60
+      },
+      "Hbz2": {
+        "start": 28,
+        "cap": 380,
+        "shape": 60
+      },
+      "Hbz6": {
+        "start": 140,
+        "cap": 1900,
+        "shape": 60
+      },
+      "Hbz5": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 260,
+        "shape": 60
+      }
+    },
+    "AHdr": {
+      "acdn": {
+        "start": 14,
+        "cap": 10,
+        "shape": 60
+      },
+      "Ndr2": {
+        "start": 25,
+        "cap": 350,
+        "shape": 60
+      },
+      "Ndr5": {
+        "start": 40,
+        "cap": 450,
+        "shape": 60
+      },
+      "Ndr8": {
+        "start": 1,
+        "cap": 1,
+        "shape": 60
+      },
+      "Ndr9": {
+        "start": 3,
+        "cap": 3,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 10,
+        "cap": 30,
+        "shape": 60
+      }
+    },
+    "AHds": {
+      "acdn": {
+        "start": 28,
+        "cap": 22,
+        "shape": 60
+      },
+      "adur": {
+        "start": 4,
+        "cap": 8,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 4,
+        "cap": 8,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 40,
+        "cap": 90,
+        "shape": 60
+      }
+    },
+    "AHfs": {
+      "acdn": {
+        "start": 18,
+        "cap": 13,
+        "shape": 60
+      },
+      "Hfs1": {
+        "start": 18,
+        "cap": 210,
+        "shape": 60
+      },
+      "Hfs3": {
+        "start": 5,
+        "cap": 45,
+        "shape": 60
+      },
+      "Hfs6": {
+        "start": 108,
+        "cap": 1260,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 100,
+        "cap": 270,
+        "shape": 60
+      }
+    },
+    "AHhb": {
+      "acdn": {
+        "start": 12,
+        "cap": 9,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 65,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "AHmt": {
+      "acdn": {
+        "start": 100,
+        "cap": 65,
+        "shape": 0
+      },
+      "Hmt2": {
+        "start": 3,
+        "cap": 1.25,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 100,
+        "cap": 160,
+        "shape": 0
+      }
+    },
+    "AHpx": {
+      "acdn": {
+        "start": 180.0,
+        "cap": 125.99999999999999,
+        "shape": 0
+      }
+    },
+    "AHre": {
+      "acdn": {
+        "start": 180,
+        "cap": 125,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AHtb": {
+      "acdn": {
+        "start": 13,
+        "cap": 9.5,
+        "shape": 60
+      },
+      "Htb1": {
+        "start": 100,
+        "cap": 1800,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.75,
+        "cap": 1.75,
+        "shape": 60
+      },
+      "adur": {
+        "start": 1.5,
+        "cap": 3.0,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 75,
+        "cap": 210,
+        "shape": 60
+      }
+    },
+    "AHtc": {
+      "acdn": {
+        "start": 14,
+        "cap": 10,
+        "shape": 60
+      },
+      "Htc1": {
+        "start": 70,
+        "cap": 1000,
+        "shape": 60
+      },
+      "Htc2": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "Htc3": {
+        "start": 0.15,
+        "cap": 0.35,
+        "shape": 60
+      },
+      "Htc4": {
+        "start": 0.15,
+        "cap": 0.3,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 2,
+        "cap": 3.5,
+        "shape": 60
+      },
+      "aare": {
+        "start": 260,
+        "cap": 360,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 210,
+        "shape": 60
+      }
+    },
+    "AHwe": {
+      "acdn": {
+        "start": 20.0,
+        "cap": 13.0,
+        "shape": 60
+      }
+    },
+    "ANab": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Nab4": {
+        "start": 18,
+        "cap": 210,
+        "shape": 60
+      },
+      "Nab5": {
+        "start": 10,
+        "cap": 115,
+        "shape": 60
+      },
+      "Nab3": {
+        "start": 2,
+        "cap": 16,
+        "shape": 60
+      },
+      "Nab6": {
+        "start": 1,
+        "cap": 1,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "ANbf": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Ucs1": {
+        "start": 100,
+        "cap": 1500,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 220,
+        "shape": 60
+      },
+      "Ucs2": {
+        "start": 1200,
+        "cap": 18000,
+        "shape": 60
+      },
+      "Nbf5": {
+        "start": 8,
+        "cap": 90,
+        "shape": 60
+      }
+    },
+    "ANc1": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Ncs1": {
+        "start": 12,
+        "cap": 140,
+        "shape": 60
+      },
+      "Ncs4": {
+        "start": 144,
+        "cap": 1680,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.2,
+        "cap": 0.45,
+        "shape": 60
+      },
+      "adur": {
+        "start": 0.4,
+        "cap": 0.8,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 240,
+        "shape": 60
+      }
+    },
+    "ANc2": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Ncs1": {
+        "start": 12,
+        "cap": 140,
+        "shape": 60
+      },
+      "Ncs4": {
+        "start": 144,
+        "cap": 1680,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.2,
+        "cap": 0.45,
+        "shape": 60
+      },
+      "adur": {
+        "start": 0.4,
+        "cap": 0.8,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 240,
+        "shape": 60
+      }
+    },
+    "ANc3": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Ncs1": {
+        "start": 12,
+        "cap": 140,
+        "shape": 60
+      },
+      "Ncs4": {
+        "start": 144,
+        "cap": 1680,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.2,
+        "cap": 0.45,
+        "shape": 60
+      },
+      "adur": {
+        "start": 0.4,
+        "cap": 0.8,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 240,
+        "shape": 60
+      }
+    },
+    "ANch": {
+      "acdn": {
+        "start": 140,
+        "cap": 90,
+        "shape": 0
+      },
+      "Nch1": {
+        "start": 5,
+        "cap": 20,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 150,
+        "cap": 240,
+        "shape": 0
+      }
+    },
+    "ANcr": {
+      "acdn": {
+        "start": 32,
+        "cap": 24,
+        "shape": 60
+      },
+      "Ncr6": {
+        "start": 0.2,
+        "cap": 1.25,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 70,
+        "cap": 170,
+        "shape": 60
+      },
+      "Ncr5": {
+        "start": 0.5,
+        "cap": 0.5,
+        "shape": 0
+      }
+    },
+    "ANcs": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Ncs1": {
+        "start": 12,
+        "cap": 140,
+        "shape": 60
+      },
+      "Ncs4": {
+        "start": 144,
+        "cap": 1680,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.2,
+        "cap": 0.45,
+        "shape": 60
+      },
+      "adur": {
+        "start": 0.4,
+        "cap": 0.8,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 240,
+        "shape": 60
+      }
+    },
+    "ANdh": {
+      "acdn": {
+        "start": 17,
+        "cap": 12,
+        "shape": 60
+      },
+      "Nsi2": {
+        "start": 0.2,
+        "cap": 0.45,
+        "shape": 60
+      },
+      "Nsi3": {
+        "start": 0.1,
+        "cap": 0.25,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 70,
+        "cap": 190,
+        "shape": 60
+      }
+    },
+    "ANdo": {
+      "acdn": {
+        "start": 160,
+        "cap": 115,
+        "shape": 0
+      },
+      "Ndo1": {
+        "start": 50,
+        "cap": 350,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "ANdr": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Ndr1": {
+        "start": 35,
+        "cap": 500,
+        "shape": 60
+      },
+      "Ndr6": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "Ndr7": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "Ndr8": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "Ndr9": {
+        "start": 0,
+        "cap": 0,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 60,
+        "cap": 180,
+        "shape": 60
+      }
+    },
+    "ANef": {
+      "acdn": {
+        "start": 180.0,
+        "cap": 125.99999999999999,
+        "shape": 0
+      }
+    },
+    "ANfl": {
+      "acdn": {
+        "start": 14,
+        "cap": 10.5,
+        "shape": 60
+      },
+      "Ocl1": {
+        "start": 100,
+        "cap": 1500,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 85,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "ANg1": {
+      "acdn": {
+        "start": 90.0,
+        "cap": 65.0,
+        "shape": 0
+      },
+      "Nrg5": {
+        "start": 14,
+        "cap": 112,
+        "shape": 0
+      },
+      "Nrg6": {
+        "start": 4.0,
+        "cap": 23.0,
+        "shape": 0
+      }
+    },
+    "ANg2": {
+      "acdn": {
+        "start": 90.0,
+        "cap": 65.0,
+        "shape": 0
+      },
+      "Nrg5": {
+        "start": 16,
+        "cap": 114,
+        "shape": 0
+      },
+      "Nrg6": {
+        "start": 5.0,
+        "cap": 24.0,
+        "shape": 0
+      }
+    },
+    "ANg3": {
+      "acdn": {
+        "start": 90.0,
+        "cap": 65.0,
+        "shape": 0
+      },
+      "Nrg5": {
+        "start": 18,
+        "cap": 116,
+        "shape": 0
+      },
+      "Nrg6": {
+        "start": 6.0,
+        "cap": 25.0,
+        "shape": 0
+      }
+    },
+    "ANht": {
+      "acdn": {
+        "start": 18,
+        "cap": 13,
+        "shape": 60
+      },
+      "Roa1": {
+        "start": 0.15,
+        "cap": 0.35,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 70,
+        "cap": 190,
+        "shape": 60
+      }
+    },
+    "ANlm": {
+      "acdn": {
+        "start": 32.0,
+        "cap": 20.8,
+        "shape": 60
+      }
+    },
+    "ANms": {
+      "acdn": {
+        "start": 10,
+        "cap": 7,
+        "shape": 60
+      },
+      "Nms1": {
+        "start": 1,
+        "cap": 3.0,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 25,
+        "cap": 60,
+        "shape": 60
+      }
+    },
+    "ANrf": {
+      "acdn": {
+        "start": 20,
+        "cap": 15,
+        "shape": 60
+      },
+      "Hbz2": {
+        "start": 25,
+        "cap": 320,
+        "shape": 60
+      },
+      "Hbz6": {
+        "start": 125,
+        "cap": 1600,
+        "shape": 60
+      },
+      "Hbz5": {
+        "start": 5,
+        "cap": 80,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 260,
+        "shape": 60
+      }
+    },
+    "ANrg": {
+      "acdn": {
+        "start": 90.0,
+        "cap": 65.0,
+        "shape": 0
+      },
+      "Nrg5": {
+        "start": 12,
+        "cap": 110,
+        "shape": 0
+      },
+      "Nrg6": {
+        "start": 3.0,
+        "cap": 22.0,
+        "shape": 0
+      }
+    },
+    "ANs1": {
+      "acdn": {
+        "start": 35.0,
+        "cap": 22.75,
+        "shape": 60
+      }
+    },
+    "ANs2": {
+      "acdn": {
+        "start": 35.0,
+        "cap": 22.75,
+        "shape": 60
+      }
+    },
+    "ANs3": {
+      "acdn": {
+        "start": 35.0,
+        "cap": 22.75,
+        "shape": 60
+      }
+    },
+    "ANsg": {
+      "acdn": {
+        "start": 40.0,
+        "cap": 26.0,
+        "shape": 60
+      }
+    },
+    "ANsi": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 2,
+        "cap": 4.5,
+        "shape": 60
+      },
+      "adur": {
+        "start": 4,
+        "cap": 7,
+        "shape": 60
+      },
+      "aare": {
+        "start": 250,
+        "cap": 380,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 200,
+        "shape": 60
+      }
+    },
+    "ANso": {
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "Nso1": {
+        "start": 15,
+        "cap": 180,
+        "shape": 60
+      },
+      "Nso3": {
+        "start": 0.15,
+        "cap": 0.3,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 75,
+        "cap": 200,
+        "shape": 60
+      }
+    },
+    "ANsq": {
+      "acdn": {
+        "start": 25.0,
+        "cap": 16.25,
+        "shape": 60
+      }
+    },
+    "ANst": {
+      "acdn": {
+        "start": 180,
+        "cap": 125,
+        "shape": 0
+      },
+      "Nst3": {
+        "start": 160,
+        "cap": 1000,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "ANsw": {
+      "acdn": {
+        "start": 70.0,
+        "cap": 45.5,
+        "shape": 60
+      }
+    },
+    "ANsy": {
+      "acdn": {
+        "start": 35.0,
+        "cap": 22.75,
+        "shape": 60
+      }
+    },
+    "ANtm": {
+      "acdn": {
+        "start": 140,
+        "cap": 95,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 150,
+        "cap": 240,
+        "shape": 0
+      }
+    },
+    "ANto": {
+      "acdn": {
+        "start": 120.0,
+        "cap": 84.0,
+        "shape": 0
+      }
+    },
+    "ANvc": {
+      "acdn": {
+        "start": 180,
+        "cap": 125,
+        "shape": 0
+      },
+      "Nvc5": {
+        "start": 180,
+        "cap": 650,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 180,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AOcl": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Ocl1": {
+        "start": 95,
+        "cap": 1700,
+        "shape": 60
+      },
+      "Ocl3": {
+        "start": 0.18,
+        "cap": 0.12,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 230,
+        "shape": 60
+      }
+    },
+    "AOeq": {
+      "acdn": {
+        "start": 150,
+        "cap": 105,
+        "shape": 0
+      },
+      "Oeq2": {
+        "start": 150,
+        "cap": 1100,
+        "shape": 0
+      },
+      "Oeq3": {
+        "start": 0.3,
+        "cap": 0.55,
+        "shape": 0
+      },
+      "adur": {
+        "start": 20,
+        "cap": 25,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 20,
+        "cap": 25,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 160,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AOhw": {
+      "acdn": {
+        "start": 13,
+        "cap": 9,
+        "shape": 60
+      },
+      "Ocl1": {
+        "start": 150,
+        "cap": 1900,
+        "shape": 60
+      },
+      "Ocl3": {
+        "start": 0.25,
+        "cap": 0.18,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 250,
+        "shape": 60
+      }
+    },
+    "AOhx": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 1.25,
+        "cap": 2.5,
+        "shape": 60
+      },
+      "adur": {
+        "start": 3,
+        "cap": 6,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 210,
+        "shape": 60
+      }
+    },
+    "AOmi": {
+      "acdn": {
+        "start": 28,
+        "cap": 25,
+        "shape": 60
+      },
+      "Omi3": {
+        "start": 5.0,
+        "cap": 3.0,
+        "shape": 60
+      },
+      "adur": {
+        "start": 15,
+        "cap": 24,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 15,
+        "cap": 24,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 210,
+        "shape": 60
+      }
+    },
+    "AOre": {
+      "acdn": {
+        "start": 240,
+        "cap": 150,
+        "shape": 0
+      },
+      "Ore1": {
+        "start": 7,
+        "cap": 3,
+        "shape": 0
+      }
+    },
+    "AOsf": {
+      "acdn": {
+        "start": 30.0,
+        "cap": 19.5,
+        "shape": 60
+      }
+    },
+    "AOsh": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Osh1": {
+        "start": 100,
+        "cap": 1500,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 220,
+        "shape": 60
+      },
+      "Osh2": {
+        "start": 1200,
+        "cap": 18000,
+        "shape": 60
+      }
+    },
+    "AOsw": {
+      "acdn": {
+        "start": 10.0,
+        "cap": 7.0,
+        "shape": 60
+      }
+    },
+    "AOvd": {
+      "acdn": {
+        "start": 180,
+        "cap": 125,
+        "shape": 0
+      },
+      "adur": {
+        "start": 10,
+        "cap": 16,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 10,
+        "cap": 16,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AOwk": {
+      "acdn": {
+        "start": 20,
+        "cap": 14,
+        "shape": 60
+      },
+      "Owk2": {
+        "start": 0.12,
+        "cap": 0.3,
+        "shape": 60
+      },
+      "Owk3": {
+        "start": 45,
+        "cap": 650,
+        "shape": 60
+      },
+      "adur": {
+        "start": 6,
+        "cap": 12,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 6,
+        "cap": 12,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 65,
+        "cap": 150,
+        "shape": 60
+      }
+    },
+    "AOws": {
+      "acdn": {
+        "start": 14,
+        "cap": 10,
+        "shape": 60
+      },
+      "Wrs1": {
+        "start": 60,
+        "cap": 850,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.6,
+        "cap": 1.4,
+        "shape": 60
+      },
+      "adur": {
+        "start": 1.2,
+        "cap": 2.2,
+        "shape": 60
+      },
+      "aare": {
+        "start": 250,
+        "cap": 350,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 200,
+        "shape": 60
+      }
+    },
+    "AOww": {
+      "acdn": {
+        "start": 100,
+        "cap": 75,
+        "shape": 0
+      },
+      "Oww1": {
+        "start": 140,
+        "cap": 700,
+        "shape": 0
+      },
+      "adur": {
+        "start": 6,
+        "cap": 9,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 6,
+        "cap": 9,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 150,
+        "cap": 300,
+        "shape": 0
+      }
+    },
+    "AUan": {
+      "acdn": {
+        "start": 180,
+        "cap": 125,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AUcb": {
+      "acdn": {
+        "start": 10.0,
+        "cap": 7.0,
+        "shape": 60
+      }
+    },
+    "AUcs": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Ucs1": {
+        "start": 100,
+        "cap": 1500,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 220,
+        "shape": 60
+      },
+      "Ucs2": {
+        "start": 1200,
+        "cap": 18000,
+        "shape": 60
+      }
+    },
+    "AUdc": {
+      "acdn": {
+        "start": 12,
+        "cap": 9,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 65,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "AUdd": {
+      "acdn": {
+        "start": 160,
+        "cap": 110,
+        "shape": 0
+      },
+      "Udd1": {
+        "start": 0.012,
+        "cap": 0.035,
+        "shape": 0
+      },
+      "Udd2": {
+        "start": 0.2,
+        "cap": 0.2,
+        "shape": 0
+      },
+      "adur": {
+        "start": 20,
+        "cap": 26,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 20,
+        "cap": 26,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 170,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AUdp": {
+      "acdn": {
+        "start": 18,
+        "cap": 12,
+        "shape": 60
+      },
+      "Udp2": {
+        "start": 1,
+        "cap": 3.5,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 40,
+        "cap": 100,
+        "shape": 60
+      }
+    },
+    "AUdr": {
+      "acdn": {
+        "start": 18,
+        "cap": 12,
+        "shape": 60
+      },
+      "Udp1": {
+        "start": 0.4,
+        "cap": 1.5,
+        "shape": 60
+      }
+    },
+    "AUfn": {
+      "acdn": {
+        "start": 14,
+        "cap": 10.5,
+        "shape": 60
+      },
+      "Ufn1": {
+        "start": 80,
+        "cap": 1050,
+        "shape": 60
+      },
+      "Ufn2": {
+        "start": 70,
+        "cap": 650,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 1.5,
+        "cap": 3,
+        "shape": 60
+      },
+      "adur": {
+        "start": 3,
+        "cap": 6,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 95,
+        "cap": 250,
+        "shape": 60
+      }
+    },
+    "AUfu": {
+      "acdn": {
+        "start": 12,
+        "cap": 8,
+        "shape": 60
+      },
+      "Ufa2": {
+        "start": 4,
+        "cap": 25,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 40,
+        "cap": 110,
+        "shape": 60
+      }
+    },
+    "AUim": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "Uim3": {
+        "start": 80,
+        "cap": 1300,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.8,
+        "cap": 1.6,
+        "shape": 60
+      },
+      "adur": {
+        "start": 1.2,
+        "cap": 2.4,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "AUin": {
+      "acdn": {
+        "start": 160,
+        "cap": 115,
+        "shape": 0
+      },
+      "Uin1": {
+        "start": 220,
+        "cap": 1800,
+        "shape": 0
+      },
+      "ahdu": {
+        "start": 1,
+        "cap": 2,
+        "shape": 0
+      },
+      "adur": {
+        "start": 1.5,
+        "cap": 3,
+        "shape": 0
+      },
+      "amcs": {
+        "start": 180,
+        "cap": 320,
+        "shape": 0
+      }
+    },
+    "AUls": {
+      "acdn": {
+        "start": 180.0,
+        "cap": 125.99999999999999,
+        "shape": 0
+      },
+      "Uls4": {
+        "start": 0.35,
+        "cap": 0.65,
+        "shape": 0
+      },
+      "Uls5": {
+        "start": 30,
+        "cap": 180,
+        "shape": 0
+      }
+    },
+    "AUsl": {
+      "acdn": {
+        "start": 15,
+        "cap": 11,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 3,
+        "cap": 5,
+        "shape": 60
+      },
+      "adur": {
+        "start": 7,
+        "cap": 12,
+        "shape": 60
+      },
+      "Usl1": {
+        "start": 0.4,
+        "cap": 0.7,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 80,
+        "cap": 170,
+        "shape": 60
+      }
+    },
+    "AHbh": {
+      "Hbh1": {
+        "start": 12.0,
+        "cap": 20.0,
+        "shape": 60
+      },
+      "Hbh3": {
+        "start": 25,
+        "cap": 220,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 0.15,
+        "cap": 0.25,
+        "shape": 60
+      },
+      "adur": {
+        "start": 0.5,
+        "cap": 0.85,
+        "shape": 60
+      }
+    },
+    "AHbn": {
+      "ahdu": {
+        "start": 2,
+        "cap": 3.5,
+        "shape": 60
+      },
+      "adur": {
+        "start": 3,
+        "cap": 6,
+        "shape": 60
+      },
+      "Hbn1": {
+        "start": 0.15,
+        "cap": 0.3,
+        "shape": 60
+      },
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 65,
+        "cap": 180,
+        "shape": 60
+      }
+    },
+    "AEim": {
+      "Eim1": {
+        "start": 12,
+        "cap": 150,
+        "shape": 60
+      },
+      "Eim2": {
+        "start": 7,
+        "cap": 35,
+        "shape": 60
+      },
+      "aare": {
+        "start": 160,
+        "cap": 220,
+        "shape": 60
+      }
+    },
+    "AHfa": {
+      "Hfa1": {
+        "start": 12,
+        "cap": 300,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 5,
+        "cap": 16,
+        "shape": 60
+      }
+    },
+    "ANfa": {
+      "Hca1": {
+        "start": 10,
+        "cap": 240,
+        "shape": 60
+      },
+      "Hca2": {
+        "start": 0.15,
+        "cap": 0.35,
+        "shape": 60
+      },
+      "Hca3": {
+        "start": 0.1,
+        "cap": 0.25,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 6,
+        "cap": 18,
+        "shape": 60
+      }
+    },
+    "ANba": {
+      "Nba1": {
+        "start": 8,
+        "cap": 240,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 6,
+        "cap": 18,
+        "shape": 60
+      }
+    },
+    "ANhs": {
+      "Ncs1": {
+        "start": 50,
+        "cap": 320,
+        "shape": 60
+      },
+      "Ncs4": {
+        "start": 350,
+        "cap": 2240,
+        "shape": 60
+      },
+      "acdn": {
+        "start": 16,
+        "cap": 12,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 90,
+        "cap": 240,
+        "shape": 60
+      }
+    },
+    "ANca": {
+      "nca1": {
+        "start": 0.25,
+        "cap": 0.65,
+        "shape": 60
+      }
+    },
+    "AOcr": {
+      "Ocr1": {
+        "start": 18.0,
+        "cap": 32.0,
+        "shape": 60
+      },
+      "Ocr2": {
+        "start": 1.7,
+        "cap": 2.8,
+        "shape": 60
+      }
+    },
+    "ANdb": {
+      "Ocr1": {
+        "start": 12.0,
+        "cap": 22.0,
+        "shape": 60
+      },
+      "Ocr2": {
+        "start": 1.6,
+        "cap": 2.3,
+        "shape": 60
+      },
+      "Ocr4": {
+        "start": 0.07,
+        "cap": 0.3,
+        "shape": 60
+      }
+    },
+    "AEev": {
+      "Eev1": {
+        "start": 0.12,
+        "cap": 0.5,
+        "shape": 60
+      }
+    },
+    "AUts": {
+      "Uts1": {
+        "start": 0.12,
+        "cap": 0.35,
+        "shape": 60
+      },
+      "Uts2": {
+        "start": 0.95,
+        "cap": 0.75,
+        "shape": 60
+      },
+      "Uts3": {
+        "start": 2,
+        "cap": 18,
+        "shape": 60
+      }
+    },
+    "AOfs": {
+      "aare": {
+        "start": 650,
+        "cap": 1600,
+        "shape": 60
+      },
+      "adur": {
+        "start": 12,
+        "cap": 25,
+        "shape": 60
+      },
+      "ahdu": {
+        "start": 12,
+        "cap": 25,
+        "shape": 60
+      },
+      "amcs": {
+        "start": 60,
+        "cap": 35,
+        "shape": 60
+      }
+    },
+    "ANeg": {
+      "Neg1": {
+        "start": 0.05,
+        "cap": 0.25,
+        "shape": 60
+      },
+      "Neg2": {
+        "start": 4,
+        "cap": 250,
+        "shape": 60
+      }
+    }
+  },
+  "hybrid": {
+    "AHhb": [
+      300,
+      5000
+    ],
+    "AUdc": [
+      300,
+      5000
+    ],
+    "AEmb": [
+      60,
+      2200
+    ]
+  },
+  "illusion_group_damage": [
+    0.35,
+    2.2
+  ],
+  "summons": {
+    "normal_hp_factor": 5.5,
+    "normal_damage_factor": 6.0,
+    "normal_armor_bonus": 8.0,
+    "ultimate_hp_factor": 5.0,
+    "ultimate_damage_factor": 5.0,
+    "ultimate_armor_bonus": 12.0,
+    "secondary_effect_factor": 3.5,
+    "simple_hp_factor": 5.5,
+    "simple_damage_factor": 6.0,
+    "extra_unit_budget_weight": 0.08
+  },
+  "misc": {
+    "AgiDefenseBonus": 0.08,
+    "DefenseArmor": 0.025,
+    "AgiAttackSpeedBonus": 0.01,
+    "AgiDefenseBase": 0
+  },
+  "rationale": "Explicit finite profiles use final native values. Count milestones and technical flags/intervals are preserved. Counts make each summon family meaningful without unbounded per-unit stats."
+}
