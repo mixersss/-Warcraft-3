@@ -5,14 +5,12 @@ for p=0,11 do
  Hero[p]=CreateUnit(p,p,0,0,0);HeroType[p]=p;HeroRole[p]=p
  Hero[p].level=60;Hero[p].points=4;Hero[p].abilities={}
 end
--- Shikamaru's source reincarnation is free at creation/selection, never a duplicate skill point.
-RosterGrantInnate(6);assert(GetUnitAbilityLevel(Hero[6],raw('R604'))==1 and Hero[6].points==4)
-SetUnitAbilityLevel(Hero[6],raw('R604'),3);RosterGrantInnate(6)
-assert(GetUnitAbilityLevel(Hero[6],raw('R604'))==3 and Hero[6].points==4)
-RosterGrantInnate(3);assert(GetUnitAbilityLevel(Hero[3],raw('R604'))==0)
+--3.5 fourth skills are learned active techniques, never free reincarnations.
+RosterGrantInnate(6);assert(GetUnitAbilityLevel(Hero[6],raw('R604'))==0 and Hero[6].points==4)
+RosterGrantInnate(3);assert(GetUnitAbilityLevel(Hero[3],raw('R301'))==0)
 Controllers[0]='human';Hero[0].xp=0;Hero[0].points=1;SkillsChoose(0,6)
-assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==0 and Hero[0].points==1,'Second chance must wait for source level 50')
-Hero[0].level=50;Caster=Hero[0];SkillsLevel();assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==1,'Source level unlock also applies to manual players')
+assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==0 and Hero[0].points==1)
+Hero[0].level=50;Caster=Hero[0];SkillsLevel();assert(GetUnitAbilityLevel(Hero[0],raw('R604'))==0,'Active choking must be learned manually')
 function PingMinimapEx(x,y,d,r,g,b,extra)Pings[#Pings+1]={x=x,y=y}end
 -- Both Hyuuga: source 400/600/800/1000 radius; allies/structures/outside enemies not marked.
 local near=CreateUnit(12,111,350,0,0)
@@ -49,7 +47,7 @@ near.abilities[raw('Rsmb')]=nil;RosterTick();assert(first.removed and not Shadow
 for n=0,15 do assert(not ShadowSegment[96+n])end
 near.abilities[raw('Rsmb')]=1;cast(6,raw('R601'),1,near);first=ShadowSegment[96]
 cast(6,raw('R601'),4,near);assert(first.removed)
-TimeNow=3204;RosterTick();assert(not ShadowTarget[6])
+TimeNow=3209;RosterTick();assert(not ShadowTarget[6])
 cast(6,raw('R601'),1,near);Hero[6].hp=0;RosterTick();assert(not ShadowTarget[6]);Hero[6].hp=10000
 function IssueImmediateOrder(u,o)Orders[#Orders+1]={unit=u,order=o};return true end
 -- Self-centered attacks cannot spend a cooldown at 700 range: Kaiten for both heroes + Hinata guard.
@@ -65,7 +63,7 @@ for _,index in ipairs({21,41,43,13}) do
  near.x=RosterRadius[index]+1;assert(not SkillsBot(p))
  near.x=RosterRadius[index]-1;assert(SkillsBot(p) and #Orders==orders+1)
 end
-print('Technique audit: free Shikamaru reincarnation; sight ranges/team privacy/lifecycle; shadow lifecycle; close-range AI boundaries')
+print('Technique audit: source3.5 active fourth skill; sight ranges/team privacy/lifecycle; shadow lifecycle; close-range AI boundaries')
 
 -- Kaiten has independent sight state in both cast orders and repels only enemies.
 TimeNow=3500;LocalPlayer=4;World={near,ally,shop};ally.owner=4;near.x=100;near.y=0;ally.x=100

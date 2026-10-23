@@ -38,11 +38,12 @@
       "hero": 3,
       "sourceUnit": "H007",
       "sourceSkills": [
-        "A02U",
+        "A01T",
         "A00E",
         "A00U",
         "A029"
-      ]
+      ],
+      "sourceVersion": "3.5"
     },
     {
       "hero": 4,
@@ -70,11 +71,12 @@
       "hero": 6,
       "sourceUnit": "H00D",
       "sourceSkills": [
-        "A02H",
+        "A00O",
         "A00P",
         "A02A",
-        "A02U"
-      ]
+        "A007"
+      ],
+      "sourceVersion": "3.5"
     },
     {
       "hero": 7,

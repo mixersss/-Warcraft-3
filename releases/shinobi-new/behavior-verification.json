@@ -1,4 +1,17 @@
 {
+  "source35NativeMocks": true,
+  "source35CloneCounts": [
+    8,
+    16,
+    24,
+    40
+  ],
+  "source35FullKits": [
+    3,
+    6
+  ],
+  "source35IndependentChoke": true,
+  "invasionCriticalPrefixNativeMocks": true,
   "corrections23NativeMocks": true,
   "corrections22NativeMocks": true,
   "prelimWinnersOnly": true,
@@ -18,7 +31,7 @@
   "isolatedCompanionSpellState": true,
   "sourceTechniqueSlots": 58,
   "rosterHeroes": 12,
-  "activeBotOrders": 52,
+  "activeBotOrders": 54,
   "mechanicFamilies": 10,
   "staggeredDataCallbacks": 12,
   "originalNinjasPerTeam": 14,
@@ -97,6 +110,12 @@
   "ramenRecoverySurvivesDamage": true,
   "pointTargetNotesNativeMocks": true,
   "villageServiceVisibilityAndNeutralSupply": true,
+  "narutoCloneCounts": [
+    8,
+    16,
+    24,
+    40
+  ],
   "narutoCloneCount": 8,
   "narutoCloneOneAttackRule": true,
   "kaitenDamage": [

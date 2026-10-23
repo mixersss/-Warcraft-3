@@ -9,7 +9,7 @@ archive=StormArchive(target)
 read=archive.read
 original_manifest=json.loads((ROOT/'src/asset-manifest.json').read_text())
 generated_manifest=json.loads((ROOT/'src/generated-assets.json').read_text())
-manifest=original_manifest+generated_manifest
+manifest=__import__('music35').effective_manifest(original_manifest)+generated_manifest
 for row in manifest:
  data=read(row['path']);assert len(data)==row['bytes'] and hashlib.sha256(data).hexdigest()==row['sha256'],row['path']
 metadata={p.name:p.read_bytes() for p in (ROOT/'dist/map').iterdir() if p.is_file()}
@@ -52,5 +52,5 @@ for row in scene['files']:
  assert metadata[name]==data
 # Archive tables and scenario are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
-result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allOriginalImportsUnchanged':True,'originalImportsUnchanged':len(original_manifest),'generatedAssetsVerified':len(generated_manifest),'allImportedBytesOriginal':False,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
+result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allOriginalImportsUnchanged':False,'musicFromUserSource35':6,'unchangedEarlierImports':len(original_manifest)-11,'originalImportsUnchanged':len(original_manifest)-11,'source35SkillVoices':5,'source35Icons':4,'generatedAssetsVerified':len(generated_manifest),'allImportedBytesOriginal':False,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
 (ROOT/'dist/verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))

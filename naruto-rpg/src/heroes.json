@@ -346,51 +346,44 @@
     ],
     "skills": [
       {
-        "source_id": "A02U",
-        "name": "Second Chance (E)",
-        "base_ability": "AOre",
+        "source_id": "A01T",
+        "name": "Ура Рэнгэ",
+        "base_ability": "ANcl",
         "levels": 3,
-        "description": "The unit will resurrect when killed immediately, when this ability is ready.",
-        "animation_tags": "spell",
+        "description": "Серия воздушных ударов: 4×150 / 8×100 / 16×75 и завершающий удар 300. Во время приёма Ли и цель не управляются. Отмена, гибель и смена этапа освобождают обоих.",
+        "animation_tags": "Spell 2",
         "source_trigger_sound_paths": [],
-        "runtime_recreated": false
+        "runtime_recreated": true
       },
       {
         "source_id": "A00E",
-        "name": "Konoha Senpuu (D)",
+        "name": "Коноха Сэнпу",
         "base_ability": "ANfb",
         "levels": 4,
-        "description": "Rock Lee's special kick.",
-        "animation_tags": "attack,walk,stand,spin",
-        "source_trigger_sound_paths": [
-          "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3"
-        ],
-        "runtime_recreated": false
+        "description": "Коноха Сэнпу: удар ногой на 100/150/250/400 урона с оглушением на 0,25 секунды. Ли сближается с целью, если точка доступна.",
+        "animation_tags": "Attack 3",
+        "source_trigger_sound_paths": [],
+        "runtime_recreated": true
       },
       {
         "source_id": "A00U",
-        "name": "Suiken (F)",
-        "base_ability": "AOw2",
+        "name": "Пьяный кулак",
+        "base_ability": "ANcl",
         "levels": 3,
-        "description": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
-        "animation_tags": "stand",
+        "description": "Суйкэн: восемь раз за 8 секунд случайно меняет ловкость. По рангу: −5…+10 / −10…+20 / −20…+40 за шаг; пятый шаг первого ранга 0…+5. В конце все изменения снимаются.",
+        "animation_tags": "Spell power up",
         "source_trigger_sound_paths": [],
-        "runtime_recreated": false
+        "runtime_recreated": true
       },
       {
         "source_id": "A029",
-        "name": "Hachimon (G)",
-        "base_ability": "AHtc",
+        "name": "Восемь врат",
+        "base_ability": "ANcl",
         "levels": 3,
-        "description": "Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
-        "animation_tags": "stand",
-        "source_trigger_sound_paths": [
-          "war3mapImported\\Sound_Gai_Hachimon32br.mp3",
-          "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
-          "war3mapImported\\Sound_Lee_HachimonSeimon32br.mp3",
-          "war3mapImported\\Sound_Lee_HachimonTomon32br.mp3"
-        ],
-        "runtime_recreated": false
+        "description": "Хатимон: на 17 секунд +50/100/200 ловкости и предельная скорость движения. Текущее HP делится на 1,2/1,35/1,5. После окончания показатели и цвет возвращаются.",
+        "animation_tags": "Spell power up",
+        "source_trigger_sound_paths": [],
+        "runtime_recreated": true
       }
     ]
   },
@@ -612,48 +605,44 @@
     ],
     "skills": [
       {
-        "source_id": "A02H",
-        "name": "Kage Mane no Jutsu (D)",
-        "base_ability": "ANcl",
+        "source_id": "A00O",
+        "name": "Теневое подражание",
+        "base_ability": "Amls",
         "levels": 4,
-        "description": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
-        "animation_tags": "spell,looping",
-        "source_trigger_sound_paths": [
-          "war3mapImported\\SoundShikamaruKageManaJutsu.mp3"
-        ],
-        "runtime_recreated": false
+        "description": "Удерживает противника тенью: 30 урона/с; 4/5/6/7 секунд на герое, 6/7/8/9 на обычном враге. На четвёртом ранге связывает также ближайших врагов.",
+        "animation_tags": "Spell",
+        "source_trigger_sound_paths": [],
+        "runtime_recreated": true
       },
       {
         "source_id": "A00P",
-        "name": "Strategy (F)",
+        "name": "Стратегия",
         "base_ability": "AEev",
         "levels": 3,
-        "description": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
-        "animation_tags": "spell",
+        "description": "Стратегия: пассивное уклонение 10% / 20% / 30%, как в3.5.",
+        "animation_tags": "Spell",
         "source_trigger_sound_paths": [],
-        "runtime_recreated": false
+        "runtime_recreated": true
       },
       {
         "source_id": "A02A",
-        "name": "Explosion Note Barrage (G)",
-        "base_ability": "ANc3",
+        "name": "Залп взрывных печатей",
+        "base_ability": "ANcl",
         "levels": 3,
-        "description": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
-        "animation_tags": "stand",
-        "source_trigger_sound_paths": [
-          "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3"
-        ],
-        "runtime_recreated": false
+        "description": "Залп кунаев с печатями: находит врагов в радиусе 150/300/300; кунай наносит 100 урона и оглушает на 2 секунды. Через 0,75 секунды возле целей появляются 1/1/2 штатные взрывные мины.",
+        "animation_tags": "Attack 2",
+        "source_trigger_sound_paths": [],
+        "runtime_recreated": true
       },
       {
-        "source_id": "A02U",
-        "name": "Second Chance (E)",
-        "base_ability": "AOre",
+        "source_id": "A007",
+        "name": "Теневое удушение",
+        "base_ability": "Amls",
         "levels": 3,
-        "description": "The unit will resurrect when killed immediately, when this ability is ready.",
-        "animation_tags": "spell",
+        "description": "Поддерживаемое теневое удушение: 30 урона/с и удержание на 4/5/6 секунд для героя, 5/7/9 для обычного врага. Прерывается прекращением поддержания.",
+        "animation_tags": "Spell",
         "source_trigger_sound_paths": [],
-        "runtime_recreated": false
+        "runtime_recreated": true
       }
     ]
   },

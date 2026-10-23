@@ -24,9 +24,9 @@ local slot=-1;for j=0,CampaignCount-1 do if CampaignActor[j]==oro then slot=j en
 assert(slot>=0 and CampaignActorRoute[slot]==3)
 local count=CampaignCount;CampaignInvasionEvents();assert(CampaignCount==count and CampaignOroAt==0,'No repeated event spawn')
 NPCCooldowns=InitHashtable();Hero[0].x=oro.x+100;Hero[0].y=oro.y;Hero[0].hp=10000;oro.last=nil;World={Hero[0]};CampaignThinkCursor=slot
-CampaignNPCTick();assert(oro.last,'Human ownership must not disable the story boss AI')
+TimeNow=TimeNow+1;InvasionOroWatch();assert(oro.last,'Human ownership must not disable the story boss AI')
 SaveReal(NPCCooldowns,GetHandleId(oro),0,0);World={};TimeNow=TimeNow+5;CampaignMoveAt[slot]=0;CampaignWalkAt[slot]=TimeNow+100;CampaignThinkCursor=slot;oro.last=nil
-CampaignNPCTick();assert(oro.last and oro.last.o=='attack','Keep marching when no nearby target is present')
+InvasionOroWatch();assert(oro.last and oro.last.o=='attack','Keep marching when no nearby target is present')
 print('PASS: character-bound stale hide recovery with pose/control/pathing reset, native/plot invisibility preserved; protected scheduled Orochimaru, actual timed attack route and autonomous human-owner AI (mock natives).')
 -- Reproduce a second cast overwriting the old shared caster during the first sleep.
 local saved={};local function mock(name,f)saved[name]=_G[name];_G[name]=f end

@@ -1,0 +1,65 @@
+{
+  "sourceFile": "Naruto Ultimate RPG 3.5.w3x",
+  "sourceSha256": "7bf624f33fca062c5d33de681a2185af4e0b95afd2e1ab10c00746c1fbb9d5bd",
+  "originalScriptPath": "Scripts\\war3map.j",
+  "tracks": [
+    {
+      "variable": "FM",
+      "path": "war3mapImported\\SOUND_0041 3.mp3",
+      "bytes": 96768,
+      "sha256": "081e6e468c595b246b316ecc3bc38b182b58659049c222e1ce340217a7e01f5d",
+      "duration_ms": 48384,
+      "file": "music35/SOUND_0041 3.mp3"
+    },
+    {
+      "variable": "GM",
+      "path": "war3mapImported\\SOUND_0054 3.mp3",
+      "bytes": 110160,
+      "sha256": "93edb11852e3c82f3cc6afed501578c328d1e6162bd724a4332463df47900263",
+      "duration_ms": 55080,
+      "file": "music35/SOUND_0054 3.mp3"
+    },
+    {
+      "variable": "NP",
+      "path": "war3mapImported\\m057 3.mp3",
+      "bytes": 86472,
+      "sha256": "4cb0bf0b0b43f9cd7cbc692926933ec360d4595f92e5d7e4b1e93681719280ae",
+      "duration_ms": 43236,
+      "file": "music35/m057 3.mp3"
+    },
+    {
+      "variable": "BP",
+      "path": "war3mapImported\\m051 3.mp3",
+      "bytes": 114552,
+      "sha256": "97f8bf185639423b5b6f8aac7f9955ff7b2b5a1cf76ea7bd675f0be092913ba3",
+      "duration_ms": 57276,
+      "file": "music35/m051 3.mp3"
+    },
+    {
+      "variable": "FQ",
+      "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
+      "bytes": 67320,
+      "sha256": "ff5d030f184ca38f2d2c0c0f0c5ba82ad0636edb2ced652d97d54e46a92f9e70",
+      "duration_ms": 33660,
+      "file": "music35/STRM_BGM_ST00 3.mp3"
+    },
+    {
+      "variable": "GQ",
+      "path": "war3mapImported\\SOUND_0045 3.mp3",
+      "bytes": 120312,
+      "sha256": "599d563b974782a9b193420fcbb1b9d38469e1019ebbb86e036bbe543e1d0bac",
+      "duration_ms": 60156,
+      "file": "music35/SOUND_0045 3.mp3"
+    }
+  ],
+  "exactBytes": true,
+  "reencoded": false,
+  "musicControllers": {
+    "GM": "MXE/S1",
+    "GQ": "MRE/T1",
+    "BP": "MAE/U1",
+    "FQ": "MBE/W1",
+    "NP": "MDE/Y1",
+    "FM": "MGE/Z1"
+  }
+}

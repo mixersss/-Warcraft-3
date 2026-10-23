@@ -13,7 +13,7 @@ for index=0,59 do
   count=count+1
  end
 end
-assert(count==52)
+assert(count==54)
 -- Imported one-shot effects must survive creation, then be cleaned by the shared timer.
 local fx=AddSpecialEffect('WindAttack.mdl',0,0);SkillsHoldFlash(fx);assert(fx.alive)
 TimeNow=2001;SkillsTick();assert(fx.alive)

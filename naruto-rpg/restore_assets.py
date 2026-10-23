@@ -12,7 +12,7 @@ missing=[r for r in manifest if not valid(r)]
 if missing:
  report=Path('/workspace/-Warcraft-3/releases/shinobi-new/build-report.json');release=report.parent
  name=json.loads(report.read_text())['filename'] if report.exists() else ''
- candidates=[args.archive] if args.archive else [release/name,release/'Shinobi_Skills_Alpha_05a.w3x']
+ candidates=[args.archive] if args.archive else [release/'Shinobi_Story_Alpha_25.w3x',release/name,release/'Shinobi_Skills_Alpha_05a.w3x']
  archive=next((p for p in candidates if p and p.is_file()),None)
  assert archive,'No release archive available; supply --archive PATH'
  source=StormArchive(archive)

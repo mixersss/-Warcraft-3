@@ -39,7 +39,7 @@ for index=0,59 do
   active=active+1
  end
 end
-assert(active==52 and CreatedTimers==baselineTimers,'No per-cast timers')
+assert(active==54 and CreatedTimers==baselineTimers,'No per-cast timers')
 -- Both Kaiten spheres come from the complete spell-spin pose. They cannot be interrupted by AI.
 for _,p in ipairs({4,8}) do
  World={};Hero[p].abilities={};Hero[p].mana=1000000;Hero[p].hp=100000000

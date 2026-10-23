@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.0-alpha
 
-## Shinobi RPG — Story Alpha 25
+## Shinobi RPG — Story Alpha 26
 
-[Скачать Shinobi Story Alpha 25](releases/shinobi-new/Shinobi_Story_Alpha_25.w3x). Восстановление Саске после зависшего скрытия во время вторжения, локальная очистка NPC-техники и настоящий маршрут атаки Орочимару по таймеру. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; требуется игровой тест Warcraft III 1.26.
+[Скачать Shinobi Story Alpha 26](releases/shinobi-new/Shinobi_Story_Alpha_26.w3x). Музыка и наборы Рока Ли/Шикамару из Naruto RPG3.5; клоны8/16/24/40; дополнительные исправления исчезновения Саске и выхода Орочимару. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
 
 ## Footman 0.23.0 — текущая версия
 

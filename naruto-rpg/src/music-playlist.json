@@ -1,47 +1,32 @@
 [
   {
-    "audio_index": 116,
-    "path": "war3mapImported\\Hero Beginning32br48hz.mp3",
-    "duration_ms": 11064
-  },
-  {
-    "audio_index": 91,
-    "path": "war3mapImported\\Those Who Inherit The Will of Fire16br16000sr.mp3",
-    "duration_ms": 33288
-  },
-  {
     "audio_index": 37,
     "path": "war3mapImported\\SOUND_0041 3.mp3",
-    "duration_ms": 82896
+    "duration_ms": 48384
   },
   {
     "audio_index": 38,
     "path": "war3mapImported\\SOUND_0054 3.mp3",
-    "duration_ms": 71760
+    "duration_ms": 55080
   },
   {
     "audio_index": 57,
     "path": "war3mapImported\\m057 3.mp3",
-    "duration_ms": 67656
+    "duration_ms": 43236
   },
   {
     "audio_index": 58,
     "path": "war3mapImported\\m051 3.mp3",
-    "duration_ms": 42360
+    "duration_ms": 57276
   },
   {
     "audio_index": 82,
     "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
-    "duration_ms": 46224
+    "duration_ms": 33660
   },
   {
     "audio_index": 83,
     "path": "war3mapImported\\SOUND_0045 3.mp3",
-    "duration_ms": 99888
-  },
-  {
-    "audio_index": 160,
-    "path": "war3mapImported\\HeavyViolence 32br48hz.mp3",
-    "duration_ms": 68040
+    "duration_ms": 60156
   }
 ]

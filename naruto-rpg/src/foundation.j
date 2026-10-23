@@ -455,6 +455,49 @@ globals
     real array PlaylistDuration
     integer SpawnCursor=0
     timer SpawnClock=null
+    integer Source35Player=0
+    unit Source35Return=null
+    unit array Choke35Caster
+    unit array Choke35Target
+    unit array Choke35Helper
+    real array Choke35Until
+    unit array Source35Hero
+    unit array Lotus35Caster
+    unit array Lotus35Target
+    integer array Lotus35Hits
+    real array Lotus35Damage
+    real array Lotus35Next
+    effect array Lotus35Art
+    real array Gate35Until
+    real array Gate35Speed
+    integer array Gate35Agility
+    integer array Drunk35Agility
+    integer array Drunk35Rank
+    integer array Drunk35Left
+    real array Drunk35Next
+    integer array Clone35Rank
+    real array Clone35At
+    real array Clone35Retry
+    group array Barrage35Shots
+    group array Barrage35Mines
+    real array Source35MineCheck
+    group array Source35MineUnits
+    integer array Barrage35Rank
+    real array Barrage35At
+    integer array Source35WireOwner
+    lightning array Source35Wire
+    real array Source35WireUntil
+    integer Source35WireCursor=0
+    real array SasukePauseSince
+    real array SasukeAlphaSince
+    real array SasukeSafeX
+    real array SasukeSafeY
+    boolean array SasukeSafeReady
+    integer CampaignOroSlot=-1
+    boolean CampaignOroStarted=false
+    real CampaignOroWatchAt=0.
+    real CampaignOroStaleAt=0.
+    unit CampaignOroTarget=null
 endglobals
 function FoundationAlive takes unit u returns boolean
     return u!=null and GetWidgetLife(u)>.405
@@ -660,6 +703,10 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call ExecuteFunc("InvasionHeroVisibility")
+    call ExecuteFunc("CommonLogTick")
+    call ExecuteFunc("Source35Tick")
+    call ExecuteFunc("InvasionOroWatch")
     call StoryTick()
     loop
         exitwhen p>=12

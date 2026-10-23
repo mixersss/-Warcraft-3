@@ -76,7 +76,7 @@ function SkillsEffect takes nothing returns nothing
         exitwhen j>=60
         if PlayableSkill[j]==raw then
             set index=j
-            if SkillAudio[j]>=0 then
+            if SkillAudio[j]>=0 and j!=15 then
                 call FoundationSound(SkillAudio[j])
             endif
         endif
@@ -167,6 +167,9 @@ function SkillsEndcast takes nothing returns nothing
     local integer index=0
     if p<12 and caster==Hero[p] then
         set index=VisualChannelIndex[p]
+        if GetSpellAbilityId()=='R604' then
+            call Source35ChokeEnd(p,false)
+        endif
         if VisualChannelUntil[p]>0. and index>=0 then
             if GetSpellAbilityId()==PlayableSkill[index] then
                 if index==38 then
@@ -248,7 +251,7 @@ function SkillsSummoned takes nothing returns nothing
     local unit summoner=GetSummoningUnit()
     local unit summoned=GetSummonedUnit()
     local integer p=GetPlayerId(GetOwningPlayer(summoner))
-    if p<12 and summoner==Hero[p] and GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and FoundationAlive(Dummy[(p-ModuloInteger(p,3))/3]) then
+    if p<12 and (summoner==Hero[p] or GetUnitAbilityLevel(summoner,'R35i')>0) and GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and FoundationAlive(Dummy[(p-ModuloInteger(p,3))/3]) then
         call IssueTargetOrder(summoned,"attack",Dummy[(p-ModuloInteger(p,3))/3])
     endif
     set summoned=null
@@ -260,6 +263,8 @@ function SkillsTick takes nothing returns nothing
     local unit target=null
     local real dx=0.
     local real dy=0.
+    call InvasionHeroVisibility()
+    call Source35Tick()
     loop
         exitwhen p>=256
         if SkillFlash[p]!=null and TimeNow>=SkillFlashUntil[p] then
@@ -319,7 +324,6 @@ function SkillsTick takes nothing returns nothing
     call RamenTick()
     call NoteTick()
     call CommonLogTick()
-    call InvasionHeroVisibility()
     call RosterTick()
     set u=null
     set target=null
@@ -504,6 +508,7 @@ function SkillsInit takes nothing returns nothing
         call TriggerRegisterPlayerUnitEvent(fragile,Player(p),EVENT_PLAYER_UNIT_ATTACKED,null)
         set p=p+1
     endloop
+    call Source35Init()
     call TriggerAddAction(fragile,function SkillsFragileClone)
     call TriggerAddAction(fragile,function SkillsRosterAttack)
     call TriggerAddAction(items,function RamenUse)

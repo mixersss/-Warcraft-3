@@ -1,0 +1,4080 @@
+{
+  "sourceVersion": "Naruto Ultimate RPG3.5",
+  "sourceMapSha256": "7bf624f33fca062c5d33de681a2185af4e0b95afd2e1ab10c00746c1fbb9d5bd",
+  "abilities": [
+    {
+      "oldId": "ANfb",
+      "newId": "A00E",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Konoha Senpu (D)",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_KonohaSenpu2.blp",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_KonohaSenpu2.blp",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "attack,walk,stand,spin",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Konoha Senpu (D)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Rock Lee's special kick.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Rock Lee's special kick.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Rock Lee's special kick.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Rock Lee's special kick.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Konoha Senpuu (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Konoha Senpuu (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Konoha Senpuu (D)",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "Htb1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "human",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Konoha Senpuu (D)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Rock Lee's special kick.",
+          "u1": 0
+        },
+        {
+          "id": "Htb1",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 1,
+          "value": 400,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.25,
+          "u1": 0
+        },
+        {
+          "id": "amsp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 100,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AOw2",
+      "newId": "A00U",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Suiken (F)",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_Suiken2.blp",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_Suiken2.blp",
+          "u1": 0
+        },
+        {
+          "id": "acat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "stand",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Suiken (F)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "Wrs1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Wrs1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Wrs1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Suiken (F)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Suiken (F)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Suiken (F)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Lee becomes intoxicated, causing his fighting spirit to randomly become higher (but also possibly lower) than normal during the duration.",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "F",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "F",
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 60,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 60,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 60,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aefl",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "StrongDrink",
+          "u1": 0
+        },
+        {
+          "id": "aefs",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "StrongDrink",
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AHtc",
+      "newId": "A029",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Hachimon (G)",
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "undead",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Hachimon (G)",
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "stand",
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 20,
+          "u1": 0
+        },
+        {
+          "id": "acat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Abilities\\Spells\\Undead\\AnimateDead\\AnimateDeadTarget.mdl",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "OpenGatesIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "OpenGatesIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "auar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "OpenGatesIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Third Gate - Gate of Life: Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Fourth Gate - Gate of Pain: Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Fifth Gate - Gate of Limit: Rock Lee opens a chakra gate and become stronger for a few seconds, inflicting him injuries.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Seimon Kai (G)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shomon Kai (G)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Tomon Kai (G)",
+          "u1": 0
+        },
+        {
+          "id": "Htc1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Htc1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Htc4",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 4,
+          "value": -10,
+          "u1": 0
+        },
+        {
+          "id": "Htc1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Htc4",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 4,
+          "value": -20,
+          "u1": 0
+        },
+        {
+          "id": "Htc4",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 4,
+          "value": -30,
+          "u1": 0
+        },
+        {
+          "id": "Htc3",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 3,
+          "value": -10,
+          "u1": 0
+        },
+        {
+          "id": "Htc3",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 3,
+          "value": -20,
+          "u1": 0
+        },
+        {
+          "id": "Htc3",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 3,
+          "value": -30,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "self",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "self",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "self",
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "BNbr",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "BNbr",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "BNbr",
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "G",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "G",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "ANcl",
+      "newId": "A01T",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Ura Renge (W)",
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "nightelf",
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "spell,throw,looping",
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "abpy",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Ura Renge (W)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Being an advanced form of the lotus, Lee pummels the opponent around in quick successions while his chakra gates are opened.",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_OmoteRenge.blp",
+          "u1": 0
+        },
+        {
+          "id": "acat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aeat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "acap",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Lee_OmoteRenge.blp",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Ura Renge (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Ura Renge (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Ura Renge (W)",
+          "u1": 0
+        },
+        {
+          "id": "atat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "ata0",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Being an advanced form of the lotus, Lee pummels the opponent around in quick successions while his chakra gates are opened.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Being an advanced form of the lotus, Lee pummels the opponent around in quick successions while his chakra gates are opened.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Being an advanced form of the lotus, Lee pummels the opponent around in quick successions while his chakra gates are opened.",
+          "u1": 0
+        },
+        {
+          "id": "amsp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1000,
+          "u1": 0
+        },
+        {
+          "id": "amho",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "Ncl4",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncl4",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncl4",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncl6",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 6,
+          "value": "thunderbolt",
+          "u1": 0
+        },
+        {
+          "id": "Ncl6",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 6,
+          "value": "thunderbolt",
+          "u1": 0
+        },
+        {
+          "id": "Ncl1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "Ncl1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "Ncl1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "air,ground,organic,enemy,neutral",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "air,ground,organic,enemy,neutral",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "air,ground,organic,enemy,neutral",
+          "u1": 0
+        },
+        {
+          "id": "Ncl3",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 3,
+          "value": 17,
+          "u1": 0
+        },
+        {
+          "id": "Ncl2",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 2,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "Ncl3",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 3,
+          "value": 17,
+          "u1": 0
+        },
+        {
+          "id": "Ncl3",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 3,
+          "value": 17,
+          "u1": 0
+        },
+        {
+          "id": "Ncl2",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 2,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "Ncl2",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 2,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "aord",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "thunderbolt",
+          "u1": 0
+        },
+        {
+          "id": "acas",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.30000001192092896,
+          "u1": 0
+        },
+        {
+          "id": "acas",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.30000001192092896,
+          "u1": 0
+        },
+        {
+          "id": "acas",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.30000001192092896,
+          "u1": 0
+        },
+        {
+          "id": "Ncl6",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 6,
+          "value": "thunderbolt",
+          "u1": 0
+        },
+        {
+          "id": "Ncl5",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 5,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncl5",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 5,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncl5",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 5,
+          "value": 0,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "Amls",
+      "newId": "A00O",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "aher",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "alig",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KagemaneIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KagemaneIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "auar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KagemaneIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow underneath an opponent, thus holding him in place until the jutsu is released.",
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 5,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 7,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 600,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 600,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Bmlc,Bmlt",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Bmlc,Bmlt",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 600,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Kage Mane No Jutsu (D)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow and branches it off towards all opponents within the perimeter, thus holding them in place.",
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 1,
+          "value": 45,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 600,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 40,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 7,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 9,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AEev",
+      "newId": "A00P",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Strategy (F)",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Shikamaru_Strategy.blp",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Shikamaru_Strategy.blp",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Strategy (F)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Strategy (Passive)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Strategy (Passive)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Strategy (Passive)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Shikamaru's uses his extroardinary intelligence to plan out steps ahead of the enemy.",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "F",
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "orc",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "ANc3",
+      "newId": "A02A",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Explosion Note Barrage (G)",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Shikamaru_Kunais.blp",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Shikamaru_Kunais.blp",
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 20,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Explosion Note Barrage (G)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Exploding Note Barrage (G)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "Ncs3",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 3,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs4",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs6",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 6,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "G",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "G",
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "undead",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Exploding Note Barrage (G)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Exploding Note Barrage (G)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Shikamaru throws a group of kunais at the enemies, with explosion notes attached via wires. A combination with Kage Mane no Jutsu will have an effective outcome.",
+          "u1": 0
+        },
+        {
+          "id": "Ncs1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs6",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 6,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs6",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 6,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs3",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 3,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs3",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 3,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs4",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs4",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 90,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 0.009999999776482582,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 300,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 300,
+          "u1": 0
+        },
+        {
+          "id": "amac",
+          "variableType": 2,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "stand",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "enemies,ground,neutral,structure,tree",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "enemies,ground,neutral,structure,tree",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "enemies,ground,neutral,structure,tree",
+          "u1": 0
+        },
+        {
+          "id": "Ncs2",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 2,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs2",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 2,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Ncs2",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 2,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 600,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "Amls",
+      "newId": "A007",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Kubi Shibari No Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "aher",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "alig",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageShibariIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageShibariIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "auar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageShibariIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 275,
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 350,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Kubi Shibari No Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow to the opponent's one and so he can control his moves.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Kage Kubi Shibari No Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Kage Kubi Shibari No Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Kage Kubi Shibari No Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow to the opponent and tries to strangle him.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow to the opponent and tries to strangle him.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Shikamaru lengthens his shadow to the opponent and tries to strangle him.",
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 5,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 7,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 9,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 550,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 550,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Bmlc,Bmlt",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Bmlc,Bmlt",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "enemies,organic",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "mls1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 225,
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 5,
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "nightelf",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AOmi",
+      "newId": "A001",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Bunshin No Jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kage Bunshin No Jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "atat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "Omi1",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "Omi1",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "Omi1",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "Omi3",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 3,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Omi3",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 3,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Omi2",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 2,
+          "value": 0.10999999940395355,
+          "u1": 0
+        },
+        {
+          "id": "Omi2",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 2,
+          "value": 0.11999999731779099,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Kage Bunshin No Jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Kage Bunshin No Jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Kage Bunshin No Jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Naruto creates numerous shadow clones that fight with him.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Naruto creates numerous shadow clones that fight with him.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Naruto creates numerous shadow clones that fight with him.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Naruto creates numerous shadow clones that fight with him.",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageBunshinIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageBunshinIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "F",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "F",
+          "u1": 0
+        },
+        {
+          "id": "Omi3",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 3,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "spell",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "Omi2",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 2,
+          "value": 0.12999999523162842,
+          "u1": 0
+        },
+        {
+          "id": "Omi3",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 3,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Omi1",
+          "variableType": 0,
+          "levelOrVariation": 4,
+          "dataPointer": 1,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 300,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 40,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Taiju Kage Bunshin no jutsu (F)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Naruto creates an exceptional amount of shadow clones that fight with him.",
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "Omi4",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Omi4",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Omi4",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "amsp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Omi4",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 4,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "Omi2",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 2,
+          "value": 0.10000000149011612,
+          "u1": 0
+        },
+        {
+          "id": "asat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AIil",
+      "newId": "A02B",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KageBunshinDummy",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 4,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "BOmi",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "BOmi",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "BOmi",
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 300,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "Iild",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 0.10000000149011612,
+          "u1": 0
+        },
+        {
+          "id": "Iild",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 0.10999999940395355,
+          "u1": 0
+        },
+        {
+          "id": "Iild",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 0.11999999731779099,
+          "u1": 0
+        },
+        {
+          "id": "Iild",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 1,
+          "value": 0.12999999523162842,
+          "u1": 0
+        },
+        {
+          "id": "Iilw",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 2,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Iilw",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 2,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Iilw",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 2,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "Iilw",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 2,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "ground,air,friend,self",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "ground,air,friend,self",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "ground,air,friend,self",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "ground,air,friend,self",
+          "u1": 0
+        },
+        {
+          "id": "aite",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "BOmi",
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 700,
+          "u1": 0
+        },
+        {
+          "id": "atat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageMissile.mdl",
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "AHtb",
+      "newId": "A02G",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Throwing Kunai Dummy 2",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Kunai.MDX",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KunaiThrowIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "KunaiThrowIcon.BLP",
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Throwing Kunai Dummy",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Throwing Kunai (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Throwing Kunai (D)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Throwing Kunai (D)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "D",
+          "u1": 0
+        },
+        {
+          "id": "Htb1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 150,
+          "u1": 0
+        },
+        {
+          "id": "Htb1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 250,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 25,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "attack,2,throw",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "Throwing Kunai (D)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": "A kunai is thrown at a very high speed, giving the opponent little time to react.",
+          "u1": 0
+        },
+        {
+          "id": "Htb1",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 1,
+          "value": 400,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 1,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 2,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 4,
+          "dataPointer": 0,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "amho",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 2000,
+          "u1": 0
+        }
+      ]
+    }
+  ],
+  "runtimeMapping": [
+    {
+      "id": "Rn02",
+      "source": "A001",
+      "index": 1
+    },
+    {
+      "id": "R301",
+      "source": "A01T",
+      "index": 15
+    },
+    {
+      "id": "R302",
+      "source": "A00E",
+      "index": 16
+    },
+    {
+      "id": "R303",
+      "source": "A00U",
+      "index": 17
+    },
+    {
+      "id": "R304",
+      "source": "A029",
+      "index": 18
+    },
+    {
+      "id": "R601",
+      "source": "A00O",
+      "index": 30
+    },
+    {
+      "id": "R602",
+      "source": "A00P",
+      "index": 31
+    },
+    {
+      "id": "R603",
+      "source": "A02A",
+      "index": 32
+    },
+    {
+      "id": "R604",
+      "source": "A007",
+      "index": 33
+    }
+  ],
+  "clones": {
+    "native": 8,
+    "extraPerSeed": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "total": [
+      8,
+      16,
+      24,
+      40
+    ],
+    "damage": [
+      0.1,
+      0.11,
+      0.12,
+      0.13
+    ],
+    "duration": 30,
+    "incoming": 15
+  },
+  "adaptationNotes": [
+    "Bounded cast-local state replaces shared globals and trigger sleeps.",
+    "Lee kick uses native Firebolt with source stats; safe ground approach replaces unsafe teleport.",
+    "Hachimon retains17 seconds,+50/100/200 agility,health division and engine-capped move speed.",
+    "Suiken retains8 additive random agility rolls,including special fifth roll at rank1,and exact cleanup.",
+    "Ura Renge retains4/8/16 half-second hits and300 finishing damage; caster stays visible to avoid the source hidden-unit bug.",
+    "Shadow native Amls channel/durations/DPS and rank4 group support retained; decorative strips use the existing shadow asset.",
+    "Kunai barrage retains native100damage/2sec stun and1/1/2 native mines; crowded requests are processed in bounded chunks.",
+    "A007 uses an independent drain Channel command plus a rank-matched native Amls helper, preserving30DPS/root/durations while avoiding collision with A00O magicleash. Endcast,death and scene changes remove the helper."
+  ]
+}

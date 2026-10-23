@@ -211,13 +211,13 @@ function RosterShadow takes integer p, integer rank, unit target returns nothing
     endif
     set ShadowTarget[p]=target
     if IsUnitType(target,UNIT_TYPE_HERO) then
-        set ShadowDuration[p]=1.+.5*rank
+        set ShadowDuration[p]=3.+rank
     else
-        set ShadowDuration[p]=1.5+.5*rank
+        set ShadowDuration[p]=5.+rank
     endif
     set ShadowUntil[p]=TimeNow+ShadowDuration[p]
     set ShadowGraceUntil[p]=TimeNow+1.
-    set ShadowBuffSeen[p]=GetUnitAbilityLevel(target,'Rsmb')>0
+    set ShadowBuffSeen[p]=(GetUnitAbilityLevel(target,'Rsmb')>0 or GetUnitAbilityLevel(target,'Bmlt')>0)
     set ShadowRoot[p]=CreateUnit(Player(p),'rshk',GetUnitX(target),GetUnitY(target),GetUnitFacing(Hero[p]))
     call SetUnitPathing(ShadowRoot[p],false)
     call SetUnitFlyHeight(ShadowRoot[p],8.,0.)
@@ -225,15 +225,13 @@ function RosterShadow takes integer p, integer rank, unit target returns nothing
     call SetUnitTimeScale(ShadowRoot[p],2.334/ShadowDuration[p])
     call RosterShadowPulse(p)
 endfunction
+// SOURCE35_RUNTIME
 function RosterGrantInnate takes integer p returns nothing
-    if HeroRole[p]==6 and GetHeroLevel(Hero[p])>=50 and GetUnitAbilityLevel(Hero[p],'R604')==0 then
-        call UnitAddAbility(Hero[p],'R604')
-        call SetUnitAbilityLevel(Hero[p],'R604',1)
-        call UnitMakeAbilityPermanent(Hero[p],true,'R604')
-    endif
+    // Both3.5 kits have a fourth active skill instead of automatic reincarnation.
 endfunction
 function RosterResetEffects takes integer p returns nothing
     local integer k=0
+    call Source35Clear(p)
     call KibaRollEnd(p)
     call KunaiClear(p)
     call CommonLogClear(p)
@@ -460,10 +458,8 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
     local real y=GetUnitY(Hero[p])
     local real power=RosterPower[index*4+rank-1]
     local real burn=RosterBurn[index*4+rank-1]
+    call Source35Apply(p,index,rank,target)
     if kind==0 then
-        if index==30 then
-            call RosterShadow(p,rank,target)
-        endif
         return
     endif
     if SkillAnimation[index]>=0 then
@@ -743,11 +739,11 @@ function RosterTick takes nothing returns nothing
             if not FoundationAlive(Hero[p]) or not FoundationAlive(ShadowTarget[p]) then
                 call RosterClearShadow(p)
             else
-                if not ShadowBuffSeen[p] and GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')>0 then
+                if not ShadowBuffSeen[p] and (GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')>0 or GetUnitAbilityLevel(ShadowTarget[p],'Bmlt')>0) then
                     set ShadowBuffSeen[p]=true
                     set ShadowUntil[p]=TimeNow+ShadowDuration[p]
                 endif
-                if TimeNow>=ShadowUntil[p] or (ShadowBuffSeen[p] and GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')==0) or (not ShadowBuffSeen[p] and TimeNow>=ShadowGraceUntil[p]) then
+                if TimeNow>=ShadowUntil[p] or (ShadowBuffSeen[p] and GetUnitAbilityLevel(ShadowTarget[p],'Rsmb')==0 and GetUnitAbilityLevel(ShadowTarget[p],'Bmlt')==0) or (not ShadowBuffSeen[p] and TimeNow>=ShadowGraceUntil[p]) then
                     call RosterClearShadow(p)
                 else
                     call RosterShadowPulse(p)

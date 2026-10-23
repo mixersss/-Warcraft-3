@@ -67,7 +67,7 @@ chat('-music');assert(MusicStopped and not MusicOn)
 chat('-music');assert(MusicOn and MusicStarted)
 chat('-help');assert(string.find(Feedback,'-anim'))
 -- Current chapter loops indefinitely; only an explicit chapter transition changes music.
-assert(PlaylistAudio[0]==160)
+assert(PlaylistAudio[0]==57)
 local first=MusicStarted
 for i=1,10 do MusicCallback();assert(MusicCursor==0 and MusicStarted==first)end
 for chapter=0,8 do

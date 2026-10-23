@@ -35,13 +35,13 @@ assert(knives==2,'First volley must contain two native Fan of Knives missiles')
 step(.6);assert(VisualVolleyFired[5]==3 and throwPoses==2,'Later volleys must not restart the body pose before its visible weapon frames')
 Caster=Hero[5];Spell=PlayableSkill[26];SkillsEndcast();assert(VisualLiftUnit[5]==nil and VisualVolleyLeft[5]==0 and Hero[5].flyHeight==0)
 RosterReset(5)
--- AEer native buff may arrive after SPELL_EFFECT. Never erase the effect on the first empty check.
+-- Amls native buff may arrive after SPELL_EFFECT. Never erase the effect on the first empty check.
 local enemy=CreateUnit(12,123,600,0,0);enemy.hp=1000000;enemy.abilities={}
 cast(6,PlayableSkill[30],1,enemy);local root=ShadowRoot[6]
 assert(root and root.type==raw('rshk') and root.animation=='birth' and ShadowSegment[96])
 TimeNow=8500.5;RosterTick();assert(ShadowRoot[6]==root and not root.removed and not ShadowBuffSeen[6])
 enemy.abilities[raw('Rsmb')]=1;TimeNow=8500.75;RosterTick()
-assert(ShadowBuffSeen[6] and ShadowUntil[6]==8502.75 and not root.removed)
+assert(ShadowBuffSeen[6] and ShadowUntil[6]==8506.75 and not root.removed)
 enemy.x=500;enemy.y=100;RosterTick();assert(root.x==500 and root.y==100)
 -- Every strip is above terrain, near black, explicitly Stand, and points toward the target.
 local strip=ShadowSegment[96];assert(strip and strip.animation=='stand' and strip.flyHeight==6 and strip.alpha==245)

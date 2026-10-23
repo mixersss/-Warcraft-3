@@ -1,0 +1,61 @@
+[
+  {
+    "path": "KagemaneIcon.BLP",
+    "bytes": 23825,
+    "sha256": "c38f104cbccc8d81083c061dedcf1b5bf3dd9e4162b04f85ac8379cd0181212c",
+    "file": "music35/KagemaneIcon.BLP"
+  },
+  {
+    "path": "KageShibariIcon.BLP",
+    "bytes": 34794,
+    "sha256": "7ebb671b3585c57726b5351c3215b45163060a9491031242ee9de0e729727369",
+    "file": "music35/KageShibariIcon.BLP"
+  },
+  {
+    "path": "OpenGatesIcon.BLP",
+    "bytes": 23797,
+    "sha256": "33b7f3fc95358908176931e345cdad140d1e7236fe72715c10faed4476dc653a",
+    "file": "music35/OpenGatesIcon.BLP"
+  },
+  {
+    "path": "Icon_Lee_OmoteRenge.blp",
+    "bytes": 37643,
+    "sha256": "3de05bcdeae19f0adc2af5c3e8569e9446c152d2b0d6be76379821f5f8f86df0",
+    "file": "music35/Icon_Lee_OmoteRenge.blp"
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3",
+    "bytes": 6816,
+    "sha256": "dfcfa67950e06759df4515c9f29749441fec048b5cbcae3a79f9db265014faa3",
+    "file": "music35/Sound_Lee_KonohaSenpu2.mp3",
+    "sourcePath": "war3mapImported\\Sound_Lee_KonohaSenpu2.mp3"
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_UraRenge.mp3",
+    "bytes": 6240,
+    "sha256": "c3df307aa1d8283e72b626f6313666f6fae5167d8a65c69d753d8739929363a9",
+    "file": "music35/Sound_Lee_UraRenge.mp3",
+    "sourcePath": "war3mapImported\\Sound_Lee_UraRenge.mp3"
+  },
+  {
+    "path": "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
+    "bytes": 5568,
+    "sha256": "fad56a5ad8ef4d819d351868a4f3589f949a35eb3b9ba36fba35c6e83e347ba0",
+    "file": "music35/SoundLeeOpenGate.mp3",
+    "sourcePath": "war3mapImported\\SoundLeeOpenGate.mp3"
+  },
+  {
+    "path": "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3",
+    "bytes": 2784,
+    "sha256": "3e9c07f1131af210ede9c3618aeab9bae7d3fbbd4861f951938156d38713e89b",
+    "file": "music35/SoundShikamaruThrowNew.mp3",
+    "sourcePath": "war3mapImported\\SoundShikamaruThrowNew.mp3"
+  },
+  {
+    "path": "war3mapImported\\SoundKageManeStricken.mp3",
+    "bytes": 3456,
+    "sha256": "790b088d21954ec059d9e6e2b0d13a0fc5c24241339f10fccea5f7dd76521341",
+    "file": "music35/SoundKageManeStricken.mp3",
+    "sourcePath": "war3mapImported\\SoundKageManeStricken.mp3"
+  }
+]

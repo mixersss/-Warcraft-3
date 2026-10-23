@@ -118,6 +118,7 @@ function CampaignEventWake takes nothing returns nothing
         endif
         set j=j+1
     endloop
+    call ExecuteFunc("InvasionOroWatch")
     call ExecuteFunc("CampaignInvasionEvents")
 endfunction
 function CampaignEventOpen takes integer slot, string title, real deadline returns nothing
@@ -133,6 +134,11 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    set CampaignOroStarted=false
+    set CampaignOroSlot=-1
+    set CampaignOroTarget=null
+    set CampaignOroWatchAt=0.
+    set CampaignOroStaleAt=0.
     call CampaignEventsClose()
     if CampaignBountyActive then
         loop
@@ -904,6 +910,8 @@ function CampaignSpawnStage takes nothing returns nothing
         set CampaignOroAt=TimeNow+1160.
         set unused=CampaignAdd(13,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[4],CampaignSupportY[4])
         set CampaignVillageOro=CampaignActor[unused]
+        set CampaignOroSlot=unused
+        set CampaignOroStarted=false
         call PauseUnit(CampaignVillageOro,true)
         call UnitAddAbility(CampaignVillageOro,'Avul')
     elseif n==13 then
@@ -1535,7 +1543,7 @@ function CampaignNPCTick takes nothing returns nothing
         set CampaignThinkCursor=j+1
         set processed=processed+1
         set u=CampaignActor[j]
-        if FoundationAlive(u) and not IsUnitPaused(u) and not NPCBusy(u) and CampaignActorType[j]!=18 and CampaignActorType[j]!=19 and CampaignActorType[j]!=14 and not (CampaignActorType[j]==11 and not CampaignKabutoAI) and not (CampaignStage==26 and CampaignSasukePlayer>=0 and GetPlayerController(Player(CampaignSasukePlayer))!=MAP_CONTROL_COMPUTER) and not (CampaignStage==12 and CampaignActorType[j]==12 and GetPlayerController(GetOwningPlayer(u))!=MAP_CONTROL_COMPUTER and Hero[GetPlayerId(GetOwningPlayer(u))]!=null) then
+        if FoundationAlive(u) and not (CampaignStage==12 and CampaignOroStarted and CampaignActorType[j]==13) and not IsUnitPaused(u) and not NPCBusy(u) and CampaignActorType[j]!=18 and CampaignActorType[j]!=19 and CampaignActorType[j]!=14 and not (CampaignActorType[j]==11 and not CampaignKabutoAI) and not (CampaignStage==26 and CampaignSasukePlayer>=0 and GetPlayerController(Player(CampaignSasukePlayer))!=MAP_CONTROL_COMPUTER) and not (CampaignStage==12 and CampaignActorType[j]==12 and GetPlayerController(GetOwningPlayer(u))!=MAP_CONTROL_COMPUTER and Hero[GetPlayerId(GetOwningPlayer(u))]!=null) then
             set target=null
             set radius=1100.
             if CampaignSoundGuard(CampaignActorType[j]) then
@@ -1759,6 +1767,7 @@ function CampaignTestArena takes integer sender, integer arena returns nothing
     endif
     call ExamBroadcast("ТЕСТ ЭТАПА: предыдущие задания пропущены без наград. Навыки, уровень и снаряжение героев сохранены.")
 endfunction
+// OROCHIMARU26_CONTROLLER
 function CampaignInvasionEvents takes nothing returns nothing
     local integer unused=0
     local integer j=0
@@ -1797,27 +1806,7 @@ function CampaignInvasionEvents takes nothing returns nothing
         endif
         set CampaignSnakeGoneAt=0.
     endif
-    if CampaignOroAt>0. and (CampaignEventDue[3] or TimeNow>=CampaignOroAt) then
-        call SetUnitOwner(CampaignVillageOro,Player(CampaignAttackOwner),true)
-        call PauseUnit(CampaignVillageOro,false)
-        call UnitRemoveAbility(CampaignVillageOro,'Avul')
-        call ShowUnit(CampaignVillageOro,true)
-        loop
-            exitwhen j>=CampaignCount
-            if CampaignActor[j]==CampaignVillageOro then
-                set CampaignActorRoute[j]=3
-                set CampaignMoveAt[j]=TimeNow+2.
-                set CampaignWalkAt[j]=TimeNow+8.
-                set CampaignWalkX[j]=GetUnitX(CampaignVillageOro)
-                set CampaignWalkY[j]=GetUnitY(CampaignVillageOro)
-            endif
-            set j=j+1
-        endloop
-        call IssuePointOrder(CampaignVillageOro,"attack",CampaignRouteX[3],CampaignRouteY[3])
-        call CampaignEventClose(3)
-        set CampaignOroAt=0.
-        call ExamBroadcast("Орочимару: Теперь я лично разберусь с Хокагэ!")
-    endif
+    call InvasionOroWatch()
 endfunction
 function CampaignTick takes nothing returns nothing
     local integer n=CampaignStage

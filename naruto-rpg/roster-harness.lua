@@ -64,11 +64,7 @@ assert(#Hits==12 and ComboLeft[4]==0 and not ComboTarget[4])
 technique(8,44,1,enemy);for i=1,6 do SkillsTick()end
 assert(#Hits==18 and not ComboTarget[8])
 technique(4,22,1,enemy);enemy.immune=true;SkillsTick();assert(#Hits==18 and not ComboTarget[4]);enemy.immune=false
--- Buff replacement clears prior bonuses; Lee's gate costs HP but cannot kill him.
-technique(3,17,2,nil);assert(GetUnitAbilityLevel(Hero[3],raw('Rbev'))==2 and GetUnitAbilityLevel(Hero[3],raw('Rbcr'))==2)
-technique(3,18,3,nil);assert(GetUnitAbilityLevel(Hero[3],raw('Rbev'))==0 and GetUnitAbilityLevel(Hero[3],raw('Rbas'))==3)
-Hero[3].hp=100;RosterNextSecond[3]=0;RosterTick();assert(Hero[3].hp==1)
-TimeNow=213;RosterTick();assert(RosterBuffUntil[3]==0 and GetUnitAbilityLevel(Hero[3],raw('Rbas'))==0)
+--3.5 Lee has cast-local agility buffs, covered in source35-harness.
 technique(4,20,2,nil);assert(GetUnitAbilityLevel(Hero[4],raw('Rbyg'))==2)
 Hero[4].hp=0;RosterTick();assert(GetUnitAbilityLevel(Hero[4],raw('Rbyg'))==0);Hero[4].hp=10000
 -- Fixed areas pulse eight times; allies/immune/structures outside valid targets survive.
@@ -126,7 +122,7 @@ for p=0,11 do
   end
  end
 end
-assert(issued==52,'All 52 active source slots must have usable AI orders')
+assert(issued==54,'Both reincarnations are replaced by active source3.5 skills')
 -- Healing skips healthy friends, reserves mana, then selects an injured ally.
 TimeNow=500;BotNextCast[2]=0;for s=0,4 do BotReadyAt[10+s]=999999 end;BotReadyAt[12]=0
 Hero[0].hp=10000;Hero[1].hp=10000;Hero[2].hp=10000

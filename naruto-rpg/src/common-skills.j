@@ -89,27 +89,4 @@ function CommonLogBot takes integer p, unit enemy returns boolean
     return false
 endfunction
 
-// ShowUnit(false) is different from native Wind Walk. No plot hides occur in invasion.
-function InvasionHeroVisibility takes nothing returns nothing
-    local integer p=0
-    loop
-        exitwhen p>=12
-        if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(Hero[p]) and IsUnitHidden(Hero[p]) then
-            if SasukeHiddenSince[p]==0. then
-                set SasukeHiddenSince[p]=TimeNow
-            elseif TimeNow>=SasukeHiddenSince[p]+10. then
-                call ShowUnit(Hero[p],true)
-                call PauseUnit(Hero[p],false)
-                call SetUnitPathing(Hero[p],true)
-                call SetUnitFlyHeight(Hero[p],0.,0.)
-                call SetUnitTimeScale(Hero[p],1.)
-                call SetUnitVertexColor(Hero[p],255,255,255,255)
-                call SetUnitAnimation(Hero[p],"stand")
-                set SasukeHiddenSince[p]=0.
-            endif
-        else
-            set SasukeHiddenSince[p]=0.
-        endif
-        set p=p+1
-    endloop
-endfunction
+// INVASION26_RECOVERY

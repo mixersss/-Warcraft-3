@@ -652,6 +652,24 @@
       "column": 2,
       "specific": "ANcs,ANc1,ANc2,ANc3",
       "repeat": 4
+    },
+    "mls1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "Amls",
+      "repeat": 4
+    },
+    "Iild": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AIil",
+      "repeat": 4
+    },
+    "Iilw": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "AIil",
+      "repeat": 4
     }
   },
   "unitFields": {

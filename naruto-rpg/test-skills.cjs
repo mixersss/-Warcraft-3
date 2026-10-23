@@ -20,7 +20,7 @@ const nativeModels=new Set(["Doodads\\Cityscape\\Props\\City_Fountain\\City_Foun
 for(const v of JSON.parse(fs.readFileSync(__dirname+'/src/skill-visuals.json')).visualUnits)if(/^(abilities|objects|doodads)\\/i.test(v.model))nativeModels.add(v.model.toLowerCase());
 for(const o of nativeNPC.units){const m=o.modifications.find(m=>m.id==='umdl')?.value;if(m && /^(abilities|objects|doodads|sharedmodels)\\/i.test(m) || m==='none.mdl')nativeModels.add(m.toLowerCase());}
 for(const nativeModel of ["Buildings\\Other\\BarrelsUnit0\\BarrelsUnit0.mdl","Doodads\\Terrain\\RockChunks\\RockChunks0.mdl"])nativeModels.add(nativeModel.toLowerCase());
-const assets=new Set([...JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')),...JSON.parse(fs.readFileSync(__dirname+'/src/generated-assets.json'))].map(r=>r.path.toLowerCase()));
+const assets=new Set([...JSON.parse(fs.readFileSync(__dirname+'/src/asset-manifest.json')),...JSON.parse(fs.readFileSync(__dirname+'/src/generated-assets.json')),...JSON.parse(fs.readFileSync(__dirname+'/src/extra35-assets.json'))].map(r=>r.path.toLowerCase()));
 for(const o of units){
  assert(['rdum','rdst'].includes(o.newId) || (get(o,'uico')||'replaceabletextures\\').toLowerCase().startsWith('replaceabletextures\\') || assets.has((get(o,'uico')||'').toLowerCase()),'Missing unit portrait '+o.newId);
  if(!['rdum','rdst'].includes(o.newId))assert(((get(o,'umdl')||'units\\').toLowerCase().startsWith('units\\') || nativeModels.has(get(o,'umdl').toLowerCase())) || assets.has(get(o,'umdl').replace(/\.mdl$/i,'.mdx').toLowerCase()),'Missing unit model '+o.newId);
@@ -42,7 +42,7 @@ for(let j=0;j<rows.length;j++){const pos=rows[j].slot;assert.equal(get(ability[r
 const buffs=parse(Parser,'war3map.w3h').customTable.objects;
 assert.equal(buffs.length,7+nativeNPC.buffs.length);assert.equal(get(buffs.find(b=>b.newId==='Rsmb'),'ftat'),'');assert(buffs.some(b=>b.newId==='Rksb'&&b.oldId==='BPSE'));
 for(const buff of buffs){assert(schema.stockIds.buffs.includes(buff.oldId),'Invalid native buff base '+buff.oldId);for(const mod of buff.modifications){assert(schema.buffFields[mod.id]);assert.equal(mod.variableType,kind(schema.buffFields[mod.id].type));}}
-for(let rank=1;rank<=4;rank++){assert.equal(get(ability.R601,'abuf',rank),'Rsmb');assert.equal(get(ability.Rbyg,'aran',rank),200+200*rank);assert.equal(get(ability.Rbyg,'Det1',rank),1);}
+for(let rank=1;rank<=4;rank++){assert.equal(get(ability.R601,'abuf',rank),'Bmlc,Bmlt');assert.equal(get(ability.Rbyg,'aran',rank),200+200*rank);assert.equal(get(ability.Rbyg,'Det1',rank),1);}
 assert.equal(rows.length,58);assert.equal(new Set(rows.map(r=>r.id)).size,58);
 for(const r of rows){assert.equal(get(ability[r.id],'alev'),r.ranks);for(let rank=1;rank<=r.ranks;rank++){assert.equal(get(ability[r.id],'amcs',rank),r.mana[rank-1]);assert(Math.abs(get(ability[r.id],'acdn',rank)-(r.cooldowns?.[rank-1]??r.cooldown))<.01);}}
 assert.equal(get(unit.R000,'uhab'),rows.slice(0,5).map(r=>r.id).join(','));
@@ -62,7 +62,7 @@ const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json')
 for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
 assert.equal(ability.Rlog.oldId,'AOwk');assert.equal(get(ability.Rlog,'aher'),0);assert.equal(get(ability.Rlog,'amcs',1),150);assert.equal(get(ability.Rlog,'acdn',1),22);assert.equal(get(ability.Rlog,'adur',1),3);assert.equal(get(ability.Rlog,'ahdu',1),3);assert.equal(get(ability.Rlog,'Owk1',1),0);assert(Math.abs(get(ability.Rlog,'Owk2',1)-.2)<.001);assert.equal(get(ability.Rlog,'Owk3',1),50);assert.equal(get(ability.Rlog,'abuf',1),'BOwk');assert.equal(get(ability.Rlog,'aart'),'Icon_Kawarimi.blp');assert.equal(get(ability.Rlog,'ahky'),'R');assert.equal(get(ability.Rlog,'abpx'),2);assert.equal(get(ability.Rlog,'abpy'),1);
 for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rlog'),'Every base/morph hero has the common skill');
-assert.equal(ability.R604.oldId,'AOre');assert.equal(ability.R301.oldId,'AOre');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
+assert.equal(ability.R604.oldId,'ANcl');assert.equal(ability.R301.oldId,'ANcl');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rjtr'));
 assert.equal(get(ability.Lgar,'Idef',1),10);assert.equal(get(ability.Lcar,'Idef',1),25);
 for(const [raw,projectile] of [['R002','Shurikens.mdl'],['R005','Shurikens.mdl'],['R006','Shurikens.mdl'],['R009','gaars sand.mdl'],['R00B','WindAttack.mdl']]){assert.equal(get(unit[raw],'ua1w'),'missile');assert.equal(get(unit[raw],'ua1m'),projectile);assert.equal(get(unit[raw],'ua1r'),700);assert.equal(get(unit[raw],'udp1'),.5);}
@@ -70,7 +70,7 @@ assert.equal(get(unit.re01,'ulev'),4);assert.equal(get(unit.re02,'ulev'),4);asse
 for(const id of ['Zbwp','Zbce','Zbbl','Ljkn','Ljsh','Ljnt'])assert(ability[id]);
 const info=parse(Info,'war3map.w3i');assert.equal(info.players.length,12);assert.equal(info.forces.length,4);assert.deepEqual(info.forces.map(f=>f.playerMasks),[7,56,448,3584]);
 const L=lauxlib.luaL_newstate();lualib.luaL_openlibs(L);
-function run(s){if(lauxlib.luaL_dostring(L,to_luastring(s))!==lua.LUA_OK)throw Error(to_jsstring(lua.lua_tostring(L,-1)));}
+function run(s){if(lauxlib.luaL_dostring(L,to_luastring("local ok,err=xpcall(function()\n"+s+"\nend,debug.traceback);if not ok then error(err)end"))!==lua.LUA_OK)throw Error(to_jsstring(lua.lua_tostring(L,-1)));}
 run(translate(source).replace(/\bnot(?=[A-Z(])/g,'not '));
 for(const m of source.matchAll(/^\s*(integer|real|boolean) array (\w+)\s*$/gm))run(`setmetatable(${m[2]}, {__index=function() return ${m[1]==='boolean'?'false':'0'} end})`);
 run("for i=0,11 do _G['SkillsData'..i]() end; SkillDataReady=true");
@@ -81,6 +81,7 @@ PLAYER_SLOT_STATE_PLAYING='playing'
 function GetPlayerSlotState(p)return PLAYER_SLOT_STATE_PLAYING end
 MAP_CONTROL_COMPUTER='computer';UNIT_STATE_MANA='mana';UNIT_STATE_MAX_MANA='maxMana';UNIT_TYPE_STRUCTURE='structure';UNIT_TYPE_MAGIC_IMMUNE='immune'
 ATTACK_TYPE_NORMAL='normal';DAMAGE_TYPE_MAGIC='magic';WEAPON_TYPE_WHOKNOWS='unknown'
+function ExecuteFunc(name)_G[name]()end
 function ModuloInteger(a,b) return a%b end
 function GetWidgetLife(u) return u.hp end
 function GetOwningPlayer(u) return u.owner end
@@ -137,7 +138,15 @@ function GetSpellTargetX() return AimX or 100 end
 function GetSpellTargetY() return AimY or 0 end
 function UnitApplyTimedLife(u,buff,duration) u.expire=TimeNow+duration end
 bj_DEGTORAD=math.pi/180
-UNIT_STATE_MAX_LIFE='maxLife'
+UNIT_STATE_LIFE='hp';UNIT_STATE_MAX_LIFE='maxLife'
+function GetHeroAgi(u,bonus)return u.agi or 20 end
+function SetHeroAgi(u,v,permanent)u.agi=v end
+function GetUnitMoveSpeed(u)return u.speed or 300 end
+function SetUnitMoveSpeed(u,v)u.speed=v end
+function GetRandomInt(a,b)return a end
+function AddLightningEx(code,visible,x,y,z,tx,ty,tz)return {alive=true}end
+function SetLightningColor()end
+function DestroyLightning(l)assert(l.alive);l.alive=false end
 function GetHeroLevel(u) return u.level end
 function GetHeroSkillPoints(u) return u.points end
 function SelectHeroSkill(u,id)
@@ -154,10 +163,16 @@ function AddSpecialEffect(model,x,y) Effects=Effects+1;return {alive=true} end
 function DestroyEffect(e) assert(e.alive,'Double effect destruction');e.alive=false;Destroyed=Destroyed+1 end
 World={};Hits={}
 function GroupEnumUnitsInRange(g,x,y,r,f) for _,u in ipairs(World)do if (u.x-x)^2+(u.y-y)^2<=r*r then g[#g+1]=u end end end
+function CreateGroup()return {}end
+function GroupClear(g)for i=#g,1,-1 do g[i]=nil end end
+function GroupAddUnit(g,u)for _,v in ipairs(g)do if u==v then return end end;g[#g+1]=u end
+Source35Init()
 function FirstOfGroup(g) return g[1] end
-function GroupRemoveUnit(g,u) assert(g[1]==u);table.remove(g,1) end
+function GroupRemoveUnit(g,u)for i,v in ipairs(g)do if v==u then table.remove(g,i);return end end end
 function UnitDamageTarget(c,t,amount,attack,ranged,at,dt,wt) assert(c~=t and amount>0);Hits[#Hits+1]={target=t,damage=amount};t.hp=t.hp-amount;return true end
 function AddUnitAnimationProperties(u,tag,on)u.alternate=on end
+function ShowUnit(u,show)u.hidden=not show end
+function PauseUnit(u,pause)u.paused=pause end
 function SetUnitTimeScale(u,s)if u then u.timeScale=s end end
 function QueueUnitAnimation(u,s)u.queuedAnimation=s end
 function SetUnitFlyHeight(u,h,s)u.flyHeight=h end
@@ -286,8 +301,9 @@ run(fs.readFileSync(__dirname+'/visibility23-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/village23-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/balance24-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/visibility25-harness.lua','utf8'));
-console.log('PASS: all 52 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
+run(fs.readFileSync(__dirname+'/source35-harness.lua','utf8'));
+console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
-fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({corrections23NativeMocks:true,corrections22NativeMocks:true,prelimWinnersOnly:true,scrollRewardLevels:2,kawarimiCooldownSeconds:22,sourceShieldDamagePerMana:[1,2,3],sourceShieldAbsorption:[.5,.7,.9],permanentDogAndPuppets:true,isolatedCompanionSpellState:true,sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:52,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,campaignObjectiveDataEntries:22,parallelCloneRooms:8,jiraiyaSearchBarrels:20,jiraiyaSearchSeconds:150,invasionStreams:8,invasionWavePeriods:[45,45,45,30,30,30,30,30],invasionRoleBasedEnemyCamp:true,visibleInvasionEventTimers:4,invasionEventCountdownSeconds:[400,760,820,1160],invasionEventTimerLifecycleNativeMocks:true,leafCornerFountainSpawns:9,sourceSoundGuardPosts:5,sourceSoundGuardRetreatHP:10000,medicPulseHP:75,medicPulseMana:25,medicPulseSeconds:.25,realMedicHealingNativeMocks:true,independentReinforcementCallbacks:true,invasionNativeBountyLifecycle:true,kibaTsugaHits:5,kibaTsugaDamagePerHit:[180,240,300],kibaTargetedMotionAndInterruptsNativeMocks:true,spacedInvasionSpawns:24,waveStallRecoveryNativeMocks:true,waveRecoveryWithoutTeleport:true,recycledActorMovementStateReset:true,leafWaveInterceptionNativeMocks:true,leafDefenseRallyPoints:[3,5],leafDefenseUpperShare:.3,windWalkNativeBuffCleanup:true,castLocalNPCVisibility:true,defenseCombatOverridesShoppingAndFollow:true,invasionWaypointRedirectsNativeMocks:true,villageShortcutActualChatDispatch:true,sourceLeafDefenders:140,sourceAnbuDefenders:102,sourceVillageMedics:6,sourceNPCSpellObjects:nativeNPC.abilities.length,sourceNPCFunctions:Object.keys(JSON.parse(fs.readFileSync(__dirname+'/src/npc-source-audit.json')).sourceFunctions).length,shopsOnlyDuringInvasion:false,shopsFromJiraiyaSearch:true,sourceVillageFountains:4,globalTeamByakuganNativeMocks:true,tentenKunaiImpactNativeMocks:true,alliedBotsDrawEnemyAggroNativeMocks:true,openingTimerDeferredNativeMocks:true,primaryHeroFamilies:12,arenaCampRegenExcluded:true,sourceUpperTerraceSeats:24,ramenRecoverySurvivesDamage:true,pointTargetNotesNativeMocks:true,villageServiceVisibilityAndNeutralSupply:true,narutoCloneCount:8,narutoCloneOneAttackRule:true,kaitenDamage:[120,180,240,420],kaitenMultiplier:1.2,arenaVictoryLevels:1,arenaBotLogUsesPerFight:1,botStatScrollPickup:true,corrections24NativeMocks:true,visibility25NativeMocks:true,autonomousOrochimaruAttack:true,sasukeStaleHiddenRecoverySeconds:10,finalEliminationDuels:3,threeWayFinal:true,cooldownsResetBeforeEveryFight:true,sourceBarrelModelRestored:true,arenaTestShortcutActualChatDispatch:true,arenaTestEarlyChapterCleanupAndReentry:true,arenaTerrainRevealWithoutDetection:true,arenaSharedVisionDisabled:true,arenaSpectatorCameraAndFilterRecovery:true,forestBotPairPatrolAndStalledGoalRecovery:true,characterBoundSasukeRole:true,campaignThroughEndingNativeMocks:true,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,commonKawarimiDataAndBotOrders:true,stageHUDDeadlinesAndHandleCleanup:true,nativeMocks:true,enginePlaytest:false},null,2));
-console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 52 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');
+fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({source35NativeMocks:true,source35CloneCounts:[8,16,24,40],source35FullKits:[3,6],source35IndependentChoke:true,invasionCriticalPrefixNativeMocks:true,corrections23NativeMocks:true,corrections22NativeMocks:true,prelimWinnersOnly:true,scrollRewardLevels:2,kawarimiCooldownSeconds:22,sourceShieldDamagePerMana:[1,2,3],sourceShieldAbsorption:[.5,.7,.9],permanentDogAndPuppets:true,isolatedCompanionSpellState:true,sourceTechniqueSlots:58,rosterHeroes:12,activeBotOrders:54,mechanicFamilies:10,staggeredDataCallbacks:12,originalNinjasPerTeam:14,mentorDepartureSeconds:330,originalLootItems:7,campaignObjectiveDataEntries:22,parallelCloneRooms:8,jiraiyaSearchBarrels:20,jiraiyaSearchSeconds:150,invasionStreams:8,invasionWavePeriods:[45,45,45,30,30,30,30,30],invasionRoleBasedEnemyCamp:true,visibleInvasionEventTimers:4,invasionEventCountdownSeconds:[400,760,820,1160],invasionEventTimerLifecycleNativeMocks:true,leafCornerFountainSpawns:9,sourceSoundGuardPosts:5,sourceSoundGuardRetreatHP:10000,medicPulseHP:75,medicPulseMana:25,medicPulseSeconds:.25,realMedicHealingNativeMocks:true,independentReinforcementCallbacks:true,invasionNativeBountyLifecycle:true,kibaTsugaHits:5,kibaTsugaDamagePerHit:[180,240,300],kibaTargetedMotionAndInterruptsNativeMocks:true,spacedInvasionSpawns:24,waveStallRecoveryNativeMocks:true,waveRecoveryWithoutTeleport:true,recycledActorMovementStateReset:true,leafWaveInterceptionNativeMocks:true,leafDefenseRallyPoints:[3,5],leafDefenseUpperShare:.3,windWalkNativeBuffCleanup:true,castLocalNPCVisibility:true,defenseCombatOverridesShoppingAndFollow:true,invasionWaypointRedirectsNativeMocks:true,villageShortcutActualChatDispatch:true,sourceLeafDefenders:140,sourceAnbuDefenders:102,sourceVillageMedics:6,sourceNPCSpellObjects:nativeNPC.abilities.length,sourceNPCFunctions:Object.keys(JSON.parse(fs.readFileSync(__dirname+'/src/npc-source-audit.json')).sourceFunctions).length,shopsOnlyDuringInvasion:false,shopsFromJiraiyaSearch:true,sourceVillageFountains:4,globalTeamByakuganNativeMocks:true,tentenKunaiImpactNativeMocks:true,alliedBotsDrawEnemyAggroNativeMocks:true,openingTimerDeferredNativeMocks:true,primaryHeroFamilies:12,arenaCampRegenExcluded:true,sourceUpperTerraceSeats:24,ramenRecoverySurvivesDamage:true,pointTargetNotesNativeMocks:true,villageServiceVisibilityAndNeutralSupply:true,narutoCloneCounts:[8,16,24,40],narutoCloneCount:8,narutoCloneOneAttackRule:true,kaitenDamage:[120,180,240,420],kaitenMultiplier:1.2,arenaVictoryLevels:1,arenaBotLogUsesPerFight:1,botStatScrollPickup:true,corrections24NativeMocks:true,visibility25NativeMocks:true,autonomousOrochimaruAttack:true,sasukeStaleHiddenRecoverySeconds:10,finalEliminationDuels:3,threeWayFinal:true,cooldownsResetBeforeEveryFight:true,sourceBarrelModelRestored:true,arenaTestShortcutActualChatDispatch:true,arenaTestEarlyChapterCleanupAndReentry:true,arenaTerrainRevealWithoutDetection:true,arenaSharedVisionDisabled:true,arenaSpectatorCameraAndFilterRecovery:true,forestBotPairPatrolAndStalledGoalRecovery:true,characterBoundSasukeRole:true,campaignThroughEndingNativeMocks:true,treeJumpActualJASS:true,autoStartHumanTeamAtSeconds:30,skillSourceListsAudited:12,commonKawarimiDataAndBotOrders:true,stageHUDDeadlinesAndHandleCleanup:true,nativeMocks:true,enginePlaytest:false},null,2));
+console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 54 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');

@@ -211,8 +211,8 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==16 then
         call SkillsFlashTarget("Abilities\\Weapons\\TreantMissile\\TreantMissile.mdl",target)
     elseif index==18 then
-        call VisualAttach(p,0,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","hand right",12.)
-        call VisualAttach(p,1,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","foot right",12.)
+        call VisualAttach(p,0,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","hand right",17.)
+        call VisualAttach(p,1,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","foot right",17.)
     elseif index==21 or index==41 then
         call SkillsFlashAt("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",sx,sy)
     elseif index==22 or index==23 or index==44 then
@@ -231,7 +231,7 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         set VisualVolleyDelay[p]=.2
         set VisualVolleyX[p]=sx
         set VisualVolleyY[p]=sy
-    elseif index==28 or index==32 or index==58 then
+    elseif index==28 or index==58 then
         if index==28 then
             call VisualPose(p,index)
             call VisualLiftStart(p,1000.,SkillHold[index])
