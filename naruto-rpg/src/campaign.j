@@ -1332,6 +1332,38 @@ function CampaignDuelTick takes nothing returns nothing
         set CampaignDuelLive=false
     endif
 endfunction
+function CampaignEntranceUnlock takes nothing returns nothing
+    local integer p=0
+    local integer rock=0
+    local boolean nearby=false
+    if CampaignStage!=17 or CampaignTransition then
+        return
+    endif
+    loop
+        exitwhen p>=12
+        if FoundationAlive(Hero[p]) and HeroRole[p]==2 and not CampaignPermanentDead[p] and not CampaignClonePending[p] and not IsUnitHidden(Hero[p]) and not IsUnitPaused(Hero[p]) then
+            set rock=0
+            loop
+                exitwhen rock>=2
+                if FoundationAlive(CampaignActor[rock]) and ExamNear(Hero[p],GetUnitX(CampaignActor[rock]),GetUnitY(CampaignActor[rock]),350.) then
+                    set nearby=true
+                endif
+                set rock=rock+1
+            endloop
+        endif
+        set p=p+1
+    endloop
+    if nearby then
+        set rock=0
+        loop
+            exitwhen rock>=2
+            if FoundationAlive(CampaignActor[rock]) then
+                call UnitRemoveAbility(CampaignActor[rock],'Avul')
+            endif
+            set rock=rock+1
+        endloop
+    endif
+endfunction
 function CampaignNearest takes integer p returns unit
     local integer j=0
     local unit result=null
@@ -1423,7 +1455,7 @@ function CampaignNearest takes integer p returns unit
         else
             set target=Hero[j-CampaignCount]
         endif
-        if FoundationAlive(target) and not IsUnitPaused(target) and not IsUnitHidden(target) and IsUnitEnemy(target,Player(p)) and not (CampaignStage==17 and j<2) then
+        if FoundationAlive(target) and not IsUnitPaused(target) and not IsUnitHidden(target) and IsUnitEnemy(target,Player(p)) and not (CampaignStage==17 and j<2 and GetUnitAbilityLevel(target,'Avul')>0) then
             set dx=GetUnitX(target)-GetUnitX(Hero[p])
             set dy=GetUnitY(target)-GetUnitY(Hero[p])
             if dx*dx+dy*dy<best then
@@ -1466,10 +1498,14 @@ function CampaignBot takes integer p, unit enemy returns nothing
             set leader=CampaignActor[1]
         endif
         if ExamNear(Hero[p],GetUnitX(leader),GetUnitY(leader),300.) then
-            if GetUnitAbilityLevel(Hero[p],'R204')==0 and GetHeroSkillPoints(Hero[p])>0 then
-                call SelectHeroSkill(Hero[p],'R204')
+            // The entrance must not require spending an unavailable level35 skill point.
+            call CampaignEntranceUnlock()
+            if GetUnitAbilityLevel(Hero[p],'R204')>0 and IssueImmediateOrder(Hero[p],"drunkenhaze") then
+                set leader=null
+                set shop=null
+                return
             endif
-            call IssueImmediateOrder(Hero[p],"drunkenhaze")
+            call IssueTargetOrder(Hero[p],"attack",leader)
         else
             call IssuePointOrder(Hero[p],"move",GetUnitX(leader),GetUnitY(leader))
         endif
@@ -1808,6 +1844,60 @@ function CampaignInvasionEvents takes nothing returns nothing
     endif
     call InvasionOroWatch()
 endfunction
+function CampaignLateProgress takes nothing returns nothing
+    local integer p=0
+    local integer enemies=0
+    local boolean sakura=false
+    if CampaignFinished or CampaignTransition or CampaignStage<17 or CampaignStage>=30 then
+        return
+    endif
+    // Preserve defeat priority; the early callback must never revive a lost party via a transition.
+    if CampaignNarutoPlayer>=0 and not FoundationAlive(Hero[CampaignNarutoPlayer]) then
+        return
+    endif
+    loop
+        exitwhen p>=12
+        if p!=CampaignSasukePlayer and not CampaignPermanentDead[p] and FoundationAlive(Hero[p]) then
+            set enemies=enemies+1
+        endif
+        set p=p+1
+    endloop
+    if enemies==0 then
+        return
+    endif
+    set p=0
+    if CampaignStage==17 then
+        call CampaignEntranceUnlock()
+        loop
+            exitwhen p>=12
+            if FoundationAlive(Hero[p]) and HeroRole[p]==2 and not CampaignPermanentDead[p] then
+                set sakura=true
+            endif
+            set p=p+1
+        endloop
+        set enemies=CampaignAliveEnemies()
+        if not sakura and enemies<=2 then
+            set p=0
+            loop
+                exitwhen p>=2
+                if FoundationAlive(CampaignActor[p]) then
+                    call UnitRemoveAbility(CampaignActor[p],'Avul')
+                    call KillUnit(CampaignActor[p])
+                endif
+                set p=p+1
+            endloop
+        endif
+        if CampaignAliveEnemies()==0 then
+            call CampaignQueueStage(26)
+        endif
+    elseif CampaignStage==29 then
+        if not FoundationAlive(CampaignSasuke) then
+            call CampaignQueueStage(30)
+        endif
+    elseif CampaignAliveEnemies()==0 then
+        call CampaignQueueStage(CampaignStage+1)
+    endif
+endfunction
 function CampaignTick takes nothing returns nothing
     local integer n=CampaignStage
     local integer p=0
@@ -2018,34 +2108,8 @@ function CampaignTick takes nothing returns nothing
         if not FoundationAlive(CampaignSasuke) or not FoundationAlive(CampaignNaruto) then
             call CampaignQueueStage(17)
         endif
-    elseif CampaignStage==17 then
-        set ready=false
-        set j=0
-        loop
-            exitwhen j>=12
-            if FoundationAlive(Hero[j]) and HeroRole[j]==2 then
-                set ready=true
-            endif
-            set j=j+1
-        endloop
-        if not ready and CampaignAliveEnemies()<=2 then
-            set j=0
-            loop
-                exitwhen j>=2
-                if FoundationAlive(CampaignActor[j]) then
-                    call UnitRemoveAbility(CampaignActor[j],'Avul')
-                    call KillUnit(CampaignActor[j])
-                endif
-                set j=j+1
-            endloop
-        endif
-        if CampaignAliveEnemies()==0 then
-            call CampaignQueueStage(26)
-        endif
-    elseif CampaignStage==29 then
-        if not FoundationAlive(CampaignSasuke) then
-            call CampaignQueueStage(30)
-        endif
+    elseif CampaignStage>=17 and CampaignStage<30 then
+        call CampaignLateProgress()
     elseif CampaignStage==30 then
         if TimeNow>=CampaignStartAt+12. then
             call CampaignFinish(true)

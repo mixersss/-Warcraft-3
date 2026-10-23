@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.0-alpha
 
-## Shinobi RPG — Story Alpha 27
+## Shinobi RPG — Story Alpha 28
 
-[Скачать Shinobi Story Alpha 27](releases/shinobi-new/Shinobi_Story_Alpha_27.w3x). Исправление перезарядки первого навыка Ли; регулярные покупки свитков характеристик ботами, в том числе с полным инвентарём. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
+[Скачать Shinobi Story Alpha 28](releases/shinobi-new/Shinobi_Story_Alpha_28.w3x). Исправление блокировки входа в убежище и поздних переходов после двойников, полная цепочка до Саске. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
 
 ## Footman 0.23.0 — текущая версия
 

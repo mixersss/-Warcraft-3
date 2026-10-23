@@ -163,7 +163,8 @@ enter();assert(CampaignStage==17 and CampaignCount==22 and Hero[1].hidden)
 -- Sakura's bot walks up to the obstacle and uses her real Okasho, never attacks invulnerability.
 Hero[2].abilities[raw('R204')]=1
 CampaignBot(2,nil);assert(Hero[2].last.o=='move')
-Hero[2].x=CampaignTX[17]-100;Hero[2].y=CampaignTY[17];CampaignBot(2,nil);assert(Hero[2].last.o=='drunkenhaze')
+Hero[2].abilities[raw('R204')]=nil;Hero[2].level=20;Hero[2].points=0
+Hero[2].x=CampaignTX[17]-100;Hero[2].y=CampaignTY[17];CampaignBot(2,nil);assert(Hero[2].last.o=='attack','Low-level Sakura must break the entrance without an unlearnable ultimate')
 -- Sakura's real existing Okasho spell destroys nearby protected boulders.
 Caster=Hero[2];Spell=raw('R204');Target=nil;Hero[2].x=CampaignTX[17];Hero[2].y=CampaignTY[17];Hero[2].abilities[Spell]=1
 SkillsEffect();assert(CampaignActor[0].hp==0 and CampaignActor[1].hp==0)

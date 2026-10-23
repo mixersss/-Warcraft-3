@@ -710,6 +710,7 @@ function FoundationTick takes nothing returns nothing
     call ExecuteFunc("CommonLogTick")
     call ExecuteFunc("Source35Tick")
     call ExecuteFunc("InvasionOroWatch")
+    call ExecuteFunc("CampaignLateProgress")
     call StoryTick()
     loop
         exitwhen p>=12

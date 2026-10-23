@@ -1,0 +1,24 @@
+{
+  "stage": 28,
+  "previousStage": 27,
+  "entranceDoesNotRequireLevel35": true,
+  "noFreeHeroSkillsOrLevels": true,
+  "parallelClonesPreserved": true,
+  "lateBossOrder": [
+    "Kabuto",
+    "Manda",
+    "Orochimaru",
+    "Sasuke"
+  ],
+  "livingBossesNotSkipped": true,
+  "defeatPriorityPreserved": true,
+  "isolatedLateProgression": true,
+  "allObjectsWorldAndImportsUnchanged": true,
+  "enginePlaytest": false,
+  "filename": "Shinobi_Story_Alpha_28.w3x",
+  "sha256": "81b8511a573a9dd1ba095333ffb84fdb5a6c351d24f8c87bd261edc09d70e349",
+  "bytes": 7469556,
+  "strictPjassPassed": true,
+  "fullNativeMockSuitePassed": true,
+  "commandsPassed": true
+}
