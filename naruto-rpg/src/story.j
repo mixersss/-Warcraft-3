@@ -443,10 +443,26 @@ function StoryHasItemSpace takes integer p returns boolean
     endloop
     return false
 endfunction
+function StoryStatChoice takes integer p returns integer
+    local integer role=HeroRole[p]
+    if role==0 or role==1 then
+        return 7
+    elseif role==2 or role==6 or role==9 or role==10 then
+        return 8
+    endif
+    return 9
+endfunction
+function StoryCanCarryChoice takes integer p, integer choice returns boolean
+    return StoryHasItemSpace(p) or (choice>=7 and choice<=9)
+endfunction
 function StoryChooseItem takes integer p returns integer
     local integer choice=0
     local integer slot=0
     local integer role=HeroRole[p]
+    // Native stat powerups are consumed on purchase, including with six carried items.
+    if not StoryHasItemSpace(p) or (StoryBought[p]>=3 and ModuloInteger(StoryBought[p],4)==3) then
+        return StoryStatChoice(p)
+    endif
     set choice=ModuloInteger(StoryBought[p],3)
     if choice==1 then
         set choice=4
@@ -466,12 +482,7 @@ function StoryChooseItem takes integer p returns integer
             if GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlga' then
                 set choice=6
             elseif GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlca' then
-                set choice=7
-                if role==1 or role==2 or role==6 or role==9 or role==10 or role==11 then
-                    set choice=8
-                elseif role==3 or role==4 or role==7 or role==8 then
-                    set choice=9
-                endif
+                set choice=StoryStatChoice(p)
                 exitwhen true
             endif
             set slot=slot+1
@@ -500,10 +511,10 @@ function StoryBuy takes integer p returns nothing
         endif
         set slot=slot+1
     endloop
-    if full then
+    set choice=StoryChooseItem(p)
+    if full and not StoryCanCarryChoice(p,choice) then
         return
     endif
-    set choice=StoryChooseItem(p)
     if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[choice] then
         call IssueNeutralTargetOrder(Player(p),shop,"neutralinteract",Hero[p])
         call IssueNeutralImmediateOrderById(Player(p),shop,StoryItem[choice])

@@ -1,7 +1,7 @@
 // Independent Alpha26 scope and exact original3.5 object/asset checks.
 const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
 const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default,Objects=require('mdx-m3-viewer/dist/cjs/parsers/w3x/w3d/file').default;
-const current=new MapFile();current.load(new Uint8Array(fs.readFileSync(__dirname+'/dist/Shinobi_Story_Alpha_26.w3x')),true);
+const current=new MapFile();current.load(new Uint8Array(fs.readFileSync(__dirname+'/dist/Shinobi_Story_Alpha_27.w3x')),true);
 const root=__dirname,read=n=>Buffer.from(current.get(n.replaceAll('/','\\')).bytes()),json=n=>JSON.parse(fs.readFileSync(root+'/src/'+n));
 const prior=new MapFile();prior.load(new Uint8Array(fs.readFileSync(root+'/../releases/shinobi-new/Shinobi_Story_Alpha_25.w3x')),true);
 const old=n=>Buffer.from(prior.get(n).bytes()),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -23,12 +23,12 @@ assert.equal(get('R35k','Htb1',1),100);assert.equal(get('R35k','ahdu',1),2);
 const source=read('war3map.j').toString(),oldSource=old('war3map.j').toString();
 const fns=s=>new Map([...s.matchAll(/^function (\w+) takes[^]*?^endfunction/gm)].map(m=>[m[1],m[0]]));
 const sf=fns(source),of=fns(oldSource);
-const changed=new Set(['InvasionHeroVisibility','VisualApply','RosterShadow','RosterGrantInnate','RosterResetEffects','RosterApply','RosterTick','SkillsEffect','SkillsEndcast','SkillsSummoned','SkillsTick','SkillsData0','SkillsData3','SkillsData6','SkillsData7','SkillsInit','CampaignEventWake','CampaignClear','CampaignSpawnStage','CampaignNPCTick','CampaignInvasionEvents','FoundationTick','FoundationInit','config']);
+const changed=new Set(['InvasionHeroVisibility','VisualApply','RosterShadow','RosterGrantInnate','RosterResetEffects','RosterApply','RosterTick','SkillsEffect','SkillsEndcast','SkillsSummoned','SkillsTick','SkillsData0','SkillsData3','SkillsData6','SkillsData7','SkillsInit','StoryChooseItem','StoryBuy','CampaignBot','CampaignEventWake','CampaignClear','CampaignSpawnStage','CampaignNPCTick','CampaignInvasionEvents','FoundationTick','FoundationInit','config']);
 for(const [name,text]of of){assert(sf.has(name),'Retain function '+name);if(!changed.has(name))assert.equal(sf.get(name).replaceAll('call InvasionSourceColor(','call SetUnitVertexColorBJ('),text,'Unchanged function '+name);}
-for(const name of sf.keys())if(!of.has(name))assert(name.startsWith('Source35')||['InvasionRecoverHero','InvasionSourceColor','InvasionOroWatch'].includes(name));
+for(const name of sf.keys())if(!of.has(name))assert(name.startsWith('Source35')||['StoryStatChoice','StoryCanCarryChoice','InvasionRecoverHero','InvasionSourceColor','InvasionOroWatch'].includes(name));
 const tick=sf.get('FoundationTick');assert(tick.indexOf('ExecuteFunc("InvasionHeroVisibility")')<tick.indexOf('call StoryTick()'));assert(tick.indexOf('ExecuteFunc("InvasionOroWatch")')<tick.indexOf('call StoryTick()'));
 assert(sf.get('InvasionHeroVisibility').includes('HeroRole[p]==1'));assert(sf.get('InvasionHeroVisibility').includes('SasukePauseSince[p]+15.'));assert(sf.get('InvasionOroWatch').includes('CampaignEventDue[3]'));
 assert(sf.get('Source35TickPlayer').includes('0xD0132'));assert(sf.get('Source35TickPlayer').includes('j>=8'));
 assert(!fs.readFileSync(root+'/src/skills35.j','utf8').includes('TriggerSleepAction('));
-const report={stage:26,source:'Naruto Ultimate RPG3.5',exactSourceMusicTracks:6,exactSourceSkillVoices:5,newSourceIcons:4,clonesByRank:[8,16,24,40],cloneDamage:[.10,.11,.12,.13],cloneLifetimeSeconds:30,fullKitsReplaced:['Rock Lee','Shikamaru'],otherAbilitiesUnitsItemsTerrainUnchanged:true,sasukeSeparateRecoveryThread:true,orochimaruDedicatedController:true,enginePlaytest:false};
+const report={stage:27,source:'Naruto Ultimate RPG3.5',exactSourceMusicTracks:6,exactSourceSkillVoices:5,newSourceIcons:4,clonesByRank:[8,16,24,40],cloneDamage:[.10,.11,.12,.13],cloneLifetimeSeconds:30,fullKitsReplaced:['Rock Lee','Shikamaru'],otherAbilitiesUnitsItemsTerrainUnchanged:true,sasukeSeparateRecoveryThread:true,orochimaruDedicatedController:true,enginePlaytest:false};
 fs.writeFileSync(root+'/dist/source35-verification.json',JSON.stringify(report,null,2)+'\n');console.log('PASS: Alpha26 exact music/voice/icon bytes;3.5 skill objects,clone profiles; unchanged other objects,world and unrelated runtime; invasion recovery isolation.');

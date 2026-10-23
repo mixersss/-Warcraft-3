@@ -1,4 +1,8 @@
 {
+  "cooldown27NativeMocks": true,
+  "statScrollPurchasesForAll12Roles": true,
+  "statPurchasesWithFullInventory": true,
+  "deferredLeeKick": true,
   "source35NativeMocks": true,
   "source35CloneCounts": [
     8,

@@ -57,7 +57,12 @@ function IssueNeutralImmediateOrderById(p,shop,id)
  for i=0,10 do if StoryItem[i]==id then price=StoryPrice[i] end end
  assert(price>0 and gold[p]>=price,'Purchase needs real gold')
  local given=false
- for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
+ if id==raw('Nsht') or id==raw('Nsta') or id==raw('Nsch') then
+  local stat=id==raw('Nsht') and 'str' or (id==raw('Nsta') and 'agi' or 'int')
+  buyer[stat]=(buyer[stat]or 0)+6;given=true
+ else
+  for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
+ end
  if given then gold[p]=gold[p]-price;boughtBy=buyer;StoryOnBuy();boughtBy=nil end
  return given
 end

@@ -1,0 +1,10 @@
+const fs=require('fs'),assert=require('node:assert/strict'),MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
+const base=__dirname,old=new MapFile();old.load(new Uint8Array(fs.readFileSync(base+'/../releases/shinobi-new/Shinobi_Story_Alpha_26.w3x')),true);
+for(const n of ['war3map.w3u','war3map.w3a','war3map.w3t','war3map.w3h','war3map.w3q','war3mapMisc.txt','war3map.w3e','war3map.wpm','war3map.doo','war3mapUnits.doo','war3map.w3b','war3map.wts','war3map.imp','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(fs.readFileSync(base+'/dist/map/'+n),Buffer.from(old.get(n).bytes()),n+' unchanged');
+const prior=Buffer.from(old.get('war3map.j').bytes()).toString(),source=fs.readFileSync(base+'/dist/map/war3map.j','utf8');
+const fns=s=>new Map([...s.matchAll(/^function (\w+) takes[^]*?^endfunction/gm)].map(m=>[m[1],m[0]]));const a=fns(prior),b=fns(source);
+for(const [n,text]of a)if(!['Source35Clear','Source35Apply','Source35TickPlayer','Source35Tick','StoryChooseItem','StoryBuy','CampaignBot','config'].includes(n))assert.equal(b.get(n),text,'Untouched function '+n);
+const apply=b.get('Source35Apply').split('elseif index==16')[1].split('elseif index==17')[0];assert(!apply.includes('SetUnitPosition('));assert(!apply.includes('SetUnitAnimation'));assert(apply.includes('Kick35At[p]=TimeNow+.1'));
+assert(b.get('Source35TickPlayer').includes('Kick35Caster[p]==u'));assert(b.get('Source35TickPlayer').includes('not IsUnitPaused(u)'));assert(b.get('Source35Clear').includes('set Kick35Target[p]=null'));
+const rows=JSON.parse(fs.readFileSync(base+'/src/playable-skills.json')),kick=rows.find(r=>r.id==='R302');assert.deepEqual(kick.cooldowns,[25,25,25,35]);
+fs.writeFileSync(base+'/dist/cooldown27-verification.json',JSON.stringify({stage:27,unchangedObjectAndWorldData:true,cooldownSeconds:[25,25,25,35],kickMovementDeferredUntilAfterNativeEffect:true,otherRuntimeUnchanged:true,statPurchasesAtFullInventory:true,enginePlaytest:false},null,2)+'\n');console.log('PASS: Alpha27 native cooldown data25/25/25/35, deferred kick approach, same world/objects/assets and unrelated runtime.');

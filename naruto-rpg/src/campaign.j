@@ -1445,7 +1445,7 @@ function CampaignBot takes integer p, unit enemy returns nothing
         return
     endif
     if shop!=null and (CampaignStage!=10 or ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),650.)) and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]==0. and GetWidgetLife(Hero[p])>GetUnitState(Hero[p],UNIT_STATE_MAX_LIFE)*.45 then
-        if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[StoryChooseItem(p)] and StoryHasItemSpace(p) then
+        if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[StoryChooseItem(p)] and StoryCanCarryChoice(p,StoryChooseItem(p)) then
             set StoryShopTripUntil[p]=TimeNow+45.
         else
             set StoryBuyAt[p]=TimeNow+10.

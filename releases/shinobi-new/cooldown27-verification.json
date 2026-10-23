@@ -1,0 +1,19 @@
+{
+  "stage": 27,
+  "unchangedObjectAndWorldData": true,
+  "cooldownSeconds": [
+    25,
+    25,
+    25,
+    35
+  ],
+  "kickMovementDeferredUntilAfterNativeEffect": true,
+  "otherRuntimeUnchanged": true,
+  "statPurchasesAtFullInventory": true,
+  "enginePlaytest": false,
+  "filename": "Shinobi_Story_Alpha_27.w3x",
+  "sha256": "ccd9fce4ea09aa31bf69ff9a68cae9ea09f524669a43d65ba46be2b595b446b7",
+  "bytes": 7469195,
+  "strictPjassPassed": true,
+  "fullNativeMockSuitePassed": true
+}

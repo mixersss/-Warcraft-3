@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.0-alpha
 
-## Shinobi RPG — Story Alpha 26
+## Shinobi RPG — Story Alpha 27
 
-[Скачать Shinobi Story Alpha 26](releases/shinobi-new/Shinobi_Story_Alpha_26.w3x). Музыка и наборы Рока Ли/Шикамару из Naruto RPG3.5; клоны8/16/24/40; дополнительные исправления исчезновения Саске и выхода Орочимару. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
+[Скачать Shinobi Story Alpha 27](releases/shinobi-new/Shinobi_Story_Alpha_27.w3x). Исправление перезарядки первого навыка Ли; регулярные покупки свитков характеристик ботами, в том числе с полным инвентарём. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
 
 ## Footman 0.23.0 — текущая версия
 

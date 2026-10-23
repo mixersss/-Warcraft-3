@@ -457,6 +457,9 @@ globals
     timer SpawnClock=null
     integer Source35Player=0
     unit Source35Return=null
+    unit array Kick35Caster
+    unit array Kick35Target
+    real array Kick35At
     unit array Choke35Caster
     unit array Choke35Target
     unit array Choke35Helper
