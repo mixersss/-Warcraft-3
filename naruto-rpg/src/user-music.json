@@ -1,0 +1,395 @@
+{
+  "tracks": [
+    {
+      "key": "stage1-a",
+      "originalName": "1 этап.mp3",
+      "sourceSha256": "5c2c4691c30afa2084e33f89aaa0679b8dc64902dc13d253e53f6f2e2763a3b4",
+      "sourceBytes": 5046901,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "126.145306"
+        }
+      },
+      "path": "war3mapImported\\m057 3.mp3",
+      "file": "user-music/standard/stage1-a.mp3",
+      "bytes": 378514,
+      "sha256": "b79884bf144b64f65ccb6a16c367d40c2eed950f253d84fcf7f8c4de111a453d",
+      "duration_ms": 126171,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 126094
+    },
+    {
+      "key": "stage1-b",
+      "originalName": "1 этап..mp3",
+      "sourceSha256": "688b0079bbd92d34ce65bb69adc6e5e4805da7f15536883a64b667ef8d0e6877",
+      "sourceBytes": 5103325,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "127.555918"
+        }
+      },
+      "path": "war3mapImported\\SOUND_0054 3.mp3",
+      "file": "user-music/standard/stage1-b.mp3",
+      "bytes": 382746,
+      "sha256": "f27d74fc088c3859c79f681c28323014c4f9b2b2dc6eefd28f895e17dd727fe5",
+      "duration_ms": 127582,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 127505
+    },
+    {
+      "key": "quiz",
+      "originalName": "Экзамен с ответами.mp3",
+      "sourceSha256": "c2a151684330e3bd851060802d4e1be1f03ccb78b1d3e1d65345b83250ad7f20",
+      "sourceBytes": 4126125,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "48000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "103.128000"
+        }
+      },
+      "path": "war3mapImported\\STRM_BGM_ST00 3.mp3",
+      "file": "user-music/standard/quiz.mp3",
+      "bytes": 309473,
+      "sha256": "588eaa939a3d4a9889c9d1a97d8411aa5fb31a04369b17d6b83e8f7163d3a7f4",
+      "duration_ms": 103158,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 103104
+    },
+    {
+      "key": "forest-a",
+      "originalName": "Второй этап со свитками.mp3",
+      "sourceSha256": "4917afeb194b0bddde5fc312ef61b98a990e4ab0c12ee280cecaf80c61a7f028",
+      "sourceBytes": 5276360,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "164.858776"
+        }
+      },
+      "path": "war3mapImported\\m051 3.mp3",
+      "file": "user-music/standard/forest-a.mp3",
+      "bytes": 494655,
+      "sha256": "2bac447469a36ba2f4afc609d142b86dc2d622d938dc09612bdedde81bd53e2d",
+      "duration_ms": 164885,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 164808
+    },
+    {
+      "key": "forest-b",
+      "originalName": "Второй этам со свитками.mp3",
+      "sourceSha256": "8c0c5d3593b0b17f1d9e565f78a27a84928ee771bd5ab9f5c99e0d781b42a020",
+      "sourceBytes": 1351017,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "32000",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "192.960000"
+        }
+      },
+      "path": "war3mapImported\\SOUND_0045 3.mp3",
+      "file": "user-music/standard/forest-b.mp3",
+      "bytes": 578900,
+      "sha256": "ff136acc7105362953e3b5e01b282bbbd9878ef74b38f90ab39683799e043233",
+      "duration_ms": 192967,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 192889
+    },
+    {
+      "key": "arena-prelim",
+      "originalName": "Первые бои на арене.mp3",
+      "sourceSha256": "16b4cdefd9b996ef2fa37cd77fa69a0496e2b232add287ebf06a3da0e6d098e5",
+      "sourceBytes": 3927188,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2,
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "duration": "163.604898"
+        }
+      },
+      "path": "war3mapImported\\SOUND_0041 3.mp3",
+      "file": "user-music/standard/arena-prelim.mp3",
+      "bytes": 490893,
+      "sha256": "fec823c592fe48218f27cee434cf6fe0f9836b35e92ad43dc86b28c4418e4881",
+      "duration_ms": 163631,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 163554
+    },
+    {
+      "key": "arena-finals",
+      "originalName": "Финальные бои на арене.mp3",
+      "sourceSha256": "70f0912e7fe20a56aed575ee76c7e47f1bd28fd471b819f4ea5aa52d749b142a",
+      "sourceBytes": 4844191,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "121.077551"
+        }
+      },
+      "path": "war3mapImported\\UserMusic_ArenaFinal.mp3",
+      "file": "user-music/standard/arena-finals.mp3",
+      "bytes": 363311,
+      "sha256": "045ba27f80dbbf751f46fe64bac110e2568353e5e328a00a540bfe7e37b6ab51",
+      "duration_ms": 121104,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 121051
+    },
+    {
+      "key": "invasion",
+      "originalName": "Нападение на коноху.mp3",
+      "sourceSha256": "38f1384ce52c760efd853bd9370a013de12651a6067a443a9156458629de339a",
+      "sourceBytes": 5034362,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "125.831837"
+        }
+      },
+      "path": "war3mapImported\\UserMusic_Invasion.mp3",
+      "file": "user-music/standard/invasion.mp3",
+      "bytes": 377574,
+      "sha256": "b412d6f0327b89d77d29a6bc034f4abe58c3c68dd0f126e586a2db7b33b24537",
+      "duration_ms": 125858,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 125781
+    },
+    {
+      "key": "sasuke-a",
+      "originalName": "Поиск саске и финальные битвы.mp3",
+      "sourceSha256": "0cf13065f50a702e7e15cd01789b51bd5369de052d8cc615b84fe1f7ecb9f435",
+      "sourceBytes": 7843048,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "196.048980"
+        }
+      },
+      "path": "war3mapImported\\UserMusic_SasukeA.mp3",
+      "file": "user-music/standard/sasuke-a.mp3",
+      "bytes": 588225,
+      "sha256": "08cb85e7966b970a81c18aa1b9960f915721b7c39c6c0dc8c542949c81174dab",
+      "duration_ms": 196075,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 196023
+    },
+    {
+      "key": "sasuke-b",
+      "originalName": "Поиск саске и финальные битвы.aac",
+      "sourceSha256": "5c2eaecd98788540d37b8d966f1fe8fcacfccb65204b47c4365c770cb92170ce",
+      "sourceBytes": 4149622,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "aac",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "124.091103"
+        }
+      },
+      "path": "war3mapImported\\UserMusic_SasukeB.mp3",
+      "file": "user-music/standard/sasuke-b.mp3",
+      "bytes": 376869,
+      "sha256": "738e68d5da90aaa435bc7922fea9f72ea147a8f42fa8b7594b2e8240c2feea44",
+      "duration_ms": 125623,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 125550
+    }
+  ],
+  "fullTracks": true,
+  "aacConverted": true,
+  "sampleRate": 22050,
+  "channels": 1,
+  "bitrateKbps": 24,
+  "preservedTracks": [
+    {
+      "key": "jiraiya",
+      "path": "war3mapImported\\Those Who Inherit The Will of Fire16br16000sr.mp3",
+      "file": "music35/STRM_BGM_ST00 3.mp3",
+      "bytes": 67320,
+      "sha256": "ff5d030f184ca38f2d2c0c0f0c5ba82ad0636edb2ced652d97d54e46a92f9e70",
+      "duration_ms": 33660
+    },
+    {
+      "key": "akatsuki",
+      "path": "war3mapImported\\HeavyViolence 32br48hz.mp3",
+      "file": "music35/SOUND_0041 3.mp3",
+      "bytes": 96768,
+      "sha256": "081e6e468c595b246b316ecc3bc38b182b58659049c222e1ce340217a7e01f5d",
+      "duration_ms": 48384
+    }
+  ],
+  "chapters": [
+    {
+      "chapter": 0,
+      "name": "Страна Волн",
+      "tracks": [
+        "stage1-a",
+        "stage1-b"
+      ]
+    },
+    {
+      "chapter": 1,
+      "name": "Экзамен с ответами",
+      "tracks": [
+        "quiz"
+      ]
+    },
+    {
+      "chapter": 2,
+      "name": "Лес смерти и свитки",
+      "tracks": [
+        "forest-a",
+        "forest-b"
+      ]
+    },
+    {
+      "chapter": 3,
+      "name": "Первые бои на арене",
+      "tracks": [
+        "arena-prelim"
+      ]
+    },
+    {
+      "chapter": 4,
+      "name": "Поиск Джирайи",
+      "tracks": [
+        "jiraiya"
+      ]
+    },
+    {
+      "chapter": 5,
+      "name": "Финальные бои на арене",
+      "tracks": [
+        "arena-finals"
+      ]
+    },
+    {
+      "chapter": 6,
+      "name": "Нападение на Коноху — вступление",
+      "tracks": [
+        "invasion"
+      ]
+    },
+    {
+      "chapter": 7,
+      "name": "Нападение на Коноху",
+      "tracks": [
+        "invasion"
+      ]
+    },
+    {
+      "chapter": 8,
+      "name": "Акацуки",
+      "tracks": [
+        "akatsuki"
+      ]
+    },
+    {
+      "chapter": 9,
+      "name": "Поиск Саске и финальные битвы",
+      "tracks": [
+        "sasuke-a",
+        "sasuke-b"
+      ]
+    }
+  ]
+}

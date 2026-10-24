@@ -1,0 +1,32 @@
+{
+  "stage": 29,
+  "filename": "Shinobi_Story_Alpha_29.w3x",
+  "bytes": 10982663,
+  "sha256": "7624e4356d70d977c121fb2979ff20e34d1152dc9dd5845b1dab799ebb84873f",
+  "userTracks": 10,
+  "aacConverted": 1,
+  "fullTrackDurationVerified": true,
+  "orderedPairs": [
+    "stage1",
+    "forest",
+    "sasuke"
+  ],
+  "preservedUnspecifiedChapters": [
+    "Jiraiya",
+    "Akatsuki"
+  ],
+  "samePlaylistDoesNotRestartOnStageChange": true,
+  "onlyMusicDataRuntimeChanged": true,
+  "allHeroSkillsItemsModelsAndVoiceBytesUnchanged": true,
+  "networkLimit8MiBWaivedByUser": true,
+  "below8MiB": false,
+  "enginePlaytest": false,
+  "strictPjassPassed": true,
+  "all392ImportsVerified": true,
+  "musicCommandsNativeMocksPassed": true,
+  "fullGameplayNativeMocksPassed": true,
+  "all10EncodedMP3Decoded": true,
+  "bitrateKbps": 24,
+  "sampleRate": 22050,
+  "channels": 1
+}

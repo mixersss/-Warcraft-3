@@ -6,3 +6,6 @@ node_modules/
 # Recovered original imports and reproducible Naruto build outputs.
 naruto-rpg/assets/
 naruto-rpg/dist/
+
+# Unused temporary low-bitrate soundtrack trial.
+naruto-rpg/user-music/compact/

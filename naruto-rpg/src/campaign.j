@@ -1940,6 +1940,7 @@ function CampaignTick takes nothing returns nothing
             endif
             call CampaignMoveHeroes()
             if CampaignMusic[n]<0 then
+                set MusicPlaying=false
                 call StopMusic(false)
                 call PauseTimer(MusicClock)
             else

@@ -450,7 +450,15 @@ globals
     boolean MusicOn=true
     timer MusicClock=null
     integer MusicCursor=0
-    integer MusicCount=9
+    integer MusicCount=10
+    integer MusicActiveChapter=-1
+    integer MusicSong=0
+    boolean MusicPlaying=false
+    integer MusicPlayingTrack=-1
+    integer array MusicChapterStart
+    integer array MusicChapterCount
+    string array MusicTrackPath
+    real array MusicTrackSeconds
     integer array PlaylistAudio
     real array PlaylistDuration
     integer SpawnCursor=0
@@ -539,16 +547,30 @@ endfunction
 // SKILLS_RUNTIME
 function FoundationMusicNext takes nothing returns nothing
     if MusicOn then
-        call StopMusic(false)
-        call PlayMusic(AudioPath[PlaylistAudio[MusicCursor]])
-        call TimerStart(MusicClock,PlaylistDuration[MusicCursor],false,function FoundationMusicNext)
+        set MusicSong=ModuloInteger(MusicSong+1,MusicChapterCount[MusicCursor])
+        set MusicPlaying=false
+        call ExecuteFunc("FoundationMusicStart")
     endif
 endfunction
 function FoundationMusicStart takes nothing returns nothing
+    local integer index=0
+    if MusicCursor<0 or MusicCursor>=MusicCount then
+        return
+    endif
+    if MusicActiveChapter!=MusicCursor then
+        set MusicSong=0
+        set MusicActiveChapter=MusicCursor
+    endif
     if MusicOn then
+        set index=MusicChapterStart[MusicCursor]+MusicSong
+        if MusicPlaying and MusicPlayingTrack==index then
+            return
+        endif
+        set MusicPlaying=true
+        set MusicPlayingTrack=index
         call StopMusic(false)
-        call PlayMusic(AudioPath[PlaylistAudio[MusicCursor]])
-        call TimerStart(MusicClock,PlaylistDuration[MusicCursor],false,function FoundationMusicNext)
+        call PlayMusic(MusicTrackPath[index])
+        call TimerStart(MusicClock,MusicTrackSeconds[index],false,function FoundationMusicNext)
     endif
 endfunction
 // STORY_RUNTIME
@@ -557,9 +579,7 @@ function FoundationMusicSetChapter takes integer chapter returns nothing
         return
     endif
     set MusicCursor=chapter
-    if MusicOn then
-        call FoundationMusicStart()
-    endif
+    call FoundationMusicStart()
 endfunction
 function FoundationChat takes nothing returns nothing
     local integer p=GetPlayerId(GetTriggerPlayer())
@@ -652,6 +672,7 @@ function FoundationChat takes nothing returns nothing
     elseif msg=="-music" then
         if MusicOn then
             set MusicOn=false
+            set MusicPlaying=false
             call PauseTimer(MusicClock)
             call StopMusic(false)
         else
@@ -661,9 +682,9 @@ function FoundationChat takes nothing returns nothing
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
     elseif msg=="-nextmusic" then
         call FoundationMusicNext()
-        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Музыка текущего сюжетного этапа начата заново. -music: включить/выключить музыку.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек текущего сюжетного этапа. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: заново музыку этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop

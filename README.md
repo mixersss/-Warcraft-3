@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.0-alpha
 
-## Shinobi RPG — Story Alpha 28
+## Shinobi RPG — Story Alpha 29
 
-[Скачать Shinobi Story Alpha 28](releases/shinobi-new/Shinobi_Story_Alpha_28.w3x). Исправление блокировки входа в убежище и поздних переходов после двойников, полная цепочка до Саске. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест Warcraft III1.26 требуется.
+[Скачать Shinobi Story Alpha 29](releases/shinobi-new/Shinobi_Story_Alpha_29.w3x). Все10 треков игрока по этапам, AAC→MP3, парные песни по очереди с повтором. Около11МБ, одиночная игра с ботами на1.26 (выше сетевого лимита8МиБ). [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
 
 ## Footman 0.23.0 — текущая версия
 

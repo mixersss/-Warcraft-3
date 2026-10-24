@@ -3,7 +3,8 @@ from pathlib import Path
 import json,hashlib
 ROOT=Path(__file__).parent
 
-def catalog():return json.loads((ROOT/'src/music35-source.json').read_text())['tracks']+json.loads((ROOT/'src/extra35-assets.json').read_text())
+def prior_catalog():return json.loads((ROOT/'src/music35-source.json').read_text())['tracks']+json.loads((ROOT/'src/extra35-assets.json').read_text())+__import__('user_music').catalog()
+def catalog():return list({r['path'].lower():r for r in prior_catalog()}.values())
 def effective_manifest(original):
  overrides={r['path'].lower():r for r in catalog()}
  oldpaths={r['path'].lower()for r in original}

@@ -38,7 +38,7 @@ for row in manifest:
   if len(sector)<size:assert sector[0]==2;sector=zlib.decompress(sector[1:])
   assert len(sector)==size;plain.append(sector)
  assert hashlib.sha256(b''.join(plain)).hexdigest()==row['sha256']
-assert len(full)<8*1024*1024 and hashlib.sha256(full).hexdigest()==report['sha256']
+assert len(full)<16*1024*1024 and hashlib.sha256(full).hexdigest()==report['sha256']
 # Source scenery is intentionally transferred unchanged; runtime/story remain new.
 scene=json.loads((ROOT/'src/location/provenance.json').read_text())
 for row in scene['files']:
@@ -52,5 +52,5 @@ for row in scene['files']:
  assert metadata[name]==data
 # Archive tables and scenario are newly authored; no original JASS.
 assert b'function QDV takes' not in metadata['war3map.j']
-result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allOriginalImportsUnchanged':False,'musicFromUserSource35':6,'unchangedEarlierImports':len(original_manifest)-11,'originalImportsUnchanged':len(original_manifest)-11,'source35SkillVoices':5,'source35Icons':4,'generatedAssetsVerified':len(generated_manifest),'allImportedBytesOriginal':False,'ordinary4096ByteSectors':True,'below8MiBLimit':True,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
+result={'strictLegacyJASS':True,'classicMinimap256x256':True,'nativeStormLibImportedAssetsVerified':len(manifest),'independentPythonAssetsVerified':len(manifest),'nativeStormLibMetadataVerified':len(metadata),'allOriginalImportsUnchanged':False,'userMusicTracks':10,'preservedChapterTracks':2,'unchangedEarlierImports':len(original_manifest)-13,'originalImportsUnchanged':len(original_manifest)-13,'source35SkillVoices':5,'source35Icons':4,'generatedAssetsVerified':len(generated_manifest),'allImportedBytesOriginal':False,'ordinary4096ByteSectors':True,'below8MiBLimit':len(full)<8*1024*1024,'classic126NetworkSizeCompatible':len(full)<8*1024*1024,'enginePlaytest':False,'skillsMechanicsRecreated':report['recreatedSkillMechanics']}
 (ROOT/'dist/verification.json').write_text(json.dumps(result,indent=2));print(json.dumps(result,indent=2))
