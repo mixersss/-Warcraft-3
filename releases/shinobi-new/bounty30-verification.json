@@ -1,0 +1,24 @@
+{
+  "stage": 30,
+  "filename": "Shinobi_Story_Alpha_30.w3x",
+  "bytes": 10982671,
+  "sha256": "a11a50263648973fe5f04ca49937a87a8065bda7e9f635eab903100f06a2394e",
+  "nativeBountyUnits": [
+    "c011",
+    "c020",
+    "c022"
+  ],
+  "base": 20,
+  "dice": 6,
+  "sides": 3,
+  "minGold": 26,
+  "maxGold": 38,
+  "nativeOwnerAward": true,
+  "noScriptedBonus": true,
+  "otherObjectsRuntimeAssetsAndMusicUnchanged": true,
+  "enginePlaytest": false,
+  "strictPjassPassed": true,
+  "fullNativeMockSuitePassed": true,
+  "all392ImportsVerified": true,
+  "musicCommandsPassed": true
+}

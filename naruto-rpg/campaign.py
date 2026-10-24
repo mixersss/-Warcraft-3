@@ -13,6 +13,11 @@ def units():
  for n,(name,model,hp,damage) in enumerate(MODELS):
   native=__import__('npc_source').body(n,name)
   if native:
+   if n in (17,32,34):
+    base,rawid,mods=native
+    # Match the hfoo-based invading ninjas: native20+6d3 bounty, not zero.
+    mods=list({m[0]:m for m in mods+[('ubba',0,20),('ubdi',0,6),('ubsi',0,3)]}.values())
+    native=(base,rawid,mods)
    out.append(native)
    continue
   scale=.8 if n!=12 else 1.2
