@@ -32,7 +32,9 @@ function RosterClearSand takes integer p returns nothing
     loop
         exitwhen n>=3
         if SandWave[p*3+n]!=null then
-            call RemoveUnit(SandWave[p*3+n])
+            if VisualUnit[SandWaveSlot[p*3+n]]==SandWave[p*3+n] then
+                call VisualClearSlot(SandWaveSlot[p*3+n])
+            endif
             set SandWave[p*3+n]=null
         endif
         set n=n+1
@@ -41,25 +43,28 @@ function RosterClearSand takes integer p returns nothing
 endfunction
 function RosterSand takes integer p, real tx, real ty returns nothing
     local integer n=0
+    local integer slot=0
     local real x=GetUnitX(Hero[p])
     local real y=GetUnitY(Hero[p])
     local real dx=tx-x
     local real dy=ty-y
     local real length=SquareRoot(dx*dx+dy*dy)
+    local real offset=0.
+    local real advance=0.
     call RosterClearSand(p)
     if length<1. then
         set length=1.
         set dx=1.
     endif
-    set SandWaveDX[p]=dx/length*110.
-    set SandWaveDY[p]=dy/length*110.
+    set advance=RMinBJ(120.,length)
     set SandWaveUntil[p]=TimeNow+1.5
     loop
         exitwhen n>=3
-        set SandWave[p*3+n]=CreateUnit(Player(p),'rswv',x+dx/length*120.-dy/length*(n-1)*160.,y+dy/length*120.+dx/length*(n-1)*160.,0.)
-        call SetUnitPathing(SandWave[p*3+n],false)
-        call SetUnitFacing(SandWave[p*3+n],bj_RADTODEG*Atan2(dy,dx))
-        call SetUnitAnimation(SandWave[p*3+n],"birth")
+        set offset=(n-1)*160.
+        set slot=VisualCursor
+        call VisualCreate(p,'rswv',x+dx/length*advance-dy/length*offset,y+dy/length*advance+dx/length*offset,tx-dy/length*offset,ty+dx/length*offset,0.,0.,1.5,1)
+        set SandWaveSlot[p*3+n]=slot
+        set SandWave[p*3+n]=VisualUnit[slot]
         set n=n+1
     endloop
 endfunction
@@ -527,6 +532,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
         set ZoneBurn[p]=burn
         set ZoneUntil[p]=TimeNow+RosterDuration[index]
         set ZoneNext[p]=TimeNow+.5
+        if index==47 then
+            call VisualPulse(p,index,x,y)
+        endif
         if (index==21 or index==41) and rank==4 then
             call RosterArea(p,x,y,400.,power,burn,0.)
         else
@@ -757,20 +765,8 @@ function RosterTick takes nothing returns nothing
                 call RosterVisionPulse(p)
             endif
         endif
-        if SandWaveUntil[p]>0. then
-            if not FoundationAlive(Hero[p]) or TimeNow>=SandWaveUntil[p] then
-                call RosterClearSand(p)
-            else
-                set q=0
-                loop
-                    exitwhen q>=3
-                    if SandWave[p*3+q]!=null then
-                        call SetUnitX(SandWave[p*3+q],GetUnitX(SandWave[p*3+q])+SandWaveDX[p])
-                        call SetUnitY(SandWave[p*3+q],GetUnitY(SandWave[p*3+q])+SandWaveDY[p])
-                    endif
-                    set q=q+1
-                endloop
-            endif
+        if SandWaveUntil[p]>0. and (not FoundationAlive(Hero[p]) or TimeNow>=SandWaveUntil[p]) then
+            call RosterClearSand(p)
         endif
         if not FoundationAlive(Hero[p]) then
             if RosterBuffUntil[p]>0. then

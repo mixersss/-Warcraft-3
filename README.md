@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.0-alpha
 
-## Shinobi RPG — Story Alpha 30
+## Shinobi RPG — Story Alpha 31
 
-[Скачать Shinobi Story Alpha 30](releases/shinobi-new/Shinobi_Story_Alpha_30.w3x). Исправлена награда за защитников Конохи для команды Песка; все10 пользовательских треков сохранены. Около11МБ, одиночная игра с ботами на1.26. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
+[Скачать Shinobi Story Alpha 31](releases/shinobi-new/Shinobi_Story_Alpha_31.w3x). `-fixsasuke` для восстановления героя во время вторжения, проверка проклятой формы и правки Гаары. Все песни и награды сохранены. [Изменения и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
 
 ## Footman 0.23.0 — текущая версия
 

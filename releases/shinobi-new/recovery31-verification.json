@@ -1,0 +1,27 @@
+{
+  "stage": 31,
+  "filename": "Shinobi_Story_Alpha_31.w3x",
+  "sha256": "a1289a381fb62a0d739011c310b7822799d283719aacfc1daeacdd51e9633f48",
+  "bytes": 10985901,
+  "fixCommand": "-fixsasuke",
+  "statusCommand": "-sasuke",
+  "recoveryKeepsHeroIdentityStatsItems": true,
+  "noResurrection": true,
+  "sourceCleanupDeletionProtection": true,
+  "swappedRoleSlotsSupported": true,
+  "cursedFormTransitionCleanup": true,
+  "gaaraTsunami8Pulses": [
+    520,
+    800,
+    1080
+  ],
+  "gaaraShieldNativeUnchanged": true,
+  "gaaraCoffinLastRankDamagePerSecond": 150,
+  "unitsBountyAndMusicUnchanged": true,
+  "actualReportedEngineRootCauseConfirmed": false,
+  "enginePlaytest": false,
+  "strictPjassPassed": true,
+  "fullNativeMockSuitePassed": true,
+  "all392ImportsVerified": true,
+  "commandsPassed": true
+}

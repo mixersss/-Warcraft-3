@@ -171,6 +171,7 @@ function FirstOfGroup(g) return g[1] end
 function GroupRemoveUnit(g,u)for i,v in ipairs(g)do if v==u then table.remove(g,i);return end end end
 function UnitDamageTarget(c,t,amount,attack,ranged,at,dt,wt) assert(c~=t and amount>0);Hits[#Hits+1]={target=t,damage=amount};t.hp=t.hp-amount;return true end
 function AddUnitAnimationProperties(u,tag,on)u.alternate=on end
+function SetUnitInvulnerable(u,on)u.invul=on;if on then u.abilities[1098282348]=1 else u.abilities[1098282348]=nil end end
 function ShowUnit(u,show)u.hidden=not show end
 function PauseUnit(u,pause)u.paused=pause end
 function SetUnitTimeScale(u,s)if u then u.timeScale=s end end
@@ -304,6 +305,8 @@ run(fs.readFileSync(__dirname+'/visibility25-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/source35-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/cooldown27-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/late28-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/gaara31-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/sasuke31-harness.lua','utf8'));
 console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

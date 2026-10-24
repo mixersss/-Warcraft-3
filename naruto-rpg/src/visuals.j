@@ -96,7 +96,7 @@ function VisualCreate takes integer p, integer raw, real sx, real sy, real tx, r
     if raw=='vkuc' or raw=='vfog' then
         call SetUnitAnimation(VisualUnit[n],"birth")
         call QueueUnitAnimation(VisualUnit[n],"stand")
-    elseif raw=='vsnd' or raw=='vsan' or raw=='vexp' then
+    elseif raw=='vsnd' or raw=='vsan' or raw=='vexp' or raw=='rswv' then
         call SetUnitAnimation(VisualUnit[n],"birth")
     elseif raw=='vrac' then
         call SetUnitAnimation(VisualUnit[n],"walk")

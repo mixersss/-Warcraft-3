@@ -1,5 +1,10 @@
 globals
     // NPC_SOURCE_GLOBALS
+    string array SasukeLastSource
+    integer array SasukeBlockedRemove
+    real array SasukeOutsideSince
+    integer array SasukeLastType
+    real array SasukeMorphRepairAt
     real array SasukeHiddenSince
     boolean array LogArenaUsed
     rect StatLootRect=null
@@ -354,6 +359,7 @@ globals
     integer array StoryBought
     integer array StoryItem
     integer array StoryPrice
+    integer array SandWaveSlot
     unit array SandWave
     real array SandWaveUntil
     real array SandWaveDX
@@ -603,6 +609,8 @@ function FoundationChat takes nothing returns nothing
         call StoryCommand(p,msg)
     elseif msg=="-naruto" then
         call SkillsChoose(p,0)
+    elseif msg=="-fixsasuke" then
+        call InvasionFixSasuke(p)
     elseif msg=="-sasuke" then
         call SkillsChoose(p,1)
     elseif SubString(msg,0,6)=="-hero " then
@@ -669,6 +677,10 @@ function FoundationChat takes nothing returns nothing
     elseif msg=="-soundtest" then
         call FoundationSound(174)
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Тест обычного звука Warcraft: сигнал нового задания.")
+    elseif msg=="-fixsasuke" then
+        call InvasionFixSasuke(p)
+    elseif msg=="-sasuke" then
+        call InvasionSasukeStatus(p)
     elseif msg=="-music" then
         if MusicOn then
             set MusicOn=false
@@ -684,7 +696,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек текущего сюжетного этапа. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: восстановить Саске при вторжении; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop

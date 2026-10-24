@@ -177,6 +177,6 @@ StoryShopsClose();CampaignStage=13;StoryBuy(1);assert(gold[1]==165 and StoryBoug
 CampaignStage=0
 -- Sand crest cleanup remains bounded.
 Hero[9].x=0;Hero[9].y=0;TimeNow=450
-RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x;RosterTick();assert(crest.x>start)
+RosterSand(9,700,0);local crest=SandWave[27];local start=crest.x;VisualTick();assert(crest.x>start)
 TimeNow=452;RosterTick();assert(not SandWave[27])
 assert(#feedback>10)
