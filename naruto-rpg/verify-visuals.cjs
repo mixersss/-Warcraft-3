@@ -25,8 +25,8 @@ for(const r of skills){
  const seq=model.sequences.find(s=>tokens.every(t=>s.name.toLowerCase().split(/\s+/).includes(t)));assert(seq);
  assert.equal((seq.interval[1]-seq.interval[0])/1000,profile.sequenceSeconds);
  if(profile.channelSeconds){
-  if(r.base==='ANcl'){for(let rank=1;rank<=r.ranks;rank++){assert(Math.abs(get(abilities[r.id],'Ncl1',rank)-profile.channelSeconds)<1e-5);assert.equal(get(abilities[r.id],'Ncl5',rank),1);}}else{assert(['AHtb','ANfb','ANc3'].includes(r.base));if(r.base==='ANc3')for(let rank=1;rank<=r.ranks;rank++)assert.equal(get(abilities[r.id],'Ncs6',rank),profile.channelSeconds);}
-  if(profile.repeatSequenceDuringChannel){assert.equal(r.id,'R704');assert.equal(seq.nonLooping,0);assert.equal(profile.sequencePlaybackScale,1);assert(profile.sequenceSeconds<=profile.channelSeconds);}else assert(Math.abs(profile.sequenceSeconds/profile.sequencePlaybackScale-profile.channelSeconds)<1e-6);
+  if(r.base==='ANcl'){for(let rank=1;rank<=r.ranks;rank++){assert(Math.abs(get(abilities[r.id],'Ncl1',rank)-profile.channelSeconds)<1e-5);assert.equal(get(abilities[r.id],'Ncl5',rank),1);}}else{assert(['AHtb','ANfb','ANc3','ANst'].includes(r.base));if(r.base==='ANc3')for(let rank=1;rank<=r.ranks;rank++)assert.equal(get(abilities[r.id],'Ncs6',rank),profile.channelSeconds);}
+  if(profile.repeatSequenceDuringChannel){assert(['R704','RB04'].includes(r.id));if(r.id==='R704')assert.equal(seq.nonLooping,0);else{assert.equal(r.base,'ANst');assert.equal(profile.channelSeconds,8);}assert.equal(profile.sequencePlaybackScale,1);assert(profile.sequenceSeconds<=profile.channelSeconds);}else assert(Math.abs(profile.sequenceSeconds/profile.sequencePlaybackScale-profile.channelSeconds)<1e-6);
  }
  for(const [field,value] of Object.entries(profile.nativeArt))for(let rank=1;rank<=r.ranks;rank++)assert.equal(get(abilities[r.id],field,rank),value,r.id+':'+field);
  out.push({hero:heroes[r.hero].name,name:r.name,id:r.id,sourceId:r.source_id,sourceTriggerVisualFunctionCount:original?.triggerVisualOperations.length||0,visualKind:profile.kind,animation:seq.name,channelSeconds:profile.channelSeconds,enginePlaybackChecked:false});

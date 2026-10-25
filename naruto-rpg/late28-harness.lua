@@ -27,12 +27,12 @@ end
 CampaignStage=29;CampaignTransition=false;CampaignSasuke=Hero[1];Hero[1].hp=10000
 CampaignLateProgress();assert(not CampaignTransition,'Wait for actual Sasuke defeat')
 Hero[1].hp=0;CampaignLateProgress();assert(CampaignTransition and CampaignQueued==30)
--- Loss priority is preserved even though progression now runs before the heavy story thread.
+-- Alpha33: Naruto's death no longer defeats other living heroes or resurrects him.
 CampaignStage=28;CampaignTransition=false;CampaignCount=0;Hero[0].hp=0
-CampaignLateProgress();assert(not CampaignTransition,'Dead required Naruto cannot be revived by early progression')
-Hero[0].hp=10000;CampaignStage=27;CampaignTransition=false;CampaignCount=0
+CampaignLateProgress();assert(CampaignTransition and CampaignQueued==29 and CampaignPermanentDead[0] and Hero[0].hp==0,'Survivors continue; Naruto remains permanently dead')
+Hero[0].hp=10000;CampaignPermanentDead[0]=false;CampaignStage=27;CampaignTransition=false;CampaignCount=0
 local story=StoryTick
 function StoryTick()error('simulated overloaded scene processing')end
 local ok=pcall(FoundationTick);assert(not ok and CampaignTransition and CampaignQueued==28,'Late transition executes before an exhausted story callback')
 StoryTick=story
-print('PASS: low-level Sakura entrance without free skill/level/stat/kill; allied boulder targeting; absent-Sakura guard requirement; exact Kabuto/Manda/Orochimaru/Sasuke gates; defeat priority and isolated progression before overloaded story (mock natives).')
+print('PASS: low-level Sakura entrance without free skill/level/stat/kill; allied boulder targeting; absent-Sakura guard requirement; cave progression and final enemy death gate; defeat priority and isolated progression before overloaded story (mock natives).')

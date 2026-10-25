@@ -1,4 +1,18 @@
 globals
+    real array VisualWindPoseAt
+    unit array VisualApproachCaster
+    unit array VisualApproachTarget
+    real array VisualApproachAt
+    trigger ExamKabutoDeathHook=null
+    boolean ExamKabutoLootDropped=false
+    unit ExamKabuto=null
+    unit ExamKabutoTarget=null
+    real ExamKabutoAt=0.
+    real ExamKabutoWalkAt=0.
+    real ExamKabutoX=0.
+    real ExamKabutoY=0.
+    real ExamKabutoHealAt=0.
+    real ExamKabutoCrippleAt=0.
     // NPC_SOURCE_GLOBALS
     string array SasukeLastSource
     integer array SasukeBlockedRemove

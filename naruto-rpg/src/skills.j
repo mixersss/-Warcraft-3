@@ -119,6 +119,7 @@ function SkillsEffect takes nothing returns nothing
         call VisualApply(p,index,rank,target)
         if SkillHold[index]>0. then
             set VisualChannelIndex[p]=index
+            set VisualWindPoseAt[p]=TimeNow+1.
             set VisualChannelUntil[p]=TimeNow+SkillHold[index]
             if GetUnitTypeId(caster)==HeroType[p] then
                 call SetUnitTimeScale(caster,SkillPoseScale[index])
@@ -305,8 +306,14 @@ function SkillsTick takes nothing returns nothing
                 set dx=GetUnitX(u)-GetUnitX(target)
                 set dy=GetUnitY(u)-GetUnitY(target)
                 if dx*dx+dy*dy<=650.*650. and not IsUnitType(target,UNIT_TYPE_MAGIC_IMMUNE) then
-                    call SetUnitAnimation(u,"attack")
-                    call DestroyEffect(AddSpecialEffectTarget("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",target,"origin"))
+                    if HeroRole[p]==1 then
+                        call SetUnitTimeScale(u,4.)
+                        call SetUnitAnimationByIndex(u,2+ModuloInteger(ComboLeft[p],2))
+                        call SkillsFlashTarget("Abilities\\Spells\\Human\\FlakCannons\\FlakTarget.mdl",target)
+                    else
+                        call SetUnitAnimation(u,"attack")
+                        call DestroyEffect(AddSpecialEffectTarget("Abilities\\Spells\\Human\\Thunderclap\\ThunderClapCaster.mdl",target,"origin"))
+                    endif
                     call RosterHit(u,target,ComboDamage[p],ComboBurn[p])
                     set ComboLeft[p]=ComboLeft[p]-1
                 else
@@ -316,6 +323,9 @@ function SkillsTick takes nothing returns nothing
                 set ComboLeft[p]=0
             endif
             if ComboLeft[p]==0 then
+                if HeroRole[p]==1 then
+                    call SetUnitTimeScale(u,1.)
+                endif
                 set ComboTarget[p]=null
             endif
         endif

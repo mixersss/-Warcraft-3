@@ -4,7 +4,7 @@
   "originalModels": 67,
   "generatedShadowModel": true,
   "activeSkills": 54,
-  "visualActorTypes": 18,
+  "visualActorTypes": 19,
   "sourceObjectsAndTriggersCompared": true,
   "bodySequencesAndAttachmentPointsChecked": true,
   "sourceSpecificKaitenVisibility": [
@@ -804,9 +804,9 @@
       "id": "RB04",
       "sourceId": "A00V",
       "sourceTriggerVisualFunctionCount": 0,
-      "visualKind": "windbarrage",
+      "visualKind": "native-wind-stampede",
       "animation": "Spell",
-      "channelSeconds": 1,
+      "channelSeconds": 8,
       "enginePlaybackChecked": false
     },
     {

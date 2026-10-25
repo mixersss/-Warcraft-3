@@ -134,6 +134,7 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    call ExamKabutoClear()
     set CampaignOroStarted=false
     set CampaignOroSlot=-1
     set CampaignOroTarget=null
@@ -338,11 +339,11 @@ function CampaignClonesTick takes nothing returns nothing
                     call RemoveUnit(clone)
                     set CampaignClone[p]=null
                 endif
-                call SetUnitPosition(Hero[p],CampaignX[CampaignStage],CampaignY[CampaignStage])
+                call SetUnitPosition(Hero[p],CampaignX[17],CampaignY[17])
                 set SpawnX[p]=GetUnitX(Hero[p])
                 set SpawnY[p]=GetUnitY(Hero[p])
                 call PanCameraToTimedForPlayer(Player(p),SpawnX[p],SpawnY[p],1.)
-                call DisplayTimedTextToPlayer(Player(p),0.,0.,12.,"Двойник побеждён! Вы присоединились к основной группе.")
+                call DisplayTimedTextToPlayer(Player(p),0.,0.,12.,"Двойник побеждён! Вы вернулись к началу пещеры, где ждут Наруто и Сакура.")
             elseif not IsUnitPaused(clone) and not NPCBusy(clone) and TimeNow>=CampaignCloneCastAt[p] then
                 if NPCTry(clone,CampaignCloneKind[p],Hero[p]) then
                     set CampaignCloneCastAt[p]=TimeNow+1.
@@ -802,7 +803,7 @@ function CampaignSpawnStage takes nothing returns nothing
                 call ShowUnit(CampaignSasuke,false)
                 call PauseUnit(CampaignSasuke,true)
                 call UnitAddAbility(CampaignSasuke,'Avul')
-                call DisplayTimedTextToPlayer(Player(CampaignSasukePlayer),0.,0.,20.,"Саске: сюжетная роль сохраняется за вами. Пока раскрывается печать, ждите. В погоне избегайте преследователей. В убежище можете управлять Кабуто командой -kabuto.")
+                call DisplayTimedTextToPlayer(Player(CampaignSasukePlayer),0.,0.,20.,"Саске: сюжетная роль сохраняется за вами. Пока раскрывается печать, ждите. В погоне избегайте преследователей. Победители боёв с двойниками выйдут к вам на финальный бой.")
             else
                 call ShowUnit(CampaignSasuke,true)
             endif
@@ -1844,25 +1845,34 @@ function CampaignInvasionEvents takes nothing returns nothing
     endif
     call InvasionOroWatch()
 endfunction
+// Late missions are an elimination campaign: any surviving allied hero may continue.
+// Mark deaths before the early progression callback can queue a healing scene transition.
+function CampaignSurvivors takes nothing returns integer
+    local integer p=0
+    local integer count=0
+    loop
+        exitwhen p>=12
+        if Hero[p]!=null and p!=CampaignSasukePlayer then
+            if not FoundationAlive(Hero[p]) then
+                set CampaignPermanentDead[p]=true
+            elseif not CampaignPermanentDead[p] then
+                set count=count+1
+            endif
+        endif
+        set p=p+1
+    endloop
+    return count
+endfunction
 function CampaignLateProgress takes nothing returns nothing
     local integer p=0
     local integer enemies=0
     local boolean sakura=false
+    local boolean pending=false
     if CampaignFinished or CampaignTransition or CampaignStage<17 or CampaignStage>=30 then
         return
     endif
-    // Preserve defeat priority; the early callback must never revive a lost party via a transition.
-    if CampaignNarutoPlayer>=0 and not FoundationAlive(Hero[CampaignNarutoPlayer]) then
-        return
-    endif
-    loop
-        exitwhen p>=12
-        if p!=CampaignSasukePlayer and not CampaignPermanentDead[p] and FoundationAlive(Hero[p]) then
-            set enemies=enemies+1
-        endif
-        set p=p+1
-    endloop
-    if enemies==0 then
+    // Individual deaths (including Naruto) do not defeat surviving teammates.
+    if CampaignSurvivors()==0 then
         return
     endif
     set p=0
@@ -1870,6 +1880,9 @@ function CampaignLateProgress takes nothing returns nothing
         call CampaignEntranceUnlock()
         loop
             exitwhen p>=12
+            if CampaignClonePending[p] then
+                set pending=true
+            endif
             if FoundationAlive(Hero[p]) and HeroRole[p]==2 and not CampaignPermanentDead[p] then
                 set sakura=true
             endif
@@ -1887,7 +1900,7 @@ function CampaignLateProgress takes nothing returns nothing
                 set p=p+1
             endloop
         endif
-        if CampaignAliveEnemies()==0 then
+        if CampaignAliveEnemies()==0 and not pending then
             call CampaignQueueStage(26)
         endif
     elseif CampaignStage==29 then
@@ -2002,19 +2015,8 @@ function CampaignTick takes nothing returns nothing
     endif
     if CampaignStage>=17 and CampaignStage<30 then
         call CampaignClonesTick()
-        set p=0
-        loop
-            exitwhen p>=12
-            if Hero[p]!=null then
-                if FoundationAlive(Hero[p]) and p!=CampaignSasukePlayer then
-                    set alive=alive+1
-                elseif p!=CampaignSasukePlayer then
-                    set CampaignPermanentDead[p]=true
-                endif
-            endif
-            set p=p+1
-        endloop
-        if alive==0 or (CampaignNarutoPlayer>=0 and not FoundationAlive(Hero[CampaignNarutoPlayer])) then
+        set alive=CampaignSurvivors()
+        if alive==0 then
             call CampaignFinish(false)
             return
         endif

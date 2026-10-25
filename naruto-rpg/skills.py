@@ -11,7 +11,7 @@ def ability_data():
  for j,row in enumerate(SKILLS):
   pos=row['slot'];changes=[('anam',3,row['name']),('aher',0,1),('aite',0,0),('alev',0,row['ranks']),('arlv',0,row['required_level']),('alsk',0,row['level_skip']),('aart',3,row['icon']),('arar',3,row['icon']),('ahky',3,row['key']),('arhk',3,row['key']),('abpx',0,pos if pos<4 else 1),('abpy',0,2 if pos<4 else 1),('arpx',0,pos%4),('arpy',0,pos//4),('aret',3,row['name']),('arut',3,row['description']),('aani',3,row['animation']),('areq',3,''),('arac',3,'human'),('acat',3,''),('aeat',3,''),('aefs',3,''),('aefl',3,'')]
   for n in range(1,row['ranks']+1):
-   changes += [('atp1',3,row['name']+f' [ур. {n}]',n,0),('aub1',3,row['rank_descriptions'][n-1],n,0),('amcs',0,row['mana'][n-1],n,0),('acdn',2,row.get('cooldowns',[row['cooldown']]*row['ranks'])[n-1],n,0),('aran',2,row['range'],n,0),('atar',3,row['targets'],n,0)]
+   changes += [('atp1',3,row['name']+f' [{row["key"]}] [ур. {n}]',n,0),('aub1',3,row['rank_descriptions'][n-1],n,0),('amcs',0,row['mana'][n-1],n,0),('acdn',2,row.get('cooldowns',[row['cooldown']]*row['ranks'])[n-1],n,0),('aran',2,row['range'],n,0),('atar',3,row['targets'],n,0)]
    for field,kind,column,values in row['fields']:changes.append((field,kind,values[min(n-1,len(values)-1)],n,column))
   out.append((row['base'],row['id'],changes))
  # Sharingan's bounded temporary passive bonuses; removed on expiration/death/reselection.

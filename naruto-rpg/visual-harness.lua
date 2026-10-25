@@ -33,7 +33,12 @@ for index=0,59 do
   local p=math.floor(index/5);Caster=Hero[p];Caster.abilities={};Caster.hp=Caster.maxLife;Caster.mana=1000000
   AimX=400;AimY=100;Dummy[math.floor(p/3)]=enemy;World={enemy}
   cast(p,PlayableSkill[index],1,SkillHeal[index] and Hero[p] or enemy)
-  SkillsTick();assert(Caster.animationIndex==SkillAnimation[index],'Missing pose '..index)
+  SkillsTick()
+  if index==7 then
+   assert((Caster.animationIndex==2 or Caster.animationIndex==3) and Caster.timeScale==4,'Sasuke combo plays accelerated actual attack sequences')
+  else
+   assert(Caster.animationIndex==SkillAnimation[index],'Missing pose '..index)
+  end
   step(.5);clear(p)
   for n=0,255 do assert(not VisualUnit[n] or VisualOwner[n]~=p,'Visual actor retained after hero reset')end
   active=active+1
@@ -60,7 +65,7 @@ VisualPulse(5,26,500,0);assert(countRaw('vshu')>0 and countRaw('vkun')>0)
 clear(5);VisualPulse(5,28,500,0);assert(countRaw('vnot')>0 and countRaw('vshu')>0)
 clear(5)
 -- Wind and the electrical cyclone are different source models.
-VisualApply(11,58,1,enemy);assert(countRaw('vtor')==3 and countRaw('vcyc')==0);clear(11)
+VisualApply(11,58,1,enemy);assert(countRaw('vtor')==0 and countRaw('vcyc')==0,'Native stampede owns wind visuals and damage; no duplicate cosmetic barrage');clear(11)
 VisualApply(11,57,1,enemy);assert(countRaw('vcyc')==1);clear(11)
 VisualApply(11,59,1,enemy);assert(countRaw('vrac')==1 and countRaw('vkuc')==1);clear(11)
 -- Rasengan / Chidori use the real left/right attachment names and source art, not a Farseer bolt.

@@ -1,0 +1,736 @@
+{
+  "sourceFile": "Naruto_Ultimate_RPG_4_2i__kopia.w3x",
+  "sourceSha256": "a0350ca172f1049bf3a9472bcdfad7d08dc6551df965b4c5191c538890490533",
+  "kabuto": {
+    "spawnAfterSeconds": 540,
+    "sourceUnit": "h012",
+    "runtimeUnit": "c00B",
+    "owner": 12,
+    "skills": {
+      "A018": 3,
+      "A02D": 3,
+      "ACcr": 1,
+      "A028": 1
+    },
+    "sourceSpawnAndAI": "function T3X takes nothing returns nothing\nset LI=TK\ncall DisableTrigger(OIV)\ncall DestroyTrigger(OIV)\ncall SetUnitPositionLoc(J_V,GetRectCenter(RM))\ncall SetUnitPositionLoc(JZV,GetRectCenter(NP))\ncall SetUnitPositionLoc(J6V,GetRectCenter(AP))\ncall SetUnitPositionLoc(J3V,GetRectCenter(TL))\ncall SetUnitPositionLoc(J1V,GetRectCenter(AM))\ncall SetUnitPositionLoc(J4V,GetRectCenter(TP))\ncall SetUnitPositionLoc(J8V,GetRectCenter(CP))\ncall SetUnitPositionLoc(J0V,GetRectCenter(GL))\ncall SetUnitPositionLoc(K0V,GetRectCenter(EL))\ncall SetUnitPositionLoc(JYV,GetRectCenter(WK))\ncall SetUnitPositionLoc(J2V,GetRectCenter(CL))\ncall SetUnitPositionLoc(J7V,GetRectCenter(PP))\ncall TriggerSleepAction(.1)\ncall DisableTrigger(X0V)\ncall StopSoundBJ(TY,true)\ncall SetUserControlForceOff(bj_FORCE_ALL_PLAYERS)\ncall CinematicModeBJ(true,bj_FORCE_ALL_PLAYERS)\ncall ClearTextMessagesBJ(bj_FORCE_ALL_PLAYERS)\ncall ForForce(bj_FORCE_ALL_PLAYERS,\nfunction TLX)\nset UD=GetRectCenter(ZQ)\ncall CreateNUnitsAtLoc(1,'h038',Player($F),UD,bj_UNIT_FACING)\nset ZH=bj_lastCreatedUnit\ncall SetUnitAnimation(ZH,\"spell one\")\ncall PauseUnit(ZH,true)\ncall CreateNUnitsAtLoc(1,'h02L',GetOwningPlayer(ZH),UD,bj_UNIT_FACING)\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall AddSpecialEffectLocBJ(M3V(UD,25.,0),\"Objects\\\\Spawnmodels\\\\Other\\\\ToonBoom\\\\ToonBoom.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall AddSpecialEffectLocBJ(M3V(UD,25.,90.),\"Objects\\\\Spawnmodels\\\\Other\\\\ToonBoom\\\\ToonBoom.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall AddSpecialEffectLocBJ(M3V(UD,25.,180.),\"Objects\\\\Spawnmodels\\\\Other\\\\ToonBoom\\\\ToonBoom.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall AddSpecialEffectLocBJ(M3V(UD,25.,270.),\"Objects\\\\Spawnmodels\\\\Other\\\\ToonBoom\\\\ToonBoom.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall TransmissionFromUnitTypeWithNameBJ(bj_FORCE_ALL_PLAYERS,Player($F),'h038',\"Mitarashi Anko\",UD,null,\"Each team starts with a scroll. It may either be an Earth or Heaven scroll. You must have both towards the end of this exam to enter the tower! Entering into the tower is not permitted until the last 2 minutes. In the meantime, I suggest you train yourselves for what comes next! Go now!\",0,10.,false)\ncall RemoveLocation(UD)\ncall TriggerSleepAction(2.75)\ncall SetUnitAnimation(ZH,\"stand\")\ncall TriggerSleepAction(6.)\ncall CinematicFadeBJ(1,3.,\"ReplaceableTextures\\\\CameraMasks\\\\Black_mask.blp\",0,0,0,0)\ncall TriggerSleepAction(4.)\ncall RemoveUnit(ZH)\ncall DestroyFogModifier(bj_lastCreatedFogModifier)\ncall SetTerrainFogExBJ(0,3200.,4500.,.0,60.,80.,80.)\ncall TriggerExecute(X_V)\ncall SetTimeOfDay(.0)\ncall PauseAllUnitsBJ(false)\ncall CinematicFadeBJ(0,1.5,\"ReplaceableTextures\\\\CameraMasks\\\\Black_mask.blp\",0,0,0,0)\ncall ForForce(bj_FORCE_ALL_PLAYERS,\nfunction TMX)\ncall ForForce(bj_FORCE_ALL_PLAYERS,\nfunction TPX)\ncall ForForce(bj_FORCE_ALL_PLAYERS,\nfunction TSX)\nset CE=PRV(bj_mapInitialPlayableArea)\ncall ForGroupBJ(CE,\nfunction TTX)\ncall ForGroupBJ(CE,\nfunction TUX)\ncall DestroyGroup(CE)\ncall CinematicModeBJ(false,bj_FORCE_ALL_PLAYERS)\ncall SetUserControlForceOn(bj_FORCE_ALL_PLAYERS)\ncall ClearMapMusic()\ncall StopMusic(false)\ncall TimerDialogDisplay(bj_lastCreatedTimerDialog,false)\ncall StartTimerBJ(V,false,1320.)\ncall CreateTimerDialogBJ(bj_lastStartedTimer,\"Tournament begins in:\")\ncall TimerDialogDisplay(bj_lastCreatedTimerDialog,true)\ncall StartTimerBJ(E,false,1200.)\nset DE=PRV(FJ)\nset FE=PRV(BQ)\nset GE=PRV(CQ)\nset HE=PRV(DQ)\nset JE=PRV(FQ)\nset KE=PRV(QK)\nset LE=PRV(SK)\ncall ForGroupBJ(DE,\nfunction TWX)\ncall ForGroupBJ(FE,\nfunction TYX)\ncall ForGroupBJ(GE,\nfunction TZX)\ncall ForGroupBJ(HE,\nfunction T_X)\ncall ForGroupBJ(JE,\nfunction T0X)\ncall ForGroupBJ(KE,\nfunction T1X)\ncall ForGroupBJ(LE,\nfunction T2X)\ncall DestroyGroup(DE)\ncall DestroyGroup(FE)\ncall DestroyGroup(GE)\ncall DestroyGroup(HE)\ncall DestroyGroup(JE)\ncall DestroyGroup(KE)\ncall DestroyGroup(LE)\ncall EnableTrigger(O1V)\ncall EnableTrigger(RVV)\ncall EnableTrigger(OFV)\ncall DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,20.,\"|c00FF0000YOU DO NOT NEED SCROLLS TO CONTINUE THE GAME|r\")\ncall EnableTrigger(OZV)\ncall ConditionalTriggerExecute(OZV)\ncall EnableTrigger(O_V)\ncall TriggerSleepAction(540.)\ncall DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,20.,\"|c00FF0000REMEMBER TO TURN IN ONLY ONE PAIR OF SCROLLS PER TEAM STARTING AT 2:00! DON'T FORGET!\")\nset AE=GetRandomLocInRect(TK)\ncall CreateNUnitsAtLoc(1,'h012',Player($C),AE,bj_UNIT_FACING)\ncall RemoveLocation(AE)\ncall UnitAddAbility(bj_lastCreatedUnit,'A018')\ncall SetUnitAbilityLevelSwapped('A018',bj_lastCreatedUnit,3)\ncall UnitAddAbility(bj_lastCreatedUnit,'A02D')\ncall SetUnitAbilityLevelSwapped('A02D',bj_lastCreatedUnit,3)\ncall UnitAddAbility(bj_lastCreatedUnit,'ACcr')\ncall UnitAddAbility(bj_lastCreatedUnit,'A028')\nset IR=bj_lastCreatedUnit\ncall EnableTrigger(DWV)\ncall EnableTrigger(O4V)\ncall EnableTrigger(O5V)\ncall EnableTrigger(O6V)\ncall TriggerSleepAction(630.)\ncall DisplayTimedTextToForce(bj_FORCE_ALL_PLAYERS,20.,\"|c00FF0000YOU DO NOT NEED SCROLLS TO CONTINUE THE GAME|r\")\nendfunction",
+    "sourceSpawnFunction": "T3X"
+  },
+  "abilities": [
+    {
+      "oldId": "AHhb",
+      "newId": "A018",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shosen Jutsu (Minor)",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Shosen Jutsu (Minor)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "The user gathers chakra towards  the hands that is then channeled into the patient. The chakra then is focused into performing surgery and regenerating wounds.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "The user gathers chakra towards  the hands that is then channeled into the patient. The chakra then is focused into performing surgery and regenerating wounds.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "The user gathers chakra towards  the hands that is then channeled into the patient. The chakra then is focused into performing surgery and regenerating wounds.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "The user gathers chakra towards  the hands that is then channeled into the patient. The chakra then is focused into performing surgery and regenerating wounds.",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Shosen Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Shosen Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Shosen Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Sakura_Shosen.blp",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Sakura_Shosen.blp",
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "abpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "arpx",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 20,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 30,
+          "u1": 0
+        },
+        {
+          "id": "Hhb1",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "Hhb1",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 750,
+          "u1": 0
+        },
+        {
+          "id": "Hhb1",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 1000,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 200,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "air,ground,invulnerable,nonancient,organic,vulnerable",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "air,ground,invulnerable,nonancient,organic,vulnerable",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "air,ground,invulnerable,nonancient,organic,vulnerable",
+          "u1": 0
+        },
+        {
+          "id": "aani",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "spell,slam",
+          "u1": 0
+        },
+        {
+          "id": "aher",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 0,
+          "u1": 0
+        }
+      ]
+    },
+    {
+      "oldId": "ANst",
+      "newId": "A00V",
+      "modifications": [
+        {
+          "id": "anam",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Daikamaitachi no Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "asat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "amat",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl",
+          "u1": 0
+        },
+        {
+          "id": "arlv",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 35,
+          "u1": 0
+        },
+        {
+          "id": "aret",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Daikamaitachi no Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Daikamaitachi no Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "arut",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Temari creates a more powerful version of her tornadoes in a great windstorm mixed with slicing concentrated chakra.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "Temari creates a more powerful version of her tornadoes in a great windstorm mixed with slicing concentrated chakra.",
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "Nst4",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 4,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "aart",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Orochimaru_FutonDaitoppa.blp",
+          "u1": 0
+        },
+        {
+          "id": "arar",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "Icon_Orochimaru_FutonDaitoppa.blp",
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "Nst1",
+          "variableType": 0,
+          "levelOrVariation": 1,
+          "dataPointer": 1,
+          "value": 10,
+          "u1": 0
+        },
+        {
+          "id": "arhk",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "ahky",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "W",
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "Nst2",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 2,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "arac",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "human",
+          "u1": 0
+        },
+        {
+          "id": "alev",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 3,
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Daikamaitachi no Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "atp1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Daikamaitachi no Jutsu (W)",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "Temari creates a more powerful version of her tornadoes in a great windstorm mixed with slicing concentrated chakra.",
+          "u1": 0
+        },
+        {
+          "id": "aub1",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "Temari creates a more powerful version of her tornadoes in a great windstorm mixed with slicing concentrated chakra.",
+          "u1": 0
+        },
+        {
+          "id": "Nst2",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 2,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "Nst2",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 2,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "Nst1",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 1,
+          "value": 20,
+          "u1": 0
+        },
+        {
+          "id": "Nst3",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 3,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "Nst3",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 3,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "Nst4",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 4,
+          "value": 300,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "acdn",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 120,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "ahdu",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 6,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "adur",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 8,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "amcs",
+          "variableType": 0,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 500,
+          "u1": 0
+        },
+        {
+          "id": "Nst3",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 3,
+          "value": 100,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 800,
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 800,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 1200,
+          "u1": 0
+        },
+        {
+          "id": "aefl",
+          "variableType": 3,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": "VolcanoLoop",
+          "u1": 0
+        },
+        {
+          "id": "amsp",
+          "variableType": 0,
+          "levelOrVariation": 0,
+          "dataPointer": 0,
+          "value": 2500,
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "enemies,ground,terrain,tree",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "enemies,ground,terrain,tree",
+          "u1": 0
+        },
+        {
+          "id": "atar",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "enemies,ground,terrain,tree",
+          "u1": 0
+        },
+        {
+          "id": "aare",
+          "variableType": 2,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": 800,
+          "u1": 0
+        },
+        {
+          "id": "Nst1",
+          "variableType": 0,
+          "levelOrVariation": 2,
+          "dataPointer": 1,
+          "value": 15,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": 1200,
+          "u1": 0
+        },
+        {
+          "id": "aran",
+          "variableType": 2,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": 1200,
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 1,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 2,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        },
+        {
+          "id": "abuf",
+          "variableType": 3,
+          "levelOrVariation": 3,
+          "dataPointer": 0,
+          "value": "",
+          "u1": 0
+        }
+      ]
+    }
+  ]
+}

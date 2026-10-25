@@ -47,6 +47,9 @@ function ExamNearest takes integer p returns unit
     local unit result=null
     local boolean hasHeaven=ExamHas(t,'Eshe')
     local boolean hasEarth=ExamHas(t,'Esea')
+    if FoundationAlive(ExamKabuto) and not IsUnitHidden(ExamKabuto) and ExamNear(ExamKabuto,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) and SkillsCanSee(ExamKabuto,Player(p)) then
+        return ExamKabuto
+    endif
     loop
         exitwhen j>=85
         set raw='Eshe'
@@ -122,11 +125,35 @@ endfunction
 function ExamClockEnd takes nothing returns nothing
     // Progression is handled by the shared heartbeat, including load/revival states.
 endfunction
+function ExamRespawn takes integer raw returns unit
+    local integer attempts=0
+    local integer point=0
+    local real x=0.
+    local real y=0.
+    loop
+        set x=GetRandomReal(-16352.,-3808.)
+        set y=GetRandomReal(-16352.,-3328.)
+        exitwhen not IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) or attempts>=24
+        set attempts=attempts+1
+    endloop
+    if attempts>=24 then
+        set point=GetRandomInt(0,84)
+        set x=ExamEnemyX[point]
+        set y=ExamEnemyY[point]
+    endif
+    return CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,x,y,GetRandomReal(0.,360.))
+endfunction
+// FOREST33_RUNTIME
 function ExamStartForest takes nothing returns nothing
     local integer t=0
     local integer p=0
     local integer k=0
     local unit u=null
+    call ExamKabutoClear()
+    call ExamKabutoSetup()
+    set ExamKabutoAt=TimeNow+540.
+    set ExamKabutoHealAt=0.
+    set ExamKabutoCrippleAt=0.
     set ExamPhase=3
     if ExamAnswers!=null then
         call DestroyTrigger(ExamAnswers)
@@ -362,24 +389,7 @@ function ExamBot takes integer p, unit enemy returns nothing
     set it=null
     set leader=null
 endfunction
-function ExamRespawn takes integer raw returns unit
-    local integer attempts=0
-    local integer point=0
-    local real x=0.
-    local real y=0.
-    loop
-        set x=GetRandomReal(-16352.,-3808.)
-        set y=GetRandomReal(-16352.,-3328.)
-        exitwhen not IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) or attempts>=24
-        set attempts=attempts+1
-    endloop
-    if attempts>=24 then
-        set point=GetRandomInt(0,84)
-        set x=ExamEnemyX[point]
-        set y=ExamEnemyY[point]
-    endif
-    return CreateUnit(Player(PLAYER_NEUTRAL_AGGRESSIVE),raw,x,y,GetRandomReal(0.,360.))
-endfunction
+
 function ExamForestTick takes nothing returns nothing
     local integer count=0
     local integer j=0
@@ -395,6 +405,7 @@ function ExamForestTick takes nothing returns nothing
     local real best=0.
     local real dx=0.
     local real dy=0.
+    call ExamKabutoTick()
     // Stagger native unit creation: one actor per shared tick (85 actors total).
     if ExamPopulateCursor<85 then
         set j=ExamPopulateCursor
@@ -568,6 +579,7 @@ function ExamForestTick takes nothing returns nothing
         set t=t+1
     endloop
     if not active then
+        call ExamKabutoClear()
         call TimerDialogDisplay(ExamDialog,false)
         call DestroyTimerDialog(ExamDialog)
         call PauseTimer(ExamClock)

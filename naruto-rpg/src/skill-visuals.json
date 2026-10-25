@@ -107,6 +107,12 @@
       "model": "WindAttack.mdl",
       "scale": 1.0,
       "animation": "stand"
+    },
+    {
+      "id": "vchi",
+      "model": "Abilities\\Weapons\\Bolt\\BoltImpact.mdl",
+      "scale": 5.0,
+      "animation": "stand"
     }
   ],
   "skills": [
@@ -1044,15 +1050,20 @@
       "hero": 11,
       "name": "Дайкамайтачи",
       "sourceId": "A00V",
-      "kind": "windbarrage",
+      "kind": "native-wind-stampede",
       "animation": "Spell",
-      "channelSeconds": 1.0,
-      "nativeArt": {},
+      "channelSeconds": 8.0,
+      "nativeArt": {
+        "amat": "Abilities\\Spells\\Other\\Tornado\\TornadoElemental.mdl",
+        "amsp": 2500,
+        "asat": ""
+      },
       "sourceComparison": "src/source-visual-audit.json",
       "status": "source art restored or source-based independent visual choreography; actual 1.26 playback pending",
       "sequenceSeconds": 1,
       "sequenceNonLooping": 1,
-      "sequencePlaybackScale": 1.0
+      "sequencePlaybackScale": 1.0,
+      "repeatSequenceDuringChannel": true
     },
     {
       "index": 59,

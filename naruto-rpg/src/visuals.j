@@ -44,6 +44,9 @@ function VisualLiftStart takes integer p, real height, real lifetime returns not
 endfunction
 function VisualClearHero takes integer p returns nothing
     local integer n=0
+    set VisualApproachCaster[p]=null
+    set VisualApproachTarget[p]=null
+    set VisualApproachAt[p]=0.
     call VisualLiftEnd(p)
     loop
         exitwhen n>=256
@@ -129,6 +132,59 @@ function VisualFan takes integer p, integer raw, real x, real y, real height, in
         set n=n+1
     endloop
 endfunction
+// Shared with RosterLine: all line graphics end at the same 900-unit hit boundary.
+function VisualLineFan takes integer p, integer raw, real x, real y, real height, integer count, real width returns nothing
+    local real sx=GetUnitX(Hero[p])
+    local real sy=GetUnitY(Hero[p])
+    local real dx=x-sx
+    local real dy=y-sy
+    local real length=SquareRoot(dx*dx+dy*dy)
+    if length<1. then
+        set dx=Cos(GetUnitFacing(Hero[p])*bj_DEGTORAD)
+        set dy=Sin(GetUnitFacing(Hero[p])*bj_DEGTORAD)
+        set length=1.
+    endif
+    call VisualFan(p,raw,sx+dx/length*900.,sy+dy/length*900.,height,count,width)
+endfunction
+// Defer approach until native spells have committed mana and cooldown, like Lee's kick.
+function VisualApproachTick takes integer p returns nothing
+    local unit u=VisualApproachCaster[p]
+    local unit target=VisualApproachTarget[p]
+    local real dx=0.
+    local real dy=0.
+    local real length=0.
+    local real distance=0.
+    local real x=0.
+    local real y=0.
+    local boolean blocked=false
+    if VisualApproachAt[p]>0. and TimeNow>=VisualApproachAt[p] then
+        set VisualApproachAt[p]=0.
+        set VisualApproachCaster[p]=null
+        set VisualApproachTarget[p]=null
+        if u==Hero[p] and FoundationAlive(u) and FoundationAlive(target) and not IsUnitPaused(u) and not IsUnitHidden(u) and JumpUnit[p]==null and IsUnitEnemy(target,Player(p)) then
+            set dx=GetUnitX(target)-GetUnitX(u)
+            set dy=GetUnitY(target)-GetUnitY(u)
+            set length=SquareRoot(dx*dx+dy*dy)
+            if length>100. and length<=650. then
+                set distance=64.
+                loop
+                    exitwhen distance>=length-80. or blocked
+                    set x=GetUnitX(u)+dx/length*distance
+                    set y=GetUnitY(u)+dy/length*distance
+                    set blocked=IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) or GetTerrainCliffLevel(x,y)!=GetTerrainCliffLevel(GetUnitX(u),GetUnitY(u))
+                    set distance=distance+64.
+                endloop
+                set x=GetUnitX(target)-dx/length*80.
+                set y=GetUnitY(target)-dy/length*80.
+                if not blocked and not IsTerrainPathable(x,y,PATHING_TYPE_WALKABILITY) and GetTerrainCliffLevel(x,y)==GetTerrainCliffLevel(GetUnitX(u),GetUnitY(u)) then
+                    call SetUnitPosition(u,x,y)
+                endif
+            endif
+        endif
+    endif
+    set u=null
+    set target=null
+endfunction
 function VisualPulse takes integer p, integer index, real x, real y returns nothing
     local integer n=0
     local integer raw='vshu'
@@ -158,8 +214,6 @@ function VisualPulse takes integer p, integer index, real x, real y returns noth
         set VisualPulseCount[p]=VisualPulseCount[p]+1
     elseif index==47 then
         call VisualField(p,'vsnd',x,y,.65)
-    elseif index==58 then
-        call VisualFan(p,'vtor',x,y,60.,3,160.)
     endif
 endfunction
 function VisualApply takes integer p, integer index, integer rank, unit target returns nothing
@@ -177,6 +231,11 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         // No-target spells have no world aim point. Never launch toward map coordinate (0,0).
         set x=sx
         set y=sy
+    endif
+    if (index==3 or index==7 or index==8) and target!=null then
+        set VisualApproachCaster[p]=Hero[p]
+        set VisualApproachTarget[p]=target
+        set VisualApproachAt[p]=TimeNow+.1
     endif
     if index==1 then
         call SkillsFlashAt("Abilities\\Spells\\Orc\\MirrorImage\\MirrorImageCaster.mdl",sx,sy)
@@ -198,6 +257,8 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         call VisualAttach(p,0,"Abilities\\Spells\\Orc\\Purge\\PurgeBuffTarget.mdl","hand left",1.5)
         call VisualAttach(p,1,"Abilities\\Weapons\\Bolt\\BoltImpact.mdl","hand left",1.5)
         call SkillsFlashTarget("Abilities\\Weapons\\Bolt\\BoltImpact.mdl",target)
+        call VisualField(p,'vchi',x,y,.8)
+        call SkillsFlashAt("Abilities\\Weapons\\ChimaeraLightningMissile\\ChimaeraLightningMissile.mdl",x,y)
     elseif index==9 then
         call SkillsFlashAt("Abilities\\Spells\\Undead\\CarrionSwarm\\CarrionSwarmDamage.mdl",sx,sy)
     elseif index==11 then
@@ -231,7 +292,7 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         set VisualVolleyDelay[p]=.2
         set VisualVolleyX[p]=sx
         set VisualVolleyY[p]=sy
-    elseif index==28 or index==58 then
+    elseif index==28 then
         if index==28 then
             call VisualPose(p,index)
             call VisualLiftStart(p,1000.,SkillHold[index])
@@ -243,7 +304,7 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==29 then
         call VisualField(p,'vkuc',sx,sy,1.5)
         call SkillsFlashAt("Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl",sx,sy)
-        call VisualFan(p,'vbal',x,y,80.,1,0.)
+        call VisualLineFan(p,'vbal',x,y,200.,1,0.)
     elseif index==36 then
         call VisualField(p,'vfog',sx,sy,8.)
     elseif index==38 then
@@ -253,6 +314,10 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==43 then
         call VisualAttach(p,0,"Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl","hand left",4.)
         call VisualAttach(p,1,"Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl","hand right",4.)
+    elseif index==45 then
+        call VisualField(p,'vsan',x,y,.8)
+    elseif index==46 then
+        call VisualField(p,'vsan',sx,sy,.8)
     elseif index==49 then
         if ZoneUntil[p]>TimeNow then
             set x=ZoneX[p]
@@ -290,8 +355,8 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
             call SkillsFlashAt("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",sx+Cos(angle)*125.,sy+Sin(angle)*125.)
             set n=n+1
         endloop
-        call VisualFan(p,'vrac',x,y,70.,1,0.)
-        call VisualFan(p,'vtor',x,y,50.,3,130.)
+        call VisualLineFan(p,'vrac',x,y,70.,1,0.)
+        call VisualLineFan(p,'vtor',x,y,50.,3,130.)
     endif
 endfunction
 function VisualTick takes nothing returns nothing
@@ -300,6 +365,11 @@ function VisualTick takes nothing returns nothing
     local real f=0.
     call KibaRollTick()
     call KunaiTick()
+    loop
+        exitwhen p>=12
+        call VisualApproachTick(p)
+        set p=p+1
+    endloop
     loop
         exitwhen n>=256
         if VisualUnit[n]!=null then
@@ -345,6 +415,10 @@ function VisualTick takes nothing returns nothing
                 set VisualVolleyLeft[p]=VisualVolleyLeft[p]-1
                 set VisualVolleyDelay[p]=.25
             endif
+        endif
+        if VisualChannelIndex[p]==58 and VisualChannelUntil[p]>TimeNow and FoundationAlive(Hero[p]) and TimeNow>=VisualWindPoseAt[p] then
+            call VisualPose(p,58)
+            set VisualWindPoseAt[p]=TimeNow+1.
         endif
         if VisualPoseLife[p]>0. then
             set VisualPoseLife[p]=VisualPoseLife[p]-.05

@@ -670,6 +670,42 @@
       "column": 2,
       "specific": "AIil",
       "repeat": 4
+    },
+    "Hhb1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "AHhb",
+      "repeat": 4
+    },
+    "Nst1": {
+      "type": "int",
+      "column": 1,
+      "specific": "ANst",
+      "repeat": 4
+    },
+    "Nst2": {
+      "type": "unreal",
+      "column": 2,
+      "specific": "ANst",
+      "repeat": 4
+    },
+    "Nst3": {
+      "type": "unreal",
+      "column": 3,
+      "specific": "ANst",
+      "repeat": 4
+    },
+    "Nst4": {
+      "type": "unreal",
+      "column": 4,
+      "specific": "ANst",
+      "repeat": 4
+    },
+    "Nst5": {
+      "type": "unreal",
+      "column": 5,
+      "specific": "ANst",
+      "repeat": 4
     }
   },
   "unitFields": {

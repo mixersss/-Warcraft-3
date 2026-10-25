@@ -1,0 +1,21 @@
+{
+  "stage": 33,
+  "filename": "Shinobi_Story_Alpha_33.w3x",
+  "bytes": 10990645,
+  "sha256": "dbdb628ba8e0f718cd7ca8ca2b62d5e10b93525069ce5fe09d04f56ef00027b7",
+  "heroKeys": "QWERF",
+  "substitutionKey": "D",
+  "kabutoSourceSpawnSeconds": 540,
+  "nativeTemariStampedeSourceFields": true,
+  "gaaraDamageAndShieldUnchanged": true,
+  "allOtherAbilityBalanceAndHeroUnitStatsUnchanged": true,
+  "sourceMusicAndVoiceBytesUnchanged": true,
+  "lateCampaignContinuesWithAnySurvivor": true,
+  "forestKabutoStealsActualScrolls": true,
+  "forestHeroesRespawnAfter20Seconds": true,
+  "cloneWinnersReturnToCaveEntrance": true,
+  "noStageJumpWhileCloneDuelsPending": true,
+  "existingCaveProgressionPreserved": true,
+  "cloneLosersNeverRevive": true,
+  "enginePlaytest": false
+}

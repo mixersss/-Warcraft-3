@@ -172,13 +172,15 @@ local cloneCount=0
 for p=0,11 do if CampaignClonePending[p] then cloneCount=cloneCount+1;assert(CampaignClone[p].level==60,'Source clone level 60');assert(CampaignNearest(p)==CampaignClone[p]);CampaignBot(p,CampaignClone[p]);assert(Hero[p].last.target==CampaignClone[p])end end
 assert(cloneCount==8,'Eight parallel clone rooms, no sequential teleport of every hero')
 local cloneX,cloneY=Hero[3].x,Hero[3].y
-killEnemies();CampaignTick();assert(CampaignQueued==26,'Main party continues while clone fights remain active')
-enter();assert(CampaignClonePending[3] and Hero[3].x==cloneX and Hero[3].y==cloneY,'Stage transitions preserve individual clone fights')
+killEnemies();CampaignTick();assert(not CampaignTransition and CampaignStage==17,'Keep the cave entrance open while individual clone fights continue')
+assert(CampaignClonePending[3] and Hero[3].x==cloneX and Hero[3].y==cloneY,'Other clone fights are not interrupted')
 for p=0,11 do if CampaignClonePending[p] then CampaignClone[p].hp=0 end end
 CampaignClonesTick();for p=0,11 do assert(not CampaignClonePending[p]);assert(not CampaignClone[p])end
-assert(CampaignStage==26 and CampaignActor[0].owner==1 and Hero[1].hidden)
+for p=0,11 do if p~=1 and Hero[p] and not CampaignPermanentDead[p] then assert(Hero[p].x==CampaignX[17] or p==0 or p==2 or p==6,'Clone winners return to cave entrance')end end
+CampaignTick();assert(CampaignTransition and CampaignQueued==26);enter()
+assert(CampaignStage==26 and CampaignActor[0].owner==1 and Hero[1].hidden,'Cave progression is preserved after regrouping; no boss is inserted into a clone duel')
 StoryCommand(1,'-kabuto');StoryCommand(1,'-kabutooff');assert(not CampaignKabutoAI)
-CampaignActor[0].hp=0;CampaignTick();assert(CampaignQueued==27,'Human-controlled Kabuto remains a required enemy')
+CampaignActor[0].hp=0;CampaignTick();assert(CampaignQueued==27)
 enter();killEnemies();CampaignTick();assert(CampaignQueued==28)
 enter();killEnemies();CampaignTick();assert(CampaignQueued==29)
 enter();assert(CampaignStage==29 and CampaignSasuke==Hero[1] and not Hero[1].hidden)
@@ -187,7 +189,9 @@ enter();assert(CampaignStage==30)
 TimeNow=CampaignStartAt+12;CampaignTick();assert(CampaignFinished and outcomes[0]=='win' and outcomes[1]=='lose')
 -- The alternate final outcome preserves Sasuke's winning side.
 fresh();CampaignBindRoles();CampaignClock=CreateTimer();CampaignDialog=CreateTimerDialog(CampaignClock);CampaignStage=29;CampaignSasuke=Hero[1];CampaignNaruto=Hero[0];Hero[0].hp=0
-CampaignTick();assert(CampaignFinished and outcomes[1]=='win' and outcomes[0]=='lose')
+CampaignTick();assert(not CampaignFinished and CampaignPermanentDead[0] and Hero[0].hp==0,'Other survivors continue after Naruto dies')
+for p=2,11 do Hero[p].hp=0 end
+CampaignTick();assert(CampaignFinished and outcomes[1]=='win' and outcomes[0]=='lose','Defeat only after all allied survivors are dead')
 -- Unique selectable story roles: swap a pending/default character, reject an already confirmed human role.
 fresh();for t=0,3 do StoryStarted[t]=false end;Hero[0].xp=300;Hero[1].xp=300
 SkillsChoose(0,1);assert(HeroRole[0]==1 and HeroRole[1]==0 and RoleChosen[0])

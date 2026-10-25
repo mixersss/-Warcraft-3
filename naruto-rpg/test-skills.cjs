@@ -60,7 +60,7 @@ for(const [id,skills] of Object.entries({ra02:['ACct'],ra03:['ACct','Rdog'],rdgf
 assert.equal(get(ability.Rn02,'Omi1',4),8);assert.equal(get(ability.Rn04,'Htb1',3),650);assert.equal(get(ability.Rs04,'Htb1',3),800);
 const audit=JSON.parse(fs.readFileSync(__dirname+'/src/source-skill-audit.json'));
 for(const h of audit.heroes)assert.deepEqual(rows.filter(r=>r.hero===h.hero).map(r=>r.source_id),h.sourceSkills);
-assert.equal(ability.Rlog.oldId,'AOwk');assert.equal(get(ability.Rlog,'aher'),0);assert.equal(get(ability.Rlog,'amcs',1),150);assert.equal(get(ability.Rlog,'acdn',1),22);assert.equal(get(ability.Rlog,'adur',1),3);assert.equal(get(ability.Rlog,'ahdu',1),3);assert.equal(get(ability.Rlog,'Owk1',1),0);assert(Math.abs(get(ability.Rlog,'Owk2',1)-.2)<.001);assert.equal(get(ability.Rlog,'Owk3',1),50);assert.equal(get(ability.Rlog,'abuf',1),'BOwk');assert.equal(get(ability.Rlog,'aart'),'Icon_Kawarimi.blp');assert.equal(get(ability.Rlog,'ahky'),'R');assert.equal(get(ability.Rlog,'abpx'),2);assert.equal(get(ability.Rlog,'abpy'),1);
+assert.equal(ability.Rlog.oldId,'AOwk');assert.equal(get(ability.Rlog,'aher'),0);assert.equal(get(ability.Rlog,'amcs',1),150);assert.equal(get(ability.Rlog,'acdn',1),22);assert.equal(get(ability.Rlog,'adur',1),3);assert.equal(get(ability.Rlog,'ahdu',1),3);assert.equal(get(ability.Rlog,'Owk1',1),0);assert(Math.abs(get(ability.Rlog,'Owk2',1)-.2)<.001);assert.equal(get(ability.Rlog,'Owk3',1),50);assert.equal(get(ability.Rlog,'abuf',1),'BOwk');assert.equal(get(ability.Rlog,'aart'),'Icon_Kawarimi.blp');assert.equal(get(ability.Rlog,'ahky'),'D');assert.equal(get(ability.Rlog,'abpx'),2);assert.equal(get(ability.Rlog,'abpy'),1);
 for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rlog'),'Every base/morph hero has the common skill');
 assert.equal(ability.R604.oldId,'ANcl');assert.equal(ability.R301.oldId,'ANcl');assert.equal(ability.Rjtr.oldId,'Aeat');assert.equal(get(ability.Rjtr,'acas',1),10);
 for(const o of units)if(['Hpal','Edem','Hblm'].includes(o.oldId) && o.newId.startsWith('R'))assert(get(o,'uabi').split(',').includes('Rjtr'));
@@ -144,6 +144,7 @@ function SetHeroAgi(u,v,permanent)u.agi=v end
 function GetUnitMoveSpeed(u)return u.speed or 300 end
 function SetUnitMoveSpeed(u,v)u.speed=v end
 function GetRandomInt(a,b)return a end
+function GetRandomReal(a,b)return (a+b)/2 end
 function AddLightningEx(code,visible,x,y,z,tx,ty,tz)return {alive=true}end
 function SetLightningColor()end
 function DestroyLightning(l)assert(l.alive);l.alive=false end
@@ -307,6 +308,7 @@ run(fs.readFileSync(__dirname+'/cooldown27-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/late28-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/gaara31-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/sasuke31-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/skills33-harness.lua','utf8'));
 console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');
