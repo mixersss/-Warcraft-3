@@ -60,7 +60,8 @@ for(const[raw,prev]of oldA){const current=a.get(raw),source=sourceByRaw.get(raw)
  for(const m of prev.modifications)if(technical.has(m.id)&&!profiles.curves[source]?.[m.id])assert.equal(get(current,m.id,m.levelOrVariation),m.value,'Technical field '+raw+':'+fieldKey(m));
 }
 // All object identity, world geometry, cosmetics, prices and rank caps are retained.
-for(const n of ['war3map.w3q','war3map.w3h','war3map.w3b','war3map.wpm','war3map.w3e','war3map.doo','war3mapUnits.doo','war3map.imp','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(now(n),before(n),n+' exact0.21');
+// The separate music-only verifier checks the full import table and exact0.23 runtime.
+for(const n of ['war3map.w3q','war3map.w3h','war3map.w3b','war3map.wpm','war3map.w3e','war3map.doo','war3mapUnits.doo','war3mapMap.tga','war3mapPreview.tga'])assert.deepEqual(now(n),before(n),n+' exact0.21');
 for(const[raw,prev]of oldU){const current=u.get(raw);assert(current);assert.equal(current.oldId,prev.oldId);for(const m of prev.modifications)if(['umdl','uico','uclr','uclg','uclb','usca','ucol','ureq','ufoo','ubba','ubdi','ubsi','ugol','ulum','upgr'].includes(m.id))assert.equal(get(current,m.id,m.levelOrVariation),m.value,'Preserved cosmetics/count/economy '+raw+':'+m.id);}
 for(const[raw,prev]of oldU)if(raw!=='ftow')assert.deepEqual(u.get(raw),prev,'Unchanged prior unit '+raw);
 const tower=u.get('ftow');assert.equal(get(tower,'uhpm'),40000);assert.equal(get(tower,'ua1b')+get(tower,'ua1d')*get(tower,'ua1s'),250);assert.equal(get(tower,'ua1s'),1);near(get(tower,'ua1c'),.5,'Fast front tower');assert(get(tower,'udp1')+get(tower,'ubs1')<.5);assert.equal(get(tower,'ua1r'),700);
@@ -73,7 +74,7 @@ const source=now('war3map.j').toString(),priorSource=before('war3map.j').toStrin
 const changed=['AddGold','RegularGearCost','BotShop','BotResearch','BotHero','BotUseSupplies','OnChat','main','Tick','CreativeCache'];
 const added=['BotArenaShop','ArenaItemIndex'];
 const functionRE=name=>new RegExp(String.raw`^function ${name} takes[\s\S]*?^endfunction`,'m');
-let normalized=source.replaceAll(b.version,'0.22.0-alpha').replace('constant integer TOWER_HP = 40000','constant integer TOWER_HP = 7800');
+let normalized=require('./verify-music-0231.cjs').stripMusic(source).replaceAll(b.version,'0.22.0-alpha').replace('constant integer TOWER_HP = 40000','constant integer TOWER_HP = 7800');
 for(const name of changed){const prev=priorSource.match(functionRE(name));const current=normalized.match(functionRE(name));assert(prev&&current,'Audited function '+name);normalized=normalized.replace(functionRE(name),()=>prev[0]);}
 for(const name of added){assert(normalized.match(functionRE(name)));normalized=normalized.replace(functionRE(name),'');}
 const newGlobals=['ArenaStore','ArenaItemId','ArenaItemCost','ArenaRelicBought','ArenaShopAt','ArmySavings','ArmyFraction'];

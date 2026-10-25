@@ -658,6 +658,8 @@ reset();Seconds=0;Tick();assert(ModeDialogOpen and #Shop[0].buttons==2,'Host see
 PLAYER_NEUTRAL_PASSIVE=15
 function CreateTrigger() return {events={},actions={}} end
 function TriggerAddAction(t,f) table.insert(t.actions,f) end
+function StopMusic(fade) assert(fade==false) end
+function PlayMusic(track) assert(type(track)=='string' and string.find(track,'FFMusic',1,true)) end
 function CreateTimer() return {} end
 function TimerStart(t,period,repeats,callback) t.callback=callback;t.period=period;if period==1 then Clock=t end end
 function CreateDestructable() return {} end

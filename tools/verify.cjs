@@ -12,7 +12,7 @@ const races = require('../map/races.json');
 const heroes = require('../map/heroes.json');
 const target = path.join(root, 'build', `FourFrontsFrenzy-${balance.version}.w3x`);
 const data = fs.readFileSync(target);
-assert.ok(data.length<4*1024*1024,'Compressed map fits the conservative Classic download limit');
+assert.ok(data.length<8*1024*1024,'Compressed map fits the Classic 1.26 network download limit');
 const map = new War3Map();
 // Use a true Uint8Array: Node Buffer.slice() shares a larger backing allocation.
 map.load(new Uint8Array(data), true);

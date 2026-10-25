@@ -1,0 +1,121 @@
+{
+  "tracks": [
+    {
+      "name": "Экзамен с ответами.mp3",
+      "sourceSha256": "c2a151684330e3bd851060802d4e1be1f03ccb78b1d3e1d65345b83250ad7f20",
+      "sourceBytes": 4126125,
+      "decodedSourceDurationMs": 103104,
+      "file": "map/music/track01.mp3",
+      "path": "war3mapImported\\FFMusic01.mp3",
+      "bytes": 309473,
+      "sha256": "588eaa939a3d4a9889c9d1a97d8411aa5fb31a04369b17d6b83e8f7163d3a7f4",
+      "durationMs": 103158,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Takanashi_Yasuharu_-_A_Friend_s_Reminiscence_(Bib.fm).mp3",
+      "sourceSha256": "9ea78a138e0175cf9d1c84fc279f3705f569930381e5a5faa4fb1cfebdf5d22a",
+      "sourceBytes": 3014365,
+      "decodedSourceDurationMs": 125533,
+      "file": "map/music/track02.mp3",
+      "path": "war3mapImported\\FFMusic02.mp3",
+      "bytes": 376790,
+      "sha256": "c1bef407b50abb896665ec80dc088d991d4d8e5e40c649189f556c3fc05494a9",
+      "durationMs": 125597,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Поиск саске и финальные битвы.mp3",
+      "sourceSha256": "0cf13065f50a702e7e15cd01789b51bd5369de052d8cc615b84fe1f7ecb9f435",
+      "sourceBytes": 7843048,
+      "decodedSourceDurationMs": 196023,
+      "file": "map/music/track03.mp3",
+      "path": "war3mapImported\\FFMusic03.mp3",
+      "bytes": 588225,
+      "sha256": "08cb85e7966b970a81c18aa1b9960f915721b7c39c6c0dc8c542949c81174dab",
+      "durationMs": 196075,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "1 этап.mp3",
+      "sourceSha256": "5c2c4691c30afa2084e33f89aaa0679b8dc64902dc13d253e53f6f2e2763a3b4",
+      "sourceBytes": 5046901,
+      "decodedSourceDurationMs": 126094,
+      "file": "map/music/track04.mp3",
+      "path": "war3mapImported\\FFMusic04.mp3",
+      "bytes": 378514,
+      "sha256": "b79884bf144b64f65ccb6a16c367d40c2eed950f253d84fcf7f8c4de111a453d",
+      "durationMs": 126171,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Финальные бои на арене.mp3",
+      "sourceSha256": "70f0912e7fe20a56aed575ee76c7e47f1bd28fd471b819f4ea5aa52d749b142a",
+      "sourceBytes": 4844191,
+      "decodedSourceDurationMs": 121051,
+      "file": "map/music/track05.mp3",
+      "path": "war3mapImported\\FFMusic05.mp3",
+      "bytes": 363311,
+      "sha256": "045ba27f80dbbf751f46fe64bac110e2568353e5e328a00a540bfe7e37b6ab51",
+      "durationMs": 121104,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Первые бои на арене.mp3",
+      "sourceSha256": "16b4cdefd9b996ef2fa37cd77fa69a0496e2b232add287ebf06a3da0e6d098e5",
+      "sourceBytes": 3927188,
+      "decodedSourceDurationMs": 163554,
+      "file": "map/music/track06.mp3",
+      "path": "war3mapImported\\FFMusic06.mp3",
+      "bytes": 490893,
+      "sha256": "fec823c592fe48218f27cee434cf6fe0f9836b35e92ad43dc86b28c4418e4881",
+      "durationMs": 163631,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Второй этам со свитками.mp3",
+      "sourceSha256": "8c0c5d3593b0b17f1d9e565f78a27a84928ee771bd5ab9f5c99e0d781b42a020",
+      "sourceBytes": 1351017,
+      "decodedSourceDurationMs": 192889,
+      "file": "map/music/track07.mp3",
+      "path": "war3mapImported\\FFMusic07.mp3",
+      "bytes": 578900,
+      "sha256": "ff136acc7105362953e3b5e01b282bbbd9878ef74b38f90ab39683799e043233",
+      "durationMs": 192967,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    },
+    {
+      "name": "Второй этап со свитками.mp3",
+      "sourceSha256": "4917afeb194b0bddde5fc312ef61b98a990e4ab0c12ee280cecaf80c61a7f028",
+      "sourceBytes": 5276360,
+      "decodedSourceDurationMs": 164808,
+      "file": "map/music/track08.mp3",
+      "path": "war3mapImported\\FFMusic08.mp3",
+      "bytes": 494655,
+      "sha256": "2bac447469a36ba2f4afc609d142b86dc2d622d938dc09612bdedde81bd53e2d",
+      "durationMs": 164885,
+      "bitrateKbps": 24,
+      "sampleRate": 22050,
+      "channels": 1
+    }
+  ],
+  "repeat": true,
+  "fullTracks": true,
+  "duplicatesRemoved": [
+    "Экзамен с ответами.mp3"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "version": "0.23.1-alpha",
+  "bytes": 7018551,
+  "sha256": "e3ff5adf64c3f6765b1449c78193def47ef9458bc6e35909b0a599522ce46c61",
+  "tracks": [
+    {
+      "name": "Экзамен с ответами.mp3",
+      "durationMs": 103158
+    },
+    {
+      "name": "Takanashi_Yasuharu_-_A_Friend_s_Reminiscence_(Bib.fm).mp3",
+      "durationMs": 125597
+    },
+    {
+      "name": "Поиск саске и финальные битвы.mp3",
+      "durationMs": 196075
+    },
+    {
+      "name": "1 этап.mp3",
+      "durationMs": 126171
+    },
+    {
+      "name": "Финальные бои на арене.mp3",
+      "durationMs": 121104
+    },
+    {
+      "name": "Первые бои на арене.mp3",
+      "durationMs": 163631
+    },
+    {
+      "name": "Второй этам со свитками.mp3",
+      "durationMs": 192967
+    },
+    {
+      "name": "Второй этап со свитками.mp3",
+      "durationMs": 164885
+    }
+  ],
+  "fullTracks": true,
+  "uniqueTracks": 8,
+  "repeatedCyclesTested": 3,
+  "timersCreated": 1,
+  "gameplayAndBalanceUnchanged": true,
+  "below8MiB": true,
+  "enginePlaytest": false,
+  "fullNpmTestPassed": true,
+  "strictClassicPjassPassed": true
+}

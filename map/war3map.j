@@ -1,6 +1,10 @@
 // Four Fronts Frenzy. Plain JASS: Warcraft III TFT 1.26+.
 // Balance globals and InitBalance are generated from balance.json.
 globals
+    timer FFMusicTimer = null
+    integer FFMusicIndex = 0
+    string array FFMusicPath
+    real array FFMusicSeconds
     integer array CreativeBuffUntil
     integer array CreativeBannerUntil
     integer array CreativeRainTicks
@@ -2346,6 +2350,7 @@ function InitSlot takes integer p returns nothing
     set fog = null
 endfunction
 
+// MUSIC_MODULE
 function InitGame takes nothing returns nothing
     local integer p = 0
     local integer t
@@ -2470,6 +2475,7 @@ function InitGame takes nothing returns nothing
     call TimerStart(clock, 1, true, function Tick)
     set AutosaveTimer = CreateTimer()
     call TimerStart(AutosaveTimer, I2R(AUTOSAVE_SECONDS), true, function AutoSave)
+    call FFMusicInit()
     set clock = null
     set cell = null
 endfunction

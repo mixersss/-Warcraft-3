@@ -467,6 +467,7 @@ def script(b: dict) -> str:
         for key,value in values.items():
             generated[-1:-1] = [f"    constant {'integer' if isinstance(value,int) else 'real'} XH_{mechanic.upper()}_{key.upper()} = {value}"]
     source = (ROOT/'map/war3map.j').read_text()
+    source = source.replace('// MUSIC_MODULE',__import__('soundtrack').runtime())
     source = source.replace('// CREATIVE_MODULE', (ROOT/'map/creative-heroes.j').read_text())
     source = source.replace('// CREATIVE_AI', (ROOT/'map/creative-ai.j').read_text())
     source = source.replace('// EXPANSION_MODULE', (ROOT/'map/expansion-heroes.j').read_text())
@@ -699,14 +700,16 @@ def build() -> Path:
         'war3map.doo': b'W3do'+i(8, 11, 0, 0, 0),
         'war3mapUnits.doo': b'W3do'+i(8, 11, 0),
         'war3map.w3r': i(5, 0), 'war3map.w3c': i(0, 0),
-        'war3map.w3s': i(1, 0), 'war3map.imp': i(1, 0),
+        'war3map.w3s': i(1, 0), 'war3map.imp': __import__('soundtrack').imports(),
         'war3map.shd': bytes(SIZE*4*SIZE*4),
         'war3mapMap.tga': minimap(), 'war3mapPreview.tga': minimap(),
     }
+    files.update(__import__('soundtrack').files())
     for filename, payload in files.items():
         (unpacked/filename).write_bytes(payload)
     target = out/f'FourFrontsFrenzy-{b["version"]}.w3x'
     target.write_bytes(archive(files, f'{b["name"]} {b["version"]}'))
+    assert target.stat().st_size<8*1024*1024,'Classic 1.26 network size budget'
     digest = hashlib.sha256(target.read_bytes()).hexdigest()
     (out/'SHA256SUMS').write_text(f'{digest}  {target.name}\n')
     print(f'Built {target}: {target.stat().st_size:,} bytes\nSHA256 {digest}')
