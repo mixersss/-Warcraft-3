@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.1-alpha
 
-## Shinobi RPG — Story Alpha 34
+## Shinobi RPG — Story Alpha 35
 
-[Скачать Shinobi Story Alpha 34](releases/shinobi-new/Shinobi_Story_Alpha_34.w3x). Исправлены проверка смерти, лечение трупов и штатное возрождение Саске после смерти. Персонаж, XP, предметы и данные Alpha33 сохранены. [Подробности и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
+[Скачать Shinobi Story Alpha 35](releases/shinobi-new/Shinobi_Story_Alpha_35.w3x). Тест защиты деревни: `-village fast` сразу выпускает волны/подкрепления, `-sasuke-die` вызывает обычную смерть Саске для проверки возрождения. Только первый игрок. [Инструкция и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
 
 ## Footman 0.23.1 — текущая версия
 

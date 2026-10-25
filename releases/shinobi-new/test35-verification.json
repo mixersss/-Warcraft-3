@@ -1,0 +1,23 @@
+{
+  "stage": 35,
+  "filename": "Shinobi_Story_Alpha_35.w3x",
+  "sha256": "28be2bcba4a0aa098cb7f8db52b3089c5458f7a811c9302c64d3b82eb79a55d5",
+  "bytes": 10994239,
+  "fastCommand": "-village fast",
+  "deathCommand": "-sasuke-die",
+  "hostOnly": true,
+  "originalWaveLanes": 8,
+  "immediateScheduledReinforcements": [
+    "Kabuto",
+    "Jiraiya",
+    "Snake",
+    "Orochimaru"
+  ],
+  "repeatDoesNotDuplicateEnemies": true,
+  "nativeDeathAndOrdinary20SecondRevival": true,
+  "noNewTimers": true,
+  "noFreeLevelsOrEquipment": true,
+  "alpha34RecoveryUnchanged": true,
+  "allObjectsWorldMusicAndVoicesUnchanged": true,
+  "enginePlaytest": false
+}

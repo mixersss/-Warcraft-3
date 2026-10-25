@@ -134,6 +134,11 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    set CampaignFastTestActive=false
+    set CampaignFastWaveCursor=0
+    if CampaignQueued!=12 then
+        set CampaignFastTestQueued=false
+    endif
     call ExamKabutoClear()
     set CampaignOroStarted=false
     set CampaignOroSlot=-1
@@ -1124,6 +1129,11 @@ function CampaignStartPlay takes nothing returns nothing
     if CampaignStage==30 then
         call ExamBroadcast("Миссия завершена. Вы прошли все подключённые сюжетные главы до финала. Спасибо за игру!")
     endif
+    if CampaignFastTestQueued and CampaignStage==12 then
+        call ExecuteFunc("CampaignFastInvasion")
+    elseif CampaignStage!=12 then
+        set CampaignFastTestQueued=false
+    endif
 endfunction
 function CampaignFinish takes boolean victory returns nothing
     local integer p=0
@@ -1845,6 +1855,7 @@ function CampaignInvasionEvents takes nothing returns nothing
     endif
     call InvasionOroWatch()
 endfunction
+// INVASION_TEST35_RUNTIME
 // Late missions are an elimination campaign: any surviving allied hero may continue.
 // Mark deaths before the early progression callback can queue a healing scene transition.
 function CampaignSurvivors takes nothing returns integer
