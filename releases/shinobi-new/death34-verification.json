@@ -1,0 +1,19 @@
+{
+  "stage": 34,
+  "filename": "Shinobi_Story_Alpha_34.w3x",
+  "bytes": 10992289,
+  "sha256": "c9b1fc700f2be2c481f0e87f3ed2673d12f39f9620010b204e59d11142e2f0b6",
+  "nativeDeathFlagAuthoritative": true,
+  "positiveHpCorpseNotAlive": true,
+  "sourceCorpseHealingBlocked": true,
+  "sourceDrainCasterAndTargetGuards": 8,
+  "nativeReviveResultChecked": true,
+  "reviveRetrySeconds": 1,
+  "ordinaryRespawnSeconds": 20,
+  "sasukeAfterReviveControlCleanup": true,
+  "heroReplacement": false,
+  "allObjectsWorldModelsMusicAndVoiceBytesUnchanged": true,
+  "alpha33CloneAndForestRulesUnchanged": true,
+  "reportedEngineCauseConfirmed": false,
+  "enginePlaytest": false
+}

@@ -22,6 +22,8 @@ function S2I(s) return tonumber(s) or 0 end
 function I2S(n) return tostring(n) end
 function ModuloInteger(n,d) return n%d end
 function GetWidgetLife(u) return 1000 end
+UNIT_TYPE_DEAD='dead'
+function IsUnitType(u,t)return u and u[t] or false end
 function GetUnitTypeId(u) return 0 end
 function DisplayTimedTextToPlayer(p,x,y,t,s) Feedback=s end
 Created=0

@@ -79,7 +79,7 @@ debug.setmetatable('',{__add=function(a,b)return tostring(a)..tostring(b)end})
 function Player(p) return p end
 PLAYER_SLOT_STATE_PLAYING='playing'
 function GetPlayerSlotState(p)return PLAYER_SLOT_STATE_PLAYING end
-MAP_CONTROL_COMPUTER='computer';UNIT_STATE_MANA='mana';UNIT_STATE_MAX_MANA='maxMana';UNIT_TYPE_STRUCTURE='structure';UNIT_TYPE_MAGIC_IMMUNE='immune'
+MAP_CONTROL_COMPUTER='computer';UNIT_STATE_MANA='mana';UNIT_STATE_MAX_MANA='maxMana';UNIT_TYPE_STRUCTURE='structure';UNIT_TYPE_MAGIC_IMMUNE='immune';UNIT_TYPE_DEAD='dead'
 ATTACK_TYPE_NORMAL='normal';DAMAGE_TYPE_MAGIC='magic';WEAPON_TYPE_WHOKNOWS='unknown'
 function ExecuteFunc(name)_G[name]()end
 function ModuloInteger(a,b) return a%b end
@@ -309,6 +309,7 @@ run(fs.readFileSync(__dirname+'/late28-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/gaara31-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/sasuke31-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/skills33-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/death34-harness.lua','utf8'));
 console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

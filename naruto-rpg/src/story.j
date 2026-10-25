@@ -803,9 +803,16 @@ function StoryTick takes nothing returns nothing
                             set StoryRevive[p]=TimeNow+20.
                             call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Наставник: Мы тебя прикроем. Возвращение в лагерь через 20 секунд.")
                         elseif TimeNow>=StoryRevive[p] then
-                            call ReviveHero(Hero[p],SpawnX[p],SpawnY[p],true)
-                            set StoryRevive[p]=0.
-                            call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+                            if ReviveHero(Hero[p],SpawnX[p],SpawnY[p],true) and FoundationAlive(Hero[p]) then
+                                set StoryRevive[p]=0.
+                                call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+                                call InvasionAfterRevive(p)
+                            else
+                                set StoryRevive[p]=TimeNow+1.
+                                if HeroRole[p]==1 then
+                                    set SasukeReviveFailures[p]=SasukeReviveFailures[p]+1
+                                endif
+                            endif
                         endif
                     else
                         set StoryRevive[p]=0.

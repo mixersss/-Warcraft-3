@@ -38,7 +38,7 @@ function CreateTimerDialog(t)return {timer=t}end
 function TimerDialogSetTitle(d,s)d.title=s end
 function TimerDialogDisplay(d,flag)d.visible=flag end
 function DestroyTimerDialog(d)d.destroyed=true end
-function ReviveHero(u,x,y,fx)u.hp=u.maxLife;u.x=x;u.y=y;u.revived=true;return true end
+function ReviveHero(u,x,y,fx)u.dead=false;u.hp=u.maxLife;u.x=x;u.y=y;u.revived=true;return true end
 local nativeCreate=CreateUnit
 function CreateUnit(p,id,x,y,facing)
  local u=nativeCreate(p,id,x,y,facing)

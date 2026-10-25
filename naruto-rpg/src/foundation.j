@@ -1,4 +1,6 @@
 globals
+    integer array SasukeCorpseHealsBlocked
+    integer array SasukeReviveFailures
     real array VisualWindPoseAt
     unit array VisualApproachCaster
     unit array VisualApproachTarget
@@ -531,7 +533,9 @@ globals
     unit CampaignOroTarget=null
 endglobals
 function FoundationAlive takes unit u returns boolean
-    return u!=null and GetWidgetLife(u)>.405
+    // Raising a corpse's HP never revives it in Classic. The engine death flag
+    // remains authoritative even if an old heal callback writes positive HP.
+    return u!=null and not IsUnitType(u,UNIT_TYPE_DEAD) and GetWidgetLife(u)>.405
 endfunction
 function FoundationPlayPending takes nothing returns nothing
     local integer index=0

@@ -34,6 +34,74 @@ function InvasionSourcePause takes unit u, boolean pause, string source returns 
     endif
     call PauseUnit(u,pause)
 endfunction
+// Source drain/heal callbacks can outlive their target. Never put positive HP
+// on an engine-dead unit: only ReviveHero may restore a real dead hero.
+function InvasionSourceLife takes unit u, real life, string source returns nothing
+    local integer p=InvasionSasukeSlot(u)
+    if u==null or GetUnitTypeId(u)==0 or IsUnitType(u,UNIT_TYPE_DEAD) then
+        if p>=0 then
+            set SasukeCorpseHealsBlocked[p]=SasukeCorpseHealsBlocked[p]+1
+            set SasukeLastSource[p]=source
+        endif
+        return
+    endif
+    call SetWidgetLife(u,life)
+endfunction
+function InvasionSourceLifePercent takes unit u, real percent, string source returns nothing
+    local integer p=InvasionSasukeSlot(u)
+    if u==null or GetUnitTypeId(u)==0 or IsUnitType(u,UNIT_TYPE_DEAD) then
+        if p>=0 then
+            set SasukeCorpseHealsBlocked[p]=SasukeCorpseHealsBlocked[p]+1
+            set SasukeLastSource[p]=source
+        endif
+        return
+    endif
+    call SetUnitLifePercentBJ(u,percent)
+endfunction
+
+function InvasionAfterRevive takes integer p returns nothing
+    local unit u=Hero[p]
+    if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
+        call CommonLogClear(p)
+        call UnitRemoveAbility(u,'Apiv')
+        call ShowUnit(u,false)
+        call UnitRemoveAbility(u,'Aloc')
+        call ShowUnit(u,true)
+        call UnitRemoveAbility(u,'Avul')
+        call SetUnitInvulnerable(u,false)
+        call PauseUnit(u,false)
+        call SetUnitPathing(u,true)
+        call SetUnitFlyHeight(u,0.,0.)
+        call SetUnitTimeScale(u,1.)
+        call SetUnitVertexColor(u,255,255,255,255)
+        call AddUnitAnimationProperties(u,"alternate",false)
+        call SetUnitAnimation(u,"stand")
+        set SasukeLastType[p]=GetUnitTypeId(u)
+        set SasukeMorphRepairAt[p]=0.
+    endif
+    set u=null
+endfunction
+function InvasionQueueCorpse takes integer p returns nothing
+    if CampaignStage==12 and not CampaignTransition and not CampaignFinished and not CampaignPermanentDead[p] and HeroRole[p]==1 and Hero[p]!=null and IsUnitType(Hero[p],UNIT_TYPE_DEAD) then
+        if StoryRevive[p]<=0. then
+            set StoryRevive[p]=TimeNow+20.
+        endif
+        if TimeNow>=StoryRevive[p] then
+            if ReviveHero(Hero[p],SpawnX[p],SpawnY[p],true) and FoundationAlive(Hero[p]) then
+                set StoryRevive[p]=0.
+                call SetUnitState(Hero[p],UNIT_STATE_MANA,GetUnitState(Hero[p],UNIT_STATE_MAX_MANA))
+                call InvasionAfterRevive(p)
+            else
+                set StoryRevive[p]=TimeNow+1.
+                set SasukeReviveFailures[p]=SasukeReviveFailures[p]+1
+            endif
+        endif
+        set SasukeHiddenSince[p]=0.
+        set SasukePauseSince[p]=0.
+        set SasukeAlphaSince[p]=0.
+        set SasukeMorphRepairAt[p]=0.
+    endif
+endfunction
 function InvasionSasukeStatus takes integer viewer returns nothing
     local integer p=0
     local unit u=null
@@ -41,6 +109,10 @@ function InvasionSasukeStatus takes integer viewer returns nothing
         exitwhen p>=12
         if HeroRole[p]==1 and Hero[p]!=null then
             set u=Hero[p]
+            if IsUnitType(u,UNIT_TYPE_DEAD) then
+                call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Движок: Саске мёртв, даже если показано положительное HP. До возрождения: "+I2S(R2I(RMaxBJ(0.,StoryRevive[p]-TimeNow)))+" сек.")
+            endif
+            call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Заблокировано лечений трупа: "+I2S(SasukeCorpseHealsBlocked[p])+". Неудачных попыток возрождения: "+I2S(SasukeReviveFailures[p]))
             call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Саске: этап "+I2S(CampaignStage)+", тип "+I2S(GetUnitTypeId(u))+", HP "+I2S(R2I(GetWidgetLife(u)))+", X/Y "+I2S(R2I(GetUnitX(u)))+"/"+I2S(R2I(GetUnitY(u)))+", предотвращено удалений "+I2S(SasukeBlockedRemove[p])+", неуязвимость "+I2S(GetUnitAbilityLevel(u,'Avul'))+". Последняя техника: "+SasukeLastSource[p])
             if IsUnitHidden(u) then
                 call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Состояние: скрыт триггером.")
@@ -120,6 +192,13 @@ function InvasionFixSasuke takes integer viewer returns nothing
                 call InvasionRecoverHero(p)
                 call IssueImmediateOrder(u,"stop")
                 call DisplayTimedTextToPlayer(Player(viewer),0.,0.,12.,"Саске восстановлен: видимость, управление и уязвимость возвращены. Уровень и предметы сохранены.")
+            elseif IsUnitType(u,UNIT_TYPE_DEAD) then
+                call InvasionQueueCorpse(p)
+                if FoundationAlive(u) then
+                    call DisplayTimedTextToPlayer(Player(viewer),0.,0.,12.,"Саске штатно возрождён; видимость и управление восстановлены.")
+                else
+                    call DisplayTimedTextToPlayer(Player(viewer),0.,0.,12.,"Саске находится в состоянии смерти движка. Назначено штатное возрождение: "+I2S(R2I(RMaxBJ(0.,StoryRevive[p]-TimeNow)))+" сек. Сброс прозрачности не воскрешает героя.")
+                endif
             else
                 call DisplayTimedTextToPlayer(Player(viewer),0.,0.,12.,"Саске погиб или его юнит удалён. Команда не воскрешает погибших; используйте -sasuke для проверки состояния.")
             endif
@@ -150,6 +229,9 @@ function InvasionHeroVisibility takes nothing returns nothing
     loop
         exitwhen p>=12
         set u=Hero[p]
+        if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and u!=null and IsUnitType(u,UNIT_TYPE_DEAD) then
+            call InvasionQueueCorpse(p)
+        endif
         if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
             if SasukeLastType[p]!=0 and GetUnitTypeId(u)!=SasukeLastType[p] and (GetUnitTypeId(u)=='R001' or GetUnitTypeId(u)=='Rsfm') then
                 set SasukeMorphRepairAt[p]=TimeNow+1.5
