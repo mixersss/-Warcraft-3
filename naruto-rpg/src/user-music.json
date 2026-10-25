@@ -237,6 +237,35 @@
     },
     {
       "key": "sasuke-a",
+      "originalName": "Takanashi_Yasuharu_-_A_Friend_s_Reminiscence_(Bib.fm).mp3",
+      "sourceSha256": "9ea78a138e0175cf9d1c84fc279f3705f569930381e5a5faa4fb1cfebdf5d22a",
+      "sourceBytes": 3014365,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "125.570612"
+        }
+      },
+      "path": "war3mapImported\\UserMusic_SasukeA.mp3",
+      "file": "user-music/standard/sasuke-a.mp3",
+      "bytes": 376790,
+      "sha256": "c1bef407b50abb896665ec80dc088d991d4d8e5e40c649189f556c3fc05494a9",
+      "duration_ms": 125597,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "decodedSourceDurationMs": 125533
+    },
+    {
+      "key": "sasuke-b",
       "originalName": "Поиск саске и финальные битвы.mp3",
       "sourceSha256": "0cf13065f50a702e7e15cd01789b51bd5369de052d8cc615b84fe1f7ecb9f435",
       "sourceBytes": 7843048,
@@ -254,8 +283,8 @@
           "duration": "196.048980"
         }
       },
-      "path": "war3mapImported\\UserMusic_SasukeA.mp3",
-      "file": "user-music/standard/sasuke-a.mp3",
+      "path": "war3mapImported\\UserMusic_SasukeB.mp3",
+      "file": "user-music/standard/sasuke-b.mp3",
       "bytes": 588225,
       "sha256": "08cb85e7966b970a81c18aa1b9960f915721b7c39c6c0dc8c542949c81174dab",
       "duration_ms": 196075,
@@ -263,39 +292,10 @@
       "sample_rate": 22050,
       "channels": 1,
       "decodedSourceDurationMs": 196023
-    },
-    {
-      "key": "sasuke-b",
-      "originalName": "Поиск саске и финальные битвы.aac",
-      "sourceSha256": "5c2eaecd98788540d37b8d966f1fe8fcacfccb65204b47c4365c770cb92170ce",
-      "sourceBytes": 4149622,
-      "sourceProbe": {
-        "programs": [],
-        "stream_groups": [],
-        "streams": [
-          {
-            "codec_name": "aac",
-            "sample_rate": "44100",
-            "channels": 2
-          }
-        ],
-        "format": {
-          "duration": "124.091103"
-        }
-      },
-      "path": "war3mapImported\\UserMusic_SasukeB.mp3",
-      "file": "user-music/standard/sasuke-b.mp3",
-      "bytes": 376869,
-      "sha256": "738e68d5da90aaa435bc7922fea9f72ea147a8f42fa8b7594b2e8240c2feea44",
-      "duration_ms": 125623,
-      "bitrate_kbps": 24,
-      "sample_rate": 22050,
-      "channels": 1,
-      "decodedSourceDurationMs": 125550
     }
   ],
   "fullTracks": true,
-  "aacConverted": true,
+  "aacConverted": false,
   "sampleRate": 22050,
   "channels": 1,
   "bitrateKbps": 24,

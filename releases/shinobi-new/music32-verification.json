@@ -1,0 +1,23 @@
+{
+  "stage": 32,
+  "filename": "Shinobi_Story_Alpha_32.w3x",
+  "bytes": 10985776,
+  "sha256": "6e4f93542b4a1d12f52673f5e2a9154930b123525c408fc160d689e422b94a41",
+  "chapter": 9,
+  "orderedTracks": [
+    {
+      "name": "Takanashi_Yasuharu_-_A_Friend_s_Reminiscence_(Bib.fm).mp3",
+      "durationMs": 125597,
+      "sourceSha256": "9ea78a138e0175cf9d1c84fc279f3705f569930381e5a5faa4fb1cfebdf5d22a"
+    },
+    {
+      "name": "Поиск саске и финальные битвы.mp3",
+      "durationMs": 196075,
+      "sourceSha256": "0cf13065f50a702e7e15cd01789b51bd5369de052d8cc615b84fe1f7ecb9f435"
+    }
+  ],
+  "fullTracks": true,
+  "repeatOrder": "A/B/A",
+  "allOtherGameplayModelsVoicesAndMusicUnchanged": true,
+  "enginePlaytest": false
+}
