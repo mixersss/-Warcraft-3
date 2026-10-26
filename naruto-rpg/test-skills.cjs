@@ -138,6 +138,7 @@ function SquareRoot(x) return math.sqrt(x) end
 function GetSpellTargetX() return AimX or 100 end
 function GetSpellTargetY() return AimY or 0 end
 function UnitApplyTimedLife(u,buff,duration) u.expire=TimeNow+duration end
+bj_PI=math.pi
 bj_DEGTORAD=math.pi/180
 UNIT_STATE_LIFE='hp';UNIT_STATE_MAX_LIFE='maxLife'
 function GetHeroAgi(u,bonus)return u.agi or 20 end
@@ -168,6 +169,22 @@ function GroupEnumUnitsInRange(g,x,y,r,f) for _,u in ipairs(World)do if (u.x-x)^
 function CreateGroup()return {}end
 function GroupClear(g)for i=#g,1,-1 do g[i]=nil end end
 function GroupAddUnit(g,u)for _,v in ipairs(g)do if u==v then return end end;g[#g+1]=u end
+function CreateTrigger()return {actions={}}end
+function TriggerAddAction(t,f)t.actions[#t.actions+1]=f end
+function InitHashtable()return {}end
+function Rect(a,b,c,d)return {a,b,c,d}end
+function SaveReal(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
+function LoadReal(t,p,c)return t[p]and t[p][c]or 0 end
+function FlushChildHashtable(t,p)t[p]=nil end
+function GetHandleId(h)return h end
+function TriggerRegisterPlayerUnitEvent()end
+function GroupAddGroup(src,dst)for _,u in ipairs(src)do GroupAddUnit(dst,u)end end
+function SetRect(r,a,b,c,d)r[1]=a;r[2]=b;r[3]=c;r[4]=d end
+function GetOrderTargetUnit()return Target end
+function GetOrderPointX()return AimX or 0 end
+function GetOrderPointY()return AimY or 0 end
+function EnumDestructablesInRect()end
+Source40Init()
 Source35Init()
 function FirstOfGroup(g) return g[1] end
 function GroupRemoveUnit(g,u)for i,v in ipairs(g)do if v==u then table.remove(g,i);return end end end
@@ -212,8 +229,8 @@ cast(0,PlayableSkill[3],1,victim);assert(#Hits==1 and Hits[1].target==enemy and 
 Caster=make(0,0,0);Caster.abilities[PlayableSkill[3]]=1;SkillsEffect();assert(#Hits==1)
 Hero[0].illusion=true;Caster=Hero[0];SkillsEffect();assert(#Hits==1);Hero[0].illusion=false
 -- Sharingan uses exact learned rank, expires, cleans up after death, and never stacks handles.
-cast(1,PlayableSkill[6],2,nil);assert(SharinganUntil[1]==18)
-local ev=string.byte('R')*16777216+string.byte('s')*65536+string.byte('e')*256+string.byte('v')
+cast(1,PlayableSkill[6],2,nil);assert(SharinganUntil[1]==10.5)
+local ev=string.byte('R')*16777216+string.byte('s')*65536+string.byte('a')*256+string.byte('g')
 assert(GetUnitAbilityLevel(Hero[1],ev)==2)
 TimeNow=18;SkillsTick();assert(SharinganUntil[1]==0 and not SharinganArt[1] and GetUnitAbilityLevel(Hero[1],ev)==0)
 cast(1,PlayableSkill[6],1,nil);Hero[1].hp=0;SkillsTick();assert(not SharinganArt[1] and GetUnitAbilityLevel(Hero[1],ev)==0);Hero[1].hp=10000
@@ -313,6 +330,7 @@ run(fs.readFileSync(__dirname+'/skills33-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/death34-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/test35-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/techniques39-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/skills40-harness.lua','utf8'));
 console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

@@ -2,12 +2,14 @@
 local function raw(s)local n=0;for i=1,4 do n=n*256+string.byte(s,i)end;return n end
 TimeNow=2000000;CampaignStage=9;CampaignTransition=false;World={}
 for p=0,11 do Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);Hero[p].level=40;HeroRole[p]=p;HeroType[p]=Hero[p].type;Hero[p].hp=10000;Hero[p].maxLife=10000;Hero[p].mana=1000;Hero[p].maxMana=1000 end
--- Smoke stuns only nearby enemies through the same native microstun as Kaiten.
+-- Smoke is now the source point projectile plus delayed native microstun helper.
 Hero[7].x=0;Hero[7].y=0;RosterReset(7)
 local foe=CreateUnit(12,0,100,0,0);local ally=CreateUnit(8,0,100,0,0);local far=CreateUnit(12,0,500,0,0)
-World={foe,ally,far};local cursor=StunCursor;cast(7,PlayableSkill[36],1,nil)
-assert(StunCursor==(cursor+1)%128,'Exactly one nearby enemy stunned')
-local dummy=StunDummy[cursor];assert(GetUnitAbilityLevel(dummy,raw('Rmic'))==1 and dummy.last.target==foe)
+World={foe,ally,far};AimX=100;AimY=0;cast(7,PlayableSkill[36],1,nil)
+assert(Source40SmokeAt[7]==TimeNow+.9 and Source40SmokeX[7]==100)
+TimeNow=TimeNow+.91;Source40Cursor=7;Source40PlayerTick()
+local smoke=Source40Helpers[7][1];assert(smoke and smoke.type==raw('r40c')and smoke.last.o=='stomp'and GetUnitAbilityLevel(smoke,raw('R40c'))==1)
+Source40Clear(7)
 -- Arena: emergency only, once per bout, attack instead of repeat escape movement.
 local h=Hero[0];h.abilities[raw('Rlog')]=1;h.hp=3000;LogReadyAt[0]=0;LogUntil[0]=0;LogArenaUsed[0]=false;VisualChannelUntil[0]=0;ComboLeft[0]=0
 assert(not CommonLogBot(0,foe),'30% HP is not an arena emergency')

@@ -60,16 +60,12 @@ function IsTerrainPathable()return false end
 VisualApply(p,8,1,enemy);enemy.hp=0;TimeNow=TimeNow+.11;VisualApproachTick(p);assert(caster.x==0 and not VisualApproachCaster[p],'Death releases references without moving hero')
 enemy.hp=10000;VisualApply(p,8,1,enemy);VisualClearHero(p);assert(not VisualApproachTarget[p] and VisualApproachAt[p]==0,'Scene reset cancels pending approach')
 IsTerrainPathable=terrain;GetTerrainCliffLevel=cliff
--- Tenten and Kirikiri graphics follow the same full-length direction as damage.
+-- Source40 native/controlled actors now own these paths; no duplicate cosmetic line.
 for _,role in ipairs({5,11})do
  local hero=Hero[role];hero.x=0;hero.y=0;hero.hp=10000;hero.facing=0
- for _,aim in ipairs({100,750})do
-  AimX=aim;AimY=0;local slot=VisualCursor;VisualApply(role,role==5 and 29 or 59,1,nil)
-  -- First actor is the summoning circle; locate the actual travelling weapon.
-  local found=false
-  for n=0,255 do if VisualUnit[n] and VisualOwner[n]==role and (VisualUnit[n].type==raw('vbal') or VisualUnit[n].type==raw('vrac'))then assert(math.abs(VisualTX[n]-900)<.01 and VisualTY[n]==0);found=true end end
-  assert(found);VisualClearHero(role)
- end
+ AimX=750;AimY=0;VisualApply(role,role==5 and 29 or 59,1,nil)
+ for n=0,255 do if VisualUnit[n]and VisualOwner[n]==role then assert(VisualUnit[n].type~=raw('vbal')and VisualUnit[n].type~=raw('vrac'),'No old line adaptation over the original mechanics')end end
+ VisualClearHero(role)
 end
 -- The big wind is native; a repeated body animation must not cancel its orders.
 local hero=Hero[11];hero.hp=10000;VisualChannelIndex[11]=58;VisualChannelUntil[11]=TimeNow+8;VisualWindPoseAt[11]=TimeNow

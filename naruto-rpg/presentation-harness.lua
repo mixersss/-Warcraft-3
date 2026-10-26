@@ -14,7 +14,7 @@ for index=0,59 do
    SkillsTick()
   else
    assert(SkillPoseQueued[p] and SkillPoseIndex[p]==SkillAnimation[index])
-   SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends')
+   SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends '..index)
   end
   count=count+1
  end

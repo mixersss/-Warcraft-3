@@ -144,14 +144,11 @@ function SkillsEffect takes nothing returns nothing
         endloop
     elseif raw=='Rs02' then
         call SkillsClearSharingan(p)
-        call UnitAddAbility(caster,'Rsev')
-        call UnitAddAbility(caster,'Rscr')
         call UnitAddAbility(caster,'Rsag')
-        call SetUnitAbilityLevel(caster,'Rsev',rank)
-        call SetUnitAbilityLevel(caster,'Rscr',rank)
         call SetUnitAbilityLevel(caster,'Rsag',rank)
         set SharinganArt[p]=AddSpecialEffectTarget("Eye_Sharingan.mdl",caster,"overhead")
-        set SharinganUntil[p]=TimeNow+18.
+        call UnitMakeAbilityPermanent(caster,true,'Rsag')
+        set SharinganUntil[p]=TimeNow+6.5+2.*rank
     elseif raw=='Rs03' and FoundationAlive(target) then
         set ComboTarget[p]=target
         set ComboLeft[p]=3
@@ -173,6 +170,9 @@ function SkillsEndcast takes nothing returns nothing
         endif
         if VisualChannelUntil[p]>0. and index>=0 then
             if GetSpellAbilityId()==PlayableSkill[index] then
+                if index==29 then
+                    call Source40BallEnd(p)
+                endif
                 if index==38 then
                     call KibaRollEnd(p)
                 endif
@@ -252,6 +252,9 @@ function SkillsSummoned takes nothing returns nothing
     local unit summoner=GetSummoningUnit()
     local unit summoned=GetSummonedUnit()
     local integer p=GetPlayerId(GetOwningPlayer(summoner))
+    if p<12 and summoner==Hero[p] then
+        call Source40Adopt(p,summoned)
+    endif
     if p<12 and (summoner==Hero[p] or GetUnitAbilityLevel(summoner,'R35i')>0) and GetPlayerController(Player(p))==MAP_CONTROL_COMPUTER and FoundationAlive(Dummy[(p-ModuloInteger(p,3))/3]) then
         call IssueTargetOrder(summoned,"attack",Dummy[(p-ModuloInteger(p,3))/3])
     endif
@@ -375,6 +378,8 @@ function SkillsBot takes integer p returns boolean
             endif
             if SkillHeal[role*5+k] and target==null then
                 // Healing only spends mana when an ally actually needs it.
+            elseif raw=='RA05' and not Source40HasPuppet(p) then
+                // Bombardment requires a real living puppet.
             elseif SkillToggle[role*5+k] and (GetUnitAbilityLevel(u,'BNms')>0 or GetUnitAbilityLevel(u,'Rgas')>0) then
                 // Leave an active native mana shield enabled.
             elseif SkillMorph[role*5+k] and GetUnitTypeId(u)!=HeroType[p] then
@@ -495,6 +500,7 @@ function SkillsInit takes nothing returns nothing
     local timer visualclock=CreateTimer()
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
+    call Source40Init()
 // GENERATED_SKILLS
     set RosterBonus[0]='Rbev'
     set RosterBonus[1]='Rbcr'

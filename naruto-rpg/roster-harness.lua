@@ -51,10 +51,13 @@ Hero[0].hp=7000
 technique(2,12,3,Hero[0]);assert(Hero[0].hp==7620)
 Hero[2].hp=9900;technique(2,12,1,Hero[2]);assert(Hero[2].hp==10000)
 enemy.hp=5000;technique(2,12,3,enemy);assert(enemy.hp==5000)
--- Single-target hit burns chakra, does not damage allies or magic-immune units.
-resetHits();technique(8,42,2,enemy);assert(#Hits==1 and enemy.mana==300 and Hits[1].damage==320)
-technique(8,42,2,Hero[7]);assert(#Hits==1)
-enemy.immune=true;technique(8,42,2,enemy);assert(#Hits==1);enemy.immune=false
+-- Hinata now uses the original area chakra-drain helpers, not a single HP hit.
+World={enemy,Hero[7]};AimX=100;AimY=0;resetHits()
+technique(8,42,2,enemy);assert(#Hits==0 and #Source40Helpers[8]==2)
+for _,u in ipairs(Source40Helpers[8])do assert(u.type==raw('r40d')and u.expire==TimeNow+4)end
+Source40Clear(8)
+-- Unchanged poison hit still exercises the legacy single-target family.
+World={enemy};technique(10,51,1,enemy);assert(#Hits==1);resetHits()
 -- Four/eight/six sub-combos have exact totals and stop on lost targets.
 enemy.hp=10000;enemy.mana=500;resetHits()
 technique(4,22,1,enemy);for i=1,4 do SkillsTick()end
@@ -90,11 +93,12 @@ TimeNow=250;Hero[10].x=0
 technique(10,50,2,nil);local first=Companion[30];assert(first.type==raw('rc02') and first.expire==nil)
 technique(10,50,3,nil);assert(first.removed and Companion[30].type==raw('rc03'))
 technique(10,52,2,nil);technique(10,53,1,nil)
+Source40Adopt(10,CreateUnit(10,raw('rs01'),100,0,0))
 assert(Companion[31].type==raw('rk02') and Companion[32].type==raw('rs01'))
-World={enemy};enemy.x=100;enemy.hp=10000;resetHits();technique(10,54,1,nil);assert(#Hits==3 and enemy.hp==8950)
+World={enemy};enemy.x=100;enemy.hp=10000;resetHits();technique(10,54,1,nil);assert(#Hits==0 and #Source40Helpers[10]==18 and enemy.hp==10000,'Native bombs fly and detonate, no instant duplicate area hit')
 local old=Companion[31];old.hp=0;RosterTick();assert(old.removed and Companion[31]==nil)
 RosterReset(10);assert(not Companion[30] and not Companion[32])
-World={enemy};resetHits();technique(10,54,1,nil);assert(#Hits==1,'Puppet bombs fallback must still have one defined result')
+World={enemy};resetHits();technique(10,54,1,nil);assert(#Hits==0 and #Source40Helpers[10]==0,'No imaginary bombs without actual puppets')
 -- Shizune only heals living allied heroes within 600, not enemies or far allies.
 Hero[2].x=0;Hero[0].x=0;Hero[0].hp=5000;Hero[1].x=1500;Hero[1].hp=5000;Hero[3].x=0;Hero[3].hp=5000
 TimeNow=260;RosterNextSecond[2]=0;technique(2,14,1,nil);RosterTick()
@@ -114,6 +118,7 @@ for p=0,11 do
    for s=0,4 do BotReadyAt[p*5+s]=999999 end
    BotReadyAt[index]=0
    if SkillHeal[index] then Hero[0].hp=1000;Hero[0].x=0;Hero[0].y=0 end
+   if index==54 then Companion[30]=make(10,0,0)end
    local before=#Orders
    assert(SkillsBot(p),'AI refused active ability '..index)
    assert(#Orders==before+1 and Orders[#Orders].order==SkillOrder[index] and SkillOrder[index]~='')
@@ -149,4 +154,4 @@ TimeNow=1000;SkillsTick()
 assert(CreatedTimers==baselineTimers,'No per-cast timer allocation is allowed')
 assert(Effects==Destroyed,'A temporary visual was retained')
 technique(9,47,1,nil);assert(ZoneUntil[9]>TimeNow,'The fixed area mechanic remains exercised independently of native Soshoryu');RosterReset(9)
-for n=1,10 do assert(seen[n],'Missing mechanic test '..n)end
+for n=1,9 do assert(seen[n],'Missing mechanic test '..n)end

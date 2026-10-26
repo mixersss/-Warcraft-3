@@ -69,7 +69,7 @@ clear(5)
 -- Wind and the electrical cyclone are different source models.
 VisualApply(11,58,1,enemy);assert(countRaw('vtor')==0 and countRaw('vcyc')==0,'Native stampede owns wind visuals and damage; no duplicate cosmetic barrage');clear(11)
 VisualApply(11,57,1,enemy);assert(countRaw('vcyc')==1);clear(11)
-VisualApply(11,59,1,enemy);assert(countRaw('vrac')==1 and countRaw('vkuc')==1);clear(11)
+VisualApply(11,59,1,enemy);assert(countRaw('vrac')==0 and countRaw('vtor')==0 and countRaw('vkuc')==1,'Native ferret shockwave and helper winds own travel visuals');clear(11)
 -- Rasengan / Chidori use the real left/right attachment names and source art, not a Farseer bolt.
 VisualApply(0,3,1,enemy);assert(VisualHand[0].point=='hand right' and string.find(VisualHand[0].model,'ClarityTarget',1,true))
 VisualApply(1,8,1,enemy);assert(VisualHand[4].point=='hand left' and string.find(VisualHand[5].model,'BoltImpact',1,true))
@@ -96,8 +96,8 @@ assert(CreatedTimers==baselineTimers)
 print('PASS: all 52 visual cast paths, uninterrupted Kaiten pose/stop cleanup, travelling weapons, distinct wind/cyclone, real hand attachments, alternate form poses, finite looping poses and bounded 600-shot stress cleanup (mock natives).')
 
 TimeNow=6000;Hero[7].type=HeroType[7];Hero[7].hp=100000000
-cast(7,PlayableSkill[37],1,nil);assert(KibaFourLegs[7] and Hero[7].alternate)
+cast(7,PlayableSkill[37],1,nil);assert(Source40AgiUntil[7]==TimeNow+25 and GetUnitAbilityLevel(Hero[7],raw('R40a'))==1,'Native morph uses source agility rather than the old generic buff')
 VisualPose(7,38);assert(Hero[7].animationIndex==SkillAnimation[38],'Tsuga spin must override Four Legs idle pose')
-Hero[7].type=raw('Rkfm');VisualPose(7,38);assert(Hero[7].animation=='attack','Stock wolf must never receive an out-of-range Kiba model index')
-RosterClearBuff(7);assert(not KibaFourLegs[7] and not Hero[7].alternate)
+Hero[7].type=raw('Rkfm');VisualPose(7,38);assert(Hero[7].animationIndex==15,'Native source Kiba model retains its real alternate spell pose')
+Source40Clear(7);assert(GetUnitAbilityLevel(Hero[7],raw('R40a'))==0 and Source40AgiUntil[7]==0)
 Hero[7].type=HeroType[7]

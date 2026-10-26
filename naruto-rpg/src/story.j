@@ -831,7 +831,12 @@ function StoryTick takes nothing returns nothing
                             else
                                 set enemy=StoryNearest(t,Hero[p])
                             endif
-                            set cast=CommonLogBot(p,enemy)
+                            if TimeNow<VisualChannelUntil[p] then
+                                // Let native channels and the controlled weapon finish before new orders.
+                                set cast=true
+                            else
+                                set cast=CommonLogBot(p,enemy)
+                            endif
                             if not cast then
                                 set cast=StoryStatLootBot(p,enemy)
                             endif

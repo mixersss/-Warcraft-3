@@ -1,4 +1,35 @@
 globals
+    unit array Source40SmokeCaster
+    real array Source40SmokeAt
+    real array Source40SmokeX
+    real array Source40SmokeY
+    integer array Source40SmokeRank
+    real Source40Now=0.
+    group Source40Scratch=null
+    group Source40Cleanup=null
+    hashtable Source40Birth=null
+    rect Source40TreeRect=null
+    real Source40CutX=0.
+    real Source40CutY=0.
+    integer Source40Cursor=0
+    group array Source40Helpers
+    unit array Source40Ball
+    unit array Source40BallCaster
+    real array Source40BallPoseAt
+    real array Source40BallAt
+    real array Source40BallUntil
+    real array Source40BallBudget
+    real array Source40BallX
+    real array Source40BallY
+    real array Source40BallAngle
+    boolean array Source40BallSteered
+    unit array Source40AgiCaster
+    real array Source40AgiUntil
+    unit array Source40WindCaster
+    real array Source40WindAt
+    real array Source40WindX
+    real array Source40WindY
+    real array Source40WindAngle
     boolean CampaignFastTestQueued=false
     boolean CampaignFastTestActive=false
     integer CampaignFastWaveCursor=0

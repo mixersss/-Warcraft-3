@@ -706,6 +706,102 @@
       "column": 5,
       "specific": "ANst",
       "repeat": 4
+    },
+    "Nsi1": {
+      "type": "int",
+      "column": 1,
+      "repeat": 4,
+      "source": "Original 35 A01E field record; skills40-source.json"
+    },
+    "aord": {
+      "type": "string",
+      "column": 0,
+      "repeat": 0,
+      "source": "Original 35 A01E field record; skills40-source.json"
+    },
+    "Ndr1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4,
+      "source": "Original 35 A02C field record; skills40-source.json"
+    },
+    "Ndr2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4,
+      "source": "Original 35 A02C field record; skills40-source.json"
+    },
+    "Ndr3": {
+      "type": "unreal",
+      "column": 3,
+      "repeat": 4,
+      "source": "Original 35 A02C field record; skills40-source.json"
+    },
+    "Uin4": {
+      "type": "string",
+      "column": 0,
+      "repeat": 4,
+      "source": "Original 35 A013 field record; skills40-source.json"
+    },
+    "Uin1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4,
+      "source": "Original 35 A013 field record; skills40-source.json"
+    },
+    "Uin2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4,
+      "source": "Original 35 A013 field record; skills40-source.json"
+    },
+    "Dda2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4,
+      "source": "Original 42 A02P field record; skills40-source.json"
+    },
+    "Dda1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4,
+      "source": "Original 42 A02P field record; skills40-source.json"
+    },
+    "Dda4": {
+      "type": "unreal",
+      "column": 4,
+      "repeat": 4,
+      "source": "Original 42 A02P field record; skills40-source.json"
+    },
+    "Min1": {
+      "type": "unreal",
+      "column": 1,
+      "repeat": 4,
+      "source": "Original 42 A02Q field record; skills40-source.json"
+    },
+    "amac": {
+      "type": "unreal",
+      "column": 0,
+      "repeat": 0,
+      "source": "Original 42 A02Q field record; skills40-source.json"
+    },
+    "Min2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4,
+      "source": "Original 42 A02Q field record; skills40-source.json"
+    },
+    "Wrs3": {
+      "type": "int",
+      "column": 3,
+      "repeat": 4,
+      "source": "Original3.5 A024"
+    },
+    "Wrs2": {
+      "type": "unreal",
+      "column": 2,
+      "repeat": 4,
+      "source": "Original3.5 A024"
     }
   },
   "unitFields": {

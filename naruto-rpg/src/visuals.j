@@ -329,14 +329,12 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         endif
     elseif index==29 then
         call VisualField(p,'vkuc',sx,sy,1.5)
-        call SkillsFlashAt("Abilities\\Spells\\Orc\\FeralSpirit\\feralspirittarget.mdl",sx,sy)
-        call VisualLineFan(p,'vbal',x,y,200.,1,0.)
     elseif index==36 then
-        call VisualField(p,'vfog',sx,sy,8.)
+        // The original projectile creates smoke after0.9s, not on the caster.
     elseif index==38 then
         call SkillsFlashAt("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",sx,sy)
     elseif index==42 then
-        call SkillsFlashTarget("Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl",target)
+        // Original mana-drain helpers own this effect.
     elseif index==43 then
         call VisualAttach(p,0,"Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl","hand left",4.)
         call VisualAttach(p,1,"Abilities\\Weapons\\SpiritOfVengeanceMissile\\SpiritOfVengeanceMissile.mdl","hand right",4.)
@@ -357,19 +355,7 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==51 then
         call VisualFan(p,'vkun',x,y,100.,1,0.)
     elseif index==54 then
-        loop
-            exitwhen n>=3
-            if FoundationAlive(Companion[p*3+n]) then
-                set x=GetUnitX(Companion[p*3+n])
-                set y=GetUnitY(Companion[p*3+n])
-                call VisualCreate(p,'vbom',x,y,x,y,300.,0.,.65,1)
-                set count=count+1
-            endif
-            set n=n+1
-        endloop
-        if count==0 then
-            call VisualCreate(p,'vbom',sx,sy,sx,sy,300.,0.,.65,1)
-        endif
+        // Native moving bombs own their flight and detonation visuals.
     elseif index==57 then
         call VisualField(p,'vcyc',x,y,3.)
         call SkillsFlashAt("Abilities\\Spells\\Other\\Tornado\\TornadoElementalSmall.mdl",x,y)
@@ -381,14 +367,23 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
             call SkillsFlashAt("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",sx+Cos(angle)*125.,sy+Sin(angle)*125.)
             set n=n+1
         endloop
-        call VisualLineFan(p,'vrac',x,y,70.,1,0.)
-        call VisualLineFan(p,'vtor',x,y,50.,3,130.)
+        // Native shockwave ferret and source helper winds own the travelling art.
     endif
+endfunction
+function VisualSource40Smoke takes nothing returns nothing
+    local integer p=Source40Cursor
+    local real x=Source40SmokeX[p]
+    local real y=Source40SmokeY[p]
+    call SkillsFlashAt("Units\\NightElf\\Wisp\\WispExplode.mdl",x,y)
+    call VisualField(p,'vfog',x,y,3.)
+    call VisualField(p,'vfog',x+100.,y,5.)
+    call VisualField(p,'vfog',x-200.,y,7.)
 endfunction
 function VisualTick takes nothing returns nothing
     local integer n=0
     local integer p=0
     local real f=0.
+    call Source40Tick()
     call KibaRollTick()
     call KunaiTick()
     loop

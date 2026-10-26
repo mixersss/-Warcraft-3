@@ -236,6 +236,7 @@ function RosterGrantInnate takes integer p returns nothing
 endfunction
 function RosterResetEffects takes integer p returns nothing
     local integer k=0
+    call Source40Clear(p)
     call Source35Clear(p)
     call KibaRollEnd(p)
     call KunaiClear(p)
@@ -463,6 +464,9 @@ function RosterApply takes integer p, integer index, integer rank, unit target r
     local real y=GetUnitY(Hero[p])
     local real power=RosterPower[index*4+rank-1]
     local real burn=RosterBurn[index*4+rank-1]
+    if Source40Apply(p,index,rank) then
+        return
+    endif
     call Source35Apply(p,index,rank,target)
     if kind==0 then
         return

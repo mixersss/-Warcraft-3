@@ -1,0 +1,54 @@
+{
+  "stage": 40,
+  "filename": "Shinobi_Story_Alpha_40.w3x",
+  "sha256": "dcd3348a662c6a1eb2089a09d82da1f9791023b0de489255fc55aac3f8ec51a1",
+  "bytes": 11003327,
+  "sourceNativeSkillReplacement": true,
+  "controlledBallSeconds": 7.5,
+  "tentenChargeSeconds": 0.75,
+  "hinataHelpersPerEnemy": [
+    1,
+    2,
+    3
+  ],
+  "kibaMorphBonusHP": [
+    50,
+    100,
+    200
+  ],
+  "kibaAgility": [
+    20,
+    40,
+    80
+  ],
+  "kibaSmokeNativeDamage": [
+    50,
+    100,
+    150,
+    200
+  ],
+  "kibaSmokeMicrostunHeroes": 0.1,
+  "permanentSanshoNativeLandingDamage": [
+    200,
+    300,
+    400
+  ],
+  "nativeBombsPerPuppet": 6,
+  "sharinganAgility": [
+    50,
+    100,
+    200
+  ],
+  "sharinganDurations": [
+    8.5,
+    10.5,
+    12.5
+  ],
+  "temariNativeShockwaveDamage": 2000,
+  "temariDistance": 1800,
+  "temariStampedeAndAllOtherAbilitiesUnchanged": true,
+  "sourceSchedulingOnExistingVisualClock": true,
+  "noNewTimers": true,
+  "worldMusicVoicesArmyOwnershipWavesRecoveryExactAlpha39": true,
+  "enginePlaytest": false
+}
