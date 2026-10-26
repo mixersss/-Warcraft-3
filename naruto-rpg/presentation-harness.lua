@@ -8,8 +8,14 @@ for index=0,59 do
  if PlayableSkill[index]~=0 and not SkillPassive[index] then
   Caster=Hero[p];Target=enemy;Spell=PlayableSkill[index];Caster.abilities[Spell]=1
   assert(SkillAnimation[index]>=0,'Unresolved animation')
-  SkillsEffect();assert(SkillPoseQueued[p] and SkillPoseIndex[p]==SkillAnimation[index])
-  SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends')
+  SkillsEffect()
+  if index==8 then
+   assert(not SkillPoseQueued[p] and VisualApproachSkill[p]==8 and VisualApproachCaster[p]==Caster,'Chidori runs source rush/impact sequence instead of queued looping charge')
+   SkillsTick()
+  else
+   assert(SkillPoseQueued[p] and SkillPoseIndex[p]==SkillAnimation[index])
+   SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends')
+  end
   count=count+1
  end
 end

@@ -1,0 +1,419 @@
+{
+  "note": "Original sources are evidence, not runtime instructions. Native damage/cooldown/stun of current Chidori and Rasengan retained; this patch changes presentation only.",
+  "functions": [
+    {
+      "version": "3.5",
+      "name": "SGV",
+      "sha256": "889173cf5f74378b2dbc778cf8b83b6b74bfe9f8d1dbfa8850d5aa79f8059932",
+      "code": "function SGV takes nothing returns nothing\nset QV=GetTriggerUnit()\nset SV=GetSpellTargetUnit()\nset TV=DistanceBetweenPoints(GetUnitLoc(QV),GetUnitLoc(SV))\ncall TriggerSleepAction(.02)\ncall PauseUnit(QV,true)\ncall PauseUnit(SV,true)\ncall SetUnitPathing(QV,false)\ncall SetUnitFacingToFaceUnitTimed(QV,SV,0)\ncall AddSpecialEffectTargetUnitBJ(\"left hand\",QV,\"Abilities\\\\Spells\\\\Orc\\\\LightningShield\\\\LightningShieldTarget.mdl\")\nset UV=bj_lastCreatedEffect\ncall SetUnitAnimation(QV,\"spell Death\")\ncall EnableTrigger(BU)\ncall TriggerSleepAction((TV/ 600.))\ncall DisableTrigger(BU)\ncall SetUnitAnimation(QV,\"Stand\")\ncall DestroyEffect(UV)\nset PE=GetUnitLoc(SV)\ncall AddSpecialEffectLocBJ(PE,\"Abilities\\\\Spells\\\\Human\\\\Thunderclap\\\\ThunderClapCaster.mdl\")\nset IX=bj_lastCreatedEffect\ncall AddSpecialEffectLocBJ(PE,\"Abilities\\\\Weapons\\\\Bolt\\\\BoltImpact.mdl\")\nset AX=bj_lastCreatedEffect\ncall AddSpecialEffectLocBJ(PE,\"Abilities\\\\Spells\\\\Human\\\\ManaFlare\\\\ManaFlareBoltImpact.mdl\")\nset NX=bj_lastCreatedEffect\ncall CreateNUnitsAtLoc(1,'h019',Player($F),PE,bj_UNIT_FACING)\nif(SEV())then\ncall UnitDamageTargetBJ(QV,SV,900.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(SXV())then\ncall UnitDamageTargetBJ(QV,SV,1200.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(SOV())then\ncall UnitDamageTargetBJ(QV,SV,1500.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\ncall AddSpecialEffectLocBJ(GetUnitLoc(SV),\"Abilities\\\\Spells\\\\Other\\\\Stampede\\\\StampedeMissileDeath.mdl\")\nset VR[0]=bj_lastCreatedEffect\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(QV),GetUnitLoc(SV),GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(QV),GetUnitLoc(SV),GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(QV),GetUnitLoc(SV),GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall RemoveLocation(PE)\nif(SFV())then\ncall ForGroupBJ(A_V(300.,GetUnitLoc(SV)),function SDV)\nelse\nif(SBV())then\ncall ForGroupBJ(A_V(400.,GetUnitLoc(SV)),function SNV)\nelse\ncall ForGroupBJ(A_V(500.,GetUnitLoc(SV)),function SIV)\nendif\nendif\ncall SetUnitPathing(QV,true)\ncall PauseUnit(SV,false)\ncall PauseUnit(QV,false)\ncall TriggerSleepAction(2)\ncall DestroyEffect(VR[0])\ncall DestroyEffect(VR[1])\ncall DestroyEffect(VR[2])\ncall DestroyEffect(IX)\ncall DestroyEffect(AX)\ncall DestroyEffect(NX)\nset TE=A0V('h019')\ncall RemoveUnit(GroupPickRandomUnit(TE))\ncall DestroyGroup(TE)\nendfunction"
+    },
+    {
+      "version": "3.5",
+      "name": "MXV",
+      "sha256": "aff2aa4404912cdaaa0e7a0d1495b19c9b37a5c48d91c368b77a21bf4ff0c03e",
+      "code": "function MXV takes nothing returns nothing\ncall TriggerSleepAction(.01)\nif(MEV())then\ncall SetUnitAnimationByIndex(GetTriggerUnit(),$A)\nelse\nif(MVV())then\ncall SetUnitTimeScalePercent(GetTriggerUnit(),200.)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\ncall TriggerSleepAction(.5)\ncall SetUnitTimeScalePercent(GetTriggerUnit(),100.)\nelse\nif(L9V())then\ncall SetUnitAnimationByIndex(GetTriggerUnit(),$F)\nendif\nendif\nendif\nendfunction"
+    },
+    {
+      "version": "3.5",
+      "name": "ILE",
+      "sha256": "945987e3d0e8d9de31f23b32e9f953b4ce8855c6c8b7aab90f87e963fe928f0e",
+      "code": "function ILE takes nothing returns nothing\nif(IKE())then\ncall ModifyHeroStat(1,GetTriggerUnit(),0,20)\ncall TriggerSleepAction(25.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,20)\nelse\nif(IJE())then\ncall ModifyHeroStat(1,GetTriggerUnit(),0,40)\ncall TriggerSleepAction(50.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,40)\nelse\ncall ModifyHeroStat(1,GetTriggerUnit(),0,80)\ncall TriggerSleepAction(50.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,80)\nendif\nendif\nendfunction"
+    },
+    {
+      "version": "3.5",
+      "name": "UOV",
+      "sha256": "67b13a17068aa3c9e7d12bc87e82523bace0ef798e7af85a90e1bd340465b13e",
+      "code": "function UOV takes nothing returns nothing\nset NA=GetSpellAbilityUnit()\nset VI=GetUnitLoc(GetTriggerUnit())\nset UR=GetSpellTargetLoc()\nset TR[0]=AYV(200.,UR,Condition(function T_V))\nset TR[1]=AYV(275.,UR,Condition(function T2V))\nset TR[2]=AYV(350.,UR,Condition(function T5V))\nif(UEV())then\ncall ForGroupBJ(TR[0],function UVV)\nelse\nif(T9V())then\ncall ForGroupBJ(TR[1],function T8V)\nelse\nif(T7V())then\ncall ForGroupBJ(TR[2],function T6V)\nendif\nendif\nendif\ncall RemoveLocation(VI)\ncall RemoveLocation(UR)\ncall DestroyGroup(TR[0])\ncall DestroyGroup(TR[1])\ncall DestroyGroup(TR[2])\nset YR=A0V('h02M')\ncall TriggerSleepAction(5.)\ncall ForGroupBJ(YR,function UXV)\ncall DestroyGroup(YR)\nendfunction"
+    },
+    {
+      "version": "4.2i",
+      "name": "HLE",
+      "sha256": "3820af9cf7947b432e616bc195ce19cdf4235eb763bd4006aa2c008dc7f69b65",
+      "code": "function HLE takes nothing returns nothing\nset GV=GetTriggerUnit()\nset HV=GetSpellTargetUnit()\nset LG[0]=GetUnitLoc(GV)\nset LG[1]=GetUnitLoc(HV)\nset MG=DistanceBetweenPoints(LG[0],LG[1])\ncall PlaySoundOnUnitBJ(Q0,'d',GV)\nset WG[1]=bj_lastPlayedSound\ncall AddSpecialEffectTargetUnitBJ(\"left hand\",GV,\"Abilities\\\\Spells\\\\Orc\\\\Purge\\\\PurgeBuffTarget.mdl\")\nset CO[9]=bj_lastCreatedEffect\ncall TriggerSleepAction(.02)\ncall PauseUnit(GV,true)\ncall PauseUnit(HV,true)\ncall AddSpecialEffectTargetUnitBJ(\"left hand\",GV,\"Abilities\\\\Weapons\\\\Bolt\\\\BoltImpact.mdl\")\nset CO[1]=bj_lastCreatedEffect\ncall SetUnitFacingToFaceUnitTimed(GV,HV,0)\ncall AddSpecialEffectTargetUnitBJ(\"left hand\",GV,\"Abilities\\\\Spells\\\\Orc\\\\Purge\\\\PurgeBuffTarget.mdl\")\nset CO[0]=bj_lastCreatedEffect\ncall TriggerWaitForSound(WG[0],.05)\ncall PlaySoundOnUnitBJ(P0,'d',GV)\ncall SetUnitPathing(GV,false)\nif(GPE())then\ncall SetUnitAnimationByIndex(GV,5)\nelse\ncall SetUnitAnimation(GV,\"spell Death\")\nendif\ncall EnableTrigger(F5)\ncall TriggerSleepAction((MG/ 600.))\ncall DisableTrigger(F5)\ncall RemoveLocation(LG[0])\ncall RemoveLocation(LG[1])\ncall DestroyEffect(CO[0])\ncall DestroyEffect(CO[1])\ncall DestroyEffect(CO[9])\ncall StopSoundBJ(WG[1],true)\ncall PlaySoundOnUnitBJ(G0,'d',HV)\nif(GQE())then\ncall SetUnitAnimation(GV,\"Attack\")\nelse\ncall SetUnitAnimation(GV,\"spell Dissipate\")\nendif\nset AE=GetUnitLoc(HV)\ncall AddSpecialEffectLocBJ(AE,\"Abilities\\\\Spells\\\\Human\\\\Thunderclap\\\\ThunderClapCaster.mdl\")\nset CO[1]=bj_lastCreatedEffect\ncall AddSpecialEffectLocBJ(AE,\"Abilities\\\\Weapons\\\\Bolt\\\\BoltImpact.mdl\")\nset CO[2]=bj_lastCreatedEffect\ncall AddSpecialEffectLocBJ(AE,\"Abilities\\\\Spells\\\\Human\\\\ManaFlare\\\\ManaFlareBoltImpact.mdl\")\nset CO[3]=bj_lastCreatedEffect\ncall AddSpecialEffectLocBJ(AE,\"Abilities\\\\Spells\\\\Other\\\\Stampede\\\\StampedeMissileDeath.mdl\")\nset CO[4]=bj_lastCreatedEffect\ncall CreateNUnitsAtLoc(1,'h019',GetOwningPlayer(GV),AE,GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h019',GetOwningPlayer(GV),AE,GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(GV),AE,GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(GV),AE,GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h02I',GetOwningPlayer(GV),AE,GetRandomReal(0,360))\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\nif(G_E())then\nif(GWE())then\ncall UnitDamageTargetBJ(GV,HV,1000.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(GYE())then\ncall UnitDamageTargetBJ(GV,HV,1500.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(GZE())then\ncall UnitDamageTargetBJ(GV,HV,2000.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nelse\nif(GSE())then\ncall UnitDamageTargetBJ(GV,HV,1500.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(GTE())then\ncall UnitDamageTargetBJ(GV,HV,2000.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(GUE())then\ncall UnitDamageTargetBJ(GV,HV,2500.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nendif\nif(HKE())then\nset CE=PIV(400.,AE,Condition(\nfunction G4E))\ncall ForGroupBJ(CE,\nfunction HJE)\nelse\nif(HFE())then\nset CE=PIV(500.,AE,Condition(\nfunction HRE))\ncall ForGroupBJ(CE,\nfunction HDE)\nelse\nset CE=PIV(600.,AE,Condition(\nfunction G9E))\ncall ForGroupBJ(CE,\nfunction HNE)\nendif\nendif\ncall SetUnitAnimation(GV,\"Stand Ready\")\ncall SetUnitPathing(GV,true)\ncall PauseUnit(HV,false)\ncall PauseUnit(GV,false)\nendfunction"
+    },
+    {
+      "version": "4.2i",
+      "name": "HPE",
+      "sha256": "734d97a83da12ff7eb1492c64fc0edc1a4a546e7b6f837163b9bfba3fe5bfa7e",
+      "code": "function HPE takes nothing returns nothing\nset LG[2]=GetUnitLoc(GV)\nset LG[3]=GetUnitLoc(HV)\nset LG[4]=M3V(LG[2],20.,AngleBetweenPoints(LG[2],LG[3]))\ncall SetUnitPositionLoc(GV,LG[4])\ncall RemoveLocation(LG[2])\ncall RemoveLocation(LG[3])\ncall RemoveLocation(LG[4])\nendfunction"
+    },
+    {
+      "version": "4.2i",
+      "name": "OWX",
+      "sha256": "743be5fb867fd14de06a997e4832407ee7e0bae3e847791c3887deda6035b122",
+      "code": "function OWX takes nothing returns nothing\ncall DestroyEffect(DO[0])\ncall DestroyEffect(DO[1])\ncall DestroyEffect(DO[2])\ncall DestroyEffect(DO[3])\ncall DestroyEffect(DO[4])\ncall DestroyEffect(DO[5])\nset YV=GetSpellTargetUnit()\nset ZV=GetSpellAbilityUnit()\nset ZG=GetUnitFacing(ZV)\nif(OTX())then\ncall SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(YV),YV,0,-200.,false)\nendif\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\NightElf\\\\Blink\\\\BlinkCaster.mdl\")\nset DO[0]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\NightElf\\\\Blink\\\\BlinkTarget.mdl\")\nset DO[1]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\Other\\\\Charm\\\\CharmTarget.mdl\")\nset DO[2]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[3]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[4]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"chest\",YV,\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[5]=bj_lastCreatedEffect\ncall TriggerSleepAction(.01)\ncall EnableTrigger(VEV)\ncall UnitShareVisionBJ(true,YV,GetOwningPlayer(ZV))\ncall TriggerSleepAction(3.)\ncall DisableTrigger(VEV)\ncall TriggerSleepAction(.01)\ncall UnitShareVisionBJ(false,YV,GetOwningPlayer(ZV))\ncall ForGroupBJ(DG,\nfunction OUX)\nset ZF=GetUnitLoc(YV)\ncall CreateNUnitsAtLoc(1,'h02J',GetOwningPlayer(ZV),ZF,bj_UNIT_FACING)\ncall UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)\ncall ResetToGameCameraForPlayer(GetOwningPlayer(YV),0)\ncall SetCameraFieldForPlayer(GetOwningPlayer(YV),CAMERA_FIELD_ZOFFSET,1000.,0)\ncall DestroyEffect(DO[0])\ncall DestroyEffect(DO[1])\ncall DestroyEffect(DO[2])\ncall DestroyEffect(DO[3])\ncall DestroyEffect(DO[4])\ncall DestroyEffect(DO[5])\ncall RemoveLocation(ZF)\nendfunction"
+    },
+    {
+      "version": "4.2i",
+      "name": "RHX",
+      "sha256": "59993de7af3057bd60d59a29a64ada13aa998fce0443ab26ab8d4d5086ea2ee4",
+      "code": "function RHX takes nothing returns nothing\ncall DestroyEffect(DO[6])\ncall DestroyEffect(DO[7])\ncall DestroyEffect(DO[8])\ncall TriggerSleepAction(.01)\ncall AddSpecialEffectTargetUnitBJ(\"hand\",GetTriggerUnit(),\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[6]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"hand\",GetTriggerUnit(),\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[7]=bj_lastCreatedEffect\ncall AddSpecialEffectTargetUnitBJ(\"hand\",GetTriggerUnit(),\"Abilities\\\\Spells\\\\Items\\\\ClarityPotion\\\\ClarityTarget.mdl\")\nset DO[8]=bj_lastCreatedEffect\ncall PlaySoundOnUnitBJ(FZ,'d',GetTriggerUnit())\ncall PlaySoundOnUnitBJ(FZ,'d',GetTriggerUnit())\ncall PlaySoundOnUnitBJ(FZ,'d',GetTriggerUnit())\nif(RFX())then\ncall SetUnitAnimationByIndex(GetTriggerUnit(),$A)\nelse\nif(RDX())then\ncall SetUnitTimeScalePercent(GetTriggerUnit(),200.)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\nelse\nif(RCX())then\ncall SetUnitAnimationByIndex(GetTriggerUnit(),$F)\nendif\nendif\nendif\ncall TriggerSleepAction(.5)\nif(RGX())then\ncall SetUnitTimeScalePercent(GetTriggerUnit(),100.)\nendif\ncall DestroyEffect(DO[6])\ncall DestroyEffect(DO[7])\ncall DestroyEffect(DO[8])\nendfunction"
+    },
+    {
+      "version": "4.2i",
+      "name": "RAX",
+      "sha256": "ca9cbaab948c5217dcd5e496dc3fbb7e22c771ef171e20290e450d5edaf5bf43",
+      "code": "function RAX takes nothing returns nothing\nset VG=GetUnitLoc(YV)\nset ME=PIV(350.,VG,Condition(\nfunction O2X))\nset LE=PIV(200.,VG,Condition(\nfunction O3X))\ncall ForGroupBJ(ME,\nfunction O7X)\ncall ForGroupBJ(LE,\nfunction O8X)\ncall SetUnitPositionLoc(YV,M3V(VG,22.,ZG))\ncall AddSpecialEffectLocBJ(VG,\"Abilities\\\\Weapons\\\\AncientProtectorMissile\\\\AncientProtectorMissile.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall AddSpecialEffectLocBJ(VG,\"Abilities\\\\Weapons\\\\SteamMissile\\\\SteamMissile.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\nif(RIX())then\nif(RXX())then\ncall UnitDamageTargetBJ(ZV,YV,4.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(ROX())then\ncall UnitDamageTargetBJ(ZV,YV,6.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(RRX())then\ncall UnitDamageTargetBJ(ZV,YV,8.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nelse\nif(O9X())then\ncall UnitDamageTargetBJ(ZV,YV,6.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(RVX())then\ncall UnitDamageTargetBJ(ZV,YV,9.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nif(REX())then\ncall UnitDamageTargetBJ(ZV,YV,12.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nendif\nendif\ncall DestroyGroup(ME)\ncall DestroyGroup(LE)\ncall RemoveLocation(VG)\nendfunction"
+    }
+  ],
+  "modelSequences": [
+    {
+      "path": "Naruto.mdx",
+      "attachments": [
+        "hand right",
+        "head",
+        "hand left",
+        "chest",
+        "foot right",
+        "foot left",
+        "origin",
+        "overhead"
+      ],
+      "sequences": [
+        {
+          "name": "Stand Ready",
+          "from": 333,
+          "to": 1333,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Stand",
+          "from": 1667,
+          "to": 2667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Attack",
+          "from": 3000,
+          "to": 4000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Attack - 2",
+          "from": 4333,
+          "to": 5333,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Walk",
+          "from": 5433,
+          "to": 6867,
+          "seconds": 1.434,
+          "nonLooping": 0
+        },
+        {
+          "name": "Spell",
+          "from": 7000,
+          "to": 8000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Spell Two",
+          "from": 8333,
+          "to": 9333,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Death",
+          "from": 9667,
+          "to": 10667,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Dissipate",
+          "from": 11000,
+          "to": 12000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Attack 3",
+          "from": 12333,
+          "to": 13333,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Stand 2",
+          "from": 13667,
+          "to": 16667,
+          "seconds": 3,
+          "nonLooping": 0
+        },
+        {
+          "name": "Morph",
+          "from": 17000,
+          "to": 18333,
+          "seconds": 1.333,
+          "nonLooping": 1
+        },
+        {
+          "name": "Stand Alternate",
+          "from": 18667,
+          "to": 21000,
+          "seconds": 2.333,
+          "nonLooping": 0
+        },
+        {
+          "name": "Attack Alternate",
+          "from": 21333,
+          "to": 22167,
+          "seconds": 0.834,
+          "nonLooping": 1
+        },
+        {
+          "name": "Walk Alternate",
+          "from": 22333,
+          "to": 24333,
+          "seconds": 2,
+          "nonLooping": 0
+        },
+        {
+          "name": "Spell slam Alternate",
+          "from": 24667,
+          "to": 25333,
+          "seconds": 0.666,
+          "nonLooping": 1
+        },
+        {
+          "name": "Morph Alternate",
+          "from": 25667,
+          "to": 26333,
+          "seconds": 0.666,
+          "nonLooping": 1
+        },
+        {
+          "name": "death alternate",
+          "from": 26767,
+          "to": 27767,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "disspate alternate",
+          "from": 28100,
+          "to": 29100,
+          "seconds": 1,
+          "nonLooping": 1
+        }
+      ],
+      "geosetCount": 3,
+      "particleEmitterCount": 0,
+      "ribbonEmitterCount": 0,
+      "geosetAnimationCount": 1
+    },
+    {
+      "path": "SasukeCursed.mdx",
+      "attachments": [
+        "origin",
+        "overhead",
+        "foot right",
+        "foot left",
+        "hand right",
+        "head",
+        "hand left",
+        "chest"
+      ],
+      "sequences": [
+        {
+          "name": "Stand Ready",
+          "from": 333,
+          "to": 1333,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Stand",
+          "from": 1667,
+          "to": 2667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Attack",
+          "from": 3000,
+          "to": 4000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Attack - 2",
+          "from": 4333,
+          "to": 5000,
+          "seconds": 0.667,
+          "nonLooping": 1
+        },
+        {
+          "name": "Walk",
+          "from": 5667,
+          "to": 6667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Spell",
+          "from": 7000,
+          "to": 8000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "spell channel",
+          "from": 8333,
+          "to": 9333,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Death",
+          "from": 9667,
+          "to": 10667,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Dissipate",
+          "from": 11000,
+          "to": 13000,
+          "seconds": 2,
+          "nonLooping": 1
+        },
+        {
+          "name": "Spell slam",
+          "from": 13333,
+          "to": 14333,
+          "seconds": 1,
+          "nonLooping": 1
+        }
+      ],
+      "geosetCount": 2,
+      "particleEmitterCount": 0,
+      "ribbonEmitterCount": 0,
+      "geosetAnimationCount": 0
+    },
+    {
+      "path": "sasuke.mdx",
+      "attachments": [
+        "origin",
+        "overhead",
+        "foot right",
+        "foot left",
+        "hand right",
+        "head",
+        "hand left",
+        "chest"
+      ],
+      "sequences": [
+        {
+          "name": "Stand Ready",
+          "from": 333,
+          "to": 1333,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Stand",
+          "from": 1667,
+          "to": 2667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Attack",
+          "from": 3000,
+          "to": 4000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Attack - 2",
+          "from": 4333,
+          "to": 5333,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Walk",
+          "from": 5667,
+          "to": 6667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Spell Stand",
+          "from": 7000,
+          "to": 8000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Spell Attack",
+          "from": 8333,
+          "to": 9333,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "Death",
+          "from": 9667,
+          "to": 10667,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Dissipate",
+          "from": 11000,
+          "to": 13000,
+          "seconds": 2,
+          "nonLooping": 1
+        },
+        {
+          "name": "Spell Walk",
+          "from": 13333,
+          "to": 14333,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "spell Death",
+          "from": 14667,
+          "to": 15667,
+          "seconds": 1,
+          "nonLooping": 0
+        },
+        {
+          "name": "spell Dissipate",
+          "from": 16000,
+          "to": 17000,
+          "seconds": 1,
+          "nonLooping": 1
+        },
+        {
+          "name": "Attack 3",
+          "from": 17333,
+          "to": 19000,
+          "seconds": 1.667,
+          "nonLooping": 1
+        },
+        {
+          "name": "Stand 2",
+          "from": 19500,
+          "to": 25000,
+          "seconds": 5.5,
+          "nonLooping": 0
+        }
+      ],
+      "geosetCount": 2,
+      "particleEmitterCount": 0,
+      "ribbonEmitterCount": 0,
+      "geosetAnimationCount": 1
+    }
+  ]
+}

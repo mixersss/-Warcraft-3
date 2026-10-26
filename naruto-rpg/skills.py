@@ -78,6 +78,8 @@ def summon_units():
  out.append(('hfoo','rdst',[('unam',3,'Технический кастер'),('umdl',3,''),('usin',0,0),('usid',0,0),('ucpt',2,0.),('ucbs',2,0.),('uabi',3,'Aloc,Avul,Rstn'),('uaen',0,0),('umvs',0,0),('ucol',2,0.),('usca',1,.01),('umpr',2,0.),('umpm',0,0),('ufoo',0,0)]))
  for entry in VISUALS['visualUnits']:
   out.append(('hfoo',entry['id'],[('unam',3,'Графика техники'),('umdl',3,entry['model']),('uabi',3,'Aloc,Avul'),('uaen',0,0),('umvs',0,0),('umvt',3,'fly'),('umvh',2,0.),('umvf',2,0.),('ucol',2,0.),('usca',1,entry['scale']),('ushu',3,''),('ushb',3,''),('ussc',1,0.),('usin',0,0),('usid',0,0),('utar',3,''),('utyp',3,''),('ufoo',0,0),('ureq',3,''),('upgr',3,'')]))
+ for base,raw,mods in out:
+  if raw=='vras':mods.extend([('uclr',0,1),('uclg',0,55),('uclb',0,55)])
  return out
 
 

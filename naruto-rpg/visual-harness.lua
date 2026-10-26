@@ -34,7 +34,9 @@ for index=0,59 do
   AimX=400;AimY=100;Dummy[math.floor(p/3)]=enemy;World={enemy}
   cast(p,PlayableSkill[index],1,SkillHeal[index] and Hero[p] or enemy)
   SkillsTick()
-  if index==7 then
+  if index==8 then
+   step(.15);assert(Caster.animationIndex==10 or Caster.animationIndex==11,'Chidori uses original rush/strike sequences instead of looping charge')
+  elseif index==7 then
    assert((Caster.animationIndex==2 or Caster.animationIndex==3) and Caster.timeScale==4,'Sasuke combo plays accelerated actual attack sequences')
   else
    assert(Caster.animationIndex==SkillAnimation[index],'Missing pose '..index)

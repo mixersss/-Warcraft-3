@@ -1,0 +1,15 @@
+{
+  "stage": 39,
+  "filename": "Shinobi_Story_Alpha_39.w3x",
+  "sha256": "3f59b05d642877d659869d568273c1c5d685802e250737af464c43b8a6ad68c4",
+  "bytes": 10995637,
+  "sourceChidoriRushAndStrike": true,
+  "sourceRasenganLayersAndPose": true,
+  "permanentMaxFormsAtLevel": 60,
+  "oneSkillPointPerMaxForm": true,
+  "nativeDamageCooldownAndStunUnchanged": true,
+  "noNewTimers": true,
+  "armyOwnershipFourNinjaWavesAndSasukeRecoveryExactAlpha38": true,
+  "allMusicWorldAndOtherObjectsUnchanged": true,
+  "enginePlaytest": false
+}

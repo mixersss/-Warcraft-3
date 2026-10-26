@@ -47,6 +47,21 @@ function VisualClearHero takes integer p returns nothing
     set VisualApproachCaster[p]=null
     set VisualApproachTarget[p]=null
     set VisualApproachAt[p]=0.
+    set VisualApproachSkill[p]=0
+    set VisualChidoriUntil[p]=0.
+    set VisualRasenganCaster[p]=null
+    set VisualRasenganTarget[p]=null
+    set VisualRasenganUntil[p]=0.
+    set VisualRasenganPoseUntil[p]=0.
+    loop
+        exitwhen n>=6
+        if VisualRasenganArt[p*6+n]!=null then
+            call DestroyEffect(VisualRasenganArt[p*6+n])
+            set VisualRasenganArt[p*6+n]=null
+        endif
+        set n=n+1
+    endloop
+    set n=0
     call VisualLiftEnd(p)
     loop
         exitwhen n>=256
@@ -146,6 +161,7 @@ function VisualLineFan takes integer p, integer raw, real x, real y, real height
     endif
     call VisualFan(p,raw,sx+dx/length*900.,sy+dy/length*900.,height,count,width)
 endfunction
+// CHIDORI39_RUNTIME
 // Defer approach until native spells have committed mana and cooldown, like Lee's kick.
 function VisualApproachTick takes integer p returns nothing
     local unit u=VisualApproachCaster[p]
@@ -157,6 +173,12 @@ function VisualApproachTick takes integer p returns nothing
     local real x=0.
     local real y=0.
     local boolean blocked=false
+    if VisualApproachSkill[p]==8 then
+        call VisualChidoriTick(p)
+        set u=null
+        set target=null
+        return
+    endif
     if VisualApproachAt[p]>0. and TimeNow>=VisualApproachAt[p] then
         set VisualApproachAt[p]=0.
         set VisualApproachCaster[p]=null
@@ -232,7 +254,11 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
         set x=sx
         set y=sy
     endif
+    if VisualApproachSkill[p]==8 then
+        call VisualChidoriEnd(p)
+    endif
     if (index==3 or index==7 or index==8) and target!=null then
+        set VisualApproachSkill[p]=index
         set VisualApproachCaster[p]=Hero[p]
         set VisualApproachTarget[p]=target
         set VisualApproachAt[p]=TimeNow+.1
@@ -245,8 +271,7 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
             call VisualCreate(p,'vscr',sx,sy,sx+100.,sy,100.,30.,.6,1)
         endif
     elseif index==3 then
-        call VisualAttach(p,0,"Abilities\\Spells\\Items\\ClarityPotion\\ClarityTarget.mdl","hand right",1.5)
-        call SkillsFlashTarget("Abilities\\Spells\\Other\\Charm\\CharmTarget.mdl",target)
+        call VisualRasenganStart(p,target)
     elseif index==4 then
         call SkillsFlashAt("Abilities\\Spells\\Human\\MarkOfChaos\\MarkOfChaosTarget.mdl",sx,sy)
     elseif index==5 then
@@ -254,11 +279,12 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==7 then
         call SkillsFlashTarget("Abilities\\Spells\\Human\\FlakCannons\\FlakTarget.mdl",target)
     elseif index==8 then
-        call VisualAttach(p,0,"Abilities\\Spells\\Orc\\Purge\\PurgeBuffTarget.mdl","hand left",1.5)
-        call VisualAttach(p,1,"Abilities\\Weapons\\Bolt\\BoltImpact.mdl","hand left",1.5)
-        call SkillsFlashTarget("Abilities\\Weapons\\Bolt\\BoltImpact.mdl",target)
-        call VisualField(p,'vchi',x,y,.8)
-        call SkillsFlashAt("Abilities\\Weapons\\ChimaeraLightningMissile\\ChimaeraLightningMissile.mdl",x,y)
+        set SkillPoseQueued[p]=false
+        set VisualPoseLife[p]=0.
+        set VisualChidoriUntil[p]=TimeNow+2.
+        set BotNextCast[p]=RMaxBJ(BotNextCast[p],TimeNow+1.25)
+        call VisualAttach(p,0,"Abilities\\Spells\\Orc\\LightningShield\\LightningShieldTarget.mdl","hand left",2.)
+        call VisualAttach(p,1,"Abilities\\Weapons\\Bolt\\BoltImpact.mdl","hand left",2.)
     elseif index==9 then
         call SkillsFlashAt("Abilities\\Spells\\Undead\\CarrionSwarm\\CarrionSwarmDamage.mdl",sx,sy)
     elseif index==11 then
@@ -368,6 +394,7 @@ function VisualTick takes nothing returns nothing
     loop
         exitwhen p>=12
         call VisualApproachTick(p)
+        call VisualRasenganTick(p)
         set p=p+1
     endloop
     loop

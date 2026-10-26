@@ -47,10 +47,15 @@ local terrain=IsTerrainPathable;local cliff=GetTerrainCliffLevel
 function IsTerrainPathable()return false end
 function GetTerrainCliffLevel()return 0 end
 VisualApply(p,8,1,enemy);assert(caster.x==0,'No SetUnitPosition inside SPELL_EFFECT')
-TimeNow=TimeNow+.11;VisualApproachTick(p);assert(caster.x==320 and not VisualApproachTarget[p])
+TimeNow=TimeNow+.11;VisualApproachTick(p);assert(caster.x==30 and VisualApproachTarget[p]==enemy,'Source-speed rush starts after native cooldown commitment')
+for k=1,12 do TimeNow=TimeNow+.05;VisualApproachTick(p)end
+assert(caster.x>=290 and caster.x<=320 and not VisualApproachTarget[p] and caster.animationIndex==11,'Source rush finishes with a separate strike')
 caster.x=0;VisualApply(p,8,1,enemy)
 function IsTerrainPathable(x,y)return x>=120 and x<=250 end
-TimeNow=TimeNow+.11;VisualApproachTick(p);assert(caster.x==0,'No blink through a blocked route')
+TimeNow=TimeNow+.11
+for k=1,10 do VisualApproachTick(p);TimeNow=TimeNow+.05 end
+assert(caster.x<120 and not VisualApproachTarget[p],'Rush stops before a blocked route')
+caster.x=0
 function IsTerrainPathable()return false end
 VisualApply(p,8,1,enemy);enemy.hp=0;TimeNow=TimeNow+.11;VisualApproachTick(p);assert(caster.x==0 and not VisualApproachCaster[p],'Death releases references without moving hero')
 enemy.hp=10000;VisualApply(p,8,1,enemy);VisualClearHero(p);assert(not VisualApproachTarget[p] and VisualApproachAt[p]==0,'Scene reset cancels pending approach')

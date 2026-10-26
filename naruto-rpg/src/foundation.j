@@ -8,6 +8,13 @@ globals
     unit array VisualApproachCaster
     unit array VisualApproachTarget
     real array VisualApproachAt
+    integer array VisualApproachSkill
+    real array VisualChidoriUntil
+    unit array VisualRasenganCaster
+    unit array VisualRasenganTarget
+    real array VisualRasenganUntil
+    real array VisualRasenganPoseUntil
+    effect array VisualRasenganArt
     trigger ExamKabutoDeathHook=null
     boolean ExamKabutoLootDropped=false
     unit ExamKabuto=null

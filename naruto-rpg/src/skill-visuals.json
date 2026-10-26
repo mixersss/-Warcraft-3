@@ -113,6 +113,18 @@
       "model": "Abilities\\Weapons\\Bolt\\BoltImpact.mdl",
       "scale": 5.0,
       "animation": "stand"
+    },
+    {
+      "id": "vcmf",
+      "model": "Abilities\\Spells\\Human\\ManaFlare\\ManaFlareBoltImpact.mdl",
+      "scale": 5.0,
+      "animation": "stand"
+    },
+    {
+      "id": "vras",
+      "model": "Objects\\Spawnmodels\\Naga\\NagaDeath\\NagaDeath.mdl",
+      "scale": 8.0,
+      "animation": "stand"
     }
   ],
   "skills": [

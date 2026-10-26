@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Story_Alpha_37.w3x",
-  "bytes": 10994111,
-  "sha256": "822303a9d73f709090159a4bb628d897bd4f472a6d4a4c5b8395f60dd1f0dc02",
+  "filename": "Shinobi_Story_Alpha_39.w3x",
+  "bytes": 10995637,
+  "sha256": "3f59b05d642877d659869d568273c1c5d685802e250737af464c43b8a6ad68c4",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata",
   "importedAssets": 392,
@@ -32,13 +32,13 @@
   "auditedActiveSkillAnimations": 54,
   "sourceVisualSlotsAudited": 58,
   "modelsWithSequenceAndAttachmentAudit": 67,
-  "visualActorTypes": 19,
+  "visualActorTypes": 21,
   "boundedVisualActorCapacity": 256,
   "realChannelCastPoses": true,
   "nativeImpactSounds": true,
   "musicMode": "user full MP3 tracks, chapter-local alternating loops",
   "experienceProfile": "source native factors and quiz/Jiraiya rewards; independent battle encounters",
-  "stage": "37 autonomous allied campaign NPC ownership",
+  "stage": "39 source Chidori presentation and permanent maximum level60 forms",
   "commonKawarimiForAllHeroes": true,
   "stageTimerHUD": true,
   "questionBankSize": 16,
@@ -52,6 +52,11 @@
   "jiraiyaBarrels": 20,
   "jiraiyaSearchSeconds": 150,
   "invasionStreams": 8,
+  "invasionUnitsPerWave": 4,
+  "autonomousVillageNPCOwners": [
+    13,
+    15
+  ],
   "invasionWavePeriods": [
     45,
     45,
