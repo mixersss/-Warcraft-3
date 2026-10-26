@@ -14871,5 +14871,110 @@
         ]
       }
     }
-  }
+  },
+  "sourceFunctions": [
+    {
+      "version": "35",
+      "name": "UOV",
+      "sha256": "67b13a17068aa3c9e7d12bc87e82523bace0ef798e7af85a90e1bd340465b13e",
+      "code": "function UOV takes nothing returns nothing\nset NA=GetSpellAbilityUnit()\nset VI=GetUnitLoc(GetTriggerUnit())\nset UR=GetSpellTargetLoc()\nset TR[0]=AYV(200.,UR,Condition(function T_V))\nset TR[1]=AYV(275.,UR,Condition(function T2V))\nset TR[2]=AYV(350.,UR,Condition(function T5V))\nif(UEV())then\ncall ForGroupBJ(TR[0],function UVV)\nelse\nif(T9V())then\ncall ForGroupBJ(TR[1],function T8V)\nelse\nif(T7V())then\ncall ForGroupBJ(TR[2],function T6V)\nendif\nendif\nendif\ncall RemoveLocation(VI)\ncall RemoveLocation(UR)\ncall DestroyGroup(TR[0])\ncall DestroyGroup(TR[1])\ncall DestroyGroup(TR[2])\nset YR=A0V('h02M')\ncall TriggerSleepAction(5.)\ncall ForGroupBJ(YR,function UXV)\ncall DestroyGroup(YR)\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "ILE",
+      "sha256": "945987e3d0e8d9de31f23b32e9f953b4ce8855c6c8b7aab90f87e963fe928f0e",
+      "code": "function ILE takes nothing returns nothing\nif(IKE())then\ncall ModifyHeroStat(1,GetTriggerUnit(),0,20)\ncall TriggerSleepAction(25.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,20)\nelse\nif(IJE())then\ncall ModifyHeroStat(1,GetTriggerUnit(),0,40)\ncall TriggerSleepAction(50.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,40)\nelse\ncall ModifyHeroStat(1,GetTriggerUnit(),0,80)\ncall TriggerSleepAction(50.)\ncall ModifyHeroStat(1,GetTriggerUnit(),1,80)\nendif\nendif\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "IFE",
+      "sha256": "685ae84a07b07ca35cfbf07c6d43364561811274570e0a4bc464a79d7c9214c7",
+      "code": "function IFE takes nothing returns nothing\nset CR=GetTriggerUnit()\nif(IDE())then\ncall ModifyHeroStat(1,CR,0,400)\ncall TriggerSleepAction(15.5)\ncall ModifyHeroStat(1,CR,1,400)\nelse\nif(ICE())then\ncall ModifyHeroStat(1,CR,0,'d')\ncall TriggerSleepAction(10.5)\ncall ModifyHeroStat(1,CR,1,'d')\nelse\nif(IBE())then\ncall ModifyHeroStat(1,CR,0,$C8)\ncall TriggerSleepAction(12.5)\ncall ModifyHeroStat(1,CR,1,$C8)\nelse\ncall ModifyHeroStat(1,CR,0,50)\ncall TriggerSleepAction(8.5)\ncall ModifyHeroStat(1,CR,1,50)\nendif\nendif\nendif\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "NKE",
+      "sha256": "ecaa7b5d8a463aef1fef7ea06c4f0c35ed6faa813287f7f4fee14bbd1cb8dab3",
+      "code": "function NKE takes nothing returns nothing\ncall TriggerSleepAction(.9)\nset PE=GetSpellTargetLoc()\nset SE=GetUnitLoc(GetTriggerUnit())\nif(NJE())then\ncall CreateNUnitsAtLocFacingLocBJ(1,'h025',GetTriggerPlayer(),PE,SE)\ncall SetUnitAbilityLevelSwapped('A024',bj_lastCreatedUnit,2)\ncall IssueImmediateOrderById(bj_lastCreatedUnit,$D009F)\ncall UnitApplyTimedLifeBJ(10.,'BTLF',bj_lastCreatedUnit)\nelse\nif(NHE())then\ncall CreateNUnitsAtLocFacingLocBJ(1,'h025',GetTriggerPlayer(),PE,SE)\ncall SetUnitAbilityLevelSwapped('A024',bj_lastCreatedUnit,3)\ncall IssueImmediateOrderById(bj_lastCreatedUnit,$D009F)\ncall UnitApplyTimedLifeBJ(10.,'BTLF',bj_lastCreatedUnit)\nelse\nif(NGE())then\ncall CreateNUnitsAtLocFacingLocBJ(1,'h025',GetTriggerPlayer(),PE,SE)\ncall SetUnitAbilityLevelSwapped('A024',bj_lastCreatedUnit,4)\ncall IssueImmediateOrderById(bj_lastCreatedUnit,$D009F)\ncall UnitApplyTimedLifeBJ(10.,'BTLF',bj_lastCreatedUnit)\nelse\ncall CreateNUnitsAtLocFacingLocBJ(1,'h025',GetTriggerPlayer(),PE,SE)\ncall SetUnitAbilityLevelSwapped('A024',bj_lastCreatedUnit,1)\ncall IssueImmediateOrderById(bj_lastCreatedUnit,$D009F)\ncall UnitApplyTimedLifeBJ(10.,'BTLF',bj_lastCreatedUnit)\nendif\nendif\nendif\ncall RemoveLocation(PE)\ncall RemoveLocation(SE)\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "NQE",
+      "sha256": "84d72d38078dae5c14a42de35d443b7759bdd6ff07a2f6cec71c1450aa162ca7",
+      "code": "function NQE takes nothing returns nothing\ncall TriggerSleepAction(.9)\nset SE=GetSpellTargetLoc()\ncall AddSpecialEffectLocBJ(SE,\"Units\\\\NightElf\\\\Wisp\\\\WispExplode.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall CreateNUnitsAtLoc(1,'h01U',GetOwningPlayer(GetTriggerUnit()),SE,bj_UNIT_FACING)\nset PE=GetUnitLoc(bj_lastCreatedUnit)\ncall UnitApplyTimedLifeBJ(3.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h01U',GetOwningPlayer(GetTriggerUnit()),OffsetLocation(PE,100.,0),bj_UNIT_FACING)\ncall UnitApplyTimedLifeBJ(5.,'BTLF',bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'h01U',GetOwningPlayer(GetTriggerUnit()),OffsetLocation(PE,-200.,0),bj_UNIT_FACING)\ncall UnitApplyTimedLifeBJ(7.,'BTLF',bj_lastCreatedUnit)\ncall RemoveLocation(PE)\ncall RemoveLocation(SE)\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "AME",
+      "sha256": "2e2fc0d1611a1eea10b3b8ec29c5d7a6bc717bc002a163ad752da93ce7a3bdc1",
+      "code": "function AME takes nothing returns nothing\nset EI[0]=GetSpellAbilityUnit()\nset QB[0]=GetUnitLoc(GetSpellAbilityUnit())\nset XI[0]=GetSpellTargetUnit()\nif(ALE())then\ncall EnableTrigger(VZ)\nelse\nif(AKE())then\ncall EnableTrigger(EZ)\nelse\ncall EnableTrigger(XZ)\nendif\nendif\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "AUE",
+      "sha256": "79aa7c2ccfe73a5af62a5a329d56e6907ee3d85eab8f8bfcd604c6af239aa933",
+      "code": "function AUE takes nothing returns nothing\nset SB[0]=GetUnitLoc(XI[0])\nif(ATE())then\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-25.))\ncall SetWidgetLife(XI[0],(GetUnitStateSwap(UNIT_STATE_LIFE,XI[0])+25.))\nelse\nif(AQE())then\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-25.))\ncall UnitDamageTargetBJ(EI[0],XI[0],25.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nelse\ncall IssueImmediateOrderById(EI[0],$D0004)\ncall DisableTrigger(GetTriggeringTrigger())\nendif\nendif\ncall RemoveLocation(SB[0])\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "A0E",
+      "sha256": "feba22dac6aa5927ccae6cf796626287fd1b037229be5823eee42f1a178be660",
+      "code": "function A0E takes nothing returns nothing\nset SB[0]=GetUnitLoc(XI[0])\nif(A_E())then\ncall SetUnitTimeScalePercent(EI[0],200.)\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-50.))\ncall SetWidgetLife(XI[0],(GetUnitStateSwap(UNIT_STATE_LIFE,XI[0])+50.))\nelse\nif(AYE())then\ncall SetUnitTimeScalePercent(EI[0],200.)\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-50.))\ncall UnitDamageTargetBJ(EI[0],XI[0],50.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nelse\ncall IssueImmediateOrderById(EI[0],$D0004)\ncall DisableTrigger(GetTriggeringTrigger())\nendif\nendif\ncall RemoveLocation(SB[0])\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "A5E",
+      "sha256": "8b5b4e1f96849af130fb402882b565322a8a62169b00de795acb13e607d4fc30",
+      "code": "function A5E takes nothing returns nothing\nset SB[0]=GetUnitLoc(XI[0])\nif(A4E())then\ncall SetUnitTimeScalePercent(EI[0],300.)\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-75.))\ncall SetWidgetLife(XI[0],(GetUnitStateSwap(UNIT_STATE_LIFE,XI[0])+75.))\nelse\nif(A2E())then\ncall SetUnitTimeScalePercent(EI[0],300.)\ncall SetUnitManaBJ(EI[0],(GetUnitStateSwap(UNIT_STATE_MANA,EI[0])-75.))\ncall UnitDamageTargetBJ(EI[0],XI[0],75.,ATTACK_TYPE_CHAOS,DAMAGE_TYPE_UNIVERSAL)\nelse\ncall IssueImmediateOrderById(EI[0],$D0004)\ncall DisableTrigger(GetTriggeringTrigger())\nendif\nendif\ncall RemoveLocation(SB[0])\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "E6E",
+      "sha256": "db1c227c2833b0dfe0dad938aa03be778c53de3488e6d9d63a8593d3b017d558",
+      "code": "function E6E takes nothing returns nothing\nset OE=GetTriggerUnit()\nset RE=AngleBetweenPoints(GetUnitLoc(OE),GetSpellTargetLoc())\nset IE=ADV(GetSpellTargetLoc(),.0,RE)\nset AE=ADV(IE,(150.*SinBJ((18.*I2R(bj_forLoopAIndex)))),(RE+180.))\ncall AddSpecialEffectLocBJ(GetUnitLoc(GetTriggerUnit()),\"Abilities\\\\Weapons\\\\Bolt\\\\BoltImpact.mdl\")\ncall TriggerSleepAction(.5)\ncall CreateNUnitsAtLoc(1,'h026',GetOwningPlayer(OE),IE,RE)\ncall UnitAddAbility(bj_lastCreatedUnit,'A025')\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0271,AE)\ncall UnitApplyTimedLifeBJ(1.5,'BTLF',bj_lastCreatedUnit)\ncall TriggerSleepAction(1.)\ncall DestroyEffect(bj_lastCreatedEffect)\nendfunction"
+    },
+    {
+      "version": "35",
+      "name": "E9E",
+      "sha256": "198569a7060b042857ff12ac6d1b15a0ca3320afbdf133b7b21f6d2174569716",
+      "code": "function E9E takes nothing returns nothing\nset OE=GetTriggerUnit()\nset RE=AngleBetweenPoints(GetUnitLoc(OE),GetSpellTargetLoc())\nset IE=ADV(GetSpellTargetLoc(),.0,RE)\nset AE=ADV(IE,(150.*SinBJ((18.*I2R(bj_forLoopAIndex)))),(RE+180.))\ncall TriggerSleepAction(.5)\ncall CreateNUnitsAtLoc(1,'h026',GetOwningPlayer(OE),IE,RE)\ncall UnitAddAbility(bj_lastCreatedUnit,'A00V')\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0271,AE)\ncall UnitApplyTimedLifeBJ(3.,'BTLF',bj_lastCreatedUnit)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "XQE",
+      "sha256": "cb65d89ac7de8efd8c1036f46ac69539a1f528435f47e6ea77ee7a7ec0a3ec31",
+      "code": "function XQE takes nothing returns nothing\nset TF=GetTriggerUnit()\nset WF=GetSpellTargetLoc()\ncall SetUnitFacingToFaceLocTimed(GetTriggerUnit(),WF,.01)\ncall TriggerSleepAction(.01)\ncall SetUnitAnimation(GetTriggerUnit(),\"spell\")\ncall TriggerSleepAction(.75)\ncall PauseUnit(GetTriggerUnit(),true)\nif(XKE())then\ncall SetUnitInvulnerable(GetTriggerUnit(),true)\nendif\ncall SetUnitTimeScalePercent(TF,400.)\ncall CreateNUnitsAtLocFacingLocBJ(1,'h031',GetOwningPlayer(GetTriggerUnit()),WF,WF)\ncall SelectUnitRemoveForPlayer(GetTriggerUnit(),GetOwningPlayer(GetTriggerUnit()))\ncall RemoveLocation(WF)\nset LF=bj_lastCreatedUnit\ncall UnitApplyTimedLifeBJ(7.5,'BTLF',LF)\nset KR=GetUnitLoc(bj_lastCreatedUnit)\ncall SelectUnitForPlayerSingle(LF,GetTriggerPlayer())\ncall SetCameraTargetControllerNoZForPlayer(GetOwningPlayer(TF),LF,0,-625.,false)\nset CG[0]=M3V(KR,250.,0)\nset CG[1]=M3V(KR,225.,45.)\nset CG[2]=M3V(KR,250.,90.)\nset CG[3]=M3V(KR,225.,135.)\nset CG[4]=M3V(KR,250.,180.)\nset CG[5]=M3V(KR,225.,225.)\nset CG[6]=M3V(KR,250.,270.)\nset CG[7]=M3V(KR,225.,315.)\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[0],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[1],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[2],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[3],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[4],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[5],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[6],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),CG[7],GetUnitFacing(GetTriggerUnit()))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),KR,GetRandomReal(0,360))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),KR,GetRandomReal(0,360))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),KR,GetRandomReal(0,360))\ncall CreateNUnitsAtLoc(1,'h02K',GetOwningPlayer(GetTriggerUnit()),KR,GetRandomReal(0,360))\nset ME=PBV('h02K')\ncall ForGroupBJ(ME,\nfunction XLE)\ncall DestroyGroup(ME)\ncall RemoveLocation(KR)\ncall ForGroupBJ(PBV('h02K'),\nfunction XME)\ncall EnableTrigger(R4)\ncall EnableTrigger(I4)\ncall EnableTrigger(N4)\ncall EnableTrigger(A4)\ncall EnableTrigger(O4)\ncall TriggerSleepAction(8.)\ncall PauseUnit(GetTriggerUnit(),false)\nif(XPE())then\ncall SetUnitInvulnerable(GetTriggerUnit(),false)\nendif\ncall SelectUnitForPlayerSingle(TF,GetOwningPlayer(GetTriggerUnit()))\ncall SetUnitTimeScalePercent(TF,100.)\nset AE=OffsetLocation(GetUnitLoc(TF),.0,-625.)\ncall PanCameraToTimedLocForPlayer(GetOwningPlayer(TF),AE,0)\ncall RemoveLocation(AE)\ncall DisableTrigger(R4)\ncall DisableTrigger(I4)\ncall DisableTrigger(B4)\ncall DisableTrigger(O4)\ncall DisableTrigger(A4)\ncall DisableTrigger(N4)\ncall SetUnitAnimation(TF,\"stand\")\ncall RemoveLocation(WF)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "X0E",
+      "sha256": "b3fffc0bccf1f3e5079270d2d90eabea8452a196f878600bfdbbc6bdb16731ac",
+      "code": "function X0E takes nothing returns nothing\nset MF=(GetUnitFacing(LF)+90.)\nset PF=GetUnitLoc(LF)\ncall SetUnitPositionLocFacingBJ(LF,PF,MF)\ncall RemoveLocation(PF)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "OCE",
+      "sha256": "11af8b31f9a66dd8a8325843b3a7ca43dce5ff8ec78fab34716d172b0d2cd8f0",
+      "code": "function OCE takes nothing returns nothing\nset DR=GetUnitLoc(LF)\nset SF=M3V(DR,30.,GetUnitFacing(TF))\ncall SetUnitPositionLoc(LF,SF)\nset QF=PIV(500.,DR,Condition(\nfunction X8E))\nset HG=PIV(550.,DR,Condition(\nfunction OIE))\ncall ForGroupBJ(HG,\nfunction OAE)\ncall ForGroupBJ(QF,\nfunction ONE)\ncall M8V(500.,DR,\nfunction OBE)\ncall DestroyGroup(QF)\ncall DestroyGroup(HG)\ncall RemoveLocation(SF)\ncall RemoveLocation(DR)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "O1E",
+      "sha256": "2361dfe7cec67e7d0ac84a3963c0d4dc7e4945a3163bd39edb02bd39291e8aa0",
+      "code": "function O1E takes nothing returns nothing\nset DR=GetUnitLoc(LF)\nset YF=AngleBetweenPoints(DR,M3V(WF,4000.,YF))\nset SF=M3V(DR,30.,YF)\ncall SetUnitPositionLoc(LF,SF)\nset QF=PIV(500.,DR,Condition(\nfunction OQE))\nset HG=PIV(550.,DR,Condition(\nfunction OYE))\ncall ForGroupBJ(HG,\nfunction OZE)\ncall ForGroupBJ(QF,\nfunction O_E)\ncall M8V(500.,DR,\nfunction O0E)\ncall DestroyGroup(QF)\ncall DestroyGroup(HG)\ncall RemoveLocation(DR)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "OJX",
+      "sha256": "6500ed62553ab9132da1916cac0f2e6b45daa073870b2a484abc023161e9b8d1",
+      "code": "function OJX takes nothing returns nothing\nif(OIX())then\ncall IssueImmediateOrderById(GetTriggerUnit(),$D0272)\ncall IssueImmediateOrderById(GetTriggerUnit(),$D009E)\nendif\nloop\nexitwhen(OAX())\ncall TriggerSleepAction(RMaxBJ(bj_WAIT_FOR_COND_MIN_INTERVAL,.1))\nendloop\nif(ONX())then\nset AE=M3V(GetUnitLoc(GetTriggerUnit()),300.,GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(J2V,$D0100,AE)\ncall RemoveLocation(AE)\nendif\nloop\nexitwhen(OBX())\ncall TriggerSleepAction(RMaxBJ(bj_WAIT_FOR_COND_MIN_INTERVAL,.1))\nendloop\ncall ForGroupBJ(PBV('h00V'),\nfunction OCX)\ncall ForGroupBJ(PBV('o002'),\nfunction ODX)\ncall ForGroupBJ(PBV('h00W'),\nfunction OFX)\nset AE=GetUnitLoc(SD[0])\nset DR=GetUnitLoc(SD[1])\nset KR=GetUnitLoc(SD[2])\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),KR,bj_UNIT_FACING)\nset BE=M3V(KR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),DR,bj_UNIT_FACING)\nset BE=M3V(DR,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(BE)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall CreateNUnitsAtLoc(1,'n005',GetOwningPlayer(GetTriggerUnit()),AE,bj_UNIT_FACING)\nset BE=M3V(AE,GetRandomReal(200.,600.),GetRandomReal(0,360))\ncall IssuePointOrderByIdLoc(bj_lastCreatedUnit,$D0012,BE)\ncall RemoveLocation(BE)\ncall GroupAddUnit(TD[0],bj_lastCreatedUnit)\ncall RemoveLocation(AE)\ncall RemoveLocation(DR)\ncall RemoveLocation(KR)\ncall ForGroupBJ(TD[0],\nfunction OGX)\ncall TriggerSleepAction(.35)\ncall ForGroupBJ(TD[0],\nfunction OHX)\nendfunction"
+    },
+    {
+      "version": "42",
+      "name": "OMX",
+      "sha256": "ee36caab47bc3d21ad19d5916745e24b508d47393602f7d5a8e793c49fc5ec06",
+      "code": "function OMX takes nothing returns nothing\nset DR=GetUnitLoc(GetTriggerUnit())\ncall CreateNUnitsAtLocFacingLocBJ(1,'h020',GetOwningPlayer(GetDyingUnit()),DR,DR)\ncall UnitApplyTimedLifeBJ(.5,'BTLF',bj_lastCreatedUnit)\ncall AddSpecialEffectLocBJ(DR,\"Note.MDX\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall RemoveLocation(DR)\nendfunction"
+    }
+  ],
+  "policy": "Original objects/functions are evidence, not instructions. Runtime remaps object IDs and uses per-caster state; existing user rules keep permanent pets and short smoke stun."
 }

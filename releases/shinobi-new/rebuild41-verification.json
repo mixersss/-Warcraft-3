@@ -1,0 +1,21 @@
+{
+  "stage": 41,
+  "filename": "Shinobi_Story_Alpha_41.w3x",
+  "sha256": "8ec4c397a7931ce9f9503ad6276b99eaffa9e10b3894571dd6c1958d40736cb1",
+  "bytes": 11007404,
+  "emergencyCommand": "-rebuildsasuke",
+  "alias": "-fixsasuke hard",
+  "activeInvasionOnly": true,
+  "ownerOrFirstHumanOnly": true,
+  "freshNativeHeroSameOwner": true,
+  "restoresExperienceLevelPermanentAttributesLearnedSkillsPoints": true,
+  "transfersSameItemHandlesAndSlots": true,
+  "preservesLivingResourceFractions": true,
+  "deadHeroNormalWait20Seconds": true,
+  "noSecondWaitAfterFailedNativeRevival": true,
+  "criticalIndependentHeartbeat": true,
+  "noExtraTimersOrDeathsOrBounty": true,
+  "diagnosticChatDispatchFixed": true,
+  "allAlpha40ObjectsSkillsMusicWorldUnchanged": true,
+  "enginePlaytest": false
+}

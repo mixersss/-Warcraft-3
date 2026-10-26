@@ -1,4 +1,12 @@
 globals
+    integer SasukeRebuildSlot=-1
+    unit array SasukeRebuildTarget
+    integer array SasukeRebuildViewer
+    real array SasukeRebuildAt
+    real array SasukeRebuildNext
+    integer array SasukeRebuildCount
+    integer array SasukeRebuildRanks
+    item array SasukeRebuildItems
     unit array Source40SmokeCaster
     real array Source40SmokeAt
     real array Source40SmokeX
@@ -672,10 +680,16 @@ function FoundationChat takes nothing returns nothing
         call StoryCommand(p,msg)
     elseif msg=="-naruto" then
         call SkillsChoose(p,0)
+    elseif msg=="-rebuildsasuke" or msg=="-fixsasuke hard" then
+        call InvasionRebuildCommand(p)
     elseif msg=="-fixsasuke" then
         call InvasionFixSasuke(p)
     elseif msg=="-sasuke" then
-        call SkillsChoose(p,1)
+        if CampaignStage==12 then
+            call InvasionSasukeStatus(p)
+        else
+            call SkillsChoose(p,1)
+        endif
     elseif SubString(msg,0,6)=="-hero " then
         set k=S2I(SubString(msg,6,StringLength(msg)))-1
         if k>=0 and k<12 then
@@ -759,7 +773,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек текущего сюжетного этапа. -music: включить/выключить музыку.")
     elseif msg=="-help" then
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения; -village fast: все враги сразу; -sasuke-die: тест смерти Саске (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: восстановить Саске при вторжении; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения; -village fast: все враги сразу; -sasuke-die: тест смерти Саске (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: мягкое восстановление; -rebuildsasuke: пересоздать Саске с навыками и вещами; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
@@ -802,6 +816,7 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call ExecuteFunc("InvasionRebuildTick")
     call ExecuteFunc("InvasionHeroVisibility")
     call ExecuteFunc("CommonLogTick")
     call ExecuteFunc("Source35Tick")

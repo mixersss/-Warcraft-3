@@ -112,6 +112,7 @@ function InvasionSasukeStatus takes integer viewer returns nothing
             if IsUnitType(u,UNIT_TYPE_DEAD) then
                 call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Движок: Саске мёртв, даже если показано положительное HP. До возрождения: "+I2S(R2I(RMaxBJ(0.,StoryRevive[p]-TimeNow)))+" сек.")
             endif
+            call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Аварийных пересозданий: "+I2S(SasukeRebuildCount[p])+". -rebuildsasuke: полное восстановление.")
             call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Заблокировано лечений трупа: "+I2S(SasukeCorpseHealsBlocked[p])+". Неудачных попыток возрождения: "+I2S(SasukeReviveFailures[p]))
             call DisplayTimedTextToPlayer(Player(viewer),0.,0.,25.,"Саске: этап "+I2S(CampaignStage)+", тип "+I2S(GetUnitTypeId(u))+", HP "+I2S(R2I(GetWidgetLife(u)))+", X/Y "+I2S(R2I(GetUnitX(u)))+"/"+I2S(R2I(GetUnitY(u)))+", предотвращено удалений "+I2S(SasukeBlockedRemove[p])+", неуязвимость "+I2S(GetUnitAbilityLevel(u,'Avul'))+". Последняя техника: "+SasukeLastSource[p])
             if IsUnitHidden(u) then
