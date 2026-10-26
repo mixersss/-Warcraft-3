@@ -115,6 +115,9 @@ globals
     boolean array CampaignClonePending
     item array ExamGear
     integer ExamGearCount=0
+    boolean Invasion48XPActive=false
+    real array Invasion48XPBefore
+    boolean array Invasion48XPChanged
     boolean CampaignBountyActive=false
     integer array CampaignBountyBefore
     boolean CampaignKabutoAI=true

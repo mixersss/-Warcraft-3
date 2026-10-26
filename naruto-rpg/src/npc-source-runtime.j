@@ -1,5 +1,8 @@
 function NPCSourceType takes unit u returns integer
     local integer raw=GetUnitTypeId(u)
+    if raw=='c048' then
+        return 'c00D'
+    endif
     if raw=='re01' then
         return 'nban'
     endif

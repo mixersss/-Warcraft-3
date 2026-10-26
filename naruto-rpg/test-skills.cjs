@@ -88,6 +88,9 @@ run("for i=0,11 do _G['SkillsData'..i]() end; SkillDataReady=true");
 run(`
 debug.setmetatable('',{__add=function(a,b)return tostring(a)..tostring(b)end})
 function Player(p) return p end
+local xpHandicaps={}
+function GetPlayerHandicapXP(p)return xpHandicaps[p]or 1 end
+function SetPlayerHandicapXP(p,v)xpHandicaps[p]=v end
 PLAYER_SLOT_STATE_PLAYING='playing'
 function GetPlayerSlotState(p)return PLAYER_SLOT_STATE_PLAYING end
 MAP_CONTROL_COMPUTER='computer';UNIT_STATE_MANA='mana';UNIT_STATE_MAX_MANA='maxMana';UNIT_TYPE_STRUCTURE='structure';UNIT_TYPE_MAGIC_IMMUNE='immune';UNIT_TYPE_DEAD='dead'
@@ -359,3 +362,5 @@ fs.writeFileSync(__dirname+'/dist/behavior-verification.json',JSON.stringify({la
 console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data columns, native damage/clone/summon/morph references, 12 slots/4 forces; actual JASS splash filters, combo, Sharingan expiration/death, sound queue, all 54 bot cast orders, roster learning/healing/mana, combos/zones/companions, staggered init and bounded effect/timer cleanup (mock natives).');
 
 run(fs.readFileSync(__dirname+'/invasion47-harness.lua','utf8'));
+
+run(fs.readFileSync(__dirname+'/balance48-harness.lua','utf8'));

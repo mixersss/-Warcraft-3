@@ -1,0 +1,13 @@
+{
+  "defenderInvasionXPMultiplier": 1.15,
+  "npcHPOverrides": {
+    "3": 318750,
+    "4": 233750
+  },
+  "finalOrochimaru": {
+    "stage": 28,
+    "kind": 13,
+    "unitId": "c048",
+    "hp": 40000
+  }
+}

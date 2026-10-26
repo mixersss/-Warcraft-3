@@ -1,0 +1,15 @@
+{
+  "stage": 48,
+  "filename": "Shinobi_Story_Alpha_48.w3x",
+  "bytes": 11024501,
+  "sha256": "67786ca2ec44c1140d627627ce02a91d06ef9996300ee49e09da455ef573c09a",
+  "defenderInvasionXPMultiplier": 1.15,
+  "priorXPFactorRestoredAfterStage": true,
+  "itachiHP": 318750,
+  "kisameHP": 233750,
+  "finalOrochimaruHP": 40000,
+  "finalOrochimaruStage": 28,
+  "invasionOrochimaruHPUnchanged": 100000,
+  "allOtherObjectsAssetsMusicGoldAndSpellsUnchanged": true,
+  "enginePlaytest": false
+}

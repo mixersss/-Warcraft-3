@@ -23,6 +23,10 @@ def units():
     base,rawid,mods=native
     mods=list({m[0]:m for m in list(mods)+[(key,0,value)for key,value in patch.items()]}.values())
     native=(base,rawid,mods)
+   hp48=json.loads((ROOT/'src/balance48.json').read_text())['npcHPOverrides'].get(str(n))
+   if hp48 is not None:
+    base,rawid,mods=native
+    native=(base,rawid,list({m[0]:m for m in list(mods)+[('uhpm',0,hp48)]}.values()))
    out.append(native)
    continue
   scale=.8 if n!=12 else 1.2
@@ -39,6 +43,9 @@ def units():
    # The absent-player Naruto fallback must be a real hero for native level60.
    mods += [('upro',3,'Наруто'),('uhab',3,''),('upra',3,'STR'),('ustr',0,20),('uagi',0,20),('uint',0,20),('ustp',2,2.),('uagp',2,1.),('uinp',2,1.5)]
   out.append(('Hpal'if n==28 else'hfoo',raw(n),mods))
+ final=json.loads((ROOT/'src/balance48.json').read_text())['finalOrochimaru']
+ base,_,mods=next(row for row in out if row[1]==raw(final['kind']))
+ out.append((base,final['unitId'],[(k,t,final['hp']if k=='uhpm'else v)for k,t,v in mods]))
  for f in json.loads((ROOT/'src/village-fountains-source.json').read_text())['fountains']:
   mods=[(m['id'],m['variableType'],m['value'].replace('\\\\','\\')if m['id']=='umdl'else m['value'])for m in f['effectiveModifications']]
   mods.extend([('unam',3,'Фонтан силы'if f['doubleHealth']else'Фонтан восстановления'),('uabi',3,('Crg2'if f['doubleHealth']else'ACnr')+',ANre,Avul')])

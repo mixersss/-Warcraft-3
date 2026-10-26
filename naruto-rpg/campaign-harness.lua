@@ -149,7 +149,7 @@ TimeNow=CampaignJiraiyaAt;CampaignTick();local jiraiyaPresent=false;for j=0,Camp
 TimeNow=CampaignSnakeAt;CampaignTick();assert(CampaignVillageSnake and CampaignVillageSnake.owner==15 and CampaignSnakeGoneAt-TimeNow==300)
 TimeNow=CampaignOroAt;CampaignTick();assert(CampaignVillageOro.owner==15 and not CampaignVillageOro.paused)
 CampaignActor[0].hp=0;CampaignTick();assert(CampaignQueued==13)
-enter();for t=0,3 do assert(not StoryShop[t],'Shops are removed after invasion')end;assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==100000 and CampaignActor[2].maxLife==375000)
+enter();for t=0,3 do assert(not StoryShop[t],'Shops are removed after invasion')end;assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==100000 and CampaignActor[2].maxLife==318750)
 TimeNow=CampaignEndAt;CampaignTick();assert(CampaignQueued==14)
 enter();assert(CampaignStage==14 and CampaignEndAt-TimeNow==360 and Hero[1].hidden and Hero[1].paused)
 assert(not CampaignNearest(0) or CampaignNearest(0)~=Hero[1],'Hidden sealed Sasuke cannot distract allies from Sound Five')

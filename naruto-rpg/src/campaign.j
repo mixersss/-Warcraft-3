@@ -152,6 +152,7 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    call Invasion48XPStop()
     call Story46Clear()
     set CampaignFastTestActive=false
     set CampaignFastWaveCursor=0
@@ -235,6 +236,10 @@ function CampaignSoundGuard takes integer kind returns boolean
 endfunction
 function CampaignAdd takes integer kind, integer owner, real x, real y returns integer
     local integer j=0
+    local integer raw=CampaignUnit[kind]
+    if CampaignStage==28 and kind==13 then
+        set raw='c048'
+    endif
     loop
         exitwhen j>=2048 or CampaignActor[j]==null
         // Slot0 is the invasion objective until CampaignTick queues the next scene.
@@ -254,7 +259,7 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
     if j>=2048 then
         return -1
     endif
-    set CampaignActor[j]=CreateUnit(Player(owner),CampaignUnit[kind],x,y,180.)
+    set CampaignActor[j]=CreateUnit(Player(owner),raw,x,y,180.)
     call NPCInitialize(CampaignActor[j],kind)
     if CampaignSoundGuard(kind) then
         call SetUnitPosition(CampaignActor[j],CampaignReserveX[kind],CampaignReserveY[kind])
@@ -1076,6 +1081,7 @@ function CampaignStartPlay takes nothing returns nothing
             endif
             set p=p+1
         endloop
+        call Invasion48XPStart()
         set CampaignBountyActive=true
         set p=0
         loop
