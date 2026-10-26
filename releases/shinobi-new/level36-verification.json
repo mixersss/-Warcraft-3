@@ -1,0 +1,10 @@
+{
+  "stage": 36,
+  "filename": "Shinobi_Story_Alpha_36.w3x",
+  "sha256": "b78b87100b855d0930c3c6f1749e50bdecd4cd353c122bd0dd7e8f79733f24fa",
+  "bytes": 10994355,
+  "firstTeamTestLevel": 45,
+  "onlyFastTest": true,
+  "allOtherRuntimeObjectsWorldMusicUnchanged": true,
+  "enginePlaytest": false
+}

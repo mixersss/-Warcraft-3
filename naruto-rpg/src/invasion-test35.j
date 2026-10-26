@@ -18,12 +18,21 @@ function CampaignFastWaveStep takes nothing returns nothing
 endfunction
 function CampaignFastInvasion takes nothing returns nothing
     local integer lane=0
+    local integer p=0
     if CampaignStage!=12 or CampaignTransition or CampaignFinished or CampaignFastTestActive then
         return
     endif
     set CampaignFastTestQueued=false
     set CampaignFastTestActive=true
     set CampaignFastWaveCursor=0
+    // First team gets test levels; never lower an already stronger hero.
+    loop
+        exitwhen p>=3
+        if FoundationAlive(Hero[p]) and GetHeroLevel(Hero[p])<45 then
+            call SetHeroLevel(Hero[p],45,true)
+        endif
+        set p=p+1
+    endloop
     // Only release scheduled events, never re-create already arrived/dead bosses.
     if CampaignKabutoAt>0. then
         set CampaignKabutoAt=TimeNow
