@@ -338,6 +338,7 @@ run(fs.readFileSync(__dirname+'/rebuild41-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/lee42-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/shadow-clones43-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/invasion44-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/sarutobi45-harness.lua','utf8'));
 console.log('PASS: all 54 active skill animations including native abilities, delayed visual cleanup and source-native XP without synthetic quest bonuses (mock natives).');
 console.log('PASS: smart tree orders, animated movement, landing, all four forest bounds, preserved trees, mana/cooldown, invalid/dead/distant trees and death/hero-replacement cleanup (mock natives).');
 console.log('PASS: chapter JASS, separate team quests, empty teams, human/bot commands, native shop budget, 56 original ninja spawns, original 330s mentor departure, source forest stats, Haku response and five-second Zabuza blink without invented splash/clones, loot chance/pickup/use, one-time rewards, twenty-second revival, moving sand crest cleanup (mock natives).');

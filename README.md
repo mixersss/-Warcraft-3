@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.1-alpha
 
-## Shinobi RPG — Story Alpha44
+## Shinobi RPG — Story Alpha45
 
-[Скачать Shinobi Story Alpha44](releases/shinobi-new/Shinobi_Story_Alpha_44.w3x). За убийства NPC-армией герои не получают награду: явная проверка добивания героем/питомцем/техникой. Размер награды и цены сохранены. Волны каждого направления:3→3→4 с повтором. `-goldcheck` — диагностика дохода. [Изменения и проверки](naruto-rpg/docs/Release-44.md). Новая игра; нужен тест Warcraft1.26.
+[Скачать Shinobi Story Alpha45](releases/shinobi-new/Shinobi_Story_Alpha_45.w3x). Защищён сюжетный переход после гибели Сарутоби от подмены его слота новой волной. Сохранены44: проверка добивания для награды заNPC, прежние суммы/цены, волны3→3→4 и `-goldcheck`. [Изменения и проверки](naruto-rpg/docs/Release-45.md). Причина сообщённого вылета пока не подтверждена; нужен crash-отчёт и тест Warcraft1.26. Новая игра.
 
 ## Footman 0.23.1 — текущая версия
 

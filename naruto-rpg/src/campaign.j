@@ -236,7 +236,8 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
     local integer j=0
     loop
         exitwhen j>=2048 or CampaignActor[j]==null
-        if not FoundationAlive(CampaignActor[j]) then
+        // Slot0 is the invasion objective until CampaignTick queues the next scene.
+        if not FoundationAlive(CampaignActor[j]) and (CampaignStage!=12 or j!=0) then
             if NPCCooldowns!=null then
                 call FlushChildHashtable(NPCCooldowns,GetHandleId(CampaignActor[j]))
                 if NPCHiddenAbilities!=null then

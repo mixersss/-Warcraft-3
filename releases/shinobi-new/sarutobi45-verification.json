@@ -1,0 +1,14 @@
+{
+  "stage": 45,
+  "filename": "Shinobi_Story_Alpha_45.w3x",
+  "bytes": 11022987,
+  "sha256": "a7bd26eb1b6e411aa00038f4222ad9c47b8d5d145873f66c89b5b8f7484730bf",
+  "preventsDeadSarutobiObjectiveBeingOverwrittenByNewWave": true,
+  "protectsOnlyInvasionSlotZero": true,
+  "otherDeadActorSlotsStillRecycled": true,
+  "originalStage12To13TransitionPreserved": true,
+  "allOtherRuntimeObjectsAssetsMusicAndAlpha44RewardsWavesUnchanged": true,
+  "reportedEngineCrashCauseUnconfirmed": true,
+  "crashLogStillNeeded": true,
+  "enginePlaytest": false
+}
