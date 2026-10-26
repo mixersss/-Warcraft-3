@@ -1,6 +1,10 @@
 -- Real JASS continuation; native graphics/combat balance are separate engine checks.
 local function raw(s)local n=0;for i=1,4 do n=n*256+string.byte(s,i)end;return n end
-local alliances={};local vision={};local outcomes={};local fades={}
+local alliances={};local vision={};
+local shared={}
+ALLIANCE_SHARED_CONTROL="control";ALLIANCE_SHARED_ADVANCED_CONTROL="advanced"
+function SetPlayerAlliance(a,b,k,v)shared[a]=shared[a] or {};shared[a][b]=shared[a][b] or {};shared[a][b][k]=v end
+local outcomes={};local fades={}
 local fog=true;local mask=true;local filter=false;local pans={}
 function IsFogEnabled()return fog end
 function IsFogMaskEnabled()return mask end
@@ -9,6 +13,7 @@ function FogMaskEnable(v)mask=v end
 function AbortCinematicFadeBJ()end
 function DisplayCineFilter(v)filter=v end
 function PanCameraToTimedForPlayer(p,x,y,t)pans[p]={x=x,y=y}end
+function GetPlayerAlliance(a,b,k)return shared[a] and shared[a][b] and shared[a][b][k] or false end
 function SetPlayerAllianceStateAllyBJ(a,b,v)alliances[a]=alliances[a] or {};alliances[a][b]=v end
 function SetPlayerAllianceStateVisionBJ(a,b,v)vision[a]=vision[a] or {};vision[a][b]=v end
 function IsUnitEnemy(u,p)

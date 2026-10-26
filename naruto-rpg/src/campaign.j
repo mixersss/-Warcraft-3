@@ -23,6 +23,14 @@ function CampaignAlliances takes integer mode returns nothing
             call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),true)
             call SetPlayerAllianceStateAllyBJ(Player(p),Player(PLAYER_NEUTRAL_PASSIVE),true)
         endif
+        // Slot13 is the autonomous Leaf NPC side, separate from all hero owners.
+        set allied=mode!=2 or HeroRole[p]<9
+        call SetPlayerAllianceStateAllyBJ(Player(13),Player(p),allied)
+        call SetPlayerAllianceStateAllyBJ(Player(p),Player(13),allied)
+        call SetPlayerAllianceStateVisionBJ(Player(13),Player(p),allied)
+        call SetPlayerAllianceStateVisionBJ(Player(p),Player(13),allied)
+        call SetPlayerAlliance(Player(13),Player(p),ALLIANCE_SHARED_CONTROL,false)
+        call SetPlayerAlliance(Player(13),Player(p),ALLIANCE_SHARED_ADVANCED_CONTROL,false)
         call SetPlayerAllianceStateAllyBJ(Player(14),Player(p),true)
         call SetPlayerAllianceStateAllyBJ(Player(p),Player(14),true)
         call SetPlayerAllianceStateVisionBJ(Player(14),Player(p),false)
@@ -77,6 +85,10 @@ function CampaignRogueAlliance takes nothing returns nothing
     if CampaignSasukePlayer<0 then
         return
     endif
+    call SetPlayerAllianceStateAllyBJ(Player(13),Player(CampaignSasukePlayer),false)
+    call SetPlayerAllianceStateAllyBJ(Player(CampaignSasukePlayer),Player(13),false)
+    call SetPlayerAllianceStateVisionBJ(Player(13),Player(CampaignSasukePlayer),false)
+    call SetPlayerAllianceStateVisionBJ(Player(CampaignSasukePlayer),Player(13),false)
     loop
         exitwhen p>=12
         if p!=CampaignSasukePlayer then
@@ -858,10 +870,7 @@ function CampaignSpawnStage takes nothing returns nothing
         call ExamBroadcast("Наруто: Разбивайте бочки! У нас 150 секунд. -quest отмечает ближайшую; боты помогут искать, если дать -go.")
     elseif n==12 then
         call CampaignAssignDefense()
-        set owner=CampaignLeader
-        if HeroRole[owner]>=9 then
-            set owner=PLAYER_NEUTRAL_AGGRESSIVE
-        endif
+        set owner=13
         set CampaignDefenseOwner=owner
         set unused=CampaignAdd(0,owner,x,y)
         set CampaignDeployCursor=0
@@ -921,8 +930,8 @@ function CampaignSpawnStage takes nothing returns nothing
         call PauseUnit(CampaignVillageOro,true)
         call UnitAddAbility(CampaignVillageOro,'Avul')
     elseif n==13 then
-        set unused=CampaignAdd(37,CampaignLeader,x-100.,y)
-        set unused=CampaignAdd(38,CampaignLeader,x+100.,y)
+        set unused=CampaignAdd(37,13,x-100.,y)
+        set unused=CampaignAdd(38,13,x+100.,y)
         set unused=CampaignAdd(3,PLAYER_NEUTRAL_AGGRESSIVE,x-300.,y+380.)
         set unused=CampaignAdd(4,PLAYER_NEUTRAL_AGGRESSIVE,x+300.,y+380.)
     elseif n==14 then
@@ -941,7 +950,7 @@ function CampaignSpawnStage takes nothing returns nothing
                 set CampaignNaruto=Hero[CampaignNarutoPlayer]
                 call SetUnitPosition(CampaignNaruto,x-300.,y)
             else
-                set unused=CampaignAdd(28,CampaignLeader,x-300.,y)
+                set unused=CampaignAdd(28,13,x-300.,y)
                 set CampaignNaruto=CampaignActor[unused]
             endif
         endif

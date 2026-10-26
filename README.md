@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.1-alpha
 
-## Shinobi RPG — Story Alpha 36
+## Shinobi RPG — Story Alpha 37
 
-[Скачать Shinobi Story Alpha 36](releases/shinobi-new/Shinobi_Story_Alpha_36.w3x). Тест защиты деревни: `-village fast` сразу выпускает волны/подкрепления, `-sasuke-die` вызывает обычную смерть Саске для проверки возрождения. Только первый игрок. [Инструкция и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
+[Скачать Shinobi Story Alpha 37](releases/shinobi-new/Shinobi_Story_Alpha_37.w3x). Союзные NPC Конохи действуют самостоятельно, без управления игроками. Тест защиты деревни: `-village fast` сразу выпускает волны/подкрепления, `-sasuke-die` вызывает обычную смерть Саске для проверки возрождения. Только первый игрок. [Инструкция и проверки](naruto-rpg/README.md). Начать новую игру; игровой тест требуется.
 
 ## Footman 0.23.1 — текущая версия
 

@@ -47,7 +47,7 @@ end
 CampaignClear();World={}
 -- Approach must reach the 150 casting range; native follow would stop too far away.
 local medics={}
-for j=0,5 do slot=CampaignAdd(32,0,CampaignMedicX[j],CampaignMedicY[j]);medics[j]=CampaignActor[slot];OrigNPC_IF[j]=medics[j] end
+for j=0,5 do slot=CampaignAdd(32,13,CampaignMedicX[j],CampaignMedicY[j]);medics[j]=CampaignActor[slot];OrigNPC_IF[j]=medics[j] end
 local injured=Hero[0];injured.hp=8500;injured.maxLife=10000;local medic=medics[0]
 injured.x=medic.x+400;injured.y=medic.y;World={injured};TimeNow=TimeNow+20;CampaignThinkCursor=0;CampaignNPCTick()
 assert(medic.last.o=='move' and medic.last.x==injured.x,'Medic approaches directly instead of following outside heal range')

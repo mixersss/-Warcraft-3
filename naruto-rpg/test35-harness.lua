@@ -25,6 +25,17 @@ local guard=0
 while CampaignTransition and guard<30 do TimeNow=TimeNow+.5;CampaignTick();guard=guard+1 end
 assert(not CampaignTransition and CampaignFastTestActive and not CampaignFastTestQueued and CampaignFastWaveCursor==8)
 for p=0,11 do assert(Hero[p].level==(p<3 and 45 or 20),'Only all three first-team heroes get test level45')end
+assert(CampaignDefenseOwner==13,'Leaf NPCs never belong to the red human')
+for j=0,CampaignCount-1 do
+ local k=CampaignActorType[j]
+ if k==0 or k==1 or k==2 or k==17 or k==29 or k==30 or k==31 or k==32 or k==33 or k==34 then
+  assert(CampaignActor[j].owner==13,'All Leaf defenders, medics and reinforcements stay autonomous')
+ end
+end
+for p=0,11 do
+ assert(not GetPlayerAlliance(13,p,ALLIANCE_SHARED_CONTROL) and not GetPlayerAlliance(13,p,ALLIANCE_SHARED_ADVANCED_CONTROL),'No human has NPC control')
+ assert(IsUnitEnemy(CampaignActor[0],p)==(HeroRole[p]>=9),'NPC side allied to Leaf and hostile to Sand regardless player slot')
+end
 assert(FoundationAlive(CampaignVillageKabuto) and FoundationAlive(CampaignVillageSnake) and FoundationAlive(CampaignVillageOro) and CampaignOroStarted)
 assert(not CampaignVillageOro.paused and GetUnitAbilityLevel(CampaignVillageOro,raw('Avul'))==0 and CampaignVillageOro.last.o=='attack','Orochimaru really starts marching')
 for j=0,3 do assert(CampaignEventClock[j]==nil and CampaignEventDialog[j]==nil,'Early arrivals close their original countdowns')end
@@ -43,5 +54,7 @@ TimeNow=deadline;InvasionHeroVisibility();assert(FoundationAlive(sasuke) and not
 KillUnit=kill
 CampaignFastTestActive=false;FoundationChat();assert(calls==1 and FoundationAlive(sasuke),'Death shortcut is disabled outside explicitly started test mode')
 CampaignStage=17;CampaignTransition=false;message='-village fast';FoundationChat();assert(CampaignStage==17 and not CampaignTransition,'Never interrupt the late story/clone elimination')
+CampaignSasukePlayer=1;CampaignRogueAlliance()
+assert(IsUnitEnemy(CampaignActor[0],1),'Independent Leaf NPCs remain hostile to rogue Sasuke in late story')
 GetTriggerPlayer,GetEventPlayerChatString,GetPlayerSlotState=player,chat,slot
 print('PASS: real -village fast chat/host/readiness/early cleanup/deployment, eight original wave lanes and all timed bosses/closed countdowns/idempotency; -sasuke-die host/test gating and ordinary20s same-hero revival; late story preserved (mock natives).')
