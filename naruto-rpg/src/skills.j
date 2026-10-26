@@ -97,6 +97,9 @@ function SkillsEffect takes nothing returns nothing
             set j=j+1
         endloop
     endif
+    if raw=='R601' then
+        call FoundationSound(5)
+    endif
     if raw=='Rlog' then
         call CommonLogEffect(p)
     endif
@@ -168,6 +171,9 @@ function SkillsEndcast takes nothing returns nothing
     local integer p=GetPlayerId(GetOwningPlayer(caster))
     local integer index=0
     if p<12 and caster==Hero[p] then
+        if GetSpellAbilityId()=='R601' then
+            call RosterClearShadow(p)
+        endif
         set index=VisualChannelIndex[p]
         if GetSpellAbilityId()=='R604' then
             call Source35ChokeEnd(p,false)
@@ -241,14 +247,6 @@ function SkillsRosterAttack takes nothing returns nothing
     set caster=null
     set target=null
 endfunction
-function SkillsFragileClone takes nothing returns nothing
-    local unit u=GetTriggerUnit()
-    if IsUnitIllusion(u) and (GetUnitTypeId(u)=='R000' or GetUnitTypeId(u)=='Rnfm') and FoundationAlive(u) then
-        call DestroyEffect(AddSpecialEffect("Objects\\Spawnmodels\\Other\\ToonBoom\\ToonBoom.mdl",GetUnitX(u),GetUnitY(u)))
-        call KillUnit(u)
-    endif
-    set u=null
-endfunction
 function SkillsCanSee takes unit u, player viewer returns boolean
     return u!=null and IsUnitVisible(u,viewer) and (not IsUnitInvisible(u,viewer) or IsUnitDetected(u,viewer))
 endfunction
@@ -256,6 +254,7 @@ function SkillsSummoned takes nothing returns nothing
     local unit summoner=GetSummoningUnit()
     local unit summoned=GetSummonedUnit()
     local integer p=GetPlayerId(GetOwningPlayer(summoner))
+    call Clone43Track(summoned)
     if p<12 and summoner==Hero[p] then
         call Source40Adopt(p,summoned)
     endif
@@ -272,6 +271,7 @@ function SkillsTick takes nothing returns nothing
     local real dx=0.
     local real dy=0.
     call InvasionHeroVisibility()
+    call Clone43Prune()
     call Source35Tick()
     loop
         exitwhen p>=256
@@ -541,7 +541,6 @@ function SkillsInit takes nothing returns nothing
         set p=p+1
     endloop
     call Source35Init()
-    call TriggerAddAction(fragile,function SkillsFragileClone)
     call TriggerAddAction(fragile,function SkillsRosterAttack)
     call TriggerAddAction(items,function RamenUse)
     call TriggerAddAction(levels,function SkillsLevel)

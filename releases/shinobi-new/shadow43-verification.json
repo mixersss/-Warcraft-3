@@ -1,0 +1,41 @@
+{
+  "stage": 43,
+  "filename": "Shinobi_Story_Alpha_43.w3x",
+  "bytes": 11009807,
+  "sha256": "d26b17cbc7fc1a18db2642545b2f0add20a7e67ade9c28f680eb227c4897451c",
+  "shikamaruSourceDamagePerSecond": [
+    25,
+    30,
+    35,
+    45
+  ],
+  "shadowRange": 600,
+  "rank4AreaAroundTarget": 400,
+  "voiceAndImpactBothQueued": true,
+  "shadowChannelBotHoldAndOwnHelperCleanup": true,
+  "cloneDeathEvent": "positive EVENT_UNIT_DAMAGED",
+  "noCloneDeathOnAttackWindup": true,
+  "cloneCountsUnchanged": [
+    8,
+    16,
+    24,
+    40
+  ],
+  "cloneEventRegistrationsCleanedOnHitOrExpiry": true,
+  "noPerCloneTimersOrAttackerSpeedChanges": true,
+  "byakuganSelfAttackBonus": 0.15,
+  "kaitenDamage": [
+    156,
+    234,
+    312,
+    546
+  ],
+  "kaitenStunSeconds": 1,
+  "shikamaruPrimary": "AGI",
+  "kankuroPrimary": "STR",
+  "botStatPurchasesFollowPrimary": true,
+  "kibaKankuroAudit": "docs/Kiba-Kankuro-audit-43.md",
+  "kibaKankuroFullReplacement": false,
+  "otherObjectsTerrainMusicAndSasukeRecoveryUnchanged": true,
+  "enginePlaytest": false
+}

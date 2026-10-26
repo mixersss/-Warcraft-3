@@ -445,9 +445,9 @@ function StoryHasItemSpace takes integer p returns boolean
 endfunction
 function StoryStatChoice takes integer p returns integer
     local integer role=HeroRole[p]
-    if role==0 or role==1 then
+    if role==0 or role==1 or role==10 then
         return 7
-    elseif role==2 or role==6 or role==9 or role==10 then
+    elseif role==2 or role==9 then
         return 8
     endif
     return 9
@@ -467,9 +467,9 @@ function StoryChooseItem takes integer p returns integer
     if choice==1 then
         set choice=4
     elseif choice==2 then
-        if role==2 or role==6 or role==9 or role==10 or role==11 then
+        if role==2 or role==9 or role==11 then
             set choice=3
-        elseif role==0 or role==3 or role==7 then
+        elseif role==0 or role==3 or role==7 or role==10 then
             set choice=1
         else
             set choice=2

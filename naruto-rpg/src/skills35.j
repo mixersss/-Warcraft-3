@@ -128,13 +128,17 @@ endfunction
 function Source35ShadowGroup takes integer p, unit main returns nothing
     local unit t=null
     local unit helper=null
-    call GroupEnumUnitsInRange(SkillScratch,GetUnitX(Hero[p]),GetUnitY(Hero[p]),550.,null)
+    call GroupEnumUnitsInRange(SkillScratch,GetUnitX(main),GetUnitY(main),400.,null)
     loop
         set t=FirstOfGroup(SkillScratch)
         exitwhen t==null
         call GroupRemoveUnit(SkillScratch,t)
         if t!=main and Source35Valid(p,t) and not IsUnitType(t,UNIT_TYPE_MAGIC_IMMUNE) then
-            set helper=Source35Dummy(p,'R35s',1,GetUnitX(Hero[p]),GetUnitY(Hero[p]))
+            set helper=Source35Dummy(p,'R35s',1,GetUnitX(main),GetUnitY(main))
+            if Shadow43Helpers[p]==null then
+                set Shadow43Helpers[p]=CreateGroup()
+            endif
+            call GroupAddUnit(Shadow43Helpers[p],helper)
             call UnitApplyTimedLife(helper,'BTLF',10.)
             call IssueTargetOrder(helper,"magicleash",t)
         endif
@@ -216,6 +220,9 @@ function Source35Apply takes integer p, integer index, integer rank, unit target
         call DestroyEffect(AddSpecialEffect("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",GetUnitX(u),GetUnitY(u)))
     elseif index==30 and Source35Valid(p,target) then
         call RosterShadow(p,rank,target)
+        set VisualChannelIndex[p]=30
+        set VisualChannelUntil[p]=ShadowUntil[p]
+        set BotNextCast[p]=RMaxBJ(BotNextCast[p],ShadowUntil[p]+.25)
         if rank==4 then
             call Source35ShadowGroup(p,target)
         endif
@@ -339,6 +346,7 @@ function Source35TickPlayer takes nothing returns nothing
             exitwhen t==null or j>=8
             call GroupRemoveUnit(SkillScratch,t)
             if GetOwningPlayer(t)==Player(p) and IsUnitIllusion(t) and FoundationAlive(t) and (GetUnitTypeId(t)=='R000' or GetUnitTypeId(t)=='Rnfm') then
+                call Clone43Track(t)
                 set roll=0
                 loop
                     exitwhen roll>=amount

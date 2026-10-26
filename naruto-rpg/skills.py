@@ -36,6 +36,9 @@ def ability_data():
  sight=[('anam',3,'Бьякуган: обнаружение'),('aher',0,0),('alev',0,4),('abpy',0,-11)]
  for n in range(1,5):sight += [('aran',2,200.+200.*n,n,0),('Det1',0,1,n,1),('atar',3,'enemies,vulnerable',n,0)]
  out.append(('Atru','Rbyg',sight))
+ # Temporary self-only percentage damage during Byakugan; all native melee/ranged attacks.
+ out.append(('ACac','Rbv3',[('anam',3,'Бьякуган: +15% атаки'),('aher',0,0),('aite',0,0),('alev',0,1),('abpy',0,-11),('Cac1',2,.15,1,1),('Ear2',0,0,1,2),('Ear3',0,1,1,3),('Ear4',0,1,1,4),('aare',2,1.,1,0),('atar',3,'self',1,0),('adur',2,0.,1,0),('ahdu',2,0.,1,0),('abuf',3,'BOac',1,0),('acat',3,''),('aefs',3,''),('aefl',3,'')]))
+ out.append(('AHtb','Rkt3',[('anam',3,'Кайтэн: оглушение1с'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('acas',2,0.,1,0),('amsp',0,10000),('Htb1',2,0.,1,1),('adur',2,1.,1,0),('ahdu',2,1.,1,0),('amat',3,''),('aani',3,''),('atar',3,'ground,air,enemy,neutral,organic',1,0),('aefs',3,''),('aefl',3,'')]))
  # Hidden native stun applied by an expiring invisible caster; no PauseUnit locks.
  stun=[('anam',3,'Короткое оглушение'),('aher',0,0),('alev',0,4),('abpx',0,0),('abpy',0,-11),('amat',3,''),('aani',3,''),('acat',3,'')]
  for n in range(1,5):stun += [('amcs',0,0,n,0),('acdn',2,0.,n,0),('aran',2,2000.,n,0),('Htb1',2,0.,n,1),('adur',2,.5*n,n,0),('ahdu',2,.25*n,n,0),('amsp',0,10000,n,0),('atar',3,'ground,air,enemy,neutral,organic',n,0)]

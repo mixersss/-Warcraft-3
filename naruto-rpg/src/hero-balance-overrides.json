@@ -1,0 +1,12 @@
+{
+  "6": {
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "reason": "User Alpha43: Shikamaru agility primary; retain original stats, mana and model."
+  },
+  "10": {
+    "primaryAttribute": "STR",
+    "runtimeBase": "Hpal",
+    "reason": "User Alpha43: Kankuro strength primary; retain original stats, mana and model."
+  }
+}

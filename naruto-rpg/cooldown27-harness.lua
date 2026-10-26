@@ -20,7 +20,7 @@ TreeJumpInside,GetTerrainCliffLevel,IsTerrainPathable=inside42,cliff42,terrain42
 SetUnitPosition=position
 -- Native powerup purchases consume real125 gold and apply+6 without needing inventory space.
 CampaignStage=12;CampaignTransition=false;CampaignFinished=false;StoryShopsOpen();World={}
-local expected={7,7,8,9,9,9,8,9,9,8,8,9}
+local expected={7,7,8,9,9,9,9,9,9,8,7,9}
 for p=0,11 do
  HeroRole[p]=p;local h=Hero[p];h.hp=10000;h.maxLife=10000;h.paused=false;h.items={};h.x=StoryShop[0].x;h.y=StoryShop[0].y
  for slot=0,5 do h.items[slot]={type=raw('Nlca'),owned=true}end

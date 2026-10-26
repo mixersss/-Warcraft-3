@@ -50,7 +50,7 @@ CreateTrigger=create
 -- The actual Kaiten and palm-combo paths issue native stun orders to the enemy.
 Hero[4]=CreateUnit(4,raw('R004'),0,0,0);HeroRole[4]=4;Hero[4].level=60;Hero[4].hp=10000
 local victim=CreateUnit(12,raw('re06'),100,0,0);victim.hp=10000;World={victim};local cursor=StunCursor
-RosterRepel(4,1);local micro=StunDummy[cursor];assert(micro and GetUnitAbilityLevel(micro,raw('Rmic'))==1,'Kaiten must issue the real microstun ability')
+RosterRepel(4,1);local micro=StunDummy[cursor];assert(micro and GetUnitAbilityLevel(micro,raw('Rkt3'))==1,'Kaiten must issue the dedicated one-second stun ability')
 for _,index in ipairs({22,23})do cursor=StunCursor;RosterApply(4,index,1,victim);assert(StunDummy[cursor]and GetUnitAbilityLevel(StunDummy[cursor],raw('Rstn'))==4,'Palm series must issue its actual native stun, capped at two seconds')end
 GetRandomInt=oldRandom
 print('PASS: exhaustive 100-roll source tables for both forests; eight-genin replenishment and random placements; ramen with either pool full, uninterrupted combat recovery, refresh and death cleanup (mock natives).')

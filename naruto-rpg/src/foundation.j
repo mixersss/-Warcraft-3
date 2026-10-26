@@ -536,6 +536,9 @@ globals
     timer SpawnClock=null
     integer Source35Player=0
     unit Source35Return=null
+    group array Shadow43Helpers
+    group Clone43Units=null
+    hashtable Clone43State=null
     real array Lee42KickElapsed
     real array Lee42KickAngle
     integer array Lee42KickStep

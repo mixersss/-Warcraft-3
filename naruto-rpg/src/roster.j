@@ -81,6 +81,8 @@ function RosterClearVisionMarks takes integer p returns nothing
     set VisionMarkCount[p]=0
 endfunction
 function RosterClearVision takes integer p returns nothing
+    call UnitRemoveAbility(Hero[p],'Rbv3')
+    call UnitRemoveAbility(Hero[p],'BOac')
     call UnitRemoveAbility(Hero[p],'Rbyg')
     set VisionUntil[p]=0.
     call RosterClearVisionMarks(p)
@@ -148,6 +150,8 @@ function RosterVisionPulse takes integer p returns nothing
 endfunction
 function RosterVision takes integer p, integer rank returns nothing
     call RosterClearVision(p)
+    call UnitAddAbility(Hero[p],'Rbv3')
+    call UnitMakeAbilityPermanent(Hero[p],true,'Rbv3')
     call UnitAddAbility(Hero[p],'Rbyg')
     call SetUnitAbilityLevel(Hero[p],'Rbyg',rank)
     call UnitMakeAbilityPermanent(Hero[p],true,'Rbyg')
@@ -158,6 +162,18 @@ function RosterVision takes integer p, integer rank returns nothing
 endfunction
 function RosterClearShadow takes integer p returns nothing
     local integer n=0
+    if VisualChannelIndex[p]==30 then
+        set VisualChannelUntil[p]=0.
+        set VisualChannelIndex[p]=-1
+        set SkillPoseQueued[p]=false
+        if Hero[p]!=null then
+            call SetUnitTimeScale(Hero[p],1.)
+        endif
+    endif
+    if Shadow43Helpers[p]!=null then
+        call ForGroup(Shadow43Helpers[p],function Shadow43RemoveHelper)
+        call GroupClear(Shadow43Helpers[p])
+    endif
     loop
         exitwhen n>=16
         if ShadowSegment[p*16+n]!=null then
@@ -334,6 +350,23 @@ function RosterArea takes integer p, real x, real y, real radius, real damage, r
     set target=null
 endfunction
 // Native placement respects collision; short sampled steps never cross a blocked wall/cliff.
+function Hyuuga43Stun takes integer p, unit target returns nothing
+    local unit dummy=null
+    if not RosterEnemy(target,Player(p)) then
+        return
+    endif
+    if StunDummy[StunCursor]!=null then
+        call RemoveUnit(StunDummy[StunCursor])
+    endif
+    set dummy=CreateUnit(Player(p),'rdst',GetUnitX(target),GetUnitY(target),0.)
+    set StunDummy[StunCursor]=dummy
+    set StunExpires[StunCursor]=TimeNow+1.5
+    set StunCursor=ModuloInteger(StunCursor+1,128)
+    call UnitRemoveAbility(dummy,'Rstn')
+    call UnitAddAbility(dummy,'Rkt3')
+    call IssueTargetOrder(dummy,"thunderbolt",target)
+    set dummy=null
+endfunction
 function RosterRepel takes integer p, integer rank returns nothing
     local unit target=null
     local real x=GetUnitX(Hero[p])
@@ -346,13 +379,17 @@ function RosterRepel takes integer p, integer rank returns nothing
     local real nx=0.
     local real ny=0.
     local integer n=0
-    call GroupEnumUnitsInRange(SkillScratch,x,y,270.,null)
+    local real radius=270.
+    if rank==4 then
+        set radius=400.
+    endif
+    call GroupEnumUnitsInRange(SkillScratch,x,y,radius,null)
     loop
         set target=FirstOfGroup(SkillScratch)
         exitwhen target==null
         call GroupRemoveUnit(SkillScratch,target)
         if RosterEnemy(target,Player(p)) then
-            call RosterStun(p,target,.2)
+            call Hyuuga43Stun(p,target)
             set tx=GetUnitX(target)
             set ty=GetUnitY(target)
             set dx=tx-x

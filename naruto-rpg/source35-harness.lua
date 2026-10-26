@@ -48,7 +48,7 @@ local h=CreateUnit(0,raw('rdst'),0,0,0);h.abilities[raw('R35i')]=1
 local image=CreateUnit(0,raw('R000'),0,0,0);image.illusion=true
 function GetSummoningUnit()return h end;function GetSummonedUnit()return image end
 Controllers[0]='computer';Dummy[0]=target;SkillsSummoned();assert(image.last and image.last.target==target)
-function GetTriggerUnit()return image end;SkillsFragileClone();assert(image.hp==0)
+function GetTriggerUnit()return image end;NativeEventDamage=1;SkillsFragileClone();NativeEventDamage=0;assert(image.hp==0)
 GetSummoningUnit=getSummoner;GetSummonedUnit=getSummoned;GetTriggerUnit=attacked
 -- Native shadow root follows the new Bmlt buff rather than disappearing after grace1s.
 World={target};target.hp=1000000;target.abilities[raw('Bmlt')]=1

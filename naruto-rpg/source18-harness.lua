@@ -4,15 +4,15 @@ TimeNow=900000;CampaignStage=0;CampaignAlliances(0)
 local timers=CreatedTimers
 for _,id in ipairs({'R000','Rnfm'})do
  local clone=CreateUnit(0,raw(id),0,0,0);clone.illusion=true;clone.hp=10000;Caster=clone
- SkillsFragileClone();assert(clone.hp==0,'Naruto clone disappears from one attack regardless of copied HP')
+ Clone43Track(clone);NativeEventDamage=1;SkillsFragileClone();NativeEventDamage=0;assert(clone.hp==0,'Naruto clone disappears from one attack regardless of copied HP')
 end
 local real=CreateUnit(0,raw('R000'),0,0,0);Caster=real;SkillsFragileClone();assert(real.hp==10000,'Never kill the real Naruto')
 local other=CreateUnit(1,raw('R001'),0,0,0);other.illusion=true;Caster=other;SkillsFragileClone();assert(other.hp==10000,'Do not change other illusion families')
-assert(CreatedTimers==timers,'The clone rule uses one shared attack trigger, no per-clone timers')
--- Both Hyuugas get exactly one source hit with requested +20% before the push at every rank.
+assert(CreatedTimers==timers,'The clone rule uses bounded damage registrations, no per-clone timers')
+-- Both Hyuugas get exactly one source hit with requested additional +30% before the push at every rank.
 for _,p in ipairs({4,8})do
  Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);HeroType[p]=Hero[p].type;HeroRole[p]=p;Hero[p].level=60
- for rank,damage in ipairs({120,180,240,420})do
+ for rank,damage in ipairs({156,234,312,546})do
   RosterReset(p);local enemy=CreateUnit(12,raw('re06'),100,0,0);enemy.hp=10000;World={enemy}
   cast(p,PlayableSkill[p*5+1],rank,nil);assert(enemy.hp==10000-damage,'Immediate boosted Kaiten damage before pushing target away')
   for i=1,5 do TimeNow=TimeNow+.5;RosterTick()end

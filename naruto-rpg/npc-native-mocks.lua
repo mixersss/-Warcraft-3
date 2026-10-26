@@ -35,7 +35,7 @@ function SetUnitColor(u,c)u.color=c end
 function GroupAddUnit(g,u)for _,v in ipairs(g)do if v==u then return end end;g[#g+1]=u end
 local npcEnumUnit=nil
 function GetEnumUnit()return npcEnumUnit end
-function ForGroup(g,callback)local old=npcEnumUnit;for _,u in ipairs(g)do npcEnumUnit=u;callback()end;npcEnumUnit=old end
+function ForGroup(g,callback)local old=npcEnumUnit;local snapshot={table.unpack(g)};for _,u in ipairs(snapshot)do npcEnumUnit=u;callback()end;npcEnumUnit=old end
 function ForGroupBJ(g,callback)ForGroup(g,callback)end
 
 function LoadBoolean(t,p,c)return t[p] and t[p][c] or false end
@@ -63,3 +63,11 @@ function LoadInteger(t,p,c)return t[p] and t[p][c] or 0 end
 function SaveInteger(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
 
 function ExecuteFunc(name)assert(type(_G[name])=='function','Missing ExecuteFunc target: '..name);_G[name]()end
+
+-- Classic per-unit damage registrations for Naruto clone impact handling.
+EVENT_UNIT_DAMAGED='damaged'
+function GetEventDamage()return NativeEventDamage or 0 end
+function SaveTriggerHandle(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
+function LoadTriggerHandle(t,p,c)return t[p]and t[p][c]or nil end
+function IsUnitInGroup(u,g)for _,v in ipairs(g)do if u==v then return true end end;return false end
+function TriggerRegisterUnitEvent(t,u,event)t.unitEvents=t.unitEvents or{};t.unitEvents[#t.unitEvents+1]={unit=u,event=event}end

@@ -802,6 +802,34 @@
       "column": 2,
       "repeat": 4,
       "source": "Original3.5 A024"
+    },
+    "Cac1": {
+      "type": "unreal",
+      "column": 1,
+      "specific": "ACac,AIcd",
+      "repeat": 4,
+      "source": "map/classic-balance-metadata.json"
+    },
+    "Ear2": {
+      "type": "bool",
+      "column": 2,
+      "specific": "AEar,AIar,ACat,ACac,AIcd,Aakb",
+      "repeat": 4,
+      "source": "map/classic-balance-metadata.json"
+    },
+    "Ear3": {
+      "type": "bool",
+      "column": 3,
+      "specific": "AEar,AIar,ACat,ACac,AIcd,Aakb",
+      "repeat": 4,
+      "source": "map/classic-balance-metadata.json"
+    },
+    "Ear4": {
+      "type": "bool",
+      "column": 4,
+      "specific": "AEar,AIar,ACat,ACac,AIcd,Aakb",
+      "repeat": 4,
+      "source": "map/classic-balance-metadata.json"
     }
   },
   "unitFields": {
