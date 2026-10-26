@@ -39,8 +39,8 @@ local hooks={};for i=1,40 do local c=CreateUnit(0,raw('Rnfm'),0,0,0);c.illusion=
 for _,pair in ipairs(hooks)do pair[1].hp=0 end
 Clone43Prune();for _,pair in ipairs(hooks)do assert(pair[2].destroyed and not IsUnitInGroup(pair[1],Clone43Units))end
 -- Both Hyuuga heroes keep independent self-only attack bonuses, expiry and death cleanup.
-for _,p in ipairs({4,8})do Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);HeroRole[p]=p;HeroType[p]=Hero[p].type;RosterVision(p,2);assert(GetUnitAbilityLevel(Hero[p],raw('Rbv3'))==1)end
-RosterClearVision(4);assert(GetUnitAbilityLevel(Hero[4],raw('Rbv3'))==0 and GetUnitAbilityLevel(Hero[8],raw('Rbv3'))==1)
+for _,p in ipairs({4,8})do Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);HeroRole[p]=p;HeroType[p]=Hero[p].type;RosterVision(p,2);assert(GetUnitAbilityLevel(Hero[p],raw('Rbv3'))==2)end
+RosterClearVision(4);assert(GetUnitAbilityLevel(Hero[4],raw('Rbv3'))==0 and GetUnitAbilityLevel(Hero[8],raw('Rbv3'))==2)
 TimeNow=TimeNow+16;RosterTick();assert(GetUnitAbilityLevel(Hero[8],raw('Rbv3'))==0)
 RosterVision(4,1);Hero[4].hp=0;RosterTick();assert(GetUnitAbilityLevel(Hero[4],raw('Rbv3'))==0)
 Hero[4].hp=10000;main.x=100;main.y=0;main.hp=10000;World={main};local cursor=StunCursor

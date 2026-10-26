@@ -18,6 +18,11 @@ def units():
     # Match the hfoo-based invading ninjas: native20+6d3 bounty, not zero.
     mods=list({m[0]:m for m in mods+[('ubba',0,20),('ubdi',0,6),('ubsi',0,3)]}.values())
     native=(base,rawid,mods)
+   patch=json.loads((ROOT/'src/mentor-balance46.json').read_text()).get(str(n),{})
+   if patch:
+    base,rawid,mods=native
+    mods=list({m[0]:m for m in list(mods)+[(key,0,value)for key,value in patch.items()]}.values())
+    native=(base,rawid,mods)
    out.append(native)
    continue
   scale=.8 if n!=12 else 1.2
@@ -29,7 +34,11 @@ def units():
   if n in (6,8,15,16):mods.extend([('ua1w',3,'missile'),('ua1r',0,550),('ua1m',3,'Kunai.mdl'),('ua1z',0,1100)])
   seed=json.loads((ROOT/'src/campaign-npc-seeds.json').read_text()).get(str(n),{})
   mods=[(k,t,seed.get(k,v)) for k,t,v in mods]
-  mods=list({m[0]:m for m in mods}.values());out.append(('hfoo',raw(n),mods))
+  mods=list({m[0]:m for m in mods}.values())
+  if n==28:
+   # The absent-player Naruto fallback must be a real hero for native level60.
+   mods += [('upro',3,'Наруто'),('uhab',3,''),('upra',3,'STR'),('ustr',0,20),('uagi',0,20),('uint',0,20),('ustp',2,2.),('uagp',2,1.),('uinp',2,1.5)]
+  out.append(('Hpal'if n==28 else'hfoo',raw(n),mods))
  for f in json.loads((ROOT/'src/village-fountains-source.json').read_text())['fountains']:
   mods=[(m['id'],m['variableType'],m['value'].replace('\\\\','\\')if m['id']=='umdl'else m['value'])for m in f['effectiveModifications']]
   mods.extend([('unam',3,'Фонтан силы'if f['doubleHealth']else'Фонтан восстановления'),('uabi',3,('Crg2'if f['doubleHealth']else'ACnr')+',ANre,Avul')])

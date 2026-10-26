@@ -151,6 +151,7 @@ endfunction
 function RosterVision takes integer p, integer rank returns nothing
     call RosterClearVision(p)
     call UnitAddAbility(Hero[p],'Rbv3')
+    call SetUnitAbilityLevel(Hero[p],'Rbv3',IMaxBJ(1,IMinBJ(4,rank)))
     call UnitMakeAbilityPermanent(Hero[p],true,'Rbv3')
     call UnitAddAbility(Hero[p],'Rbyg')
     call SetUnitAbilityLevel(Hero[p],'Rbyg',rank)

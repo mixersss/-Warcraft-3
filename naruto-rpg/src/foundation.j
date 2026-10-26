@@ -536,6 +536,8 @@ globals
     timer SpawnClock=null
     integer Source35Player=0
     unit Source35Return=null
+    real Story46AttackAt=0.
+    unit array Story46Boss
     hashtable Invasion44Bounty=null
     trigger Invasion44DeathHook=null
     integer array Invasion44Wave
@@ -836,6 +838,7 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call ExecuteFunc("Story46Tick")
     call ExecuteFunc("InvasionRebuildTick")
     call ExecuteFunc("InvasionHeroVisibility")
     call ExecuteFunc("CommonLogTick")

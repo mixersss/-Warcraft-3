@@ -1,0 +1,44 @@
+{
+  "stage": 46,
+  "filename": "Shinobi_Story_Alpha_46.w3x",
+  "bytes": 11024336,
+  "sha256": "65c9589a229ddb4ad75555f26f233b34d7bc9b02fbd804a15b92db2e50e7b7c1",
+  "byakuganPercentByRank": [
+    5,
+    10,
+    15,
+    20
+  ],
+  "nativeFlags": {
+    "Ear2Melee": 1,
+    "Ear3Ranged": 1,
+    "Ear4Flat": 0
+  },
+  "byakuganSourceBugConfirmedFromClassicEditorLabels": true,
+  "actualLearnedRankPropagated": true,
+  "heroAttributesUnchanged": true,
+  "mentors": {
+    "sarutobi": {
+      "hp": 150000,
+      "armor": 12
+    },
+    "kakashiGai": {
+      "hp": 100000,
+      "armor": 20
+    }
+  },
+  "akatsukiStatsAndSpellsUnchanged": true,
+  "akatsukiPreparationAfterPlayerControlSeconds": 10,
+  "storyDuelStage": 16,
+  "narutoMinimumLevel": 60,
+  "keepsGearAndLearnedSkills": true,
+  "spectatorHeroesAndPetsRelocatedOutOfBattlefield": true,
+  "noNewHeroHideOrRemoval": true,
+  "spectatorCameraFollowsDuel": true,
+  "nextSceneNormalPlacement": true,
+  "closedNarutoSlotRealHeroFallback": true,
+  "noNewTimers": true,
+  "allOtherObjectsAssetsMusicAndRuntimeUnchanged": true,
+  "sarutobiCrashCauseStillUnconfirmed": true,
+  "enginePlaytest": false
+}

@@ -37,7 +37,12 @@ def ability_data():
  for n in range(1,5):sight += [('aran',2,200.+200.*n,n,0),('Det1',0,1,n,1),('atar',3,'enemies,vulnerable',n,0)]
  out.append(('Atru','Rbyg',sight))
  # Temporary self-only percentage damage during Byakugan; all native melee/ranged attacks.
- out.append(('ACac','Rbv3',[('anam',3,'Бьякуган: +15% атаки'),('aher',0,0),('aite',0,0),('alev',0,1),('abpy',0,-11),('Cac1',2,.15,1,1),('Ear2',0,0,1,2),('Ear3',0,1,1,3),('Ear4',0,1,1,4),('aare',2,1.,1,0),('atar',3,'self',1,0),('adur',2,0.,1,0),('ahdu',2,0.,1,0),('abuf',3,'BOac',1,0),('acat',3,''),('aefs',3,''),('aefl',3,'')]))
+ byakugan=[('anam',3,'Бьякуган: усиление обычной атаки'),('aher',0,0),('aite',0,0),('alev',0,4),('abpy',0,-11),('acat',3,''),('aefs',3,''),('aefl',3,'')]
+ # Classic editor labels: Ear2=Melee Bonus, Ear3=Ranged Bonus, Ear4=Flat Bonus.
+ # Flat Bonus must be false: Cac1 values are fractional percentages, not +0.05 points.
+ for rank,bonus in enumerate([.05,.10,.15,.20],1):
+  byakugan += [('Cac1',2,bonus,rank,1),('Ear2',0,1,rank,2),('Ear3',0,1,rank,3),('Ear4',0,0,rank,4),('aare',2,1.,rank,0),('atar',3,'self',rank,0),('adur',2,0.,rank,0),('ahdu',2,0.,rank,0),('abuf',3,'BOac',rank,0)]
+ out.append(('ACac','Rbv3',byakugan))
  out.append(('AHtb','Rkt3',[('anam',3,'Кайтэн: оглушение1с'),('aher',0,0),('alev',0,1),('abpy',0,-11),('amcs',0,0,1,0),('acdn',2,0.,1,0),('aran',2,2000.,1,0),('acas',2,0.,1,0),('amsp',0,10000),('Htb1',2,0.,1,1),('adur',2,1.,1,0),('ahdu',2,1.,1,0),('amat',3,''),('aani',3,''),('atar',3,'ground,air,enemy,neutral,organic',1,0),('aefs',3,''),('aefl',3,'')]))
  # Hidden native stun applied by an expiring invisible caster; no PauseUnit locks.
  stun=[('anam',3,'Короткое оглушение'),('aher',0,0),('alev',0,4),('abpx',0,0),('abpy',0,-11),('amat',3,''),('aani',3,''),('acat',3,'')]

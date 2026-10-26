@@ -152,6 +152,7 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    call Story46Clear()
     set CampaignFastTestActive=false
     set CampaignFastWaveCursor=0
     if CampaignQueued!=12 then
@@ -965,6 +966,13 @@ function CampaignSpawnStage takes nothing returns nothing
                 set unused=CampaignAdd(28,13,x-300.,y)
                 set CampaignNaruto=CampaignActor[unused]
             endif
+            call Story46PrepareDuel()
+            if CampaignNarutoPlayer>=0 then
+                call CampaignResetFighter(CampaignNarutoPlayer)
+            endif
+            if CampaignSasukePlayer>=0 then
+                call CampaignResetFighter(CampaignSasukePlayer)
+            endif
         endif
     elseif n==30 then
         set unused=CampaignAdd(3,PLAYER_NEUTRAL_PASSIVE,x-100.,y)
@@ -1098,11 +1106,14 @@ function CampaignStartPlay takes nothing returns nothing
     set j=0
     loop
         exitwhen j>=CampaignCount
-        if CampaignActor[j]!=null and not (CampaignStage==12 and CampaignActorType[j]==13) and CampaignStage!=30 then
+        if CampaignActor[j]!=null and not (CampaignStage==12 and CampaignActorType[j]==13) and CampaignStage!=30 and not (CampaignStage==13 and (CampaignActorType[j]==3 or CampaignActorType[j]==4)) then
             call PauseUnit(CampaignActor[j],false)
         endif
         set j=j+1
     endloop
+    if CampaignStage==13 then
+        call Story46MentorsStart()
+    endif
     set CampaignEndAt=0.
     if CampaignLimit[CampaignStage]>0. then
         set CampaignEndAt=TimeNow+CampaignLimit[CampaignStage]
@@ -1152,7 +1163,7 @@ function CampaignStartPlay takes nothing returns nothing
         exitwhen p>=12
         if Hero[p]!=null then
             call ResetToGameCameraForPlayer(Player(p),1.)
-            if CampaignStage==9 or CampaignStage==11 then
+            if CampaignStage==9 or CampaignStage==11 or CampaignStage==16 then
                 call PanCameraToTimedForPlayer(Player(p),CampaignTX[CampaignStage],CampaignTY[CampaignStage],0.)
             else
                 call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),1.)
@@ -2031,7 +2042,10 @@ function CampaignTick takes nothing returns nothing
             loop
                 exitwhen p>=12
                 if Hero[p]!=null then
-                    if n>=17 then
+                    if n==16 then
+                        call ResetToGameCameraForPlayer(Player(p),0.)
+                        call PanCameraToTimedForPlayer(Player(p),CampaignTX[16],CampaignTY[16],0.)
+                    elseif n>=17 then
                         call PanCameraToTimedForPlayer(Player(p),GetUnitX(Hero[p]),GetUnitY(Hero[p]),0.)
                     else
                         call CameraSetupApplyForPlayer(true,CampaignCamera[camera],Player(p),0.)

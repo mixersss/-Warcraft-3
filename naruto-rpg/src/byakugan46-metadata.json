@@ -1,0 +1,33 @@
+{
+  "source": "Classic enUS1.27.1 AbilityMetaData.slk + WorldEditStrings.txt",
+  "metadataSha256": "891109928d7f34fc5f4e33eb53b807513ae54107b13dea0dde5ce75bbe063246",
+  "labelsSha256": "ad0dbeff29809d210e6856fb44a08dad8d2069ebad17210cda9f3354bc8979ec",
+  "fields": {
+    "Cac1": {
+      "dataColumn": 1,
+      "editorLabel": "Attack Damage Increase"
+    },
+    "Ear2": {
+      "dataColumn": 2,
+      "editorLabel": "Melee Bonus",
+      "percentageAttackRequiredValue": 1
+    },
+    "Ear3": {
+      "dataColumn": 3,
+      "editorLabel": "Ranged Bonus",
+      "percentageAttackRequiredValue": 1
+    },
+    "Ear4": {
+      "dataColumn": 4,
+      "editorLabel": "Flat Bonus",
+      "percentageAttackRequiredValue": 0
+    }
+  },
+  "oldBug": "Ear2=0 disabled melee; Ear4=1 interpreted .15 as a flat amount.",
+  "requestedPercentagePerRank": [
+    0.05,
+    0.1,
+    0.15,
+    0.2
+  ]
+}
