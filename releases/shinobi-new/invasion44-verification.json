@@ -1,0 +1,34 @@
+{
+  "stage": 44,
+  "filename": "Shinobi_Story_Alpha_44.w3x",
+  "sha256": "dce102c026c97e2cd44da94d4b46ac8d690ab5e2f33d735e26fe0838f51f7f3a",
+  "bytes": 11023029,
+  "objectsAndAssetsExactAlpha43": true,
+  "npcVictimOwners": [
+    13,
+    15
+  ],
+  "nativeBountyDisabledOnlyForNPCOwnersDuringInvasion": true,
+  "heroOwnedVictimNativeRewardsUnchanged": true,
+  "explicitLastHitHeroPetCloneSkillOwnership": true,
+  "noHeroRewardFromOrdinaryArmyKills": true,
+  "originalBountyValuesAndDicePreserved": true,
+  "ordinaryNinjaGoldRange": [
+    26,
+    38
+  ],
+  "meanNinjaGold": 32,
+  "pricesAndShoppingUnchanged": true,
+  "deathHookSingleAndPersistent": true,
+  "noNewTimers": true,
+  "wavePatternPerLane": [
+    3,
+    3,
+    4
+  ],
+  "waveLanes": 8,
+  "existingPeriodsDelaysAndFourSafeFormationPositionsPreserved": true,
+  "diagnostic": "-goldcheck",
+  "originalReportedEngineCauseUnconfirmed": true,
+  "enginePlaytest": false
+}

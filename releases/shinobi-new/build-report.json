@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Story_Alpha_43.w3x",
-  "bytes": 11009807,
-  "sha256": "d26b17cbc7fc1a18db2642545b2f0add20a7e67ade9c28f680eb227c4897451c",
+  "filename": "Shinobi_Story_Alpha_44.w3x",
+  "bytes": 11023029,
+  "sha256": "dce102c026c97e2cd44da94d4b46ac8d690ab5e2f33d735e26fe0838f51f7f3a",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata",
   "importedAssets": 392,
@@ -38,7 +38,7 @@
   "nativeImpactSounds": true,
   "musicMode": "user full MP3 tracks, chapter-local alternating loops",
   "experienceProfile": "source native factors and quiz/Jiraiya rewards; independent battle encounters",
-  "stage": "43 Shikamaru source shadow voice/mechanics and Naruto clone hit timing",
+  "stage": "44 explicit NPC bounty attribution and 3/3/4 invasion waves",
   "commonKawarimiForAllHeroes": true,
   "stageTimerHUD": true,
   "questionBankSize": 16,
@@ -52,7 +52,12 @@
   "jiraiyaBarrels": 20,
   "jiraiyaSearchSeconds": 150,
   "invasionStreams": 8,
-  "invasionUnitsPerWave": 4,
+  "invasionUnitsPerWave": 3,
+  "invasionWavePattern": [
+    3,
+    3,
+    4
+  ],
   "autonomousVillageNPCOwners": [
     13,
     15

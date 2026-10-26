@@ -1,8 +1,8 @@
 # Four Fronts Frenzy — 0.23.1-alpha
 
-## Shinobi RPG — Story Alpha43
+## Shinobi RPG — Story Alpha44
 
-[Скачать Shinobi Story Alpha43](releases/shinobi-new/Shinobi_Story_Alpha_43.w3x). Исправлены параметры и голос первого навыка Шикамару, уничтожение клонов после попадания; Бьякуган даёт+15% атаки, Кайтэн+30% урона и1с стана. Шикамару — ловкость, Канкуро — сила, с соответствующими покупками ботов. [Изменения и проверки](naruto-rpg/docs/Release-43.md) · [Проверка Кибы/Канкуро и оставшиеся отличия](naruto-rpg/docs/Kiba-Kankuro-audit-43.md). Новая игра; требуется тест Warcraft1.26.
+[Скачать Shinobi Story Alpha44](releases/shinobi-new/Shinobi_Story_Alpha_44.w3x). За убийства NPC-армией герои не получают награду: явная проверка добивания героем/питомцем/техникой. Размер награды и цены сохранены. Волны каждого направления:3→3→4 с повтором. `-goldcheck` — диагностика дохода. [Изменения и проверки](naruto-rpg/docs/Release-44.md). Новая игра; нужен тест Warcraft1.26.
 
 ## Footman 0.23.1 — текущая версия
 

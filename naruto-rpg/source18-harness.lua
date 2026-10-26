@@ -38,8 +38,8 @@ for p=0,11 do HeroRole[p]=p end
 HeroRole[0]=9;HeroRole[9]=0;CampaignBindRoles();CampaignAlliances(2);CampaignMoveHeroes()
 assert(Hero[0].x==-2336 and Hero[9].x~=-2336 and CampaignAttackerOwner[0]==0,'A Gaara selected by red must join Sand at FM')
 for lane=0,7 do
- local first=CampaignCount;CampaignInvasionWave(lane);assert(CampaignCount==first+4)
- for j=first,first+3 do
+ local first=CampaignCount;local count=(Invasion44Wave[lane]+1)%3==0 and 4 or 3;CampaignInvasionWave(lane);assert(CampaignCount==first+count)
+ for j=first,first+count-1 do
   local u=CampaignActor[j];local owner=PLAYER_NEUTRAL_PASSIVE
   assert(u.owner==owner and IsUnitEnemy(u,9) and not IsUnitEnemy(u,0),'All streams belong to Sand, hostile to Leaf')
   assert(not u.paused and u.last.o=='attack' and CampaignActorRoute[j]==CampaignWaveDestination[lane])

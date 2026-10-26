@@ -627,6 +627,7 @@ function CampaignWaveRecover takes integer slot returns boolean
 endfunction
 function CampaignInvasionWave takes integer lane returns nothing
     local integer n=0
+    local integer count=3
     local integer slot=0
     local integer owner=PLAYER_NEUTRAL_PASSIVE
     local integer origin=CampaignWaveOrigin[lane]
@@ -634,8 +635,12 @@ function CampaignInvasionWave takes integer lane returns nothing
     if CampaignStage!=12 or CampaignTransition then
         return
     endif
+    set Invasion44Wave[lane]=Invasion44Wave[lane]+1
+    if ModuloInteger(Invasion44Wave[lane],3)==0 then
+        set count=4
+    endif
     loop
-        exitwhen n>=4
+        exitwhen n>=count
         set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignWaveSpawnX[lane*4+n],CampaignWaveSpawnY[lane*4+n])
         if slot>=0 then
             set CampaignActorRoute[slot]=destination
@@ -1054,14 +1059,27 @@ function CampaignStartPlay takes nothing returns nothing
             if not CampaignBountyActive then
                 set CampaignBountyBefore[p]=GetPlayerState(Player(p),PLAYER_STATE_GIVES_BOUNTY)
             endif
-            call SetPlayerState(Player(p),PLAYER_STATE_GIVES_BOUNTY,1)
+            if p==13 or p==PLAYER_NEUTRAL_PASSIVE then
+                // NPC victims pay only through the checked killer handler.
+                call SetPlayerState(Player(p),PLAYER_STATE_GIVES_BOUNTY,0)
+            else
+                call SetPlayerState(Player(p),PLAYER_STATE_GIVES_BOUNTY,1)
+            endif
             set p=p+1
         endloop
         set CampaignBountyActive=true
         set p=0
+        loop
+            exitwhen p>=12
+            set Invasion44Earned[p]=0
+            set Invasion44Kills[p]=0
+            set p=p+1
+        endloop
+        set p=0
         set j=0
         loop
             exitwhen j>=8
+            set Invasion44Wave[j]=0
             set CampaignWaveAt[j]=TimeNow+CampaignWavePeriod[j]+CampaignWaveDelay[j]
             set j=j+1
         endloop

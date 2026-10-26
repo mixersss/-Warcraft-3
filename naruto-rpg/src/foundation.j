@@ -536,6 +536,11 @@ globals
     timer SpawnClock=null
     integer Source35Player=0
     unit Source35Return=null
+    hashtable Invasion44Bounty=null
+    trigger Invasion44DeathHook=null
+    integer array Invasion44Wave
+    integer array Invasion44Earned
+    integer array Invasion44Kills
     group array Shadow43Helpers
     group Clone43Units=null
     hashtable Clone43State=null
@@ -671,7 +676,13 @@ function FoundationChat takes nothing returns nothing
     if p>=12 then
         return
     endif
-    if msg=="-village fast" then
+    if msg=="-goldcheck" then
+        if CampaignTestHost(p) then
+            call Invasion44Inspect(p)
+        else
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Диагностика доступна первому игроку-человеку.")
+        endif
+    elseif msg=="-village fast" then
         call CampaignTestFast(p)
     elseif msg=="-sasuke-die" then
         call CampaignTestSasukeDeath(p)

@@ -30,8 +30,8 @@ for n=1,math.ceil(CampaignCount/24)+1 do CampaignNPCTick()end
 for _,u in ipairs(reserves)do assert(u.last==nil and not u.paused,'Healthy guards stay at their source posts instead of marching into the invasion')end
 World={};local first=CampaignCount
 for lane=0,7 do
- local start=CampaignCount;CampaignInvasionWave(lane);assert(CampaignCount==start+4)
- for n=0,3 do
+ local start=CampaignCount;local count=(Invasion44Wave[lane]+1)%3==0 and 4 or 3;CampaignInvasionWave(lane);assert(CampaignCount==start+count)
+ for n=0,count-1 do
   local u=CampaignActor[start+n];assert(u.x==CampaignWaveSpawnX[lane*4+n] and u.y==CampaignWaveSpawnY[lane*4+n])
   for m=0,n-1 do local v=CampaignActor[start+m];assert((u.x-v.x)^2+(u.y-v.y)^2>=96^2,'Wave spawn formation must not overlap')end
  end

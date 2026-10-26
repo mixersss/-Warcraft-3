@@ -71,3 +71,7 @@ function SaveTriggerHandle(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
 function LoadTriggerHandle(t,p,c)return t[p]and t[p][c]or nil end
 function IsUnitInGroup(u,g)for _,v in ipairs(g)do if u==v then return true end end;return false end
 function TriggerRegisterUnitEvent(t,u,event)t.unitEvents=t.unitEvents or{};t.unitEvents[#t.unitEvents+1]={unit=u,event=event}end
+
+function SaveInteger(t,p,c,v)t[p]=t[p]or{};t[p][c]=v;return true end
+function LoadInteger(t,p,c)return t[p]and t[p][c]or 0 end
+UNIT_TYPE_SUMMONED='summoned'

@@ -517,6 +517,7 @@ function SkillsInit takes nothing returns nothing
     local timer clock=CreateTimer()
     set SkillScratch=CreateGroup()
     call Source40Init()
+    call Invasion44Init()
 // GENERATED_SKILLS
     set RosterBonus[0]='Rbev'
     set RosterBonus[1]='Rbcr'

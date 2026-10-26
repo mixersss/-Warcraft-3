@@ -49,7 +49,7 @@ assert(IsUnitEnemy(CampaignVillageKabuto,13) and IsUnitEnemy(CampaignActor[0],15
 assert(not CampaignVillageOro.paused and GetUnitAbilityLevel(CampaignVillageOro,raw('Avul'))==0 and CampaignVillageOro.last.o=='attack','Orochimaru really starts marching')
 for j=0,3 do assert(CampaignEventClock[j]==nil and CampaignEventDialog[j]==nil,'Early arrivals close their original countdowns')end
 local waveCount=0;for j=0,CampaignCount-1 do if CampaignActorRoute[j]>=0 and CampaignActorType[j]~=11 and CampaignActorType[j]~=13 and CampaignActorType[j]~=36 then waveCount=waveCount+1 end end
-assert(waveCount==32,'Eight immediate waves have exactly four ninjas each')
+assert(waveCount==24,'Eight initial waves have three ninjas each')
 for lane=0,7 do assert(CampaignWaveAt[lane]>TimeNow,'Normal repeated waves retain their real next deadlines')end
 Hero[0].level=46
 local before=CampaignCount;FoundationChat();assert(Hero[0].level==46,'Repeated command never lowers levels');assert(CampaignCount==before and CampaignFastWaveCursor==8,'Repeated command never duplicates waves or bosses')

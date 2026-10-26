@@ -139,10 +139,10 @@ assert(counts[17]==140 and counts[34]==102 and counts[32]==6,'All 248 source vil
 for t=0,3 do assert(StoryShop[t],'All four original village shops exist during invasion')end
 local waveStart=TimeNow;local initial=CampaignCount
 for _,p in ipairs({9,10,11})do assert(math.abs(Hero[p].x+2336)<1 and math.abs(Hero[p].y+11840)<=32,'Sand starts at the source enemy camp')end
-TimeNow=waveStart+30;CampaignTick();assert(CampaignCount==initial+16,'Four immediate 30-second streams x four')
-TimeNow=waveStart+45;CampaignTick();assert(CampaignCount==initial+24,'Sand first wave plus delayed Sound')
-TimeNow=waveStart+60;CampaignTick();assert(CampaignCount==initial+44)
-TimeNow=waveStart+75;CampaignTick();assert(CampaignCount==initial+52)
+TimeNow=waveStart+30;CampaignTick();assert(CampaignCount==initial+12,'Four immediate 30-second streams x three')
+TimeNow=waveStart+45;CampaignTick();assert(CampaignCount==initial+18,'Sand first wave plus delayed Sound')
+TimeNow=waveStart+60;CampaignTick();assert(CampaignCount==initial+33)
+TimeNow=waveStart+75;CampaignTick();assert(CampaignCount==initial+39)
 for j=initial,CampaignCount-1 do local u=CampaignActor[j];assert(not u.paused and u.last.o=='attack' and CampaignActorRoute[j]>=0,'Every invader is active and marching to its source waypoint')end
 TimeNow=CampaignKabutoAt;CampaignTick();assert(CampaignVillageKabuto and CampaignVillageKabuto.owner==15)
 TimeNow=CampaignJiraiyaAt;CampaignTick();local jiraiyaPresent=false;for j=0,CampaignCount-1 do if CampaignActorType[j]==33 then jiraiyaPresent=true end end;assert(jiraiyaPresent,'Jiraiya joins the village defense')

@@ -71,7 +71,7 @@ World={};CampaignStage=12;CampaignTransition=true;CampaignFinished=false;Campaig
 CampaignSpawnStage();while CampaignDeployCursor<242 do CampaignDeploy()end
 local gold=GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD);CampaignStartPlay()
 assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==gold,'Enabling bounty cannot change balances')
-for p=0,15 do assert(GetPlayerState(p,PLAYER_STATE_GIVES_BOUNTY)==1,'Native player-owned invasion troops must pay bounty')end
+for p=0,15 do assert(GetPlayerState(p,PLAYER_STATE_GIVES_BOUNTY)==((p==13 or p==15)and 0 or 1),'NPC victims use explicit checked rewards; hero-owned victims retain native bounty')end
 local clocks={};for j=0,3 do clocks[j]=CampaignEventClock[j] end
 local expired=nil;mock('GetExpiredTimer',function()return expired end)
 for _,j in ipairs({0,1,2,3})do expired=clocks[j];assert(expired.callback==CampaignEventWake);expired.callback();assert(CampaignEventClock[j]==nil and expired.destroyed)end
