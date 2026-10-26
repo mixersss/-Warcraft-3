@@ -1,0 +1,37 @@
+{
+  "sourceFile": "Naruto Ultimate RPG 3.5.w3x",
+  "sourceSha256": "7bf624f33fca062c5d33de681a2185af4e0b95afd2e1ab10c00746c1fbb9d5bd",
+  "sourceFunctions": {
+    "RWX": "function RWX takes nothing returns boolean\nreturn(GetUnitTypeId(GetTriggerUnit())=='h00Z')or(GetUnitTypeId(GetTriggerUnit())=='h00G')\nendfunction",
+    "RYX": "function RYX takes nothing returns boolean\nreturn(RWX())\nendfunction",
+    "RZX": "function RZX takes nothing returns nothing\ncall AddHeroXPSwapped(30,RMV,false)\ncall AddHeroXPSwapped(30,RUV,false)\ncall AddHeroXPSwapped(30,R0V,false)\nendfunction"
+  },
+  "registration": "K4: EVENT_PLAYER_UNIT_DEATH, RYX condition, RZX action; disabled after invasion in BGX",
+  "sourceRoleBindings": {
+    "RMV": "H008",
+    "RUV": "H00A",
+    "R0V": "H009"
+  },
+  "victimMapping": {
+    "h00Z": "c011",
+    "h00G": "c022"
+  },
+  "notEligible": [
+    "c020 medic (h02Y)",
+    "c00F Sound",
+    "c010 Sand",
+    "heroes",
+    "illusions"
+  ],
+  "sandRoleIds": [
+    9,
+    10,
+    11
+  ],
+  "xpPerRecipientPerDeath": 30,
+  "requiresHeroLastHit": false,
+  "globalFactorsChanged": false,
+  "nativeXPReplaced": false,
+  "goldChanged": false,
+  "version42Difference": "4.2i BZO instead awards28 for h00Z/h02Y and32 for h00G plus small Leaf wave rewards; use latest requested3.5 RZX30 for h00Z/h00G, no medic bonus."
+}

@@ -27,6 +27,21 @@ function Invasion44HeroOwner takes unit killer returns integer
     endif
     return -1
 endfunction
+// Original3.5 RZX grants30XP to each Sand hero per Leaf/ANBU death, regardless of killer.
+function Invasion47Experience takes unit victim returns nothing
+    local integer p=0
+    local integer raw=GetUnitTypeId(victim)
+    if GetPlayerId(GetOwningPlayer(victim))!=13 or (raw!='c011' and raw!='c022') then
+        return
+    endif
+    loop
+        exitwhen p>=12
+        if Hero[p]!=null and HeroRole[p]>=9 and HeroRole[p]<=11 and GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
+            call AddHeroXP(Hero[p],30,false)
+        endif
+        set p=p+1
+    endloop
+endfunction
 function Invasion44Death takes nothing returns nothing
     local unit victim=GetTriggerUnit()
     local unit killer=GetKillingUnit()
@@ -43,6 +58,7 @@ function Invasion44Death takes nothing returns nothing
         set killer=null
         return
     endif
+    call Invasion47Experience(victim)
     set p=Invasion44HeroOwner(killer)
     if p>=0 and IsUnitEnemy(victim,Player(p)) then
         set raw=GetUnitTypeId(victim)

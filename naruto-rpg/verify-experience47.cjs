@@ -1,0 +1,17 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
+const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
+const root=__dirname,old=new MapFile(),now=new MapFile(),file=fs.readFileSync(root+'/dist/Shinobi_Story_Alpha_47.w3x');
+old.load(new Uint8Array(fs.readFileSync(root+'/../releases/shinobi-new/Shinobi_Story_Alpha_46.w3x')),true);now.load(new Uint8Array(file),true);
+const a=n=>Buffer.from(old.get(n).bytes()),b=n=>Buffer.from(now.get(n).bytes());
+assert.deepEqual(now.getFileNames().sort(),old.getFileNames().sort());
+for(const n of now.getFileNames())if(!['war3map.j','war3map.w3i'].includes(n))assert.deepEqual(b(n),a(n),n+' unchanged including all objects/music/nativeXP constants');
+assert.deepEqual(b('war3map.w3i'),Buffer.from(a('war3map.w3i').toString('latin1').replaceAll('SHINOBI STORY ALPHA 46','SHINOBI STORY ALPHA 47'),'latin1'));
+const src=b('war3map.j').toString(),previous=a('war3map.j').toString();
+assert.equal(src.replace(/^function Invasion47Experience takes[^]*?^endfunction\n/gm,'').replace('    call Invasion47Experience(victim)\n','').replaceAll('SHINOBI STORY ALPHA 47','SHINOBI STORY ALPHA 46'),previous,'Only XP helper and one guarded death-hook call may change runtime');
+const audit=JSON.parse(fs.readFileSync(root+'/src/invasion-experience47-source.json'));
+assert(audit.sourceFunctions.RWX.includes("=='h00Z'")&&audit.sourceFunctions.RWX.includes("=='h00G'"));
+assert.equal((audit.sourceFunctions.RZX.match(/AddHeroXPSwapped\(30,/g)||[]).length,3);
+const death=src.match(/^function Invasion44Death takes[^]*?^endfunction/m)[0];assert(death.indexOf('call Invasion47Experience(victim)')>death.indexOf('return\n    endif'));assert.equal((death.match(/call Invasion47Experience\(/g)||[]).length,1);
+const misc=b('war3mapMisc.txt').toString();assert(misc.includes('HeroFactorXP=90,90,70,70,70,70,70,50,40,40,40,40,40,40,40,40,40,40,30'));assert(misc.includes('HeroExpRange=2000.0'));
+const report={stage:47,filename:'Shinobi_Story_Alpha_47.w3x',bytes:file.length,sha256:crypto.createHash('sha256').update(file).digest('hex'),source:'Naruto Ultimate RPG3.5 RZX',sandXPPerLeafOrAnbuDeath:30,roleBasedRecipients:true,ordinaryArmyStillPaysNoGold:true,nativeExperienceFactorsRangeAndUnitLevelsUnchanged:true,allOtherArchiveFilesUnchangedFrom46:true,enginePlaytest:false};
+fs.writeFileSync(root+'/dist/experience47-verification.json',JSON.stringify(report,null,2)+'\n');console.log('PASS: exact46 archive/runtime delta only restores source3.5 invasion XP; native XP, gold, units, skills, world and music unchanged');
