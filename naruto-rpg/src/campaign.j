@@ -23,6 +23,8 @@ function CampaignAlliances takes integer mode returns nothing
             call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),true)
             call SetPlayerAllianceStateAllyBJ(Player(p),Player(PLAYER_NEUTRAL_PASSIVE),true)
         endif
+        call SetPlayerAlliance(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),ALLIANCE_SHARED_CONTROL,false)
+        call SetPlayerAlliance(Player(PLAYER_NEUTRAL_PASSIVE),Player(p),ALLIANCE_SHARED_ADVANCED_CONTROL,false)
         // Slot13 is the autonomous Leaf NPC side, separate from all hero owners.
         set allied=mode!=2 or HeroRole[p]<9
         call SetPlayerAllianceStateAllyBJ(Player(13),Player(p),allied)
@@ -37,6 +39,10 @@ function CampaignAlliances takes integer mode returns nothing
         call SetPlayerAllianceStateVisionBJ(Player(p),Player(14),false)
         set p=p+1
     endloop
+    call SetPlayerAllianceStateAllyBJ(Player(13),Player(PLAYER_NEUTRAL_PASSIVE),mode!=2)
+    call SetPlayerAllianceStateAllyBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(13),mode!=2)
+    call SetPlayerAllianceStateVisionBJ(Player(13),Player(PLAYER_NEUTRAL_PASSIVE),false)
+    call SetPlayerAllianceStateVisionBJ(Player(PLAYER_NEUTRAL_PASSIVE),Player(13),false)
 endfunction
 function CampaignBindRoles takes nothing returns nothing
     local integer p=0
@@ -622,15 +628,15 @@ endfunction
 function CampaignInvasionWave takes integer lane returns nothing
     local integer n=0
     local integer slot=0
-    local integer owner=CampaignAttackerOwner[CampaignWaveRole[lane]]
+    local integer owner=PLAYER_NEUTRAL_PASSIVE
     local integer origin=CampaignWaveOrigin[lane]
     local integer destination=CampaignWaveDestination[lane]
     if CampaignStage!=12 or CampaignTransition then
         return
     endif
     loop
-        exitwhen n>=3
-        set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignWaveSpawnX[lane*3+n],CampaignWaveSpawnY[lane*3+n])
+        exitwhen n>=4
+        set slot=CampaignAdd(CampaignWaveKind[lane],owner,CampaignWaveSpawnX[lane*4+n],CampaignWaveSpawnY[lane*4+n])
         if slot>=0 then
             set CampaignActorRoute[slot]=destination
             call PauseUnit(CampaignActor[slot],false)
@@ -1837,7 +1843,7 @@ function CampaignInvasionEvents takes nothing returns nothing
         call ExamBroadcast("Джирайя: Я здесь! Помогу защитить деревню.")
     endif
     if CampaignKabutoAt>0. and (CampaignEventDue[0] or TimeNow>=CampaignKabutoAt) then
-        set unused=CampaignAdd(11,CampaignAttackerOwner[1],CampaignSupportX[5],CampaignSupportY[5])
+        set unused=CampaignAdd(11,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[5],CampaignSupportY[5])
         set CampaignVillageKabuto=CampaignActor[unused]
         set CampaignActorRoute[unused]=3
         call IssuePointOrder(CampaignVillageKabuto,"attack",CampaignRouteX[3],CampaignRouteY[3])
@@ -1846,7 +1852,7 @@ function CampaignInvasionEvents takes nothing returns nothing
         call ExamBroadcast("Канкуро: Кабуто прибыл на помощь нападающим!")
     endif
     if CampaignSnakeAt>0. and (CampaignEventDue[2] or TimeNow>=CampaignSnakeAt) then
-        set unused=CampaignAdd(36,CampaignAttackerOwner[2],CampaignSupportX[5],CampaignSupportY[5])
+        set unused=CampaignAdd(36,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[5],CampaignSupportY[5])
         set CampaignVillageSnake=CampaignActor[unused]
         set CampaignActorRoute[unused]=3
         call IssuePointOrder(CampaignVillageSnake,"attack",CampaignRouteX[3],CampaignRouteY[3])

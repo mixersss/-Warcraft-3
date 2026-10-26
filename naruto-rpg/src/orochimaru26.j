@@ -18,7 +18,7 @@ function InvasionOroWatch takes nothing returns nothing
             return
         endif
         if not FoundationAlive(u) then
-            set slot=CampaignAdd(13,CampaignAttackOwner,CampaignSupportX[4],CampaignSupportY[4])
+            set slot=CampaignAdd(13,PLAYER_NEUTRAL_PASSIVE,CampaignSupportX[4],CampaignSupportY[4])
             if slot<0 then
                 set u=null
                 return
@@ -27,7 +27,7 @@ function InvasionOroWatch takes nothing returns nothing
             set CampaignVillageOro=CampaignActor[slot]
             set u=CampaignVillageOro
         endif
-        call SetUnitOwner(u,Player(CampaignAttackOwner),true)
+        call SetUnitOwner(u,Player(PLAYER_NEUTRAL_PASSIVE),true)
         call PauseUnit(u,false)
         call UnitRemoveAbility(u,'Avul')
         call ShowUnit(u,true)

@@ -1,0 +1,14 @@
+{
+  "stage": 38,
+  "filename": "Shinobi_Story_Alpha_38.w3x",
+  "sha256": "2d1808e25da8d5dfedeb36dd662c27ad78a7dbf720703cc99ee088a98772427a",
+  "bytes": 10994616,
+  "autonomousLeafNPCOwner": 13,
+  "autonomousSandNPCOwner": 15,
+  "noPlayerSharedControl": true,
+  "reciprocalNPCArmyHostility": true,
+  "unitsPerWave": 4,
+  "waveSchedulesUnchanged": true,
+  "allOtherRuntimeObjectsWorldMusicUnchanged": true,
+  "enginePlaytest": false
+}

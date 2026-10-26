@@ -37,8 +37,19 @@ for p=0,11 do
  assert(IsUnitEnemy(CampaignActor[0],p)==(HeroRole[p]>=9),'NPC side allied to Leaf and hostile to Sand regardless player slot')
 end
 assert(FoundationAlive(CampaignVillageKabuto) and FoundationAlive(CampaignVillageSnake) and FoundationAlive(CampaignVillageOro) and CampaignOroStarted)
+assert(CampaignVillageKabuto.owner==15 and CampaignVillageSnake.owner==15 and CampaignVillageOro.owner==15,'All attacker bosses are autonomous')
+for j=0,CampaignCount-1 do
+ if CampaignActorRoute[j]>=0 then assert(CampaignActor[j].owner==15,'Every attack stream stays outside human slots')end
+end
+for p=0,11 do
+ assert(not GetPlayerAlliance(15,p,ALLIANCE_SHARED_CONTROL) and not GetPlayerAlliance(15,p,ALLIANCE_SHARED_ADVANCED_CONTROL),'Temari and all others have no enemy army control')
+ assert(IsUnitEnemy(CampaignVillageKabuto,p)==(HeroRole[p]<9),'Attacker NPCs remain allied to Sand heroes and hostile to Leaf')
+end
+assert(IsUnitEnemy(CampaignVillageKabuto,13) and IsUnitEnemy(CampaignActor[0],15),'Both autonomous armies must fight each other')
 assert(not CampaignVillageOro.paused and GetUnitAbilityLevel(CampaignVillageOro,raw('Avul'))==0 and CampaignVillageOro.last.o=='attack','Orochimaru really starts marching')
 for j=0,3 do assert(CampaignEventClock[j]==nil and CampaignEventDialog[j]==nil,'Early arrivals close their original countdowns')end
+local waveCount=0;for j=0,CampaignCount-1 do if CampaignActorRoute[j]>=0 and CampaignActorType[j]~=11 and CampaignActorType[j]~=13 and CampaignActorType[j]~=36 then waveCount=waveCount+1 end end
+assert(waveCount==32,'Eight immediate waves have exactly four ninjas each')
 for lane=0,7 do assert(CampaignWaveAt[lane]>TimeNow,'Normal repeated waves retain their real next deadlines')end
 Hero[0].level=46
 local before=CampaignCount;FoundationChat();assert(Hero[0].level==46,'Repeated command never lowers levels');assert(CampaignCount==before and CampaignFastWaveCursor==8,'Repeated command never duplicates waves or bosses')

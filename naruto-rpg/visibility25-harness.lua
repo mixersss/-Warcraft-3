@@ -18,7 +18,7 @@ CampaignBindRoles();CampaignAlliances(2);CampaignMoveHeroes();CampaignSpawnStage
 local oro=CampaignVillageOro;assert(oro.paused and GetUnitAbilityLevel(oro,raw('Avul'))==1,'Cannot kill the scheduled boss before his entrance')
 while CampaignDeployCursor<242 do CampaignDeploy()end
 CampaignStartPlay();Controllers[9]='human';CampaignAttackOwner=9;TimeNow=CampaignOroAt
-CampaignInvasionEvents();assert(oro.owner==9 and not oro.paused and GetUnitAbilityLevel(oro,raw('Avul'))==0 and not oro.hidden)
+CampaignInvasionEvents();assert(oro.owner==15 and not oro.paused and GetUnitAbilityLevel(oro,raw('Avul'))==0 and not oro.hidden)
 assert(oro.last.o=='attack'and oro.last.x==CampaignRouteX[3]and oro.last.y==CampaignRouteY[3],'Timer actually starts the village march')
 local slot=-1;for j=0,CampaignCount-1 do if CampaignActor[j]==oro then slot=j end end
 assert(slot>=0 and CampaignActorRoute[slot]==3)
