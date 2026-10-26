@@ -25,7 +25,14 @@ killer=CreateUnit(15,raw('c010'),0,0,0)
 for n=1,100 do hook.actions[1]()end
 for p=0,11 do assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==0 and Invasion44Earned[p]==0,'Army kills must never enrich any hero')end
 -- Even an ordinary ninja accidentally owned by a hero must not qualify.
-killer=CreateUnit(9,raw('c010'),0,0,0);hook.actions[1]();assert(GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD)==0)
+for _,p in ipairs({9,10,11})do
+ for _,kind in ipairs({'c00F','c010'})do
+  killer=CreateUnit(p,raw(kind),0,0,0)
+  assert(Invasion44HeroOwner(killer)==-1,'Ordinary Sand/Sound soldier is never a hero pet or spell caster')
+  for n=1,100 do hook.actions[1]()end
+  for _,recipient in ipairs({9,10,11})do assert(GetPlayerState(recipient,PLAYER_STATE_RESOURCE_GOLD)==0 and Invasion44Earned[recipient]==0,'Gaara, Kankuro and Temari gain zero from ordinary soldiers')end
+ end
+end
 killer=Hero[9];hook.actions[1]();assert(GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD)==32 and Invasion44Kills[9]==1)
 for _,p in ipairs({10,11})do killer=Hero[p];hook.actions[1]();assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==32)end
 -- Pets, clones and actual technical spell casters still credit the real owner.
@@ -64,7 +71,7 @@ for wave=1,6 do
  for lane=0,7 do
   local n=CampaignCount;CampaignInvasionWave(lane);local expected=wave%3==0 and 4 or 3
   assert(CampaignCount==n+expected and Invasion44Wave[lane]==wave)
-  for k=0,expected-1 do local u=CampaignActor[n+k];assert(u.owner==15 and u.x==CampaignWaveSpawnX[lane*4+k] and u.y==CampaignWaveSpawnY[lane*4+k])end
+  for k=0,expected-1 do local u=CampaignActor[n+k];assert(u.owner==15 and Invasion44HeroOwner(u)==-1 and u.x==CampaignWaveSpawnX[lane*4+k] and u.y==CampaignWaveSpawnY[lane*4+k])end
  end
 end
 local w=Invasion44Wave[0];CampaignTransition=true;CampaignInvasionWave(0);assert(Invasion44Wave[0]==w)
