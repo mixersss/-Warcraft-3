@@ -70,6 +70,7 @@ function Source35Clear takes integer p returns nothing
     local integer wire=0
     local unit holder=Source35Hero[p]
     local unit mine=null
+    call Lee42Clear(p)
     call Source35LotusEnd(p,false)
     call Source35ChokeEnd(p,true)
     if holder!=null then
@@ -179,10 +180,7 @@ function Source35Apply takes integer p, integer index, integer rank, unit target
         call SetUnitFlyHeight(target,500.,2000.)
         set BotNextCast[p]=TimeNow+10.
     elseif index==16 and Source35Valid(p,target) then
-        // Moving during SPELL_EFFECT cancels Firebolt before native cooldown commits.
-        set Kick35Caster[p]=u
-        set Kick35Target[p]=target
-        set Kick35At[p]=TimeNow+.1
+        call Lee42KickStart(p,target)
     elseif index==17 then
         set Source35Hero[p]=u
         if Drunk35Agility[p]!=0 then
@@ -192,7 +190,7 @@ function Source35Apply takes integer p, integer index, integer rank, unit target
         set Drunk35Rank[p]=rank
         set Drunk35Left[p]=8
         set Drunk35Next[p]=TimeNow
-        call SetUnitAnimationByIndex(u,9)
+        call Lee42DrinkStart(p)
     elseif index==18 then
         set Source35Hero[p]=u
         if Gate35Agility[p]!=0 then
@@ -276,18 +274,6 @@ function Source35TickPlayer takes nothing returns nothing
         call Source35Clear(p)
         set u=null
         return
-    endif
-    if Kick35Caster[p]!=null and TimeNow>=Kick35At[p] then
-        set t=Kick35Target[p]
-        if Kick35Caster[p]==u and Source35Valid(p,t) and not IsUnitPaused(u) and Lotus35Caster[p]==null and Choke35Caster[p]==null then
-            if not IsTerrainPathable(GetUnitX(t)-80.,GetUnitY(t),PATHING_TYPE_WALKABILITY) then
-                call SetUnitPosition(u,GetUnitX(t)-80.,GetUnitY(t))
-            endif
-            call SetUnitAnimationByIndex(u,3)
-        endif
-        set Kick35Caster[p]=null
-        set Kick35Target[p]=null
-        set Kick35At[p]=0.
     endif
     if Choke35Caster[p]!=null and (Choke35Caster[p]!=u or not Source35Valid(p,Choke35Target[p]) or TimeNow>=Choke35Until[p]) then
         call Source35ChokeEnd(p,true)

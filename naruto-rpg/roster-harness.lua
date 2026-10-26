@@ -117,6 +117,7 @@ for p=0,11 do
    TimeNow=300+p*10+slot;BotNextCast[p]=0
    for s=0,4 do BotReadyAt[p*5+s]=999999 end
    BotReadyAt[index]=0
+   if index==6 then SharinganUntil[p]=0 end
    if SkillHeal[index] then Hero[0].hp=1000;Hero[0].x=0;Hero[0].y=0 end
    if index==54 then Companion[30]=make(10,0,0)end
    local before=#Orders

@@ -1,0 +1,39 @@
+{
+  "stage": 42,
+  "filename": "Shinobi_Story_Alpha_42.w3x",
+  "sha256": "1f1f9ddf22069edb1bc6162a4c558005fd253f8d40c18f6b0f2295b430c28d4f",
+  "bytes": 11008421,
+  "sourceVersion": "3.5",
+  "leeNativeDamage": [
+    100,
+    150,
+    250,
+    400
+  ],
+  "leeNativeDamageAlreadyCorrectIn41": true,
+  "leeFormerRange": 800,
+  "leeMeleeRange": 90,
+  "leeStun": 0.25,
+  "leeCooldown": [
+    25,
+    25,
+    25,
+    35
+  ],
+  "leeFineClockSeconds": 0.05,
+  "sourceKickRiseAndAcceleratedPose": true,
+  "sourcePushWithScenePathCliffGuards": true,
+  "suikenStatsUnchanged": true,
+  "suikenSourcePoseSequence": [
+    9,
+    6,
+    6,
+    6
+  ],
+  "sharinganCombatPriority": true,
+  "sharinganCooldownCommittedOnlyOnEffect": true,
+  "sharinganBonusAndNativeObjectUnchanged": true,
+  "allOtherObjectsWorldMusicExactAlpha41": true,
+  "sasukeRecoveryExactAlpha41": true,
+  "enginePlaytest": false
+}

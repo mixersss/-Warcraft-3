@@ -101,6 +101,9 @@ function SkillsEffect takes nothing returns nothing
         call CommonLogEffect(p)
     endif
     if index>=0 then
+        if index!=16 and index!=17 then
+            call Lee42Clear(p)
+        endif
         if SkillMorph[index] then
             // Remove Wind Walk before a native form change can retain its hidden state.
             call CommonLogClear(p)
@@ -149,6 +152,7 @@ function SkillsEffect takes nothing returns nothing
         set SharinganArt[p]=AddSpecialEffectTarget("Eye_Sharingan.mdl",caster,"overhead")
         call UnitMakeAbilityPermanent(caster,true,'Rsag')
         set SharinganUntil[p]=TimeNow+6.5+2.*rank
+        set BotReadyAt[p*5+1]=TimeNow+SkillCooldown[6]+2.
     elseif raw=='Rs03' and FoundationAlive(target) then
         set ComboTarget[p]=target
         set ComboLeft[p]=3
@@ -364,6 +368,16 @@ function SkillsBot takes integer p returns boolean
         set target=null
         return false
     endif
+    // Activate the short combat buff before competing damage/transform spells.
+    // Reserve the real cooldown only in SPELL_EFFECT, not on an accepted order.
+    if role==1 and SharinganUntil[p]<=TimeNow and TimeNow>=BotReadyAt[p*5+1] and GetUnitAbilityLevel(u,'Rs02')>0 and GetUnitState(u,UNIT_STATE_MANA)>=200. and SkillsCanSee(target,Player(p)) then
+        if IssueImmediateOrder(u,"stomp") then
+            set BotNextCast[p]=TimeNow+2.5
+            set u=null
+            set target=null
+            return true
+        endif
+    endif
     loop
         exitwhen k<0 or issued
         set raw=PlayableSkill[role*5+k]
@@ -376,7 +390,9 @@ function SkillsBot takes integer p returns boolean
             else
                 set target=Dummy[(p-ModuloInteger(p,3))/3]
             endif
-            if SkillHeal[role*5+k] and target==null then
+            if raw=='Rs02' then
+                // Sharingan is handled by its combat-priority branch above.
+            elseif SkillHeal[role*5+k] and target==null then
                 // Healing only spends mana when an ally actually needs it.
             elseif raw=='RA05' and not Source40HasPuppet(p) then
                 // Bombardment requires a real living puppet.

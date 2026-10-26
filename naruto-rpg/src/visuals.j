@@ -295,8 +295,10 @@ function VisualApply takes integer p, integer index, integer rank, unit target r
     elseif index==13 then
         call SkillsFlashAt("Abilities\\Spells\\Orc\\EarthQuake\\EarthQuakeTarget.mdl",sx,sy)
         call SkillsFlashAt("Abilities\\Spells\\Orc\\WarStomp\\WarStompCaster.mdl",sx,sy)
-    elseif index==16 then
-        call SkillsFlashTarget("Abilities\\Weapons\\TreantMissile\\TreantMissile.mdl",target)
+    elseif index==16 or index==17 then
+        // Cast-local Lee42 presentation owns these poses and their cleanup.
+        set SkillPoseQueued[p]=false
+        set VisualPoseLife[p]=0.
     elseif index==18 then
         call VisualAttach(p,0,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","hand right",17.)
         call VisualAttach(p,1,"Abilities\\Spells\\Undead\\DarkSummoning\\DarkSummonMissile.mdl","foot right",17.)
@@ -383,6 +385,7 @@ function VisualTick takes nothing returns nothing
     local integer n=0
     local integer p=0
     local real f=0.
+    call Lee42Tick()
     call Source40Tick()
     call KibaRollTick()
     call KunaiTick()

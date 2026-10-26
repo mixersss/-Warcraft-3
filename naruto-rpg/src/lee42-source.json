@@ -1,0 +1,35 @@
+{
+  "source": "Naruto Ultimate RPG3.5",
+  "mapSha256": "7bf624f33fca062c5d33de681a2185af4e0b95afd2e1ab10c00746c1fbb9d5bd",
+  "note": "Original action evidence, not instructions. Native first two Firebolt damage ranks inherit stock ANfb. Safe path/scene guards replace original unbounded shared actor timer.",
+  "functions": {
+    "EFE": {
+      "code": "function EFE takes nothing returns nothing\ncall UnitAddAbility(GetTriggerUnit(),'Amrf')\ncall UnitRemoveAbility(GetTriggerUnit(),'Amrf')\ncall SetUnitFlyHeight(GetTriggerUnit(),100.,200.)\ncall SetUnitPathing(GetTriggerUnit(),false)\ncall TriggerSleepAction(1.2)\ncall SetUnitFlyHeight(GetTriggerUnit(),.0,600.)\ncall SetUnitPathing(GetTriggerUnit(),true)\nendfunction",
+      "sha256": "2d359b2ea92f420a5f48e9eb59db0ae40c9d42cf3e778affc7b9ca911d4de270"
+    },
+    "EKE": {
+      "code": "function EKE takes nothing returns nothing\nset OA=GetSpellAbilityUnit()\nset RA=GetUnitLoc(GetSpellAbilityUnit())\nset PB=GetSpellTargetUnit()\nset IA=GetUnitLoc(PB)\ncall TriggerSleepAction(.01)\ncall SetUnitTimeScalePercent(GetTriggerUnit(),200.)\ncall TriggerSleepAction(.3)\ncall SetUnitTimeScalePercent(GetTriggerUnit(),100.)\ncall SetUnitAnimationByIndex(GetSpellAbilityUnit(),3)\nset MB[0]=ATV(SC)\nset MB[1]=ATV(WC)\nset MB[2]=ATV(IG)\ncall GroupAddGroup(MB[1],MB[0])\ncall GroupAddGroup(MB[2],MB[0])\nif(EJE())then\nelse\ncall SetUnitPositionLoc(GetTriggerUnit(),IA)\ncall RemoveLocation(IA)\ncall EnableTrigger(SW)\ncall TriggerSleepAction(.7)\ncall DisableTrigger(SW)\nendif\ncall RemoveLocation(RA)\nendfunction",
+      "sha256": "a4622d783cc388687884e3103a60f48ba0fe16ac159f27e3ce9675821be68913"
+    },
+    "EME": {
+      "code": "function EME takes nothing returns nothing\nset IA=GetUnitLoc(PB)\ncall AddSpecialEffectLocBJ(IA,\"Abilities\\\\Weapons\\\\TreantMissile\\\\TreantMissile.mdl\")\ncall DestroyEffect(bj_lastCreatedEffect)\ncall SetUnitPositionLoc(PB,ADV(IA,12.,AngleBetweenPoints(RA,IA)))\ncall RemoveLocation(IA)\nendfunction",
+      "sha256": "537a163e5723a6d46aec54f08d2ed51a318f462fb69e620fcb57e762a2d6155e"
+    },
+    "BKE": {
+      "code": "function BKE takes nothing returns nothing\nset RI=GetTriggerUnit()\ncall TriggerExecute(LZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(MZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(PZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(QZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(SZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(TZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(UZ)\ncall TriggerSleepAction(1.)\ncall TriggerExecute(WZ)\ncall TriggerSleepAction(1.)\ncall ModifyHeroStat(1,RI,1,IB)\ncall ModifyHeroStat(1,RI,1,AB)\ncall ModifyHeroStat(1,RI,1,NB)\ncall ModifyHeroStat(1,RI,1,BB)\ncall ModifyHeroStat(1,RI,1,CB)\ncall ModifyHeroStat(1,RI,1,DB)\ncall ModifyHeroStat(1,RI,1,FB)\ncall ModifyHeroStat(1,RI,1,GB)\nendfunction",
+      "sha256": "5088ab2e292a111537b2de732c68178730cf1d94390f79a454753172f4c5005d"
+    },
+    "BQE": {
+      "code": "function BQE takes nothing returns nothing\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\nif(BPE())then\nset IB=GetRandomInt(-5,$A)\ncall ModifyHeroStat(1,RI,0,IB)\nelse\nif(BME())then\nset IB=GetRandomInt(-$A,20)\ncall ModifyHeroStat(1,RI,0,IB)\nelse\nset IB=GetRandomInt(-20,40)\ncall ModifyHeroStat(1,RI,0,IB)\nendif\nendif\nendfunction",
+      "sha256": "963f55b3f79897312188b67fb14b4bb676678e1f5b5ba28ac495c2131e3b9e27"
+    },
+    "B8E": {
+      "code": "function B8E takes nothing returns nothing\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\nif(B7E())then\nset CB=GetRandomInt(0,5)\ncall ModifyHeroStat(1,RI,0,CB)\nelse\nif(B6E())then\nset CB=GetRandomInt(-$A,20)\ncall ModifyHeroStat(1,RI,0,CB)\nelse\nset CB=GetRandomInt(-20,40)\ncall ModifyHeroStat(1,RI,0,CB)\nendif\nendif\nendfunction",
+      "sha256": "96128f201f80887d5adb57192c39e3a98adf247b0e2d3e488439d4be6c5c91db"
+    },
+    "CHE": {
+      "code": "function CHE takes nothing returns nothing\ncall TriggerSleepAction(.01)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),9)\ncall TriggerSleepAction(.25)\ncall SetUnitTimeScalePercent(GetTriggerUnit(),150.)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\ncall TriggerSleepAction(.25)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\ncall TriggerSleepAction(.25)\ncall SetUnitAnimationByIndex(GetTriggerUnit(),6)\ncall TriggerSleepAction(.35)\ncall SetUnitTimeScalePercent(GetTriggerUnit(),100.)\nendfunction",
+      "sha256": "c7b02e028564e32775d400adc13d99aa46885f215cdd7406a9d22296a2749b3c"
+    }
+  }
+}

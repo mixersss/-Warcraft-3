@@ -12,6 +12,9 @@ for index=0,59 do
   if index==8 then
    assert(not SkillPoseQueued[p] and VisualApproachSkill[p]==8 and VisualApproachCaster[p]==Caster,'Chidori runs source rush/impact sequence instead of queued looping charge')
    SkillsTick()
+  elseif index==16 or index==17 then
+   assert(not SkillPoseQueued[p],'Lee source sequence replaces generic replay')
+   if index==16 then assert(Kick35Caster[p]==Caster)else assert(Lee42DrinkCaster[p]==Caster and Caster.animationIndex==9)end
   else
    assert(SkillPoseQueued[p] and SkillPoseIndex[p]==SkillAnimation[index])
    SkillsTick();assert(not SkillPoseQueued[p] and Caster.animationIndex==((KibaFourLegs[p] and p==7 and index~=37 and index~=38) and 15 or SkillAnimation[index]),'Native spell must animate after instant cast ends '..index)

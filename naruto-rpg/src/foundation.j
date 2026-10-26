@@ -536,6 +536,12 @@ globals
     timer SpawnClock=null
     integer Source35Player=0
     unit Source35Return=null
+    real array Lee42KickElapsed
+    real array Lee42KickAngle
+    integer array Lee42KickStep
+    unit array Lee42DrinkCaster
+    real array Lee42DrinkElapsed
+    integer array Lee42DrinkStep
     unit array Kick35Caster
     unit array Kick35Target
     real array Kick35At

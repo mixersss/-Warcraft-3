@@ -6,10 +6,17 @@ local position=SetUnitPosition;local effect=false
 function SetUnitPosition(u,x,y)assert(not effect,'Never interrupt native Firebolt inside SPELL_EFFECT');position(u,x,y)end
 effect=true;Source35Apply(3,16,1,victim);VisualApply(3,16,1,victim);effect=false
 assert(lee.x==0 and Kick35Caster[3]==lee and Kick35Target[3]==victim)
-TimeNow=TimeNow+.5;Source35Tick();assert(lee.x==320 and not Kick35Caster[3])
-Source35Apply(3,16,1,victim);local at=lee.x;victim.hp=0;TimeNow=TimeNow+.5;Source35Tick();assert(lee.x==at and not Kick35Target[3]);victim.hp=10000
+local inside42,cliff42,terrain42=TreeJumpInside,GetTerrainCliffLevel,IsTerrainPathable;function TreeJumpInside(p,x,y)return true end
+function GetTerrainCliffLevel(x,y)return 0 end
+function IsTerrainPathable(x,y,t)return false end
+for n=1,7 do Lee42Tick()end
+assert(lee.x==360 and Kick35Caster[3]==lee,'Source kick pose '..tostring(lee.x)..' ref '..tostring(Kick35Caster[3])..' dead '..tostring(lee.dead)..' hidden '..tostring(lee.hidden))
+for n=1,18 do Lee42Tick()end
+assert(not Kick35Caster[3] and lee.flyHeight==0 and lee.timeScale==1)
+Source35Apply(3,16,1,victim);local at=lee.x;victim.hp=0;Lee42Tick();assert(lee.x==at and not Kick35Target[3]);victim.hp=10000
 Source35Apply(3,16,1,victim);Source35Clear(3);assert(not Kick35Caster[3] and Kick35At[3]==0)
-Source35Apply(3,16,1,victim);Hero[3]=CreateUnit(3,999,100,0,0);TimeNow=TimeNow+.5;Source35Tick();assert(Hero[3].x==100 and not Kick35Caster[3]);Hero[3]=lee
+Source35Apply(3,16,1,victim);Hero[3]=CreateUnit(3,999,100,0,0);Lee42Tick();assert(Hero[3].x==100 and not Kick35Caster[3] and lee.flyHeight==0);Hero[3]=lee
+TreeJumpInside,GetTerrainCliffLevel,IsTerrainPathable=inside42,cliff42,terrain42
 SetUnitPosition=position
 -- Native powerup purchases consume real125 gold and apply+6 without needing inventory space.
 CampaignStage=12;CampaignTransition=false;CampaignFinished=false;StoryShopsOpen();World={}
