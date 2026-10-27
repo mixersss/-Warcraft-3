@@ -1,7 +1,7 @@
 {
-  "filename": "Shinobi_Story_Alpha_52.w3x",
-  "bytes": 11033809,
-  "sha256": "5f1865f05045776e57973be77a0465bc3c071c1d9a3d59b07484f2bd8fd384c4",
+  "filename": "Shinobi_Story_Alpha_53.w3x",
+  "bytes": 11033877,
+  "sha256": "2887dbf42a653e443f8059eb1e9c6bab69bc4e7b347a79a32de4f85fa3bb0491",
   "newMetadataAndScript": true,
   "copiedOriginalScenarioOrObjects": "terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata",
   "importedAssets": 392,

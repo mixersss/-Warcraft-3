@@ -82,6 +82,14 @@ end
 -- At most8 purchases/call, no unbounded loop with a large balance.
 StatBought50[0]=0;SetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD,2000);StoryBuyAt[0]=0;StoryBuy(0);assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==1000 and StatBought50[0]==8)
 TimeNow=TimeNow+1;StoryBuy(0);assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==0 and StatBought50[0]==16)
+-- Idle heroes rally at the arena entrance; they still fight and make genuine shop trips.
+for p=0,11 do
+ local h=Hero[p];h.hp=h.maxLife;h.dead=false;h.paused=false;h.x=15500;h.y=-15600
+ StoryRetreat[StoryTeam(p)]=false;StoryShopTripUntil[p]=0;StoryBuyAt[p]=TimeNow+100
+ CampaignBot(p,nil);assert(h.last.o=='attack'and h.last.x==15932 and h.last.y==-13600,'All12 rally by Sarutobi, not lane corners')
+ h.x=15932;h.y=-13600;CampaignBot(p,nil);assert(h.last.o=='holdposition','Idle heroes hold the entrance')
+ local target=CreateUnit(15,raw('c010'),15800,-13700,0);CampaignBot(p,target);assert(h.last.o=='attack'and h.last.target==target,'Visible enemies override hold')
+end
 -- Only corpses expire; living units are never culled. Objective cannot be recycled on death.
 local living=CampaignActor[17];local corpse=CampaignActor[18];corpse.hp=0;corpse.dead=true;Endless50CleanupCursor=18;Endless50Cleanup();TimeNow=TimeNow+120;Endless50CleanupCursor=18;Endless50Cleanup();assert(corpse.removed and CampaignActor[18]==nil and not living.removed)
 local sasuke=Hero[1];InvasionSourceRemove(sasuke,'endless-test');assert(Hero[1]==sasuke and not sasuke.removed,'Preserve real Sasuke from NPC cleanup in endless mode')

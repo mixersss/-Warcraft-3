@@ -1650,7 +1650,14 @@ function CampaignBot takes integer p, unit enemy returns nothing
         endif
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)
-    elseif (CampaignStage==12 and HeroRole[p]<9) or CampaignStage==31 then
+    elseif CampaignStage==31 then
+        // Shared defense holds the arena entrance instead of the original invasion lane corners.
+        if not ExamNear(Hero[p],15932.,-13600.,192.) then
+            call IssuePointOrder(Hero[p],"attack",15932.,-13600.)
+        else
+            call IssueImmediateOrder(Hero[p],"holdposition")
+        endif
+    elseif CampaignStage==12 and HeroRole[p]<9 then
         // Fixed 30/70 allocation prevents every hero chasing the same northern wave.
         if CampaignDefenseLane[p]==5 then
             call IssuePointOrder(Hero[p],"attack",CampaignRouteX[5],CampaignRouteY[5])

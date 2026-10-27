@@ -12,6 +12,8 @@ for(let j50=0;j50<cfg50.guardians.length;j50++){
  assert.equal(values('Endless50Kind')[j50],p50.kind);assert.equal(values('Endless50X')[j50],p50.x);assert.equal(values('Endless50Y')[j50],p50.y);
 }
 assert.equal(cfg50.guardians.length,17);
+assert(!blocked[cell(...cfg50.heroRally)]&&connected[cell(...cfg50.heroRally)],'Arena-entrance rally is walkable and connected');
+assert(Math.hypot(cfg50.heroRally[0]-cfg50.guardians[0].x,cfg50.heroRally[1]-cfg50.guardians[0].y)<400,'Rally near Sarutobi');
 assert.equal(cfg50.heroSpawns.length,12,'All twelve slots need explicit village arrivals');
 for(let j=0;j<12;j++){
  const p=cfg50.heroSpawns[j];assert.equal(values('Endless50SpawnX')[j],p[0]);assert.equal(values('Endless50SpawnY')[j],p[1]);

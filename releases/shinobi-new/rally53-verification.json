@@ -1,0 +1,15 @@
+{
+  "filename": "Shinobi_Story_Alpha_53.w3x",
+  "bytes": 11033877,
+  "sha256": "2887dbf42a653e443f8059eb1e9c6bab69bc4e7b347a79a32de4f85fa3bb0491",
+  "endlessIdleRally": [
+    15932,
+    -13600
+  ],
+  "holdRadius": 192,
+  "all12BotRolesCovered": true,
+  "combatRetreatShoppingPreserved": true,
+  "originalInvasionLanesUnchanged": true,
+  "allOtherObjectsAssetsAndGameplayUnchanged": true,
+  "enginePlaytest": false
+}
