@@ -13,12 +13,12 @@ Source40Clear(7)
 -- Arena: emergency only, once per bout, attack instead of repeat escape movement.
 local h=Hero[0];h.abilities[raw('Rlog')]=1;h.hp=3000;LogReadyAt[0]=0;LogUntil[0]=0;LogArenaUsed[0]=false;VisualChannelUntil[0]=0;ComboLeft[0]=0
 assert(not CommonLogBot(0,foe),'30% HP is not an arena emergency')
-h.hp=1500;assert(CommonLogBot(0,foe)and LogArenaUsed[0]and h.last.o=='windwalk')
+h.hp=1500;LogLastDamageAt[0]=TimeNow;LogBotNextAt[0]=0;assert(CommonLogBot(0,foe)and LogArenaUsed[0]and h.last.o=='windwalk')
 CommonLogEffect(0);TimeNow=TimeNow+1;assert(CommonLogBot(0,foe)and h.last.o=='attack'and h.last.target==foe,'No repeated movement away under invisibility')
 h.order=OrderId('attack');local ongoing=h.last;assert(CommonLogBot(0,foe)and h.last==ongoing,'Do not reset an ongoing attack');h.order=0
 TimeNow=TimeNow+30;assert(not CommonLogBot(0,foe),'No second escape after cooldown')
-CampaignResetFighter(0);assert(not LogArenaUsed[0]and CommonLogBot(0,foe),'Next bout has its own emergency use')
-CommonLogClear(0);CampaignStage=0;LogReadyAt[0]=0;h.hp=3000;assert(CommonLogBot(0,foe),'Outside arena original45% escape remains')
+CampaignResetFighter(0);LogLastDamageAt[0]=TimeNow;assert(not LogArenaUsed[0]and CommonLogBot(0,foe),'Next bout has its own emergency use')
+CommonLogClear(0);CampaignStage=0;LogReadyAt[0]=0;h.hp=3000;assert(not CommonLogBot(0,foe),'30% HP alone no longer triggers escape outside arenas')
 -- One native level per actual victory; neither loser nor next idle tick gets it.
 CommonLogClear(0);CampaignStage=9;CampaignTransition=false;CampaignFinalActive=false;CampaignDuelLive=true;CampaignDuelA=0;CampaignDuelB=3;CampaignWinnerCount=0;CampaignBracket=false;CampaignQueueCount=0;CampaignQueueCursor=0
 h.hp=10000;h.level=40;Hero[3].hp=0;Hero[3].level=40

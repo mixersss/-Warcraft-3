@@ -29,6 +29,9 @@ def unit_entries():
    mods.extend([('unam',3,name),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,'')])
    if raw in ['re01','re03','re04']:mods.append(('uabi',3,{'re01':'','re03':'A00F','re04':'S028,S022'}[raw]))
    mods=list({m[0]:m for m in mods}.values())
+   if raw=='re04':
+    cfg=json.loads((ROOT/'src/balance49.json').read_text())
+    mods=[(k,t,round(v*cfg['zabuzaHPMultiplier'])if k=='uhpm'else round(v*cfg['zabuzaAttackMultiplier'])if k in ('ua1b','ua1s')else v)for k,t,v in mods]
    out.append((native['oldId'],raw,mods))
   else:
    out.append(('hfoo',raw,mods))

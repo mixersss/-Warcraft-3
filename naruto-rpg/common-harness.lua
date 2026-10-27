@@ -3,9 +3,9 @@ local function raw(s)local n=0;for i=1,4 do n=n*256+string.byte(s,i)end;return n
 function I2S(n)return tostring(math.floor(n))end
 function IssueImmediateOrder(u,o)u.last={o=o};return true end
 TimeNow=10000;Hero={};HeroRole={};HeroType={};StoryStage={[0]=1,[1]=1,[2]=1,[3]=1}
-for p=0,11 do Hero[p]=CreateUnit(p,p,-14000,14000,0);Hero[p].abilities[raw('Rlog')]=1;HeroRole[p]=p;HeroType[p]=p;LogReadyAt[p]=0;LogUntil[p]=0 end
+for p=0,11 do Hero[p]=CreateUnit(p,p,-14000,14000,0);Hero[p].abilities[raw('Rlog')]=1;HeroRole[p]=p;HeroType[p]=p;LogReadyAt[p]=0;LogUntil[p]=0;LogBotNextAt[p]=0;LogLastDamageAt[p]=TimeNow end
 local enemy=CreateUnit(12,0,-13800,14000,0)
-Hero[0].hp=3000;Hero[0].mana=150;ComboLeft[0]=0;VisualChannelUntil[0]=0
+Hero[0].hp=1500;Hero[0].mana=150;ComboLeft[0]=0;VisualChannelUntil[0]=0
 assert(CommonLogBot(0,enemy) and Hero[0].last.o=='windwalk','Wounded bot casts the real native order')
 Caster=Hero[0];Spell=raw('Rlog');Target=nil
 local timers=CreatedTimers;SkillsEffect();local log=LogActor[0]
@@ -14,10 +14,10 @@ TimeNow=10001;assert(CommonLogBot(0,enemy) and Hero[0].last.o=='move','Do not im
 TimeNow=10001.5;CommonLogTick();assert(not LogActor[0] and log.removed,'Log removed after 1.5 seconds')
 TimeNow=10003;assert(not CommonLogBot(0,enemy),'Respect the 22-second cooldown')
 TimeNow=10022;Hero[0].mana=149;assert(not CommonLogBot(0,enemy),'No cast without 150 mana')
-Hero[0].mana=150;Hero[0].hp=9000;assert(not CommonLogBot(0,enemy),'Healthy bots keep fighting')
-Hero[0].hp=3000;assert(CommonLogBot(0,enemy))
+TimeNow=10045;LogLastDamageAt[0]=TimeNow;Hero[0].mana=150;Hero[0].hp=9000;assert(not CommonLogBot(0,enemy),'Healthy bots keep fighting')
+Hero[0].hp=1500;assert(CommonLogBot(0,enemy))
 CommonLogEffect(0);local nextLog=LogActor[0];Hero[0].hp=0;CommonLogTick();assert(not LogActor[0] and nextLog.removed and LogUntil[0]==0,'Death cleanup')
-Hero[0].hp=3000;CommonLogEffect(0);nextLog=LogActor[0];RosterReset(0);assert(not LogActor[0] and nextLog.removed,'Reselection/chapter cleanup')
+Hero[0].hp=1500;CommonLogEffect(0);nextLog=LogActor[0];RosterReset(0);assert(not LogActor[0] and nextLog.removed,'Reselection/chapter cleanup')
 assert(CreatedTimers==timers)
 -- Timers for preparation, unbounded battle elapsed time, transitions, quiz and both forest deadlines.
 assert(HUDTime(65.9)=='1:05' and HUDTime(-1)=='0:00')

@@ -364,3 +364,5 @@ console.log('PASS: 58 skills across 12 heroes, stock bases/field types/data colu
 run(fs.readFileSync(__dirname+'/invasion47-harness.lua','utf8'));
 
 run(fs.readFileSync(__dirname+'/balance48-harness.lua','utf8'));
+
+run(fs.readFileSync(__dirname+'/balance49-harness.lua','utf8'));

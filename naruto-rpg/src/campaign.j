@@ -13,7 +13,7 @@ function CampaignAlliances takes integer mode returns nothing
                 set allied=(HeroRole[p]<9 and HeroRole[q]<9) or (HeroRole[p]>=9 and HeroRole[q]>=9)
             endif
             call SetPlayerAllianceStateAllyBJ(Player(p),Player(q),allied)
-            call SetPlayerAllianceStateVisionBJ(Player(p),Player(q),allied and CampaignStage!=9 and CampaignStage!=11)
+            call SetPlayerAllianceStateVisionBJ(Player(p),Player(q),p==q or (allied and CampaignStage!=9 and CampaignStage!=11))
             set q=q+1
         endloop
         if mode==2 then
@@ -518,6 +518,8 @@ endfunction
 function CampaignResetFighter takes integer p returns nothing
     local integer k=0
     set LogArenaUsed[p]=false
+    set LogBotNextAt[p]=0.
+    set LogLastDamageAt[p]=0.
     call UnitResetCooldown(Hero[p])
     loop
         exitwhen k>=5
@@ -1589,18 +1591,18 @@ function CampaignBot takes integer p, unit enemy returns nothing
         set StoryShopTripUntil[p]=0.
         set StoryBuyAt[p]=TimeNow+10.
         call IssueTargetOrder(Hero[p],"attack",enemy)
-    elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null and not (CampaignStage==12 and HeroRole[p]<9) then
-        if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
-            call IssueTargetOrder(Hero[p],"attack",enemy)
-        else
-            call IssueTargetOrder(Hero[p],"follow",leader)
-        endif
-    elseif shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]>TimeNow then
+    elseif enemy==null and shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]>TimeNow then
         if ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
             set StoryShopTripUntil[p]=0.
         else
             call IssuePointOrder(Hero[p],"move",GetUnitX(shop),GetUnitY(shop))
+        endif
+    elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null and not (CampaignStage==12 and HeroRole[p]<9) then
+        if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
+            call IssueTargetOrder(Hero[p],"attack",enemy)
+        else
+            call IssueTargetOrder(Hero[p],"follow",leader)
         endif
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)

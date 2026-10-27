@@ -460,7 +460,7 @@ function StoryChooseItem takes integer p returns integer
     local integer slot=0
     local integer role=HeroRole[p]
     // Native stat powerups are consumed on purchase, including with six carried items.
-    if not StoryHasItemSpace(p) or (StoryBought[p]>=3 and ModuloInteger(StoryBought[p],4)==3) then
+    if not StoryHasItemSpace(p) or (StoryBought[p]>=3 and ModuloInteger(StoryBought[p],2)==1) then
         return StoryStatChoice(p)
     endif
     set choice=ModuloInteger(StoryBought[p],3)
@@ -518,7 +518,7 @@ function StoryBuy takes integer p returns nothing
     if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[choice] then
         call IssueNeutralTargetOrder(Player(p),shop,"neutralinteract",Hero[p])
         call IssueNeutralImmediateOrderById(Player(p),shop,StoryItem[choice])
-        set StoryBuyAt[p]=TimeNow+4.
+        set StoryBuyAt[p]=TimeNow+2.
     endif
     set shop=null
 endfunction

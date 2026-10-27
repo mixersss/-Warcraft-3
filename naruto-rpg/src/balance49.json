@@ -1,0 +1,48 @@
+{
+  "defenderNinjaKillGoldBonus": 20,
+  "zabuzaHPMultiplier": 0.8,
+  "zabuzaAttackMultiplier": 0.8,
+  "botLogHPThreshold": 0.25,
+  "botLogRecentDamageSeconds": 2.5,
+  "botLogMinIntervalSeconds": 45,
+  "statScrollPurchaseIntervalSeconds": 2,
+  "northHokageBarrier": {
+    "bounds": [
+      15680,
+      -12864,
+      16160,
+      -12736
+    ],
+    "models": [
+      [
+        15712,
+        -12800
+      ],
+      [
+        15776,
+        -12800
+      ],
+      [
+        15840,
+        -12800
+      ],
+      [
+        15904,
+        -12800
+      ],
+      [
+        15968,
+        -12800
+      ],
+      [
+        16032,
+        -12800
+      ],
+      [
+        16096,
+        -12800
+      ]
+    ]
+  },
+  "globalHeroXPMultiplier": 1.3
+}

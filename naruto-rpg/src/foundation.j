@@ -118,6 +118,12 @@ globals
     boolean Invasion48XPActive=false
     real array Invasion48XPBefore
     boolean array Invasion48XPChanged
+    unit array LogObservedHero
+    real array LogPreviousHP
+    real array LogLastDamageAt
+    real array LogBotNextAt
+    boolean Experience49Applied=false
+    boolean Gates49Built=false
     boolean CampaignBountyActive=false
     integer array CampaignBountyBefore
     boolean CampaignKabutoAI=true
@@ -900,6 +906,8 @@ function FoundationInit takes nothing returns nothing
         set p=p+1
     endloop
     call TriggerAddAction(chat,function FoundationChat)
+    call Experience49Init()
+    call Gates49Init()
     call TreeJumpInit()
     call StoryInit()
     call FogMaskEnable(true)

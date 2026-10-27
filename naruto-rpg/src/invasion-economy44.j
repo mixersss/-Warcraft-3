@@ -53,7 +53,7 @@ function Invasion48XPStart takes nothing returns nothing
         if Hero[p]!=null and HeroRole[p]>=0 and HeroRole[p]<9 and GetPlayerSlotState(Player(p))==PLAYER_SLOT_STATE_PLAYING then
             set Invasion48XPBefore[p]=GetPlayerHandicapXP(Player(p))
             set Invasion48XPChanged[p]=true
-            call SetPlayerHandicapXP(Player(p),Invasion48XPBefore[p]*1.15)
+            call SetPlayerHandicapXP(Player(p),Invasion48XPBefore[p]*1.0)
         endif
         set p=p+1
     endloop
@@ -96,6 +96,9 @@ function Invasion44Death takes nothing returns nothing
         set gold=LoadInteger(Invasion44Bounty,raw,0)
         set dice=LoadInteger(Invasion44Bounty,raw,1)
         set sides=LoadInteger(Invasion44Bounty,raw,2)
+        if HeroRole[p]>=0 and HeroRole[p]<9 and owner==PLAYER_NEUTRAL_PASSIVE and (raw=='c00F' or raw=='c010') then
+            set gold=gold+20
+        endif
         // Match the original dice distribution, not a uniform min/max approximation.
         loop
             exitwhen n>=dice or sides<=0

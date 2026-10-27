@@ -40,18 +40,18 @@ local pet=CreateUnit(10,raw('rc01'),0,0,0);Companion[30]=pet;killer=pet;hook.act
 local clone=CreateUnit(9,raw('R009'),0,0,0);clone.illusion=true;killer=clone;hook.actions[1]();assert(GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD)==64)
 killer=CreateUnit(11,raw('r40w'),0,0,0);hook.actions[1]();assert(GetPlayerState(11,PLAYER_STATE_RESOURCE_GOLD)==64)
 -- Symmetric Leaf behavior, no allied kill/illusion payout, no work outside active invasion.
-victim=CreateUnit(15,raw('c010'),0,0,0);killer=Hero[0];hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==32)
-killer=CreateUnit(13,raw('c022'),0,0,0);hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==32)
+victim=CreateUnit(15,raw('c010'),0,0,0);killer=Hero[0];hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52)
+killer=CreateUnit(13,raw('c022'),0,0,0);hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52)
 killer=Hero[9];local sandGold=GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD);hook.actions[1]();assert(GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD)==sandGold,'Friendly kills cannot pay')
-killer=Hero[0];victim.illusion=true;hook.actions[1]();victim.illusion=false;assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==32)
+killer=Hero[0];victim.illusion=true;hook.actions[1]();victim.illusion=false;assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52)
 for _,guard in ipairs({'transition','finished','otherstage'})do
  CampaignTransition=guard=='transition';CampaignFinished=guard=='finished';CampaignStage=guard=='otherstage'and 13 or 12
- hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==32)
+ hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52)
 end
 CampaignStage=12;CampaignFinished=false;CampaignTransition=false
 -- Exactly preserve six individual d3 draws:26 minimum and38 maximum.
-function GetRandomInt(a,b)return a end;hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==58)
-function GetRandomInt(a,b)return b end;hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==96)
+function GetRandomInt(a,b)return a end;hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==98)
+function GetRandomInt(a,b)return b end;hook.actions[1]();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==156)
 -- Exercise the real host-only diagnostic chat dispatch without changing balances.
 local playerChat,messageChat,unitName,displayText=GetTriggerPlayer,GetEventPlayerChatString,GetUnitName,DisplayTimedTextToPlayer
 local sender=0;local lines=0

@@ -48,6 +48,9 @@ for row in scene['files']:
  if name=='war3map.w3b':
   from presentation import scenery
   data=scenery()
+ elif name=='war3map.wpm':
+  from terrain49 import pathing
+  data=pathing(data)
  elif name=='war3map.doo':data=(ROOT/'src/location/render-war3map.doo').read_bytes()
  assert metadata[name]==data
 # Archive tables and scenario are newly authored; no original JASS.

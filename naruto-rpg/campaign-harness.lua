@@ -93,7 +93,7 @@ local function doDuels(expected)
    assert(not Hero[a].paused and not Hero[b].paused and IsUnitEnemy(Hero[a],b))
    assert(Hero[a].cooldownResets>0 and Hero[b].cooldownResets>0)
    assert(not vision[a][b]and not vision[b][a],'Fighters must not share invisible unit sight')
-   for p=0,11 do for q=0,11 do assert(not vision[p][q],'Spectators must not relay sight to a fighter')end end
+   for p=0,11 do for q=0,11 do assert(vision[p][q]==(p==q),'Only self sight may remain; spectators must not relay sight to a fighter')end end
    if CampaignBracket then assert(CampaignPrelimWinner[a] and CampaignPrelimWinner[b],'Only preliminary winners enter the second arena');assert(not CampaignEliminated[a]and not CampaignEliminated[b],'Losers never re-enter elimination rounds')end
    for k=0,4 do assert(BotReadyAt[a*5+k]<=TimeNow and BotReadyAt[b*5+k]<=TimeNow,'Bot cooldown bookkeeping resets too')end
    Hero[b].invisible=true;assert(CampaignNearest(a)==nil,'No scripted target through invisibility')
@@ -149,7 +149,7 @@ TimeNow=CampaignJiraiyaAt;CampaignTick();local jiraiyaPresent=false;for j=0,Camp
 TimeNow=CampaignSnakeAt;CampaignTick();assert(CampaignVillageSnake and CampaignVillageSnake.owner==15 and CampaignSnakeGoneAt-TimeNow==300)
 TimeNow=CampaignOroAt;CampaignTick();assert(CampaignVillageOro.owner==15 and not CampaignVillageOro.paused)
 CampaignActor[0].hp=0;CampaignTick();assert(CampaignQueued==13)
-enter();for t=0,3 do assert(not StoryShop[t],'Shops are removed after invasion')end;assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==100000 and CampaignActor[2].maxLife==318750)
+enter();for t=0,3 do assert(not StoryShop[t],'Shops are removed after invasion')end;assert(CampaignStage==13 and CampaignEndAt-TimeNow==360 and CampaignActor[0].maxLife==100000 and CampaignActor[2].maxLife==262500)
 TimeNow=CampaignEndAt;CampaignTick();assert(CampaignQueued==14)
 enter();assert(CampaignStage==14 and CampaignEndAt-TimeNow==360 and Hero[1].hidden and Hero[1].paused)
 assert(not CampaignNearest(0) or CampaignNearest(0)~=Hero[1],'Hidden sealed Sasuke cannot distract allies from Sound Five')

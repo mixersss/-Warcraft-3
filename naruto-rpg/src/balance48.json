@@ -1,8 +1,8 @@
 {
-  "defenderInvasionXPMultiplier": 1.15,
+  "defenderInvasionXPMultiplier": 1.0,
   "npcHPOverrides": {
-    "3": 318750,
-    "4": 233750
+    "3": 262500,
+    "4": 192500
   },
   "finalOrochimaru": {
     "stage": 28,
