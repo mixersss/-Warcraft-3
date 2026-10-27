@@ -1,3 +1,22 @@
+function Control50Tick takes nothing returns nothing
+    local integer p=0
+    loop
+        exitwhen p>=12
+        if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or Control50Unit[p]!=Hero[p] or not FoundationAlive(Hero[p]) then
+            set Control50Until[p]=0.
+        elseif Control50Until[p]>0. and TimeNow>=Control50Until[p] then
+            set Control50Until[p]=0.
+            if IsUnitPaused(Hero[p]) then
+                call PauseUnit(Hero[p],false)
+                call SetUnitTimeScale(Hero[p],1.)
+                call SetUnitPathing(Hero[p],true)
+                call ShowUnit(Hero[p],true)
+                call SetUnitAnimation(Hero[p],"stand")
+            endif
+        endif
+        set p=p+1
+    endloop
+endfunction
 function Experience49Init takes nothing returns nothing
     local integer p=0
     if Experience49Applied then
@@ -6,7 +25,7 @@ function Experience49Init takes nothing returns nothing
     set Experience49Applied=true
     loop
         exitwhen p>=12
-        call SetPlayerHandicapXP(Player(p),GetPlayerHandicapXP(Player(p))*1.3)
+        call SetPlayerHandicapXP(Player(p),GetPlayerHandicapXP(Player(p))*1.7)
         set p=p+1
     endloop
 endfunction

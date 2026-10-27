@@ -1,5 +1,8 @@
 function NPCSourceType takes unit u returns integer
     local integer raw=GetUnitTypeId(u)
+    if raw=='c050' then
+        return 'c000'
+    endif
     if raw=='c048' then
         return 'c00D'
     endif
@@ -2723,54 +2726,109 @@ call RemoveUnit(GetEnumUnit())
 endfunction
 function OrigNPC_V6X takes nothing returns nothing
 call SetUnitTimeScalePercent(GetEnumUnit(),100.)
+if FoundationAlive(GetEnumUnit()) and GetUnitCurrentOrder(GetEnumUnit())==0 then
+call SetUnitAnimation(GetEnumUnit(),"stand")
+endif
 endfunction
 function OrigNPC_V7X takes nothing returns nothing
-call PlaySoundOnUnitBJ(OrigNPC_QT,'d',GetTriggerUnit())
-call PlaySoundOnUnitBJ(OrigNPC_QT,'d',GetTriggerUnit())
-set OrigNPC_DC=GetTriggerUnit()
-set OrigNPC_XE=GetSpellTargetLoc()
-set OrigNPC_JR[0]=OrigNPC_PIV(800.,OrigNPC_XE,Condition(function OrigNPC_VTX))
-call PauseUnit(OrigNPC_DC,true)
-call ForGroupBJ(OrigNPC_JR[0],function OrigNPC_VUX)
-call DestroyGroup(OrigNPC_JR[0])
-set OrigNPC_JR[1]=OrigNPC_PIV(800.,OrigNPC_XE,Condition(function OrigNPC_V2X))
-call ForGroupBJ(OrigNPC_JR[1],function OrigNPC_V3X)
+local unit Sleep50Caster=GetTriggerUnit()
+local location Sleep50Point=GetSpellTargetLoc()
+local group Sleep50Illusions=null
+local group Sleep50Victims=null
+local group Sleep50Actors=CreateGroup()
+local integer Sleep50Slot=-1
+local integer n=0
+local integer Sleep50Epoch=Water50Epoch
+call PlaySoundOnUnitBJ(OrigNPC_QT,'d',Sleep50Caster)
+call PlaySoundOnUnitBJ(OrigNPC_QT,'d',Sleep50Caster)
+set OrigNPC_DC=Sleep50Caster
+set Sleep50Illusions=OrigNPC_PIV(800.,Sleep50Point,Condition(function OrigNPC_VTX))
+call PauseUnit(Sleep50Caster,true)
+call ForGroupBJ(Sleep50Illusions,function OrigNPC_VUX)
+call DestroyGroup(Sleep50Illusions)
+set Sleep50Victims=OrigNPC_PIV(800.,Sleep50Point,Condition(function OrigNPC_V2X))
+call ForGroupBJ(Sleep50Victims,function OrigNPC_V3X)
+loop
+exitwhen n>=64 or Sleep50Slot>=0
+if Sleep50Targets[n]==null then
+set Sleep50Slot=n
+endif
+set n=n+1
+endloop
+if Sleep50Slot>=0 then
+set Sleep50Targets[Sleep50Slot]=Sleep50Victims
+set Sleep50Casters[Sleep50Slot]=Sleep50Caster
+set Sleep50Visuals[Sleep50Slot]=Sleep50Actors
+set Sleep50Casts=Sleep50Casts+1
 call EnableTrigger(OrigNPC_H8)
+endif
 call TriggerSleepAction(.5)
-call PauseUnit(OrigNPC_DC,false)
-call ForGroupBJ(OrigNPC_JR[1],function OrigNPC_V4X)
+call PauseUnit(Sleep50Caster,false)
+call ForGroupBJ(Sleep50Victims,function OrigNPC_V4X)
 call TriggerSleepAction(5.5)
+if Sleep50Epoch==Water50Epoch and Sleep50Slot>=0 and Sleep50Targets[Sleep50Slot]==Sleep50Victims then
+set Sleep50Targets[Sleep50Slot]=null
+set Sleep50Casters[Sleep50Slot]=null
+set Sleep50Visuals[Sleep50Slot]=null
+set Sleep50Casts=IMaxBJ(0,Sleep50Casts-1)
+if Sleep50Casts==0 then
 call DisableTrigger(OrigNPC_H8)
-call ForGroupBJ(OrigNPC_JR[2],function OrigNPC_V5X)
-call ForGroupBJ(OrigNPC_JR[1],function OrigNPC_V6X)
-call DestroyGroup(OrigNPC_JR[1])
-call RemoveLocation(OrigNPC_XE)
+endif
+endif
+call ForGroupBJ(Sleep50Actors,function OrigNPC_V5X)
+call ForGroupBJ(Sleep50Victims,function OrigNPC_V6X)
+call DestroyGroup(Sleep50Actors)
+call DestroyGroup(Sleep50Victims)
+call RemoveLocation(Sleep50Point)
+set Sleep50Caster=null
+set Sleep50Point=null
+set Sleep50Actors=null
+set Sleep50Victims=null
+set Sleep50Illusions=null
 endfunction
 function OrigNPC_V9X takes nothing returns nothing
 call RemoveUnit(GetEnumUnit())
 endfunction
 function OrigNPC_EVX takes nothing returns nothing
-call ForGroupBJ(OrigNPC_JR[2],function OrigNPC_V9X)
-set OrigNPC_BE=GetUnitLoc(GetEnumUnit())
-set OrigNPC_KR=OrigNPC_M3V(OrigNPC_BE,GetRandomReal(.0,300.),GetRandomReal(0,360))
-call CreateNUnitsAtLoc(1,'h02A',GetOwningPlayer(OrigNPC_DC),OrigNPC_KR,GetRandomReal(0,360))
+local unit victim=GetEnumUnit()
+local location origin=null
+local location point=null
+if not FoundationAlive(victim) then
+set victim=null
+return
+endif
+set origin=GetUnitLoc(victim)
+set point=OrigNPC_M3V(origin,GetRandomReal(.0,300.),GetRandomReal(0,360))
+call CreateNUnitsAtLoc(1,'h02A',GetOwningPlayer(Sleep50Casters[Sleep50EmitSlot]),point,GetRandomReal(0,360))
 call UnitApplyTimedLifeBJ(.65,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_JR[2],bj_lastCreatedUnit)
+call GroupAddUnit(Sleep50Visuals[Sleep50EmitSlot],bj_lastCreatedUnit)
 call SetUnitVertexColorBJ(bj_lastCreatedUnit,'d','d','d',30.)
 call SetUnitTimeScalePercent(bj_lastCreatedUnit,200.)
-call RemoveLocation(OrigNPC_KR)
-set OrigNPC_DR=OrigNPC_M3V(OrigNPC_BE,GetRandomReal(.0,300.),GetRandomReal(0,360))
-call CreateNUnitsAtLoc(1,'h02B',GetOwningPlayer(OrigNPC_DC),OrigNPC_DR,GetRandomReal(0,360))
+call RemoveLocation(point)
+set point=OrigNPC_M3V(origin,GetRandomReal(.0,300.),GetRandomReal(0,360))
+call CreateNUnitsAtLoc(1,'h02B',GetOwningPlayer(Sleep50Casters[Sleep50EmitSlot]),point,GetRandomReal(0,360))
 call UnitApplyTimedLifeBJ(.65,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_JR[2],bj_lastCreatedUnit)
+call GroupAddUnit(Sleep50Visuals[Sleep50EmitSlot],bj_lastCreatedUnit)
 call SetUnitVertexColorBJ(bj_lastCreatedUnit,'d','d','d',50.)
 call SetUnitTimeScalePercent(bj_lastCreatedUnit,30.)
-call RemoveLocation(OrigNPC_BE)
-call RemoveLocation(OrigNPC_DR)
-call RemoveLocation(OrigNPC_KR)
+call RemoveLocation(origin)
+call RemoveLocation(point)
+set victim=null
+set origin=null
+set point=null
 endfunction
 function OrigNPC_EEX takes nothing returns nothing
-call ForGroupBJ(OrigNPC_JR[1],function OrigNPC_EVX)
+local integer n=0
+loop
+exitwhen n>=64
+if Sleep50Targets[n]!=null and Sleep50Casters[n]!=null then
+call ForGroupBJ(Sleep50Visuals[n],function OrigNPC_V5X)
+call GroupClear(Sleep50Visuals[n])
+set Sleep50EmitSlot=n
+call ForGroupBJ(Sleep50Targets[n],function OrigNPC_EVX)
+endif
+set n=n+1
+endloop
 endfunction
 function OrigNPC_EOX takes nothing returns boolean
 return(GetSpellAbilityId()=='A01G')
@@ -4971,93 +5029,183 @@ function OrigNPC_G8X takes nothing returns nothing
 call RemoveUnit(GetEnumUnit())
 endfunction
 function OrigNPC_G9X takes nothing returns nothing
+local unit Water50Caster=GetTriggerUnit()
+local unit Water50Pet=null
+local unit Water50Candidate=null
+local integer Water50Slot=-1
+local real Water50Best=1000000000000.
+local real Water50DX=0.
+local real Water50DY=0.
+local group Water50Group=CreateGroup()
+local group Water50Scan=null
+local location Water50Origin=null
+local location Water50Center=null
+local location Water50Target=GetSpellTargetLoc()
+local location Water50Point=null
+local integer Water50CastEpoch=Water50Epoch
 call TriggerSleepAction(.01)
-set OrigNPC_KA=GetSpellAbilityUnit()
-set OrigNPC_LA[0]=GetUnitLoc(OrigNPC_KA)
-call UnitAddAbility(OrigNPC_KA,'Amrf')
-call UnitRemoveAbility(OrigNPC_KA,'Amrf')
-call UnitAddAbility(OrigNPC_KEV,'S000')
-call PauseUnit(OrigNPC_KEV,true)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_LA[0],OrigNPC_LA[0])
-set OrigNPC_LA[1]=GetUnitLoc(bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,0),GetSpellTargetLoc())
+if Water50CastEpoch!=Water50Epoch or GetUnitTypeId(Water50Caster)==0 then
+call DestroyGroup(Water50Group)
+call RemoveLocation(Water50Target)
+set Water50Caster=null
+set Water50Group=null
+set Water50Target=null
+return
+endif
+set Water50Casts=Water50Casts+1
+set Water50Origin=GetUnitLoc(Water50Caster)
+call UnitAddAbility(Water50Caster,'Amrf')
+call UnitRemoveAbility(Water50Caster,'Amrf')
+call UnitAddAbility(Water50Caster,'S000')
+call PauseUnit(Water50Caster,true)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Origin,Water50Origin)
+set Water50Center=GetUnitLoc(bj_lastCreatedUnit)
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,0)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,45.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,45.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,90.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,90.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,135.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,135.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,180.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,180.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,225.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,225.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,270.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,270.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(OrigNPC_KA),OrigNPC_M3V(OrigNPC_LA[1],700.,315.),GetSpellTargetLoc())
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Point=OrigNPC_M3V(Water50Center,700.,315.)
+call CreateNUnitsAtLocFacingLocBJ(1,'e002',GetOwningPlayer(Water50Caster),Water50Point,Water50Target)
+call RemoveLocation(Water50Point)
+set Water50Point=null
 call UnitApplyTimedLifeBJ(12.,'BTLF',bj_lastCreatedUnit)
-call GroupAddUnit(OrigNPC_MA,bj_lastCreatedUnit)
-call ForGroupBJ(OrigNPC_PBV('h01E'),function OrigNPC_GGX)
-call IssuePointOrderByIdLoc(OrigNPC_PA,0xD0012,OrigNPC_M3V(OrigNPC_LA[0],GetRandomReal(-800.,800.),GetRandomReal(0,360)))
-call SetUnitFlyHeight(OrigNPC_PA,GetRandomReal(-100.,400.),GetRandomReal(200.,400.))
-call RemoveLocation(OrigNPC_LA[0])
+call GroupAddUnit(Water50Group,bj_lastCreatedUnit)
+set Water50Scan=OrigNPC_PBV('h01E')
+loop
+set Water50Candidate=FirstOfGroup(Water50Scan)
+exitwhen Water50Candidate==null
+call GroupRemoveUnit(Water50Scan,Water50Candidate)
+if FoundationAlive(Water50Candidate) and GetOwningPlayer(Water50Candidate)==GetOwningPlayer(Water50Caster) then
+set Water50DX=GetUnitX(Water50Candidate)-GetLocationX(Water50Target)
+set Water50DY=GetUnitY(Water50Candidate)-GetLocationY(Water50Target)
+if Water50DX*Water50DX+Water50DY*Water50DY<Water50Best then
+set Water50Best=Water50DX*Water50DX+Water50DY*Water50DY
+set Water50Pet=Water50Candidate
+endif
+endif
+endloop
+call DestroyGroup(Water50Scan)
+set Water50Scan=null
+if Water50Pet!=null then
+set Water50Slot=Water50Cursor
+set Water50Cursor=ModuloInteger(Water50Cursor+1,64)
+set Water50MoveCaster[Water50Slot]=Water50Caster
+set Water50MovePet[Water50Slot]=Water50Pet
+set Water50MoveUntil[Water50Slot]=TimeNow+12.
+set Water50Point=OrigNPC_M3V(Water50Origin,GetRandomReal(-800.,800.),GetRandomReal(0,360))
+call IssuePointOrderByIdLoc(Water50Pet,0xD0012,Water50Point)
+call RemoveLocation(Water50Point)
+set Water50Point=null
+call SetUnitFlyHeight(Water50Pet,GetRandomReal(-100.,400.),GetRandomReal(200.,400.))
+endif
+call RemoveLocation(Water50Origin)
 call EnableTrigger(OrigNPC_ETV)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GHX)
-call SetUnitFlyHeight(OrigNPC_KA,500.,250.)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GJX)
+call ForGroupBJ(Water50Group,function OrigNPC_GHX)
+call SetUnitFlyHeight(Water50Caster,500.,250.)
+call ForGroupBJ(Water50Group,function OrigNPC_GJX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GKX)
+call ForGroupBJ(Water50Group,function OrigNPC_GKX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GLX)
+call ForGroupBJ(Water50Group,function OrigNPC_GLX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GMX)
+call ForGroupBJ(Water50Group,function OrigNPC_GMX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GPX)
+call ForGroupBJ(Water50Group,function OrigNPC_GPX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GQX)
+call ForGroupBJ(Water50Group,function OrigNPC_GQX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GSX)
+call ForGroupBJ(Water50Group,function OrigNPC_GSX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GTX)
+call ForGroupBJ(Water50Group,function OrigNPC_GTX)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GUX)
+call ForGroupBJ(Water50Group,function OrigNPC_GUX)
 call TriggerSleepAction(.2)
-call UnitRemoveAbility(OrigNPC_KEV,'S000')
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GWX)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GYX)
+call UnitRemoveAbility(Water50Caster,'S000')
+call ForGroupBJ(Water50Group,function OrigNPC_GWX)
+call ForGroupBJ(Water50Group,function OrigNPC_GYX)
 call TriggerSleepAction(6.3)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_GZX)
-call SetUnitFlyHeight(OrigNPC_KA,.0,500.)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G_X)
+call ForGroupBJ(Water50Group,function OrigNPC_GZX)
+call SetUnitFlyHeight(Water50Caster,.0,500.)
+call ForGroupBJ(Water50Group,function OrigNPC_G_X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G0X)
+call ForGroupBJ(Water50Group,function OrigNPC_G0X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G1X)
+call ForGroupBJ(Water50Group,function OrigNPC_G1X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G2X)
+call ForGroupBJ(Water50Group,function OrigNPC_G2X)
 call TriggerSleepAction(.2)
-call PauseUnit(OrigNPC_KEV,false)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G3X)
+call PauseUnit(Water50Caster,false)
+call ForGroupBJ(Water50Group,function OrigNPC_G3X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G4X)
+call ForGroupBJ(Water50Group,function OrigNPC_G4X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G5X)
+call ForGroupBJ(Water50Group,function OrigNPC_G5X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G6X)
+call ForGroupBJ(Water50Group,function OrigNPC_G6X)
 call TriggerSleepAction(.2)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G7X)
+call ForGroupBJ(Water50Group,function OrigNPC_G7X)
 call TriggerSleepAction(.2)
+if Water50CastEpoch==Water50Epoch then
+if Water50Slot>=0 and Water50MoveCaster[Water50Slot]==Water50Caster and Water50MovePet[Water50Slot]==Water50Pet then
+set Water50MoveCaster[Water50Slot]=null
+set Water50MovePet[Water50Slot]=null
+set Water50MoveUntil[Water50Slot]=0.
+endif
+set Water50Casts=IMaxBJ(0,Water50Casts-1)
+if Water50Casts==0 then
 call DisableTrigger(OrigNPC_ETV)
-call ForGroupBJ(OrigNPC_MA,function OrigNPC_G8X)
-call RemoveLocation(OrigNPC_LA[1])
+endif
+endif
+call ForGroupBJ(Water50Group,function OrigNPC_G8X)
+call RemoveLocation(Water50Center)
+call DestroyGroup(Water50Group)
+call RemoveLocation(Water50Target)
+set Water50Group=null
+set Water50Pet=null
+set Water50Candidate=null
+set Water50Caster=null
+set Water50Origin=null
+set Water50Center=null
+set Water50Target=null
 endfunction
 function OrigNPC_HEX takes nothing returns boolean
 return(GetSpellAbilityId()=='A021')
@@ -5094,13 +5242,26 @@ call TriggerSleepAction(2)
 call DestroyEffect(OrigNPC_YE)
 endfunction
 function OrigNPC_HRX takes nothing returns boolean
-return(IsUnitAliveBJ(OrigNPC_PA))
+return Water50Casts>0
 endfunction
 function OrigNPC_HIX takes nothing returns nothing
-set OrigNPC_LA[0]=GetUnitLoc(OrigNPC_KA)
-call IssuePointOrderByIdLoc(OrigNPC_PA,0xD0012,OrigNPC_M3V(OrigNPC_LA[0],GetRandomReal(500.,800.),GetRandomReal(0,360)))
-call SetUnitFlyHeight(OrigNPC_PA,GetRandomReal(-100.,400.),GetRandomReal(300.,700.))
-call RemoveLocation(OrigNPC_LA[0])
+local integer n=0
+local real angle=0.
+local real distance=0.
+loop
+exitwhen n>=64
+if TimeNow<Water50MoveUntil[n] and FoundationAlive(Water50MoveCaster[n]) and FoundationAlive(Water50MovePet[n]) then
+set angle=GetRandomReal(0.,360.)*bj_DEGTORAD
+set distance=GetRandomReal(500.,800.)
+call IssuePointOrderById(Water50MovePet[n],0xD0012,GetUnitX(Water50MoveCaster[n])+distance*Cos(angle),GetUnitY(Water50MoveCaster[n])+distance*Sin(angle))
+call SetUnitFlyHeight(Water50MovePet[n],GetRandomReal(-100.,400.),GetRandomReal(300.,700.))
+else
+set Water50MoveCaster[n]=null
+set Water50MovePet[n]=null
+set Water50MoveUntil[n]=0.
+endif
+set n=n+1
+endloop
 endfunction
 function OrigNPC_H8X takes nothing returns boolean
 return(GetSpellAbilityId()=='A00X')
@@ -6284,7 +6445,7 @@ function OrigNPC_AHI takes nothing returns nothing
 call PlaySoundBJ(OrigNPC_H0)
 endfunction
 function OrigNPC_AKI takes nothing returns boolean
-return(GetSpellAbilityId()=='A021')and(GetTriggerUnit()==OrigNPC_KEV)
+return(GetSpellAbilityId()=='A021')and(NPCSourceType(GetTriggerUnit())=='c004')
 endfunction
 function OrigNPC_ALI takes nothing returns boolean
 return(OrigNPC_AKI())
@@ -6293,7 +6454,7 @@ function OrigNPC_AMI takes nothing returns nothing
 call PlaySoundOnUnitBJ(OrigNPC_BY,'d',GetTriggerUnit())
 endfunction
 function OrigNPC_AQI takes nothing returns boolean
-return(GetSpellAbilityId()=='A01N')and(GetTriggerUnit()==OrigNPC_KEV)
+return(GetSpellAbilityId()=='A01N')and(NPCSourceType(GetTriggerUnit())=='c004')
 endfunction
 function OrigNPC_ASI takes nothing returns boolean
 return(OrigNPC_AQI())
@@ -6302,7 +6463,7 @@ function OrigNPC_ATI takes nothing returns nothing
 call PlaySoundOnUnitBJ(OrigNPC_X0,'d',GetTriggerUnit())
 endfunction
 function OrigNPC_AWI takes nothing returns boolean
-return(GetSpellAbilityId()=='A01O')and(GetTriggerUnit()==OrigNPC_KEV)
+return(GetSpellAbilityId()=='A01O')and(NPCSourceType(GetTriggerUnit())=='c004')
 endfunction
 function OrigNPC_AYI takes nothing returns boolean
 return(OrigNPC_AWI())
@@ -6373,7 +6534,7 @@ function OrigNPC_FXI takes nothing returns nothing
 call PlaySoundOnUnitBJ(OrigNPC_F0,'d',GetTriggerUnit())
 endfunction
 function OrigNPC_FUI takes nothing returns boolean
-return(GetSpellAbilityId()=='A00C')and(GetTriggerUnit()!=OrigNPC_KIV)
+return(GetSpellAbilityId()=='A00C')and(NPCSourceType(GetTriggerUnit())!='c003')
 endfunction
 function OrigNPC_FWI takes nothing returns boolean
 return(OrigNPC_FUI())

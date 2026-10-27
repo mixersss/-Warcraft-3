@@ -1,0 +1,183 @@
+{
+  "stage": 50,
+  "filename": "Shinobi_Story_Alpha_50.w3x",
+  "bytes": 11033823,
+  "sha256": "42b4399017e52e906fcf6cea0311058d7c40d342d9666e0f5bde0e27f273dff8",
+  "globalHeroXPRate": 1.7,
+  "primaryAttributes": {
+    "sakura": "AGI",
+    "temari": "AGI",
+    "kiba": "STR"
+  },
+  "statPurchases": {
+    "cycle": "4 primary, fifth STR; STR heroes fifth AGI",
+    "price": 125,
+    "maxAttemptsPerVisit": 8,
+    "nativeGoldAndStock": true
+  },
+  "finiteNPCStuns": {
+    "A028": {
+      "hero": 2,
+      "normal": 3,
+      "effect": 2
+    },
+    "A008": 0.25,
+    "A00I": 0.5
+  },
+  "triggerPauseSafetySeconds": 20,
+  "clonesNoLongerUse500IgnoredPhysicalDamage": true,
+  "otherNPCSkinPreserved": true,
+  "postStoryEndless": {
+    "stage": 31,
+    "bothStoryOutcomes": true,
+    "all12HeroSlotsPreserved": true,
+    "heroProgressAndInventoryPreserved": true,
+    "sandAllied": true,
+    "sarutobiHP": 300000,
+    "sarutobiPost": {
+      "kind": 0,
+      "x": 16208,
+      "y": -13488
+    },
+    "guardians": [
+      {
+        "kind": 0,
+        "x": 16208,
+        "y": -13488
+      },
+      {
+        "kind": 1,
+        "x": 16048,
+        "y": -13488
+      },
+      {
+        "kind": 2,
+        "x": 16208,
+        "y": -13648
+      },
+      {
+        "kind": 33,
+        "x": 16112,
+        "y": -13328
+      },
+      {
+        "kind": 31,
+        "x": 16048,
+        "y": -13648
+      },
+      {
+        "kind": 30,
+        "x": 15952,
+        "y": -13360
+      },
+      {
+        "kind": 35,
+        "x": 16208,
+        "y": -13808
+      },
+      {
+        "kind": 34,
+        "x": 16080,
+        "y": -13168
+      },
+      {
+        "kind": 34,
+        "x": 16048,
+        "y": -13808
+      },
+      {
+        "kind": 34,
+        "x": 16208,
+        "y": -13008
+      },
+      {
+        "kind": 34,
+        "x": 16080,
+        "y": -13968
+      },
+      {
+        "kind": 34,
+        "x": 15920,
+        "y": -13904
+      },
+      {
+        "kind": 34,
+        "x": 16048,
+        "y": -13008
+      },
+      {
+        "kind": 34,
+        "x": 15824,
+        "y": -13136
+      },
+      {
+        "kind": 34,
+        "x": 15888,
+        "y": -12976
+      },
+      {
+        "kind": 34,
+        "x": 16080,
+        "y": -14128
+      },
+      {
+        "kind": 34,
+        "x": 16208,
+        "y": -14256
+      }
+    ],
+    "heroReviveSeconds": 20,
+    "guardianReviveSeconds": 240,
+    "noOrdinaryDefendingInfantry": true,
+    "bossIntervalSeconds": 300,
+    "bossCycles": [
+      [
+        11,
+        12
+      ],
+      [
+        4
+      ],
+      [
+        3
+      ],
+      [
+        13,
+        11,
+        12,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        13,
+        11,
+        12,
+        4,
+        3
+      ]
+    ],
+    "repeatLastCycle": true,
+    "all12MusicTracksSequentialLoop": true,
+    "sharedDefeatOnlyOnHokageDeath": true
+  },
+  "kisameEffect": {
+    "actualCasterSnapshot": true,
+    "privateWaterActors": true,
+    "temporaryLocationsAndGroupsFreed": true,
+    "epochSafeEffectReferenceCount": true,
+    "boundedMovementTable": 64,
+    "reusesExistingSourcePeriodicTrigger": true
+  },
+  "kabutoFeathers": {
+    "privateCastersAndVictimGroups": true,
+    "noDoubleLocationFree": true,
+    "epochSafeEmitter": true,
+    "reusesSourcePeriodicTrigger": true
+  },
+  "modelsMusicAndWorldUnchanged": true,
+  "noNewTimersOrTriggersForDefense": true,
+  "enginePlaytest": false
+}

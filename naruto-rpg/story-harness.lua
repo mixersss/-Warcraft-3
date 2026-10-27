@@ -50,6 +50,8 @@ function IssueTargetOrder(u,o,target)u.last={o=o,target=target};return true end
 function IssueImmediateOrder(u,o)u.last={o=o};return true end
 function IssueNeutralTargetOrder(p,shop,o,buyer)assert(o=='neutralinteract');neutralBuyer[p]=buyer;return true end
 local boughtBy=nil
+local soldItem=nil
+function GetSoldItem()return soldItem end
 function GetBuyingUnit()return boughtBy end
 function IssueNeutralImmediateOrderById(p,shop,id)
  local buyer=neutralBuyer[p];assert(buyer==Hero[p],'Native shop buyer was not selected')
@@ -63,7 +65,7 @@ function IssueNeutralImmediateOrderById(p,shop,id)
  else
   for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
  end
- if given then gold[p]=gold[p]-price;boughtBy=buyer;StoryOnBuy();boughtBy=nil end
+ if given then gold[p]=gold[p]-price;boughtBy=buyer;soldItem={type=id};StoryOnBuy();boughtBy=nil;soldItem=nil end
  return given
 end
 GroundStatItems={}
@@ -172,8 +174,8 @@ assert(gold[1]==500 and StoryBought[1]==0,'No immediate opening purchases')
 for stage=0,11 do if stage~=10 then CampaignStage=stage;TimeNow=400;StoryBuy(1);assert(gold[1]==500 and StoryBought[1]==0);assert(not StoryShopFor(1))end end
 CampaignStage=12;CampaignTransition=false;StoryShopsOpen();assert(StoryShop[0] and StoryShop[1] and StoryShop[2] and StoryShop[3])
 for i=1,3 do TimeNow=400+i*5;StoryBuy(1)end
-assert(gold[1]==165 and StoryBought[1]==3)
-StoryShopsClose();CampaignStage=13;StoryBuy(1);assert(gold[1]==165 and StoryBought[1]==3);for t=0,3 do assert(not StoryShop[t])end
+assert(gold[1]==0 and StoryBought[1]==4)
+StoryShopsClose();CampaignStage=13;StoryBuy(1);assert(gold[1]==0 and StoryBought[1]==4);for t=0,3 do assert(not StoryShop[t])end
 CampaignStage=0
 -- Sand crest cleanup remains bounded.
 Hero[9].x=0;Hero[9].y=0;TimeNow=450

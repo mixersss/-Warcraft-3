@@ -80,8 +80,12 @@ function HUDTick takes nothing returns nothing
             set timing=HUDTime(ExamNextAt-TimeNow)+" осталось"
         elseif stage>=9 then
             set phase=CampaignName[stage]
-            if CampaignTransition then
+            if stage==31 and Endless50Starting then
+                set timing="Подготовка "+I2S(Endless50Cursor)+"/29"
+            elseif CampaignTransition then
                 set timing=HUDTime(CampaignIntroAt+8.-TimeNow)+" переход"
+            elseif stage==31 and Endless50Active then
+                set timing=HUDTime(Endless50BossAt-TimeNow)+" до боссов"
             elseif CampaignEndAt>0. then
                 set timing=HUDTime(CampaignEndAt-TimeNow)+" осталось"
             elseif (stage==9 or stage==11) and not CampaignDuelLive and CampaignDuelAt>TimeNow then
@@ -123,8 +127,12 @@ function HUDTick takes nothing returns nothing
     endif
     if CampaignStage>=9 or CampaignTransition then
         call HUDCell(5,1,CampaignName[CampaignStage])
-        if CampaignTransition then
+        if CampaignStage==31 and Endless50Starting then
+            call HUDCell(5,2,"Подготовка "+I2S(Endless50Cursor)+"/29")
+        elseif CampaignTransition then
             call HUDCell(5,2,HUDTime(CampaignIntroAt+8.-TimeNow)+" до старта")
+        elseif CampaignStage==31 and Endless50Active then
+            call HUDCell(5,2,HUDTime(Endless50BossAt-TimeNow)+" до боссов")
         elseif CampaignEndAt>0. then
             call HUDCell(5,2,HUDTime(CampaignEndAt-TimeNow))
         else

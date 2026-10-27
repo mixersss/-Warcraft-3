@@ -28,6 +28,9 @@ function StoryLeader takes integer t returns unit
     return fallback
 endfunction
 function StoryGoal takes integer t returns string
+    if StoryStage[t]==31 then
+        return "Бесконечная защита Конохи: все отряды защищают Сарутоби у арены. Герои возвращаются через20сек, стража — через4мин. Боссы каждые5мин. До следующей группы: "+I2S(R2I(RMaxBJ(0.,Endless50BossAt-TimeNow)))+"сек. -shop: свитки; -fountain: восстановление."
+    endif
     if StoryStage[t]>=9 then
         return CampaignName[StoryStage[t]]+". "+CampaignIntro[StoryStage[t]]+" |n-go: к цели; -follow: прикрытие; -retreat: отход. В убежище смерть окончательная!"
     endif
@@ -400,7 +403,7 @@ function StoryShopFor takes integer p returns unit
     local real best=999999999.
     local real dx=0.
     local real dy=0.
-    if (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
+    if (CampaignStage!=10 and CampaignStage!=12 and CampaignStage!=31) or CampaignTransition then
         return null
     endif
     loop
@@ -445,9 +448,9 @@ function StoryHasItemSpace takes integer p returns boolean
 endfunction
 function StoryStatChoice takes integer p returns integer
     local integer role=HeroRole[p]
-    if role==0 or role==1 or role==10 then
+    if role==0 or role==1 or role==7 or role==10 then
         return 7
-    elseif role==2 or role==9 then
+    elseif role==9 then
         return 8
     endif
     return 9
@@ -456,83 +459,53 @@ function StoryCanCarryChoice takes integer p, integer choice returns boolean
     return StoryHasItemSpace(p) or (choice>=7 and choice<=9)
 endfunction
 function StoryChooseItem takes integer p returns integer
-    local integer choice=0
-    local integer slot=0
-    local integer role=HeroRole[p]
-    // Native stat powerups are consumed on purchase, including with six carried items.
-    if not StoryHasItemSpace(p) or (StoryBought[p]>=3 and ModuloInteger(StoryBought[p],2)==1) then
-        return StoryStatChoice(p)
-    endif
-    set choice=ModuloInteger(StoryBought[p],3)
-    if choice==1 then
-        set choice=4
-    elseif choice==2 then
-        if role==2 or role==9 or role==11 then
-            set choice=3
-        elseif role==0 or role==3 or role==7 or role==10 then
-            set choice=1
-        else
-            set choice=2
+    local integer main=StoryStatChoice(p)
+    if ModuloInteger(StatBought50[p]+1,5)==0 then
+        if main==7 then
+            return 9
         endif
+        return 7
     endif
-    if choice==0 then
-        set slot=0
-        loop
-            exitwhen slot>=6
-            if GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlga' then
-                set choice=6
-            elseif GetItemTypeId(UnitItemInSlot(Hero[p],slot))=='Nlca' then
-                set choice=StoryStatChoice(p)
-                exitwhen true
-            endif
-            set slot=slot+1
-        endloop
-    endif
-    return choice
+    return main
 endfunction
 function StoryBuy takes integer p returns nothing
-    local integer t=StoryTeam(p)
-    local integer slot=0
     local integer choice=0
-    local integer role=HeroRole[p]
-    local boolean full=true
+    local integer attempts=0
+    local integer before=0
     local unit shop=StoryShopFor(p)
-    // Preparation must leave every hero inventory empty; purchases begin during play.
-    if shop==null or (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
+    if shop==null or (CampaignStage!=10 and CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or not FoundationAlive(Hero[p]) or TimeNow<StoryBuyAt[p] then
+        set shop=null
         return
     endif
-    if TimeNow<StoryBuyAt[p] or GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)<30 then
-        return
-    endif
+    call IssueNeutralTargetOrder(Player(p),shop,"neutralinteract",Hero[p])
     loop
-        exitwhen slot>=6
-        if UnitItemInSlot(Hero[p],slot)==null then
-            set full=false
-        endif
-        set slot=slot+1
-    endloop
-    set choice=StoryChooseItem(p)
-    if full and not StoryCanCarryChoice(p,choice) then
-        return
-    endif
-    if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=StoryPrice[choice] then
-        call IssueNeutralTargetOrder(Player(p),shop,"neutralinteract",Hero[p])
+        exitwhen attempts>=8
+        set choice=StoryChooseItem(p)
+        set before=GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)
+        exitwhen before<StoryPrice[choice]
         call IssueNeutralImmediateOrderById(Player(p),shop,StoryItem[choice])
-        set StoryBuyAt[p]=TimeNow+2.
-    endif
+        set attempts=attempts+1
+        // Sold-item callback advances the sequence; never spin on absent stock/failed native order.
+        exitwhen GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=before
+    endloop
+    set StoryBuyAt[p]=TimeNow+1.
     set shop=null
 endfunction
 function StoryOnBuy takes nothing returns nothing
     local unit buyer=GetBuyingUnit()
     local integer p=GetPlayerId(GetOwningPlayer(buyer))
+    local integer sold=GetItemTypeId(GetSoldItem())
     if p<12 and buyer==Hero[p] then
         set StoryBought[p]=StoryBought[p]+1
+        if sold=='Nsht' or sold=='Nsta' or sold=='Nsch' then
+            set StatBought50[p]=StatBought50[p]+1
+        endif
     endif
     set buyer=null
 endfunction
 function StoryShopsOpen takes nothing returns nothing
     local integer j=0
-    if CampaignStage!=10 and CampaignStage!=11 and CampaignStage!=12 then
+    if CampaignStage!=10 and CampaignStage!=11 and CampaignStage!=12 and CampaignStage!=31 then
         return
     endif
     call StoryShopsClose()
@@ -564,7 +537,7 @@ function StoryFountainFor takes integer p returns unit
     local real best=999999999.
     local real dx=0.
     local real dy=0.
-    if (CampaignStage!=10 and CampaignStage!=12) or CampaignTransition then
+    if (CampaignStage!=10 and CampaignStage!=12 and CampaignStage!=31) or CampaignTransition then
         return null
     endif
     loop

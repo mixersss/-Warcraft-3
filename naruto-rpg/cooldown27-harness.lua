@@ -20,15 +20,15 @@ TreeJumpInside,GetTerrainCliffLevel,IsTerrainPathable=inside42,cliff42,terrain42
 SetUnitPosition=position
 -- Native powerup purchases consume real125 gold and apply+6 without needing inventory space.
 CampaignStage=12;CampaignTransition=false;CampaignFinished=false;StoryShopsOpen();World={}
-local expected={7,7,8,9,9,9,9,9,9,8,7,9}
+local expected={7,7,9,9,9,9,9,7,9,8,7,9}
 for p=0,11 do
  HeroRole[p]=p;local h=Hero[p];h.hp=10000;h.maxLife=10000;h.paused=false;h.items={};h.x=StoryShop[0].x;h.y=StoryShop[0].y
  for slot=0,5 do h.items[slot]={type=raw('Nlca'),owned=true}end
- local first=h.items[0];StoryBuyAt[p]=0;StoryBought[p]=0;SetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD,250)
+ local first=h.items[0];StoryBuyAt[p]=0;StoryBought[p]=0;StatBought50[p]=0;SetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD,250)
  assert(StoryChooseItem(p)==expected[p+1] and StoryCanCarryChoice(p,expected[p+1]))
  local stat=expected[p+1]==7 and 'str' or (expected[p+1]==8 and 'int' or 'agi');local before=h[stat]or 0
- StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==125 and StoryBought[p]==1 and h[stat]==before+6 and h.items[0]==first)
- StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==125,'Respect4s shopping interval')
+ StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==0 and StoryBought[p]==2 and h[stat]==before+12 and h.items[0]==first)
+ StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==0,'No free repeated purchases after spending budget')
  TimeNow=TimeNow+5;StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==0 and h[stat]==before+12)
  TimeNow=TimeNow+5;StoryBuy(p);assert(GetPlayerState(p,PLAYER_STATE_RESOURCE_GOLD)==0 and StoryBought[p]==2,'Never grant unaffordable powerups')
  h.items={};StoryBought[p]=3;assert(StoryChooseItem(p)==expected[p+1],'Every fourth successful purchase prioritizes main stat')

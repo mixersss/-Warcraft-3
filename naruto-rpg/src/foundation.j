@@ -124,6 +124,32 @@ globals
     real array LogBotNextAt
     boolean Experience49Applied=false
     boolean Gates49Built=false
+    integer Sleep50Casts=0
+    integer Sleep50EmitSlot=0
+    group array Sleep50Targets
+    group array Sleep50Visuals
+    unit array Sleep50Casters
+    integer Water50Casts=0
+    integer Water50Epoch=0
+    integer Water50Cursor=0
+    unit array Water50MoveCaster
+    unit array Water50MovePet
+    real array Water50MoveUntil
+    unit array Control50Unit
+    real array Control50Until
+    integer array StatBought50
+    boolean Endless50Active=false
+    boolean Endless50Starting=false
+    integer Endless50Cursor=0
+    integer Endless50BossRound=0
+    integer Endless50CleanupCursor=17
+    real Endless50BossAt=0.
+    real Endless50ThinkAt=0.
+    integer array Endless50Kind
+    real array Endless50X
+    real array Endless50Y
+    real array Endless50ReviveAt
+    real array Endless50DeadSince
     boolean CampaignBountyActive=false
     integer array CampaignBountyBefore
     boolean CampaignKabutoAI=true
@@ -645,7 +671,11 @@ endfunction
 // SKILLS_RUNTIME
 function FoundationMusicNext takes nothing returns nothing
     if MusicOn then
-        set MusicSong=ModuloInteger(MusicSong+1,MusicChapterCount[MusicCursor])
+        if CampaignStage==31 then
+            set MusicSong=ModuloInteger(MusicSong+1,12)
+        else
+            set MusicSong=ModuloInteger(MusicSong+1,MusicChapterCount[MusicCursor])
+        endif
         set MusicPlaying=false
         call ExecuteFunc("FoundationMusicStart")
     endif
@@ -655,12 +685,19 @@ function FoundationMusicStart takes nothing returns nothing
     if MusicCursor<0 or MusicCursor>=MusicCount then
         return
     endif
+    if CampaignStage==31 then
+        set MusicCursor=0
+    endif
     if MusicActiveChapter!=MusicCursor then
         set MusicSong=0
         set MusicActiveChapter=MusicCursor
     endif
     if MusicOn then
-        set index=MusicChapterStart[MusicCursor]+MusicSong
+        if CampaignStage==31 then
+            set index=MusicSong
+        else
+            set index=MusicChapterStart[MusicCursor]+MusicSong
+        endif
         if MusicPlaying and MusicPlayingTrack==index then
             return
         endif
@@ -687,7 +724,13 @@ function FoundationChat takes nothing returns nothing
     if p>=12 then
         return
     endif
-    if msg=="-goldcheck" then
+    if msg=="-endless" then
+        if CampaignTestHost(p) and SkillDataReady and SpawnCursor>=12 and StoryPopulateCursor>=64 and not CampaignFinished then
+            call ExecuteFunc("Endless50Start")
+        else
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,10.,"Команда доступна ведущему после выбора героев. Уровни и вещи сохраняются.")
+        endif
+    elseif msg=="-goldcheck" then
         if CampaignTestHost(p) then
             call Invasion44Inspect(p)
         else
@@ -804,6 +847,7 @@ function FoundationChat takes nothing returns nothing
         call FoundationMusicNext()
         call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек текущего сюжетного этапа. -music: включить/выключить музыку.")
     elseif msg=="-help" then
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-endless: ведущий сразу включает общую бесконечную защиту Конохи. Сохраняются текущие герои, уровни и вещи; возврата к сюжету нет.")
         call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения; -village fast: все враги сразу; -sasuke-die: тест смерти Саске (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: мягкое восстановление; -rebuildsasuke: пересоздать Саске с навыками и вещами; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
@@ -847,6 +891,8 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call ExecuteFunc("Control50Tick")
+    call ExecuteFunc("Endless50Tick")
     call ExecuteFunc("Story46Tick")
     call ExecuteFunc("InvasionRebuildTick")
     call ExecuteFunc("InvasionHeroVisibility")

@@ -62,7 +62,7 @@ endfunction
 function Invasion47Experience takes unit victim returns nothing
     local integer p=0
     local integer raw=GetUnitTypeId(victim)
-    if GetPlayerId(GetOwningPlayer(victim))!=13 or (raw!='c011' and raw!='c022') then
+    if CampaignStage!=12 or GetPlayerId(GetOwningPlayer(victim))!=13 or (raw!='c011' and raw!='c022') then
         return
     endif
     loop
@@ -84,7 +84,7 @@ function Invasion44Death takes nothing returns nothing
     local integer sides=0
     local integer n=0
     local texttag label=null
-    if CampaignStage!=12 or CampaignTransition or CampaignFinished or not CampaignBountyActive or (owner!=13 and owner!=PLAYER_NEUTRAL_PASSIVE) or IsUnitIllusion(victim) then
+    if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or CampaignFinished or not CampaignBountyActive or (owner!=13 and owner!=PLAYER_NEUTRAL_PASSIVE) or IsUnitIllusion(victim) then
         set victim=null
         set killer=null
         return
@@ -96,7 +96,7 @@ function Invasion44Death takes nothing returns nothing
         set gold=LoadInteger(Invasion44Bounty,raw,0)
         set dice=LoadInteger(Invasion44Bounty,raw,1)
         set sides=LoadInteger(Invasion44Bounty,raw,2)
-        if HeroRole[p]>=0 and HeroRole[p]<9 and owner==PLAYER_NEUTRAL_PASSIVE and (raw=='c00F' or raw=='c010') then
+        if (CampaignStage==31 or (HeroRole[p]>=0 and HeroRole[p]<9)) and owner==PLAYER_NEUTRAL_PASSIVE and (raw=='c00F' or raw=='c010') then
             set gold=gold+20
         endif
         // Match the original dice distribution, not a uniform min/max approximation.
@@ -128,7 +128,7 @@ function Invasion44Death takes nothing returns nothing
 endfunction
 function Invasion44Inspect takes integer viewer returns nothing
     local integer p=0
-    if CampaignStage!=12 then
+    if CampaignStage!=12 and CampaignStage!=31 then
         call DisplayTimedTextToPlayer(Player(viewer),0.,0.,10.,"Учёт наград доступен во время нападения на Коноху.")
         return
     endif

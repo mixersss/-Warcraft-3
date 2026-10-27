@@ -24,7 +24,7 @@ function InvasionRebuildWorker takes nothing returns nothing
     endif
     set old=SasukeRebuildTarget[p]
     set viewer=SasukeRebuildViewer[p]
-    if CampaignStage!=12 or CampaignTransition or CampaignFinished or CampaignPermanentDead[p] or HeroRole[p]!=1 or old==null or old!=Hero[p] or GetUnitTypeId(old)==0 then
+    if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or CampaignFinished or CampaignPermanentDead[p] or HeroRole[p]!=1 or old==null or old!=Hero[p] or GetUnitTypeId(old)==0 then
         set SasukeRebuildTarget[p]=null
         set SasukeRebuildAt[p]=0.
         set old=null
@@ -188,7 +188,7 @@ function InvasionRebuildWorker takes nothing returns nothing
 endfunction
 function InvasionRebuildCommand takes integer viewer returns nothing
     local integer p=CampaignSasukePlayer
-    if CampaignStage!=12 or CampaignTransition or CampaignFinished then
+    if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or CampaignFinished then
         call DisplayTimedTextToPlayer(Player(viewer),0.,0.,12.,"Аварийное пересоздание доступно только во время активной защиты Конохи.")
         return
     endif
@@ -229,7 +229,7 @@ function InvasionRebuildTick takes nothing returns nothing
     loop
         exitwhen p>=12
         if SasukeRebuildTarget[p]!=null then
-            if CampaignStage!=12 or CampaignTransition or CampaignFinished or CampaignPermanentDead[p] or Hero[p]!=SasukeRebuildTarget[p] then
+            if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or CampaignFinished or CampaignPermanentDead[p] or Hero[p]!=SasukeRebuildTarget[p] then
                 set SasukeRebuildTarget[p]=null
                 set SasukeRebuildAt[p]=0.
             elseif TimeNow>=SasukeRebuildAt[p] then

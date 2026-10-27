@@ -1,7 +1,7 @@
 // Source spell cleanup must never delete the registered real Sasuke during invasion.
 function InvasionSasukeSlot takes unit u returns integer
     local integer p=0
-    if u==null or CampaignStage!=12 or CampaignTransition then
+    if u==null or (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition then
         return -1
     endif
     set p=GetPlayerId(GetOwningPlayer(u))
@@ -32,6 +32,19 @@ function InvasionSourcePause takes unit u, boolean pause, string source returns 
     if p>=0 and pause then
         set SasukeLastSource[p]=source
     endif
+    if u!=null then
+        set p=GetPlayerId(GetOwningPlayer(u))
+        if p<12 and u==Hero[p] then
+            if pause and (CampaignStage==12 or CampaignStage==31) and not CampaignTransition then
+                if Control50Unit[p]!=u or Control50Until[p]==0. then
+                    set Control50Unit[p]=u
+                    set Control50Until[p]=TimeNow+20.
+                endif
+            else
+                set Control50Until[p]=0.
+            endif
+        endif
+    endif
     call PauseUnit(u,pause)
 endfunction
 // Source drain/heal callbacks can outlive their target. Never put positive HP
@@ -61,7 +74,7 @@ endfunction
 
 function InvasionAfterRevive takes integer p returns nothing
     local unit u=Hero[p]
-    if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
+    if (CampaignStage==12 or CampaignStage==31) and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
         call CommonLogClear(p)
         call UnitRemoveAbility(u,'Apiv')
         call ShowUnit(u,false)
@@ -82,7 +95,7 @@ function InvasionAfterRevive takes integer p returns nothing
     set u=null
 endfunction
 function InvasionQueueCorpse takes integer p returns nothing
-    if CampaignStage==12 and not CampaignTransition and not CampaignFinished and not CampaignPermanentDead[p] and HeroRole[p]==1 and Hero[p]!=null and IsUnitType(Hero[p],UNIT_TYPE_DEAD) then
+    if (CampaignStage==12 or CampaignStage==31) and not CampaignTransition and not CampaignFinished and not CampaignPermanentDead[p] and HeroRole[p]==1 and Hero[p]!=null and IsUnitType(Hero[p],UNIT_TYPE_DEAD) then
         if StoryRevive[p]<=0. then
             set StoryRevive[p]=TimeNow+20.
         endif
@@ -159,7 +172,7 @@ function InvasionFixSasuke takes integer viewer returns nothing
     local integer k=0
     local boolean locked=false
     local unit u=null
-    if CampaignStage!=12 or CampaignTransition or CampaignFinished then
+    if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition or CampaignFinished then
         call DisplayTimedTextToPlayer(Player(viewer),0.,0.,10.,"Восстановление Саске доступно во время активного нападения на Коноху.")
         return
     endif
@@ -211,7 +224,7 @@ endfunction
 function InvasionSourceColor takes unit u, real r, real g, real b, real transparency returns nothing
     local integer p=GetPlayerId(GetOwningPlayer(u))
     call SetUnitVertexColorBJ(u,r,g,b,transparency)
-    if p<12 and u==Hero[p] and HeroRole[p]==1 and CampaignStage==12 then
+    if p<12 and u==Hero[p] and HeroRole[p]==1 and (CampaignStage==12 or CampaignStage==31) then
         if transparency>=99.9 then
             if SasukeAlphaSince[p]==0. then
                 set SasukeAlphaSince[p]=TimeNow
@@ -230,10 +243,10 @@ function InvasionHeroVisibility takes nothing returns nothing
     loop
         exitwhen p>=12
         set u=Hero[p]
-        if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and u!=null and IsUnitType(u,UNIT_TYPE_DEAD) then
+        if (CampaignStage==12 or CampaignStage==31) and not CampaignTransition and HeroRole[p]==1 and u!=null and IsUnitType(u,UNIT_TYPE_DEAD) then
             call InvasionQueueCorpse(p)
         endif
-        if CampaignStage==12 and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
+        if (CampaignStage==12 or CampaignStage==31) and not CampaignTransition and HeroRole[p]==1 and FoundationAlive(u) then
             if SasukeLastType[p]!=0 and GetUnitTypeId(u)!=SasukeLastType[p] and (GetUnitTypeId(u)=='R001' or GetUnitTypeId(u)=='Rsfm') then
                 set SasukeMorphRepairAt[p]=TimeNow+1.5
             endif

@@ -8,5 +8,20 @@
     "primaryAttribute": "STR",
     "runtimeBase": "Hpal",
     "reason": "User Alpha43: Kankuro strength primary; retain original stats, mana and model."
+  },
+  "2": {
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "reason": "User Alpha50 primary attribute request; retain base stats, mana, model and skills."
+  },
+  "7": {
+    "primaryAttribute": "STR",
+    "runtimeBase": "Hpal",
+    "reason": "User Alpha50 primary attribute request; retain base stats, mana, model and skills."
+  },
+  "11": {
+    "primaryAttribute": "AGI",
+    "runtimeBase": "Edem",
+    "reason": "User Alpha50 primary attribute request; retain base stats, mana, model and skills."
   }
 }

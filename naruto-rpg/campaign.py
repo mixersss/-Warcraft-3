@@ -46,6 +46,8 @@ def units():
  final=json.loads((ROOT/'src/balance48.json').read_text())['finalOrochimaru']
  base,_,mods=next(row for row in out if row[1]==raw(final['kind']))
  out.append((base,final['unitId'],[(k,t,final['hp']if k=='uhpm'else v)for k,t,v in mods]))
+ base,_,mods=next(row for row in out if row[1]=='c000')
+ out.append((base,'c050',[(k,t,300000 if k=='uhpm'else v)for k,t,v in mods]))
  for f in json.loads((ROOT/'src/village-fountains-source.json').read_text())['fountains']:
   mods=[(m['id'],m['variableType'],m['value'].replace('\\\\','\\')if m['id']=='umdl'else m['value'])for m in f['effectiveModifications']]
   mods.extend([('unam',3,'Фонтан силы'if f['doubleHealth']else'Фонтан восстановления'),('uabi',3,('Crg2'if f['doubleHealth']else'ACnr')+',ANre,Avul')])
@@ -70,6 +72,8 @@ def generated():
   model=row[1].replace('.mdl','.mdx'); seq=next((x['animations'] for x in animations if x['path'].lower()==model.lower()),[])
   cast=next((i for i,a in enumerate(seq) if (a if isinstance(a,str) else a['name']).lower().startswith('spell')),next((i for i,a in enumerate(seq) if 'attack' in (a if isinstance(a,str) else a['name']).lower()),0))
   lines += [f"    set CampaignUnit[{n}]='{raw(n)}'",f'    set CampaignAnimation[{n}]={cast}']
+ for j,row in enumerate(json.loads((ROOT/'src/endless50.json').read_text())['guardians']):
+  lines += [f"    set Endless50Kind[{j}]={row['kind']}",f"    set Endless50X[{j}]={float(row['x'])}",f"    set Endless50Y[{j}]={float(row['y'])}"]
  for stage,seats in json.loads((ROOT/'src/arena-stands-source.json').read_text())['stages'].items():
   for p,seat in enumerate(seats):
    n=p+(12 if int(stage)==11 else 0)

@@ -1,9 +1,9 @@
 CampaignClear();CampaignStage=0;CampaignFinished=false;CampaignTransition=false
 for p=0,11 do Hero[p]=CreateUnit(p,raw('R000')+p,0,0,0);HeroRole[p]=p;Controllers[p]='computer';SetPlayerHandicapXP(p,1)end
 Experience49Applied=false;Experience49Init();Experience49Init()
-for p=0,11 do assert(math.abs(GetPlayerHandicapXP(p)-1.3)<.00001,'Global30% XP for every player once')end
+for p=0,11 do assert(math.abs(GetPlayerHandicapXP(p)-1.7)<.00001,'Global70% XP for every player once')end
 CampaignStage=12;CampaignStartPlay();CampaignClear()
-for p=0,11 do assert(math.abs(GetPlayerHandicapXP(p)-1.3)<.00001,'No double invasion bonus and no removal of global rate on exit')end
+for p=0,11 do assert(math.abs(GetPlayerHandicapXP(p)-1.7)<.00001,'No double invasion bonus and no removal of global rate on exit')end
 -- Fresh actual damage is required, with danger assessment rather than just cooldown/low HP.
 CampaignStage=12;TimeNow=19000000;local h=Hero[0];h.maxLife=10000;h.hp=10000;h.mana=1000;h.abilities[raw('Rlog')]=1
 local foe=CreateUnit(15,raw('c010'),100,0,0);foe.hp=10000;foe.maxLife=10000
@@ -29,7 +29,7 @@ Invasion44Death();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52,'32 or
 killer=CreateUnit(13,raw('c011'),0,0,0);Invasion44Death();assert(GetPlayerState(0,PLAYER_STATE_RESOURCE_GOLD)==52,'Ordinary allied army earns no hero bonus')
 killer=Hero[9];victim=CreateUnit(13,raw('c011'),0,0,0);Invasion44Death();assert(GetPlayerState(9,PLAYER_STATE_RESOURCE_GOLD)==32,'Sand bounty remains original')
 GetTriggerUnit,GetKillingUnit,GetRandomInt=trigger,killing,random
-for _,p in ipairs({0,1,2,9,10,11})do StoryBought[p]=3;assert(StoryChooseItem(p)==StoryStatChoice(p));StoryBought[p]=5;assert(StoryChooseItem(p)==StoryStatChoice(p),'Every second purchase after initial gear is a stat scroll')end
+for _,p in ipairs({0,1,2,9,10,11})do StatBought50[p]=0;StoryBought[p]=3;assert(StoryChooseItem(p)==StoryStatChoice(p));StoryBought[p]=5;assert(StoryChooseItem(p)==StoryStatChoice(p),'Every second purchase after initial gear is a stat scroll')end
 local create,invul=CreateDestructable,SetDestructableInvulnerable;local walls={}
 function CreateDestructable(kind,x,y,angle,scale,variation)local d={kind=kind,x=x,y=y};walls[#walls+1]=d;return d end
 function SetDestructableInvulnerable(d,value)d.invulnerable=value end
@@ -37,4 +37,4 @@ Gates49Built=false;Gates49Init();Gates49Init();assert(#walls==7,'Seven persisten
 for _,d in ipairs(walls)do assert(d.kind==raw('LTba')and d.invulnerable and d.y==-12800)end
 CreateDestructable,SetDestructableInvulnerable=create,invul
 CampaignClear()
-print('PASS: global30% XP/no double invasion bonus, tactical invisibility and owner-only color, defender20gold without army transfer, frequent role-based scroll selection, idempotent visible invulnerable north barricades (native mocks)')
+print('PASS: global70% XP/no double invasion bonus, tactical invisibility and owner-only color, defender20gold without army transfer, frequent role-based scroll selection, idempotent visible invulnerable north barricades (native mocks)')

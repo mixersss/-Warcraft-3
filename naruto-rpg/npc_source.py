@@ -15,6 +15,10 @@ def entries(key):
   for m in o['modifications']:
    row=(m['id'],m['variableType'],icon(m['id'],m['value']))
    if key=='abilities':row+=(m['levelOrVariation'],m['dataPointer'])
+   if key=='abilities' and o['newId']in ('A008','A00I') and m['id']in ('ahdu','adur') and m['levelOrVariation']>0:
+    row=(m['id'],m['variableType'],.25 if o['newId']=='A008'else .5,m['levelOrVariation'],m['dataPointer'])
+   if key=='abilities' and o['newId']=='A028' and m['id']in ('ahdu','adur','Ncs6') and m['levelOrVariation']==1:
+    row=(m['id'],m['variableType'],2. if m['id']in ('ahdu','Ncs6')else 3.,m['levelOrVariation'],m['dataPointer'])
    mods.append(row)
   if key=='units':
    mods.extend([('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,'')])
@@ -26,7 +30,8 @@ def body(kind,name):
  row=DATA['profiles'].get(str(kind))
  if not row:return None
  o=row['body'];mods=[(m['id'],m['variableType'],icon(m['id'],m['value']))for m in o['modifications']]
- mods.extend([('unam',3,name),('uabi',3,','.join(row['skills'])),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,'')])
+ skills=[raw for raw in row['skills']if not(20<=kind<=27 and raw=='S02D')]
+ mods.extend([('unam',3,name),('uabi',3,','.join(skills)),('usnd',3,''),('ucs1',3,'WoodHeavyBash'),('ucs2',3,'')])
  return o['oldId'],o['newId'],list({m[0]:m for m in mods}.values())
 
 ORDERS={'AHtb':('thunderbolt',1),'ANsb':('thunderbolt',1),'ANfb':('thunderbolt',1),'ANbf':('breathoffire',2),'ANbr':('battleroar',0),'ANbl':('blink',2),'AHtc':('thunderclap',0),'AHwe':('waterelemental',0),'AOmi':('mirrorimage',0),'ANst':('stampede',2),'ANc3':('clusterrockets',2),'AHdr':('drain',3),'AEmb':('manaburn',1),'AOcl':('chainlightning',1),'AEsh':('shadowstrike',1),'AUsl':('sleep',1),'ACcr':('cripple',1),'ACwb':('web',1),'AUim':('impale',2),'AUin':('inferno',2),'Aenw':('ensnare',1),'AOwk':('windwalk',0),'AOw2':('stomp',0),'ANms':('manashieldon',0),'AEfk':('fanofknives',0),'AEer':('entanglingroots',1),'Acyc':('cyclone',1),'Arsg':('spiritbeast',0),'ANsi':('silence',2),'AEme':('metamorphosis',0),'AOsh':('shockwave',2)}
@@ -67,8 +72,9 @@ def initialize():
  for kind,p in DATA['profiles'].items():
   lines.append('    if kind=='+kind+' then')
   for raw,rank in p['skills'].items():
-   if kind=='8' and raw=='S02B':continue
+   if (kind=='8' and raw=='S02B')or(20<=int(kind)<=27 and raw=='S02D'):continue
    lines.extend([f"        call UnitAddAbility(u,'{raw}')",f"        call SetUnitAbilityLevel(u,'{raw}',{rank})"])
+  if 20<=int(kind)<=27:lines.append("        call UnitRemoveAbility(u,'S02D')")
   if kind=='8':lines.append("        call UnitRemoveAbility(u,'S02B')")
   lines.append('    endif')
  lines.extend([

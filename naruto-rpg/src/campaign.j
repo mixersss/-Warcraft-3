@@ -152,6 +152,13 @@ function CampaignEventOpen takes integer slot, string title, real deadline retur
 endfunction
 function CampaignClear takes nothing returns nothing
     local integer j=0
+    set Water50Epoch=Water50Epoch+1
+    set Water50Casts=0
+    set Sleep50Casts=0
+    if NPCSourceReady then
+        call DisableTrigger(OrigNPC_H8)
+        call DisableTrigger(OrigNPC_ETV)
+    endif
     call Invasion48XPStop()
     call Story46Clear()
     set CampaignFastTestActive=false
@@ -186,6 +193,14 @@ function CampaignClear takes nothing returns nothing
     endif
     loop
         exitwhen j>=2048
+        if j<64 then
+            set Sleep50Targets[j]=null
+            set Sleep50Visuals[j]=null
+            set Sleep50Casters[j]=null
+            set Water50MoveCaster[j]=null
+            set Water50MovePet[j]=null
+            set Water50MoveUntil[j]=0.
+        endif
         if CampaignActor[j]!=null then
             if NPCCooldowns!=null then
                 call FlushChildHashtable(NPCCooldowns,GetHandleId(CampaignActor[j]))
@@ -239,11 +254,13 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
     local integer raw=CampaignUnit[kind]
     if CampaignStage==28 and kind==13 then
         set raw='c048'
+    elseif CampaignStage==31 and kind==0 then
+        set raw='c050'
     endif
     loop
         exitwhen j>=2048 or CampaignActor[j]==null
         // Slot0 is the invasion objective until CampaignTick queues the next scene.
-        if not FoundationAlive(CampaignActor[j]) and (CampaignStage!=12 or j!=0) then
+        if not FoundationAlive(CampaignActor[j]) and (CampaignStage!=12 or j!=0) and (CampaignStage!=31 or j>=17) then
             if NPCCooldowns!=null then
                 call FlushChildHashtable(NPCCooldowns,GetHandleId(CampaignActor[j]))
                 if NPCHiddenAbilities!=null then
@@ -260,6 +277,7 @@ function CampaignAdd takes integer kind, integer owner, real x, real y returns i
         return -1
     endif
     set CampaignActor[j]=CreateUnit(Player(owner),raw,x,y,180.)
+    set Endless50DeadSince[j]=0.
     call NPCInitialize(CampaignActor[j],kind)
     if CampaignSoundGuard(kind) then
         call SetUnitPosition(CampaignActor[j],CampaignReserveX[kind],CampaignReserveY[kind])
@@ -641,7 +659,7 @@ function CampaignInvasionWave takes integer lane returns nothing
     local integer owner=PLAYER_NEUTRAL_PASSIVE
     local integer origin=CampaignWaveOrigin[lane]
     local integer destination=CampaignWaveDestination[lane]
-    if CampaignStage!=12 or CampaignTransition then
+    if (CampaignStage!=12 and CampaignStage!=31) or CampaignTransition then
         return
     endif
     set Invasion44Wave[lane]=Invasion44Wave[lane]+1
@@ -1193,6 +1211,10 @@ function CampaignFinish takes boolean victory returns nothing
     if CampaignFinished then
         return
     endif
+    if CampaignStage>=17 and CampaignStage<=30 then
+        call ExecuteFunc("Endless50Start")
+        return
+    endif
     set CampaignFinished=true
     call NoteClearAll()
     call CampaignVillageLandmarksClose()
@@ -1474,6 +1496,24 @@ function CampaignNearest takes integer p returns unit
         endif
         return null
     endif
+    if CampaignStage==31 then
+        call GroupEnumUnitsInRange(CampaignScratch,GetUnitX(Hero[p]),GetUnitY(Hero[p]),1600.,null)
+        loop
+            set target=FirstOfGroup(CampaignScratch)
+            exitwhen target==null
+            call GroupRemoveUnit(CampaignScratch,target)
+            if FoundationAlive(target) and not IsUnitPaused(target) and GetUnitAbilityLevel(target,'Avul')==0 and IsUnitEnemy(target,Player(p)) and SkillsCanSee(target,Player(p)) then
+                set dx=GetUnitX(target)-GetUnitX(Hero[p])
+                set dy=GetUnitY(target)-GetUnitY(Hero[p])
+                if dx*dx+dy*dy<best then
+                    set best=dx*dx+dy*dy
+                    set result=target
+                endif
+            endif
+        endloop
+        set target=null
+        return result
+    endif
     if CampaignStage==12 then
         call GroupEnumUnitsInRange(CampaignScratch,GetUnitX(Hero[p]),GetUnitY(Hero[p]),1400.,null)
         loop
@@ -1586,7 +1626,7 @@ function CampaignBot takes integer p, unit enemy returns nothing
         if shop!=null and ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
         endif
-    elseif CampaignStage==12 and HeroRole[p]<9 and enemy!=null then
+    elseif ((CampaignStage==12 and HeroRole[p]<9) or CampaignStage==31) and enemy!=null then
         // Combat overrides shopping and following while a wave needs interception.
         set StoryShopTripUntil[p]=0.
         set StoryBuyAt[p]=TimeNow+10.
@@ -1594,11 +1634,15 @@ function CampaignBot takes integer p, unit enemy returns nothing
     elseif enemy==null and shop!=null and TimeNow>=StoryBuyAt[p] and StoryShopTripUntil[p]>TimeNow then
         if ExamNear(Hero[p],GetUnitX(shop),GetUnitY(shop),250.) then
             call StoryBuy(p)
-            set StoryShopTripUntil[p]=0.
+            if GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=125 then
+                set StoryShopTripUntil[p]=TimeNow+45.
+            else
+                set StoryShopTripUntil[p]=0.
+            endif
         else
             call IssuePointOrder(Hero[p],"move",GetUnitX(shop),GetUnitY(shop))
         endif
-    elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null and not (CampaignStage==12 and HeroRole[p]<9) then
+    elseif not StoryMarch[t] and leader!=Hero[p] and leader!=null and not ((CampaignStage==12 and HeroRole[p]<9) or CampaignStage==31) then
         if enemy!=null and ExamNear(enemy,GetUnitX(Hero[p]),GetUnitY(Hero[p]),700.) then
             call IssueTargetOrder(Hero[p],"attack",enemy)
         else
@@ -1606,7 +1650,7 @@ function CampaignBot takes integer p, unit enemy returns nothing
         endif
     elseif enemy!=null then
         call IssueTargetOrder(Hero[p],"attack",enemy)
-    elseif CampaignStage==12 and HeroRole[p]<9 then
+    elseif (CampaignStage==12 and HeroRole[p]<9) or CampaignStage==31 then
         // Fixed 30/70 allocation prevents every hero chasing the same northern wave.
         if CampaignDefenseLane[p]==5 then
             call IssuePointOrder(Hero[p],"attack",CampaignRouteX[5],CampaignRouteY[5])
@@ -1683,7 +1727,7 @@ function CampaignNPCTick takes nothing returns nothing
                     set CampaignMoveAt[j]=TimeNow+3.
                 endif
             elseif target!=null then
-                if CampaignStage==12 and CampaignActorRoute[j]>=0 and best>650.*650. and TimeNow>=CampaignMoveAt[j] and CampaignWaveRecover(j) then
+                if (CampaignStage==12 or CampaignStage==31) and CampaignActorRoute[j]>=0 and best>650.*650. and TimeNow>=CampaignMoveAt[j] and CampaignWaveRecover(j) then
                     set CampaignMoveAt[j]=TimeNow+2.
                 elseif NPCUseInventory(u,CampaignActorType[j],target) or NPCTry(u,CampaignActorType[j],target) then
                     set CampaignMoveAt[j]=TimeNow+1.
@@ -1695,7 +1739,7 @@ function CampaignNPCTick takes nothing returns nothing
                     endif
                     set CampaignMoveAt[j]=TimeNow+3.
                 endif
-            elseif CampaignStage==12 and CampaignActorRoute[j]>=0 and TimeNow>=CampaignMoveAt[j] then
+            elseif (CampaignStage==12 or CampaignStage==31) and CampaignActorRoute[j]>=0 and TimeNow>=CampaignMoveAt[j] then
                 if ExamNear(u,CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]],220.) then
                     if CampaignActorRoute[j]==8 or CampaignActorRoute[j]==11 then
                         set CampaignActorRoute[j]=11
@@ -1709,7 +1753,7 @@ function CampaignNPCTick takes nothing returns nothing
                     call IssuePointOrder(u,"attack",CampaignRouteX[CampaignActorRoute[j]],CampaignRouteY[CampaignActorRoute[j]])
                     set CampaignMoveAt[j]=TimeNow+3.
                 endif
-            elseif CampaignStage==12 and (CampaignSoundGuard(CampaignActorType[j]) or CampaignActorType[j]==1 or CampaignActorType[j]==2 or CampaignActorType[j]==17 or CampaignActorType[j]==34 or (CampaignActorType[j]>=29 and CampaignActorType[j]<=33)) and TimeNow>=CampaignMoveAt[j] then
+            elseif (CampaignStage==12 or CampaignStage==31) and (CampaignSoundGuard(CampaignActorType[j]) or CampaignActorType[j]==1 or CampaignActorType[j]==2 or CampaignActorType[j]==17 or CampaignActorType[j]==34 or (CampaignActorType[j]>=29 and CampaignActorType[j]<=33) or (CampaignStage==31 and j<17)) and TimeNow>=CampaignMoveAt[j] then
                 // Native creep guarding was disabled; explicitly return only stationary defenders.
                 if not ExamNear(u,CampaignPostX[j],CampaignPostY[j],96.) then
                     call IssuePointOrder(u,"move",CampaignPostX[j],CampaignPostY[j])
@@ -1990,7 +2034,7 @@ function CampaignTick takes nothing returns nothing
     local integer destination=1
     local item growth=null
     local integer camera=0
-    if CampaignFinished then
+    if CampaignFinished or CampaignStage==31 then
         return
     endif
     if CampaignStage==0 and not CampaignTransition then

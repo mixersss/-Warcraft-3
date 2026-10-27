@@ -47,7 +47,7 @@ function PlayMusic(path)LastCampaignMusic=path end
 function StopMusic()end
 MusicOn=false
 local function fresh()
- CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0;CampaignFinalActive=false;CampaignPrelimDone=false;CampaignPrelimWinner={}
+ Endless50Active=false;Endless50Starting=false;CampaignStage=0;CampaignQueued=0;CampaignTransition=false;CampaignPlaced=false;CampaignFinished=false;CampaignCount=0;CampaignFinalActive=false;CampaignPrelimDone=false;CampaignPrelimWinner={}
  CampaignClone={};CampaignClonePending={};CampaignCloneKind={};CampaignCloneCastAt=setmetatable({},{__index=function()return 0 end})
  CampaignActor={};CampaignActorType={};CampaignPermanentDead={};CampaignCastAt={};CampaignMoveAt={};CampaignActorRoute={}
  setmetatable(CampaignCastAt,{__index=function()return 0 end});setmetatable(CampaignMoveAt,{__index=function()return 0 end})
@@ -191,12 +191,12 @@ enter();killEnemies();CampaignTick();assert(CampaignQueued==29)
 enter();assert(CampaignStage==29 and CampaignSasuke==Hero[1] and not Hero[1].hidden)
 Hero[1].hp=0;CampaignTick();assert(CampaignQueued==30)
 enter();assert(CampaignStage==30)
-TimeNow=CampaignStartAt+12;CampaignTick();assert(CampaignFinished and outcomes[0]=='win' and outcomes[1]=='lose')
+TimeNow=CampaignStartAt+12;CampaignTick();assert(not CampaignFinished and CampaignStage==31 and Endless50Starting and not outcomes[0]and not outcomes[1],'Story victory starts shared endless defense, no split victory screen')
 -- The alternate final outcome preserves Sasuke's winning side.
 fresh();CampaignBindRoles();CampaignClock=CreateTimer();CampaignDialog=CreateTimerDialog(CampaignClock);CampaignStage=29;CampaignSasuke=Hero[1];CampaignNaruto=Hero[0];Hero[0].hp=0
 CampaignTick();assert(not CampaignFinished and CampaignPermanentDead[0] and Hero[0].hp==0,'Other survivors continue after Naruto dies')
 for p=2,11 do Hero[p].hp=0 end
-CampaignTick();assert(CampaignFinished and outcomes[1]=='win' and outcomes[0]=='lose','Defeat only after all allied survivors are dead')
+CampaignTick();assert(not CampaignFinished and CampaignStage==31 and Endless50Starting,'Alternate ending/all fallen also start shared endless defense')
 -- Unique selectable story roles: swap a pending/default character, reject an already confirmed human role.
 fresh();for t=0,3 do StoryStarted[t]=false end;Hero[0].xp=300;Hero[1].xp=300
 SkillsChoose(0,1);assert(HeroRole[0]==1 and HeroRole[1]==0 and RoleChosen[0])
