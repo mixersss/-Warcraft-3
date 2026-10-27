@@ -145,6 +145,8 @@ globals
     integer Endless50CleanupCursor=17
     real Endless50BossAt=0.
     real Endless50ThinkAt=0.
+    real array Endless50SpawnX
+    real array Endless50SpawnY
     integer array Endless50Kind
     real array Endless50X
     real array Endless50Y

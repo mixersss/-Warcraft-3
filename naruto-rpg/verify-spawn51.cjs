@@ -1,0 +1,15 @@
+const fs=require('fs'),assert=require('node:assert/strict'),crypto=require('crypto');
+const MapFile=require('mdx-m3-viewer/dist/cjs/parsers/w3x/map').default;
+const root=__dirname,old=new MapFile(),now=new MapFile();
+const file=fs.readFileSync(root+'/dist/Shinobi_Story_Alpha_51.w3x');
+old.load(new Uint8Array(fs.readFileSync(root+'/../releases/shinobi-new/Shinobi_Story_Alpha_50.w3x')),true);now.load(new Uint8Array(file),true);
+assert.deepEqual(now.getFileNames().sort(),old.getFileNames().sort());
+for(const n of now.getFileNames())if(!['war3map.j','war3map.w3i'].includes(n))assert.deepEqual(Buffer.from(now.get(n).bytes()),Buffer.from(old.get(n).bytes()),n+' unchanged50');
+const prev=Buffer.from(old.get('war3map.j').bytes()).toString(),current=Buffer.from(now.get('war3map.j').bytes()).toString();
+let normalized=current.replaceAll('ALPHA 51','ALPHA 50').replace(/^    real array Endless50Spawn[XY]\n/gm,'').replace(/^    set Endless50Spawn[XY]\[\d+\]=[^\n]*\n/gm,'');
+normalized=normalized.replace(/function Endless50ReadyHero takes[^]*?endfunction/,s=>s.replaceAll('Endless50SpawnX[p]','CampaignDefenderX[p]').replaceAll('Endless50SpawnY[p]','CampaignDefenderY[p]'));
+assert.equal(normalized,prev,'Entire JASS unchanged except explicit12-position transfer data and lookup');
+assert.deepEqual(Buffer.from(now.get('war3map.w3i').bytes()),Buffer.from(Buffer.from(old.get('war3map.w3i').bytes()).toString('latin1').replaceAll('ALPHA 50','ALPHA 51'),'latin1'));
+const cfg=JSON.parse(fs.readFileSync(root+'/src/endless50.json'));assert.equal(cfg.heroSpawns.length,12);assert.equal(new Set(cfg.heroSpawns.map(p=>p.join(','))).size,12);
+for(let p=0;p<12;p++)for(const [axis,i]of [['X',0],['Y',1]])assert(current.includes('set Endless50Spawn'+axis+'['+p+']='+cfg.heroSpawns[p][i]+'.0'));
+const report={filename:'Shinobi_Story_Alpha_51.w3x',bytes:file.length,sha256:crypto.createHash('sha256').update(file).digest('hex'),cause:'Endless defense indexed 12 players into nine initialized original defender positions; Sand slots defaulted to0,0',explicitVillageSpawnCount:12,heroSpawns:cfg.heroSpawns,initialTransferAndRevivalUseSamePoints:true,allOtherArchiveFilesAndJASSUnchanged:true,enginePlaytest:false};fs.writeFileSync(root+'/dist/spawn51-verification.json',JSON.stringify(report,null,2)+'\n');console.log('PASS: all12 explicit endless arrivals; full Alpha50 archive/JASS exact outside spawn data/lookup/version.');

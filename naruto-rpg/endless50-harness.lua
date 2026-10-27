@@ -26,7 +26,7 @@ for p=0,11 do
  for q=0,11 do assert(not IsUnitEnemy(h,q),'All12 allied')end
  assert(IsUnitEnemy(CreateUnit(15,raw('c010'),0,0,0),p))
  assert(not GetPlayerAlliance(13,p,ALLIANCE_SHARED_CONTROL)and not GetPlayerAlliance(15,p,ALLIANCE_SHARED_CONTROL))
- assert(StoryShopFor(p)~=nil and SpawnX[p]==CampaignDefenderX[p])
+ assert(StoryShopFor(p)~=nil and SpawnX[p]==Endless50SpawnX[p] and SpawnY[p]==Endless50SpawnY[p] and h.x==SpawnX[p] and h.y==SpawnY[p] and h.x>15000 and h.y< -15000)
 end
 assert(StoryShop[0]and StoryShop[3]and VillageFountain[0]and VillageFountain[3])
 -- Hero death: one standard delay, same identity/items; repeated deaths do not end the shared game.

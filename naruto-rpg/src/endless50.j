@@ -26,8 +26,8 @@ function Endless50ReadyHero takes integer p returns nothing
     set CampaignPermanentDead[p]=false
     set CampaignClonePending[p]=false
     set StoryRevive[p]=0.
-    set SpawnX[p]=CampaignDefenderX[p]
-    set SpawnY[p]=CampaignDefenderY[p]
+    set SpawnX[p]=Endless50SpawnX[p]
+    set SpawnY[p]=Endless50SpawnY[p]
     if not FoundationAlive(Hero[p]) then
         if not ReviveHero(Hero[p],SpawnX[p],SpawnY[p],true) then
             set StoryRevive[p]=TimeNow+1.

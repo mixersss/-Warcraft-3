@@ -12,5 +12,13 @@ for(let j50=0;j50<cfg50.guardians.length;j50++){
  assert.equal(values('Endless50Kind')[j50],p50.kind);assert.equal(values('Endless50X')[j50],p50.x);assert.equal(values('Endless50Y')[j50],p50.y);
 }
 assert.equal(cfg50.guardians.length,17);
+assert.equal(cfg50.heroSpawns.length,12,'All twelve slots need explicit village arrivals');
+for(let j=0;j<12;j++){
+ const p=cfg50.heroSpawns[j];assert.equal(values('Endless50SpawnX')[j],p[0]);assert.equal(values('Endless50SpawnY')[j],p[1]);
+ assert(!blocked[cell(...p)]&&connected[cell(...p)],'All twelve arrivals have clear connected ground: '+j);
+ assert((p[0]-16128)**2+(p[1]+15744)**2<800**2,'Inside village near fountain: '+j);
+ for(let k=0;k<j;k++)assert(Math.hypot(p[0]-cfg50.heroSpawns[k][0],p[1]-cfg50.heroSpawns[k][1])>=96,'Separate hero arrivals');
+}
+console.log('PASS: all12 explicit endless-defense spawns inside village on connected ground, including Sand slots9/10/11.');
 console.log('PASS:17 non-overlapping guardians within1024 ground travel of unchanged arena-side Sarutobi, all source invasion routes and hero arrivals remain connected (dynamic native collision untested).');
 `)(require,__dirname);

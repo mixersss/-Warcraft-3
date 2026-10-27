@@ -1,0 +1,60 @@
+{
+  "filename": "Shinobi_Story_Alpha_51.w3x",
+  "bytes": 11033809,
+  "sha256": "48ea7a0626fc6473a9aa659a577d5e08d40a749246e955ac7188d53d71c17434",
+  "cause": "Endless defense indexed 12 players into nine initialized original defender positions; Sand slots defaulted to0,0",
+  "explicitVillageSpawnCount": 12,
+  "heroSpawns": [
+    [
+      15488,
+      -15744
+    ],
+    [
+      15648,
+      -15744
+    ],
+    [
+      15808,
+      -15744
+    ],
+    [
+      15520,
+      -15584
+    ],
+    [
+      15648,
+      -15584
+    ],
+    [
+      15808,
+      -15584
+    ],
+    [
+      15488,
+      -15424
+    ],
+    [
+      15648,
+      -15424
+    ],
+    [
+      15808,
+      -15424
+    ],
+    [
+      15360,
+      -15872
+    ],
+    [
+      15968,
+      -15456
+    ],
+    [
+      16128,
+      -15456
+    ]
+  ],
+  "initialTransferAndRevivalUseSamePoints": true,
+  "allOtherArchiveFilesAndJASSUnchanged": true,
+  "enginePlaytest": false
+}

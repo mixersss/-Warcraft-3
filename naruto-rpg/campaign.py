@@ -74,6 +74,8 @@ def generated():
   lines += [f"    set CampaignUnit[{n}]='{raw(n)}'",f'    set CampaignAnimation[{n}]={cast}']
  for j,row in enumerate(json.loads((ROOT/'src/endless50.json').read_text())['guardians']):
   lines += [f"    set Endless50Kind[{j}]={row['kind']}",f"    set Endless50X[{j}]={float(row['x'])}",f"    set Endless50Y[{j}]={float(row['y'])}"]
+ for j,pos in enumerate(json.loads((ROOT/'src/endless50.json').read_text())['heroSpawns']):
+  lines += [f'    set Endless50SpawnX[{j}]={float(pos[0])}',f'    set Endless50SpawnY[{j}]={float(pos[1])}']
  for stage,seats in json.loads((ROOT/'src/arena-stands-source.json').read_text())['stages'].items():
   for p,seat in enumerate(seats):
    n=p+(12 if int(stage)==11 else 0)
