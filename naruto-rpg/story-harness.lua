@@ -51,6 +51,10 @@ function IssueImmediateOrder(u,o)u.last={o=o};return true end
 function IssueNeutralTargetOrder(p,shop,o,buyer)assert(o=='neutralinteract');neutralBuyer[p]=buyer;return true end
 local boughtBy=nil
 local soldItem=nil
+local saleShop=nil
+function GetSellingUnit()return saleShop end
+function RemoveItemFromStock(shop,id)if shop.stock then shop.stock[id]=nil end end
+function AddItemToStock(shop,id,current,max)shop.stock=shop.stock or {};shop.stock[id]=current end
 function GetSoldItem()return soldItem end
 function GetBuyingUnit()return boughtBy end
 function IssueNeutralImmediateOrderById(p,shop,id)
@@ -65,7 +69,7 @@ function IssueNeutralImmediateOrderById(p,shop,id)
  else
   for slot=0,5 do if not buyer.items[slot] then buyer.items[slot]={type=id,owned=true};given=true;break end end
  end
- if given then gold[p]=gold[p]-price;boughtBy=buyer;soldItem={type=id};StoryOnBuy();boughtBy=nil;soldItem=nil end
+ if given then gold[p]=gold[p]-price;boughtBy=buyer;saleShop=shop;soldItem={type=id};StoryOnBuy();boughtBy=nil;soldItem=nil;saleShop=nil end
  return given
 end
 GroundStatItems={}

@@ -468,6 +468,34 @@ function StoryChooseItem takes integer p returns integer
     endif
     return main
 endfunction
+// Restore stock after the native sale has finished decrementing it.
+function Scroll57Flush takes nothing returns nothing
+    local integer j=0
+    local integer k=0
+    local integer raw=0
+    loop
+        exitwhen j>=4
+        set k=0
+        loop
+            exitwhen k>=3
+            if Scroll57Pending[j*3+k] then
+                set Scroll57Pending[j*3+k]=false
+                if StoryShop[j]!=null and GetUnitTypeId(StoryShop[j])!=0 then
+                    set raw='Nsht'
+                    if k==1 then
+                        set raw='Nsta'
+                    elseif k==2 then
+                        set raw='Nsch'
+                    endif
+                    call RemoveItemFromStock(StoryShop[j],raw)
+                    call AddItemToStock(StoryShop[j],raw,1,1)
+                endif
+            endif
+            set k=k+1
+        endloop
+        set j=j+1
+    endloop
+endfunction
 function StoryBuy takes integer p returns nothing
     local integer choice=0
     local integer attempts=0
@@ -485,6 +513,7 @@ function StoryBuy takes integer p returns nothing
         exitwhen before<StoryPrice[choice]
         call IssueNeutralImmediateOrderById(Player(p),shop,StoryItem[choice])
         set attempts=attempts+1
+        call Scroll57Flush()
         // Sold-item callback advances the sequence; never spin on absent stock/failed native order.
         exitwhen GetPlayerState(Player(p),PLAYER_STATE_RESOURCE_GOLD)>=before
     endloop
@@ -495,6 +524,28 @@ function StoryOnBuy takes nothing returns nothing
     local unit buyer=GetBuyingUnit()
     local integer p=GetPlayerId(GetOwningPlayer(buyer))
     local integer sold=GetItemTypeId(GetSoldItem())
+    local unit seller=GetSellingUnit()
+    local integer j=0
+    local integer k=0
+    if sold=='Nsht' or sold=='Nsta' or sold=='Nsch' then
+        if sold=='Nsta' then
+            set k=1
+        elseif sold=='Nsch' then
+            set k=2
+        endif
+        loop
+            exitwhen j>=4
+            if seller==StoryShop[j] and seller!=null then
+                set Scroll57Pending[j*3+k]=true
+                if Scroll57Clock==null then
+                    set Scroll57Clock=CreateTimer()
+                endif
+                call TimerStart(Scroll57Clock,0.,false,function Scroll57Flush)
+                exitwhen true
+            endif
+            set j=j+1
+        endloop
+    endif
     if p<12 and buyer==Hero[p] then
         set StoryBought[p]=StoryBought[p]+1
         if sold=='Nsht' or sold=='Nsta' or sold=='Nsch' then
@@ -502,6 +553,7 @@ function StoryOnBuy takes nothing returns nothing
         endif
     endif
     set buyer=null
+    set seller=null
 endfunction
 function StoryShopsOpen takes nothing returns nothing
     local integer j=0
@@ -514,6 +566,9 @@ function StoryShopsOpen takes nothing returns nothing
     loop
         exitwhen j>=4
         set StoryShop[j]=CreateUnit(Player(14),'rqsh',StoryShopX[j],StoryShopY[j],270.)
+        call AddItemToStock(StoryShop[j],'Nsht',1,1)
+        call AddItemToStock(StoryShop[j],'Nsta',1,1)
+        call AddItemToStock(StoryShop[j],'Nsch',1,1)
         call TriggerRegisterUnitEvent(StoryShopSales,StoryShop[j],EVENT_UNIT_SELL_ITEM)
         set j=j+1
     endloop

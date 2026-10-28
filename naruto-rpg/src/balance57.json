@@ -1,0 +1,57 @@
+{
+  "sakuraBefore": {
+    "R201": {
+      "cooldown": 9.0,
+      "mana": [
+        55,
+        65,
+        75,
+        85
+      ]
+    },
+    "R202": {
+      "cooldown": 14.0,
+      "mana": [
+        105,
+        105,
+        105,
+        105
+      ]
+    },
+    "R203": {
+      "cooldown": 10.0,
+      "mana": [
+        80,
+        100,
+        120
+      ]
+    },
+    "R204": {
+      "cooldown": 30.0,
+      "mana": [
+        190
+      ]
+    },
+    "R205": {
+      "cooldown": 65.0,
+      "mana": [
+        150
+      ]
+    }
+  },
+  "sakuraHealMana": [
+    120,
+    150,
+    180
+  ],
+  "scrollStock": {
+    "visible": 1,
+    "refillAfterEverySale": true
+  },
+  "itachiFireballPose": {
+    "source35NativeAnimation": "spell,walk",
+    "currentInvalidIndex": 8,
+    "validName": "spell",
+    "validIndex": 3
+  }
+}

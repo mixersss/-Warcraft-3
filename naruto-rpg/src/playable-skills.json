@@ -938,7 +938,7 @@
       75,
       85
     ],
-    "cooldown": 9.0,
+    "cooldown": 12.0,
     "range": 750.0,
     "targets": "ground,air,enemy,neutral,organic",
     "description": "Бросок куная: урон цели и оглушение на 0,5 сек (героя — на 0,25 сек).",
@@ -1055,7 +1055,7 @@
       105,
       105
     ],
-    "cooldown": 14.0,
+    "cooldown": 17.0,
     "range": 750.0,
     "targets": "ground,air,enemy,neutral,organic",
     "description": "Взрыв печати поражает врагов в радиусе 260.",
@@ -1172,11 +1172,11 @@
     "required_level": 20,
     "level_skip": 5,
     "mana": [
-      80,
-      100,
-      120
+      120,
+      150,
+      180
     ],
-    "cooldown": 10.0,
+    "cooldown": 13.0,
     "range": 750.0,
     "targets": "air,ground,friend,self,organic",
     "description": "Лечит выбранного союзника, включая саму Сакуру; не лечит врагов и постройки.",
@@ -1292,7 +1292,7 @@
     "mana": [
       190
     ],
-    "cooldown": 30.0,
+    "cooldown": 33.0,
     "range": 0.0,
     "targets": "",
     "description": "Удар по земле: урон вокруг Сакуры и короткое оглушение.",
@@ -1402,7 +1402,7 @@
     "mana": [
       150
     ],
-    "cooldown": 65.0,
+    "cooldown": 68.0,
     "range": 0.0,
     "targets": "",
     "description": "Сидзунэ сражается 40 секунд и раз в секунду лечит союзных героев рядом на 35 HP.",

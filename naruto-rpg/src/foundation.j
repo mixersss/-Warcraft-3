@@ -124,6 +124,12 @@ globals
     real array LogBotNextAt
     boolean Experience49Applied=false
     boolean Gates49Built=false
+    timer Scroll57Clock=null
+    boolean array Scroll57Pending
+    boolean Village57Ready=false
+    real array Pet57OrderAt
+    unit array Pet57Target
+    integer Pet57Player=0
     integer Sleep50Casts=0
     integer Sleep50EmitSlot=0
     group array Sleep50Targets
@@ -893,6 +899,7 @@ function FoundationTick takes nothing returns nothing
     local integer team=0
     local boolean casting=false
     set TimeNow=TimeNow+.5
+    call ExecuteFunc("Companion57Tick")
     call ExecuteFunc("Control50Tick")
     call ExecuteFunc("Endless50Tick")
     call ExecuteFunc("Story46Tick")

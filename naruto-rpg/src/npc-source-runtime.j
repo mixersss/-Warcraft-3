@@ -2210,32 +2210,53 @@ call KillUnit(GetEnumUnit())
 endif
 endfunction
 function OrigNPC_WME takes nothing returns nothing
-set OrigNPC_MV=OrigNPC_M3V(GetSpellTargetLoc(),100.,AngleBetweenPoints(GetUnitLoc(GetTriggerUnit()),GetSpellTargetLoc()))
-set OrigNPC_KF=GetSpellAbilityUnit()
+local unit caster=GetSpellAbilityUnit()
+local unit fireball=null
+local location origin=GetUnitLoc(caster)
+local location aim=GetSpellTargetLoc()
+local location point=null
+local location center=null
+local group victims=null
+local integer epoch=Water50Epoch
+set point=OrigNPC_M3V(aim,100.,AngleBetweenPoints(origin,aim))
+call RemoveLocation(origin)
+call RemoveLocation(aim)
 call TriggerSleepAction(.3)
-call AddSpecialEffectLocBJ(OrigNPC_MV,"Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl")
+if epoch==Water50Epoch and FoundationAlive(caster) then
+call AddSpecialEffectLocBJ(point,"Objects\\Spawnmodels\\Other\\NeutralBuildingExplosion\\NeutralBuildingExplosion.mdl")
 call DestroyEffect(bj_lastCreatedEffect)
-call CreateNUnitsAtLocFacingLocBJ(1,'h022',GetOwningPlayer(OrigNPC_KF),OrigNPC_MV,OrigNPC_MV)
-call UnitApplyTimedLifeBJ(2.,'BTLF',bj_lastCreatedUnit)
-set OrigNPC_KR=GetUnitLoc(bj_lastCreatedUnit)
-set OrigNPC_GE=OrigNPC_PIV(300.,OrigNPC_KR,Condition(function OrigNPC_WCE))
-if(OrigNPC_WJE())then
-if(OrigNPC_WDE())then
-call ForGroupBJ(OrigNPC_GE,function OrigNPC_WFE)
+call CreateNUnitsAtLocFacingLocBJ(1,'h022',GetOwningPlayer(caster),point,point)
+set fireball=bj_lastCreatedUnit
+call UnitApplyTimedLifeBJ(2.,'BTLF',fireball)
+set center=GetUnitLoc(fireball)
+// Source enumeration callbacks are synchronous; only publish this cast's snapshots here.
+set OrigNPC_KF=caster
+set OrigNPC_KR=center
+set victims=OrigNPC_PIV(300.,center,Condition(function OrigNPC_WCE))
+if NPCSourceType(caster)=='R001' then
+if GetUnitAbilityLevel(caster,'A01B')==3 then
+call ForGroupBJ(victims,function OrigNPC_WFE)
+elseif GetUnitAbilityLevel(caster,'A01B')==4 then
+call ForGroupBJ(victims,function OrigNPC_WHE)
 endif
-if(OrigNPC_WGE())then
-call ForGroupBJ(OrigNPC_GE,function OrigNPC_WHE)
 endif
-endif
-call ForGroupBJ(OrigNPC_GE,function OrigNPC_WLE)
-call DestroyGroup(OrigNPC_GE)
-call SetUnitAnimation(bj_lastCreatedUnit,"birth")
-call SetUnitTimeScalePercent(bj_lastCreatedUnit,87.5)
-call SetUnitPathing(bj_lastCreatedUnit,false)
-call CreateNUnitsAtLocFacingLocBJ(1,'h021',GetOwningPlayer(OrigNPC_KF),OrigNPC_MV,OrigNPC_KR)
+call ForGroupBJ(victims,function OrigNPC_WLE)
+call DestroyGroup(victims)
+call SetUnitAnimation(fireball,"birth")
+call SetUnitTimeScalePercent(fireball,87.5)
+call SetUnitPathing(fireball,false)
+call CreateNUnitsAtLocFacingLocBJ(1,'h021',GetOwningPlayer(caster),point,center)
 call UnitApplyTimedLifeBJ(4.,'BTLF',bj_lastCreatedUnit)
-call RemoveLocation(OrigNPC_KR)
-call RemoveLocation(OrigNPC_MV)
+call RemoveLocation(center)
+endif
+call RemoveLocation(point)
+set caster=null
+set fireball=null
+set origin=null
+set aim=null
+set point=null
+set center=null
+set victims=null
 endfunction
 function OrigNPC_WQE takes nothing returns boolean
 return(NPCSourceType(GetTriggerUnit())=='H00S')or(NPCSourceType(GetTriggerUnit())=='c021')or(NPCSourceType(GetTriggerUnit())=='c000')or(NPCSourceType(GetTriggerUnit())=='c003')
@@ -2316,8 +2337,12 @@ function OrigNPC_W7E takes nothing returns boolean
 return(GetSpellAbilityId()=='A01B')and(NPCSourceType(GetTriggerUnit())=='c003')
 endfunction
 function OrigNPC_W8E takes nothing returns nothing
+local unit caster=GetTriggerUnit()
 call TriggerSleepAction(.01)
-call SetUnitAnimationByIndex(GetTriggerUnit(),8)
+if FoundationAlive(caster) then
+call SetUnitAnimation(caster,"spell")
+endif
+set caster=null
 endfunction
 function OrigNPC_YVE takes nothing returns boolean
 return(GetSpellAbilityId()=='A012')

@@ -1,0 +1,48 @@
+{
+  "filename": "Shinobi_Story_Alpha_57.w3x",
+  "bytes": 11035293,
+  "sha256": "10af5906ca1f2992758d55dfee1ba784e0995ce66e2501b6ac6185c35d2db2a5",
+  "pets": {
+    "independentHeartbeat": true,
+    "existingThreeSlots": true,
+    "kankuroThirdRequiresLearnedRA04At35": true,
+    "noFreeSummons": true,
+    "humanOrdersPreserved": true
+  },
+  "books": {
+    "infiniteByPostSaleRefill": true,
+    "visibleStock": 1,
+    "infinityNameMarker": true,
+    "nativePostDecrementSafe": true,
+    "oneReusedDeferredTimer": true,
+    "price125andBonus6Unchanged": true
+  },
+  "sakura": {
+    "cooldownIncreaseAllSkills": 3,
+    "thirdSkillMana": [
+      120,
+      150,
+      180
+    ]
+  },
+  "itachiThirdSkill": {
+    "source": "A01B/ANbf",
+    "source35NativePose": "spell,walk",
+    "invalidIndex8Removed": true,
+    "importedModelSpellIndex": 3,
+    "mainFireballBirthCorrected": true,
+    "castLocalHandles": true
+  },
+  "invasion": {
+    "afterArena11": true,
+    "isolatedSetupBudgets": true,
+    "boundedActualActorCleanup": true,
+    "readyLatch": true,
+    "preparationOnlyHokageImmunity": true,
+    "defendersRequired": 242,
+    "durationSeconds": 1500,
+    "realObjectiveDeathStillAdvances13": true
+  },
+  "allModelsMusicWorldUnitsOtherAbilitiesUnchanged": true,
+  "enginePlaytest": false
+}

@@ -192,7 +192,7 @@ function CampaignClear takes nothing returns nothing
         set j=0
     endif
     loop
-        exitwhen j>=2048
+        exitwhen j>=IMaxBJ(CampaignCount,64)
         if j<64 then
             set Sleep50Targets[j]=null
             set Sleep50Visuals[j]=null
@@ -911,6 +911,9 @@ function CampaignSpawnStage takes nothing returns nothing
         set owner=13
         set CampaignDefenseOwner=owner
         set unused=CampaignAdd(0,owner,x,y)
+        if unused>=0 then
+            call SetUnitInvulnerable(CampaignActor[unused],true)
+        endif
         set CampaignDeployCursor=0
         call ExamBroadcast("Коноха: открыты четыре магазина Ичираку и четыре фонтана. Их места отмечены обзором: -shop — ближайший магазин, -fountain — ближайший фонтан.")
         if CampaignChampion>=0 then
@@ -1038,6 +1041,9 @@ function CampaignQueueStage takes integer next returns nothing
         call DisableTrigger(OrigNPC_R3V)
     endif
     set CampaignQueued=next
+    if next==12 then
+        set Village57Ready=false
+    endif
     set CampaignTransition=true
     set CampaignPlaced=false
     set CampaignIntroAt=TimeNow
@@ -1134,6 +1140,9 @@ function CampaignStartPlay takes nothing returns nothing
         exitwhen j>=CampaignCount
         if CampaignActor[j]!=null and not (CampaignStage==12 and CampaignActorType[j]==13) and CampaignStage!=30 and not (CampaignStage==13 and (CampaignActorType[j]==3 or CampaignActorType[j]==4)) then
             call PauseUnit(CampaignActor[j],false)
+            if CampaignStage==12 and CampaignActorType[j]==0 then
+                call SetUnitInvulnerable(CampaignActor[j],false)
+            endif
         endif
         set j=j+1
     endloop
@@ -2053,11 +2062,15 @@ function CampaignTick takes nothing returns nothing
         return
     endif
     if CampaignTransition then
-        if CampaignStage==12 and CampaignPlaced then
-            call CampaignDeploy()
+        if CampaignStage==12 and CampaignPlaced and (not Village57Ready or not FoundationAlive(CampaignActor[0])) then
+            call ExecuteFunc("CampaignClear")
+            call ExecuteFunc("Scene57Build")
+        endif
+        if CampaignStage==12 and CampaignPlaced and Village57Ready then
+            call ExecuteFunc("CampaignDeploy")
         endif
         if not CampaignPlaced and TimeNow>=CampaignIntroAt+1.5 then
-            call CampaignClear()
+            call ExecuteFunc("CampaignClear")
             set CampaignStage=CampaignQueued
             call CampaignArenaVisibility(CampaignStage)
             set CampaignPlaced=true
@@ -2066,7 +2079,7 @@ function CampaignTick takes nothing returns nothing
             if n==12 then
                 call CampaignAlliances(2)
             endif
-            call CampaignMoveHeroes()
+            call ExecuteFunc("CampaignMoveHeroes")
             if CampaignMusic[n]<0 then
                 set MusicPlaying=false
                 call StopMusic(false)
@@ -2079,7 +2092,7 @@ function CampaignTick takes nothing returns nothing
                 set MusicCursor=6
                 call FoundationMusicStart()
             endif
-            call CampaignSpawnStage()
+            call ExecuteFunc("Scene57Build")
             if n==17 then
                 call CampaignClonesSpawn()
             endif
@@ -2118,7 +2131,7 @@ function CampaignTick takes nothing returns nothing
             call ExamBroadcast(CampaignIntro[n])
             call CinematicFadeBJ(bj_CINEFADETYPE_FADEIN,1.5,"ReplaceableTextures\\CameraMasks\\Black_mask.blp",0.,0.,0.,0.)
         endif
-        if CampaignPlaced and TimeNow>=CampaignIntroAt+8. and (CampaignStage!=12 or CampaignDeployCursor>=242) then
+        if CampaignPlaced and TimeNow>=CampaignIntroAt+8. and (CampaignStage!=12 or (Village57Ready and CampaignDeployCursor>=242)) then
             call CampaignStartPlay()
             if CampaignStage==12 then
                 set MusicCursor=7

@@ -375,3 +375,6 @@ run(fs.readFileSync(__dirname+'/endless50-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/water50-harness.lua','utf8'));
 
 run(fs.readFileSync(__dirname+'/feather50-harness.lua','utf8'));
+
+run(fs.readFileSync(__dirname+'/fixes57-harness.lua','utf8'));
+run(fs.readFileSync(__dirname+'/itachi57-harness.lua','utf8'));
