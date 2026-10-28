@@ -9,3 +9,6 @@ naruto-rpg/dist/
 
 # Unused temporary low-bitrate soundtrack trial.
 naruto-rpg/user-music/compact/
+
+# X Hero Siege reproducible bot build.
+xhero-siege/dist/

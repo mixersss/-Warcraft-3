@@ -1,0 +1,1171 @@
+{
+  "filename": "XHeroSiege-4.80-Bots-Alpha01.w3x",
+  "bytes": 4764973,
+  "sha256": "a69485dcdf637db8f76148daeeadbdbff1d32c5112ae7792e067edbd0f1c1a2c",
+  "originalSHA256": "de41a82c38a28a1f039b5ab19a0622a249090fd12d225c3bae54afbbf3777886",
+  "changedArchiveFiles": [
+    "war3map.j",
+    "war3map.wts"
+  ],
+  "preservedFiles": {
+    "war3map.w3e": "9573a5e83f51f8ab1e18295ce6f2ffda370e2fb5cf822ed713a61603c93e0311",
+    "war3map.w3i": "159b5cc3ae1550de6548db259f97a4d5e1235a3b6930bd05a15b8f7b138605ff",
+    "war3map.wtg": "4aab31a4d7031f86cd90ee453fce8e6ccf988d7a533eccfd389d81ac4b441223",
+    "war3map.wct": "5f46551e0545d6a33010f8d3167e2c9f19a314b1dfe89c24613105ea6d67cadf",
+    "war3map.shd": "498d7bdf27b123cc40eed2276744f5951d149a506ad4d7d16699179105a0dee3",
+    "war3mapMap.blp": "95e2d8cae2042a63dc5a2506b73606772e46404e86aab8bd52078d3d0805aa22",
+    "war3map.mmp": "0a4169abcd1efa355a32db3bd96f8e38f99ff80b6180f3c54331c95c38903534",
+    "war3map.wpm": "e1524feef36f04d56bba31321f2ac36b2fccb10866abb1cc85e53c98115a164f",
+    "war3map.doo": "539cac2c4bbde5b2371c018a3e62b4990d46fa3b901211019bf40284898f7c54",
+    "war3mapUnits.doo": "3db3b995ef455c2f3c736e2d28dde248b7dd235eedd3a33bc9eab6922b901eab",
+    "war3map.w3r": "f13ee6ed54ea2aae9fc49a9faeb5da6e8ddef0e12ed5d30d35a624ae813e0485",
+    "war3map.w3c": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+    "war3map.w3u": "288d45159090679940bfa5522c02f9897b2f9746734222f73e6a1dcedfa84545",
+    "war3map.w3t": "50f409dca5c09affadbf621a896582afa44a9aa621dbe68fddab06ca7ac77410",
+    "war3map.w3d": "1ff753807121495d4e7907dd7a7160501d019ab04a3152f707008b4e292fd653",
+    "war3map.w3a": "7480113cba4d9313897bfd02c80424e6f2f048c8fa7fe7a823a2ba76bb375095",
+    "war3map.w3h": "54062d2362ea94f906c7bc2e697e78120d3f19034e1a037027bd43916f94ae0e",
+    "war3map.w3s": "27886e10088b79c92acf11b87c169dd76bf2165c4a7b126c5ae71cd2f0cadacc",
+    "war3map.imp": "7fd6344904515bd38ad3763ab0376a077dda0cd3721fa127a044204e3dadb462",
+    "war3mapMisc.txt": "b8aea51dbc5ce255a2d3e35ca419fd3b66c4b1f7bf39f1b85900fdd690d2533e",
+    "war3mapSkin.txt": "295f103ea366305a922b5303bd8e7c1f52ca2fbd188e984c611c8d545b8da14b",
+    "ReplaceableTextures\\CommandButtons\\BTNGnollCommandAura.tga": "3e9cc4b7dab7f8210f7f2a1efd030b271a5ec1b0d430f18e8a750ff2243f1e7e",
+    "ReplaceableTextures\\CommandButtons\\BTNWispHeal.tga": "da5af8924d93cd3b02dfded41e7cbc76a99601918dfb61d0e60393093872c94e",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISBTNWispHeal.tga": "132ded0185e5254eff244cfdcf17fe5f97e551c574fe19a8a178c123db6c235e",
+    "ReplaceableTextures\\CommandButtonsDisabled\\DISPASBTNLifeRegenerationAura.tga": "8e8324ee355507f66164c5a74943935dd994c65d09c37993f230e6256ecc330f",
+    "ReplaceableTextures\\PassiveButtons\\PASBTNLifeRegenerationAura.tga": "ea315ececb76c94318c454ee89dd9f0a1dc2daeeb94e1f957afe07eeae6c8ec1",
+    "Splats\\LightningData.slk": "8570f09f41113203d7a743ea9a37633c1ee373fccfa5386b7716d31163dc6fc4",
+    "war3mapPreview.tga": "71068b42c1b92d0f9bfff75e56edbd719c63e2e37fcb0268ba732817661ac147",
+    "war3mapImported\\KiljaedenNEW.mdx": "b46673f38cc5cfd94d947b4b508725bf45ee30690f0ac60843b7a5c005e55be4",
+    "Kiljaeden_2 NEW.blp": "e6a7cb9d4d374ddfdfc67fcf6995cbe3156930810e914b9462c55b686ce8966c",
+    "Kiljaeden_1 NEW.blp": "f796920cab81d76a63f0a5abef9af041863a4d44a2d0608e7f0f2a886d185d55",
+    "war3mapImported\\Malganis.mdx": "d8d9f63faa613ccb3c3d0e7bac4a9256be1054c251bfbaf79d8b64f80701e42d",
+    "Malganis_1.blp": "88e096edbb93f3e682524f073012b089de771c508a8b1c53066a3e855ee47983",
+    "Malganis_2.blp": "de115dac5311bed835956e17138aad73fc98e57e746d3955a4b71656d363b846",
+    "Malganis_3.blp": "2ebf0be099f940e0fd4052382ed0a044e32a869774b5a00571d555cbf75cc093",
+    "FIRE1WHITE.BLP": "2399c9f6b6c06e9033440e84a80c152be73ccf486a0181e13ef289b616782b10",
+    "Flare.BLP": "9bc398c3f9fccb302a05f68c5d2213fb8f52d5bfc612deec9bad7c16e6dd8a55",
+    "war3mapImported\\Magtheridon.mdx": "e2e3de6d81593c9d332dcfcec63968613ec41a745674326ed0faedfefde1e321",
+    "Magtheridon_Skin01.blp": "83172bfe68070391c0c6dc8c6d2ee3796261ab5789a86bfbd86e1a3591a171fb",
+    "Magtheridon_Skin02.blp": "c5b385b26ce96a6bb0f4ec3735cff3139d9b6f0330ce0d74e71ab3614903bc61",
+    "Magtheridon_Skin03.blp": "93b6b3b4217ef85fd30e21c1f416ace409f71d7eddb8c4cc00c15d236e02ef6c",
+    "ORBREFLECT.blp": "a3f7c4042151946883354e15789ac4a734a795ea248ef2bae104c457a8211317",
+    "SMOOTHREFLECT.blp": "3dd6efc9914a422130618b9ee14979647fa60ec5ae9936d9f330b29ac80340fb",
+    "PitLord_Mat_C.blp": "93b6b3b4217ef85fd30e21c1f416ace409f71d7eddb8c4cc00c15d236e02ef6c",
+    "ToonSmoke16.blp": "c3a54cab23177ea73e2d11c8e22b95324c716e159cbce4fe073164e5e4501178"
+  },
+  "adaptedParticipantFunctions": [
+    "Trig_StartGame_Func002Func001C",
+    "Trig_ModeRandom_Func012Func001C",
+    "Trig_DualHeroSelect_Conditions",
+    "Trig_DualHeroSelect_Func009Func001C",
+    "Trig_DualHeroChange_Conditions",
+    "Trig_DualHeroStats_Conditions",
+    "Trig_DualHeroLevel_Conditions",
+    "Trig_SpecialXTeleport_Conditions",
+    "Trig_LeaderBoard_Func003002001",
+    "Trig_Kills100_Conditions",
+    "Trig_Kills500_Conditions",
+    "Trig_Kills1000_Conditions",
+    "Trig_Kills2000_Conditions",
+    "Trig_WaveKills20_Conditions",
+    "Trig_WaveKills40_Conditions",
+    "Trig_WaveKills60_Conditions",
+    "Trig_WaveKills80_Conditions",
+    "Trig_MuradinAttacked_Conditions",
+    "Trig_Teleport_Conditions",
+    "Trig_EnableAbilities_Conditions",
+    "Trig_Level20Abilities_Conditions"
+  ],
+  "initializedMusicStrings": 13,
+  "botPool": [
+    "Hpal",
+    "Obla",
+    "Otch",
+    "Ulic",
+    "Hamg",
+    "Hmkg",
+    "Nplh",
+    "Emoo"
+  ],
+  "profiles": {
+    "Hpal": [
+      "A00M",
+      "A00H",
+      "A00A",
+      "A00Y",
+      "AHad"
+    ],
+    "Hamg": [
+      "AHbz",
+      "AHwe",
+      "A003",
+      "AEsf",
+      "AOcr"
+    ],
+    "Hmkg": [
+      "AHtb",
+      "AHtc",
+      "AHbh",
+      "AHav",
+      "A005"
+    ],
+    "Hvwd": [
+      "A02N",
+      "AHfa",
+      "A000",
+      "A015",
+      "AOae"
+    ],
+    "Obla": [
+      "AOwk",
+      "AOcr",
+      "AOmi",
+      "AOww",
+      "A045"
+    ],
+    "Otch": [
+      "AOsh",
+      "AOws",
+      "A00W",
+      "AHad",
+      "Acdb"
+    ],
+    "Ulic": [
+      "AUfn",
+      "A04C",
+      "ANfa",
+      "A035",
+      "AUfu"
+    ],
+    "Emoo": [
+      "AOcl",
+      "ANwm",
+      "ANfl",
+      "A01M",
+      "AEar"
+    ],
+    "Edem": [
+      "ACs8",
+      "AEim",
+      "A00K",
+      "AEev",
+      "AEme"
+    ],
+    "Edmm": [
+      "AUav",
+      "AEim",
+      "A00K",
+      "AEev",
+      "AEme"
+    ],
+    "Nbst": [
+      "ANsg",
+      "ACs7",
+      "ANsw",
+      "AEme",
+      "AEah"
+    ],
+    "Eevi": [
+      "A049",
+      "AEev",
+      "AEvi",
+      "AHad"
+    ],
+    "Nbbc": [
+      "AHad",
+      "AOcr",
+      "AOmi",
+      "AOww"
+    ],
+    "Eevm": [
+      "A049",
+      "AEev",
+      "AEvi",
+      "AHad"
+    ],
+    "Ubal": [
+      "A01A",
+      "ANr3",
+      "AUav",
+      "AHad"
+    ],
+    "Hapm": [
+      "AHad",
+      "AHds",
+      "AOae",
+      "AHav"
+    ],
+    "Hblm": [
+      "A02S",
+      "Acdb",
+      "ANcf",
+      "AHpx",
+      "ANic"
+    ],
+    "Oshd": [
+      "A01U",
+      "Arsw",
+      "A00F",
+      "A01X",
+      "A01I"
+    ],
+    "Harf": [
+      "A01S",
+      "A02J",
+      "A011",
+      "A012",
+      "AOae"
+    ],
+    "Nplh": [
+      "ANrf",
+      "AOw2",
+      "ANca",
+      "ANdo",
+      "AUau"
+    ],
+    "Udre": [
+      "AUcs",
+      "A01P",
+      "A00J",
+      "AUin",
+      "A034"
+    ],
+    "Hmbr": [
+      "AHtb",
+      "AHtc",
+      "ANbr",
+      "AHav"
+    ],
+    "Ewar": [
+      "AEfk",
+      "A028",
+      "A051",
+      "AEsv",
+      "A00N"
+    ],
+    "Ucrl": [
+      "AUim",
+      "AUts",
+      "AUcb",
+      "AUls",
+      "A020"
+    ],
+    "Hjai": [
+      "A00G",
+      "A01B",
+      "AOcr",
+      "A04R",
+      "A02O"
+    ],
+    "Uear": [
+      "AUdc",
+      "A018",
+      "AUan"
+    ],
+    "Othr": [
+      "AOhw",
+      "AOr2",
+      "AOvd"
+    ],
+    "Hlgr": [
+      "A02R",
+      "A02X",
+      "AHre"
+    ],
+    "Ekgg": [
+      "AEmb",
+      "A02Q",
+      "AEtq"
+    ],
+    "Nklj": [
+      "ACs8",
+      "A001",
+      "A03L",
+      "A03G",
+      "Acdb"
+    ],
+    "Npbm": [
+      "Acdh",
+      "ANbf",
+      "ANdb",
+      "AOeq",
+      "A03J"
+    ],
+    "Ofar": [
+      "AOae",
+      "AOsf",
+      "AOcl",
+      "AOeq"
+    ],
+    "Uktl": [
+      "AUfn",
+      "AUfu",
+      "AOmi",
+      "A04Z",
+      "AUdd"
+    ],
+    "Uvar": [
+      "AUsl",
+      "A04Y",
+      "AHtc",
+      "ANbr"
+    ],
+    "H002": [
+      "A00V",
+      "A00U",
+      "A008",
+      "A00T",
+      "A03Y"
+    ],
+    "N001": [
+      "ANst",
+      "A01D"
+    ],
+    "H001": [
+      "AOcr",
+      "AHds",
+      "AOae"
+    ],
+    "H003": [
+      "AEev",
+      "AHhb",
+      "AUav"
+    ],
+    "H004": [
+      "AHhb",
+      "AHds",
+      "A011",
+      "A012",
+      "A01H"
+    ],
+    "E000": [
+      "AEah",
+      "AOcr",
+      "AEar",
+      "AOae"
+    ],
+    "E001": [
+      "AOcr",
+      "AEar",
+      "A003"
+    ],
+    "H000": [
+      "A02B",
+      "A02H",
+      "A02C",
+      "A02G",
+      "A004"
+    ],
+    "H007": [
+      "A028",
+      "A02A",
+      "A000",
+      "A029",
+      "AOae"
+    ],
+    "H008": [
+      "A01J",
+      "A036",
+      "A03D",
+      "A038",
+      "AEar"
+    ],
+    "H009": [
+      "A03K",
+      "ANmo",
+      "A03I",
+      "A03H",
+      "A03Y"
+    ],
+    "H00A": [
+      "A03B",
+      "A03C",
+      "A03D",
+      "A03A",
+      "AEar"
+    ],
+    "U006": [
+      "ACs8",
+      "A00J",
+      "A03L",
+      "A03G",
+      "Acdb"
+    ],
+    "U007": [
+      "ACs8",
+      "A00J",
+      "A03L",
+      "A03G",
+      "Acdb"
+    ],
+    "U008": [
+      "ACs8",
+      "A00J",
+      "A03L",
+      "A03G",
+      "Acdb"
+    ],
+    "U009": [
+      "ACs8",
+      "A00J",
+      "A03L",
+      "A03G",
+      "Acdb"
+    ],
+    "N00W": [
+      "A03T",
+      "A04G",
+      "AOcr",
+      "A03P",
+      "AOae"
+    ],
+    "E004": [
+      "AUav",
+      "AEim",
+      "A00K",
+      "AEev",
+      "AEme"
+    ],
+    "E00B": [
+      "AUav",
+      "AEim",
+      "A00K",
+      "AEev",
+      "AEme"
+    ]
+  },
+  "spells": {
+    "A000": {
+      "base": "AOcr",
+      "order": "",
+      "mode": 0
+    },
+    "A001": {
+      "base": "ANdo",
+      "order": "doom",
+      "mode": 2
+    },
+    "A003": {
+      "base": "ACcb",
+      "order": "thunderbolt",
+      "mode": 2
+    },
+    "A004": {
+      "base": "AId7",
+      "order": "",
+      "mode": 0
+    },
+    "A005": {
+      "base": "AUav",
+      "order": "",
+      "mode": 0
+    },
+    "A008": {
+      "base": "AUts",
+      "order": "",
+      "mode": 0
+    },
+    "A00A": {
+      "base": "AEfk",
+      "order": "fanofknives",
+      "mode": 1
+    },
+    "A00F": {
+      "base": "Afbk",
+      "order": "",
+      "mode": 0
+    },
+    "A00G": {
+      "base": "ACcv",
+      "order": "",
+      "mode": 0
+    },
+    "A00H": {
+      "base": "ANht",
+      "order": "howlofterror",
+      "mode": 1
+    },
+    "A00J": {
+      "base": "Arsw",
+      "order": "",
+      "mode": 0
+    },
+    "A00K": {
+      "base": "ANfd",
+      "order": "",
+      "mode": 0
+    },
+    "A00M": {
+      "base": "AOhw",
+      "order": "healingwave",
+      "mode": 4
+    },
+    "A00N": {
+      "base": "Aamk",
+      "order": "",
+      "mode": 0
+    },
+    "A00T": {
+      "base": "AIil",
+      "order": "",
+      "mode": 0
+    },
+    "A00U": {
+      "base": "AEfk",
+      "order": "fanofknives",
+      "mode": 1
+    },
+    "A00V": {
+      "base": "ACtb",
+      "order": "",
+      "mode": 0
+    },
+    "A00W": {
+      "base": "ACpv",
+      "order": "",
+      "mode": 0
+    },
+    "A00Y": {
+      "base": "ACs7",
+      "order": "",
+      "mode": 0
+    },
+    "A011": {
+      "base": "AHbh",
+      "order": "",
+      "mode": 0
+    },
+    "A012": {
+      "base": "Aroa",
+      "order": "",
+      "mode": 0
+    },
+    "A015": {
+      "base": "Afak",
+      "order": "",
+      "mode": 0
+    },
+    "A018": {
+      "base": "AUau",
+      "order": "",
+      "mode": 0
+    },
+    "A01A": {
+      "base": "ANht",
+      "order": "howlofterror",
+      "mode": 1
+    },
+    "A01B": {
+      "base": "ACwe",
+      "order": "",
+      "mode": 0
+    },
+    "A01D": {
+      "base": "ANrc",
+      "order": "",
+      "mode": 0
+    },
+    "A01H": {
+      "base": "AUts",
+      "order": "",
+      "mode": 0
+    },
+    "A01I": {
+      "base": "AEev",
+      "order": "",
+      "mode": 0
+    },
+    "A01J": {
+      "base": "AHfa",
+      "order": "",
+      "mode": 0
+    },
+    "A01M": {
+      "base": "ANmo",
+      "order": "monsoon",
+      "mode": 3
+    },
+    "A01P": {
+      "base": "ANin",
+      "order": "",
+      "mode": 0
+    },
+    "A01S": {
+      "base": "AEsb",
+      "order": "",
+      "mode": 0
+    },
+    "A01U": {
+      "base": "AIpm",
+      "order": "",
+      "mode": 0
+    },
+    "A01X": {
+      "base": "Aeye",
+      "order": "",
+      "mode": 0
+    },
+    "A020": {
+      "base": "Apoi",
+      "order": "",
+      "mode": 0
+    },
+    "A028": {
+      "base": "AEev",
+      "order": "",
+      "mode": 0
+    },
+    "A029": {
+      "base": "AEar",
+      "order": "",
+      "mode": 0
+    },
+    "A02A": {
+      "base": "Aroc",
+      "order": "",
+      "mode": 0
+    },
+    "A02B": {
+      "base": "AOcl",
+      "order": "chainlightning",
+      "mode": 2
+    },
+    "A02C": {
+      "base": "Aegr",
+      "order": "",
+      "mode": 0
+    },
+    "A02G": {
+      "base": "ANrc",
+      "order": "",
+      "mode": 0
+    },
+    "A02H": {
+      "base": "ANfl",
+      "order": "forkedlightning",
+      "mode": 2
+    },
+    "A02J": {
+      "base": "AHds",
+      "order": "divineshield",
+      "mode": 5
+    },
+    "A02N": {
+      "base": "ACif",
+      "order": "",
+      "mode": 0
+    },
+    "A02O": {
+      "base": "Aasl",
+      "order": "",
+      "mode": 0
+    },
+    "A02Q": {
+      "base": "AEar",
+      "order": "",
+      "mode": 0
+    },
+    "A02R": {
+      "base": "AHhb",
+      "order": "holybolt",
+      "mode": 4
+    },
+    "A02S": {
+      "base": "ANc1",
+      "order": "",
+      "mode": 0
+    },
+    "A02X": {
+      "base": "AHad",
+      "order": "",
+      "mode": 0
+    },
+    "A034": {
+      "base": "AHab",
+      "order": "",
+      "mode": 0
+    },
+    "A035": {
+      "base": "ANsg",
+      "order": "summongrizzly",
+      "mode": 6
+    },
+    "A036": {
+      "base": "Afak",
+      "order": "",
+      "mode": 0
+    },
+    "A038": {
+      "base": "AHca",
+      "order": "",
+      "mode": 0
+    },
+    "A03A": {
+      "base": "AHca",
+      "order": "",
+      "mode": 0
+    },
+    "A03B": {
+      "base": "AHfa",
+      "order": "",
+      "mode": 0
+    },
+    "A03C": {
+      "base": "Afak",
+      "order": "",
+      "mode": 0
+    },
+    "A03D": {
+      "base": "AUts",
+      "order": "",
+      "mode": 0
+    },
+    "A03G": {
+      "base": "AUls",
+      "order": "",
+      "mode": 0
+    },
+    "A03H": {
+      "base": "AHdr",
+      "order": "",
+      "mode": 0
+    },
+    "A03I": {
+      "base": "AId7",
+      "order": "",
+      "mode": 0
+    },
+    "A03J": {
+      "base": "AId7",
+      "order": "",
+      "mode": 0
+    },
+    "A03K": {
+      "base": "Absk",
+      "order": "",
+      "mode": 0
+    },
+    "A03L": {
+      "base": "ANcr",
+      "order": "",
+      "mode": 0
+    },
+    "A03P": {
+      "base": "Arsp",
+      "order": "",
+      "mode": 0
+    },
+    "A03T": {
+      "base": "AUdc",
+      "order": "",
+      "mode": 0
+    },
+    "A03Y": {
+      "base": "AHab",
+      "order": "",
+      "mode": 0
+    },
+    "A045": {
+      "base": "AId7",
+      "order": "",
+      "mode": 0
+    },
+    "A049": {
+      "base": "AEim",
+      "order": "immolation",
+      "mode": 1
+    },
+    "A04C": {
+      "base": "ACbf",
+      "order": "breathoffrost",
+      "mode": 3
+    },
+    "A04G": {
+      "base": "AId7",
+      "order": "",
+      "mode": 0
+    },
+    "A04R": {
+      "base": "Arsp",
+      "order": "",
+      "mode": 0
+    },
+    "A04Y": {
+      "base": "Acdb",
+      "order": "",
+      "mode": 0
+    },
+    "A04Z": {
+      "base": "Acdb",
+      "order": "",
+      "mode": 0
+    },
+    "A051": {
+      "base": "AEme",
+      "order": "metamorphosis",
+      "mode": 6
+    },
+    "ACs7": {
+      "base": "ACs7",
+      "order": "",
+      "mode": 0
+    },
+    "ACs8": {
+      "base": "ACs8",
+      "order": "",
+      "mode": 0
+    },
+    "AEah": {
+      "base": "AEah",
+      "order": "",
+      "mode": 0
+    },
+    "AEar": {
+      "base": "AEar",
+      "order": "",
+      "mode": 0
+    },
+    "AEev": {
+      "base": "AEev",
+      "order": "",
+      "mode": 0
+    },
+    "AEfk": {
+      "base": "AEfk",
+      "order": "fanofknives",
+      "mode": 1
+    },
+    "AEim": {
+      "base": "AEim",
+      "order": "immolation",
+      "mode": 1
+    },
+    "AEmb": {
+      "base": "AEmb",
+      "order": "",
+      "mode": 0
+    },
+    "AEme": {
+      "base": "AEme",
+      "order": "metamorphosis",
+      "mode": 6
+    },
+    "AEsf": {
+      "base": "AEsf",
+      "order": "starfall",
+      "mode": 1
+    },
+    "AEsv": {
+      "base": "AEsv",
+      "order": "",
+      "mode": 0
+    },
+    "AEtq": {
+      "base": "AEtq",
+      "order": "",
+      "mode": 0
+    },
+    "AEvi": {
+      "base": "AEvi",
+      "order": "",
+      "mode": 0
+    },
+    "AHad": {
+      "base": "AHad",
+      "order": "",
+      "mode": 0
+    },
+    "AHav": {
+      "base": "AHav",
+      "order": "avatar",
+      "mode": 6
+    },
+    "AHbh": {
+      "base": "AHbh",
+      "order": "",
+      "mode": 0
+    },
+    "AHbz": {
+      "base": "AHbz",
+      "order": "blizzard",
+      "mode": 3
+    },
+    "AHds": {
+      "base": "AHds",
+      "order": "divineshield",
+      "mode": 5
+    },
+    "AHfa": {
+      "base": "AHfa",
+      "order": "",
+      "mode": 0
+    },
+    "AHhb": {
+      "base": "AHhb",
+      "order": "holybolt",
+      "mode": 4
+    },
+    "AHpx": {
+      "base": "AHpx",
+      "order": "phoenix",
+      "mode": 3
+    },
+    "AHre": {
+      "base": "AHre",
+      "order": "resurrection",
+      "mode": 1
+    },
+    "AHtb": {
+      "base": "AHtb",
+      "order": "thunderbolt",
+      "mode": 2
+    },
+    "AHtc": {
+      "base": "AHtc",
+      "order": "thunderclap",
+      "mode": 1
+    },
+    "AHwe": {
+      "base": "AHwe",
+      "order": "waterelemental",
+      "mode": 6
+    },
+    "ANbf": {
+      "base": "ANbf",
+      "order": "breathoffire",
+      "mode": 3
+    },
+    "ANbr": {
+      "base": "ANbr",
+      "order": "",
+      "mode": 0
+    },
+    "ANca": {
+      "base": "ANca",
+      "order": "",
+      "mode": 0
+    },
+    "ANcf": {
+      "base": "ANcf",
+      "order": "breathoffire",
+      "mode": 3
+    },
+    "ANdb": {
+      "base": "ANdb",
+      "order": "",
+      "mode": 0
+    },
+    "ANdo": {
+      "base": "ANdo",
+      "order": "doom",
+      "mode": 2
+    },
+    "ANfa": {
+      "base": "ANfa",
+      "order": "",
+      "mode": 0
+    },
+    "ANfl": {
+      "base": "ANfl",
+      "order": "forkedlightning",
+      "mode": 2
+    },
+    "ANic": {
+      "base": "ANic",
+      "order": "incineratearrow",
+      "mode": 2
+    },
+    "ANmo": {
+      "base": "ANmo",
+      "order": "monsoon",
+      "mode": 3
+    },
+    "ANr3": {
+      "base": "ANr3",
+      "order": "",
+      "mode": 0
+    },
+    "ANrf": {
+      "base": "ANrf",
+      "order": "rainoffire",
+      "mode": 3
+    },
+    "ANsg": {
+      "base": "ANsg",
+      "order": "summongrizzly",
+      "mode": 6
+    },
+    "ANst": {
+      "base": "ANst",
+      "order": "stampede",
+      "mode": 3
+    },
+    "ANsw": {
+      "base": "ANsw",
+      "order": "summonwareagle",
+      "mode": 6
+    },
+    "ANwm": {
+      "base": "ANwm",
+      "order": "wateryminion",
+      "mode": 6
+    },
+    "AOae": {
+      "base": "AOae",
+      "order": "",
+      "mode": 0
+    },
+    "AOcl": {
+      "base": "AOcl",
+      "order": "chainlightning",
+      "mode": 2
+    },
+    "AOcr": {
+      "base": "AOcr",
+      "order": "",
+      "mode": 0
+    },
+    "AOeq": {
+      "base": "AOeq",
+      "order": "earthquake",
+      "mode": 3
+    },
+    "AOhw": {
+      "base": "AOhw",
+      "order": "healingwave",
+      "mode": 4
+    },
+    "AOmi": {
+      "base": "AOmi",
+      "order": "mirrorimage",
+      "mode": 6
+    },
+    "AOr2": {
+      "base": "AOr2",
+      "order": "",
+      "mode": 0
+    },
+    "AOsf": {
+      "base": "AOsf",
+      "order": "spiritwolf",
+      "mode": 6
+    },
+    "AOsh": {
+      "base": "AOsh",
+      "order": "shockwave",
+      "mode": 3
+    },
+    "AOvd": {
+      "base": "AOvd",
+      "order": "",
+      "mode": 0
+    },
+    "AOw2": {
+      "base": "AOw2",
+      "order": "howlofterror",
+      "mode": 1
+    },
+    "AOwk": {
+      "base": "AOwk",
+      "order": "windwalk",
+      "mode": 5
+    },
+    "AOws": {
+      "base": "AOws",
+      "order": "stomp",
+      "mode": 1
+    },
+    "AOww": {
+      "base": "AOww",
+      "order": "whirlwind",
+      "mode": 1
+    },
+    "AUan": {
+      "base": "AUan",
+      "order": "",
+      "mode": 0
+    },
+    "AUau": {
+      "base": "AUau",
+      "order": "",
+      "mode": 0
+    },
+    "AUav": {
+      "base": "AUav",
+      "order": "",
+      "mode": 0
+    },
+    "AUcb": {
+      "base": "AUcb",
+      "order": "",
+      "mode": 0
+    },
+    "AUcs": {
+      "base": "AUcs",
+      "order": "carrionswarm",
+      "mode": 3
+    },
+    "AUdc": {
+      "base": "AUdc",
+      "order": "",
+      "mode": 0
+    },
+    "AUdd": {
+      "base": "AUdd",
+      "order": "deathanddecay",
+      "mode": 3
+    },
+    "AUfn": {
+      "base": "AUfn",
+      "order": "frostnova",
+      "mode": 2
+    },
+    "AUfu": {
+      "base": "AUfu",
+      "order": "frostarmor",
+      "mode": 4
+    },
+    "AUim": {
+      "base": "AUim",
+      "order": "",
+      "mode": 0
+    },
+    "AUin": {
+      "base": "AUin",
+      "order": "inferno",
+      "mode": 3
+    },
+    "AUls": {
+      "base": "AUls",
+      "order": "",
+      "mode": 0
+    },
+    "AUsl": {
+      "base": "AUsl",
+      "order": "sleep",
+      "mode": 2
+    },
+    "AUts": {
+      "base": "AUts",
+      "order": "",
+      "mode": 0
+    },
+    "Acdb": {
+      "base": "Acdb",
+      "order": "",
+      "mode": 0
+    },
+    "Acdh": {
+      "base": "Acdh",
+      "order": "",
+      "mode": 0
+    },
+    "Arsw": {
+      "base": "Arsw",
+      "order": "",
+      "mode": 0
+    }
+  },
+  "enginePlaytest": false
+}

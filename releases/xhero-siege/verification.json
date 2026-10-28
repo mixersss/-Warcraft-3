@@ -1,0 +1,16 @@
+{
+  "filename": "XHeroSiege-4.80-Bots-Alpha01.w3x",
+  "sha256": "a69485dcdf637db8f76148daeeadbdbff1d32c5112ae7792e067edbd0f1c1a2c",
+  "strictClassicJASS": true,
+  "nativeStormAndIndependentMPQFiles": 47,
+  "allModelsTexturesTerrainObjectsAndSlotsPreserved": true,
+  "sourceRevivalAndPenaltyPreserved": true,
+  "sourceWaveAndBossFunctionsPreserved": true,
+  "onlyChangedFiles": [
+    "war3map.j",
+    "war3map.wts"
+  ],
+  "ordinary4096ByteSectors": true,
+  "below8MiB": true,
+  "enginePlaytest": false
+}
