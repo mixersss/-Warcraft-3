@@ -1,0 +1,19 @@
+{
+  "filename": "Shinobi_Story_Alpha_59.w3x",
+  "bytes": 12612516,
+  "sha256": "80980b66453adc06730fcaf01669492aaac759fbbb5493d313df2407ba5d1793",
+  "previousVersion": 58,
+  "physicalTerrainTiles": 288,
+  "playableTiles": 256,
+  "apronUnits": 2048,
+  "allOriginalWorldCoordinatesPreserved": true,
+  "allOriginalTerrainVerticesExact": true,
+  "allOriginalPathingAndShadowCellsExact": true,
+  "apronFullyBlocked": true,
+  "cameraBoundsAnd12SlotsExact": true,
+  "completeJASSExactExceptTitle": true,
+  "allGameplayObjectsAndImportedAssetsExact": true,
+  "minimap256Reframed": true,
+  "crashRootCauseConfirmed": false,
+  "enginePlaytest": false
+}

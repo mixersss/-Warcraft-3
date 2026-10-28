@@ -8,12 +8,12 @@ ROOT=Path(__file__).parent;SIZE=256;HALF=16384;BOUND=16320
 HEROES=json.loads((ROOT/'src/heroes.json').read_text());ASSETS=json.loads((ROOT/'src/asset-manifest.json').read_text());AUDIO=json.loads((ROOT/'src/all-original-audio.json').read_text())
 GENERATED=json.loads((ROOT/'src/generated-assets.json').read_text())
 BASE=[(-15936,14400),(-7744,14400),(-15936,9536),(-7744,9536)]
-NAME='SHINOBI STORY ALPHA 58'
+NAME='SHINOBI STORY ALPHA 59'
 DESC='Наруто RPG: четыре команды по три героя. Страна Волн, вопросы Ибики, Лес смерти, арены, поиск Джирайи в бочках, вторжение, Акацуки и погоня за Саске. Русские задания; боты участвуют в сюжете. -help: команды.'
 def positions():return [(BASE[p//3][0],BASE[p//3][1]+(p%3-1)*128) for p in range(12)]
 def info():
  d=i(25,1,6061)+s(NAME)+s('mixersss; imported assets from ShikamaruShadow map')+s(DESC)+s('1-12; 4 teams x 3')
- d+=f(-BOUND,-BOUND,BOUND,BOUND,-BOUND,BOUND,BOUND,-BOUND)+i(0,0,0,0,SIZE,SIZE,0x60)+b'X'
+ d+=f(-BOUND,-BOUND,BOUND,BOUND,-BOUND,BOUND,BOUND,-BOUND)+i(16,16,16,16,SIZE,SIZE,0x60)+b'X'
  d+=i(-1)+s('')+s(DESC)+s(NAME)+s('Warcraft III TFT 1.26; сюжетная альфа')
  d+=i(2)+s('')+s('')+s('')+s('')+i(0)+f(3000,5000,.5)+bytes([0,0,0,255])+i(0)+s('Default')+b'L'+bytes([255]*4)
  d+=i(12)
@@ -65,18 +65,19 @@ def unit_entries():
   mods[:]=list({k:(k,t,v) for k,t,v in mods}.values())
  return entries
 def unit_data():return objects(unit_entries())
-def preview():
- raw=(ROOT/'src/location/original-war3map.w3e').read_bytes()
+def preview(raw=None):
+ raw=raw if raw is not None else (ROOT/'src/location/original-war3map.w3e').read_bytes()
  n=struct.unpack_from('<i',raw,13)[0];off=17+n*4
- cliffs=struct.unpack_from('<i',raw,off)[0];off+=4+cliffs*4+16
+ cliffs=struct.unpack_from('<i',raw,off)[0];off+=4+cliffs*4
+ tw,th,originx,originy=struct.unpack_from('<IIff',raw,off);off+=16
  w=256;d=bytearray(struct.pack('<BBBHHBHHHHBB',0,0,2,0,0,0,0,0,w,w,24,0))
  palette=[(116,91,62),(115,94,64),(108,105,97),(125,121,108),(142,139,123),(99,94,87),(59,91,42),(120,119,108),(67,98,45)]
  for py in range(w):
   for px in range(w):
-   tile=raw[off+(py*257+px)*7+4]&15
+   tile=raw[off+(int(py*(th-1)/w)*tw+int(px*(tw-1)/w))*7+4]&15
    color=palette[tile%len(palette)]
    for xx,yy in BASE:
-    if abs(px-(xx+HALF)/128)<2 and abs(py-(yy+HALF)/128)<2:color=(245,215,50)
+    if abs(px-(xx-originx)/((tw-1)*128)*w)<2 and abs(py-(yy-originy)/((th-1)*128)*w)<2:color=(245,215,50)
    d+=bytes(reversed(color))
  return bytes(d)
 def q(x):return json.dumps(x,ensure_ascii=False)
@@ -148,6 +149,11 @@ def build():
  for name in ['war3map.w3e','war3map.wpm','war3map.doo','war3map.w3b','war3map.w3d']:
   files[name]=(ROOT/'src/location'/('original-'+name)).read_bytes()
  files['war3map.wpm']=__import__('terrain49').pathing(files['war3map.wpm'])
+ files['war3map.w3e']=__import__('terrain59').environment(files['war3map.w3e'])
+ files['war3map.wpm']=__import__('terrain59').raster(files['war3map.wpm'])
+ files['war3map.shd']=__import__('terrain59').raster(files['war3map.shd'],shadow=True)
+ files['war3mapPreview.tga']=preview(files['war3map.w3e'])
+ files['war3mapMap.tga']=files['war3mapPreview.tga']
  files['war3map.w3b']=scenery()
  files['war3map.doo']=(ROOT/'src/location/render-war3map.doo').read_bytes()
  files['war3map.wts']=(ROOT/'src/npc-original.wts').read_bytes()
@@ -158,8 +164,8 @@ def build():
   if old.is_file():old.unlink()
  for name,data in files.items():
   if name not in imported: (mapdir/name).write_bytes(data)
- out=ROOT/'dist/Shinobi_Story_Alpha_58.w3x';out.write_bytes(archive(files,NAME))
+ out=ROOT/'dist/Shinobi_Story_Alpha_59.w3x';out.write_bytes(archive(files,NAME))
  assert out.stat().st_size<16*1024*1024,'User-approved soundtrack size budget'
- report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata','importedAssets':len(__import__('music35').effective_manifest(ASSETS))+len(GENERATED),'originalImportedAssets':len(ASSETS),'generatedAssets':len(GENERATED),'models':67+sum(x['path'].lower().endswith(('.mdl','.mdx'))for x in GENERATED),'audioFiles':174,'musicTracks':15,'userMusicTracks':13,'preservedChapterTracks':2,'classicNetworkLimitBytes':8*1024*1024,'below8MiBLimit':out.stat().st_size<8*1024*1024,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':0,'recreatedSkillMechanics':58,'skillImplementation':'playable roster remains adapted; NPC and level-60 clone spell actions imported from source','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':0,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':54,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'user chapter loops; -music shuffled15 tracks across all stages, no repeats per round; endless defense all15','experienceProfile':'global native hero XP rate170pct; source factors and fixed quest rewards retained','stage':'50 bounded Kabuto stun, physical clone hits, stat-only shopping and post-story endless shared defense','commonKawarimiForAllHeroes':True,'stageTimerHUD':True,'questionBankSize':16,'questionsPerExam':5,'questionSeconds':15,'forestExamSeconds':1320,'towerOpensAfterSeconds':1200,'examGenin':85,'campaignObjectives':23,'postStoryEndlessDefense':True,'globalHeroXPRate':1.7,'endlessGuardians':17,'endlessSarutobiHP':300000,'endlessGuardianReviveSeconds':240,'endlessBossIntervalSeconds':300,'parallelCloneEncounters':8,'jiraiyaBarrels':20,'jiraiyaSearchSeconds':150,'invasionStreams':8,'invasionUnitsPerWave':3,'invasionWavePattern':[3,3,4],'autonomousVillageNPCOwners':[13,15],'invasionWavePeriods':[45,45,45,30,30,30,30,30],'cinematics':'simplified fades/camera transitions; not identical to original','npcTechniques':'source-native spell objects and callbacks, original level-60 clone skill sets; adapted bot targeting/scheduling','shopsOnlyDuringInvasion':False,'shopsFromJiraiyaSearch':True,'sourceLeafDefenders':140,'sourceAnbuDefenders':102,'sourceVillageMedics':6,'sourceVillageShops':4,'sourceNPCSpellObjects':len(__import__('npc_source').DATA['abilities']),'sourceNPCFunctions':len(json.loads((ROOT/'src/npc-source-audit.json').read_text())['sourceFunctions']),'fullOriginalScenarioIdentical':False,'sourceVillageFountains':4,'globalTeamByakugan':True,'openingTimerUIDelayedUntilGameStart':True,'unbiasedEnemyTargetSelection':True,'tentenKunaiDamageAndStunOnImpact':True,'sourcePrimaryStockHeroFamilies':12,'fogOfWarEnabled':True,'sourceHeroManaAndPrimaryAttributes':12,'sourceSkillUnlocks':58,'sourceDeathForestFountains':2,'sourceDeathForestTrees':445,'sourceLootTables':2,'ramenIndependentResourcePools':True,'hiddenTreeJumpButton':True,'sourceSoundGuardPosts':5,'medicPulseHP':75,'medicPulseMana':25,'medicPulseSeconds':.25,'independentReinforcementCallbacks':True,'invasionNativeBounty':True,'kibaTsugaHits':5,'kibaTsugaDamagePerHit':[180,240,300],'engineTested':False}
+ report={'filename':out.name,'bytes':out.stat().st_size,'sha256':hashlib.sha256(out.read_bytes()).hexdigest(),'newMetadataAndScript':True,'copiedOriginalScenarioOrObjects':'terrain/scenery, source-native NPC object records, WTS and spell-action closure; fresh campaign control and metadata','importedAssets':len(__import__('music35').effective_manifest(ASSETS))+len(GENERATED),'originalImportedAssets':len(ASSETS),'generatedAssets':len(GENERATED),'models':67+sum(x['path'].lower().endswith(('.mdl','.mdx'))for x in GENERATED),'audioFiles':174,'musicTracks':15,'userMusicTracks':13,'preservedChapterTracks':2,'classicNetworkLimitBytes':8*1024*1024,'below8MiBLimit':out.stat().st_size<8*1024*1024,'animationsInModels':442,'teams':4,'slots':12,'inventoriedLearnableSkills':58,'inventoriedInnateSkills':0,'recreatedSkillMechanics':58,'skillImplementation':'playable roster remains adapted; NPC and level-60 clone spell actions imported from source','playableHeroesWithSkills':12,'sectorSize':4096,'originalNinjasPerTeam':14,'nativeTreeJumpTargeting':True,'mentorDepartureSeconds':330,'originalLootTypes':7,'recreatedInnateSkills':0,'nativeVisibleTrees':3377,'auditedActiveSkillAnimations':54,'sourceVisualSlotsAudited':58,'modelsWithSequenceAndAttachmentAudit':67,'visualActorTypes':len(VISUALS['visualUnits']),'boundedVisualActorCapacity':256,'realChannelCastPoses':True,'nativeImpactSounds':True,'musicMode':'user chapter loops; -music shuffled15 tracks across all stages, no repeats per round; endless defense all15','experienceProfile':'global native hero XP rate170pct; source factors and fixed quest rewards retained','stage':'50 bounded Kabuto stun, physical clone hits, stat-only shopping and post-story endless shared defense','commonKawarimiForAllHeroes':True,'stageTimerHUD':True,'questionBankSize':16,'questionsPerExam':5,'questionSeconds':15,'forestExamSeconds':1320,'towerOpensAfterSeconds':1200,'examGenin':85,'campaignObjectives':23,'postStoryEndlessDefense':True,'globalHeroXPRate':1.7,'endlessGuardians':17,'endlessSarutobiHP':300000,'endlessGuardianReviveSeconds':240,'endlessBossIntervalSeconds':300,'parallelCloneEncounters':8,'jiraiyaBarrels':20,'jiraiyaSearchSeconds':150,'invasionStreams':8,'invasionUnitsPerWave':3,'invasionWavePattern':[3,3,4],'autonomousVillageNPCOwners':[13,15],'invasionWavePeriods':[45,45,45,30,30,30,30,30],'cinematics':'simplified fades/camera transitions; not identical to original','npcTechniques':'source-native spell objects and callbacks, original level-60 clone skill sets; adapted bot targeting/scheduling','shopsOnlyDuringInvasion':False,'shopsFromJiraiyaSearch':True,'sourceLeafDefenders':140,'sourceAnbuDefenders':102,'sourceVillageMedics':6,'sourceVillageShops':4,'sourceNPCSpellObjects':len(__import__('npc_source').DATA['abilities']),'sourceNPCFunctions':len(json.loads((ROOT/'src/npc-source-audit.json').read_text())['sourceFunctions']),'fullOriginalScenarioIdentical':False,'sourceVillageFountains':4,'globalTeamByakugan':True,'openingTimerUIDelayedUntilGameStart':True,'unbiasedEnemyTargetSelection':True,'tentenKunaiDamageAndStunOnImpact':True,'sourcePrimaryStockHeroFamilies':12,'fogOfWarEnabled':True,'sourceHeroManaAndPrimaryAttributes':12,'sourceSkillUnlocks':58,'sourceDeathForestFountains':2,'sourceDeathForestTrees':445,'sourceLootTables':2,'ramenIndependentResourcePools':True,'hiddenTreeJumpButton':True,'sourceSoundGuardPosts':5,'medicPulseHP':75,'medicPulseMana':25,'medicPulseSeconds':.25,'independentReinforcementCallbacks':True,'invasionNativeBounty':True,'kibaTsugaHits':5,'kibaTsugaDamagePerHit':[180,240,300],'terrainSafetyApronUnits':2048,'terrainPhysicalTiles':288,'terrainPlayableTiles':256,'crashFixConfirmedInEngine':False,'engineTested':False}
  (ROOT/'dist/build-report.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
 if __name__=='__main__':build()
