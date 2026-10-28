@@ -64,7 +64,7 @@ end
 MusicOn=true;MusicCursor=0;MusicActiveChapter=-1;MusicSong=0;MusicPlaying=false;MusicClock=MusicClock or CreateTimer()
 for i=0,11 do assert(type(MusicTrackPath[i])=='string'and #MusicTrackPath[i]>0 and MusicTrackSeconds[i]>0,'Actual generated soundtrack metadata')end
 FoundationMusicStart()
-for i=0,25 do assert(MusicPlayingTrack==i%12 and LastCampaignMusic==MusicTrackPath[i%12]);FoundationMusicNext()end
+for i=0,25 do assert(MusicPlayingTrack==i%15 and LastCampaignMusic==MusicTrackPath[i%15]);FoundationMusicNext()end
 -- Clone defense removed at both object construction (verified separately) and native initialization.
 for kind=20,27 do local c=CreateUnit(12,CampaignUnit[kind],0,0,0);UnitAddAbility(c,raw('S02D'));NPCInitialize(c,kind);assert(GetUnitAbilityLevel(c,raw('S02D'))==0)end
 -- Real cash and event-based4+1 stat cadence, including six occupied inventory slots.
@@ -97,7 +97,7 @@ assert(CreatedTimers<=timers+1,'No timer per guardian, wave, revive or raid')
 local objective=CampaignActor[0];objective.hp=0;objective.dead=true;CampaignInvasionWave(0);assert(CampaignActor[0]==objective)
 Endless50Tick();assert(CampaignFinished and not Endless50Active and defeats==12 and winners==0,'All players lose only when Sarutobi dies')
 CustomVictoryBJ,CustomDefeatBJ=win,lose
-print('PASS: actual31 startup/all12 restoration/retained gear and levels/allied Sand/no NPC control/17 correct posts/shops/fountains; repeated20s hero and240s guardian revival; original waves; eight300s boss groups including repeated finale;12-track loop; native4+1 scroll purchases/full inventory/bounded bank spending; corpse-only cleanup and common Hokage defeat (native mocks)')
+print('PASS: actual31 startup/all12 restoration/retained gear and levels/allied Sand/no NPC control/17 correct posts/shops/fountains; repeated20s hero and240s guardian revival; original waves; eight300s boss groups including repeated finale;15-track loop; native4+1 scroll purchases/full inventory/bounded bank spending; corpse-only cleanup and common Hokage defeat (native mocks)')
 
 CampaignStage=12;CampaignFinished=false;CampaignTransition=false;TimeNow=26000000
 local u=Hero[0];u.hp=10000;u.dead=false;u.hidden=false;u.paused=false

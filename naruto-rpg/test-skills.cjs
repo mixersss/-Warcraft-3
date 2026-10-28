@@ -369,7 +369,7 @@ run(fs.readFileSync(__dirname+'/balance49-harness.lua','utf8'));
 
 const endlessLines=source.split('\n').filter(s=>/^\s*set Endless50(?:Kind|X|Y|SpawnX|SpawnY)\[\d+\]/.test(s));
 run(translate('function EndlessFixture50 takes nothing returns nothing\n'+endlessLines.join('\n')+'\nendfunction\n'));run('EndlessFixture50()');
-const endlessMusicLines=source.split('\n').filter(s=>/^\s*set Music(?:TrackPath|TrackSeconds|ChapterStart|ChapterCount)\[\d+\]/.test(s));
+const endlessMusicLines=source.split('\n').filter(s=>/^\s*set Music(?:TrackPath|TrackSeconds|ChapterStart|ChapterCount)\[\d+\]/.test(s)||/^\s*set MusicTotal58=/.test(s));
 run(translate('function EndlessMusicFixture50 takes nothing returns nothing\n'+endlessMusicLines.join('\n')+'\nendfunction\n'));run('EndlessMusicFixture50()');
 run(fs.readFileSync(__dirname+'/endless50-harness.lua','utf8'));
 run(fs.readFileSync(__dirname+'/water50-harness.lua','utf8'));

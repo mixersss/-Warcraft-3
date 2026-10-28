@@ -292,6 +292,93 @@
       "sample_rate": 22050,
       "channels": 1,
       "decodedSourceDurationMs": 196023
+    },
+    {
+      "key": "grief-and-sorrow",
+      "originalName": "Naruto_OST_Toshiro_Masuda_-_Grief_and_Sorrow_(SkySound7.com).mp3",
+      "sourceSha256": "5b6990c908424194183ebfcfb85f5bc31aa7b6bfab6a51e8ab8b2b1cdeed7a1d",
+      "sourceBytes": 4204922,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "175.177143"
+        }
+      },
+      "path": "war3mapImported\\Music58_grief-and-sorrow.mp3",
+      "file": "user-music/standard/grief-and-sorrow.mp3",
+      "bytes": 525836,
+      "sha256": "f8a9b0fe61cf2f2c976b497a35a68739bca71a05f02e9094863d590eb6707e38",
+      "duration_ms": 175203,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "playlistOnly": true
+    },
+    {
+      "key": "i-have-seen-much",
+      "originalName": "Naruto_Shippuden_Ost_-_I_Have_Seen_Much_Extended_(SkySound7.com).mp3",
+      "sourceSha256": "a5912c00d4f4b1b2866cbdd33884f8cf93dc3709fbdc6caa0362e1029fb250b3",
+      "sourceBytes": 3852373,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "240.744490"
+        }
+      },
+      "path": "war3mapImported\\Music58_i-have-seen-much.mp3",
+      "file": "user-music/standard/i-have-seen-much.mp3",
+      "bytes": 722538,
+      "sha256": "52f44fe1742679fb2fa8fe2bd70828c6deb14d1947305f4df16700b7c2299dea",
+      "duration_ms": 240771,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "playlistOnly": true
+    },
+    {
+      "key": "determination",
+      "originalName": "Yasuharu_Takanashi_-_Determination_(SkySound7.com).mp3",
+      "sourceSha256": "2745b50e37b6f30ec99cdc40b6743a59b2c3b9548c32083e180d1c4f139b3488",
+      "sourceBytes": 4715669,
+      "sourceProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "mp3",
+            "sample_rate": "44100",
+            "channels": 2
+          }
+        ],
+        "format": {
+          "duration": "117.890600"
+        }
+      },
+      "path": "war3mapImported\\Music58_determination.mp3",
+      "file": "user-music/standard/determination.mp3",
+      "bytes": 354055,
+      "sha256": "edfab04fb05cb325a2486a0ea52bc1aea6beadc986bbac9ed947d0ead478d124",
+      "duration_ms": 117943,
+      "bitrate_kbps": 24,
+      "sample_rate": 22050,
+      "channels": 1,
+      "playlistOnly": true
     }
   ],
   "fullTracks": true,

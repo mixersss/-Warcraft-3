@@ -1,0 +1,43 @@
+{
+  "filename": "Shinobi_Story_Alpha_58.w3x",
+  "bytes": 12591616,
+  "sha256": "5f98be92ae4ca8f4327516358ea695b05aac1d2f28e7a6bf0919e075aa0efe01",
+  "addedTracks": [
+    {
+      "name": "Naruto_OST_Toshiro_Masuda_-_Grief_and_Sorrow_(SkySound7.com).mp3",
+      "path": "war3mapImported\\Music58_grief-and-sorrow.mp3",
+      "bytes": 525836,
+      "seconds": 175.203,
+      "sha256": "f8a9b0fe61cf2f2c976b497a35a68739bca71a05f02e9094863d590eb6707e38"
+    },
+    {
+      "name": "Naruto_Shippuden_Ost_-_I_Have_Seen_Much_Extended_(SkySound7.com).mp3",
+      "path": "war3mapImported\\Music58_i-have-seen-much.mp3",
+      "bytes": 722538,
+      "seconds": 240.771,
+      "sha256": "52f44fe1742679fb2fa8fe2bd70828c6deb14d1947305f4df16700b7c2299dea"
+    },
+    {
+      "name": "Yasuharu_Takanashi_-_Determination_(SkySound7.com).mp3",
+      "path": "war3mapImported\\Music58_determination.mp3",
+      "bytes": 354055,
+      "seconds": 117.943,
+      "sha256": "edfab04fb05cb325a2486a0ea52bc1aea6beadc986bbac9ed947d0ead478d124"
+    }
+  ],
+  "allTracks": 15,
+  "userTracks": 13,
+  "preservedSourceTracks": 2,
+  "fullTracksNoTruncation": true,
+  "mp3Kbps": 24,
+  "mono22050Hz": true,
+  "musicCommand": "toggle all-track shuffled playlist / current-stage soundtrack",
+  "shuffleWithoutRepeatsPerRound": true,
+  "noSameTrackAtRoundBoundary": true,
+  "chapterChangesDoNotRestartGlobalTrack": true,
+  "muteCommand": "-mute",
+  "skipCommand": "-nextmusic",
+  "noNewMusicTimers": true,
+  "allPreviousImportsAndGameplayObjectsUnchanged": true,
+  "enginePlaytest": false
+}

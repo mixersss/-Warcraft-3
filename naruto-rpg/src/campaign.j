@@ -2081,9 +2081,11 @@ function CampaignTick takes nothing returns nothing
             endif
             call ExecuteFunc("CampaignMoveHeroes")
             if CampaignMusic[n]<0 then
-                set MusicPlaying=false
-                call StopMusic(false)
-                call PauseTimer(MusicClock)
+                if not MusicAll58 then
+                    set MusicPlaying=false
+                    call StopMusic(false)
+                    call PauseTimer(MusicClock)
+                endif
             else
                 set MusicCursor=CampaignMusic[n]
                 call FoundationMusicStart()

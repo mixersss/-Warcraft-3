@@ -358,10 +358,12 @@ function Endless50Tick takes nothing returns nothing
                 set CampaignWaveAt[j]=TimeNow+CampaignWavePeriod[j]+CampaignWaveDelay[j]
                 set j=j+1
             endloop
-            set MusicCursor=0
-            set MusicSong=0
-            set MusicPlaying=false
-            set MusicActiveChapter=-1
+            if not MusicAll58 then
+                set MusicCursor=0
+                set MusicSong=0
+                set MusicPlaying=false
+                set MusicActiveChapter=-1
+            endif
             call ExecuteFunc("FoundationMusicStart")
             call ExamBroadcast("Все на защиту Конохи! Волны идут непрерывно. До первого выхода боссов —5минут. Все главы музыки играют по очереди.")
         endif

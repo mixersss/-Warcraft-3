@@ -561,6 +561,10 @@ globals
     real array ResumeAt
     real TimeNow=0.
     integer array AudioCursor
+    boolean MusicAll58=false
+    integer MusicAllSong58=0
+    integer array MusicBag58
+    integer MusicTotal58=0
     boolean MusicOn=true
     timer MusicClock=null
     integer MusicCursor=0
@@ -677,10 +681,40 @@ function FoundationSound takes integer index returns nothing
 endfunction
 // TREE_RUNTIME
 // SKILLS_RUNTIME
+function FoundationMusicShuffle58 takes nothing returns nothing
+    local integer k=0
+    local integer j=0
+    local integer swap=0
+    loop
+        exitwhen k>=MusicTotal58
+        set MusicBag58[k]=k
+        set k=k+1
+    endloop
+    set k=MusicTotal58-1
+    loop
+        exitwhen k<=0
+        set j=GetRandomInt(0,k)
+        set swap=MusicBag58[k]
+        set MusicBag58[k]=MusicBag58[j]
+        set MusicBag58[j]=swap
+        set k=k-1
+    endloop
+    if MusicTotal58>1 and MusicBag58[0]==MusicPlayingTrack then
+        set swap=MusicBag58[0]
+        set MusicBag58[0]=MusicBag58[1]
+        set MusicBag58[1]=swap
+    endif
+    set MusicAllSong58=0
+endfunction
 function FoundationMusicNext takes nothing returns nothing
     if MusicOn then
-        if CampaignStage==31 then
-            set MusicSong=ModuloInteger(MusicSong+1,12)
+        if MusicAll58 then
+            set MusicAllSong58=MusicAllSong58+1
+            if MusicAllSong58>=MusicTotal58 then
+                call FoundationMusicShuffle58()
+            endif
+        elseif CampaignStage==31 then
+            set MusicSong=ModuloInteger(MusicSong+1,MusicTotal58)
         else
             set MusicSong=ModuloInteger(MusicSong+1,MusicChapterCount[MusicCursor])
         endif
@@ -690,22 +724,29 @@ function FoundationMusicNext takes nothing returns nothing
 endfunction
 function FoundationMusicStart takes nothing returns nothing
     local integer index=0
-    if MusicCursor<0 or MusicCursor>=MusicCount then
-        return
-    endif
-    if CampaignStage==31 then
-        set MusicCursor=0
-    endif
-    if MusicActiveChapter!=MusicCursor then
-        set MusicSong=0
-        set MusicActiveChapter=MusicCursor
-    endif
-    if MusicOn then
+    if MusicAll58 then
+        if MusicTotal58<=0 then
+            return
+        endif
+        set index=MusicBag58[MusicAllSong58]
+    else
+        if MusicCursor<0 or MusicCursor>=MusicCount then
+            return
+        endif
+        if CampaignStage==31 then
+            set MusicCursor=0
+        endif
+        if MusicActiveChapter!=MusicCursor then
+            set MusicSong=0
+            set MusicActiveChapter=MusicCursor
+        endif
         if CampaignStage==31 then
             set index=MusicSong
         else
             set index=MusicChapterStart[MusicCursor]+MusicSong
         endif
+    endif
+    if MusicOn then
         if MusicPlaying and MusicPlayingTrack==index then
             return
         endif
@@ -841,6 +882,24 @@ function FoundationChat takes nothing returns nothing
     elseif msg=="-sasuke" then
         call InvasionSasukeStatus(p)
     elseif msg=="-music" then
+        set MusicAll58=not MusicAll58
+        set MusicOn=true
+        set MusicPlaying=false
+        call PauseTimer(MusicClock)
+        call StopMusic(false)
+        if MusicAll58 then
+            call FoundationMusicShuffle58()
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Общий плейлист включён: вся музыка в случайном порядке без повторов в круге, независимо от этапа. -music: вернуться к музыке этапа; -mute: тишина.")
+        else
+            set MusicActiveChapter=-1
+            set MusicSong=0
+            if CampaignStage>=9 and CampaignStage!=31 then
+                set MusicCursor=CampaignMusic[CampaignStage]
+            endif
+            call DisplayTimedTextToPlayer(Player(p),0.,0.,8.,"Общий плейлист выключен. Вернулась музыка текущего этапа. -mute: выключить звук музыки.")
+        endif
+        call FoundationMusicStart()
+    elseif msg=="-mute" then
         if MusicOn then
             set MusicOn=false
             set MusicPlaying=false
@@ -853,10 +912,10 @@ function FoundationChat takes nothing returns nothing
         call DisplayTimedTextToPlayer(Player(p),0,0,5.,"Фоновая музыка переключена.")
     elseif msg=="-nextmusic" then
         call FoundationMusicNext()
-        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек текущего сюжетного этапа. -music: включить/выключить музыку.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,8.,"Следующий трек активного плейлиста. -music: общий режим; -mute: тишина.")
     elseif msg=="-help" then
         call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-endless: ведущий сразу включает общую бесконечную защиту Конохи. Сохраняются текущие герои, уровни и вещи; возврата к сюжету нет.")
-        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения; -village fast: все враги сразу; -sasuke-die: тест смерти Саске (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: мягкое восстановление; -rebuildsasuke: пересоздать Саске с навыками и вещами; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: вкл/выкл; -nextmusic: следующий трек этапа; -skills: каталог. Во время анимации не отдавайте герою приказы.")
+        call DisplayTimedTextToPlayer(Player(p),0,0,20.,"-arena 1/2: тест арен; -village: тест вторжения; -village fast: все враги сразу; -sasuke-die: тест смерти Саске (первый игрок). -go: начать миссию / отряд к цели; -follow: прикрывать игрока; -retreat: отступить; -quest: задание и метка; -fixsasuke: мягкое восстановление; -rebuildsasuke: пересоздать Саске с навыками и вещами; -sasuke: состояние; -shop / -fountain: снабжение Конохи; -camera: герой. -hero 1..12: выбор до миссии; -heroes: список; -anim / -anim N: анимация; -voice: голос героя; -sound / -sound N: звук; -music: общий плейлист/музыка этапа; -mute: вкл/выкл звук музыки; -nextmusic: следующий трек; -skills: каталог. Во время анимации не отдавайте герою приказы.")
     elseif msg=="-skills" then
         call DisplayTimedTextToPlayer(Player(p),0,0,15.,"Навыки персонажа: "+HeroName[template]+". У всех двенадцати персонажей подключены техники; изучай их кнопкой +.")
         loop
