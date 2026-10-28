@@ -1,0 +1,16 @@
+{
+  "filename": "Shinobi_Story_Alpha_54.w3x",
+  "bytes": 11033868,
+  "sha256": "aa03de89a6083e19a86fb16228c6ae39f928b8cefb5f53a364d4f3af63e47476",
+  "unlimitedBooks": [
+    "Nsht",
+    "Nsta",
+    "Nsch"
+  ],
+  "stockMaximum": 0,
+  "replenishTime": 0,
+  "pricesAndStatBonusesUnchanged": true,
+  "allShopsUseSameItemDefinitions": true,
+  "otherItemsAndEntireGameplayAndAssetsUnchanged": true,
+  "enginePlaytest": false
+}
