@@ -18,12 +18,17 @@
   "7": {
     "primaryAttribute": "STR",
     "runtimeBase": "Hpal",
-    "reason": "User Alpha50 primary attribute request; retain base stats, mana, model and skills."
+    "reason": "User Alpha56: modest strength-primary growth1.5 to2.0; preserve starting stats, other growth and mana; beast form inherits.",
+    "strengthPerLevel": 2.0
   },
   "11": {
     "primaryAttribute": "AGI",
     "runtimeBase": "Edem",
     "reason": "User Alpha55: Temari agility-primary growth raised from legacy0.75 to2.25; retain starting stats, strength/intelligence growth, mana, model and skills.",
     "agilityPerLevel": 2.25
+  },
+  "8": {
+    "agilityPerLevel": 2.0,
+    "reason": "User Alpha56: Hinata agility-primary growth1.5 to2.0, same as Neji; retain other stats/mana/skills."
   }
 }

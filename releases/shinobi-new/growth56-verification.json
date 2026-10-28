@@ -1,0 +1,18 @@
+{
+  "filename": "Shinobi_Story_Alpha_56.w3x",
+  "bytes": 11033788,
+  "sha256": "9912714185abe57a22008d038e0c16800349ac32ad5cb8b1e345e876ce8ec440",
+  "kibaStrengthGrowth": {
+    "before": 1.5,
+    "after": 2,
+    "bothNormalAndBeastForm": true
+  },
+  "hinataAgilityGrowth": {
+    "before": 1.5,
+    "after": 2,
+    "sameAsNeji": true
+  },
+  "allOtherObjectsFieldsAssetsGameplayUnchanged": true,
+  "temariKankuroAndCloneChanges55Preserved": true,
+  "enginePlaytest": false
+}
