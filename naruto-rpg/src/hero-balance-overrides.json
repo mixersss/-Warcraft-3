@@ -7,7 +7,8 @@
   "10": {
     "primaryAttribute": "STR",
     "runtimeBase": "Hpal",
-    "reason": "User Alpha43: Kankuro strength primary; retain original stats, mana and model."
+    "reason": "User Alpha55: Kankuro strength-primary growth raised from legacy1.0 to2.0; retain other stats, mana and model.",
+    "strengthPerLevel": 2.0
   },
   "2": {
     "primaryAttribute": "AGI",
@@ -22,6 +23,7 @@
   "11": {
     "primaryAttribute": "AGI",
     "runtimeBase": "Edem",
-    "reason": "User Alpha50 primary attribute request; retain base stats, mana, model and skills."
+    "reason": "User Alpha55: Temari agility-primary growth raised from legacy0.75 to2.25; retain starting stats, strength/intelligence growth, mana, model and skills.",
+    "agilityPerLevel": 2.25
   }
 }

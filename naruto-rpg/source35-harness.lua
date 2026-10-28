@@ -28,9 +28,9 @@ for rank=1,3 do
 end
 Source35Apply(3,15,3,target);target.hp=0;Source35Tick();assert(not Hero[3].paused and not target.paused and not Lotus35Target[3])
 target.hp=1000000;Source35Apply(3,15,2,target);Source35Clear(3);assert(not Hero[3].paused and not target.paused)
--- The native8 seed illusions are copied0/1/2/4 times per seed; helpers never replace original hero.
+-- Eight seeds schedule0/1/2/4 extra images each; every extra image copies the real Naruto.
 local issueId=IssueTargetOrderById;local casts=0
-function IssueTargetOrderById(u,id,t)assert(id==0xD0132 and GetUnitAbilityLevel(u,raw('R35i'))>0 and t.illusion);casts=casts+1;return true end
+function IssueTargetOrderById(u,id,t)assert(id==0xD0132 and GetUnitAbilityLevel(u,raw('R35i'))>0 and t==Hero[0] and not t.illusion);casts=casts+1;return true end
 for rank=1,4 do
  World={};for n=1,8 do local c=CreateUnit(0,raw('R000'),n*10,0,0);c.illusion=true;World[#World+1]=c end
  local ally=CreateUnit(0,raw('R000'),0,0,0);World[#World+1]=ally

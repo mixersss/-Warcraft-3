@@ -351,7 +351,7 @@ function Source35TickPlayer takes nothing returns nothing
                 loop
                     exitwhen roll>=amount
                     set helper=Source35Dummy(p,'R35i',Clone35Rank[p],GetUnitX(u),GetUnitY(u))
-                    call IssueTargetOrderById(helper,0xD0132,t)
+                    call IssueTargetOrderById(helper,0xD0132,u)
                     set roll=roll+1
                 endloop
                 set j=j+1

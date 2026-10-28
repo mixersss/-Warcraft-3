@@ -1,0 +1,35 @@
+{
+  "filename": "Shinobi_Story_Alpha_55.w3x",
+  "bytes": 11033789,
+  "sha256": "9c9a5dcaf3f6076fc7cd27b02558382d6a40485584f028f3fe1c90ab1ed20f3d",
+  "temari": {
+    "unit": "R00B",
+    "agilityGrowthBefore": 0.75,
+    "agilityGrowthAfter": 2.25
+  },
+  "kankuro": {
+    "unit": "R00A",
+    "strengthGrowthBefore": 1,
+    "strengthGrowthAfter": 2
+  },
+  "narutoClones": {
+    "nativeOutgoingDamage": [
+      0.15,
+      0.18,
+      0.21,
+      0.24
+    ],
+    "bothNativeAndHelperImages": true,
+    "extraImagesCopyRealHero": true,
+    "countsUnchanged": [
+      8,
+      16,
+      24,
+      40
+    ],
+    "durationSeconds": 30,
+    "fragileOnDamageUnchanged": true
+  },
+  "otherObjectsAssetsGameplayUnchanged": true,
+  "enginePlaytest": false
+}
