@@ -2,7 +2,7 @@ import {VOICE_CUES} from './voice-cues.js';
 // Exactly two reusable voice channels, one per fighter. A new cue interrupts that
 // fighter's previous cue; no growing queues during rapid skills or rematches.
 export class Voices{
- constructor({onDuck=()=>{},onError=()=>{}}={}){this.enabled=true;this.onDuck=onDuck;this.onError=onError;this.channels=[0,1].map(()=>({audio:new Audio(),token:0,active:false}));for(const c of this.channels){c.audio.volume=.88;c.audio.preload='auto';}this.lastCue=null;this.failures=0;}
+ constructor({onDuck=()=>{},onError=()=>{}}={}){this.enabled=true;this.onDuck=onDuck;this.onError=onError;this.channels=[0,1].map(()=>({audio:new Audio(),token:0,active:false}));for(const c of this.channels){c.audio.volume=.65;c.audio.preload='auto';}this.lastCue=null;this.failures=0;}
  duck(){this.onDuck(this.channels.some(c=>c.active));}
  stop(side=null){for(const c of side===null?this.channels:[this.channels[side]]){c.token++;c.audio.onended=null;c.audio.onerror=null;c.audio.pause();c.active=false;}this.duck();}
  setEnabled(enabled){this.enabled=enabled;if(!enabled)this.stop();}

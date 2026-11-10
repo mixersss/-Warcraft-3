@@ -1,0 +1,126 @@
+{
+  "source": "16 reference images supplied inline by the user on 2026-11-11",
+  "method": "procedural costume recreation; source images not edited or embedded",
+  "firstPass": true,
+  "characters": {
+    "naruto": {
+      "top": "#ec9638",
+      "pants": "#e79135",
+      "hair": "#f1ce38",
+      "shoe": "#163c52",
+      "skin": "#eec49e"
+    },
+    "sasuke": {
+      "top": "#173b70",
+      "pants": "#e4e3db",
+      "hair": "#202c3c",
+      "shoe": "#153756",
+      "skin": "#eed0b6",
+      "shortSleeve": true
+    },
+    "sakura": {
+      "top": "#a22c4e",
+      "pants": "#25434a",
+      "hair": "#e79dae",
+      "shoe": "#173c5e",
+      "skin": "#f0cab7",
+      "sleeveless": true
+    },
+    "kiba": {
+      "top": "#9a9e93",
+      "pants": "#64634d",
+      "hair": "#343b30",
+      "shoe": "#214453",
+      "skin": "#ddbf9d"
+    },
+    "shikamaru": {
+      "top": "#a7aaa2",
+      "pants": "#57514b",
+      "hair": "#303730",
+      "shoe": "#234a68",
+      "skin": "#e8c5a8",
+      "shortSleeve": true
+    },
+    "hinata": {
+      "top": "#d3c7bd",
+      "pants": "#444d6a",
+      "hair": "#333852",
+      "shoe": "#153953",
+      "skin": "#f0d2ba"
+    },
+    "neji": {
+      "top": "#c9bea3",
+      "pants": "#56564d",
+      "hair": "#4b4635",
+      "shoe": "#17414c",
+      "skin": "#e7cfb3",
+      "shortSleeve": true
+    },
+    "tenten": {
+      "top": "#dfb2c0",
+      "pants": "#25403d",
+      "hair": "#4a332b",
+      "shoe": "#173a53",
+      "skin": "#e7c6ad",
+      "sleeveless": true
+    },
+    "kankuro": {
+      "top": "#343827",
+      "pants": "#343827",
+      "hair": "#2f3525",
+      "shoe": "#343b2b",
+      "skin": "#d7bc8e"
+    },
+    "lee": {
+      "top": "#256e59",
+      "pants": "#256e59",
+      "hair": "#22372e",
+      "shoe": "#1c3a46",
+      "skin": "#e3c49a"
+    },
+    "kakashi": {
+      "top": "#6c7d5d",
+      "pants": "#303b4e",
+      "hair": "#c2c9ca",
+      "shoe": "#263843",
+      "skin": "#e1c3ab"
+    },
+    "orochimaru": {
+      "top": "#c5bf9d",
+      "pants": "#5b6251",
+      "hair": "#23252c",
+      "shoe": "#444d33",
+      "skin": "#e6d9c2"
+    },
+    "jiraiya": {
+      "top": "#7e8163",
+      "pants": "#787c5c",
+      "hair": "#dedfd4",
+      "shoe": "#9a4d3d",
+      "skin": "#dab18b"
+    },
+    "itachi": {
+      "top": "#292e3b",
+      "pants": "#313746",
+      "hair": "#242831",
+      "shoe": "#2d3541",
+      "skin": "#dec5b0"
+    },
+    "gaara": {
+      "top": "#44362f",
+      "pants": "#3c342e",
+      "hair": "#863d3a",
+      "shoe": "#303536",
+      "skin": "#e5c7ae",
+      "shortSleeve": true
+    },
+    "temari": {
+      "top": "#cfc0ca",
+      "pants": "#cfb7ac",
+      "hair": "#dcc76a",
+      "shoe": "#29353e",
+      "skin": "#edd0b7",
+      "shortSleeve": true
+    }
+  }
+}

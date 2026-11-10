@@ -1,14 +1,16 @@
 import {byId} from './roster.js';
+import {LOOKS,outfitBack,outfitLegs,outfitBody,outfitArms,outfitHead} from './appearance.js';
 import {drawTechnique,drawProjectile} from './vfx.js';
 export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
- const d=byId(id),swing=['attack','heavy','punch','kick'].includes(pose),cast=pose==='cast'||pose==='rush',walk=pose==='walk',jump=pose==='jump',guard=pose==='guard',hit=pose==='hit',t=extra.anim||0,progress=Math.max(0,Math.min(1,extra.progress??.4)),strike=Math.sin(Math.PI*Math.min(1,progress/.8)),crouch=!!extra.crouching||pose==='crouch',phase=Math.sin(time*11),bob=walk?Math.abs(phase)*3:Math.sin(time*2.3)*1.5;
- c.save();c.translate(x,y-bob);c.scale(scale*face,scale);if(pose==='ko'){const k=Math.min(1,extra.koProgress??1);c.translate(48*k,-10*k);c.rotate(-1.4*k);}else if(hit){c.translate(-12*Math.sin(progress*Math.PI),-6);c.rotate(-.17*Math.sin(progress*Math.PI));}if(crouch)c.translate(0,48);if(pose==='land')c.scale(1.06,.91);c.lineJoin='round';c.lineCap='round';
- const outline='#212737',skin='#efc3a0',shade='#c28e78',color=d.color;
- const polygon=(points,fill,stroke=outline,width=2)=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}};
+ const d=byId(id),look=LOOKS[id],swing=['attack','heavy','punch','kick'].includes(pose),cast=pose==='cast'||pose==='rush',walk=pose==='walk',jump=pose==='jump',guard=pose==='guard',hit=pose==='hit',t=extra.anim||0,progress=Math.max(0,Math.min(1,extra.progress??.4)),strike=Math.sin(Math.PI*Math.min(1,progress/.8)),crouch=!!extra.crouching||pose==='crouch',phase=Math.sin(time*11),bob=walk?Math.abs(phase)*1.4:0;
+ c.save();c.translate(x,y-bob);c.scale(scale*face,scale);if(pose==='ko'){const k=Math.min(1,extra.koProgress??1);c.translate(48*k,-10*k);c.rotate(-1.4*k);}else if(hit){const strength=.35+(extra.hitStrength||.3)*.65;c.translate(-18*strength*Math.sin(progress*Math.PI),-4);c.rotate(-.22*strength*Math.sin(progress*Math.PI));}if(crouch)c.translate(0,48);if(pose==='land')c.scale(1.06,.91);c.lineJoin='round';c.lineCap='round';
+ const outline='#29333e',skin=look.skin,shade='#c69b83',color=look.top;
+ const polygon=(points,fill,stroke=outline,width=1.4)=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}};
  const oval=(x,y,rx,ry,fill,stroke=false)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=outline;c.lineWidth=1.6;c.stroke();}};
- const bone=(x1,y1,x2,y2,w,col)=>{c.strokeStyle=outline;c.lineWidth=w+3;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.strokeStyle=col;c.lineWidth=w;c.stroke();};
+ const bone=(x1,y1,x2,y2,w,col)=>{c.strokeStyle=outline;c.lineWidth=w+2;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.strokeStyle=col;c.lineWidth=w;c.stroke();};
  // Long hair, gourds, scrolls and signature tools behind the body.
- if(['neji','hinata','itachi','orochimaru','jiraiya'].includes(id))polygon([[-20,-159],[-29,-112],[-37,-77],[-14,-97],[16,-103],[25,-144]],d.hair);
+ outfitBack(c,id,time);
+ if(['neji','itachi','orochimaru'].includes(id))polygon([[-20,-159],[-29,-112],[-37,-77],[-14,-97],[16,-103],[25,-144]],look.hair);
  if(id==='gaara'){oval(-28,-96,23,36,'#b39a68',true);oval(-27,-129,15,20,'#c4ad7c',true);bone(-45,-110,-10,-91,4,'#68513f');bone(-44,-86,-10,-111,4,'#68513f');}
  if(id==='tenten')for(const yy of [-111,-82]){polygon([[-35,yy-11],[-32,yy+17],[-9,yy+13],[-12,yy-14]],'#d1c49e');bone(-33,yy-10,-12,yy-13,5,'#914d4e');}
  if(id==='kankuro'){polygon([[-34,-128],[-55,-101],[-45,-52],[-17,-65]],'#887655');bone(-48,-107,-35,-57,5,'#b69a6f');}
@@ -21,44 +23,44 @@ export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
  if(crouch){kneeL=[-43,-46];footL=[-39,-48];kneeR=[40,-45];footR=[48,-48];}
  if(kick){kneeR=[21+40*strike,-34-(crouch?16:45)*strike];footR=[35+90*strike,-(crouch?48:103)*strike];if(crouch)footR[1]=-48;}
  if(hit){kneeL=[-30,-30];footL=[-43,0];}
- const pants=id==='lee'?'#51785d':id==='sasuke'?'#d6d9d7':id==='naruto'?'#d98637':id==='neji'?'#aca797':id==='hinata'?'#626b92':'#424657';
+ const pants=look.pants;
  bone(-12,-75,...kneeL,18,pants);bone(...kneeL,...footL,15,pants);bone(13,-75,...kneeR,18,pants);bone(...kneeR,...footR,15,pants);
  if(id==='lee'){bone(kneeL[0],kneeL[1]+6,footL[0],footL[1]-8,18,'#d1945b');bone(kneeR[0],kneeR[1]+6,footR[0],footR[1]-8,18,'#d1945b');}
- for(const foot of [footL,footR]){bone(foot[0]-5,foot[1],foot[0]+10,foot[1],9,'#313b4a');bone(foot[0]+4,foot[1]-2,foot[0]+9,foot[1]-2,3,skin);}
+ outfitLegs(c,id,kneeL,footL,kneeR,footR);
+ c.save();c.translate(0,-75);c.rotate((swing?(kick?-.045:.035)*strike:(extra.vx||0)*face*.00009));c.translate(swing?strike*4:0,75+(pose==='idle'?Math.sin(time*2.3)*.7:0));
  let torso=[[-22,-126],[20,-128],[25,-78],[9,-69],[-25,-76]];
  if(id==='itachi')torso=[[-30,-132],[26,-131],[35,-49],[-34,-50]];
  polygon(torso,color);polygon([[6,-126],[20,-128],[25,-78],[9,-69]],'#151a3029',null);
- if(['kakashi','shikamaru'].includes(id)){polygon([[-21,-124],[21,-123],[21,-81],[-22,-81]],'#6e815c');for(const xx of [-14,6]){polygon([[xx,-115],[xx+10,-115],[xx+10,-97],[xx,-97]],'#8a9a70');}}
- if(id==='naruto'){polygon([[-23,-125],[-8,-127],[-8,-106],[-22,-99]],'#343c46');bone(0,-124,0,-77,2,'#dbceac');oval(10,-106,7,7,'#cfbba1');}
- if(id==='sakura')bone(0,-123,0,-78,2,'#ead3c6');
- if(id==='sasuke'){bone(-24,-77,24,-77,8,'#a9a0b1');oval(24,-76,9,7,'#b8aabb',true);}
- if(id==='itachi'){for(const [xx,yy]of [[-10,-105],[14,-67]]){oval(xx,yy,12,7,'#ac4356',true);oval(xx+6,yy-4,8,6,'#ac4356');}polygon([[-10,-133],[7,-135],[19,-113],[-2,-113]],'#4d3b4c');}
- if(id==='orochimaru'){bone(-26,-81,24,-81,7,'#9e7eae');oval(-3,-78,10,7,'#aa90bd');}
- if(id==='jiraiya'){polygon([[-24,-127],[-13,-127],[-13,-78],[-32,-62]],'#a65e55');polygon([[15,-127],[25,-126],[34,-64],[16,-78]],'#a65e55');}
+ outfitBody(c,id,time);
  // Arms use distinct attack silhouettes: palm, kick, sword, fan and fist.
- const arm=pose==='victory'?[[34,-160],[18,-206]]:hit?[[1,-110],[-15,-77]]:jump?[[39,-131],[53,-151]]:guard?[[24,-139],[37,-114]]:swing&&!kick?[[33+21*strike,-104-15*strike],[29+67*strike,-84-31*strike]]:cast?[[40,-114],[62,-128]]:[[33,-104+(walk?stride*.2:0)],[29,-84+(walk?stride*.3:0)]];
- bone(-18,-121,-34,-99-(guard?15:0),14,color);bone(-34,-99-(guard?15:0),-25,-78-(guard?38:0),11,skin);
- bone(19,-122,...arm[0],14,color);bone(...arm[0],...arm[1],11,skin);
+ const arm=pose==='victory'?[[34,-160],[18,-206]]:hit?[[1,-110],[-15,-77]]:jump?[[39,-131],[53,-151]]:guard?[[24,-139],[37,-114]]:swing&&!kick?[[33+21*strike,-107-12*strike],[35+61*strike,-126+11*strike]]:cast?[[40,-114],[62,-128]]:[[33,-107+(walk?stride*.2:0)],[35,-126+(walk?stride*.3:0)]];
+ const sleeve=look.sleeveless?skin:color,forearm=look.shortSleeve||look.sleeveless?skin:id==='kakashi'?'#303d51':color;bone(-18,-121,-34,-108-(guard?8:0),13,sleeve);bone(-34,-108-(guard?8:0),-25,-110-(guard?15:0),10,forearm);
+ bone(19,-122,...arm[0],13,sleeve);bone(...arm[0],...arm[1],10,forearm);
  if(id==='lee'){bone(arm[0][0],arm[0][1],arm[1][0],arm[1][1],11,'#d8d2b9');for(let n=0;n<4;n++)bone(arm[1][0]-7,arm[1][1]+n*3-5,arm[1][0]+3,arm[1][1]+n*3-5,1,'#a8ac9b');}
- oval(arm[1][0]+2,arm[1][1]-1,7,6,skin,true);
+ oval(arm[1][0]+2,arm[1][1]-1,6,5.5,skin,true);outfitArms(c,id,arm);
  if((d.style==='sword'&&(pose==='attack'||pose==='heavy'))||(cast&&extra.visual==='snakeSword')){bone(arm[1][0],arm[1][1],arm[1][0]+56,arm[1][1]-67,5,'#cad9e3');bone(arm[1][0]-7,arm[1][1]-3,arm[1][0]+9,arm[1][1]+7,3,'#8a889c');}
- if(['weapon','tactical','crow'].includes(d.style)&&(pose==='attack'||pose==='heavy'))polygon([[92,-115],[110,-135],[114,-129],[102,-111]],'#dce1df');
- if(['palm'].includes(d.style)&&swing){bone(91,-118,100,-128,4,skin);bone(95,-117,105,-124,3,skin);}
+ if(['weapon','tactical','crow'].includes(d.style)&&(pose==='attack'||pose==='heavy'))polygon([[arm[1][0],arm[1][1]],[arm[1][0]+18,arm[1][1]-20],[arm[1][0]+22,arm[1][1]-14],[arm[1][0]+10,arm[1][1]+4]],'#dce1df');
+ if(['palm'].includes(d.style)&&swing){bone(arm[1][0],arm[1][1]-3,arm[1][0]+8,arm[1][1]-13,3,skin);bone(arm[1][0]+4,arm[1][1]-2,arm[1][0]+13,arm[1][1]-9,2,skin);}
+ // Smaller head and finer ink: closer to the reference proportions.
+ c.save();c.translate(0,-140);c.scale(.9,.9);c.translate(0,140);
  // Head, ears, shaded jaw and readable anime eyes.
  bone(-2,-133,-2,-142,13,skin);oval(-2,-160,22,25,skin,true);polygon([[8,-178],[19,-166],[18,-148],[4,-137],[-2,-137],[8,-152]],shade,null);
  oval(-23,-158,4,7,skin,true);
- if(id==='lee')polygon([[-25,-161],[-24,-179],[-12,-189],[10,-189],[21,-177],[21,-163],[13,-167],[-15,-167]],d.hair);
- else if(['neji','hinata','itachi','orochimaru'].includes(id))polygon([[-24,-160],[-26,-178],[-15,-190],[10,-191],[23,-178],[24,-143],[15,-153],[9,-175],[-3,-181],[-10,-164]],d.hair);
- else if(id==='tenten'){oval(-20,-183,12,11,d.hair,true);oval(17,-183,12,11,d.hair,true);polygon([[-23,-161],[-25,-174],[-12,-187],[10,-186],[23,-174],[20,-160],[9,-175],[-5,-173]],d.hair);}
- else if(id==='temari'){for(const [xx,yy]of [[-24,-182],[23,-183],[-28,-160],[27,-160]])polygon([[xx,yy],[xx-13,yy-14],[xx+4,yy-20],[xx+8,yy+5]],d.hair);polygon([[-22,-162],[-25,-178],[-8,-193],[10,-187],[24,-178],[20,-159],[10,-178],[-5,-172]],d.hair);}
- else if(id==='shikamaru'){polygon([[-15,-181],[-29,-218],[-10,-209],[0,-225],[10,-210],[24,-212],[18,-181]],d.hair);oval(-2,-174,24,17,d.hair,true);}
- else if(id==='kankuro'){polygon([[-27,-150],[-30,-185],[-17,-200],[-8,-190],[13,-195],[27,-184],[25,-148],[16,-164],[11,-182],[-17,-181],[-18,-154]],d.hair);}
- else{polygon([[-25,-163],[-32,-178],[-20,-178],[-23,-194],[-9,-188],[-7,-205],[4,-192],[17,-202],[15,-184],[30,-189],[24,-174],[31,-172],[19,-160],[10,-177],[-2,-171],[-15,-174]],d.hair);}
- if(id==='sakura'){polygon([[-25,-162],[-28,-140],[-20,-137],[-17,-161]],d.hair);}
- if(id!=='gaara'&&id!=='jiraiya'){bone(-22,-171,19,-171,6,'#394152');polygon([[-15,-175],[12,-175],[12,-168],[-15,-168]],'#bec9cf',outline,1);c.strokeStyle='#657481';c.lineWidth=1;c.beginPath();c.arc(-3,-171,2,0,5);c.stroke();}
+ if(id==='lee')polygon([[-25,-161],[-24,-179],[-12,-189],[10,-189],[21,-177],[21,-163],[13,-167],[-15,-167]],look.hair);
+ else if(['neji','itachi','orochimaru'].includes(id))polygon([[-24,-160],[-26,-178],[-15,-190],[10,-191],[23,-178],[24,-143],[15,-153],[9,-175],[-3,-181],[-10,-164]],look.hair);
+ else if(id==='hinata')polygon([[-24,-145],[-28,-171],[-16,-191],[9,-193],[25,-179],[27,-148],[15,-155],[14,-171],[7,-168],[1,-174],[-6,-168],[-13,-174],[-16,-149]],look.hair);
+ else if(id==='sasuke')polygon([[-25,-157],[-26,-181],[-9,-197],[13,-200],[30,-210],[24,-193],[39,-196],[26,-183],[38,-182],[22,-171],[18,-145],[10,-168],[-12,-172],[-18,-147]],look.hair);
+ else if(id==='gaara')polygon([[-24,-164],[-25,-178],[-17,-186],[-12,-182],[-3,-193],[1,-185],[12,-191],[13,-181],[24,-185],[20,-175],[27,-170],[20,-159],[13,-173],[1,-170],[-10,-175],[-17,-160]],look.hair);
+ else if(id==='tenten'){oval(-20,-183,12,11,look.hair,true);oval(17,-183,12,11,look.hair,true);polygon([[-23,-161],[-25,-174],[-12,-187],[10,-186],[23,-174],[20,-160],[9,-175],[-5,-173]],look.hair);}
+ else if(id==='temari'){for(const [xx,yy]of [[-24,-182],[23,-183],[-28,-160],[27,-160]])polygon([[xx,yy],[xx-13,yy-14],[xx+4,yy-20],[xx+8,yy+5]],look.hair);polygon([[-22,-162],[-25,-178],[-8,-193],[10,-187],[24,-178],[20,-159],[10,-178],[-5,-172]],look.hair);}
+ else if(id==='shikamaru'){polygon([[-15,-181],[-29,-218],[-10,-209],[0,-225],[10,-210],[24,-212],[18,-181]],look.hair);oval(-2,-174,24,17,look.hair,true);}
+ else if(id==='kankuro'){polygon([[-27,-150],[-30,-185],[-17,-200],[-8,-190],[13,-195],[27,-184],[25,-148],[16,-164],[11,-182],[-17,-181],[-18,-154]],look.hair);}
+ else{polygon([[-25,-163],[-32,-178],[-20,-178],[-23,-194],[-9,-188],[-7,-205],[4,-192],[17,-202],[15,-184],[30,-189],[24,-174],[31,-172],[19,-160],[10,-177],[-2,-171],[-15,-174]],look.hair);}
+ if(id==='sakura'){polygon([[-25,-162],[-28,-140],[-20,-137],[-17,-161]],look.hair);}
+ if(!['gaara','jiraiya','hinata','shikamaru'].includes(id)){bone(-22,-171,19,-171,6,id==='neji'?'#e7e5d8':'#263d51');polygon([[-15,-175],[12,-175],[12,-168],[-15,-168]],'#bec9cf',outline,1);c.strokeStyle='#657481';c.lineWidth=1;c.beginPath();c.arc(-3,-171,2,0,5);c.stroke();}
  if(id==='jiraiya'){polygon([[-21,-178],[17,-178],[17,-165],[-21,-165]],'#b8bfba');c.fillStyle='#5e665f';c.font='10px serif';c.fillText('油',-11,-168);}
  const eye=['hinata','neji'].includes(id)?'#e0d9ee':id==='sasuke'||id==='itachi'?'#a94c5e':id==='naruto'?'#6eacbf':'#505367';
- polygon([[-14,-160],[-5,-158],[-9,-154],[-15,-155]],'#f4e9d9',outline,1);polygon([[3,-158],[14,-161],[15,-156],[7,-153]],'#f4e9d9',outline,1);oval(-10,-157,2,2.4,eye);oval(10,-157,2,2.5,eye);bone(-15,-164,-5,-162,1.7,d.hair);bone(4,-162,15,-165,1.7,d.hair);
+ polygon([[-14,-160],[-5,-158],[-9,-154],[-15,-155]],'#f4e9d9',outline,1);polygon([[3,-158],[14,-161],[15,-156],[7,-153]],'#f4e9d9',outline,1);oval(-10,-157,2,2.4,eye);oval(10,-157,2,2.5,eye);bone(-15,-164,-5,swing||cast?-162:-164,1.4,look.hair);bone(4,swing||cast?-162:-164,15,-165,1.4,look.hair);
  if(id==='kakashi'){polygon([[-21,-153],[17,-152],[10,-139],[-4,-134],[-20,-142]],'#394554');bone(-17,-174,2,-174,7,'#bdc7ca');}
  else{bone(3,-146,10,-147,1,'#915e59');}
  if(id==='naruto')for(const [xx,yy]of [[-17,-149],[-17,-145],[12,-149],[12,-145]])bone(xx,yy,xx+4,yy,1,'#a77764');
@@ -66,10 +68,11 @@ export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
  if(id==='jiraiya')for(const xx of [-12,12])bone(xx,-154,xx,-140,3,'#ab5f58');
  if(id==='kankuro'){bone(-11,-152,-3,-148,3,'#8970a6');bone(4,-150,12,-146,3,'#8970a6');}
  if(id==='gaara'){c.fillStyle='#8e443b';c.font='10px serif';c.fillText('愛',6,-179);}
- if(cast&&['rasengan','rasenganGiant','chidori','lionFists'].includes(extra.visual)){c.shadowBlur=18;c.shadowColor=extra.color||'#a4ddf1';oval(64,-126,13+Math.sin(time*25)*2,13,extra.color||'#a4ddf1');c.shadowBlur=0;}
+ outfitHead(c,id,extra.hasDog);c.restore();
+ if(cast&&['rasengan','chidori','lionFists'].includes(extra.visual)){c.shadowBlur=18;c.shadowColor=extra.color||'#a4ddf1';oval(64,-126,13+Math.sin(time*25)*2,13,extra.color||'#a4ddf1');c.shadowBlur=0;}
  if(extra.buff){c.strokeStyle=extra.buff.color+'88';c.lineWidth=2;for(let k=0;k<3;k++){c.beginPath();c.arc(0,-99,62+k*15,time*3+k,time*3+k+1.5);c.stroke();}}
  if(hit){c.strokeStyle='#65434b';c.lineWidth=2;c.beginPath();c.moveTo(-15,-158);c.lineTo(-5,-155);c.moveTo(4,-154);c.lineTo(14,-159);c.stroke();c.globalAlpha=.12;polygon([[-24,-193],[23,-190],[30,-70],[-25,-70]],'#fff',null);}
- c.restore();
+ c.restore();c.restore();
 }
 export class Art{
  constructor(canvas){this.c=canvas.getContext('2d');this.canvas=canvas;this.background=document.createElement('canvas');this.background.width=1280;this.background.height=720;this.landscape();}
@@ -92,14 +95,14 @@ export class Art{
   c.fillStyle='#d3c9a465';c.font='56px serif';c.textAlign='center';c.fillText('忍',640,601);
   for(const [x,y]of [[115,510],[1145,510]]){c.fillStyle='#5e6257';c.fillRect(x-7,y-145,14,145);c.fillStyle='#a88b71';c.fillRect(x-14,y-140,28,24);c.fillStyle='#8b514f';c.fillRect(x-36,y-135,73,9);c.fillStyle='#dab67c';c.fillRect(x-13,y-122,29,46);c.fillStyle='#785943';c.fillRect(x-16,y-77,35,6);c.fillStyle='#5c5d50';c.font='22px serif';c.fillText('火',x+1,y-92);}
  }
- draw(fight,realTime){const c=this.c;c.clearRect(0,0,1280,720);c.drawImage(this.background,0,0);const time=fight?.time||realTime;
+ draw(fight,realTime){const c=this.c;c.clearRect(0,0,1280,720);c.save();const tremor=fight?.shake||0;c.translate(Math.sin(realTime*91)*tremor,Math.cos(realTime*83)*tremor*.4);c.drawImage(this.background,0,0);const time=fight?.time||realTime;
   // Continuous drifting leaves, independent of combat objects.
   for(let k=0;k<18;k++){const x=(k*151+realTime*(12+k%5))%1360-40,y=180+(k*73)%350+Math.sin(realTime+k)*20;c.save();c.translate(x,y);c.rotate(realTime+k);c.fillStyle=k%2?'#d6c68a88':'#b8ce9d66';c.beginPath();c.ellipse(0,0,6,2,0,0,Math.PI*2);c.fill();c.restore();}
-  if(!fight)return;
+  if(!fight){c.restore();return;}
   for(const f of fight.fighters){c.fillStyle='#263a414a';c.beginPath();c.ellipse(f.x,555,Math.max(22,48-(550-f.y)*.07),Math.max(4,9-(550-f.y)*.015),0,0,Math.PI*2);c.fill();}
   for(const t of fight.traps){c.save();c.translate(t.x,548);c.fillStyle='#e1ceaa';c.fillRect(-20,-8,40,7);c.strokeStyle=t.color;c.lineWidth=2;c.strokeRect(-17,-14,34,12);c.fillStyle='#715d52';c.font='12px serif';c.textAlign='center';c.fillText('爆',0,-4);c.restore();}
-  for(const s of fight.summons){c.save();c.globalAlpha=Math.min(1,s.life);if(s.pet==='clone')ninja(c,fight.fighters[s.owner].id,s.x,550,.8,'walk',time,s.facing,{anim:time});else this.pet(c,s,time);c.restore();}
-  for(const f of fight.fighters)ninja(c,f.id,f.x,f.y,1,f.hp<=0?'ko':fight.phase==='round'&&fight.roundWinner===f.side?'victory':f.state,time,f.facing,{buff:f.buff,anim:f.stateTime,progress:f.stateTotal?1-f.stateTime/f.stateTotal:0,crouching:f.crouching,koProgress:(2.6-fight.phaseTime)/.4,vy:f.vy,visual:f.skillVisual,color:byId(f.id).skills.find(s=>s.name===f.moveName)?.color});
+  for(const s of fight.summons){c.save();c.globalAlpha=Math.min(1,s.life)*(s.pet==='clone'?.65:1);if(s.pet==='clone')ninja(c,fight.fighters[s.owner].id,s.x,550,.8,s.stun>0?'hit':'walk',time,s.facing,{anim:time,progress:.4,hitStrength:.4});else this.pet(c,s,time);const top={clone:177,dog:66,puppet:108,crow:143,frog:79,snake:128}[s.pet]||100;c.fillStyle='#172430cc';c.fillRect(s.x-21,550-top,42,5);c.fillStyle=s.owner?'#c88d91':'#bfd19b';c.fillRect(s.x-20,551-top,40*Math.max(0,s.hp/s.maxHP),3);c.restore();}
+  for(const f of fight.fighters)ninja(c,f.id,f.x,f.y,1,f.hp<=0?'ko':fight.phase==='round'&&fight.roundWinner===f.side?'victory':f.state,time,f.facing,{buff:f.buff,anim:f.stateTime,progress:f.stateTotal?1-f.stateTime/f.stateTotal:0,crouching:f.crouching,hitStrength:f.hitStrength,vx:f.vx,hasDog:f.dogReleased||fight.summons.some(s=>s.owner===f.side&&s.pet==='dog'),koProgress:(2.6-fight.phaseTime)/.4,vy:f.vy,visual:f.skillVisual,color:byId(f.id).skills.find(s=>s.name===f.moveName)?.color});
   for(const p of fight.shots)if(p.delay<=0)drawProjectile(c,p,time);
   for(const f of fight.effects){if(f.type==='technique'){drawTechnique(c,f,time,fight.fighters[f.owner]);continue;}const p=1-f.life/f.total;c.save();c.translate(f.x,f.y);c.globalAlpha=Math.min(1,f.life*5);c.strokeStyle=f.color||'#ffe4b7';c.fillStyle=f.color||'#ffe4b7';c.lineWidth=3;
    if(f.type==='dust'){for(let k=0;k<6;k++){c.globalAlpha=(1-p)*.4;c.fillStyle='#d5c8a7';c.beginPath();c.ellipse((k-2.5)*(8+p*12),-p*15,9+p*10,4+p*5,0,0,Math.PI*2);c.fill();}}
@@ -113,11 +116,12 @@ export class Art{
    else if(f.type==='smoke'){for(let k=0;k<6;k++){c.beginPath();c.ellipse(Math.sin(k*3)*p*45,-p*50+k*7,15+p*15,18+p*12,0,0,Math.PI*2);c.fill();}}
    else{for(let k=0;k<3;k++){c.beginPath();c.ellipse(0,0,35+p*80+k*12,65+p*50,0,time*3+k,time*3+k+3);c.stroke();}}
    c.restore();}
-  const vig=c.createRadialGradient(640,340,200,640,360,800);vig.addColorStop(0,'#151d3000');vig.addColorStop(1,'#101a3b88');c.fillStyle=vig;c.fillRect(0,0,1280,720);
+  const vig=c.createRadialGradient(640,340,200,640,360,800);vig.addColorStop(0,'#151d3000');vig.addColorStop(1,'#101a3b88');c.fillStyle=vig;c.fillRect(0,0,1280,720);c.restore();
  }
  pet(c,s,time){c.save();c.translate(s.x,550);c.scale(s.facing||1,1);const oval=(x,y,rx,ry,col)=>{c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();};
   if(s.pet==='dog'){oval(0,-25,30,15,'#e1dfc9');oval(27,-39,14,13,'#e5e5ce');c.strokeStyle='#dedcc5';c.lineWidth=8;for(const xx of [-18,15]){c.beginPath();c.moveTo(xx,-22);c.lineTo(xx+Math.sin(time*18+xx)*8,-3);c.stroke();}c.beginPath();c.moveTo(-26,-29);c.quadraticCurveTo(-55,-62,-41,-67);c.stroke();c.fillStyle='#505866';c.fillRect(26,-45,13,4);c.fillRect(35,-37,4,3);}
   else if(s.pet==='crow'){c.translate(0,-100+Math.sin(time*4)*20);c.fillStyle='#303248';c.beginPath();c.moveTo(-8,0);c.lineTo(-45,-20+Math.sin(time*22)*25);c.lineTo(-15,-3);c.lineTo(3,-15);c.lineTo(11,-3);c.lineTo(40,-30+Math.sin(time*22)*25);c.lineTo(16,5);c.lineTo(-2,9);c.closePath();c.fill();}
+  else if(s.pet==='snake'){c.strokeStyle='#8b749d';c.lineWidth=24;c.lineCap='round';c.beginPath();c.moveTo(-75,-12);c.bezierCurveTo(-120,-55,15,-35,-10,-76);c.quadraticCurveTo(10,-118,60,-94);c.stroke();oval(61,-95,30,19,'#a28ab4');oval(75,-101,4,5,'#e9d48b');c.strokeStyle='#42384f';c.lineWidth=3;c.beginPath();c.moveTo(54,-82);c.lineTo(83,-86);c.stroke();c.strokeStyle='#c47892';c.lineWidth=2;c.beginPath();c.moveTo(86,-88);c.lineTo(106,-85);c.stroke();}
   else if(s.pet==='frog'){oval(0,-28,38,25,'#9cab73');oval(26,-15,22,12,'#aab483');oval(-26,-15,22,12,'#aab483');for(const xx of [-18,18]){oval(xx,-54,13,12,'#c3ce9b');oval(xx,-54,5,8,'#3b4d4b');}}
   else{c.strokeStyle='#d8d5d35c';c.lineWidth=1;c.beginPath();c.moveTo(-70,-130);c.lineTo(-15,-60);c.moveTo(-60,-125);c.lineTo(15,-60);c.stroke();c.fillStyle='#977e59';c.fillRect(-17,-68,34,46);oval(0,-83,20,16,'#b49a70');c.strokeStyle='#5b5052';c.lineWidth=6;for(const v of [-1,1]){c.beginPath();c.moveTo(v*15,-57);c.lineTo(v*40,-33);c.lineTo(v*46,-65);c.moveTo(v*10,-25);c.lineTo(v*24,-4);c.stroke();}c.fillStyle='#75536a';c.fillRect(-12,-87,8,4);c.fillRect(5,-87,8,4);}
  c.restore();}

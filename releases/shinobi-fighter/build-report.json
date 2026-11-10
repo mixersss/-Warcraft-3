@@ -1,7 +1,7 @@
 {
-  "file": "Shinobi-Clash-Alpha02.html",
-  "bytes": 8454878,
-  "sha256": "54cfdbe911a4b4288a5d9041df4c7401848e01f0f455c7a29e3f8ae999c4ae08",
+  "file": "Shinobi-Clash-Alpha03.html",
+  "bytes": 8473687,
+  "sha256": "73d9894a4ed5135954c418e8e32989570a93dfa8ede08a70e52c7126de615606",
   "fighters": 16,
   "techniques": 64,
   "musicTracks": 13,
@@ -15,5 +15,11 @@
   "roundsToWin": 2,
   "networkMultiplayer": false,
   "originalWarcraftModelsUsed": false,
-  "sourceSkillAdaptation": true
+  "sourceSkillAdaptation": true,
+  "manaRemoved": true,
+  "allFourSkillsCooldownOnly": true,
+  "cloneLifetimeSeconds": 6,
+  "summonsHaveHPAndCanBeKilled": true,
+  "voiceVolume": 0.65,
+  "referenceOutfitPass": 16
 }
