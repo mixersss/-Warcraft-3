@@ -1,0 +1,28 @@
+{
+  "simulationTests": 9,
+  "all64TechniquesExecuted": true,
+  "travelingBasicProjectiles": true,
+  "actualChromiumSmoke": true,
+  "checks": [
+    "16roster cards",
+    "player and opponent selection",
+    "W clones",
+    "Space jump after cast",
+    "P pause",
+    "ultimate rendering",
+    "help",
+    "victory modal",
+    "rematch",
+    "responsive layouts",
+    "standalone inlineHTML with HTTPblocked",
+    "chakra cost",
+    "music status",
+    "no JS exceptions"
+  ],
+  "all13MusicFilesByteExactToUserRTSPlaylist": true,
+  "fileURLNavigationTested": false,
+  "managedBrowserFilePolicyPreserved": true,
+  "publicDeploymentVerified": false,
+  "engine": "Canvas2D standalone",
+  "existingStrategyAndWarcraftMapsUntouched": true
+}

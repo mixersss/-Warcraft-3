@@ -1,0 +1,54 @@
+[
+  {
+    "name": "1 этап",
+    "file": "assets/music/track-01.mp3"
+  },
+  {
+    "name": "1 этап.",
+    "file": "assets/music/track-02.mp3"
+  },
+  {
+    "name": "Экзамен с ответами",
+    "file": "assets/music/track-03.mp3"
+  },
+  {
+    "name": "Второй этап со свитками",
+    "file": "assets/music/track-04.mp3"
+  },
+  {
+    "name": "Второй этам со свитками",
+    "file": "assets/music/track-05.mp3"
+  },
+  {
+    "name": "Первые бои на арене",
+    "file": "assets/music/track-06.mp3"
+  },
+  {
+    "name": "Финальные бои на арене",
+    "file": "assets/music/track-07.mp3"
+  },
+  {
+    "name": "Нападение на коноху",
+    "file": "assets/music/track-08.mp3"
+  },
+  {
+    "name": "Takanashi_Yasuharu_-_A_Friend_s_Reminiscence_(Bib.fm)",
+    "file": "assets/music/track-09.mp3"
+  },
+  {
+    "name": "Поиск саске и финальные битвы",
+    "file": "assets/music/track-10.mp3"
+  },
+  {
+    "name": "Naruto_OST_Toshiro_Masuda_-_Grief_and_Sorrow_(SkySound7.com)",
+    "file": "assets/music/track-11.mp3"
+  },
+  {
+    "name": "Naruto_Shippuden_Ost_-_I_Have_Seen_Much_Extended_(SkySound7.com)",
+    "file": "assets/music/track-12.mp3"
+  },
+  {
+    "name": "Yasuharu_Takanashi_-_Determination_(SkySound7.com)",
+    "file": "assets/music/track-13.mp3"
+  }
+]

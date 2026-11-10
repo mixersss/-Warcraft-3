@@ -1,5 +1,9 @@
 # Four Fronts Frenzy — 0.23.1-alpha
 
+## SHINOBI CLASH — отдельный браузерный файтинг
+
+[Скачать игру ZIP](releases/shinobi-fighter/Shinobi-Clash-Alpha01.zip) · [Таблица бойцов и64техник](shinobi-fighter/HEROES.md) · [Управление](shinobi-fighter/README.md).16персонажей, разныеобычныеатаки, чакра, комбо, ульты, дуэлидо2победпротивИИ и13твоихтреков. Крупныерисованные2Dфигурки, безWarcraft. Pagesпубликацияв/fighter/подготовлена, доступностьсайтапоканеподтверждена.
+
 ## SHINOBI · Две деревни — отдельная браузерная стратегия
 
 [Автономная игра HTML](releases/shinobi-strategy/Shinobi-Strategy-Alpha01.html) · [ZIP](releases/shinobi-strategy/Shinobi-Strategy-Alpha01.zip) · [Как играть и статус публикации](shinobi-strategy/README.md). Строительство, ресурсы, найм ниндзя, Наруто/Саске/Сакура против бота Гаары и13музыкальныхтреков. СобственныйCanvas2Dдвижок, Warcraft не нужен. Для сайта подготовленGitHubPagesworkflow; доступностьпубличногоадресапоканеподтверждена.
