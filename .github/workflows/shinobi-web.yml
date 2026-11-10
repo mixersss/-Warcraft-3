@@ -22,7 +22,9 @@ jobs:
       - name: Verify independent RTS simulation
         run: node --test shinobi-strategy/test/engine.test.js
       - name: Verify independent fighting simulation
-        run: node shinobi-fighter/test/combat.test.js
+        run: |
+          node shinobi-fighter/test/combat.test.js
+          node shinobi-fighter/test/voices.test.js
       - name: Prepare both browser games
         run: |
           mkdir -p _site/fighter

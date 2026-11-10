@@ -1,7 +1,8 @@
 import {byId} from './roster.js';
+import {drawTechnique,drawProjectile} from './vfx.js';
 export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
- const d=byId(id),swing=pose==='attack'||pose==='heavy',cast=pose==='cast'||pose==='rush',walk=pose==='walk',jump=pose==='jump',guard=pose==='guard',hit=pose==='hit',t=extra.anim||0,phase=Math.sin(time*11),bob=walk?Math.abs(phase)*3:Math.sin(time*2.3)*1.5;
- c.save();c.translate(x,y-bob);c.scale(scale*face,scale);c.lineJoin='round';c.lineCap='round';
+ const d=byId(id),swing=['attack','heavy','punch','kick'].includes(pose),cast=pose==='cast'||pose==='rush',walk=pose==='walk',jump=pose==='jump',guard=pose==='guard',hit=pose==='hit',t=extra.anim||0,progress=Math.max(0,Math.min(1,extra.progress??.4)),strike=Math.sin(Math.PI*Math.min(1,progress/.8)),crouch=!!extra.crouching||pose==='crouch',phase=Math.sin(time*11),bob=walk?Math.abs(phase)*3:Math.sin(time*2.3)*1.5;
+ c.save();c.translate(x,y-bob);c.scale(scale*face,scale);if(pose==='ko'){const k=Math.min(1,extra.koProgress??1);c.translate(48*k,-10*k);c.rotate(-1.4*k);}else if(hit){c.translate(-12*Math.sin(progress*Math.PI),-6);c.rotate(-.17*Math.sin(progress*Math.PI));}if(crouch)c.translate(0,48);if(pose==='land')c.scale(1.06,.91);c.lineJoin='round';c.lineCap='round';
  const outline='#212737',skin='#efc3a0',shade='#c28e78',color=d.color;
  const polygon=(points,fill,stroke=outline,width=2)=>{c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=width;c.stroke();}};
  const oval=(x,y,rx,ry,fill,stroke=false)=>{c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=outline;c.lineWidth=1.6;c.stroke();}};
@@ -14,10 +15,12 @@ export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
  if(id==='temari'){
   c.save();c.translate(-22,-96);c.rotate((cast||swing?-.65:-.3));polygon([[0,43],[-73,-84],[58,-97],[27,43]],'#ddd3ba');for(let k=0;k<6;k++)bone(8,41,-65+k*24,-84-Math.sin(k)*8,1,'#938777');for(const [px,py]of [[-42,-54],[-5,-68],[31,-60]])oval(px,py,11,14,'#78608e');c.restore();
  }
- const kick=swing&&['kick','claw'].includes(d.style),stride=walk?phase*22:0;
+ const kick=pose==='kick'||pose==='heavy'&&['kick','claw'].includes(d.style)||pose==='attack'&&d.style==='kick',stride=walk?phase*22:0;
  let kneeL=[-18-stride,-35],footL=[-27-stride,0],kneeR=[21+stride,-34],footR=[35+stride,0];
- if(jump){kneeL=[-34,-47];footL=[-16,-25];kneeR=[28,-24];footR=[45,-40];}
- if(kick){kneeR=[54,-84];footR=[103,-104];}
+ if(jump){const falling=extra.vy>0;kneeL=falling?[-28,-29]:[-34,-54];footL=falling?[-25,-1]:[-8,-30];kneeR=falling?[25,-40]:[35,-40];footR=falling?[44,-8]:[53,-43];}
+ if(crouch){kneeL=[-43,-46];footL=[-39,-48];kneeR=[40,-45];footR=[48,-48];}
+ if(kick){kneeR=[21+40*strike,-34-(crouch?16:45)*strike];footR=[35+90*strike,-(crouch?48:103)*strike];if(crouch)footR[1]=-48;}
+ if(hit){kneeL=[-30,-30];footL=[-43,0];}
  const pants=id==='lee'?'#51785d':id==='sasuke'?'#d6d9d7':id==='naruto'?'#d98637':id==='neji'?'#aca797':id==='hinata'?'#626b92':'#424657';
  bone(-12,-75,...kneeL,18,pants);bone(...kneeL,...footL,15,pants);bone(13,-75,...kneeR,18,pants);bone(...kneeR,...footR,15,pants);
  if(id==='lee'){bone(kneeL[0],kneeL[1]+6,footL[0],footL[1]-8,18,'#d1945b');bone(kneeR[0],kneeR[1]+6,footR[0],footR[1]-8,18,'#d1945b');}
@@ -33,13 +36,13 @@ export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
  if(id==='orochimaru'){bone(-26,-81,24,-81,7,'#9e7eae');oval(-3,-78,10,7,'#aa90bd');}
  if(id==='jiraiya'){polygon([[-24,-127],[-13,-127],[-13,-78],[-32,-62]],'#a65e55');polygon([[15,-127],[25,-126],[34,-64],[16,-78]],'#a65e55');}
  // Arms use distinct attack silhouettes: palm, kick, sword, fan and fist.
- const arm=guard?[[24,-139],[37,-114]]:swing&&!kick?[[54,-119],[92,-115]]:cast?[[40,-114],[62,-128]]:[[33,-104+(walk?stride*.2:0)],[29,-84+(walk?stride*.3:0)]];
+ const arm=pose==='victory'?[[34,-160],[18,-206]]:hit?[[1,-110],[-15,-77]]:jump?[[39,-131],[53,-151]]:guard?[[24,-139],[37,-114]]:swing&&!kick?[[33+21*strike,-104-15*strike],[29+67*strike,-84-31*strike]]:cast?[[40,-114],[62,-128]]:[[33,-104+(walk?stride*.2:0)],[29,-84+(walk?stride*.3:0)]];
  bone(-18,-121,-34,-99-(guard?15:0),14,color);bone(-34,-99-(guard?15:0),-25,-78-(guard?38:0),11,skin);
  bone(19,-122,...arm[0],14,color);bone(...arm[0],...arm[1],11,skin);
  if(id==='lee'){bone(arm[0][0],arm[0][1],arm[1][0],arm[1][1],11,'#d8d2b9');for(let n=0;n<4;n++)bone(arm[1][0]-7,arm[1][1]+n*3-5,arm[1][0]+3,arm[1][1]+n*3-5,1,'#a8ac9b');}
  oval(arm[1][0]+2,arm[1][1]-1,7,6,skin,true);
- if(d.style==='sword'&&(swing||cast)){bone(arm[1][0],arm[1][1],arm[1][0]+56,arm[1][1]-67,5,'#cad9e3');bone(arm[1][0]-7,arm[1][1]-3,arm[1][0]+9,arm[1][1]+7,3,'#8a889c');}
- if(['weapon','tactical','crow'].includes(d.style)&&swing)polygon([[92,-115],[110,-135],[114,-129],[102,-111]],'#dce1df');
+ if((d.style==='sword'&&(pose==='attack'||pose==='heavy'))||(cast&&extra.visual==='snakeSword')){bone(arm[1][0],arm[1][1],arm[1][0]+56,arm[1][1]-67,5,'#cad9e3');bone(arm[1][0]-7,arm[1][1]-3,arm[1][0]+9,arm[1][1]+7,3,'#8a889c');}
+ if(['weapon','tactical','crow'].includes(d.style)&&(pose==='attack'||pose==='heavy'))polygon([[92,-115],[110,-135],[114,-129],[102,-111]],'#dce1df');
  if(['palm'].includes(d.style)&&swing){bone(91,-118,100,-128,4,skin);bone(95,-117,105,-124,3,skin);}
  // Head, ears, shaded jaw and readable anime eyes.
  bone(-2,-133,-2,-142,13,skin);oval(-2,-160,22,25,skin,true);polygon([[8,-178],[19,-166],[18,-148],[4,-137],[-2,-137],[8,-152]],shade,null);
@@ -63,9 +66,9 @@ export function ninja(c,id,x,y,scale=1,pose='idle',time=0,face=1,extra={}){
  if(id==='jiraiya')for(const xx of [-12,12])bone(xx,-154,xx,-140,3,'#ab5f58');
  if(id==='kankuro'){bone(-11,-152,-3,-148,3,'#8970a6');bone(4,-150,12,-146,3,'#8970a6');}
  if(id==='gaara'){c.fillStyle='#8e443b';c.font='10px serif';c.fillText('愛',6,-179);}
- if(cast){c.shadowBlur=18;c.shadowColor=extra.color||'#a4ddf1';oval(64,-126,13+Math.sin(time*25)*2,13,extra.color||'#a4ddf1');c.shadowBlur=0;}
+ if(cast&&['rasengan','rasenganGiant','chidori','lionFists'].includes(extra.visual)){c.shadowBlur=18;c.shadowColor=extra.color||'#a4ddf1';oval(64,-126,13+Math.sin(time*25)*2,13,extra.color||'#a4ddf1');c.shadowBlur=0;}
  if(extra.buff){c.strokeStyle=extra.buff.color+'88';c.lineWidth=2;for(let k=0;k<3;k++){c.beginPath();c.arc(0,-99,62+k*15,time*3+k,time*3+k+1.5);c.stroke();}}
- if(hit){c.globalAlpha=.22;polygon([[-24,-193],[23,-190],[30,-70],[-25,-70]],'#fff',null);}
+ if(hit){c.strokeStyle='#65434b';c.lineWidth=2;c.beginPath();c.moveTo(-15,-158);c.lineTo(-5,-155);c.moveTo(4,-154);c.lineTo(14,-159);c.stroke();c.globalAlpha=.12;polygon([[-24,-193],[23,-190],[30,-70],[-25,-70]],'#fff',null);}
  c.restore();
 }
 export class Art{
@@ -93,13 +96,14 @@ export class Art{
   // Continuous drifting leaves, independent of combat objects.
   for(let k=0;k<18;k++){const x=(k*151+realTime*(12+k%5))%1360-40,y=180+(k*73)%350+Math.sin(realTime+k)*20;c.save();c.translate(x,y);c.rotate(realTime+k);c.fillStyle=k%2?'#d6c68a88':'#b8ce9d66';c.beginPath();c.ellipse(0,0,6,2,0,0,Math.PI*2);c.fill();c.restore();}
   if(!fight)return;
-  for(const f of fight.fighters){c.fillStyle='#263a414a';c.beginPath();c.ellipse(f.x,555,48,9,0,0,Math.PI*2);c.fill();}
+  for(const f of fight.fighters){c.fillStyle='#263a414a';c.beginPath();c.ellipse(f.x,555,Math.max(22,48-(550-f.y)*.07),Math.max(4,9-(550-f.y)*.015),0,0,Math.PI*2);c.fill();}
   for(const t of fight.traps){c.save();c.translate(t.x,548);c.fillStyle='#e1ceaa';c.fillRect(-20,-8,40,7);c.strokeStyle=t.color;c.lineWidth=2;c.strokeRect(-17,-14,34,12);c.fillStyle='#715d52';c.font='12px serif';c.textAlign='center';c.fillText('爆',0,-4);c.restore();}
   for(const s of fight.summons){c.save();c.globalAlpha=Math.min(1,s.life);if(s.pet==='clone')ninja(c,fight.fighters[s.owner].id,s.x,550,.8,'walk',time,s.facing,{anim:time});else this.pet(c,s,time);c.restore();}
-  for(const f of fight.fighters)ninja(c,f.id,f.x,f.y,1,f.state,time,f.facing,{buff:f.buff,anim:f.stateTime,color:byId(f.id).skills.find(s=>s.name===f.moveName)?.color});
-  for(const p of fight.shots){if(p.delay>0)continue;c.save();c.translate(p.x,p.y);c.shadowColor=p.color;c.shadowBlur=20;if(p.style==='fan'){c.strokeStyle=p.color;c.lineWidth=5;for(let k=0;k<3;k++){c.beginPath();c.arc(0,0,p.r+k*8,Math.PI*.65,Math.PI*1.5);c.stroke();}}else if(p.r<20){c.rotate(time*17);c.fillStyle=p.color;for(let k=0;k<4;k++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(-5,-p.r);c.lineTo(5,-p.r*.65);c.closePath();c.fill();}}else{const g=c.createRadialGradient(0,0,2,0,0,p.r);g.addColorStop(0,'#fff4d7');g.addColorStop(.35,p.color);g.addColorStop(1,p.color+'00');c.fillStyle=g;c.beginPath();c.arc(0,0,p.r,0,Math.PI*2);c.fill();c.strokeStyle=p.color;c.lineWidth=3;c.beginPath();c.moveTo(-Math.sign(p.v)*p.r,0);c.lineTo(-Math.sign(p.v)*(p.r+55),Math.sin(time*25)*7);c.stroke();}c.restore();}
-  for(const f of fight.effects){const p=1-f.life/f.total;c.save();c.translate(f.x,f.y);c.globalAlpha=Math.min(1,f.life*5);c.strokeStyle=f.color||'#ffe4b7';c.fillStyle=f.color||'#ffe4b7';c.lineWidth=3;
-   if(f.type==='hit'||f.type==='guard'){for(let k=0;k<8;k++){const a=k*Math.PI/4;c.beginPath();c.moveTo(Math.cos(a)*8,Math.sin(a)*8);c.lineTo(Math.cos(a)*(12+p*45),Math.sin(a)*(12+p*45));c.stroke();}if(f.type==='guard'){c.beginPath();c.arc(0,0,25+p*15,0,Math.PI*2);c.stroke();}}
+  for(const f of fight.fighters)ninja(c,f.id,f.x,f.y,1,f.hp<=0?'ko':fight.phase==='round'&&fight.roundWinner===f.side?'victory':f.state,time,f.facing,{buff:f.buff,anim:f.stateTime,progress:f.stateTotal?1-f.stateTime/f.stateTotal:0,crouching:f.crouching,koProgress:(2.6-fight.phaseTime)/.4,vy:f.vy,visual:f.skillVisual,color:byId(f.id).skills.find(s=>s.name===f.moveName)?.color});
+  for(const p of fight.shots)if(p.delay<=0)drawProjectile(c,p,time);
+  for(const f of fight.effects){if(f.type==='technique'){drawTechnique(c,f,time,fight.fighters[f.owner]);continue;}const p=1-f.life/f.total;c.save();c.translate(f.x,f.y);c.globalAlpha=Math.min(1,f.life*5);c.strokeStyle=f.color||'#ffe4b7';c.fillStyle=f.color||'#ffe4b7';c.lineWidth=3;
+   if(f.type==='dust'){for(let k=0;k<6;k++){c.globalAlpha=(1-p)*.4;c.fillStyle='#d5c8a7';c.beginPath();c.ellipse((k-2.5)*(8+p*12),-p*15,9+p*10,4+p*5,0,0,Math.PI*2);c.fill();}}
+   else if(f.type==='hit'||f.type==='guard'){for(let k=0;k<8;k++){const a=k*Math.PI/4;c.beginPath();c.moveTo(Math.cos(a)*8,Math.sin(a)*8);c.lineTo(Math.cos(a)*(12+p*45),Math.sin(a)*(12+p*45));c.stroke();}if(f.type==='guard'){c.beginPath();c.arc(0,0,25+p*15,0,Math.PI*2);c.stroke();}}
    else if(f.type==='slash'){c.scale(f.face||1,1);c.lineWidth=2+(1-p)*3;c.beginPath();c.arc(-30,0,40+p*30,-1.2,1.1);c.stroke();if(f.style==='sand'||f.style==='puppet'){for(let k=0;k<8;k++)c.fillRect(k*9-30,p*25-20+Math.sin(k)*12,4,4);}}
    else if(f.type==='shadow'){c.fillStyle='#202b3cb8';c.beginPath();c.ellipse((f.tx-f.x)/2,0,Math.abs(f.tx-f.x)/2,9+Math.sin(time*20)*2,0,0,Math.PI*2);c.fill();for(let k=0;k<4;k++){c.beginPath();c.moveTo(f.tx-f.x,0);c.quadraticCurveTo(f.tx-f.x-40+k*20,-90,f.tx-f.x+(k-2)*20,-160+p*20);c.stroke();}}
    else if(f.type==='ring'){for(let k=0;k<3;k++){c.beginPath();c.ellipse(0,30,(f.radius||120)*p,(f.radius||120)*p*.35+k*13,0,0,Math.PI*2);c.stroke();}for(let k=0;k<12;k++){const a=k*Math.PI/6;c.fillRect(Math.cos(a)*(f.radius||120)*p,Math.sin(a)*50*p,3,14*(1-p));}}

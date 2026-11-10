@@ -1,0 +1,415 @@
+[
+  {
+    "index": 1,
+    "file": "assets/voices/voice-001.mp3",
+    "source": "war3mapImported\\SoundRasengan.mp3",
+    "bytes": 7296,
+    "sha256": "b0c97f82c8ed785ee798bf59925699a2cb34f6b1cc251ca58620d2f838138056"
+  },
+  {
+    "index": 3,
+    "file": "assets/voices/voice-003.mp3",
+    "source": "war3mapImported\\SoundKibaSotoro.mp3",
+    "bytes": 3840,
+    "sha256": "9438c64303de1c13ce9a6ef621054231d15c53bb76a9a2d678054e7528dcfce2"
+  },
+  {
+    "index": 6,
+    "file": "assets/voices/voice-006.mp3",
+    "source": "war3mapImported\\SoundKakashiSkill1.mp3",
+    "bytes": 6048,
+    "sha256": "99c030cd163215442fcc11eba33993126569f191ea71c8411f2ab215afcd881d"
+  },
+  {
+    "index": 8,
+    "file": "assets/voices/voice-008.mp3",
+    "source": "war3mapImported\\SoundHinataHakke2.mp3",
+    "bytes": 8352,
+    "sha256": "9fa21618ae8adc441a5335bac9ee5f70dd254a2d7c8fe8eda10d15c32d2b5fb8"
+  },
+  {
+    "index": 13,
+    "file": "assets/voices/voice-013.mp3",
+    "source": "war3mapImported\\SoundHinataSpin.mp3",
+    "bytes": 3456,
+    "sha256": "6af2922281989bf378ef09a562988540cb56f28be17c228931311dd673e2247d"
+  },
+  {
+    "index": 16,
+    "file": "assets/voices/voice-016.mp3",
+    "source": "war3mapImported\\SoundJiraiyaRasenganNew.mp3",
+    "bytes": 4896,
+    "sha256": "69a774ed95ffa104da489b53af7ed437819356e125af92723495026af268843c"
+  },
+  {
+    "index": 23,
+    "file": "assets/voices/voice-023.mp3",
+    "source": "war3mapImported\\SoundNarutoKageBunshinJutsu.mp3",
+    "bytes": 4992,
+    "sha256": "1f918f48469dc66d69e926f856a7b6386afb137eda427f5c6d08379c63315395"
+  },
+  {
+    "index": 24,
+    "file": "assets/voices/voice-024.mp3",
+    "source": "war3mapImported\\SoundOrochimaruThrow2.mp3",
+    "bytes": 3936,
+    "sha256": "766de4817c34c4e7ae5188173981295897b9d93fcfbaf334c9d2ac794f31bcd7"
+  },
+  {
+    "index": 28,
+    "file": "assets/voices/voice-028.mp3",
+    "source": "war3mapImported\\SoundShikamaruKageKubiShibariJutsu.mp3",
+    "bytes": 6720,
+    "sha256": "0a9cb910c2605f873e64c68eea5ea1347b8bc1788ca13c75a52ed8d370646c4d"
+  },
+  {
+    "index": 29,
+    "file": "assets/voices/voice-029.mp3",
+    "source": "war3mapImported\\SoundShikamaruKageManaJutsu.mp3",
+    "bytes": 11848,
+    "sha256": "8436eb44c8a5d07c74c8b0dec873ec6593ebd18de13912f2a3713732a40e9c09"
+  },
+  {
+    "index": 32,
+    "file": "assets/voices/voice-032.mp3",
+    "source": "war3mapImported\\SoundTemariKuchiyoseKiriKiriMai.mp3",
+    "bytes": 7968,
+    "sha256": "ca78425e672f52a8244534637b48f9b267b941548b5c0a9a4386d877c08c9e06"
+  },
+  {
+    "index": 34,
+    "file": "assets/voices/voice-034.mp3",
+    "source": "war3mapImported\\SoundNarutoTransform.mp3",
+    "bytes": 9312,
+    "sha256": "55e02d94dcc041fd965ae26b92a064af1fa282e9e0efa21d6a5ed3a986fdc61c"
+  },
+  {
+    "index": 42,
+    "file": "assets/voices/voice-042.mp3",
+    "source": "war3mapImported\\SoundSakuraThrowNew2.mp3",
+    "bytes": 3456,
+    "sha256": "fa9fed4a4bbc7c8adadab3fb79b78c59cdaf706f2cf8b9028734b3640fc243c8"
+  },
+  {
+    "index": 50,
+    "file": "assets/voices/voice-050.mp3",
+    "source": "war3mapImported\\SoundTemariSwing.mp3",
+    "bytes": 4128,
+    "sha256": "76255211ade764ba3d732ccee9eac8139b06b681aa25f4d87637d90f28d1d4bc"
+  },
+  {
+    "index": 61,
+    "file": "assets/voices/voice-061.mp3",
+    "source": "war3mapImported\\Sound_Hinata_Byakugan.mp3",
+    "bytes": 2496,
+    "sha256": "000fabf08aa4b715e330a2ad0cb6c65efd020b91e5a042a7eeaa37afb4beb127"
+  },
+  {
+    "index": 63,
+    "file": "assets/voices/voice-063.mp3",
+    "source": "war3mapImported\\Sound_Itachi_KatonGokakyu.mp3",
+    "bytes": 7296,
+    "sha256": "28b28d23a4429a29647ec9ed16dd3bc3ffe78f7db33f417b0c5580574186451b"
+  },
+  {
+    "index": 64,
+    "file": "assets/voices/voice-064.mp3",
+    "source": "war3mapImported\\Sound_Itachi_MangekyoSharingan.mp3",
+    "bytes": 5088,
+    "sha256": "056389e886624e8a9cec84a7691e891265971a3a9ecb018f905d718a2807df4e"
+  },
+  {
+    "index": 65,
+    "file": "assets/voices/voice-065.mp3",
+    "source": "war3mapImported\\Sound_Itachi_Tsukiyomi.mp3",
+    "bytes": 2880,
+    "sha256": "9ab13b49766778398bdeed5455f7f365425d38816534b99487b9cf849940eea8"
+  },
+  {
+    "index": 66,
+    "file": "assets/voices/voice-066.mp3",
+    "source": "war3mapImported\\Sound_Jiraiya_Kuchiyose.mp3",
+    "bytes": 3840,
+    "sha256": "7b3a112d49fb970ffd755315132eb08fd757eb99e9f21261e1154d63c41d4bae"
+  },
+  {
+    "index": 67,
+    "file": "assets/voices/voice-067.mp3",
+    "source": "war3mapImported\\Sound_Kankuro_Kugutsu.mp3",
+    "bytes": 4032,
+    "sha256": "552b6d2331ebc0fcc19c3cb28b5b7af8c42b6789998ce60fffb07a08136eab68"
+  },
+  {
+    "index": 68,
+    "file": "assets/voices/voice-068.mp3",
+    "source": "war3mapImported\\Sound_Kiba_Shikyaku.mp3",
+    "bytes": 4512,
+    "sha256": "2c0dddef89df683381f3321bec06b218a2cf5e4f5e9b3da894f65efb7f5c2142"
+  },
+  {
+    "index": 70,
+    "file": "assets/voices/voice-070.mp3",
+    "source": "war3mapImported\\Sound_Lee_UraRenge.mp3",
+    "bytes": 6240,
+    "sha256": "c3df307aa1d8283e72b626f6313666f6fae5167d8a65c69d753d8739929363a9"
+  },
+  {
+    "index": 71,
+    "file": "assets/voices/voice-071.mp3",
+    "source": "war3mapImported\\Sound_Neji_Byakugan.mp3",
+    "bytes": 2880,
+    "sha256": "4aec43b605b111249c6fa89c74779cc07a2f593b14b7171f8c563cc0051ae686"
+  },
+  {
+    "index": 72,
+    "file": "assets/voices/voice-072.mp3",
+    "source": "war3mapImported\\Sound_Neji_Kaiten2.mp3",
+    "bytes": 3264,
+    "sha256": "5fd230b2744c0a2c2ed3ae1fa7fe8d740fe94d6e0b0b23b1c36dff98d89b5a37"
+  },
+  {
+    "index": 73,
+    "file": "assets/voices/voice-073.mp3",
+    "source": "war3mapImported\\Sound_Orochimaru_Kuchiyose.mp3",
+    "bytes": 4512,
+    "sha256": "bd361c0d5c129d497fcb64bea1207bba88814dce3b21849e7dad16746e8b56db"
+  },
+  {
+    "index": 75,
+    "file": "assets/voices/voice-075.mp3",
+    "source": "war3mapImported\\Sound_Sasuke_Sharingan.mp3",
+    "bytes": 3264,
+    "sha256": "ea0f0639e3cadb5fb4af307afcdb4d3878e006ed91139ec0979597dd7cbba548"
+  },
+  {
+    "index": 77,
+    "file": "assets/voices/voice-077.mp3",
+    "source": "war3mapImported\\Sound_Tenten_Soshoryu.mp3",
+    "bytes": 4608,
+    "sha256": "871cc3f9dd2a96cc05acbb7f8118a8884066f9b6b5c17fc4806045d311a1f691"
+  },
+  {
+    "index": 78,
+    "file": "assets/voices/voice-078.mp3",
+    "source": "war3mapImported\\Sound_Sakura_RoarShort.mp3",
+    "bytes": 10464,
+    "sha256": "d58c311ee58c5866739b67dee5e5157317e389ddd9bea0f327e17830dafb2c41"
+  },
+  {
+    "index": 80,
+    "file": "assets/voices/voice-080.mp3",
+    "source": "war3mapImported\\Sound_Temari_Kamaitachi2.mp3",
+    "bytes": 3456,
+    "sha256": "68f1c73e109f9604a43124d95f85b439aca8eae300ed67c7adf05c6e7391b1f6"
+  },
+  {
+    "index": 81,
+    "file": "assets/voices/voice-081.mp3",
+    "source": "war3mapImported\\Sound_Gaara_SabakuKyu.mp3",
+    "bytes": 5280,
+    "sha256": "8c8a6c593d516a97aae928b4c9200ddae7d79b6fad9b8e40c6af0e3b8453a0b3"
+  },
+  {
+    "index": 88,
+    "file": "assets/voices/voice-088.mp3",
+    "source": "war3mapImported\\Sound_Tenten_Yell1_32br.mp3",
+    "bytes": 6478,
+    "sha256": "f34071f1d2c3f631506ae06a684faad73625bf56a1af1dea30270a561acbae06"
+  },
+  {
+    "index": 90,
+    "file": "assets/voices/voice-090.mp3",
+    "source": "war3mapImported\\Sound_Naruto_RasenganLong_32br.mp3",
+    "bytes": 23520,
+    "sha256": "c57c8ce1745ae948845666d2482f5c733f0f1b074cde99b56069ebf65a32433f"
+  },
+  {
+    "index": 98,
+    "file": "assets/voices/voice-098.mp3",
+    "source": "war3mapImported\\Sound_Neji_HakkeRokujuyonSho32br.mp3",
+    "bytes": 7008,
+    "sha256": "e9d6b15883ddd29e6448571bed766b8fa29fbcd2cc5f9497b2750d1c20ecc2c5"
+  },
+  {
+    "index": 99,
+    "file": "assets/voices/voice-099.mp3",
+    "source": "war3mapImported\\Sound_Neji_HakkeHyakuNijuhachiSho32br.mp3",
+    "bytes": 9216,
+    "sha256": "d48060953df9d2d9bc0f121649890763355246b2cd40dc670e8597a22e38fe6b"
+  },
+  {
+    "index": 101,
+    "file": "assets/voices/voice-101.mp3",
+    "source": "war3mapImported\\Sound_Gaara_SabakuTaiso_32br.mp3",
+    "bytes": 7296,
+    "sha256": "88181e26caab6c94efc21cbca565cd5908053be6771e545791e39c5c3033f0d7"
+  },
+  {
+    "index": 105,
+    "file": "assets/voices/voice-105.mp3",
+    "source": "war3mapImported\\Sound_Lee_Hachimon32br.mp3",
+    "bytes": 2230,
+    "sha256": "19e8316d6582af61a6ee26da181615480bdd89e82352746bc464d29190c17587"
+  },
+  {
+    "index": 109,
+    "file": "assets/voices/voice-109.mp3",
+    "source": "war3mapImported\\Sound_Kiba_Tsuuga32br.mp3",
+    "bytes": 2016,
+    "sha256": "1aa0e3110bf46aa57adbc6547dad5fe1f359208356bbb4c32daf07810a27a921"
+  },
+  {
+    "index": 113,
+    "file": "assets/voices/voice-113.mp3",
+    "source": "war3mapImported\\Sound_Sakura_Kai32br.mp3",
+    "bytes": 1209,
+    "sha256": "fe54e086581f986c1de094845981b80df62e01c479a8108d1fce7f8b17061b85"
+  },
+  {
+    "index": 117,
+    "file": "assets/voices/voice-117.mp3",
+    "source": "war3mapImported\\Sound_Jiraiya_KatonGamayuEndan_32br.mp3",
+    "bytes": 8928,
+    "sha256": "7bb4bb0fad9ff489dac72787d730742c8bc856688419f7a87bb7d9d1aea0fe2f"
+  },
+  {
+    "index": 121,
+    "file": "assets/voices/voice-121.mp3",
+    "source": "war3mapImported\\Sound_Tenten_NinguKuchiyose32br48hz.mp3",
+    "bytes": 5337,
+    "sha256": "e1b0916285061a04a4b958d10481a4e97da98ec548ad12e3d813e46bb0041f3b"
+  },
+  {
+    "index": 122,
+    "file": "assets/voices/voice-122.mp3",
+    "source": "war3mapImported\\Sound_Sasuke_KatonP1 32br48hz.mp3",
+    "bytes": 2112,
+    "sha256": "0dedbaf93c0b19f4daa9ef8c71dfa564b23d48bcdda5d178de7ebd0195a22c42"
+  },
+  {
+    "index": 123,
+    "file": "assets/voices/voice-123.mp3",
+    "source": "war3mapImported\\Sound_Sasuke_KatonP2 32br48hz.mp3",
+    "bytes": 4800,
+    "sha256": "90846af504531909e63ba69db626f29f364be941ddc9f93d69573e947744b21a"
+  },
+  {
+    "index": 126,
+    "file": "assets/voices/voice-126.mp3",
+    "source": "war3mapImported\\Sound_Kankuro_KirohigiP1 32br48hz.mp3",
+    "bytes": 3840,
+    "sha256": "6f720603f522de18176fdfcc08b507216e08ad55dc3311132dc331d789f0ae69"
+  },
+  {
+    "index": 127,
+    "file": "assets/voices/voice-127.mp3",
+    "source": "war3mapImported\\Sound_Kankuro_KirohigiP2 32br48hz.mp3",
+    "bytes": 4083,
+    "sha256": "42be42e87b783af2aff8fc967a3c319bf3ab56ecaf82afbca01bbd0824b49fd9"
+  },
+  {
+    "index": 129,
+    "file": "assets/voices/voice-129.mp3",
+    "source": "war3mapImported\\Sound_Kakashi_Raikiri 32br48hz.mp3",
+    "bytes": 3264,
+    "sha256": "d71c1b70fe215a491b1b601028b78710138d735e2cfc8aaad30ecd6f916c7e90"
+  },
+  {
+    "index": 130,
+    "file": "assets/voices/voice-130.mp3",
+    "source": "war3mapImported\\Sound_Sasuke_Chidori 32br48hz.mp3",
+    "bytes": 2880,
+    "sha256": "f6a48d0e23a285724cab8dfadcbe66e9cdfd4f10d5d139b7fab6a0c48ed547ef"
+  },
+  {
+    "index": 132,
+    "file": "assets/voices/voice-132.mp3",
+    "source": "war3mapImported\\Sound_Kakashi_Roar 32br48hz.mp3",
+    "bytes": 3688,
+    "sha256": "30c77fffd8cc476156e8caf2faeae07a6ad1b5c98a6a72b467cabb4c3601fbe8"
+  },
+  {
+    "index": 138,
+    "file": "assets/voices/voice-138.mp3",
+    "source": "war3mapImported\\Sound_Sasuke_Throw 32br48hz.mp3",
+    "bytes": 1284,
+    "sha256": "cb072e40419c95047f05cdc73f39d7d9ff76ffc843444db49a1628ad40e4f1fa"
+  },
+  {
+    "index": 139,
+    "file": "assets/voices/voice-139.mp3",
+    "source": "war3mapImported\\Sound_Gaara_RyuusaBakuryu 32br48hz.mp3",
+    "bytes": 5412,
+    "sha256": "291179f5aadc4c17b753f5ba3a6c593e5ab93c81c29a6cb53c1ae479254def15"
+  },
+  {
+    "index": 141,
+    "file": "assets/voices/voice-141.mp3",
+    "source": "war3mapImported\\Sound_Hinata_Kaiten 32br48hz.mp3",
+    "bytes": 2436,
+    "sha256": "15729f6248feba1ef14b49b882cd94356a35eaac78a2d616fc54d3de122f810c"
+  },
+  {
+    "index": 142,
+    "file": "assets/voices/voice-142.mp3",
+    "source": "war3mapImported\\Sound_Itachi_Throw 32br48hz.mp3",
+    "bytes": 1092,
+    "sha256": "53eea96ef85501e94d8aab99cd825492deb58e9c55d2cd8251b5710865aaac45"
+  },
+  {
+    "index": 144,
+    "file": "assets/voices/voice-144.mp3",
+    "source": "war3mapImported\\Sound_Kankuro_Throw 32br48hz.mp3",
+    "bytes": 996,
+    "sha256": "7ccf60d789f1de4175830e41cdf7ac322e006fc5732cff3153938d7e9e89b3d2"
+  },
+  {
+    "index": 157,
+    "file": "assets/voices/voice-157.mp3",
+    "source": "war3mapImported\\Sound_Temari_TatsuNoOshigato 32br48hz.mp3",
+    "bytes": 5088,
+    "sha256": "0d08d5074c8922860150712a0e89b849a3caa4bae11afcb6b6e5ef8e7f39c09d"
+  },
+  {
+    "index": 163,
+    "file": "assets/voices/voice-163.mp3",
+    "source": "war3mapImported\\Sound_Tenten_Throw4 32br48h.mp3",
+    "bytes": 1668,
+    "sha256": "275d3e05cdbfae411b83a1a2edd16bb0ffca67418b40c00a8f9f2f2ad45b206e"
+  },
+  {
+    "index": 165,
+    "file": "assets/voices/voice-165.mp3",
+    "source": "war3mapImported\\Sound_Gaara_Throw2 32br48hz.mp3",
+    "bytes": 1668,
+    "sha256": "5d29aee09a866f93a124855d9d06fc8fde56baeeaee5ca479b88e83199bc1e33"
+  },
+  {
+    "index": 168,
+    "file": "assets/voices/voice-168.mp3",
+    "source": "war3mapImported\\Sound_Shikamaru_Throw2 32br48hz.mp3",
+    "bytes": 1764,
+    "sha256": "e8acd059d14ae673bdbbbcfe201d3008e32f20ced89fbf41059a926cd38dd424"
+  },
+  {
+    "index": 169,
+    "file": "assets/voices/voice-169.mp3",
+    "source": "war3mapImported\\Sound_Shikamaru_Throw3 32br48hz.mp3",
+    "bytes": 2532,
+    "sha256": "4b000bf90f58845e64070484d822c290ab0a3c3aaa7425d7588d65cf19e4dfcc"
+  },
+  {
+    "index": 171,
+    "file": "assets/voices/voice-171.mp3",
+    "source": "war3mapImported\\Sound_Kiba_Akamaru 32br48hz.mp3",
+    "bytes": 5376,
+    "sha256": "fa23f356331a14caa2c0c89d61c05844945262867489b11bc7127aacf3efd137"
+  },
+  {
+    "index": 173,
+    "file": "assets/voices/voice-173.mp3",
+    "source": "war3mapImported\\Sound_Lee_KonohaSenpuu 32br48hz.mp3",
+    "bytes": 6201,
+    "sha256": "4071995ac6a3864ae3f85608499af0e2363ff80abf011fc2b3bf71993a661503"
+  }
+]

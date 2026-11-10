@@ -2,7 +2,7 @@
 
 ## SHINOBI CLASH — отдельный браузерный файтинг
 
-[Скачать игру ZIP](releases/shinobi-fighter/Shinobi-Clash-Alpha01.zip) · [Таблица бойцов и64техник](shinobi-fighter/HEROES.md) · [Управление](shinobi-fighter/README.md).16персонажей, разныеобычныеатаки, чакра, комбо, ульты, дуэлидо2победпротивИИ и13твоихтреков. Крупныерисованные2Dфигурки, безWarcraft. Pagesпубликацияв/fighter/подготовлена, доступностьсайтапоканеподтверждена.
+[Скачать игру ZIP](releases/shinobi-fighter/Shinobi-Clash-Alpha02.zip) · [Таблица бойцов и64техник](shinobi-fighter/HEROES.md) · [Управление](shinobi-fighter/README.md).Alpha02:16бойцов,64техники,59исходныхголосов, A—рука/D—нога/↓—присед, реакциипопадания и13твоихтреков. [Изменения](shinobi-fighter/Release-02.md). Крупныерисованные2Dфигурки, безWarcraft. Pagesпубликацияв/fighter/подготовлена, доступностьсайтапоканеподтверждена.
 
 ## SHINOBI · Две деревни — отдельная браузерная стратегия
 

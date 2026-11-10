@@ -1,0 +1,29 @@
+{
+  "version": "Alpha02",
+  "combatTests": 14,
+  "audioControllerTests": 3,
+  "browserSmokePassed": true,
+  "all64ThemedTechniquesDrawnInChromium": true,
+  "sourceMP3s": 59,
+  "sourceVoiceSkillBindings": 64,
+  "sourceFilesByteExactAndSHA256Verified": true,
+  "all59MP3sFullyDecodedWithFFmpeg": true,
+  "sourceClipDurationSeconds": [
+    0.24,
+    5.88
+  ],
+  "embeddedVoicesByteExact": true,
+  "all13EmbeddedMusicTracksExactAlpha01": true,
+  "controls": {
+    "hand": "A",
+    "foot": "D",
+    "crouch": "ArrowDown",
+    "walk": "ArrowLeft/ArrowRight",
+    "jump": "Space"
+  },
+  "actualKeyboardAndNativeAudioTested": true,
+  "actualAudioDecodedAndPlaybackTimeAdvancedBothActors": true,
+  "fileURLPolicyNotBypassed": true,
+  "physicalSpeakerListeningTested": false,
+  "publicDeploymentVerified": false
+}
