@@ -1,0 +1,31 @@
+{
+  "filename": "Shinobi-Strategy-Alpha01.html",
+  "bytes": 7992148,
+  "sha256": "9fc77cd8a10ef9b9f657a2344b562f25a336ed2554e6886fee2a0b103654ff01",
+  "engine": "custom HTML5 Canvas 2D RTS, ES modules",
+  "standaloneOfflineHTML": true,
+  "externalRuntimeDependencies": false,
+  "musicTracks": 13,
+  "heroes": [
+    "Naruto",
+    "Sasuke",
+    "Sakura"
+  ],
+  "opponentHero": "Gaara",
+  "teams": 2,
+  "maximumPopulationPerTeam": 80,
+  "browserSmoke": true,
+  "features": [
+    "worker economy",
+    "paid construction",
+    "paid recruitment queues",
+    "army attack and armor upgrades",
+    "river/bridge pathfinding",
+    "autonomous economy and attacks",
+    "four hero techniques",
+    "hero resurrection",
+    "minimap",
+    "shuffled full music playlist"
+  ],
+  "multiplayer": false
+}
