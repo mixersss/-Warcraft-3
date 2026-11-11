@@ -6,6 +6,7 @@ Checks the native choice of writer and its argument; not a live server test.
 import argparse
 import hashlib
 import struct
+import sys
 from pathlib import Path
 
 from inspect_pdb import pe_info
@@ -62,6 +63,19 @@ def main():
             return_stub(4)
         elif address == 0x500560:  # Temporary WPacket destructor.
             return_stub(0)
+        elif address == 0x54efe0:
+            writes.append(('long', stack_arg(1)))
+            return_stub(4, 1)
+        elif address == 0x54ebe0:
+            writes.append(('char', stack_arg(1) & 255))
+            return_stub(4, 1)
+        elif address == 0x54f180:
+            writes.append(('sequence', bytes(emulator.mem_read(stack_arg(1), stack_arg(2) & 65535))))
+            return_stub(8, 1)
+        elif address == 0x571270:  # variadic logging; caller removes its arguments
+            return_stub(0)
+        elif address == 0x201f000:  # GetTickCount import stub
+            return_stub(0, 1000)
 
     emulator.hook_add(UC_HOOK_CODE, hook)
     put(0x2000004, 0x2001000)
@@ -90,6 +104,43 @@ def main():
     if writes != [('command', 346), ('string', digest)] or submitted != [True]:
         raise AssertionError('Unexpected native secondary-password request')
     print('Native secondary-password creation writes command 346 and uppercase MD5 string.')
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
+    from hunter import movement, normal_attack
+    emulator.mem_write(0x6001d0, struct.pack('<I', 0x201f000))
+    put(0x2003014, 123)
+    points = ((223200,278700),(223700,278900))
+    for kind in (1, 2):
+        writes.clear()
+        submitted.clear()
+        put(0x200131c, kind)
+        emulator.mem_write(0x2004000, bytes(0x200))
+        if kind == 1:
+            emulator.mem_write(0x2004004, struct.pack('<iiii', *points[0], *points[1]))
+            put(0x2004104, 2)
+            expected = movement(123,1,points)
+        else:
+            emulator.mem_write(0x2004000, b'\x01\x02')
+            put(0x2004004,25)
+            put(0x2004008,456)
+            put(0x200400c,1456)
+            emulator.mem_write(0x2004014,struct.pack('<iiii',*points[0],*points[0]))
+            put(0x2004114,2)
+            expected = normal_attack(123,2,1,25,456,1456,points[0])
+        emulator.mem_write(0x1100000,struct.pack('<5I',0xf00000,0x2003000,kind,0x2004000,0))
+        emulator.reg_write(UC_X86_REG_ESP,0x1100000)
+        emulator.reg_write(UC_X86_REG_ECX,0x2000000)
+        emulator.emu_start(0x5198b0,0xf00000,count=1000000)
+        encoded = bytearray()
+        if not writes or writes[0] != ('command',6) or submitted != [True]:
+            raise AssertionError('Native action did not send the expected command')
+        for field, value in writes[1:]:
+            if field == 'long': encoded.extend(struct.pack('>I',value))
+            elif field == 'char': encoded.append(value)
+            elif field == 'sequence': encoded.extend(struct.pack('>H',len(value))+value)
+            else: raise AssertionError('Unexpected action writer')
+        if bytes(encoded) != expected:
+            raise AssertionError(f'Action {kind} does not match native serialization calls')
+    print('Movement and normal-attack requests match native BeginAction serialization.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

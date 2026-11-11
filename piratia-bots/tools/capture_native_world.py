@@ -1,0 +1,113 @@
+"""Synthetic fixtures from the supplied GameServer's native world writers.
+
+Unicorn development tool. Getters provide synthetic actors; native WriteBaseInfo,
+WriteLookData and event writers run. Packet writers capture bytes. Append-look
+inventory access is stubbed as ten empty slots; no real server/session runs.
+"""
+import argparse
+import hashlib
+import json
+import struct
+from pathlib import Path
+from inspect_pdb import pe_info
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('exe', type=Path)
+    parser.add_argument('output', type=Path)
+    args = parser.parse_args()
+    raw = args.exe.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != 'f60aa51c8a8d08ee097bc4a6003b5a07dd97f6dc5d6ea8ae4c8425fa3660f6c5':
+        parser.error('Unexpected GameServer executable')
+    from unicorn import Uc, UC_ARCH_X86, UC_MODE_32, UC_HOOK_CODE
+    from unicorn.x86_const import UC_X86_REG_ESP, UC_X86_REG_EAX, UC_X86_REG_ECX, UC_X86_REG_EIP
+    base, sections, *_ = pe_info(raw)
+    u = Uc(UC_ARCH_X86, UC_MODE_32)
+    u.mem_map(base, 0x400000)
+    for s in sections:
+        u.mem_write(base+s['rva'], raw[s['raw']:s['raw']+s['raw_size']])
+    u.mem_map(0x1000000, 0x200000)
+    u.mem_map(0x2000000, 0x100000)
+    u.mem_map(0xf00000, 0x1000)
+    actor, pos, radius, event, empty = 0x2000000, 0x2010000, 0x2011000, 0x2012000, 0x2013000
+    state = {}
+    result = bytearray()
+
+    def put(address, value):
+        u.mem_write(address, struct.pack('<I', value))
+
+    def arg(index):
+        return struct.unpack('<I', u.mem_read(u.reg_read(UC_X86_REG_ESP)+4*index, 4))[0]
+
+    def ret(value=0, pop=0):
+        sp = u.reg_read(UC_X86_REG_ESP)
+        address = arg(0)
+        u.reg_write(UC_X86_REG_ESP, sp+4+pop)
+        u.reg_write(UC_X86_REG_EAX, value)
+        u.reg_write(UC_X86_REG_EIP, address)
+
+    def hook(uc, address, size, unused):
+        if address in (0x524a30,0x524b30,0x524c40):
+            width = {0x524a30:1,0x524b30:2,0x524c40:4}[address]
+            result.extend((arg(1) & ((1 << (width*8))-1)).to_bytes(width,'big'))
+            ret(1,4)
+        elif address == 0x524e60:
+            value = bytes(u.mem_read(arg(1),100)).split(b'\0')[0]+b'\0'
+            result.extend(struct.pack('>H',len(value))+value)
+            ret(1,4)
+        elif address == 0x4013c0:
+            ret(state['attrs'].get(arg(1),0),4)
+        elif address == 0x4e6070:
+            result.extend(bytes(20))
+            ret(1,12)
+        elif address in getters:
+            ret(getters[address]())
+
+    getters = {0x415630:lambda:0, 0x42bcc0:lambda:state['model'],
+               0x416250:lambda:state['id'],0x416270:lambda:state['handle'],
+               0x4c3b80:lambda:actor,0x4e5710:lambda:0,
+               0x4d7bf0:lambda:0,0x4d79d0:lambda:empty,0x4d7b30:lambda:empty,
+               0x4d7af0:lambda:empty,0x445460:lambda:1,0x416bb0:lambda:pos,
+               0x4bd3e0:lambda:radius,0x4160e0:lambda:0,0x41b250:lambda:0,
+               0x4c49b0:lambda:event,0x417d60:lambda:0,0x201f000:lambda:1,
+               0x5040e0:lambda:0}
+    u.hook_add(UC_HOOK_CODE,hook)
+    put(actor,0x201e000)
+    put(0x201e018,0x201f000)
+    put(radius,40)
+
+    def call(address, arguments):
+        u.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
+        u.reg_write(UC_X86_REG_ESP,0x1100000)
+        u.reg_write(UC_X86_REG_ECX,actor)
+        u.emu_start(address,0xf00000,count=1000000)
+
+    fixtures = {}
+    for label, model, identity, control, x, y in (
+            ('own',1,123,1,223200,278700),('monster',75,456,5,223600,278900),
+            ('own_worn',1,123,1,223200,278700)):
+        state.update(model=model,id=identity,handle=identity+1000,
+                     attrs={0:1,1:100,10:control,31:100,43:150,44:480})
+        u.mem_write(actor+0x1e4,b'SyntheticActor\0')
+        u.mem_write(actor+0x6e32,struct.pack('<H',model))
+        u.mem_write(actor+0x7488,struct.pack('<H',2000))
+        u.mem_write(actor+0x6e34,bytes(1620))
+        if label == 'own_worn':
+            u.mem_write(actor+0x6e34,struct.pack('<HH',123,1))
+            u.mem_write(actor+0x6e34+0xa0,b'\x01')
+            u.mem_write(actor+0x6e34+0x9e,b'\x01')
+        u.mem_write(pos,struct.pack('<ii',x,y))
+        result.clear()
+        call(0x4e54b0,[0x2014000])
+        fixtures[label+'_base'] = bytes(result).hex()
+        result.clear()
+        call(0x506090,[0x2014000,0,44,0])
+        fixtures[label+'_attrs'] = bytes(result).hex()
+    args.output.parent.mkdir(parents=True,exist_ok=True)
+    args.output.write_text(json.dumps(fixtures,indent=2)+'\n')
+    print('Captured synthetic native base/attribute writer fixtures; no live game test.')
+
+
+if __name__ == '__main__':
+    main()

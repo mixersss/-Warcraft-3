@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-06'
-NAME = 'Piratia-Auto-Bots-Alpha06'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-07'
+NAME = 'Piratia-Auto-Bots-Alpha07'
 
 
 def main():
@@ -15,6 +15,8 @@ def main():
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
+    sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
+    sources += sorted((ROOT / 'assets').glob('*.json'))
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -29,12 +31,17 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'automatic account/character creation and headless connection alpha; gameplay AI not implemented',
+        'status': 'first bounded PvE hunter prototype; live movement/combat requires owner test',
         'native_windows_server_tested': False,
-        'automated_tests': 24,
+        'pure_python_tests_passed': 34,
+        'full_python_suite_total': 42,
+        'socket_tests_not_rerun_this_release': 8,
+        'last_full_network_regression': '24 passed in Alpha 06',
+        'native_action_serialization_compared': ['movement', 'normal attack'],
+        'native_world_writers_captured': ['base info', 'look', 'event', 'attribute range'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
-        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True},
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
         'secondary_password_setup': 'command 346 with uppercase MD5 string; only if login flag says absent',
         'native_character_look_compared': True,

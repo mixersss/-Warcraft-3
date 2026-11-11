@@ -8,6 +8,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from collections import deque
 
 from classic_crypto import PacketCipher, login_proof, noise_seed, password_key, session_key
 from classic_wire import ProtocolError, Reader, Wire, sequence, string
@@ -42,6 +43,9 @@ class Client:
         self.wire, self.report = Wire(sock, report.event), report
         self.authenticated = self.entered = self.begin_requested = False
         self.has_secondary_password = False
+        self.world_handler = None
+        self.pending_world = deque(maxlen=256)
+        self.enter_payload = None
 
     def wait(self, wanted, timeout=20):
         deadline = time.monotonic() + timeout
@@ -58,6 +62,11 @@ class Client:
             if len(payload) < 20:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
+        elif command in (504, 505, 508, 509, 520):
+            if self.world_handler:
+                self.world_handler(command, payload)
+            else:
+                self.pending_world.append((command, payload))
 
     def login(self, account, password):
         self.report.stage('challenge')
@@ -150,6 +159,7 @@ class Client:
                     raise ServerError('enter_map', code)
                 if command == 516:
                     self.entered = True
+                    self.enter_payload = payload
                     self.report.stage('in_world')
                     return
             else:

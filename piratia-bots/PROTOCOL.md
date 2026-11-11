@@ -76,6 +76,58 @@ server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
 
+### Alpha 07: first bounded PvE hunter
+
+The owner confirmed Alpha 06 enters the world. This release retains its SQL, cache,
+secondary-password and login path. Default run changes to ONE saved bot / 300 seconds
+in `hunt` mode; `--mode idle --count 3 --seconds 60` retains the old standing test.
+
+Classic world layout is derived from the supplied matching GameServer/PDB, not the
+modern DX9 source: WriteBaseInfo 0x4e54b0, WriteLookData 0x4e5d60, WriteSkillbag 0x4e5790,
+WriteSkillState 0x505e80, WriteAttr 0x505f00 / 0x506090, Event::WriteInfo 0x4fd960,
+and Cmd_EnterMap 0x4db730. No modern guild-permission long, is-player byte, IMP long,
+look DBID/required-level fields or skill-state timestamps are consumed. Equipment has
+10 slots and 5 instance-attribute pairs. Initial skill range extras are three shorts.
+Only the entity/skills/states/attributes prefix of EnterMap is consumed; inventories,
+shortcuts and boats are not manipulated. NPC/player names are skipped, not stored.
+
+World commands: 504 begin-see, 505 end-see, 508 action notification, 509 attributes.
+Movement notifications use the first point as authoritative position, not the route's
+future endpoint. Skill-target notifications update remaining HP. Unknown/malformed
+required world fields stop the hunt rather than guessing coordinates or health.
+
+Native CProCirculateCS::BeginAction at 0x5198b0 is emulated with packet-writer capture
+in check_native_enter.py. Both movement and normal attack match byte-for-byte:
+command 6, actor u32, action-counter u32, action u8. Movement adds a sequence of raw
+little-endian int32 point pairs. Attack adds chMove=2, fight-ID u8, two equal current
+points, skill u32, target world-ID u32 and its native handle u32. No modern global
+packet counter is added. These are serialization checks, not live action acceptance.
+
+capture_native_world.py runs native base/look/event/attribute writers with synthetic
+actor getters; packet writers capture bytes. Append-look inventory is stubbed as ten
+empty slots. Fixtures cover an empty and an equipped actor; they are not captured from
+a live private session. Main entry framing and skill/state prefixes are additionally
+checked against native disassembly. Combat notification fields still need live testing.
+
+Navigation uses a numerical crop derived from the owner's garner.blk: MSB-first packed
+bits, original 50cm grid; 100cm cells with nine clearance samples, bounds near Argent,
+bounded A* and no diagonal wall cutting. Three native spawn positions have tested paths
+to the scouting route. Dynamic actor collisions are not included. Movement requests are
+limited to six metres, at most every 2.5 seconds; repeated blocked movement stops.
+
+The policy only attacks control-type 5 models 71/75 (passive Sleepy Snail / Mystic Shrub),
+level <= min(2, own level+1), alive, within the spawn leash. No player, NPC, pet or resource
+targets. Normal server skill/cooldowns are used; no stat/loot/GM modifications. At <=35%
+health it cancels the attack and returns toward its initial position; waits for >=85%.
+At death it stops, without a revive workaround. No loot, equip, quests or advanced AI.
+
+34 pure offline tests pass (18 new world/navigation/policy checks plus 16 existing pure
+regressions). Eight existing real-socket tests were not rerun: sandbox approval for that
+run was interrupted; the last full 24-test socket-inclusive run passed in Alpha 06.
+The full current suite contains 42 tests. Native world/action captures passed separately.
+Actual Windows hunting, path acceptance, collision behavior and combat remain untested
+until the owner's run. Do not describe fixture/emulator tests as a successful hunt.
+
 ### Alpha 06: secondary password required before entry
 
 The owner's Alpha 05 run receives 534 (ERR_PT_INVALID_PW2) after character selection.
