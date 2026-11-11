@@ -76,6 +76,29 @@ server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
 
+### Alpha 08: fix append-look size and test the real writer
+
+The owner's Alpha 07 run enters the world but fails in initial world decoding with
+`Too many world attributes`. The ten normal equipment slots were incorrectly reused
+for the separate append-look block. Native WriteAppendLook at 0x4e6070 compares its
+loop index with **4** at 0x4e6092 (defESPE_KBGRID_NUM), writing a u16 per slot and an
+extra valid byte for nonzero append items. Reading ten slots consumed skill data and
+misaligned the subsequent attribute header. The attribute count limit is not relaxed.
+
+The earlier synthetic native-base capture stubbed this entire method with twenty
+zero bytes, hiding the error. That stub is removed. The actual append-look writer
+now runs with synthetic inventory getters, covering empty and nonempty append items.
+Native WriteSkillbag and WriteSkillState also run, using synthetic skill getters.
+The fixture includes two skills (zero and nonzero range) followed by states and native
+attributes, so tests verify the complete boundary rather than a manually invented gap.
+Only actor/inventory/skill data getters and packet I/O are stubbed; counts and loops
+are emitted by the actual hash-pinned native writer routines.
+
+36 pure tests pass; full suite totals 44 including the eight existing socket tests
+not repeated in this restricted environment. No new live hunt has been claimed.
+World decoding diagnostics now record phase, byte offsets and counts, never names,
+passwords or raw payloads. Accounts, characters, PINs and navigation policy are retained.
+
 ### Alpha 07: first bounded PvE hunter
 
 The owner confirmed Alpha 06 enters the world. This release retains its SQL, cache,
@@ -103,11 +126,10 @@ little-endian int32 point pairs. Attack adds chMove=2, fight-ID u8, two equal cu
 points, skill u32, target world-ID u32 and its native handle u32. No modern global
 packet counter is added. These are serialization checks, not live action acceptance.
 
-capture_native_world.py runs native base/look/event/attribute writers with synthetic
-actor getters; packet writers capture bytes. Append-look inventory is stubbed as ten
-empty slots. Fixtures cover an empty and an equipped actor; they are not captured from
-a live private session. Main entry framing and skill/state prefixes are additionally
-checked against native disassembly. Combat notification fields still need live testing.
+The original Alpha 07 capture ran native base/look/event/attribute writers with synthetic
+actor getters but incorrectly stubbed append-look as ten empty slots. This gap is
+corrected in Alpha 08 above. These fixtures are not captured from a live private session.
+Combat notification fields still need live testing.
 
 Navigation uses a numerical crop derived from the owner's garner.blk: MSB-first packed
 bits, original 50cm grid; 100cm cells with nine clearance samples, bounds near Argent,

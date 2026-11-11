@@ -3,6 +3,7 @@ import math
 import struct
 import time
 from classic_wire import sequence
+from classic_wire import ProtocolError
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 
 
@@ -173,7 +174,12 @@ class Hunter:
 def hunt(client, seconds, stop, report, navigation, tell=print):
     report.stage('reading_world')
     world = World()
-    world.enter(client.enter_payload)
+    try:
+        world.enter(client.enter_payload)
+    except ProtocolError:
+        report.result['world_decode'] = world.decode_info
+        raise
+    report.result['world_decode'] = world.decode_info
     policy = Hunter(world, navigation, client.wire.send, report, tell)
     client.world_handler = world.observe
     try:

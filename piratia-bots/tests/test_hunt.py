@@ -19,7 +19,8 @@ FIXTURES = json.loads((ROOT/'tests/fixtures/native_world.json').read_text())
 
 def enter_packet():
     return (bytes(6)+string('garner')+b'\0'+bytes.fromhex(FIXTURES['own_base'])
-            +b'\0\x19\0\0\0'+b'\0'+bytes.fromhex(FIXTURES['own_attrs']))
+            +bytes.fromhex(FIXTURES['own_skills'])+bytes.fromhex(FIXTURES['own_states'])
+            +bytes.fromhex(FIXTURES['own_attrs']))
 
 
 def world_fixture():
@@ -30,7 +31,7 @@ def world_fixture():
 
 class WorldTests(unittest.TestCase):
     def test_native_base_and_attribute_writer_fixtures(self):
-        for label in ('own','monster','own_worn'):
+        for label in ('own','monster','own_worn','own_append'):
             r = Reader(bytes.fromhex(FIXTURES[label+'_base']))
             actor = entity(r)
             r.end()
@@ -39,6 +40,20 @@ class WorldTests(unittest.TestCase):
             r = Reader(bytes.fromhex(FIXTURES[label+'_attrs']))
             self.assertEqual(attrs(r)[MAX_HP],100)
             r.end()
+
+    def test_native_append_look_has_four_separate_slots(self):
+        self.assertEqual(bytes.fromhex(FIXTURES['own_append']),bytes(8))
+        self.assertEqual(bytes.fromhex(FIXTURES['own_append_append']),b'\x03\x09\x01'+bytes(6))
+
+    def test_native_nonempty_skills_keep_attribute_boundary(self):
+        # Native skill list includes both a zero-range and an extended-range entry.
+        self.assertEqual(len(bytes.fromhex(FIXTURES['own_skills'])),43)
+        world = world_fixture()
+        self.assertEqual(world.decode_info['skill_count'],2)
+        self.assertEqual(world.decode_info['skill_state_count'],0)
+        self.assertEqual(world.decode_info['attribute_count'],45)
+        self.assertEqual(world.decode_info['phase'],'complete')
+        self.assertEqual(world.own.values[HP],100)
 
     def test_enter_map_decodes_own_health_position_skill(self):
         world = world_fixture()

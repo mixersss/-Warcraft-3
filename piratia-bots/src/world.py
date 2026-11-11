@@ -101,7 +101,9 @@ def entity(reader):
     reader.string_bytes()
     skip_look(reader)
     reader.byte()  # PK control
-    for _ in range(10):  # Native WriteAppendLook (default appearance extras).
+    # Append-look is a separate FOUR-slot block (defESPE_KBGRID_NUM), not
+    # the ten normal equipment slots consumed by skip_look above.
+    for _ in range(4):
         if reader.short():
             reader.byte()
     if not identity or not 0 < model < 100000 or control not in (0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 17):
@@ -120,6 +122,7 @@ class World:
         self.updates = 0
         self.damage_events = 0
         self.failed_actions = 0
+        self.decode_info = {}
 
     @property
     def own(self):
@@ -127,30 +130,39 @@ class World:
 
     def enter(self, payload):
         reader = Reader(payload)
+        self.decode_info = {'phase':'entry_header', 'packet_bytes':len(payload)}
         if reader.short():
             raise ProtocolError('Map entry refused')
         reader.take(4)  # auto-lock, bag-lock, enter type, new character
         map_name = reader.string()
         reader.byte()  # can team; NO modern IMP uint32
+        self.decode_info.update(phase='entity',offset=reader.position)
         own = entity(reader)
         if own.control != 1:
             raise ProtocolError('Expected the main player character')
+        self.decode_info.update(phase='skills',offset=reader.position,append_look_slots=4)
         default_skill = reader.short()
         reader.byte()
         count = reader.short()
         if count > 256:
             raise ProtocolError('Too many initial skills')
+        self.decode_info['skill_count'] = count
         for _ in range(count):
             reader.take(14)
             if reader.short():
                 reader.take(6)  # range[1..3], not modern extended ranges
-        reader.take(reader.byte() * 2)  # classic state count + (ID,level); no timestamps
+        self.decode_info.update(phase='skill_states',offset=reader.position)
+        state_count = reader.byte()
+        self.decode_info['skill_state_count'] = state_count
+        reader.take(state_count * 2)  # classic state count + (ID,level); no timestamps
+        self.decode_info.update(phase='attributes',offset=reader.position)
         own.values = attrs(reader)
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
             raise ProtocolError('Initial health/level could not be decoded')
         # Inventory/shortcuts/boats follow; this prototype does not manipulate them.
         self.entities = {own.identity: own}
         self.own_id, self.map, self.default_skill = own.identity, map_name, default_skill
+        self.decode_info.update(phase='complete',offset=reader.position,attribute_count=len(own.values))
 
     def observe(self, command, payload):
         reader = Reader(payload)

@@ -1,8 +1,8 @@
 """Synthetic fixtures from the supplied GameServer's native world writers.
 
 Unicorn development tool. Getters provide synthetic actors; native WriteBaseInfo,
-WriteLookData and event writers run. Packet writers capture bytes. Append-look
-inventory access is stubbed as ten empty slots; no real server/session runs.
+WriteLookData, append-look, skillbag, state and event writers run. Packet writers
+capture bytes. Inventory/skill getters supply synthetic data; no live session runs.
 """
 import argparse
 import hashlib
@@ -58,9 +58,18 @@ def main():
             ret(1,4)
         elif address == 0x4013c0:
             ret(state['attrs'].get(arg(1),0),4)
-        elif address == 0x4e6070:
-            result.extend(bytes(20))
-            ret(1,12)
+        elif address == 0x4d8db0:  # CKitbag::IsSingleChange
+            ret(0,8)
+        elif address == 0x423360:  # CKitbag::GetGridContByID
+            ret(0x2016000 if state.get('append') and (arg(1) & 65535)==0 else 0,8)
+        elif address == 0x4c5550:  # ItemIsAppendLook, synthetic known append item
+            ret(1,4)
+        elif address == 0x4e5a60:  # changed skill count
+            ret(2)
+        elif address == 0x4e5a80:  # skill grid getter
+            ret(0x2017000+arg(1)*16,4)
+        elif address == 0x4dd070:  # temporary skill-table data getter
+            ret(0x2018000+(0 if (arg(1) & 65535)==25 else 64),8)
         elif address in getters:
             ret(getters[address]())
 
@@ -71,11 +80,18 @@ def main():
                0x4d7af0:lambda:empty,0x445460:lambda:1,0x416bb0:lambda:pos,
                0x4bd3e0:lambda:radius,0x4160e0:lambda:0,0x41b250:lambda:0,
                0x4c49b0:lambda:event,0x417d60:lambda:0,0x201f000:lambda:1,
-               0x5040e0:lambda:0}
+               0x5040e0:lambda:0,0x4c3b40:lambda:actor,
+               0x4b8250:lambda:0,0x4b94b0:lambda:0,0x4b96b0:lambda:0}
     u.hook_add(UC_HOOK_CODE,hook)
     put(actor,0x201e000)
     put(0x201e018,0x201f000)
     put(radius,40)
+    u.mem_write(0x2016000,struct.pack('<H',777))
+    u.mem_write(0x20160a0,b'\x01')
+    for index,skill in enumerate((25,28)):
+        u.mem_write(0x2017000+index*16,struct.pack('<BBH',1,1,skill))
+        u.mem_write(0x2018000+index*64+0x18,struct.pack('<I',1000))
+        u.mem_write(0x2018000+index*64+0x1c,struct.pack('<4H',index,150,1,0))
 
     def call(address, arguments):
         u.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
@@ -86,9 +102,10 @@ def main():
     fixtures = {}
     for label, model, identity, control, x, y in (
             ('own',1,123,1,223200,278700),('monster',75,456,5,223600,278900),
-            ('own_worn',1,123,1,223200,278700)):
+            ('own_worn',1,123,1,223200,278700),('own_append',1,123,1,223200,278700)):
         state.update(model=model,id=identity,handle=identity+1000,
-                     attrs={0:1,1:100,10:control,31:100,43:150,44:480})
+                     attrs={0:1,1:100,10:control,31:100,43:150,44:480},append=label=='own_append')
+        u.mem_write(actor+0x4974,struct.pack('<H',25))
         u.mem_write(actor+0x1e4,b'SyntheticActor\0')
         u.mem_write(actor+0x6e32,struct.pack('<H',model))
         u.mem_write(actor+0x7488,struct.pack('<H',2000))
@@ -101,6 +118,15 @@ def main():
         result.clear()
         call(0x4e54b0,[0x2014000])
         fixtures[label+'_base'] = bytes(result).hex()
+        result.clear()
+        call(0x4e6070,[actor+0x4d20,0x2014000,1])
+        fixtures[label+'_append'] = bytes(result).hex()
+        result.clear()
+        call(0x4e5790,[0x2014000,0])
+        fixtures[label+'_skills'] = bytes(result).hex()
+        result.clear()
+        call(0x505e80,[0x2014000])
+        fixtures[label+'_states'] = bytes(result).hex()
         result.clear()
         call(0x506090,[0x2014000,0,44,0])
         fixtures[label+'_attrs'] = bytes(result).hex()

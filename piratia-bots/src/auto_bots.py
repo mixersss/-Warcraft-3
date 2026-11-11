@@ -69,7 +69,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle'):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha07'
+    report.result['version'] = 'AutoAccountsAlpha08'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -145,13 +145,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — первая охота без окна игры (Alpha 07).')
+    print('Пиратия — первая охота без окна игры (Alpha 08).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha07'
+    setup_report.result['version'] = 'AutoAccountsAlpha08'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

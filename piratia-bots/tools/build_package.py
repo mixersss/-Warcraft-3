@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-07'
-NAME = 'Piratia-Auto-Bots-Alpha07'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-08'
+NAME = 'Piratia-Auto-Bots-Alpha08'
 
 
 def main():
@@ -33,12 +33,12 @@ def main():
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
         'status': 'first bounded PvE hunter prototype; live movement/combat requires owner test',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 34,
-        'full_python_suite_total': 42,
+        'pure_python_tests_passed': 36,
+        'full_python_suite_total': 44,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'native_action_serialization_compared': ['movement', 'normal attack'],
-        'native_world_writers_captured': ['base info', 'look', 'event', 'attribute range'],
+        'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
         'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True},
