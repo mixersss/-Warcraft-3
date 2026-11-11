@@ -29,6 +29,14 @@ class Navigation:
         x, y = cell
         return 0 <= x < self.width and 0 <= y < self.height and self.cells[y*self.width+x] == 1
 
+    def nearest(self, position, radius=6):
+        x,y = self.cell(position)
+        cells = ((x+dx,y+dy) for dx in range(-radius,radius+1) for dy in range(-radius,radius+1))
+        for cell in sorted(cells,key=lambda c:(c[0]-x)**2+(c[1]-y)**2):
+            if self.free(cell):
+                return self.position(cell)
+        return None
+
     def path(self, start, end, limit=25000):
         start_cell, goal = self.cell(start), self.cell(end)
         if not self.free(start_cell) or not self.free(goal):

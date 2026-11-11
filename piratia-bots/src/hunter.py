@@ -55,6 +55,8 @@ class Hunter:
         self.attack_interval = self.rng.uniform(2.0, 2.5)
         self.route = list(range(len(navigation.waypoints)))
         self.rng.shuffle(self.route)
+        self.adventure = None
+        self.loot = None
 
     def change(self, value):
         if self.mode != value:
@@ -91,9 +93,11 @@ class Hunter:
     def eligible(self, entity, now):
         own = self.world.own
         # Only the two passive beginner species from this server's CharacterInfo.
-        return (entity.control == 5 and entity.model in (71, 75) and entity.alive
-                and 0 < entity.values.get(LV, 9999) <= min(2, own.values[LV]+1)
-                and entity.handle != 0 and distance(entity.position, self.home) <= 22000
+        models = self.adventure.desired_models() if self.adventure else (71,75)
+        maximum_level = min(10,own.values[LV]) if self.adventure else min(2,own.values[LV]+1)
+        return (entity.control == 5 and entity.model in models and entity.alive
+                and 0 < entity.values.get(LV, 9999) <= maximum_level
+                and entity.handle != 0 and distance(entity.position, self.home) <= (45000 if self.adventure else 22000)
                 and self.blacklist.get(entity.identity, 0) < now)
 
     def tick(self, now=None):
@@ -132,6 +136,14 @@ class Hunter:
         if self.stuck >= 5:
             self.change('путь заблокирован; остановка движения')
             return
+        if self.adventure and self.adventure.tick(now,self):
+            self.change(self.adventure.reason)
+            return
+        if self.loot and self.adventure:
+            task = self.adventure.farm()
+            if task and task[1] and self.loot.tick(now,self,{task[1]}):
+                self.change('подбор квестового трофея')
+                return
         target = self.world.entities.get(self.target)
         if self.target and (not target or not target.alive):
             if target and target.values.get(HP, 1) <= 0:
@@ -166,10 +178,22 @@ class Hunter:
             self.emit(normal_attack(own.identity, self.sequence, self.fight, self.world.default_skill,
                                     target.identity, target.handle, own.position))
             self.attacks += 1
+            if self.loot:
+                self.loot.note_attack(target.identity,now)
             self.next_action = now+self.attack_interval
             return
         self.change('поиск мобов у Аргента')
-        goal = self.nav.waypoints[self.route[self.waypoint % len(self.route)]]
+        goals = self.nav.waypoints
+        if self.adventure:
+            from adventure import FARMS
+            goals = [self.nav.nearest(p) for m in sorted(self.adventure.desired_models()) for p in FARMS[m][1]]
+            goals = [p for p in goals if p]
+            if not goals:
+                self.change('нет проверенного маршрута к мобам')
+                return
+            goal = goals[self.waypoint % len(goals)]
+        else:
+            goal = goals[self.route[self.waypoint % len(self.route)]]
         if distance(own.position, goal) < 300 or not self.move_to(goal, now):
             self.waypoint += 1
             self.next_action = now+2
@@ -179,7 +203,7 @@ class Hunter:
                 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
 
-def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None):
+def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None):
     report.stage('reading_world')
     world = World()
     try:
@@ -191,9 +215,25 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy = Hunter(world, navigation, client.wire.send, report, tell, bot_name)
     progression = Progression(world, client.wire.send)
     social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name)
+    role = None
+    if role_store:
+        role = role_store.resolve(bot_name,world.own.model,world.own.values.get(4))
+        progression.first_job = role['first_job']
+        tell('Закреплённый класс: '+role['label'])
+        report.result['class_path'] = role
+    if adventure_mode:
+        from adventure import Adventure
+        from loot import QuestLoot
+        if role is None:
+            raise ProtocolError('Для квестов требуется сохранённый путь класса.')
+        policy.adventure = Adventure(world,client.wire.send,tell,role)
+        policy.loot = QuestLoot(world)
 
     def observe(command, payload):
-        if command == 501:
+        if command in (801,802,803,822,827,828,830,831,832):
+            if policy.adventure:
+                policy.adventure.observe(command,payload)
+        elif command == 501:
             reader = Reader(payload)
             source, text = reader.long(), reader.string()
             social.hear(source, text, time.monotonic())
@@ -227,4 +267,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['hunt'] = policy.summary()
         report.result['progression'] = progression.summary()
         report.result['chat'] = social.summary()
+        if policy.adventure:
+            report.result['adventure'] = policy.adventure.summary()
+            report.result['adventure']['quest_loot_requests'] = policy.loot.requests
         client.world_handler = None

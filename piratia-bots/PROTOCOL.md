@@ -308,3 +308,56 @@ are infeasible because body2 can only choose job8 among these six.
 45 pure offline tests pass; eight existing socket tests not rerun this release.
 400 chat decision policies and400 planned quota records are simulations, not live
 server clients or evidence of400-user server performance.
+
+### Alpha 10: pinned class intent, classic NPC quests and quest-only pickup
+
+Owner confirmed Alpha09 hunting and local chat. New quest code is an owner-test pilot,
+not a claim of completed live profession chains or instances.
+
+`roles.py` atomically saves body/target job per bot character in data/bot-roles.json.
+Valid target/body edges come from TemplateSDK.AddCatTable; first job mapping:
+8/9->1,12->2,13/14->5,16->4. Existing actual job must be0, that first job or target;
+incompatible saved/actual state stops instead of rerolling. Existing actors stay intact.
+New empty accounts use four native creator bodies round-robin, with hair2000/2062/
+2124/2291 and face2554. The native UI constructor capture now compares all four LOOKs.
+This does not establish live server acceptance of every body.
+
+Native client serializers executed in check_native_enter.py:
+* CS_RequestTalk0x508200: command301, NPC worldID u32, subcommand302 u16, page0 u8.
+* CS_SelMission0x508cf0:301, worldID,322 u16, selection4 u8, zero-based index u8.
+* CS_MissionPage0x508c30:301, worldID,322 u16, button6/7, selected prize0, param0.
+* BeginAction0x5198b0 item-pick8: command6, actorID/counter,8, item worldID/handle.
+
+Incoming NPC802 and mission827 layouts are audited against the supplied NpcSdk.lua
+SendMissionPage and MissionSdk.lua SendAcceptPage/SendDeliveryPage/SendPendingPage,
+not assumed from the newer public source. 802 includes ordinary functions then
+(name,state) mission entries. Only exact audited titles are eligible; promotion must
+match the saved path again before commitment. Prize selection0=choose-one,1=all;
+unknown multi-choice rewards pause. Quest texts are treated as data, never instructions.
+Only real visible NPCs at audited garnernpc coordinates receive requests.
+
+Journal828 (u8 count, u16 ID/u8 state rows) captured by executing native server
+MisGetMisLog0x47e3f0 up to0x47e4a3 before transport. Add832/change830/clear831 follow
+native journal state semantics; requests alone do not increment completion counters.
+325 requests journal when not received on entry (native server dispatch calls
+CCharacter::MisLog around0x4e6a1e). Lua script mission IDs and journal IDs differ:
+script701 Welcome uses journal1; script702/703 share journal701; Sword scripts62,
+66..72 use journal58,62..65; Explorer scripts65,191..197 use61,158..161. Unknown
+or foreign profession journal work is not cancelled or reinterpreted.
+
+Supported executable routing is limited to Argent tutorial, first Swordsman and
+Explorer chains. Hunter59/Herbalist60 referral may be accepted for their own saved
+path, then waits because other-map traversal is not implemented. Target professions
+are goals, never SQL/GM grants. Advanced professions, instances, equipment and revive
+remain unimplemented. No unsupported route is silently substituted with Swordsman.
+
+World items506 fields audited at native server0x4faaf2..0x4fab9b: worldID,handle,
+itemID,x,y,u16 angle,u16 count,u8 appearance,u32 source,then event.507 removes ID.
+Quest pickup requires appearance0 (monster drop), needed model, recently attacked
+source, observed own XP/level credit, <=12m distance, then <=1.8m pickup. Attempts
+are bounded/cooldowned; neither disappearance nor request is claimed as bag credit.
+Native server remains authoritative for ownership, bag capacity and quest counts.
+
+63 pure checks pass; eight existing socket tests excluded. Actual quest completion,
+new bodies, profession acceptance and hours-long operation still need the owner's
+Windows server. No claim of 400 live connections or working instances is made.

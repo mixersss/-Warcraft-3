@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-09'
-NAME = 'Piratia-Auto-Bots-Alpha09'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-10'
+NAME = 'Piratia-Auto-Bots-Alpha10'
 
 
 def main():
@@ -31,20 +31,23 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'earned attribute allocation and local chat pilot; new actions require live owner validation',
+        'status': 'pinned class paths, Argent quest and quest-loot pilot; live quest acceptance not yet validated',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 45,
-        'full_python_suite_total': 53,
+        'pure_python_tests_passed': 63,
+        'full_python_suite_total': 71,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
-        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True},
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'hunting_and_chat_alpha09': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
         'secondary_password_setup': 'command 346 with uppercase MD5 string; only if login flag says absent',
-        'native_character_look_compared': True,
+        'native_character_look_compared': [1,2,3,4],
+        'native_journal_writer_captured': True,
+        'live_quest_completion_tested': False,
+        'instances_implemented': False,
         'creation_appearance': {'type': 1, 'hair': 2000, 'face': 2554, 'source': 'native client character creator tables'},
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],

@@ -116,7 +116,7 @@ def main():
     emulator.mem_write(0x6001d0, struct.pack('<I', 0x201f000))
     put(0x2003014, 123)
     points = ((223200,278700),(223700,278900))
-    for kind in (1, 2):
+    for kind in (1, 2, 8):
         writes.clear()
         submitted.clear()
         put(0x200131c, kind)
@@ -125,6 +125,10 @@ def main():
             emulator.mem_write(0x2004004, struct.pack('<iiii', *points[0], *points[1]))
             put(0x2004104, 2)
             expected = movement(123,1,points)
+        elif kind == 8:
+            emulator.mem_write(0x2004000,struct.pack('<II',456,1456))
+            from hunter import action_header
+            expected = action_header(123,8,8)+struct.pack('>II',456,1456)
         else:
             emulator.mem_write(0x2004000, b'\x01\x02')
             put(0x2004004,25)
@@ -147,7 +151,7 @@ def main():
             else: raise AssertionError('Unexpected action writer')
         if bytes(encoded) != expected:
             raise AssertionError(f'Action {kind} does not match native serialization calls')
-    print('Movement and normal-attack requests match native BeginAction serialization.')
+    print('Movement, normal attack and item pickup match native BeginAction serialization.')
     from social import say_request
     from progression import attribute_request
     text = 'Привет :)'
@@ -171,6 +175,25 @@ def main():
     assert say_request(text) == struct.pack('>H',len(text.encode('cp1251'))+1)+text.encode('cp1251')+b'\0'
     assert attribute_request(25,17) == b'\x01'+struct.pack('>HI',25,17)
     print('Local chat and base-attribute request match native classic serializers.')
+    from adventure import talk_request,select_request,commit_request
+    requests = [(0x508200,(456,0),talk_request(456)),
+                (0x508cf0,(456,2),select_request(456,2)),
+                (0x508c30,(456,6,0,0),commit_request(456,6)),
+                (0x508c30,(456,7,0,0),commit_request(456,7))]
+    for address,arguments,expected in requests:
+        writes.clear()
+        submitted.clear()
+        emulator.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
+        emulator.reg_write(UC_X86_REG_ESP,0x1100000)
+        emulator.emu_start(address,0xf00000,count=1000000)
+        if not writes or writes[0]!=('command',301) or submitted!=[True]:
+            raise AssertionError('Unexpected native NPC request')
+        body = b''
+        for kind,value in writes[1:]:
+            body += struct.pack({'char':'>B','short':'>H','long':'>I'}[kind],value)
+        if body!=expected:
+            raise AssertionError(f'Native NPC request mismatch at {address:x}')
+    print('NPC talk, quest selection, accept and delivery match native client serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

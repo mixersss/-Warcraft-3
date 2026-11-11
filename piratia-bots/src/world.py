@@ -117,6 +117,7 @@ def entity(reader):
 class World:
     def __init__(self):
         self.entities = {}
+        self.items = {}
         self.own_id = None
         self.map = None
         self.default_skill = None
@@ -167,7 +168,18 @@ class World:
 
     def observe(self, command, payload):
         reader = Reader(payload)
-        if command == 504:
+        if command == 506:
+            identity,handle,model = reader.long(),reader.long(),reader.long()
+            position = reader.long(),reader.long()
+            reader.short()  # angle
+            count,kind,source = reader.short(),reader.byte(),reader.long()
+            if not count or kind not in (0,1,2) or not all(0<=v<409600 for v in position):
+                raise ProtocolError('Invalid classic item appearance')
+            if len(self.items)<1024 or identity in self.items:
+                self.items[identity] = (model,handle,position,kind,source,time.monotonic())
+        elif command == 507:
+            self.items.pop(reader.long(),None)
+        elif command == 504:
             reader.byte()
             seen = entity(reader)
             reader.take(2)  # NPC show flags

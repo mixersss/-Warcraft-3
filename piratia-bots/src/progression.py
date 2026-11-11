@@ -11,8 +11,9 @@ def attribute_request(attribute, value):
 
 
 class Progression:
-    def __init__(self, world, send):
+    def __init__(self, world, send, first_job=1):
         self.world, self.send = world, send
+        self.first_job = first_job
         self.pending = None
         self.disabled = False
         self.confirmed = self.requests = 0
@@ -36,13 +37,15 @@ class Progression:
         if self.disabled or not safe or now < self.next_action:
             return
         points = values.get(AP, 0)
-        strength, constitution = values.get(STR), values.get(CON)
-        # Alpha09 remains a beginner Lance melee hunter; do not guess builds for other jobs.
+        primary = {1:25,2:26,4:29,5:29}.get(self.first_job)
+        compatible = {1:(1,2),2:(1,3),4:(1,3,4),5:(3,4)}.get(self.first_job,())
+        strength, constitution = values.get(primary), values.get(CON)
+        # Only the pinned first-profession build; no guesses for advanced classes.
         if (not 0 < points <= 10000 or strength is None or constitution is None
-                or self.world.own.model != 1 or values.get(4) != 0):
+                or self.world.own.model not in compatible or values.get(4) not in (0, self.first_job)):
             return
-        # Maintain a 2:1 STR:CON investment tendency using authoritative current values.
-        attribute = CON if strength > constitution * 2 else STR
+        # Maintain a 2:1 primary:CON tendency using authoritative current values.
+        attribute = CON if strength > constitution * 2 else primary
         target = values[attribute] + 1
         self.send(8, attribute_request(attribute, target))
         self.requests += 1
@@ -50,7 +53,7 @@ class Progression:
 
     def summary(self):
         values = self.world.own.values
-        return {'start_level': self.start_level, 'level': values.get(LV),
+        return {'first_job_build': self.first_job, 'start_level': self.start_level, 'level': values.get(LV),
                 'start_experience': self.start_xp, 'experience': values.get(XP),
                 'free_attribute_points': values.get(AP), 'attribute_requests': self.requests,
                 'confirmed_point_spends': self.confirmed, 'awaiting_confirmation': bool(self.pending),

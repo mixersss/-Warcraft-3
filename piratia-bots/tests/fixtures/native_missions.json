@@ -1,0 +1,4 @@
+{
+  "journal_packet": "033c0202bd00003e01",
+  "source": "native MisGetMisLog 0x47e3f0; synthetic two-row journal; transport not executed"
+}

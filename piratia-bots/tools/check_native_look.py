@@ -7,6 +7,7 @@ Usage: python tools/check_native_look.py /path/to/Game.exe
 import argparse
 import hashlib
 import struct
+import sys
 from pathlib import Path
 
 from inspect_pdb import pe_info
@@ -72,17 +73,19 @@ def main():
             return_from_stub()
 
     emulator.hook_add(UC_HOOK_CODE, hook)
-    emulator.reg_write(UC_X86_REG_ECX, scene)
-    put(0x1100000, 0xf00000)
-    emulator.reg_write(UC_X86_REG_ESP, 0x1100000)
-    emulator.emu_start(0x4c16c0, 0xf00000, count=1000000)
-    expected = bytearray(1626)
-    for index, value in ((2, 1), (166, 250), (167, 9), (326, 1), (1624, 208), (1625, 7)):
-        expected[index] = value
-    if capture != [bytes(expected)]:
-        raise AssertionError('Native creation LOOK differs from the captured golden layout')
-    print('Native classic UI creation LOOK matches the 1626-byte golden payload.')
-    print(f'Appearance read from native creator tables: hair={hairs[0]}, face={faces[0]}.')
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
+    from headless import creation_look
+    for body in (1,2,3,4):
+        for offset,value in ((0x10,body),(0x334,hairs[body-1]),(0x338,faces[body-1])):
+            emulator.mem_write(model+offset,struct.pack('<H',value))
+        capture.clear()
+        emulator.reg_write(UC_X86_REG_ECX,scene)
+        put(0x1100000,0xf00000)
+        emulator.reg_write(UC_X86_REG_ESP,0x1100000)
+        emulator.emu_start(0x4c16c0,0xf00000,count=1000000)
+        if capture != [creation_look(body)]:
+            raise AssertionError(f'Native creation LOOK differs for body {body}')
+    print('All four native classic creation LOOKs match; constructor and creator tables executed.')
     print('Windows game server acceptance is not tested by this capture.')
 
 

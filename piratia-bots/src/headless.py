@@ -14,6 +14,17 @@ from classic_crypto import PacketCipher, login_proof, noise_seed, password_key, 
 from classic_wire import ProtocolError, Reader, Wire, sequence, string
 
 
+def creation_look(body=1):
+    if body not in (1,2,3,4):
+        raise ValueError('Unknown character body')
+    look = bytearray(1626)
+    struct.pack_into('<H', look, 2, body)
+    struct.pack_into('<H', look, 0x658, (2000,2062,2124,2291)[body-1])
+    struct.pack_into('<H', look, 0xa6, 2554)
+    look[0xa6+0xa0] = 1
+    return bytes(look)
+
+
 class ServerError(ProtocolError):
     def __init__(self, stage, code):
         self.stage, self.code = stage, code
@@ -62,7 +73,7 @@ class Client:
             if len(payload) < 20:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
-        elif command in (501, 504, 505, 508, 509, 520):
+        elif command in (501, 504, 505, 506, 507, 508, 509, 520, 801, 802, 803, 822, 827, 828, 830, 831, 832):
             if self.world_handler:
                 self.world_handler(command, payload)
             else:
@@ -165,7 +176,7 @@ class Client:
             else:
                 self.service(command, payload)
 
-    def create_character(self, name):
+    def create_character(self, name, body=1):
         """Exact classic client layout: two strings and a packed 1626-byte LOOK.
 
         Native SendChaToServ 0x4c16c0: type +2, face item +0xa6,
@@ -174,15 +185,9 @@ class Client:
         import re
         if not re.fullmatch(r'Bot[0-9a-f]{8}', name):
             raise ValueError('Character name must be an automatically generated bot name')
-        look = bytearray(1626)
-        struct.pack_into('<H', look, 2, 1)       # Lance type.
-        # CCreateChaScene's selection tables in THIS client's .data, not the
-        # CharacterInfo renderer mesh IDs: nHairTestCnt[0]=2000, nFaceTestCnt[0]=2554.
-        struct.pack_into('<H', look, 0x658, 2000)
-        struct.pack_into('<H', look, 0xa6, 2554)
-        look[0xa6 + 0xa0] = 1                   # SItemGrid constructor availability.
+        look = creation_look(body)
         self.report.stage('creating_character')
-        self.report.result['creation_appearance'] = {'type': 1, 'hair': 2000, 'face': 2554, 'look_bytes': 1626}
+        self.report.result['creation_appearance'] = {'type': body, 'hair': (2000,2062,2124,2291)[body-1], 'face': 2554, 'look_bytes': 1626}
         self.wire.send(435, string(name) + string('Argent City') + sequence(look))
         _, payload = self.wait({935}, timeout=35)
         code = Reader(payload).short()

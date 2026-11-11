@@ -1,0 +1,324 @@
+"""Classic Argent tutorial/first Swordsman quest pilot; native NPC and journal actions.
+
+Server owns all conditions, kill/item counts, rewards and profession changes.
+"""
+import math
+import struct
+from collections import deque
+from classic_wire import Reader, ProtocolError
+
+# Numeric positions from supplied garnernpc.txt; no game assets or credentials.
+NPCS = {'senna': (222375,278525), 'goldie': (219312,270612),
+        'nila': (226781,270475), 'ditto': (225075,277025),
+        'daniel': (219350,273050), 'peter': (219220,276700), 'william': (227789,283199)}
+TITLES = {'Welcome', "Blacksmith's Greetings", "Tailor's Greetings",
+          "Physician's Greetings", 'Battle training', 'Swordsman Promotion','Hunter Promotion','Herbalist Promotion','Explorer Promotion'}
+# Native journal IDs differ from the mission script IDs used by AddNpcMission!
+DESTINATIONS = {1:'senna',701:'senna',702:'senna',703:'senna',704:'senna',
+                58:'peter',62:'peter',63:'william',64:'william',65:'peter'}
+LETTER_STOPS = {701:'goldie',702:'nila',703:'ditto'}
+GRIND = {704:(103,1620),62:(237,None),64:(125,1678)}
+# Model: real level, practical search points inside the audited navigation crop.
+FARMS = {75:(1,[(213050,269050)]),71:(2,[(219050,263950)]),
+         103:(3,[(213050,271050),(219050,263950)]),
+         185:(4,[(212050,264050),(222050,264050)]),
+         206:(5,[(207050,274050)]),184:(6,[(219050,256050)]),
+         104:(9,[(196050,270050)]),119:(7,[(210050,257050)]),125:(8,[(205750,263850),(196050,270050)]),
+         237:(10,[(198050,259050)])}
+QUEST_COMMANDS = (801,802,803,822,827,828,830,831,832)
+
+
+def talk_request(npc):
+    return struct.pack('>IHB',npc,302,0)
+
+
+def select_request(npc, index):
+    if not 0 <= index < 64:
+        raise ValueError('Invalid NPC mission index')
+    return struct.pack('>IHBB',npc,322,4,index)
+
+
+def commit_request(npc, button, reward=0):
+    if button not in (6,7) or not 0 <= reward < 64:
+        raise ValueError('Only native accept/deliver actions are supported')
+    return struct.pack('>IHBBB',npc,322,button,reward,0)
+
+
+def mission_page(payload):
+    r = Reader(payload)
+    button, npc, title = r.byte(), r.long(), r.string()
+    if button not in (6,7,8):
+        raise ProtocolError('Unsupported mission page button')
+    count = r.byte()
+    if count > 32:
+        raise ProtocolError('Too many mission needs')
+    needs = []
+    for _ in range(count):
+        kind = r.byte()
+        if kind in (0,1):
+            needs.append((kind,r.short(),r.short(),r.byte()))
+        elif kind == 5:
+            r.string_bytes()  # Do not execute instructions or parse arbitrary text.
+        else:
+            raise ProtocolError('Unsupported mission need')
+    choice, count = r.byte(), r.byte()
+    if count > 32 or choice not in (0,1):
+        raise ProtocolError('Unsupported mission rewards')
+    prizes = [(r.byte(),r.short(),r.short()) for _ in range(count)]
+    r.string_bytes()
+    r.end()
+    return button,npc,title,needs,choice,prizes
+
+
+class Adventure:
+    def __init__(self, world, send, tell=lambda text:None, role=None):
+        self.world, self.send, self.tell = world, send, tell
+        self.role = role or {'first_job':1,'target_job':9,'promotion':'Swordsman Promotion','label':'крестоносец'}
+        self.destinations = {k:v for k,v in DESTINATIONS.items() if k in (1,701,702,703,704)}
+        if self.role['first_job']==1:
+            self.destinations.update({k:v for k,v in DESTINATIONS.items() if k<100})
+        elif self.role['first_job'] in (2,5):
+            self.destinations[59 if self.role['first_job']==2 else 60] = 'other_map'
+        elif self.role['first_job']==4:
+            self.destinations.update({61:'daniel',158:'daniel',159:'william',160:'william',161:'daniel'})
+        self.grind = {704:(103,1620)}
+        self.grind.update({62:(237,None),64:(125,1678)} if self.role['first_job']==1 else
+                          {158:(237,None),160:(104,1595)} if self.role['first_job']==4 else {})
+        self.journal = {}
+        self.journal_ready = False
+        self.events = deque(maxlen=64)
+        self.deadline = self.next_visit = self.next_log = 0
+        self.context = None
+        self.pending = None
+        self.destination = 'senna'
+        self.subvisit = None
+        self.started = None
+        self.disabled = False
+        self.accepted = self.delivered = self.requests = self.timeouts = 0
+        self.seen_pages = 0
+        self.missing_offers = 0
+        self.last_needs = []
+        self.start_job = world.own.values.get(4)
+        self.reason = 'чтение журнала заданий'
+
+    def observe(self, command, payload):
+        r = Reader(payload)
+        if command == 828:
+            count = r.byte()
+            if count > 64:
+                raise ProtocolError('Too many active missions')
+            entries = [(r.short(),r.byte()) for _ in range(count)]
+            r.end()
+            self.journal = dict(entries)
+            self.journal_ready = True
+        elif command in (830,832):
+            identity, state = r.short(),r.byte()
+            r.end()
+            self.journal[identity] = state
+            self.journal_ready = True
+            if command == 832 and self.pending and self.pending[0] == 6:
+                self.accepted += 1
+                self.pending = None
+                self.context = None
+                self.next_visit = 0
+        elif command == 831:
+            identity = r.short()
+            r.end()
+            self.journal.pop(identity,None)
+            if self.pending and self.pending[0] == 7 and self.pending[1] == identity:
+                self.delivered += 1
+                self.pending = None
+                self.context = None
+                self.destination = {58:'peter',62:'peter',63:'william',64:'william',61:'daniel',158:'daniel',159:'william',160:'william'}.get(identity,'senna')
+                self.subvisit = None
+                self.next_visit = 0
+        elif command in (801,802,803,822,827):
+            self.events.append((command,payload))
+
+    def active(self):
+        return next((identity for identity in self.destinations if identity in self.journal),None)
+
+    def farm(self):
+        active = self.active()
+        return self.grind.get(active) if active in self.grind and self.journal[active] == 0 else None
+
+    def desired_models(self):
+        level = self.world.own.values.get(0,1)
+        task = self.farm()
+        if task and FARMS[task[0]][0] <= level:
+            return {task[0]}
+        highest = max((lv for lv,_ in FARMS.values() if lv <= min(level,10)), default=1)
+        return {model for model,(lv,_) in FARMS.items() if max(1,highest-2) <= lv <= highest}
+
+    def choose_destination(self):
+        active = self.active()
+        if active:
+            if active in LETTER_STOPS and self.subvisit == active:
+                return LETTER_STOPS[active]
+            return self.destinations[active]
+        return self.destination
+
+    def settle(self, now, delay=3):
+        self.context = None
+        self.next_visit = now + delay
+        self.events.clear()
+
+    def process_event(self, command, payload, now):
+        if not self.context:
+            return
+        npc, key, stage, selected_title = self.context
+        if command == 802 and stage == 'talk':
+            r = Reader(payload)
+            source, page = r.long(),r.byte()
+            r.string_bytes()
+            if source != npc:
+                return
+            functions = r.byte()
+            if functions > 64:
+                raise ProtocolError('Too many NPC functions')
+            for _ in range(functions): r.string_bytes()
+            count = r.byte()
+            if count > 64:
+                raise ProtocolError('Too many NPC missions')
+            offers = [(r.string(),r.byte()) for _ in range(count)]
+            r.end()
+            self.seen_pages += 1
+            allowed = {'Welcome',"Blacksmith's Greetings","Tailor's Greetings","Physician's Greetings",'Battle training'} if key == 'senna' else set()
+            active = self.active()
+            if self.world.own.values.get(0,1) >= 9 and self.world.own.values.get(4) == 0:
+                allowed.add(self.role['promotion'])
+            if key in ('goldie','nila','ditto'):
+                allowed = { { 'goldie':"Blacksmith's Greetings", 'nila':"Tailor's Greetings", 'ditto':"Physician's Greetings"}[key] }
+            candidates = [(i,title,state) for i,(title,state) in enumerate(offers)
+                          if title in allowed and state & 3]
+            # Complete ready work before accepting another task.
+            candidates.sort(key=lambda item: not bool(item[2]&2))
+            if candidates:
+                index,title,state = candidates[0]
+                self.send(301,select_request(npc,index))
+                self.requests += 1
+                self.context = npc,key,'select',title
+                self.deadline = now+8
+            else:
+                self.missing_offers += 1
+                if active in LETTER_STOPS:
+                    self.subvisit = active if key == 'senna' else None
+                    self.settle(now)
+                elif not active and self.role['first_job'] in (2,5):
+                    self.destination = 'senna'
+                    self.settle(now,120)
+                elif not active and self.world.own.values.get(0,1) >= 9:
+                    trainer = 'daniel' if self.role['first_job']==4 else 'peter'
+                    self.destination = {'senna':trainer,trainer:'william','william':'senna'}.get(key,'senna')
+                    self.settle(now,20)
+                else:
+                    self.settle(now,120)
+        elif command == 827 and stage == 'select':
+            button,source,title,needs,choice,prizes = mission_page(payload)
+            if source != npc or title != selected_title or title not in TITLES or ('Promotion' in title and title != self.role['promotion']):
+                return
+            self.last_needs = needs
+            if button == 8:
+                active = self.active()
+                if active in LETTER_STOPS and key == 'senna': self.subvisit = active
+                self.settle(now,5 if active in LETTER_STOPS else 60)
+                return
+            # These audited quests have no item reward selection. Unknown choices pause.
+            if choice == 0 and len(prizes) > 1:
+                self.reason = 'неизвестный выбор награды; задание отложено'
+                self.settle(now,120)
+                return
+            self.send(301,commit_request(npc,button))
+            self.requests += 1
+            self.pending = button,self.active(),now+8
+            self.context = npc,key,'commit',title
+            self.deadline = now+8
+        elif command in (801,803) and stage == 'commit':
+            # Some intermediate greeting pages set a quest flag without clearing its journal row.
+            source = Reader(payload).long()
+            if source == npc and key in ('goldie','nila','ditto'):
+                self.pending = None
+                self.subvisit = None
+                self.settle(now)
+
+    def tick(self, now, policy):
+        if self.started is None: self.started = now
+        if self.disabled: return False
+        if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):
+            self.reason = 'первая профессия подтверждена сервером; охота'
+            return False
+        if self.world.own.values.get(4) != 0:
+            self.reason = 'другая раса/профессия; автоматическая цепочка не выбрана'
+            return False
+        foreign = ({58,62,63,64,65,59,98,99,150,151,60,80,81,82,83,61,158,159,160,161}
+                   - set(self.destinations)) & set(self.journal)
+        if foreign:
+            self.reason = 'обнаружен квест другой профессии; автоматические квесты приостановлены'
+            return False
+        if self.role['first_job'] in (2,5) and self.active() in (59,60):
+            self.reason = 'путь '+self.role['label']+': переход на другую карту ещё не реализован'
+            return False
+        while self.events:
+            try:
+                self.process_event(*self.events.popleft(),now)
+            except ProtocolError:
+                self.disabled = True
+                self.reason = 'неизвестный формат задания; квесты остановлены'
+                return False
+        if self.context:
+            if now < self.deadline:
+                return True
+            self.timeouts += 1
+            key = self.context[1]
+            if key in ('goldie','nila','ditto'):
+                self.subvisit = None
+            self.pending = None
+            self.settle(now,120)
+            return False
+        if not self.journal_ready:
+            if now >= self.next_log:
+                self.send(325,b'')
+                self.next_log = now+30
+            if now-self.started > 15:
+                self.disabled = True
+                self.reason = 'журнал не получен; сохранена обычная охота'
+            return False
+        if now < self.next_visit or self.farm():
+            return False
+        key = self.choose_destination()
+        position = NPCS[key]
+        # Use only a real visible NPC at the audited location, never a saved world ID.
+        npc = next((e for e in self.world.entities.values() if e.control in (2,3)
+                    and math.dist(e.position,position)<450),None)
+        self.reason = 'задание: путь к '+key
+        if policy.target:
+            from hunter import movement
+            policy.emit(movement(self.world.own_id,policy.sequence,[self.world.own.position]*2))
+            policy.target = None
+            policy.next_action = now+1
+            return True
+        if npc and math.dist(npc.position,self.world.own.position) <= 220:
+            self.send(301,talk_request(npc.identity))
+            self.requests += 1
+            self.context = npc.identity,key,'talk',None
+            self.deadline = now+8
+            self.reason = 'задание: разговор с '+key
+            return True
+        goal = policy.nav.nearest(position,6)
+        if not goal or not policy.move_to(goal,now):
+            self.reason = 'NPC недоступен по проверенной карте'
+            self.next_visit = now+120
+            return False
+        return True
+
+    def summary(self):
+        return {'state':self.reason,'journal_received':self.journal_ready,
+                'active_missions':dict(self.journal),'accepted_confirmed':self.accepted,
+                'deliveries_confirmed':self.delivered,'npc_requests':self.requests,
+                'npc_pages':self.seen_pages,'missing_offers':self.missing_offers,
+                'dialogue_timeouts':self.timeouts,'disabled':self.disabled,
+                'start_profession':self.start_job,'profession':self.world.own.values.get(4),
+                'profession_confirmed':self.world.own.values.get(4)==self.role['first_job'],
+                'target_class':self.role['label'],'target_job':self.role['target_job'],
+                'first_job':self.role['first_job'],
+                'last_objectives':[list(n) for n in self.last_needs]}
