@@ -1,0 +1,18 @@
+{
+  "artifact": "Piratia-Music-Fix-01.zip",
+  "sha256": "2e30a2434dcb6965ee37add8959be6f2da60b35d71d2e1fde7bbb76d5eb11b05",
+  "method": "original musical content transcoded to Vorbis q6 at unchanged client paths",
+  "music_disabled": false,
+  "game_exe_or_dll_patched": false,
+  "original_audio_backed_up": true,
+  "exact_restore_tested": true,
+  "automated_tests_passed": 9,
+  "tests_platform": "Linux with actual FFmpeg",
+  "native_codec_selection_executed": true,
+  "native_windows_playback_tested": false,
+  "live_hang_resolved_confirmed": false,
+  "user_music_processed_in_workspace": false,
+  "private_dump_or_audio_included": false,
+  "ffmpeg_binaries_included": false,
+  "ffmpeg_download_sha256_pinned": true
+}

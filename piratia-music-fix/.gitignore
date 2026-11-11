@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+tools/ffmpeg-7.1.1/
+*.dmp
+*.DMP
+*.rar
+*.7z*

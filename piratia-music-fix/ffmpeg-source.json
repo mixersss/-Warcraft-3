@@ -1,0 +1,8 @@
+{
+  "package": "Gyan.FFmpeg",
+  "version": "7.1.1",
+  "download": "https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-full_build.zip",
+  "sha256": "d760e1b3574402ed18b4865851f87d87e73965a982e6453212df8621fed1c508",
+  "checksum_source": "https://github.com/microsoft/winget-pkgs/blob/master/manifests/g/Gyan/FFmpeg/7.1.1/Gyan.FFmpeg.installer.yaml",
+  "binaries_in_release": false
+}
