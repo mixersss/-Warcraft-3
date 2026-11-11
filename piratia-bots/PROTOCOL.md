@@ -74,6 +74,25 @@ server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
 
+### Alpha 04: creation appearance IDs
+
+The owner's Alpha 03 run confirms SQL account insertion and native login succeed;
+all three accounts then received 520 (ERR_PT_INVALIDDAT) on character creation.
+The Alpha 02/03 model inputs in the UI capture were incorrect: CharacterInfo mesh
+parts (100/2000) are not the selectable creation hair/face item IDs. The capture proved
+the byte layout but did not establish validity of those synthetic model inputs.
+
+The supplied client's native .data at VA **0x655848** contains CCreateChaScene's
+hair starts `(2000,2062,2124,2291)` and at **0x655868** face starts
+`(2554,2554,2554,2554)`. Alpha 04 selects Lance hair=2000 and face=2554. The developer
+capture now reads these tables from the hash-pinned mapped executable before running
+SendChaToServ; it no longer invents the appearance from renderer metadata. The packed
+wire format is unchanged. The non-sensitive creation profile is included in reports.
+
+Account and encrypted-cache handling are unchanged. The existing three accounts are
+reused; no deletion, recreation or SQL login-flag reset is needed. Live acceptance
+of the corrected appearance still requires the owner's next run.
+
 ### Alpha 03: persistence fix
 
 The owner reported `save_bot_identities ArgumentException` before any account inserts.
@@ -109,12 +128,13 @@ on an empty account. A differently named existing character causes a stop.
 Native client **NewCha at 0x51a5c0** sends command 435, character name string,
 birthplace string, and a **1626-byte LOOK sequence**. It does NOT send modern type/hair/
 face uint32 fields. Reply 935 begins with u16 error. The default Lance LOOK is captured
-from native **SendChaToServ at 0x4c16c0**, with model type=1, hair=100, face=2000:
+from native **SendChaToServ at 0x4c16c0**, with type=1, creator hair=2000, face=2554
+(appearance inputs corrected in Alpha 04):
 
 * Zero-filled 1626 bytes.
 * Little-endian u16 type at offset 2 = 1.
-* Face SItemGrid at offset 166: u16 item ID=2000, availability byte at +160=1.
-* Little-endian u16 hair at offset 1624 = 100.
+* Face SItemGrid at offset 166: u16 item ID=2554, availability byte at +160=1.
+* Little-endian u16 hair at offset 1624 = 2000.
 
 The native UI capture emulates the original SItemGrid constructor and memory copies;
 UI text validation/serialization and network submission are stubbed. It verifies the

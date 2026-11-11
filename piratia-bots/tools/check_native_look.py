@@ -43,7 +43,13 @@ def main():
     scene, model, edit = 0x2000000, 0x2001000, 0x2002000
     put(scene + 0x2ac, 0)
     put(scene + 0x2dc, model)
-    for offset, value in ((0x10, 1), (0x334, 100), (0x338, 2000)):
+    # Read the actual character creator selection tables from the mapped EXE.
+    # CharacterInfo model part IDs are not valid creation appearance IDs.
+    hairs = struct.unpack('<4I', emulator.mem_read(0x655848, 16))
+    faces = struct.unpack('<4I', emulator.mem_read(0x655868, 16))
+    if hairs != (2000, 2062, 2124, 2291) or faces != (2554, 2554, 2554, 2554):
+        raise AssertionError('Unexpected native character creator selection tables')
+    for offset, value in ((0x10, 1), (0x334, hairs[0]), (0x338, faces[0])):
         emulator.mem_write(model + offset, struct.pack('<H', value))
     put(0x670270, edit)
     put(0x6702e0, 0)
@@ -71,11 +77,12 @@ def main():
     emulator.reg_write(UC_X86_REG_ESP, 0x1100000)
     emulator.emu_start(0x4c16c0, 0xf00000, count=1000000)
     expected = bytearray(1626)
-    for index, value in ((2, 1), (166, 208), (167, 7), (326, 1), (1624, 100)):
+    for index, value in ((2, 1), (166, 250), (167, 9), (326, 1), (1624, 208), (1625, 7)):
         expected[index] = value
     if capture != [bytes(expected)]:
         raise AssertionError('Native creation LOOK differs from the captured golden layout')
     print('Native classic UI creation LOOK matches the 1626-byte golden payload.')
+    print(f'Appearance read from native creator tables: hair={hairs[0]}, face={faces[0]}.')
     print('Windows game server acceptance is not tested by this capture.')
 
 

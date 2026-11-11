@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-03'
-NAME = 'Piratia-Auto-Bots-Alpha03'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-04'
+NAME = 'Piratia-Auto-Bots-Alpha04'
 
 
 def main():
@@ -34,7 +34,9 @@ def main():
         'automated_tests': 18,
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': False},
         'native_character_look_compared': True,
+        'creation_appearance': {'type': 1, 'hair': 2000, 'face': 2554, 'source': 'native client character creator tables'},
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
         'runtime': 'Python >=3.9; standard library only',

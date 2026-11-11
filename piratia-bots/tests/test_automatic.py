@@ -50,9 +50,10 @@ class AutomaticCreationTests(unittest.TestCase):
         wire.header_size = 6
         wire.in_cipher, wire.out_cipher = PacketCipher(seed, key), PacketCipher(seed, key)
         # Native UI SendChaToServ capture (client 0x4c16c0), default Lance:
-        # all zero except (offset,value): 2=1,166=208,167=7,326=1,1624=100.
+        # Creator menu tables: hair=2000, face=2554 (not renderer mesh IDs).
+        # all zero except (offset,value): 2=1,166=250,167=9,326=1,1624=208,1625=7.
         golden = bytearray(1626)
-        for index, value in ((2, 1), (166, 208), (167, 7), (326, 1), (1624, 100)):
+        for index, value in ((2, 1), (166, 250), (167, 9), (326, 1), (1624, 208), (1625, 7)):
             golden[index] = value
         # Reply may be queued before the client sends; encryption state is independent.
         wire.send(935, b'\0\0')
@@ -64,6 +65,8 @@ class AutomaticCreationTests(unittest.TestCase):
         self.assertEqual(reader.string(), 'Argent City')
         self.assertEqual(reader.sequence(), bytes(golden))
         reader.end()
+        self.assertEqual(report.result['creation_appearance'],
+                         {'type': 1, 'hair': 2000, 'face': 2554, 'look_bytes': 1626})
 
     def test_creation_refusal_stops_without_entering(self):
         client = Client(Mock(), Report())

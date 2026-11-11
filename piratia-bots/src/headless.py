@@ -135,10 +135,13 @@ class Client:
             raise ValueError('Character name must be an automatically generated bot name')
         look = bytearray(1626)
         struct.pack_into('<H', look, 2, 1)       # Lance type.
-        struct.pack_into('<H', look, 0x658, 100) # Default hair, CharacterInfo[1].
-        struct.pack_into('<H', look, 0xa6, 2000) # Default face item.
+        # CCreateChaScene's selection tables in THIS client's .data, not the
+        # CharacterInfo renderer mesh IDs: nHairTestCnt[0]=2000, nFaceTestCnt[0]=2554.
+        struct.pack_into('<H', look, 0x658, 2000)
+        struct.pack_into('<H', look, 0xa6, 2554)
         look[0xa6 + 0xa0] = 1                   # SItemGrid constructor availability.
         self.report.stage('creating_character')
+        self.report.result['creation_appearance'] = {'type': 1, 'hair': 2000, 'face': 2554, 'look_bytes': 1626}
         self.wire.send(435, string(name) + string('Argent City') + sequence(look))
         _, payload = self.wait({935}, timeout=35)
         code = Reader(payload).short()

@@ -1,0 +1,27 @@
+{
+  "artifact": "Piratia-Auto-Bots-Alpha04.zip",
+  "sha256": "c57d836aaa18e3c4f90f007688b29eb62ad6bdcc75109a5228966afd5388f593",
+  "status": "automatic account/character creation and headless connection alpha; gameplay AI not implemented",
+  "native_windows_server_tested": false,
+  "automated_tests": 18,
+  "powershell_state_regression": "passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced",
+  "windows_sql_dpapi_runtime_tested": false,
+  "owner_confirmed_previous_release": {
+    "account_creation": true,
+    "login": true,
+    "character_creation": false
+  },
+  "native_character_look_compared": true,
+  "creation_appearance": {
+    "type": 1,
+    "hair": 2000,
+    "face": 2554,
+    "source": "native client character creator tables"
+  },
+  "native_gate_crypto_compared": [
+    "3DES encrypt/decrypt",
+    "B encrypt/decrypt",
+    "Noise encrypt/decrypt with evolving state"
+  ],
+  "runtime": "Python >=3.9; standard library only"
+}
