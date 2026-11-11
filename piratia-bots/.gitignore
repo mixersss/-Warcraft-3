@@ -6,3 +6,5 @@ bot-local.json
 bot-report.json
 bot-report-*.json
 data/
+population-status.json
+population-status.tmp

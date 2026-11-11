@@ -1,6 +1,7 @@
 """Bounded A* over a derived walkability crop from the owner's garner.blk."""
 import base64
 import heapq
+from functools import lru_cache
 import json
 import math
 import zlib
@@ -10,6 +11,7 @@ from pathlib import Path
 class Navigation:
     def __init__(self, path):
         data = json.loads(Path(path).read_text(encoding='utf-8'))
+        self.map = data.get('map','garner')
         self.origin = tuple(data['origin'])
         self.width, self.height = data['width'], data['height']
         if not 1 <= self.width <= 1000 or not 1 <= self.height <= 1000:
@@ -38,7 +40,14 @@ class Navigation:
         return None
 
     def path(self, start, end, limit=25000):
-        start_cell, goal = self.cell(start), self.cell(end)
+        cached = self._path(self.cell(start), self.cell(end), limit)
+        result = list(cached)
+        if result:
+            result[0] = tuple(start)
+        return result
+
+    @lru_cache(maxsize=256)
+    def _path(self, start_cell, goal, limit):
         if not self.free(start_cell) or not self.free(goal):
             return []
         queue = [(0, start_cell)]
@@ -51,8 +60,7 @@ class Navigation:
                     result.append(self.position(cell))
                     cell = previous[cell]
                 result.reverse()
-                result[0] = tuple(start)
-                return result
+                return tuple(result)
             x, y = cell
             for dx, dy in ((1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,-1),(1,-1),(-1,1)):
                 target = x+dx, y+dy

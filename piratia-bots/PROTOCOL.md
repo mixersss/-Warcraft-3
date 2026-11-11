@@ -361,3 +361,72 @@ Native server remains authoritative for ownership, bag capacity and quest counts
 63 pure checks pass; eight existing socket tests excluded. Actual quest completion,
 new bodies, profession acceptance and hours-long operation still need the owner's
 Windows server. No claim of 400 live connections or working instances is made.
+
+### Alpha 11: continuous routes, native inventory and three home regions
+
+Supersedes Alpha 10's 1..10 runtime and Argent-only navigation. Default is 30
+workers, 1.5-second stagger, 3600-second duration; hard maximum 60. This is a
+configuration and offline verification, not evidence of 30 live connections.
+The credential-free population status counts only workers that decoded entry.
+
+Movement retains the native maximum 32 contiguous points. Prediction uses only
+MC508/action1 acknowledged routes, native MSPD44, clamps at their endpoint and
+never mutates the stored authoritative first point. Continuation starts within
+0.65 seconds of estimated arrival; request throttle is 0.65 seconds and missing
+ACK grace is 1.5 seconds. In-range combat freezes prediction. This removes the
+previous six-cell / 2.5–3.1-second burst cadence. A* paths have a bounded shared
+256-entry cache; callers receive their own lists. Server BLOCK/ARRIVE/CANCEL
+updates replace the motion route.
+
+GameServer WriteKitbag0x4e5b00 is captured in `native_world.json` (`bag_init`,
+`bag_delta`) including an instance-bearing armor, boat document, empty slot,
+deletion and sword. Format: sync u8; capacity u16 only for init0; repeated slot
+u16 and itemID u16, zero ID means empty; count/endurance/maxEndurance/energy/
+maxEnergy are five u16; forge/valid u8; boat type43 adds u32; two u32 DB params;
+instance u8 optionally adds exactly five (u16,u16) pairs. Terminator FFFF.
+No modern DBID/tradable/expiration fields. Unknown item types pause inventory
+rather than guessing offsets. Initial bag follows the entry attribute block.
+MC508/action6 carries bag synchronization, action5 carries LOOK updates.
+
+Native client BeginAction0x5198b0 action11 serializes bag slot i16, target i16
+(-1 for double-click auto target). Equipment chooses compatible owned upgrades
+using a numerical ItemInfo projection (level, body models, jobs, equip links,
+attack/defense score). LOOK must show the actual item in its target slot before
+confirmation. Refused items back off 300 seconds. No local inventory grants.
+Apples1847 have ItemUse_APPLE HP+20 in the supplied script. The same audited
+item-use request is used; both bag consumption and HP gain must be observed.
+No-food/dead/healthy cases send no request; no confirmation backs off120sec.
+
+Native client skill upgrade0x51a920 sends command11,u16 skill,u8 ranks.
+First-profession reward books: sword3164->66, hunter3187->74,
+herbalist3206->97, explorer3227->210; owned books use normal item-use action.
+Skill and TP7 deduction must both be observed. Only these audited skills are
+learned/upgraded, at most rank3, reserving two TP for upgrades. Active casting
+is not implemented. Native CS_DieReturn0x5080c0 sends command10,u8 City1.
+Death delay8sec, maximum3 requests/30sec spacing. MC516 return re-decodes world,
+clears old motion/inventory/items and resets local pending equipment/skill use.
+Normal death penalties remain server-owned.
+
+Numerical `.blk` crops cover garner, magicsea and darkblue; 3x3 clearance and
+native birthpoint coordinates derive from the supplied resources. Farm species
+and their regular/quest drop IDs derive from CharacterInfo/ChaSpn, exclude event
+IDs >=500 and retain reachable species level1..15 with HP<2000. No models, map
+textures, NPC scripts or full game binaries are distributed. Tests cover all
+nine spawn-to-beginner paths and four local profession trainers/assistants.
+New role intent is pinned before native character creation; the birthplace string
+uses Argent City, Shaitan City or Icicle Castle according to first profession.
+Existing characters are not moved or recreated.
+
+Local tutorial mission IDs: Argent1/701..704, Shaitan2/707..710,
+Icicle3/713..716. Herb chain60/80..83, Hunter59/98/99/150/151 join the previous
+Argent Sword/Explorer chains. The same exact promotion-title check runs at
+selection and commit. Item-objective farming includes the lowest eligible actual
+regional dropper, even when the kill-target species differs. Live completion
+of these chains still requires an owner test. Cross-map travel, advanced
+profession chains, instances and group play are not implemented.
+
+Chat has107 curated phrases, bounded per-bot event queues, actual map/role
+context, and unchanged shared1/15sec plus personal90sec cooldowns. Equipment,
+skill and delivery events are triggered only by confirmed counters. No remote
+AI, human chat transcripts or human names are saved. Public diagnostics contain
+bot index, map, health, levels, movement/combat counts and class goals only.

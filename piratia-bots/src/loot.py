@@ -34,9 +34,9 @@ class QuestLoot:
                 continue
             if not (own.values.get(0,0)>level or own.values.get(15,-1)>xp):
                 continue
-            if math.dist(own.position,position)>1200:
+            if math.dist(policy.position(now),position)>1200:
                 continue
-            if math.dist(own.position,position)>180:
+            if math.dist(policy.position(now),position)>180:
                 goal = policy.nav.nearest(position,2)
                 return bool(goal and policy.move_to(goal,now))
             from hunter import action_header

@@ -71,7 +71,7 @@ def mission_page(payload):
 
 
 class Adventure:
-    def __init__(self, world, send, tell=lambda text:None, role=None):
+    def __init__(self, world, send, tell=lambda text:None, role=None, region=None):
         self.world, self.send, self.tell = world, send, tell
         self.role = role or {'first_job':1,'target_job':9,'promotion':'Swordsman Promotion','label':'крестоносец'}
         self.destinations = {k:v for k,v in DESTINATIONS.items() if k in (1,701,702,703,704)}
@@ -84,6 +84,36 @@ class Adventure:
         self.grind = {704:(103,1620)}
         self.grind.update({62:(237,None),64:(125,1678)} if self.role['first_job']==1 else
                           {158:(237,None),160:(104,1595)} if self.role['first_job']==4 else {})
+        self.region = region
+        self.npcs = dict(NPCS)
+        self.letter_stops = dict(LETTER_STOPS)
+        self.trainer = 'daniel' if self.role['first_job']==4 else 'peter'
+        self.assistant = 'william'
+        self.profession_local = self.role['first_job'] in (1,4)
+        if world.map=='magicsea':
+            self.npcs.update(senna=(87614,357250),goldie=(90260,349526),nila=(89463,360213),
+                             ditto=(90311,364658),gannon=(86299,350092),nic=(86507,364804))
+            self.destinations={2:'senna',707:'senna',708:'senna',709:'senna',710:'senna'}
+            self.letter_stops={707:'goldie',708:'nila',709:'ditto'}
+            self.grind={710:(188,1691)}
+            self.profession_local=self.role['first_job']==5
+            if self.profession_local:
+                self.destinations.update({60:'gannon',80:'gannon',81:'nic',82:'nic',83:'gannon'})
+                self.grind.update({80:(43,None),82:(62,3129)})
+                self.trainer,self.assistant='gannon','nic'
+        elif world.map=='darkblue':
+            self.npcs.update(senna=(131577,50700),goldie=(134423,52988),nila=(134926,53992),
+                             ditto=(135298,49926),ray=(136573,57078),mo=(123788,61340))
+            self.destinations={3:'senna',713:'senna',714:'senna',715:'senna',716:'senna'}
+            self.letter_stops={713:'goldie',714:'nila',715:'ditto'}
+            self.grind={716:(234,1597)}
+            self.profession_local=self.role['first_job']==2
+            if self.profession_local:
+                self.destinations.update({59:'ray',98:'ray',99:'mo',150:'mo',151:'ray'})
+                self.grind.update({98:(240,None),150:(234,1779)})
+                self.trainer,self.assistant='ray','mo'
+        if not self.profession_local:
+            self.destinations[{1:58,2:59,4:61,5:60}[self.role['first_job']]]='other_map'
         self.journal = {}
         self.journal_ready = False
         self.events = deque(maxlen=64)
@@ -129,7 +159,7 @@ class Adventure:
                 self.delivered += 1
                 self.pending = None
                 self.context = None
-                self.destination = {58:'peter',62:'peter',63:'william',64:'william',61:'daniel',158:'daniel',159:'william',160:'william'}.get(identity,'senna')
+                self.destination = {58:'peter',62:'peter',63:'william',64:'william',61:'daniel',158:'daniel',159:'william',160:'william',59:'ray',98:'ray',99:'mo',150:'mo',60:'gannon',80:'gannon',81:'nic',82:'nic'}.get(identity,'senna')
                 self.subvisit = None
                 self.next_visit = 0
         elif command in (801,802,803,822,827):
@@ -143,18 +173,31 @@ class Adventure:
         return self.grind.get(active) if active in self.grind and self.journal[active] == 0 else None
 
     def desired_models(self):
-        level = self.world.own.values.get(0,1)
-        task = self.farm()
-        if task and FARMS[task[0]][0] <= level:
-            return {task[0]}
-        highest = max((lv for lv,_ in FARMS.values() if lv <= min(level,10)), default=1)
-        return {model for model,(lv,_) in FARMS.items() if max(1,highest-2) <= lv <= highest}
+        level=self.world.own.values.get(0,1)
+        farms = ({int(m):(r['level'],r['points']) for m,r in self.region['farms'].items()}
+                 if self.region else FARMS)
+        task=self.farm()
+        wanted=set()
+        if task:
+            if task[0] in farms and farms[task[0]][0]<=level:wanted.add(task[0])
+            if task[1] and self.region:
+                droppers=[int(m) for m,r in self.region['farms'].items() if task[1] in r['drops'] and r['level']<=level]
+                if droppers:
+                    wanted.add(min(droppers,key=lambda m:farms[m][0]))
+            if wanted:return wanted
+        highest=max((lv for lv,_ in farms.values() if lv<=min(level,15)),default=1)
+        return {model for model,(lv,_) in farms.items() if max(1,highest-2)<=lv<=highest}
+
+    def farm_goals(self):
+        farms=({int(m):(r['level'],r['points']) for m,r in self.region['farms'].items()}
+               if self.region else FARMS)
+        return [p for model in sorted(self.desired_models()) for p in farms[model][1]]
 
     def choose_destination(self):
         active = self.active()
         if active:
-            if active in LETTER_STOPS and self.subvisit == active:
-                return LETTER_STOPS[active]
+            if active in self.letter_stops and self.subvisit == active:
+                return self.letter_stops[active]
             return self.destinations[active]
         return self.destination
 
@@ -201,15 +244,15 @@ class Adventure:
                 self.deadline = now+8
             else:
                 self.missing_offers += 1
-                if active in LETTER_STOPS:
+                if active in self.letter_stops:
                     self.subvisit = active if key == 'senna' else None
                     self.settle(now)
-                elif not active and self.role['first_job'] in (2,5):
+                elif not active and not self.profession_local:
                     self.destination = 'senna'
                     self.settle(now,120)
                 elif not active and self.world.own.values.get(0,1) >= 9:
-                    trainer = 'daniel' if self.role['first_job']==4 else 'peter'
-                    self.destination = {'senna':trainer,trainer:'william','william':'senna'}.get(key,'senna')
+                    trainer = self.trainer
+                    self.destination = {'senna':trainer,trainer:self.assistant,self.assistant:'senna'}.get(key,'senna')
                     self.settle(now,20)
                 else:
                     self.settle(now,120)
@@ -220,8 +263,8 @@ class Adventure:
             self.last_needs = needs
             if button == 8:
                 active = self.active()
-                if active in LETTER_STOPS and key == 'senna': self.subvisit = active
-                self.settle(now,5 if active in LETTER_STOPS else 60)
+                if active in self.letter_stops and key == 'senna': self.subvisit = active
+                self.settle(now,5 if active in self.letter_stops else 60)
                 return
             # These audited quests have no item reward selection. Unknown choices pause.
             if choice == 0 and len(prizes) > 1:
@@ -255,7 +298,7 @@ class Adventure:
         if foreign:
             self.reason = 'обнаружен квест другой профессии; автоматические квесты приостановлены'
             return False
-        if self.role['first_job'] in (2,5) and self.active() in (59,60):
+        if not self.profession_local and self.active() in (58,59,60,61):
             self.reason = 'путь '+self.role['label']+': переход на другую карту ещё не реализован'
             return False
         while self.events:
@@ -286,18 +329,18 @@ class Adventure:
         if now < self.next_visit or self.farm():
             return False
         key = self.choose_destination()
-        position = NPCS[key]
+        position = self.npcs[key]
         # Use only a real visible NPC at the audited location, never a saved world ID.
         npc = next((e for e in self.world.entities.values() if e.control in (2,3)
                     and math.dist(e.position,position)<450),None)
         self.reason = 'задание: путь к '+key
         if policy.target:
             from hunter import movement
-            policy.emit(movement(self.world.own_id,policy.sequence,[self.world.own.position]*2))
+            policy.emit(movement(self.world.own_id,policy.sequence,[policy.position(now)]*2))
             policy.target = None
             policy.next_action = now+1
             return True
-        if npc and math.dist(npc.position,self.world.own.position) <= 220:
+        if npc and math.dist(npc.position,policy.position(now)) <= 220:
             self.send(301,talk_request(npc.identity))
             self.requests += 1
             self.context = npc.identity,key,'talk',None

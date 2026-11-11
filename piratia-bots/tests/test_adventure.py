@@ -46,6 +46,7 @@ class QuestTests(unittest.TestCase):
         quest = Adventure(w,send,role=role(first))
         quest.journal_ready = True
         policy = Mock()
+        policy.position.side_effect = lambda now: w.own.position
         policy.target = None
         return w,send,quest,policy
 
@@ -215,6 +216,7 @@ class LootTests(unittest.TestCase):
     def test_only_quest_items_from_recent_attacks_with_server_xp_credit(self):
         w = scene()
         policy = Mock()
+        policy.position.side_effect = lambda now: w.own.position
         policy.sequence = 3
         loot = QuestLoot(w)
         loot.note_attack(88,0)

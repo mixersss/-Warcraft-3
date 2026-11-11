@@ -24,7 +24,7 @@ def prepare_accounts(count):
     result = subprocess.run(
         [str(powershell), '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy',
          'Bypass', '-File', str(ROOT / 'src/provision.ps1'), '-Count', str(count)],
-        capture_output=True, timeout=120, encoding='utf-8', errors='replace')
+        capture_output=True, timeout=600, encoding='utf-8', errors='replace')
     if result.returncode:
         # Helper stderr contains only a stage/type/SQL number, never SQL or credentials.
         reason = result.stderr.strip()[:300]
@@ -64,15 +64,18 @@ def ensure_character(bot, client, chars):
     if chars:
         raise ProtocolError('На аккаунте бота найден другой персонаж. Автосоздание остановлено.')
     if 'creation_body' in bot:
-        client.create_character(bot['character'], body=bot['creation_body'])
+        from roles import RoleStore
+        from regions import birthplace_for
+        role=RoleStore(ROOT/'data/bot-roles.json').resolve(bot['character'],bot['creation_body'],0)
+        client.create_character(bot['character'],body=bot['creation_body'],birthplace=birthplace_for(role['first_job']))
     else:
         client.create_character(bot['character'])
     return None  # Reconnect to retrieve the authoritative server-side character list.
 
 
-def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None):
+def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha10'
+    report.result['version'] = 'AutoAccountsAlpha11'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -110,12 +113,12 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         print(f"Бот {index}: {bot['character']} вошёл в мир без окна игры.")
         if mode in ('hunt','adventure'):
             from hunter import hunt
-            from navigation import Navigation
-            nav = navigation or Navigation(ROOT / 'assets/argent-navigation.json')
+            from regions import Regions
+            nav = navigation or Regions(ROOT/'assets')
             from roles import RoleStore
             hunt(client, seconds, stop, report, nav, lambda text: print(f'Бот {index}: {text}'),
                  bot_name=bot['character'], chat_budget=chat_budget, adventure_mode=(mode=='adventure'),
-                 role_store=RoleStore(ROOT / 'data/bot-roles.json'))
+                 role_store=RoleStore(ROOT / 'data/bot-roles.json'),fleet=fleet,bot_index=index)
         else:
             client.idle(seconds, stop)
         report.stage('interrupted' if stop.is_set() else 'completed')
@@ -135,29 +138,30 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
                 pass
         if sock:
             sock.close()
+        if fleet:fleet.update(index,connected=False,state=report.result.get('stage','finished'))
         report.write(report_dir / f'bot-report-{index:02d}.json')
     return succeeded
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--count', type=int, default=1)
-    parser.add_argument('--seconds', type=int, default=900)
+    parser.add_argument('--count', type=int, default=30)
+    parser.add_argument('--seconds', type=int, default=3600)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure'), default='adventure')
     args = parser.parse_args()
-    if not 1 <= args.count <= 10 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
-        parser.error('count: 1..10; seconds: 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 60 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
+        parser.error('count: 1..60; seconds: 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — классы, задания и фарм без окна игры (Alpha 10).')
+    print('Пиратия — классы, задания и фарм без окна игры (Alpha 11).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha10'
+    setup_report.result['version'] = 'AutoAccountsAlpha11'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -188,10 +192,12 @@ def main():
         for index, bot in enumerate(bots):
             bot['creation_body'] = index % 4 + 1
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
-        from navigation import Navigation
+        from regions import Regions
         from social import ChatBudget
-        navigation = Navigation(ROOT / 'assets/argent-navigation.json')
+        navigation = Regions(ROOT/'assets')
         chat_budget = ChatBudget()
+        from fleet import Fleet
+        fleet=Fleet(args.count,ROOT/'population-status.json')
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=args.count)
         try:
             futures = []
@@ -200,7 +206,12 @@ def main():
                     if index > 1 and stop.wait(1.5):
                         break
                     futures.append(pool.submit(run_bot, index, bot, args.port, args.seconds, stop,
-                                               ROOT, args.mode, navigation, chat_budget))
+                                               ROOT, args.mode, navigation, chat_budget, fleet))
+                remaining=set(futures)
+                while remaining:
+                    _,remaining=concurrent.futures.wait(remaining,timeout=30)
+                    status=fleet.write()
+                    print(f"В мире: {status['connected']}/{args.count}; города: {status['cities']}")
                 results = [future.result() for future in futures]
             except KeyboardInterrupt:
                 print('\nОстанавливаю ботов обычным выходом…')
@@ -209,6 +220,7 @@ def main():
         finally:
             stop.set()
             pool.shutdown(wait=True)
+            fleet.write()
         setup_report.stage('completed' if all(results) else 'some_bots_failed')
         setup_report.result['successful_bots'] = sum(results)
         print(f'Проверку завершили: {sum(results)} из {len(bots)} ботов.')

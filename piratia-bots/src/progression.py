@@ -14,6 +14,7 @@ class Progression:
     def __init__(self, world, send, first_job=1):
         self.world, self.send = world, send
         self.first_job = first_job
+        self.target_job = None
         self.pending = None
         self.disabled = False
         self.confirmed = self.requests = 0
@@ -42,7 +43,7 @@ class Progression:
         strength, constitution = values.get(primary), values.get(CON)
         # Only the pinned first-profession build; no guesses for advanced classes.
         if (not 0 < points <= 10000 or strength is None or constitution is None
-                or self.world.own.model not in compatible or values.get(4) not in (0, self.first_job)):
+                or self.world.own.model not in compatible or values.get(4) not in ({0, self.first_job} | ({self.target_job} if self.target_job else set()))):
             return
         # Maintain a 2:1 primary:CON tendency using authoritative current values.
         attribute = CON if strength > constitution * 2 else primary

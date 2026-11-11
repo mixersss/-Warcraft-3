@@ -59,9 +59,18 @@ def main():
         elif address == 0x4013c0:
             ret(state['attrs'].get(arg(1),0),4)
         elif address == 0x4d8db0:  # CKitbag::IsSingleChange
-            ret(0,8)
+            ret(1 if state.get('bag') and (arg(1)&65535) in state['bag_changed'] else 0,8)
         elif address == 0x423360:  # CKitbag::GetGridContByID
-            ret(0x2016000 if state.get('append') and (arg(1) & 65535)==0 else 0,8)
+            ret((0x201a000+(arg(1)&65535)*256 if state.get('bag') and (arg(1)&65535) in state['bag_items'] else
+                 0x2016000 if state.get('append') and (arg(1)&65535)==0 else 0),8)
+        elif address == 0x417070:
+            ret(6)
+        elif address == 0x418ce0:
+            kind=43 if (arg(1)&65535)==3988 else 22
+            put(0x2019134,kind)
+            ret(0x2019000)
+        elif address == 0x4ee6c0:
+            ret(0,4)
         elif address == 0x4c5550:  # ItemIsAppendLook, synthetic known append item
             ret(1,4)
         elif address == 0x4e5a60:  # changed skill count
@@ -130,6 +139,29 @@ def main():
         result.clear()
         call(0x506090,[0x2014000,0,44,0])
         fixtures[label+'_attrs'] = bytes(result).hex()
+    state['append']=False
+    state['bag']=True
+    state['bag_changed']={0,1,2,3}
+    state['bag_items']={0:289,1:1847,3:3988}
+    for slot,identity in state['bag_items'].items():
+        ptr=0x201a000+slot*256
+        u.mem_write(ptr,bytes(200))
+        u.mem_write(ptr,struct.pack('<6H',identity,1,100,100,50,50))
+        u.mem_write(ptr+0xa0,b'\x01')
+        if slot==0:
+            u.mem_write(ptr+0x9e,b'\x01')
+            u.mem_write(ptr+0x16,struct.pack('<10H',25,1,26,2,27,3,28,4,29,5))
+    result.clear()
+    call(0x4e5b00,[actor+0x4d20,0x2014000,0])
+    fixtures['bag_init']=bytes(result).hex()
+    state['bag_changed']={0,5}
+    state['bag_items']={5:1}
+    u.mem_write(0x201a000+5*256,bytes(200))
+    u.mem_write(0x201a000+5*256,struct.pack('<6H',1,1,100,100,50,50))
+    u.mem_write(0x201a000+5*256+0xa0,b'\x01')
+    result.clear()
+    call(0x4e5b00,[actor+0x4d20,0x2014000,1])
+    fixtures['bag_delta']=bytes(result).hex()
     args.output.parent.mkdir(parents=True,exist_ok=True)
     args.output.write_text(json.dumps(fixtures,indent=2)+'\n')
     print('Captured synthetic native base/attribute writer fixtures; no live game test.')

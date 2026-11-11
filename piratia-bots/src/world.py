@@ -1,6 +1,7 @@
 """Bounded world packets for the supplied 2008 GameServer, not modern layouts."""
 import struct
 import time
+import math
 from dataclasses import dataclass, field
 from classic_wire import Reader, ProtocolError
 
@@ -25,7 +26,7 @@ def attrs(reader):
     return result
 
 
-def skip_look(reader):
+def skip_look(reader, equipment=None):
     synchronization, model, boat = reader.byte(), reader.short(), reader.byte()
     if synchronization not in (0, 1) or boat not in (0, 1):
         raise ProtocolError('Unsupported classic appearance')
@@ -33,11 +34,15 @@ def skip_look(reader):
         reader.take(14)
         return model
     reader.short()  # hair
+    if equipment is not None:
+        equipment.clear()
     # Native WriteLookData 0x4e5d60 uses TEN slots, no modern DBID/level fields.
-    for _ in range(10):
+    for slot in range(10):
         item = reader.short()
         if not item:
             continue
+        if equipment is not None:
+            equipment[slot] = item
         if synchronization == 1:
             reader.take(5)  # current endurance/energy, valid
             continue
@@ -68,6 +73,7 @@ class Entity:
     values: dict = field(default_factory=dict)
     seen_at: float = field(default_factory=time.monotonic)
     name: str = ''  # Transient for addressed chat; never included in reports.
+    equipment: dict = field(default_factory=dict)
 
     @property
     def position(self):
@@ -100,7 +106,8 @@ def entity(reader):
     reader.byte()  # event object type
     reader.short()  # event ID
     reader.string_bytes()
-    skip_look(reader)
+    equipment = {}
+    skip_look(reader, equipment)
     reader.byte()  # PK control
     # Append-look is a separate FOUR-slot block (defESPE_KBGRID_NUM), not
     # the ten normal equipment slots consumed by skip_look above.
@@ -111,11 +118,11 @@ def entity(reader):
         raise ProtocolError('Unrecognized classic entity fields')
     if not 0 <= x < 409600 or not 0 <= y < 409600 or radius > 2000 or state > 16:
         raise ProtocolError('Unrecognized classic position/state')
-    return Entity(model, identity, handle, control, state, x, y, radius, name=name)
+    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment)
 
 
 class World:
-    def __init__(self):
+    def __init__(self, item_types=None):
         self.entities = {}
         self.items = {}
         self.own_id = None
@@ -125,6 +132,72 @@ class World:
         self.damage_events = 0
         self.failed_actions = 0
         self.decode_info = {}
+        self.item_types = item_types or {}
+        self.bag = {}
+        self.bag_ready = self.bag_disabled = False
+        self.bag_capacity = None
+        self.motion = {}
+        self.move_revision = 0
+        self.move_state = 0
+        self.look_revision = 0
+        self.skills = {}
+
+    def position(self, now=None, identity=None):
+        """Bounded prediction along the SERVER's route; raw x/y remain authoritative."""
+        identity = self.own_id if identity is None else identity
+        actor = self.entities.get(identity)
+        if actor is None:
+            return None
+        moving = self.motion.get(identity)
+        if not moving:
+            return actor.position
+        points, started, speed = moving
+        remaining = max(0,(time.monotonic() if now is None else now)-started)*speed
+        for a,b in zip(points,points[1:]):
+            length=math.dist(a,b)
+            if length and remaining<length:
+                ratio=remaining/length
+                return round(a[0]+(b[0]-a[0])*ratio),round(a[1]+(b[1]-a[1])*ratio)
+            remaining-=length
+        return points[-1]
+
+    def freeze_prediction(self, now):
+        point = self.position(now)
+        if point:
+            self.motion[self.own_id] = ([point],now,0)
+
+    def read_skills(self, reader):
+        self.default_skill=reader.short()
+        sync,count=reader.byte(),reader.short()
+        if count>256:raise ProtocolError('Too many skills')
+        if sync==0:self.skills={}
+        for _ in range(count):
+            identity,state,level=reader.short(),reader.byte(),reader.byte()
+            sp,endurance,energy=reader.short(),reader.short(),reader.short()
+            interval=reader.long()
+            if reader.short():reader.take(6)
+            if level:self.skills[identity]={'level':level,'state':state,'sp':sp,'interval_ms':interval}
+            else:self.skills.pop(identity,None)
+        self.decode_info['skill_count']=count
+
+    def read_bag(self, reader):
+        if self.bag_disabled:
+            return
+        from inventory import kitbag
+        try:
+            sync,capacity,changes=kitbag(reader,self.item_types)
+            if sync==0:
+                self.bag={}
+                self.bag_capacity=capacity
+                self.bag_ready=True
+            for slot,item in changes.items():
+                if self.bag_capacity is not None and slot>=self.bag_capacity:
+                    raise ProtocolError('Bag slot exceeds capacity')
+                if item is None:self.bag.pop(slot,None)
+                else:self.bag[slot]=item
+        except ProtocolError:
+            self.bag_disabled=True
+            self.decode_info['inventory']='unsupported_packet'
 
     @property
     def own(self):
@@ -143,16 +216,8 @@ class World:
         if own.control != 1:
             raise ProtocolError('Expected the main player character')
         self.decode_info.update(phase='skills',offset=reader.position,append_look_slots=4)
-        default_skill = reader.short()
-        reader.byte()
-        count = reader.short()
-        if count > 256:
-            raise ProtocolError('Too many initial skills')
-        self.decode_info['skill_count'] = count
-        for _ in range(count):
-            reader.take(14)
-            if reader.short():
-                reader.take(6)  # range[1..3], not modern extended ranges
+        self.read_skills(reader)
+        default_skill=self.default_skill
         self.decode_info.update(phase='skill_states',offset=reader.position)
         state_count = reader.byte()
         self.decode_info['skill_state_count'] = state_count
@@ -161,10 +226,18 @@ class World:
         own.values = attrs(reader)
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
             raise ProtocolError('Initial health/level could not be decoded')
-        # Inventory/shortcuts/boats follow; this prototype does not manipulate them.
+        self.motion.clear()
+        self.items.clear()
+        self.move_revision += 1
+        self.move_state = 1
+        self.bag = {}
+        self.bag_ready = self.bag_disabled = False
+        self.bag_capacity = None
         self.entities = {own.identity: own}
         self.own_id, self.map, self.default_skill = own.identity, map_name, default_skill
         self.decode_info.update(phase='complete',offset=reader.position,attribute_count=len(own.values))
+        if reader.position < len(reader.data):
+            self.read_bag(reader)
 
     def observe(self, command, payload):
         reader = Reader(payload)
@@ -196,6 +269,7 @@ class World:
             identity = reader.long()
             if identity != self.own_id:
                 self.entities.pop(identity, None)
+                self.motion.pop(identity,None)
         elif command == 509:
             identity = reader.long()
             values = attrs(reader)
@@ -215,6 +289,15 @@ class World:
                 if not 0 <= x < 409600 or not 0 <= y < 409600:
                     raise ProtocolError('Invalid authoritative movement position')
                 if current:
+                    route=list(struct.iter_unpack('<ii',points))
+                    if any(not 0<=v<409600 for point in route for v in point):
+                        raise ProtocolError('Invalid server movement route')
+                    stamp=time.monotonic()
+                    self.motion[identity]=(route if not state else [route[-1]],stamp,
+                                           max(1,min(current.values.get(SPEED,480),3000)))
+                    if identity==self.own_id:
+                        self.move_revision+=1
+                        self.move_state=state
                     current.x, current.y = x, y
                     if stop is not None:
                         current.state = stop
@@ -235,6 +318,13 @@ class World:
                     if state & 0x100:
                         current.state = 7
                 self.damage_events += 1
+            elif action == 5 and current:
+                skip_look(reader,current.equipment)
+                if identity==self.own_id:self.look_revision+=1
+            elif action == 7 and identity==self.own_id:
+                self.read_skills(reader)
+            elif action == 6 and identity==self.own_id:
+                self.read_bag(reader)
         elif command == 520:
             self.failed_actions += 1
         self.updates += 1

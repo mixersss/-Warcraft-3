@@ -1,0 +1,77 @@
+{
+  "artifact": "Piratia-Auto-Bots-Alpha11.zip",
+  "sha256": "6bc52ad452b659b4be72db47f975b15414ea8771deb17e3531f34e33aecbfefd",
+  "status": "30-bot default; continuous movement, native inventory/equipment, three-city quest pilot; live test pending",
+  "native_windows_server_tested": false,
+  "pure_python_tests_passed": 83,
+  "full_python_suite_total": 91,
+  "socket_tests_not_rerun_this_release": 8,
+  "last_full_network_regression": "24 passed in Alpha 06",
+  "current_network_regression": "8 integration tests blocked by sandbox; elevated retry cancelled",
+  "default_bot_count": 30,
+  "default_duration_seconds": 3600,
+  "three_city_spawn_and_trainer_routes_verified": true,
+  "chat_phrase_count": 107,
+  "live_thirty_connections_tested": false,
+  "native_action_serialization_compared": [
+    "movement",
+    "normal attack",
+    "local speech",
+    "base attributes",
+    "NPC talk",
+    "quest selection",
+    "quest accept/deliver",
+    "item pickup",
+    "item use/equip",
+    "skill upgrade",
+    "return to city"
+  ],
+  "native_world_writers_captured": [
+    "base info",
+    "look",
+    "append-look (4 slots)",
+    "skillbag",
+    "skill state",
+    "event",
+    "attribute range",
+    "initial kitbag with boat/instance",
+    "kitbag delta"
+  ],
+  "powershell_state_regression": "passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced",
+  "windows_sql_dpapi_runtime_tested": false,
+  "owner_confirmed_previous_release": {
+    "account_creation": true,
+    "login": true,
+    "character_creation": true,
+    "map_entry": true,
+    "movement_and_combat_alpha08": true,
+    "hunting_and_chat_alpha09": true
+  },
+  "begin_play_format": "classic character-name string, native client 0x51a4d0",
+  "secondary_password_setup": "command 346 with uppercase MD5 string; only if login flag says absent",
+  "native_character_look_compared": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "native_journal_writer_captured": true,
+  "live_quest_completion_tested": false,
+  "instances_implemented": false,
+  "creation_appearance": {
+    "type": 1,
+    "hair": 2000,
+    "face": 2554,
+    "source": "native client character creator tables"
+  },
+  "native_gate_crypto_compared": [
+    "3DES encrypt/decrypt",
+    "B encrypt/decrypt",
+    "Noise encrypt/decrypt with evolving state"
+  ],
+  "population_target": 400,
+  "maximum_enabled_bots": 60,
+  "four_hundred_live_connections_tested": false,
+  "chat_ai": "local rules only",
+  "runtime": "Python >=3.9; standard library only"
+}

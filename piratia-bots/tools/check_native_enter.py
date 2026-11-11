@@ -72,6 +72,8 @@ def main():
         elif address == 0x54ee40:
             writes.append(('short', stack_arg(1) & 65535))
             return_stub(4, 1)
+        elif address == 0x516540:
+            return_stub(0,0x2007000)
         elif address == 0x56ce90:  # Localized log format, not packet content.
             return_stub(4, 0x2007000)
         elif address == 0x5b7470:  # Stack-cookie check, no packet effects.
@@ -116,7 +118,7 @@ def main():
     emulator.mem_write(0x6001d0, struct.pack('<I', 0x201f000))
     put(0x2003014, 123)
     points = ((223200,278700),(223700,278900))
-    for kind in (1, 2, 8):
+    for kind in (1, 2, 8, 11):
         writes.clear()
         submitted.clear()
         put(0x200131c, kind)
@@ -125,6 +127,10 @@ def main():
             emulator.mem_write(0x2004004, struct.pack('<iiii', *points[0], *points[1]))
             put(0x2004104, 2)
             expected = movement(123,1,points)
+        elif kind == 11:
+            emulator.mem_write(0x2004000,struct.pack('<hh',3,-1))
+            from hunter import action_header
+            expected=action_header(123,11,11)+struct.pack('>hh',3,-1)
         elif kind == 8:
             emulator.mem_write(0x2004000,struct.pack('<II',456,1456))
             from hunter import action_header
@@ -147,11 +153,12 @@ def main():
         for field, value in writes[1:]:
             if field == 'long': encoded.extend(struct.pack('>I',value))
             elif field == 'char': encoded.append(value)
+            elif field == 'short': encoded.extend(struct.pack('>H',value))
             elif field == 'sequence': encoded.extend(struct.pack('>H',len(value))+value)
             else: raise AssertionError('Unexpected action writer')
         if bytes(encoded) != expected:
             raise AssertionError(f'Action {kind} does not match native serialization calls')
-    print('Movement, normal attack and item pickup match native BeginAction serialization.')
+    print('Movement, normal attack, item pickup and item use match native BeginAction serialization.')
     from social import say_request
     from progression import attribute_request
     text = 'Привет :)'
@@ -194,6 +201,18 @@ def main():
         if body!=expected:
             raise AssertionError(f'Native NPC request mismatch at {address:x}')
     print('NPC talk, quest selection, accept and delivery match native client serializers.')
+    for address,arguments,expected in (
+        (0x51a920,(66,1),[('command',11),('short',66),('char',1)]),
+        (0x5080c0,(1,),[('command',10),('char',1)])):
+        writes.clear()
+        submitted.clear()
+        emulator.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
+        emulator.reg_write(UC_X86_REG_ESP,0x1100000)
+        emulator.reg_write(UC_X86_REG_ECX,0x2000000)
+        emulator.emu_start(address,0xf00000,count=1000000)
+        if writes!=expected or submitted!=[True]:
+            raise AssertionError(f'Native skill/revive mismatch at {address:x}: {writes}')
+    print('Skill upgrade and return-to-city match native client serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

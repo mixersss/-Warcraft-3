@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-10'
-NAME = 'Piratia-Auto-Bots-Alpha10'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-11'
+NAME = 'Piratia-Auto-Bots-Alpha11'
 
 
 def main():
@@ -31,14 +31,20 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'pinned class paths, Argent quest and quest-loot pilot; live quest acceptance not yet validated',
+        'status': '30-bot default; continuous movement, native inventory/equipment, three-city quest pilot; live test pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 63,
-        'full_python_suite_total': 71,
+        'pure_python_tests_passed': 83,
+        'full_python_suite_total': 91,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup'],
-        'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range'],
+        'current_network_regression': '8 integration tests blocked by sandbox; elevated retry cancelled',
+        'default_bot_count': 30,
+        'default_duration_seconds': 3600,
+        'three_city_spawn_and_trainer_routes_verified': True,
+        'chat_phrase_count': 107,
+        'live_thirty_connections_tested': False,
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city'],
+        'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
         'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'hunting_and_chat_alpha09': True},
@@ -52,7 +58,7 @@ def main():
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
         'population_target': 400,
-        'maximum_enabled_bots': 10,
+        'maximum_enabled_bots': 60,
         'four_hundred_live_connections_tested': False,
         'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',

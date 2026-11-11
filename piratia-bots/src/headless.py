@@ -73,7 +73,7 @@ class Client:
             if len(payload) < 20:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
-        elif command in (501, 504, 505, 506, 507, 508, 509, 520, 801, 802, 803, 822, 827, 828, 830, 831, 832):
+        elif command in (501, 504, 505, 506, 507, 508, 509, 516, 520, 801, 802, 803, 822, 827, 828, 830, 831, 832):
             if self.world_handler:
                 self.world_handler(command, payload)
             else:
@@ -176,7 +176,7 @@ class Client:
             else:
                 self.service(command, payload)
 
-    def create_character(self, name, body=1):
+    def create_character(self, name, body=1, birthplace='Argent City'):
         """Exact classic client layout: two strings and a packed 1626-byte LOOK.
 
         Native SendChaToServ 0x4c16c0: type +2, face item +0xa6,
@@ -185,10 +185,12 @@ class Client:
         import re
         if not re.fullmatch(r'Bot[0-9a-f]{8}', name):
             raise ValueError('Character name must be an automatically generated bot name')
+        if birthplace not in ('Argent City','Shaitan City','Icicle Castle'):
+            raise ValueError('Unknown birthplace')
         look = creation_look(body)
         self.report.stage('creating_character')
         self.report.result['creation_appearance'] = {'type': body, 'hair': (2000,2062,2124,2291)[body-1], 'face': 2554, 'look_bytes': 1626}
-        self.wire.send(435, string(name) + string('Argent City') + sequence(look))
+        self.wire.send(435, string(name) + string(birthplace) + sequence(look))
         _, payload = self.wait({935}, timeout=35)
         code = Reader(payload).short()
         if code:
