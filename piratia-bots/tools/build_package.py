@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-02'
-NAME = 'Piratia-Auto-Bots-Alpha02'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-03'
+NAME = 'Piratia-Auto-Bots-Alpha03'
 
 
 def main():
@@ -14,6 +14,7 @@ def main():
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
+    sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -31,6 +32,7 @@ def main():
         'status': 'automatic account/character creation and headless connection alpha; gameplay AI not implemented',
         'native_windows_server_tested': False,
         'automated_tests': 18,
+        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
         'native_character_look_compared': True,
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',

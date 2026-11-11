@@ -74,6 +74,21 @@ server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
 
+### Alpha 03: persistence fix
+
+The owner reported `save_bot_identities ArgumentException` before any account inserts.
+Reproduced in real PowerShell 7.4.6: passing `$null` for the string backup-path argument
+of System.IO.File.Replace becomes an empty string and throws ArgumentException.
+State persistence now lives in `state_store.ps1`, uses a concrete unique backup path
+and retains the previous encrypted state. Existing Alpha 02 state is read unchanged;
+an incomplete `.tmp` from a failed save is replaced by the next complete serialization.
+No SQL records are reset, deleted or rewritten by this fix.
+
+`tests/test_state_store.ps1` reproduces the old failure and checks three incremental
+saves, previous-state backup contents, and a restart with an existing cache and stale
+temporary file. Passed with real PowerShell 7.4.6 on Linux. This does not imply a native
+Windows PowerShell 5.1, Windows DPAPI or SQL Server integration test has passed.
+
 ### Alpha 02: automatic setup and classic character creation
 
 `provision.ps1` uses System.Data.SqlClient with Windows Integrated Security against

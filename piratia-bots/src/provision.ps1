@@ -4,6 +4,7 @@ $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 Add-Type -AssemblyName System.Security
 Add-Type -AssemblyName System.Data
+. (Join-Path $PSScriptRoot 'state_store.ps1')
 
 # Only the owner's local SQL instance, using the current Windows identity.
 # No SQL credentials, server configuration changes or GM grants are required.
@@ -14,17 +15,6 @@ $lock = $null
 $connection = $null
 $transaction = $null
 $setupStage = 'local_state'
-
-function Save-State($State) {
-    $temporary = "$statePath.tmp"
-    $json = ConvertTo-Json -InputObject $State -Depth 8
-    [IO.File]::WriteAllText($temporary, $json, (New-Object Text.UTF8Encoding($false)))
-    if ([IO.File]::Exists($statePath)) {
-        [IO.File]::Replace($temporary, $statePath, $null)
-    } else {
-        [IO.File]::Move($temporary, $statePath)
-    }
-}
 
 function Protect-Password([string]$Password) {
     $bytes = [Text.Encoding]::UTF8.GetBytes($Password)
@@ -123,7 +113,9 @@ FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.account_login', N'U');
             account="PB$suffix"; character=('Bot' + $suffix.Substring(0,8))
             password_dpapi=(Protect-Password (New-Password))
         }
-        Save-State $state
+        $script:setupStage = 'write_bot_state'
+        Save-BotState -State $state -Path $statePath
+        $setupStage = 'save_bot_identities'
     }
     $outputBots = @()
     foreach ($entry in @($state.bots | Select-Object -First $Count)) {
@@ -173,7 +165,8 @@ INSERT dbo.account_login ([id],[name],[password]) VALUES (@next,@name,@hash);
     $failure = $_.Exception
     while ($null -ne $failure.InnerException) { $failure = $failure.InnerException }
     if ($failure -is [Data.SqlClient.SqlException]) { $sqlCode = ' SQL=' + $failure.Number }
-    [Console]::Error.WriteLine('Account setup failed. Stage=' + $setupStage + $sqlCode + ' ' + $failure.GetType().Name)
+    $location = ' Line=' + $_.InvocationInfo.ScriptLineNumber
+    [Console]::Error.WriteLine('Account setup failed. Stage=' + $setupStage + $sqlCode + ' ' + $failure.GetType().Name + $location)
     exit 1
 } finally {
     if ($null -ne $transaction) { try { $transaction.Rollback() } catch {}; $transaction.Dispose() }
