@@ -1,0 +1,13 @@
+{
+  "artifact": "Piratia-Headless-Connection-Alpha01.zip",
+  "sha256": "795a80eb753144ddc7edaa1b57a0e03b72220480d7d7c5fcdf464f8b0e7d89c1",
+  "status": "connection compatibility alpha; gameplay AI not implemented",
+  "native_windows_server_tested": false,
+  "automated_tests": 11,
+  "native_gate_crypto_compared": [
+    "3DES encrypt/decrypt",
+    "B encrypt/decrypt",
+    "Noise encrypt/decrypt with evolving state"
+  ],
+  "runtime": "Python >=3.9; standard library only"
+}
