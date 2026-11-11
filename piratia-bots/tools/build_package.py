@@ -5,13 +5,14 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'headless-connection-01'
-NAME = 'Piratia-Headless-Connection-Alpha01'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-02'
+NAME = 'Piratia-Auto-Bots-Alpha02'
 
 
 def main():
     sources = [ROOT / 'Start-Bot.cmd', ROOT / 'README.md', ROOT / 'PROTOCOL.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
+    sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
@@ -27,9 +28,11 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'connection compatibility alpha; gameplay AI not implemented',
+        'status': 'automatic account/character creation and headless connection alpha; gameplay AI not implemented',
         'native_windows_server_tested': False,
-        'automated_tests': 11,
+        'automated_tests': 18,
+        'windows_sql_dpapi_runtime_tested': False,
+        'native_character_look_compared': True,
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
         'runtime': 'Python >=3.9; standard library only',

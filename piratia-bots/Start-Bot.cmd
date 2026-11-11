@@ -11,10 +11,10 @@ echo https://www.python.org/downloads/windows/
 echo Select "Add python.exe to PATH", then run this file again.
 goto done
 :use_py
-py -3 src\headless.py
+py -3 src\auto_bots.py
 goto done
 :use_python
-python src\headless.py
+python src\auto_bots.py
 :done
 echo.
 pause

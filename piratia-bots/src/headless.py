@@ -124,9 +124,31 @@ class Client:
             else:
                 self.service(command, payload)
 
-    def idle(self, seconds):
+    def create_character(self, name):
+        """Exact classic client layout: two strings and a packed 1626-byte LOOK.
+
+        Native SendChaToServ 0x4c16c0: type +2, face item +0xa6,
+        hair +0x658. NewCha 0x51a5c0 sends the LOOK as a sequence, not three ints.
+        """
+        import re
+        if not re.fullmatch(r'Bot[0-9a-f]{8}', name):
+            raise ValueError('Character name must be an automatically generated bot name')
+        look = bytearray(1626)
+        struct.pack_into('<H', look, 2, 1)       # Lance type.
+        struct.pack_into('<H', look, 0x658, 100) # Default hair, CharacterInfo[1].
+        struct.pack_into('<H', look, 0xa6, 2000) # Default face item.
+        look[0xa6 + 0xa0] = 1                   # SItemGrid constructor availability.
+        self.report.stage('creating_character')
+        self.wire.send(435, string(name) + string('Argent City') + sequence(look))
+        _, payload = self.wait({935}, timeout=35)
+        code = Reader(payload).short()
+        if code:
+            raise ServerError('create_character', code)
+        self.report.stage('character_created')
+
+    def idle(self, seconds, stop=None):
         deadline = time.monotonic() + seconds
-        while time.monotonic() < deadline:
+        while time.monotonic() < deadline and not (stop and stop.is_set()):
             try:
                 command, payload = self.wire.receive(min(deadline, time.monotonic() + 1))
                 self.service(command, payload)

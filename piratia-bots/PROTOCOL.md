@@ -1,7 +1,8 @@
 # Classic protocol compatibility notes
 
 This is an owner-operated localhost diagnostic client, not a replacement server.
-It implements no GM commands, SQL changes, gameplay automation or character creation.
+It implements no GM commands or gameplay AI. Alpha 02 adds scoped account inserts
+using the owner's local Windows SQL identity and native network character creation.
 
 ## Evidence
 
@@ -72,6 +73,44 @@ interpreted yet. 537 answers 17; 515 echoes five u32 values in command 15.
 server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
+
+### Alpha 02: automatic setup and classic character creation
+
+`provision.ps1` uses System.Data.SqlClient with Windows Integrated Security against
+localhost\SQLEXPRESS / AccountServer only. It validates dbo.account_login metadata,
+generates its own PB + 12 hexadecimal account names, and inserts a standard uppercase
+MD5 password hash. Nullable/default columns are left to database defaults. Unsupported
+required columns stop setup. Identity IDs are left to SQL; non-identity integer IDs
+use a serializable transaction and locked MAX(id)+1. Existing rows are read under locks
+and must match the saved bot hash; no UPDATE/DELETE/DDL or GM grants are issued.
+
+Random credentials are saved before insertion in an atomic local JSON file, with the
+password encrypted using Windows DPAPI CurrentUser. A dedicated process lock prevents
+two launchers for the same folder; the provisioning helper has its own file lock.
+Credential JSON is passed to Python over a private child-process pipe, never logged.
+Repeated launches reuse saved identities; world character creation is requested only
+on an empty account. A differently named existing character causes a stop.
+
+Native client **NewCha at 0x51a5c0** sends command 435, character name string,
+birthplace string, and a **1626-byte LOOK sequence**. It does NOT send modern type/hair/
+face uint32 fields. Reply 935 begins with u16 error. The default Lance LOOK is captured
+from native **SendChaToServ at 0x4c16c0**, with model type=1, hair=100, face=2000:
+
+* Zero-filled 1626 bytes.
+* Little-endian u16 type at offset 2 = 1.
+* Face SItemGrid at offset 166: u16 item ID=2000, availability byte at +160=1.
+* Little-endian u16 hair at offset 1624 = 100.
+
+The native UI capture emulates the original SItemGrid constructor and memory copies;
+UI text validation/serialization and network submission are stubbed. It verifies the
+LOOK bytes, not live server acceptance. After successful creation, reconnect and read
+the authoritative character slot list before entering; only three bounded relogin
+attempts allow normal server-side logout to finish. Login flags are never reset by SQL.
+
+18 tests cover the codecs, state transitions and creation packet, including failure
+and reuse cases. SQL Server and DPAPI have **not** been executed in this Linux workspace.
+They require the owner's Windows run. Schema checks and transaction logic have been
+reviewed, but are not represented as a passing native SQL integration test.
 
 Standard DES known-answer vector, native Gate golden vectors and a fragmented/
 coalesced local socket mock cover the implemented handshake. The native vector

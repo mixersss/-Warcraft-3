@@ -1,0 +1,15 @@
+{
+  "artifact": "Piratia-Auto-Bots-Alpha02.zip",
+  "sha256": "63467ef5e9aa477a4ef0a9eda37a8c95f41fca4519b0bdb2e1ed9857bef395e1",
+  "status": "automatic account/character creation and headless connection alpha; gameplay AI not implemented",
+  "native_windows_server_tested": false,
+  "automated_tests": 18,
+  "windows_sql_dpapi_runtime_tested": false,
+  "native_character_look_compared": true,
+  "native_gate_crypto_compared": [
+    "3DES encrypt/decrypt",
+    "B encrypt/decrypt",
+    "Noise encrypt/decrypt with evolving state"
+  ],
+  "runtime": "Python >=3.9; standard library only"
+}
