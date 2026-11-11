@@ -1,0 +1,18 @@
+{
+  "source_sha256": "a77996a46b9aad45669e2e4f8b266dc05d4f57c4053249428d4edbb5377fb41f",
+  "result_sha256": "79f9e8aaeab8f6765a6d6bffdf8e685e02eb6ae15db5a5b27a8d4d70d7b17bfa",
+  "size": 628,
+  "record_size": 208,
+  "record_count": 3,
+  "address_offsets": [
+    112,
+    128,
+    320,
+    336,
+    528,
+    544
+  ],
+  "new_address": "127.0.0.1",
+  "unchanged_outside_address_fields": true,
+  "native_client_login_tested": false
+}
