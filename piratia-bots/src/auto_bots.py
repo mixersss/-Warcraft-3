@@ -67,9 +67,9 @@ def ensure_character(bot, client, chars):
     return None  # Reconnect to retrieve the authoritative server-side character list.
 
 
-def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle'):
+def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha08'
+    report.result['version'] = 'AutoAccountsAlpha09'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -108,8 +108,9 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle'):
         if mode == 'hunt':
             from hunter import hunt
             from navigation import Navigation
-            nav = Navigation(ROOT / 'assets/argent-navigation.json')
-            hunt(client, seconds, stop, report, nav, lambda text: print(f'Бот {index}: {text}'))
+            nav = navigation or Navigation(ROOT / 'assets/argent-navigation.json')
+            hunt(client, seconds, stop, report, nav, lambda text: print(f'Бот {index}: {text}'),
+                 bot_name=bot['character'], chat_budget=chat_budget)
         else:
             client.idle(seconds, stop)
         report.stage('interrupted' if stop.is_set() else 'completed')
@@ -140,18 +141,18 @@ def main():
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt'), default='hunt')
     args = parser.parse_args()
-    if not 1 <= args.count <= 10 or not 5 <= args.seconds <= 600 or not 1 <= args.port <= 65535:
-        parser.error('count: 1..10; seconds: 5..600; port: 1..65535')
+    if not 1 <= args.count <= 10 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
+        parser.error('count: 1..10; seconds: 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — первая охота без окна игры (Alpha 08).')
+    print('Пиратия — первая охота без окна игры (Alpha 09).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha08'
+    setup_report.result['version'] = 'AutoAccountsAlpha09'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -180,11 +181,19 @@ def main():
         setup_report.result['bot_count'] = len(bots)
         setup_report.write(report_path)
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
+        from navigation import Navigation
+        from social import ChatBudget
+        navigation = Navigation(ROOT / 'assets/argent-navigation.json')
+        chat_budget = ChatBudget()
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=args.count)
         try:
-            futures = [pool.submit(run_bot, index, bot, args.port, args.seconds, stop, ROOT, args.mode)
-                       for index, bot in enumerate(bots, 1)]
+            futures = []
             try:
+                for index, bot in enumerate(bots, 1):
+                    if index > 1 and stop.wait(1.5):
+                        break
+                    futures.append(pool.submit(run_bot, index, bot, args.port, args.seconds, stop,
+                                               ROOT, args.mode, navigation, chat_budget))
                 results = [future.result() for future in futures]
             except KeyboardInterrupt:
                 print('\nОстанавливаю ботов обычным выходом…')

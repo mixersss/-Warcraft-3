@@ -62,7 +62,7 @@ class Client:
             if len(payload) < 20:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
-        elif command in (504, 505, 508, 509, 520):
+        elif command in (501, 504, 505, 508, 509, 520):
             if self.world_handler:
                 self.world_handler(command, payload)
             else:

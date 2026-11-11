@@ -1,0 +1,53 @@
+{
+  "artifact": "Piratia-Auto-Bots-Alpha09.zip",
+  "sha256": "e56300e7a0f89d8748cc4927d472c383a4f9db256a1a8febb7a2c771ff7e08e1",
+  "status": "earned attribute allocation and local chat pilot; new actions require live owner validation",
+  "native_windows_server_tested": false,
+  "pure_python_tests_passed": 45,
+  "full_python_suite_total": 53,
+  "socket_tests_not_rerun_this_release": 8,
+  "last_full_network_regression": "24 passed in Alpha 06",
+  "native_action_serialization_compared": [
+    "movement",
+    "normal attack",
+    "local speech",
+    "base attributes"
+  ],
+  "native_world_writers_captured": [
+    "base info",
+    "look",
+    "append-look (4 slots)",
+    "skillbag",
+    "skill state",
+    "event",
+    "attribute range"
+  ],
+  "powershell_state_regression": "passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced",
+  "windows_sql_dpapi_runtime_tested": false,
+  "owner_confirmed_previous_release": {
+    "account_creation": true,
+    "login": true,
+    "character_creation": true,
+    "map_entry": true,
+    "movement_and_combat_alpha08": true
+  },
+  "begin_play_format": "classic character-name string, native client 0x51a4d0",
+  "secondary_password_setup": "command 346 with uppercase MD5 string; only if login flag says absent",
+  "native_character_look_compared": true,
+  "creation_appearance": {
+    "type": 1,
+    "hair": 2000,
+    "face": 2554,
+    "source": "native client character creator tables"
+  },
+  "native_gate_crypto_compared": [
+    "3DES encrypt/decrypt",
+    "B encrypt/decrypt",
+    "Noise encrypt/decrypt with evolving state"
+  ],
+  "population_target": 400,
+  "maximum_enabled_bots": 10,
+  "four_hundred_live_connections_tested": false,
+  "chat_ai": "local rules only",
+  "runtime": "Python >=3.9; standard library only"
+}

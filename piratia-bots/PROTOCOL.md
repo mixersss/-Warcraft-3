@@ -274,3 +274,37 @@ check uses optional development-only Unicorn, with the exact uploaded executable
 it does not launch Windows, account services or a real game world. Integration
 tests use a mock, not the actual server. Windows console launch and live login
 still require the owner's local run. No assertion of functioning combat AI is made.
+
+### Alpha 09: earned attribute allocation, local chat, future population quotas
+
+Owner confirmed Alpha08 enters, approaches mobs and attacks on their Windows server.
+New Alpha09 actions have codec/policy checks, **no live acceptance confirmation yet**.
+
+Native client `Say` **0x51a6f0** writes command1 + a sequence containing CP1251 text
+and terminal NUL. Native server sender around **0x4f960e** writes501 + source worldID
+u32 + NUL-terminated text sequence. The parser retains nearby character names only
+in bounded transient world state for addressed replies; it logs neither names nor text.
+A process-shared lock/budget permits one total line per15sec, perbot >=90sec; a
+human sender is answered once per300sec by that bot. Replies expire after20sec and
+only visible non-Bot-prefixed player entities are eligible. This is local rule matching.
+
+Native client `SynBaseAttribute` **0x51a780** writes command8 + byte count + pairs
+u16 attributeID/u32 **absolute new value**. Native CChaAttr values at+0x24, changed
+mask+0x34c; STR25..LUK30. Emulation executes the original changed-bit/value readers
+and captures STR25->17. Runtime sends exactly one +1 request against authoritative
+AP6 and current attribute value, waits for both value and AP deduction, and disables
+allocation after a10sec timeout. Only unpromoted Lance uses the initial melee build.
+No SQL/GM grant or local authoritative stat mutation is used. Server stores progress.
+
+Current concurrent runtime is still a bounded1..10 threaded pilot, now sharing the
+read-only navigation grid and chat limiter; login launches stagger by1.5sec. It is
+**not** the final400-connection manager. Offline `population.py` uses integral max
+flow for body/profession compatibility from supplied MisSdk/TemplateSDK.lua lines
+158..202. Defaults: bodies1..4 each100; jobs8=100,9/12/13/14/16 each60. This six-class
+selection excludes unused/other jobs in the table. It neither changes appearance
+nor grants professions or creates accounts. Equal100 bodies and equal~67 classes
+are infeasible because body2 can only choose job8 among these six.
+
+45 pure offline tests pass; eight existing socket tests not rerun this release.
+400 chat decision policies and400 planned quota records are simulations, not live
+server clients or evidence of400-user server performance.

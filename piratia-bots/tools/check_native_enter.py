@@ -69,6 +69,13 @@ def main():
         elif address == 0x54ebe0:
             writes.append(('char', stack_arg(1) & 255))
             return_stub(4, 1)
+        elif address == 0x54ee40:
+            writes.append(('short', stack_arg(1) & 65535))
+            return_stub(4, 1)
+        elif address == 0x56ce90:  # Localized log format, not packet content.
+            return_stub(4, 0x2007000)
+        elif address == 0x5b7470:  # Stack-cookie check, no packet effects.
+            return_stub(4)
         elif address == 0x54f180:
             writes.append(('sequence', bytes(emulator.mem_read(stack_arg(1), stack_arg(2) & 65535))))
             return_stub(8, 1)
@@ -141,6 +148,29 @@ def main():
         if bytes(encoded) != expected:
             raise AssertionError(f'Action {kind} does not match native serialization calls')
     print('Movement and normal-attack requests match native BeginAction serialization.')
+    from social import say_request
+    from progression import attribute_request
+    text = 'Привет :)'
+    emulator.mem_write(0x2002000, text.encode('cp1251') + b'\0')
+    for address, expected in ((0x51a6f0, [('command', 1), ('sequence', text.encode('cp1251')+b'\0')]),
+                              (0x51a780, [('command', 8), ('char', 1), ('short', 25), ('long', 17)])):
+        writes.clear()
+        submitted.clear()
+        if address == 0x51a780:
+            emulator.mem_write(0x2002000, bytes(0x400))
+            # Native CChaAttr: changed-bit mask +0x34c, values +0x24.
+            emulator.mem_write(0x200234f, b'\x02')  # changed STR=25
+            put(0x2002088, 17)  # 0x24 + 25*4
+        put(0x1100000, 0xf00000)
+        put(0x1100004, 0x2002000)
+        emulator.reg_write(UC_X86_REG_ESP, 0x1100000)
+        emulator.reg_write(UC_X86_REG_ECX, 0x2000000)
+        emulator.emu_start(address, 0xf00000, count=1000000)
+        if writes != expected or submitted != [True]:
+            raise AssertionError(f'Unexpected native speech/attribute writes: {writes}')
+    assert say_request(text) == struct.pack('>H',len(text.encode('cp1251'))+1)+text.encode('cp1251')+b'\0'
+    assert attribute_request(25,17) == b'\x01'+struct.pack('>HI',25,17)
+    print('Local chat and base-attribute request match native classic serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

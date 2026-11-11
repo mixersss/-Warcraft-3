@@ -5,12 +5,12 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-08'
-NAME = 'Piratia-Auto-Bots-Alpha08'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-09'
+NAME = 'Piratia-Auto-Bots-Alpha09'
 
 
 def main():
-    sources = [ROOT / 'Start-Bot.cmd', ROOT / 'README.md', ROOT / 'PROTOCOL.md']
+    sources = sorted(ROOT.glob('Start*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -31,23 +31,27 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'first bounded PvE hunter prototype; live movement/combat requires owner test',
+        'status': 'earned attribute allocation and local chat pilot; new actions require live owner validation',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 36,
-        'full_python_suite_total': 44,
+        'pure_python_tests_passed': 45,
+        'full_python_suite_total': 53,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
-        'native_action_serialization_compared': ['movement', 'normal attack'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
-        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True},
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
         'secondary_password_setup': 'command 346 with uppercase MD5 string; only if login flag says absent',
         'native_character_look_compared': True,
         'creation_appearance': {'type': 1, 'hair': 2000, 'face': 2554, 'source': 'native client character creator tables'},
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
+        'population_target': 400,
+        'maximum_enabled_bots': 10,
+        'four_hundred_live_connections_tested': False,
+        'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')

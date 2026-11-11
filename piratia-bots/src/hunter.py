@@ -2,8 +2,11 @@
 import math
 import struct
 import time
+import random
 from classic_wire import sequence
-from classic_wire import ProtocolError
+from classic_wire import ProtocolError, Reader
+from progression import Progression
+from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 
 
@@ -29,7 +32,7 @@ def normal_attack(actor, number, fight, skill, target, handle, position):
 
 
 class Hunter:
-    def __init__(self, world, navigation, send, report, tell=print):
+    def __init__(self, world, navigation, send, report, tell=print, seed=None):
         self.world, self.nav, self.send = world, navigation, send
         self.report, self.tell = report, tell
         self.home = world.own.position
@@ -47,6 +50,11 @@ class Hunter:
         self.last_target_hp = None
         self.target_since = 0
         self.started = time.monotonic()
+        self.rng = random.Random(str(seed or world.own.identity))
+        self.move_interval = self.rng.uniform(2.5, 3.1)
+        self.attack_interval = self.rng.uniform(2.0, 2.5)
+        self.route = list(range(len(navigation.waypoints)))
+        self.rng.shuffle(self.route)
 
     def change(self, value):
         if self.mode != value:
@@ -72,7 +80,7 @@ class Hunter:
             travelled += step
         self.emit(movement(own.identity, self.sequence, points))
         self.moves += 1
-        self.next_action = now + 2.5
+        self.next_action = now + self.move_interval
         if distance(own.position, self.last_position) < 40:
             self.stuck += 1
         else:
@@ -158,10 +166,10 @@ class Hunter:
             self.emit(normal_attack(own.identity, self.sequence, self.fight, self.world.default_skill,
                                     target.identity, target.handle, own.position))
             self.attacks += 1
-            self.next_action = now+2  # no spam or attack-speed override
+            self.next_action = now+self.attack_interval
             return
         self.change('поиск мобов у Аргента')
-        goal = self.nav.waypoints[self.waypoint % len(self.nav.waypoints)]
+        goal = self.nav.waypoints[self.route[self.waypoint % len(self.route)]]
         if distance(own.position, goal) < 300 or not self.move_to(goal, now):
             self.waypoint += 1
             self.next_action = now+2
@@ -171,7 +179,7 @@ class Hunter:
                 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
 
-def hunt(client, seconds, stop, report, navigation, tell=print):
+def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None):
     report.stage('reading_world')
     world = World()
     try:
@@ -180,11 +188,22 @@ def hunt(client, seconds, stop, report, navigation, tell=print):
         report.result['world_decode'] = world.decode_info
         raise
     report.result['world_decode'] = world.decode_info
-    policy = Hunter(world, navigation, client.wire.send, report, tell)
-    client.world_handler = world.observe
+    policy = Hunter(world, navigation, client.wire.send, report, tell, bot_name)
+    progression = Progression(world, client.wire.send)
+    social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name)
+
+    def observe(command, payload):
+        if command == 501:
+            reader = Reader(payload)
+            source, text = reader.long(), reader.string()
+            social.hear(source, text, time.monotonic())
+        else:
+            world.observe(command, payload)
+
+    client.world_handler = observe
     try:
         while client.pending_world:
-            world.observe(*client.pending_world.popleft())
+            observe(*client.pending_world.popleft())
         report.stage('hunting')
         tell(f'Данные мира: {world.map}, координаты {world.own.x//100},{world.own.y//100}, '
              f'здоровье {world.own.values[HP]}/{world.own.values[MAX_HP]}.')
@@ -196,8 +215,16 @@ def hunt(client, seconds, stop, report, navigation, tell=print):
             except TimeoutError:
                 pass
             policy.tick()
+            now = time.monotonic()
+            alive = world.own.alive
+            safe = (alive and now-policy.started >= 3 and not policy.resting
+                    and world.own.values.get(HP, 0) > world.own.values.get(MAX_HP, 1) * .5)
+            progression.tick(now, safe)
+            social.tick(now, policy.resting, alive and now-policy.started >= 3)
             if time.monotonic()-client.wire.last_send > 2:
                 client.wire.heartbeat()
     finally:
         report.result['hunt'] = policy.summary()
+        report.result['progression'] = progression.summary()
+        report.result['chat'] = social.summary()
         client.world_handler = None

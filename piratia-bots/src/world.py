@@ -67,6 +67,7 @@ class Entity:
     radius: int
     values: dict = field(default_factory=dict)
     seen_at: float = field(default_factory=time.monotonic)
+    name: str = ''  # Transient for addressed chat; never included in reports.
 
     @property
     def position(self):
@@ -83,7 +84,7 @@ def entity(reader):
     reader.string_bytes()  # names deliberately not retained in world reports
     reader.byte()  # GM level
     handle, control = reader.long(), reader.byte()
-    reader.string_bytes()
+    name = reader.string()
     reader.string_bytes()
     reader.short()  # icon
     reader.long()  # guild ID
@@ -110,7 +111,7 @@ def entity(reader):
         raise ProtocolError('Unrecognized classic entity fields')
     if not 0 <= x < 409600 or not 0 <= y < 409600 or radius > 2000 or state > 16:
         raise ProtocolError('Unrecognized classic position/state')
-    return Entity(model, identity, handle, control, state, x, y, radius)
+    return Entity(model, identity, handle, control, state, x, y, radius, name=name)
 
 
 class World:
