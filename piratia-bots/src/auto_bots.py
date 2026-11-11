@@ -58,16 +58,16 @@ def ensure_character(bot, client, chars):
     """Never take control of an unrelated character, even on a saved bot account."""
     matching = [char for char in chars if char['name'] == bot['character']]
     if matching:
-        return matching[0]['slot']
+        return matching[0]['name']
     if chars:
         raise ProtocolError('На аккаунте бота найден другой персонаж. Автосоздание остановлено.')
     client.create_character(bot['character'])
-    return None  # Reconnect to retrieve the authoritative server-side slot list.
+    return None  # Reconnect to retrieve the authoritative server-side character list.
 
 
 def run_bot(index, bot, port, seconds, stop, report_dir):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha04'
+    report.result['version'] = 'AutoAccountsAlpha05'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -76,8 +76,8 @@ def run_bot(index, bot, port, seconds, stop, report_dir):
             report.stage('cancelled')
             return False
         sock, client, chars = connect_bot(bot, report, port)
-        slot = ensure_character(bot, client, chars)
-        if slot is None:
+        selected_name = ensure_character(bot, client, chars)
+        if selected_name is None:
             print(f'Бот {index}: персонаж создан автоматически.')
             client.logout()
             sock.close()
@@ -95,11 +95,11 @@ def run_bot(index, bot, port, seconds, stop, report_dir):
             matching = [char for char in chars if char['name'] == bot['character']]
             if not matching:
                 raise ProtocolError('Сервер принял создание, но персонаж отсутствует в списке после входа.')
-            slot = matching[0]['slot']
+            selected_name = matching[0]['name']
         if stop.is_set():
             report.stage('cancelled')
             return False
-        client.enter(slot)
+        client.enter(selected_name)
         print(f"Бот {index}: {bot['character']} вошёл в мир без окна игры.")
         client.idle(seconds, stop)
         report.stage('interrupted' if stop.is_set() else 'completed')
@@ -134,13 +134,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — автоматические аккаунты и персонажи (Alpha 04).')
+    print('Пиратия — автоматические аккаунты и персонажи (Alpha 05).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Пока проверяем создание и вход: боты стоят в мире {args.seconds} секунд, боевого ИИ ещё нет.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha04'
+    setup_report.result['version'] = 'AutoAccountsAlpha05'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

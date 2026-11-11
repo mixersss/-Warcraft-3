@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-04'
-NAME = 'Piratia-Auto-Bots-Alpha04'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-05'
+NAME = 'Piratia-Auto-Bots-Alpha05'
 
 
 def main():
@@ -31,10 +31,11 @@ def main():
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
         'status': 'automatic account/character creation and headless connection alpha; gameplay AI not implemented',
         'native_windows_server_tested': False,
-        'automated_tests': 18,
+        'automated_tests': 20,
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
         'windows_sql_dpapi_runtime_tested': False,
-        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': False},
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True},
+        'begin_play_format': 'classic character-name string, native client 0x51a4d0',
         'native_character_look_compared': True,
         'creation_appearance': {'type': 1, 'hair': 2000, 'face': 2554, 'source': 'native client character creator tables'},
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',

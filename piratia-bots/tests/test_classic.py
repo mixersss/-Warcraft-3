@@ -140,7 +140,8 @@ class LoginTests(unittest.TestCase):
                 b.sendall(frame(931, reply) + frame(537, cipher=wire.out_cipher))
                 if not populated:
                     return
-                self.assertEqual(wire.receive(time.monotonic() + 2), (433, b'\x01'))
+                # Native classic BeginPlay transmits the character name, not slot 1.
+                self.assertEqual(wire.receive(time.monotonic() + 2), (433, string('Бот')))
                 wire.send(933, b'\0\0')
                 wire.send(516, b'\0\0' + bytes(128))
                 self.assertEqual(wire.receive(time.monotonic() + 2), (17, b''))
@@ -166,7 +167,7 @@ class LoginTests(unittest.TestCase):
             self.assertEqual(len(chars), int(populated))
             if populated:
                 self.assertEqual(chars[0]['slot'], 1)
-                client.enter(1)
+                client.enter(chars[0]['name'])
                 self.assertTrue(client.entered)
                 client.idle(.05)
                 client.logout()

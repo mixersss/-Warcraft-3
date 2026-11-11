@@ -18,11 +18,33 @@ from test_classic import frame
 
 
 class AutomaticCreationTests(unittest.TestCase):
+    def test_classic_begin_play_uses_native_name_string(self):
+        report = Report()
+        client = Client(Mock(), report)
+        client.wire = Mock()
+        client.wire.receive.side_effect = [(933, b'\0\0'), (516, b'\0\0')]
+        client.enter('Bot12345678')
+        # Golden encoding from native BeginPlay -> WriteString, not a slot byte.
+        client.wire.send.assert_called_once_with(433, b'\x00\x0cBot12345678\x00')
+        self.assertTrue(client.entered)
+        self.assertEqual(report.result['begin_play_format'], 'character_name_string')
+        self.assertNotIn('Bot12345678', json.dumps(report.result))
+
+    def test_begin_play_refusal_does_not_select_other_characters(self):
+        client = Client(Mock(), Report())
+        client.wire = Mock()
+        client.wire.receive.return_value = (933, struct.pack('>H', 524))
+        with self.assertRaises(ServerError) as caught:
+            client.enter('Bot12345678')
+        self.assertEqual(caught.exception.code, 524)
+        self.assertFalse(client.entered)
+        client.wire.send.assert_called_once_with(433, b'\x00\x0cBot12345678\x00')
+
     def test_character_reused_without_creation(self):
         client = Mock()
         bot = {'character': 'Bot12345678'}
         chars = [{'slot': 2, 'name': bot['character']}]
-        self.assertEqual(ensure_character(bot, client, chars), 2)
+        self.assertEqual(ensure_character(bot, client, chars), 'Bot12345678')
         client.create_character.assert_not_called()
 
     def test_unrelated_character_is_never_selected_or_modified(self):
@@ -93,7 +115,7 @@ class AutomaticCreationTests(unittest.TestCase):
             first.create_character.assert_called_once_with(bot['character'])
             first.logout.assert_called_once()
             first_sock.close.assert_called_once()
-            second.enter.assert_called_once_with(0)
+            second.enter.assert_called_once_with('Bot12345678')
             second.logout.assert_called_once()
             saved = (Path(temporary) / 'bot-report-01.json').read_text()
             for value in bot.values():

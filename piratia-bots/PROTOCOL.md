@@ -66,13 +66,35 @@ VC signed-char to unsigned-int conversion before remainder; negative Python modu
 would be incompatible. Initial Noise seed uses the last four non-NUL challenge
 bytes and signed-short(version squared times 0x1111 times 2).
 
-433 BeginPlay: one zero-based slot byte. 933 may report a refusal. Only a successful
+433 BeginPlay: character-name string (u16 byte length including NUL, name, NUL).
+The supplied native client does not send a slot byte. 933 may report a refusal. Only a successful
 516 EnterMap marks the client as in the world. The remaining world payload is not
 interpreted yet. 537 answers 17; 515 echoes five u32 values in command 15.
 434 EndPlay waits for 934 before 432 Logout. On timeout TCP closes through the normal
 server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
+
+### Alpha 05: classic BeginPlay takes the character name
+
+The owner's Alpha 04 run confirms all three characters are created successfully;
+all three subsequently received 524 (ERR_PT_INVALIDCHA) on entering the world.
+Alpha 04 incorrectly used the later source revision's slot-byte BeginPlay request.
+The supplied native client **BeginPlay at 0x51a4d0** writes command 433 and then calls
+**WriteString at 0x54f330** with the character name. It does not call WriteChar.
+
+`tools/check_native_enter.py` executes the hash-pinned BeginPlay method in Unicorn,
+stubbing SDK allocation/writers/network to capture the native serialization calls.
+It confirms exactly `(command,433),(string,Bot12345678)`. This is method-call capture,
+not an unmodified live client or game-server test. The encrypted socket integration
+test and the new golden request test now expect the name string; an error-524 test
+confirms the client stops rather than trying unrelated characters or changing SQL.
+Auto mode selects the exact saved character name from the authenticated server list.
+Slot numbers remain only UI information; they are not sent to classic BeginPlay.
+
+20 Python tests pass. The existing accounts, character records, appearance data and
+encrypted credentials are preserved. Live acceptance of the corrected request is
+still pending the owner's next run.
 
 ### Alpha 04: creation appearance IDs
 
@@ -139,10 +161,10 @@ from native **SendChaToServ at 0x4c16c0**, with type=1, creator hair=2000, face=
 The native UI capture emulates the original SItemGrid constructor and memory copies;
 UI text validation/serialization and network submission are stubbed. It verifies the
 LOOK bytes, not live server acceptance. After successful creation, reconnect and read
-the authoritative character slot list before entering; only three bounded relogin
+the authoritative character list before entering; only three bounded relogin
 attempts allow normal server-side logout to finish. Login flags are never reset by SQL.
 
-18 tests cover the codecs, state transitions and creation packet, including failure
+20 tests cover the codecs, state transitions and creation packet, including failure
 and reuse cases. SQL Server and DPAPI have **not** been executed in this Linux workspace.
 They require the owner's Windows run. Schema checks and transaction logic have been
 reviewed, but are not represented as a passing native SQL integration test.

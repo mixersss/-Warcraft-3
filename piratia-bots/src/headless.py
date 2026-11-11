@@ -104,11 +104,14 @@ class Client:
         self.report.stage('character_selection')
         return characters
 
-    def enter(self, slot):
-        if not 0 <= slot <= 2:
-            raise ValueError('Slot must be 0..2')
+    def enter(self, name):
+        # Native classic BeginPlay 0x51a4d0 -> WriteString 0x54f330.
+        # Later source revisions use a slot byte; this supplied EXE uses a name.
+        if not isinstance(name, str) or not 1 <= len(name.encode('cp1251')) <= 16:
+            raise ValueError('Expected a character name of 1..16 encoded bytes')
         self.report.stage('entering_map')
-        self.wire.send(433, bytes([slot]))
+        self.report.result['begin_play_format'] = 'character_name_string'
+        self.wire.send(433, string(name))
         self.begin_requested = True
         deadline = time.monotonic() + 30
         while True:
@@ -213,7 +216,8 @@ def main():
             slot = int(input('Номер персонажа: ')) - 1
             if slot not in {char['slot'] for char in characters}:
                 raise ValueError('Нет персонажа с таким номером.')
-        client.enter(slot)
+        selected = next(char for char in characters if char['slot'] == slot)
+        client.enter(selected['name'])
         print(f'Сервер подтвердил вход в мир. Персонаж стоит {args.seconds} секунд.')
         print('Можешь найти его своим основным персонажем. Для выхода — Ctrl+C.')
         client.idle(args.seconds)
