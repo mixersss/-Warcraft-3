@@ -112,10 +112,18 @@ FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.account_login', N'U');
         $state.bots += [PSCustomObject]@{
             account="PB$suffix"; character=('Bot' + $suffix.Substring(0,8))
             password_dpapi=(Protect-Password (New-Password))
+            secondary_password_dpapi=(Protect-Password (New-Password))
         }
         $script:setupStage = 'write_bot_state'
         Save-BotState -State $state -Path $statePath
         $setupStage = 'save_bot_identities'
+    }
+    # Upgrade the saved Alpha 02-05 cache without changing any login credentials.
+    $setupStage = 'prepare_secondary_passwords'
+    $stateChanged = Initialize-BotSecondaryPasswordState -State $state -Count $Count -CreateProtectedPassword { Protect-Password (New-Password) }
+    if ($stateChanged) {
+        $script:setupStage = 'write_bot_state'
+        Save-BotState -State $state -Path $statePath
     }
     $outputBots = @()
     foreach ($entry in @($state.bots | Select-Object -First $Count)) {
@@ -124,6 +132,7 @@ FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.account_login', N'U');
         if ($entry.account -cnotmatch '^PB[0-9a-f]{12}$' -or
             $entry.character -cnotmatch '^Bot[0-9a-f]{8}$') { throw 'Invalid saved bot identity.' }
         $password = Unprotect-Password $entry.password_dpapi
+        $secondaryPassword = Unprotect-Password $entry.secondary_password_dpapi
         $hash = Password-Hash $password
         $transaction = $connection.BeginTransaction([Data.IsolationLevel]::Serializable)
         $command = $connection.CreateCommand()
@@ -156,7 +165,7 @@ INSERT dbo.account_login ([id],[name],[password]) VALUES (@next,@name,@hash);
         $transaction.Commit()
         $transaction.Dispose()
         $transaction = $null
-        $outputBots += [PSCustomObject]@{account=$entry.account; character=$entry.character; password=$password}
+        $outputBots += [PSCustomObject]@{account=$entry.account; character=$entry.character; password=$password; secondary_password=$secondaryPassword}
     }
     # Private pipe to the Python parent, never printed by the launcher or put in reports.
     [Console]::Out.Write((ConvertTo-Json -InputObject @{bots=@($outputBots)} -Depth 4 -Compress))

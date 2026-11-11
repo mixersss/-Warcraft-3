@@ -74,6 +74,22 @@ def main():
     if writes != [('command', 433), ('string', b'Bot12345678')] or submitted != [True]:
         raise AssertionError(f'Unexpected native BeginPlay writes: {writes}')
     print('Native classic BeginPlay writes command 433 and character-name string.')
+    # The UI hashes the PIN at 0x46390e with md5string (0x577680).
+    # Verify the actual format constant, then capture CS_CreatePassword2.
+    if bytes(emulator.mem_read(0x614ac8, 5)).split(b'\0')[0] != b'%02X':
+        raise AssertionError('Unexpected native MD5 hex case format')
+    writes.clear()
+    submitted.clear()
+    digest = b'25F9E794323B453885F5181F1B624D0B'
+    emulator.mem_write(0x2002000, digest + b'\0')
+    put(0x6c2508, 0x2001000)
+    put(0x1100000, 0xf00000)
+    put(0x1100004, 0x2002000)
+    emulator.reg_write(UC_X86_REG_ESP, 0x1100000)
+    emulator.emu_start(0x507e40, 0xf00000, count=100000)
+    if writes != [('command', 346), ('string', digest)] or submitted != [True]:
+        raise AssertionError('Unexpected native secondary-password request')
+    print('Native secondary-password creation writes command 346 and uppercase MD5 string.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

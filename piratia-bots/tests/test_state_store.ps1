@@ -46,7 +46,18 @@ try {
     $final = [IO.File]::ReadAllText($path) | ConvertFrom-Json
     Assert-True (@($final.bots).Count -eq 3) 'Restart lost bot identities.'
     Assert-True ($final.bots[0].password_dpapi -eq 'encrypted-placeholder-1') 'Restart changed a saved credential.'
-    [Console]::Out.WriteLine('PASS: old ArgumentException reproduced; three saves, backups and restart preserve identities.')
+    # Upgrade an old three-bot cache without touching login data or an existing PIN.
+    Add-Member -InputObject $final.bots[1] -NotePropertyName 'secondary_password_dpapi' -NotePropertyValue 'keep-existing-secondary'
+    $changed = Initialize-BotSecondaryPasswordState -State $final -Count 3 -CreateProtectedPassword { 'protected-secondary-placeholder' }
+    Assert-True $changed 'Old cache did not receive missing secondary-password fields.'
+    Assert-True ($final.bots[1].secondary_password_dpapi -eq 'keep-existing-secondary') 'Existing secondary password was replaced.'
+    Assert-True ($final.bots[0].password_dpapi -eq 'encrypted-placeholder-1') 'Cache migration changed a login credential.'
+    Save-BotState -State $final -Path $path
+    $migrated = [IO.File]::ReadAllText($path) | ConvertFrom-Json
+    $changed = Initialize-BotSecondaryPasswordState -State $migrated -Count 3 -CreateProtectedPassword { throw 'Repeated migration must not generate credentials.' }
+    Assert-True (-not $changed) 'Repeated migration changed saved PINs.'
+    Assert-True ($migrated.bots[2].secondary_password_dpapi -eq 'protected-secondary-placeholder') 'Migrated encrypted field was lost.'
+    [Console]::Out.WriteLine('PASS: old exception reproduced; saves, backups, restart and idempotent PIN migration preserve credentials.')
 } finally {
     [IO.Directory]::Delete($root, $true)
 }

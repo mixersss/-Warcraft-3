@@ -56,7 +56,8 @@ ECB mode and zero padding; padding adds a block when already aligned.
 
 931 response: u16 error; on success encrypted-key sequence, u8 slot count, per slot
 u8 presence and, if present, two strings, u16 level, look sequence; u8 secondary-password
-flag; u32 communication-encryption mode; u32 trailer. Decrypt the session-key sequence
+flag (used to create an absent secondary password before BeginPlay); u32
+communication-encryption mode; u32 trailer. Decrypt the session-key sequence
 with the password-derived 3DES key, then take six bytes as the B key.
 
 After 931, encrypt command and payload only: Noise then B. Reverse order for
@@ -74,6 +75,30 @@ interpreted yet. 537 answers 17; 515 echoes five u32 values in command 15.
 server disconnect path. No forced process termination or SQL login-status edits.
 
 ## Validation limits
+
+### Alpha 06: secondary password required before entry
+
+The owner's Alpha 05 run receives 534 (ERR_PT_INVALID_PW2) after character selection.
+The login secondary-password flag was previously read and discarded. Auto mode now
+uses it: when absent, send command **346**, a string containing uppercase ASCII MD5
+hex of a separate saved secondary password, then require response **941** + u16 zero
+before proceeding. When the flag says set, no create/update/reset request is sent.
+
+Native UI at **0x46390e** calls md5string **0x577680**, whose format constant at
+**0x614ac8** is `%02X`. Native **CS_CreatePassword2 at 0x507e40** writes 346 and calls
+WriteString. `check_native_enter.py` captures these calls from the supplied executable
+as well as BeginPlay. It stubs SDK I/O; native server acceptance remains untested here.
+
+The SQL helper adds `secondary_password_dpapi` to old cache entries only when missing,
+with a separate generated nine-character password protected by DPAPI CurrentUser.
+Existing login passwords, account names, character names and saved secondary secrets
+are preserved. Persist before sending to the server, so an interrupted run retains the
+same secret. No direct GameDB password update or server password-check bypass is used.
+
+24 Python tests include successful encrypted PIN creation -> BeginPlay -> map entry,
+skipping an already set password, failure handling, and secret exclusion from reports.
+The real PowerShell persistence test covers an old-cache upgrade and an idempotent
+repeat, using a dummy protected-string factory; it is not a Windows DPAPI test.
 
 ### Alpha 05: classic BeginPlay takes the character name
 
@@ -164,7 +189,7 @@ LOOK bytes, not live server acceptance. After successful creation, reconnect and
 the authoritative character list before entering; only three bounded relogin
 attempts allow normal server-side logout to finish. Login flags are never reset by SQL.
 
-20 tests cover the codecs, state transitions and creation packet, including failure
+24 tests cover the codecs, state transitions and creation packet, including failure
 and reuse cases. SQL Server and DPAPI have **not** been executed in this Linux workspace.
 They require the owner's Windows run. Schema checks and transaction logic have been
 reviewed, but are not represented as a passing native SQL integration test.

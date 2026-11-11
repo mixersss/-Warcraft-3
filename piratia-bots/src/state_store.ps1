@@ -1,4 +1,20 @@
 # Shared by the Windows setup helper and the standalone persistence regression test.
+function Initialize-BotSecondaryPasswordState {
+    param([Parameter(Mandatory=$true)]$State,
+          [ValidateRange(1,10)][int]$Count,
+          [Parameter(Mandatory=$true)][scriptblock]$CreateProtectedPassword)
+    $changed = $false
+    foreach ($entry in @($State.bots | Select-Object -First $Count)) {
+        if ($null -eq $entry.PSObject.Properties['secondary_password_dpapi']) {
+            $protected = [string](& $CreateProtectedPassword)
+            if ([string]::IsNullOrWhiteSpace($protected)) { throw 'Missing protected secondary password.' }
+            Add-Member -InputObject $entry -NotePropertyName 'secondary_password_dpapi' -NotePropertyValue $protected
+            $changed = $true
+        }
+    }
+    return $changed
+}
+
 function Save-BotState {
     param([Parameter(Mandatory=$true)]$State,
           [Parameter(Mandatory=$true)][string]$Path)

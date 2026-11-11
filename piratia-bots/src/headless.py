@@ -9,7 +9,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from classic_crypto import PacketCipher, login_proof, noise_seed, session_key
+from classic_crypto import PacketCipher, login_proof, noise_seed, password_key, session_key
 from classic_wire import ProtocolError, Reader, Wire, sequence, string
 
 
@@ -41,6 +41,7 @@ class Client:
     def __init__(self, sock, report):
         self.wire, self.report = Wire(sock, report.event), report
         self.authenticated = self.entered = self.begin_requested = False
+        self.has_secondary_password = False
 
     def wait(self, wanted, timeout=20):
         deadline = time.monotonic() + timeout
@@ -90,7 +91,11 @@ class Client:
                 name, job, level = reader.string(), reader.string(), reader.short()
                 reader.sequence()  # Native character look; no renderer needed.
                 characters.append({'slot': slot, 'name': name, 'job': job, 'level': level})
-        reader.byte()  # Has secondary password; not required for entering a character.
+        secondary_flag = reader.byte()
+        if secondary_flag not in (0, 1):
+            raise ProtocolError('Invalid secondary-password flag')
+        self.has_secondary_password = bool(secondary_flag)
+        self.report.result['secondary_password_set'] = self.has_secondary_password
         encryption = reader.long()
         reader.long()  # Native response trailer.
         reader.end()
@@ -103,6 +108,29 @@ class Client:
         self.report.result['communication_encryption'] = encryption
         self.report.stage('character_selection')
         return characters
+
+    def ensure_secondary_password(self, secret):
+        """Create an absent PIN via the classic client's normal request, never reset one.
+
+        Native UI 0x46390e hashes to uppercase MD5; CS_CreatePassword2 at
+        0x507e40 sends command 346 and the hash string. Reply: 941 + u16 error.
+        """
+        if self.has_secondary_password:
+            return False
+        import re
+        if not isinstance(secret, str) or not re.fullmatch(r'[A-Za-z0-9]{9}', secret):
+            raise ValueError('Expected the saved nine-character bot secondary password')
+        self.report.stage('creating_secondary_password')
+        self.wire.send(346, string(password_key(secret)))
+        _, payload = self.wait({941}, timeout=30)
+        code = Reader(payload).short()
+        if code:
+            raise ServerError('create_secondary_password', code)
+        self.has_secondary_password = True
+        self.report.result['secondary_password_set'] = True
+        self.report.result['secondary_password_created'] = True
+        self.report.stage('character_selection')
+        return True
 
     def enter(self, name):
         # Native classic BeginPlay 0x51a4d0 -> WriteString 0x54f330.

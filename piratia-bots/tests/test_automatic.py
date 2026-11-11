@@ -18,6 +18,35 @@ from test_classic import frame
 
 
 class AutomaticCreationTests(unittest.TestCase):
+    def test_secondary_password_uses_classic_md5_string(self):
+        report = Report()
+        client = Client(Mock(), report)
+        client.wire = Mock()
+        client.wait = Mock(return_value=(941, b'\0\0'))
+        self.assertTrue(client.ensure_secondary_password('123456789'))
+        client.wire.send.assert_called_once_with(346, b'\x00\x2125F9E794323B453885F5181F1B624D0B\x00')
+        self.assertTrue(client.has_secondary_password)
+        self.assertNotIn('25F9E794', json.dumps(report.result))
+        self.assertNotIn('123456789', json.dumps(report.result))
+
+    def test_existing_secondary_password_is_never_overwritten(self):
+        client = Client(Mock(), Report())
+        client.has_secondary_password = True
+        client.wire = Mock()
+        self.assertFalse(client.ensure_secondary_password('123456789'))
+        client.wire.send.assert_not_called()
+
+    def test_secondary_password_refusal_stops_before_entry(self):
+        client = Client(Mock(), Report())
+        client.wire = Mock()
+        client.wait = Mock(return_value=(941, struct.pack('>H', 534)))
+        with self.assertRaises(ServerError) as caught:
+            client.ensure_secondary_password('123456789')
+        self.assertEqual(caught.exception.stage, 'create_secondary_password')
+        self.assertFalse(client.has_secondary_password)
+        self.assertFalse(client.begin_requested)
+        self.assertEqual(client.wire.send.call_count, 1)
+
     def test_classic_begin_play_uses_native_name_string(self):
         report = Report()
         client = Client(Mock(), report)

@@ -36,7 +36,8 @@ def prepare_accounts(count):
         for bot in bots:
             if (not re.fullmatch(r'PB[0-9a-f]{12}', bot['account'])
                     or not re.fullmatch(r'Bot[0-9a-f]{8}', bot['character'])
-                    or not re.fullmatch(r'[A-Za-z0-9]{9}', bot['password'])):
+                    or not re.fullmatch(r'[A-Za-z0-9]{9}', bot['password'])
+                    or not re.fullmatch(r'[A-Za-z0-9]{9}', bot['secondary_password'])):
                 raise ValueError()
         return bots
     except (ValueError, TypeError, KeyError):
@@ -48,6 +49,7 @@ def connect_bot(bot, report, port):
     client = Client(sock, report)
     try:
         chars = client.login(bot['account'], bot['password'])
+        client.ensure_secondary_password(bot['secondary_password'])
         return sock, client, chars
     except BaseException:
         sock.close()
@@ -67,7 +69,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha05'
+    report.result['version'] = 'AutoAccountsAlpha06'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -76,6 +78,8 @@ def run_bot(index, bot, port, seconds, stop, report_dir):
             report.stage('cancelled')
             return False
         sock, client, chars = connect_bot(bot, report, port)
+        if report.result.get('secondary_password_created'):
+            print(f'Бот {index}: второй пароль задан автоматически.')
         selected_name = ensure_character(bot, client, chars)
         if selected_name is None:
             print(f'Бот {index}: персонаж создан автоматически.')
@@ -134,13 +138,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — автоматические аккаунты и персонажи (Alpha 05).')
+    print('Пиратия — автоматические аккаунты и персонажи (Alpha 06).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Пока проверяем создание и вход: боты стоят в мире {args.seconds} секунд, боевого ИИ ещё нет.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha05'
+    setup_report.result['version'] = 'AutoAccountsAlpha06'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

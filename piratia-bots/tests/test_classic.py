@@ -101,7 +101,7 @@ class WireTests(unittest.TestCase):
 
 
 class LoginTests(unittest.TestCase):
-    def exercise(self, error=0, populated=True):
+    def exercise(self, error=0, populated=True, secondary=False):
         a, b = socket.socketpair()
         self.addCleanup(a.close)
         self.addCleanup(b.close)
@@ -140,11 +140,17 @@ class LoginTests(unittest.TestCase):
                 b.sendall(frame(931, reply) + frame(537, cipher=wire.out_cipher))
                 if not populated:
                     return
+                if secondary:
+                    self.assertEqual(wire.receive(time.monotonic() + 2),
+                                     (346, b'\x00\x2125F9E794323B453885F5181F1B624D0B\x00'))
+                    wire.send(941, b'\0\0')
+                    self.assertEqual(wire.receive(time.monotonic() + 2), (17, b''))
                 # Native classic BeginPlay transmits the character name, not slot 1.
                 self.assertEqual(wire.receive(time.monotonic() + 2), (433, string('Бот')))
                 wire.send(933, b'\0\0')
                 wire.send(516, b'\0\0' + bytes(128))
-                self.assertEqual(wire.receive(time.monotonic() + 2), (17, b''))
+                if not secondary:
+                    self.assertEqual(wire.receive(time.monotonic() + 2), (17, b''))
                 wire.send(515, bytes(range(20)))
                 self.assertEqual(wire.receive(time.monotonic() + 2), (15, bytes(range(20))))
                 self.assertEqual(wire.receive(time.monotonic() + 2), (434, b''))
@@ -167,6 +173,9 @@ class LoginTests(unittest.TestCase):
             self.assertEqual(len(chars), int(populated))
             if populated:
                 self.assertEqual(chars[0]['slot'], 1)
+                if secondary:
+                    self.assertFalse(client.has_secondary_password)
+                    self.assertTrue(client.ensure_secondary_password('123456789'))
                 client.enter(chars[0]['name'])
                 self.assertTrue(client.entered)
                 client.idle(.05)
@@ -183,10 +192,15 @@ class LoginTests(unittest.TestCase):
             self.assertNotIn(password, text)
             self.assertNotIn('bot_test', text)
             self.assertNotIn(challenge.decode(), text)
+            self.assertNotIn('123456789', text)
+            self.assertNotIn('25F9E794323B453885F5181F1B624D0B', text)
             self.assertIn('events', json.loads(text))
 
     def test_encrypted_login_enter_ping_logout(self):
         self.exercise()
+
+    def test_encrypted_secondary_password_creation_before_entry(self):
+        self.exercise(secondary=True)
 
     def test_rejected_login(self):
         self.exercise(error=1001)
