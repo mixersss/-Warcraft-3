@@ -71,7 +71,9 @@ def mission_page(payload):
 
 
 class Adventure:
-    def __init__(self, world, send, tell=lambda text:None, role=None, region=None):
+    def __init__(self, world, send, tell=lambda text:None, role=None, region=None, tactic='quests'):
+        if tactic not in ('quests','farm'):raise ValueError('Unknown tactic')
+        self.tactic=tactic
         self.world, self.send, self.tell = world, send, tell
         self.role = role or {'first_job':1,'target_job':9,'promotion':'Swordsman Promotion','label':'крестоносец'}
         self.destinations = {k:v for k,v in DESTINATIONS.items() if k in (1,701,702,703,704)}
@@ -114,6 +116,7 @@ class Adventure:
                 self.trainer,self.assistant='ray','mo'
         if not self.profession_local:
             self.destinations[{1:58,2:59,4:61,5:60}[self.role['first_job']]]='other_map'
+        self.tutorial_ids=set(self.letter_stops) | {1,2,3,704,710,716}
         self.journal = {}
         self.journal_ready = False
         self.events = deque(maxlen=64)
@@ -165,10 +168,18 @@ class Adventure:
         elif command in (801,802,803,822,827):
             self.events.append((command,payload))
 
+    def profession_priority(self):
+        return self.world.own.values.get(4)==0 and self.world.own.values.get(0,1)>=9
+
     def active(self):
+        profession=[identity for identity in self.destinations
+                    if identity not in self.tutorial_ids and identity in self.journal]
+        if profession:return profession[0]
+        if self.tactic=='farm' or self.profession_priority():return None
         return next((identity for identity in self.destinations if identity in self.journal),None)
 
     def farm(self):
+        if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):return None
         active = self.active()
         return self.grind.get(active) if active in self.grind and self.journal[active] == 0 else None
 
@@ -232,6 +243,8 @@ class Adventure:
                 allowed.add(self.role['promotion'])
             if key in ('goldie','nila','ditto'):
                 allowed = { { 'goldie':"Blacksmith's Greetings", 'nila':"Tailor's Greetings", 'ditto':"Physician's Greetings"}[key] }
+            if self.tactic=='farm' or self.profession_priority():
+                allowed &= {self.role['promotion']}
             candidates = [(i,title,state) for i,(title,state) in enumerate(offers)
                           if title in allowed and state & 3]
             # Complete ready work before accepting another task.
@@ -259,6 +272,9 @@ class Adventure:
         elif command == 827 and stage == 'select':
             button,source,title,needs,choice,prizes = mission_page(payload)
             if source != npc or title != selected_title or title not in TITLES or ('Promotion' in title and title != self.role['promotion']):
+                return
+            if ((self.tactic=='farm' or self.profession_priority()) and title!=self.role['promotion']):
+                self.settle(now,10)
                 return
             self.last_needs = needs
             if button == 8:
@@ -326,6 +342,9 @@ class Adventure:
                 self.disabled = True
                 self.reason = 'журнал не получен; сохранена обычная охота'
             return False
+        if self.tactic=='farm' and not self.profession_priority() and self.active() is None:
+            self.reason='фарм до уровня задания профессии'
+            return False
         if now < self.next_visit or self.farm():
             return False
         key = self.choose_destination()
@@ -355,7 +374,7 @@ class Adventure:
         return True
 
     def summary(self):
-        return {'state':self.reason,'journal_received':self.journal_ready,
+        return {'tactic':self.tactic,'state':self.reason,'journal_received':self.journal_ready,
                 'active_missions':dict(self.journal),'accepted_confirmed':self.accepted,
                 'deliveries_confirmed':self.delivered,'npc_requests':self.requests,
                 'npc_pages':self.seen_pages,'missing_offers':self.missing_offers,

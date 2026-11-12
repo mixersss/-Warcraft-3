@@ -263,6 +263,7 @@ class World:
                 reader.take(4)
             seen.values = attrs(reader)
             if len(self.entities) < 2048 or seen.identity in self.entities:
+                self.motion.pop(seen.identity,None)
                 self.entities[seen.identity] = seen
         elif command == 505:
             reader.byte()
@@ -310,6 +311,7 @@ class World:
                     x, y = reader.long(), reader.long()
                     if current:
                         current.x, current.y = x, y
+                        self.motion.pop(identity,None)
                 reader.take(24)  # source, source position, skill, two target fields
                 reader.short()  # effect time
                 values = attrs(reader)

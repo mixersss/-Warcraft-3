@@ -69,6 +69,79 @@ class Hunter:
         self.move_until = 0
         self.move_revision = -1
         self.move_waits = 0
+        self.owner=str(seed or world.own.identity)
+        self.coordination=None
+        self.target_key=None
+        self.combat_since=None
+        self.last_damage_at=0
+        self.approach_probe=False
+        self.approach_angle=self.rng.uniform(0,math.tau)
+        self.recoveries=self.no_damage_retargets=self.busy_targets=0
+        self.next_recovery=0
+        self.search_goal=None
+        self.search_started=0
+        self.goal_blacklist={}
+        self.tactic='quests'
+
+    def drop_target(self,now=None,avoid=False):
+        had_target=self.target is not None or self.target_key is not None
+        if self.target and avoid and now is not None:
+            self.blacklist[self.target]=now+45
+            if len(self.blacklist)>256:self.blacklist.pop(next(iter(self.blacklist)))
+        if self.coordination:self.coordination.release(self.owner)
+        self.target=None
+        self.target_key=None
+        self.combat_since=None
+        self.last_target_hp=None
+        if had_target:self.move_goal=None
+        self.approach_probe=False
+
+    def clear_zone(self):
+        if self.coordination:self.coordination.leave_zone(self.owner)
+        self.search_goal=None
+
+    def available_spot(self,point,now):
+        return not any(e.identity!=self.world.own_id and e.control==1 and e.alive
+                       and distance(point,self.world.position(now,e.identity))<100
+                       for e in self.world.entities.values())
+
+    def approach(self,target,reach,now):
+        center=self.world.position(now,target.identity)
+        radius=max(70,reach-65)
+        options=[]
+        for i in range(12):
+            angle=self.approach_angle+i*math.tau/12
+            point=(round(center[0]+math.cos(angle)*radius),round(center[1]+math.sin(angle)*radius))
+            point=self.nav.nearest(point,1)
+            if (point and distance(point,center)<=reach-20
+                    and self.available_spot(point,now)):
+                options.append(point)
+        for point in sorted(set(options),key=lambda pt:distance(self.position(now),pt)):
+            if self.nav.path(self.position(now),point):return point
+        return None
+
+    def recover_path(self,now):
+        self.drop_target(now,avoid=True)
+        if self.search_goal:self.goal_blacklist[self.search_goal]=now+45
+        self.clear_zone()
+        self.stuck=0
+        self.recoveries+=1
+        self.next_recovery=now+8
+        self.move_sent=-1e9
+        origin=self.position(now)
+        # Small checked detour, never a coordinate teleport or a forced SQL move.
+        for radius in (200,400,600):
+            for i in range(8):
+                angle=self.approach_angle+(self.recoveries+i)*math.tau/8
+                point=self.nav.nearest((round(origin[0]+radius*math.cos(angle)),
+                                        round(origin[1]+radius*math.sin(angle))),1)
+                if point and self.available_spot(point,now) and self.nav.path(origin,point):
+                    self.move_to(point,now)
+                    self.next_action=now+1
+                    self.change('обход препятствия; повторный поиск цели')
+                    return
+        self.next_action=now+2
+        self.change('ожидание свободного прохода')
 
     def change(self, value):
         if self.mode != value:
@@ -133,6 +206,9 @@ class Hunter:
     def tick(self, now=None):
         now = time.monotonic() if now is None else now
         own = self.world.own
+        if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
+            # A server correction can invalidate interpolation; prefer its raw position.
+            self.world.motion.pop(self.world.own_id,None)
         if not own or self.world.map != self.nav.map or not self.nav.free(self.nav.cell(self.position(now))):
             self.change('ожидание достоверных данных карты')
             return
@@ -141,6 +217,8 @@ class Hunter:
             self.change('ожидание данных здоровья')
             return
         if hp <= 0 or own.state >= 5:
+            self.drop_target()
+            self.clear_zone()
             self.change('персонаж погиб; обычное возвращение в город')
             if self.dead_since is None:self.dead_since=now
             if now-self.dead_since>=8 and now>=self.next_revive and self.death_attempts<3:
@@ -158,7 +236,8 @@ class Hunter:
             if not self.resting:
                 self.cancel_pending = True
             self.resting = True
-            self.target = None
+            self.drop_target()
+            self.clear_zone()
         if self.resting:
             if hp / maximum >= .85:
                 self.resting = False
@@ -182,10 +261,12 @@ class Hunter:
             self.next_action=now+.2
             self.change('надевает подходящую экипировку')
             return
-        if self.stuck >= 5:
-            self.change('путь заблокирован; остановка движения')
+        if self.stuck >= 5 and now>=self.next_recovery:
+            self.recover_path(now)
             return
         if self.adventure and self.adventure.tick(now,self):
+            self.drop_target()
+            self.clear_zone()
             self.change(self.adventure.reason)
             return
         if self.loot:
@@ -197,33 +278,69 @@ class Hunter:
                 return
         target = self.world.entities.get(self.target)
         if self.target and (not target or not target.alive):
-            if target and target.values.get(HP, 1) <= 0:
-                self.kills += 1  # Observed target death, not proof of kill credit.
-            self.target = None
-            target = None
-        if target and (not self.eligible(target, now) or now-self.target_since > 35):
-            self.blacklist[target.identity] = now+45
-            self.target = None
-            target = None
+            if target and target.values.get(HP,1)<=0:self.kills+=1
+            self.drop_target()
+            target=None
+        if target:
+            key=(self.world.map,target.identity,target.handle)
+            if (not self.eligible(target,now) or key!=self.target_key
+                    or (self.coordination and not self.coordination.claim(self.owner,key,now))):
+                self.drop_target(now,avoid=True)
+                target=None
+            else:
+                hp=target.values.get(HP)
+                if self.last_target_hp is not None and hp is not None and hp<self.last_target_hp:
+                    self.last_damage_at=now
+                self.last_target_hp=hp
+                # Detect an approach that never completes and attacks that cause no damage.
+                stalled=(self.combat_since is not None and now-self.last_damage_at>=14)
+                if stalled or (self.combat_since is None and now-self.target_since>25):
+                    self.no_damage_retargets+=1
+                    self.drop_target(now,avoid=True)
+                    target=None
         if not target:
-            candidates = sorted((e for e in self.world.entities.values() if self.eligible(e, now)),
-                                key=lambda e: distance(self.position(now),self.world.position(now,e.identity)))
+            candidates=[e for e in self.world.entities.values() if self.eligible(e,now)]
+            self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
+            candidates.sort(key=lambda e:distance(self.position(now),self.world.position(now,e.identity)))
             for candidate in candidates:
-                if self.nav.path(self.position(now),self.world.position(now,candidate.identity)):
-                    target = candidate
-                    self.target, self.target_since = target.identity, now
-                    break
+                key=(self.world.map,candidate.identity,candidate.handle)
+                if self.coordination and not self.coordination.available(self.owner,key,now):
+                    self.busy_targets+=1
+                    continue
+                reach=max(100,min(own.values.get(ATTACK_DISTANCE,150),250))+own.radius+candidate.radius
+                in_range=distance(self.position(now),self.world.position(now,candidate.identity))<=reach
+                if not in_range and self.approach(candidate,reach,now) is None:continue
+                if self.coordination and not self.coordination.claim(self.owner,key,now):continue
+                target=candidate
+                self.target,self.target_since=target.identity,now
+                self.target_key=key
+                self.last_target_hp=target.values.get(HP)
+                self.last_damage_at=now
+                self.combat_since=None
+                self.approach_probe=False
+                self.clear_zone()
+                break
         if target:
             reach = max(100, min(own.values.get(ATTACK_DISTANCE, 150), 250)) + own.radius + target.radius
             if distance(self.position(now),self.world.position(now,target.identity)) > reach:
                 self.change('подход к слабому мобу')
-                if not self.move_to(self.world.position(now,target.identity), now):
-                    self.blacklist[target.identity] = now+45
-                    self.target = None
+                goal=self.approach(target,reach,now)
+                if not goal or not self.move_to(goal,now):
+                    self.drop_target(now,avoid=True)
                 return
             if not self.world.default_skill:
                 self.change('ожидание обычной атаки от сервера')
                 return
+            if self.combat_since is None:self.combat_since=self.last_damage_at=now
+            if now-self.last_damage_at>=6 and not self.approach_probe:
+                self.approach_probe=True
+                self.approach_angle+=math.pi/2
+                goal=self.approach(target,max(100,reach-40),now)
+                if goal and distance(self.position(now),goal)>80:
+                    self.move_goal=None
+                    self.move_to(goal,now)
+                    self.change('повторный подход: нет подтверждённого урона')
+                    return
             self.change('обычная атака')
             self.fight = (self.fight+1) & 255
             self.emit(normal_attack(own.identity, self.sequence, self.fight, self.world.default_skill,
@@ -235,27 +352,43 @@ class Hunter:
                 self.loot.note_attack(target.identity,now)
             self.next_action = now+self.attack_interval
             return
-        self.change('поиск подходящих мобов')
-        goals = self.nav.waypoints
+        self.change('поиск свободного места фарма')
         if self.adventure:
-            goals = [self.nav.nearest(p) for p in self.adventure.farm_goals()]
-            goals = [p for p in goals if p]
-            if not goals:
-                self.change('нет проверенного маршрута к мобам')
-                return
-            goal = goals[self.waypoint % len(goals)]
+            raw_goals=self.adventure.farm_goals()
+        elif self.region:
+            raw_goals=[pt for model in self.farm_models() for pt in self.region['farms'][str(model)]['points']]
         else:
-            goal = goals[self.route[self.waypoint % len(self.route)]]
-        if distance(self.position(now), goal) < 300 or not self.move_to(goal, now):
-            self.waypoint += 1
-            self.next_action = now+2
+            raw_goals=[self.nav.waypoints[i] for i in self.route]
+        goals=list(dict.fromkeys(self.nav.nearest(p) for p in raw_goals))
+        goals=[p for p in goals if p and self.goal_blacklist.get(p,0)<=now]
+        if not goals:
+            self.change('нет свободного проверенного маршрута; повторный поиск')
+            self.next_action=now+2
+            return
+        # Stable per-bot ordering, independent of the order of the JSON species.
+        goals.sort(key=lambda pt:((pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
+        goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now)
+              if self.coordination else goals[self.waypoint%len(goals)])
+        if goal!=self.search_goal:self.search_goal,self.search_started=goal,now
+        if distance(self.position(now),goal)<300 or now-self.search_started>45:
+            self.goal_blacklist[goal]=now+20
+            if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
+            self.clear_zone()
+            self.waypoint+=1
+            self.next_action=now+.5
+        elif not self.move_to(goal,now):
+            self.goal_blacklist[goal]=now+45
+            self.clear_zone()
+            self.next_action=now+1
 
     def summary(self):
-        return {'state': self.mode, 'move_requests': self.moves, 'attack_requests': self.attacks,
+        return {'tactic':self.tactic,'state': self.mode,
+                'target_id':self.target,'path_recoveries':self.recoveries,
+                'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
 
-def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None, fleet=None, bot_index=0):
+def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None, fleet=None, bot_index=0, tactic='quests'):
     report.stage('reading_world')
     from equipment import ItemCatalog,Equipment
     from pathlib import Path
@@ -269,6 +402,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     report.result['world_decode'] = world.decode_info
     nav=navigation.nav(world.map) if hasattr(navigation,'nav') else navigation
     policy = Hunter(world, nav, client.wire.send, report, tell, bot_name)
+    policy.tactic=tactic
+    policy.coordination=getattr(navigation,'coordination',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
     from recovery import Recovery
@@ -290,7 +425,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         from loot import QuestLoot
         if role is None:
             raise ProtocolError('Для квестов требуется сохранённый путь класса.')
-        policy.adventure = Adventure(world,client.wire.send,tell,role,policy.region)
+        policy.adventure = Adventure(world,client.wire.send,tell,role,policy.region,tactic=tactic)
         policy.loot = QuestLoot(world)
 
     def snapshot(now):
@@ -305,7 +440,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if fleet:
             values=world.own.values
             fleet.update(bot_index,connected=True,map=world.map,level=values.get(0),job=values.get(4),
-                         body=world.own.model,state=policy.mode,hp=values.get(HP),max_hp=values.get(MAX_HP),
+                         body=world.own.model,state=policy.mode,tactic=policy.tactic,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
                          quests=policy.adventure.delivered if policy.adventure else 0,
                          target_job=role['target_job'] if role else 0)
@@ -316,7 +451,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
-            policy.target=None
+            policy.drop_target()
+            policy.clear_zone()
             policy.move_goal=None
             policy.stuck=0
             policy.resting=False
@@ -327,7 +463,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.recovery.pending=None
             if policy.skills:policy.skills.pending=None
             if adventure_mode:
-                policy.adventure=Adventure(world,client.wire.send,tell,role,policy.region)
+                policy.adventure=Adventure(world,client.wire.send,tell,role,policy.region,tactic=tactic)
         elif command in (801,802,803,822,827,828,830,831,832):
             if policy.adventure:
                 policy.adventure.observe(command,payload)
@@ -383,4 +519,6 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if policy.adventure:
             report.result['adventure'] = policy.adventure.summary()
             report.result['adventure']['quest_loot_requests'] = policy.loot.requests
+        policy.drop_target()
+        policy.clear_zone()
         client.world_handler = None

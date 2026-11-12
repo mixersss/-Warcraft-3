@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-11'
-NAME = 'Piratia-Auto-Bots-Alpha11-Fix01'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-12'
+NAME = 'Piratia-Auto-Bots-Alpha12'
 
 
 def main():
@@ -31,14 +31,19 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': '30-bot default; continuous movement, native inventory/equipment, three-city quest pilot; live test pending',
+        'status': 'exclusive mob targets, balanced farm zones, bounded stuck/no-damage recovery; 15 quests + 15 farm with shared first-profession priority; live verification pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 83,
-        'full_python_suite_total': 91,
+        'pure_python_tests_passed': 102,
+        'full_python_suite_total': 110,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
-        'current_network_regression': '8 integration tests blocked by sandbox; elevated retry cancelled',
+        'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
         'default_bot_count': 30,
+        'default_mode': 'mixed',
+        'cohort_tactics_at_30': {'quests':15,'farm':15},
+        'first_profession_in_both_tactics': True,
+        'exclusive_target_and_zone_cohort_tested': 30,
+        'live_target_distribution_verified': False,
         'default_duration_seconds': 3600,
         'three_city_spawn_and_trainer_routes_verified': True,
         'chat_phrase_count': 107,
@@ -48,7 +53,7 @@ def main():
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60, rejection 0/61, credential preservation',
         'fix01': 'secondary-password helper population limit aligned with launcher: 1..60' ,
         'windows_sql_dpapi_runtime_tested': False,
-        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'hunting_and_chat_alpha09': True},
+        'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'alpha11_fix01_spawn_and_initial_quest_movement':True, 'hunting_and_chat_alpha09': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
         'secondary_password_setup': 'command 346 with uppercase MD5 string; only if login flag says absent',
         'native_character_look_compared': [1,2,3,4],

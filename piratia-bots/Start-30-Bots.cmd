@@ -1,2 +1,2 @@
 @echo off
-call "%~dp0Start-Bot.cmd" --count 30 --seconds 3600
+call "%~dp0Start-Bot.cmd" --count 30 --seconds 3600 --mode mixed

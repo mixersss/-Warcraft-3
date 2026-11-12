@@ -430,3 +430,46 @@ context, and unchanged shared1/15sec plus personal90sec cooldowns. Equipment,
 skill and delivery events are triggered only by confirmed counters. No remote
 AI, human chat transcripts or human names are saved. Public diagnostics contain
 bot index, map, health, levels, movement/combat counts and class goals only.
+
+### Alpha 12: exclusive targets, recovery and mixed progression
+
+No native command format changes. A process-local shared Coordination object in
+Regions provides atomic target leases keyed by (map,worldID,handle), one owner
+per spawn, expiry8sec. The Hunter renews between normal actions and releases on
+retreat/death/quest travel/map transition/exit/retarget. Candidate selection
+skips already leased targets, with atomic recheck after route validation. This
+is bot cooperation, not a change to server ownership or kill-credit rules.
+
+Farm zones use expiring45sec leases, prefer lowest occupancy and stable per-bot
+ordering. Leases are removed on reaching a zone, choosing a target or changing
+activity. Reached goals back off20sec; unreachable goals45sec. This replaces
+every adventure worker starting at the identical first farm point.
+Approach selection checks twelve points inside attack range, avoids occupied
+player endpoints and routes to a walkable point instead of the monster center.
+
+Permanent stuck>=5 return was replaced with a checked200/400/600cm detour,
+release/blacklist of the failed target and search retry. A target whose HP does
+not decrease gets one alternate approach after6sec and a45sec blacklist after
+14sec; approach-only timeout25sec. Observed HP reductions renew the progress
+window, so healthy long fights are not dropped after the former absolute35sec.
+MC508/action4 explicit position corrections clear stale predicted motion.
+New MC504 appearances also clear motion belonging to a previous entity instance.
+
+Default CLI mode is mixed. Odd numbered workers use quests; even workers farm,
+so count30 gives15/15. Explicit adventure uses all quests, hunt uses all farm.
+Both instantiate the same class-pinned Adventure controller and preserve saved
+role intent. Farm ignores optional tutorial IDs without deleting journal rows;
+at level9 both prioritize only their own profession-title offers and commits.
+Any active own profession chain takes precedence over the tutorial. After real
+job change, old quest rows no longer constrain desired farm species. Kill/item
+objectives still use server journal state, loot credit evidence and earned XP.
+No second-profession implementation, high-level navigation or quest grants were
+introduced. Supported regional farms remain level1..15.
+
+New diagnostics include tactic, target_id, path_recoveries, no_damage_retargets,
+reserved_targets_skipped and fleet tactics counts. Offline tests include thirty
+simultaneous claim attempts (one winner), thirty policies selecting thirty
+unique mobs, balanced30-worker zone selection, release/expiry/respawn isolation,
+no-damage and permanent-stuck recovery, both tactics' real promotion requests
+for each first profession, and progressive level-appropriate mob selection.
+These are synthetic policy/world tests, not a live thirty-client server run.

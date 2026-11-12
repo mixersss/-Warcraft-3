@@ -7,6 +7,8 @@ from navigation import Navigation
 class Regions:
     def __init__(self,assets):
         self.assets=Path(assets)
+        from coordination import Coordination
+        self.coordination=Coordination()
         from equipment import ItemCatalog
         self.items=ItemCatalog(self.assets/'items.json')
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))

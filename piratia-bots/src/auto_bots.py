@@ -75,7 +75,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha11'
+    report.result['version'] = 'AutoAccountsAlpha12'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -111,13 +111,17 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
             return False
         client.enter(selected_name)
         print(f"Бот {index}: {bot['character']} вошёл в мир без окна игры.")
-        if mode in ('hunt','adventure'):
+        if mode in ('hunt','adventure','mixed'):
             from hunter import hunt
             from regions import Regions
             nav = navigation or Regions(ROOT/'assets')
             from roles import RoleStore
+            from coordination import tactic_for
+            selected_tactic=tactic_for(index,mode)
+            print(f'Бот {index}: тактика '+('задания и профессия' if selected_tactic=='quests' else 'фарм и профессия'))
             hunt(client, seconds, stop, report, nav, lambda text: print(f'Бот {index}: {text}'),
-                 bot_name=bot['character'], chat_budget=chat_budget, adventure_mode=(mode=='adventure'),
+                 bot_name=bot['character'], chat_budget=chat_budget, adventure_mode=True,
+                 tactic=selected_tactic,
                  role_store=RoleStore(ROOT / 'data/bot-roles.json'),fleet=fleet,bot_index=index)
         else:
             client.idle(seconds, stop)
@@ -148,20 +152,20 @@ def main():
     parser.add_argument('--count', type=int, default=30)
     parser.add_argument('--seconds', type=int, default=3600)
     parser.add_argument('--port', type=int, default=1973)
-    parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure'), default='adventure')
+    parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
     args = parser.parse_args()
     if not 1 <= args.count <= 60 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
         parser.error('count: 1..60; seconds: 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — классы, задания и фарм без окна игры (Alpha 11).')
+    print('Пиратия — классы, задания и фарм без окна игры (Alpha 12).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha11'
+    setup_report.result['version'] = 'AutoAccountsAlpha12'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
