@@ -46,11 +46,32 @@ class Party:
         self.next_invite=0;self.pending=None;self.pending_name=None;self.members=();self.invites=self.accepts=self.refreshes=0
         self.rng=random.Random(name+':party')
         self.session_until=None;self.leave_pending=None;self.next_leave=0;self.leave_requests=0
+        self.personality=None;self.humans=set();self.human_requests=0
+    def request_name(self,name,now):
+        if (not name or len(name.encode('cp1251',errors='replace'))>32 or name.lower().startswith('bot')):return 'Не могу пригласить это имя.'
+        if len(self.members)>=5:return 'У нас уже полная группа.'
+        if self.members and self.members[0]!=self.name:return 'Я не лидер группы. Нужно приглашение от лидера.'
+        if self.pending:return 'Сейчас жду ответ на предыдущее приглашение.'
+        if not self.world.own.alive:return 'Сначала вернусь после гибели, потом соберёмся.'
+        self.send(6001,string(name));self.invites+=1;self.human_requests+=1
+        self.humans.add(name);self.pending_name=name;self.pending=now+12
+        if len(self.humans)>128:
+            old=next((n for n in self.humans if n not in self.members and n!=name),None)
+            if old:self.humans.discard(old)
+        return 'Приглашение в пати отправлено. Подтверди его в игре.'
+    def request_human(self,source,now):
+        person=self.world.entities.get(source)
+        return self.request_name(person.name,now) if person else 'Не вижу тебя рядом. Напиши в ЛС.'
     def observe(self,command,payload,now):
         r=Reader(payload)
         if command==5001:
             name,identity=r.string(),r.long();r.short();r.end()
             peer=self.directory.peers(self.name,now).get(name)
+            if not peer and self.personality and name and not name.lower().startswith('bot'):
+                if not self.members and self.world.own.alive:
+                    self.humans.add(name);self.send(6002,struct.pack('>I',identity));self.accepts+=1
+                else:self.send(6003,struct.pack('>I',identity))
+                return
             # Both endpoints must be running known bots, on the same map nearby.
             if (peer and peer['index']%5==1 and peer['map']==self.world.map
                     and self.index%3 and not self.members
@@ -66,9 +87,11 @@ class Party:
             r.end()
             old_size=len(self.members)
             self.directory.clear_team(self.name)
-            if self.name in names and self.directory.team(names):
+            bot_names=[n for n in names if n not in self.humans]
+            if self.name in names and self.directory.team(bot_names):
                 self.members=tuple(names);self.refreshes+=1;self.pending=None
-                if old_size<2 and len(names)>=2:self.session_until=now+self.rng.uniform(600,1200)
+                if any(n in self.humans for n in names):self.session_until=None
+                elif old_size<2 and len(names)>=2:self.session_until=now+self.rng.uniform(600,1200)
             else:self.members=();self.pending=None
             if len(self.members)<2:
                 self.session_until=None;self.leave_pending=None
@@ -98,4 +121,4 @@ class Party:
                     and self.directory.reserve_invite(self.name,name,now)):
                 self.send(6001,string(name));self.invites+=1;self.pending=now+12;self.pending_name=name;self.next_invite=now+60
                 break
-    def summary(self):return {'invite_requests':self.invites,'accept_requests':self.accepts,'confirmed_size':len(self.members),'refreshes':self.refreshes,'leave_requests':self.leave_requests,'awaiting_leave_confirmation':bool(self.leave_pending)}
+    def summary(self):return {'invite_requests':self.invites,'accept_requests':self.accepts,'confirmed_size':len(self.members),'refreshes':self.refreshes,'leave_requests':self.leave_requests,'awaiting_leave_confirmation':bool(self.leave_pending),'human_invite_requests':self.human_requests}

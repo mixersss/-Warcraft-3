@@ -4,12 +4,21 @@ class HelpPlayer:
  def __init__(self,world):
   self.world=world;self.source=None;self.until=0;self.started=0;self.last_progress=0;self.last_position=None
   self.accepted=self.finished=self.expired=0
+  self.personality=None;self.bot_target=None
+ def request_bot(self,source,target,now,policy):
+  self.source=source;self.bot_target=target;self.until=now+90
+  self.started=self.last_progress=now;self.last_position=policy.position(now);self.accepted+=1
+  policy.assist_target=target
  def request(self,source,now,policy):
   person=self.world.entities.get(source)
   if not person or person.control!=1 or person.name.lower().startswith('bot'):return 'Не вижу тебя рядом. Подойди ближе и позови по имени.'
   busy=(policy.target or policy.resting or (policy.market and policy.market.busy)
         or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (policy.travel,policy.adventure,policy.story,policy.career,policy.town) if f))
   if busy:return 'Сейчас занят делом. Позови чуть позже, когда освобожусь.'
+  if self.personality:
+   accepted,reply=self.personality.help(False,self.world.own.values.get(1,0)/max(1,self.world.own.values.get(31,1)))
+   if not accepted:return reply
+  self.bot_target=None
   self.source=source;self.until=now+120;self.started=self.last_progress=now;self.last_position=policy.position(now);self.accepted+=1
   return 'Иду к тебе. Помогу с ближайшим слабым мобом, если смогу до него добраться.'
  def active(self,now):return self.source is not None and now<self.until
@@ -21,6 +30,12 @@ class HelpPlayer:
   pos=policy.position(now)
   if math.dist(pos,self.last_position)>=100:self.last_position=pos;self.last_progress=now
   if not policy.target and now-self.last_progress>35:self.source=None;policy.assist_target=None;self.expired+=1;return False
+  if self.bot_target is not None:
+   target=self.world.entities.get(self.bot_target)
+   if not target or not target.alive:
+    self.source=None;self.bot_target=None;policy.assist_target=None;self.finished+=1;return False
+   policy.assist_target=self.bot_target
+   return False
   if policy.target:return False
   if math.dist(pos,person.position)>350:
    goal=policy.nav.nearest(person.position,3)

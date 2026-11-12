@@ -34,6 +34,12 @@ class Social:
         self.level=world.own.values.get(0);self.resting=False
         self.events=deque(maxlen=4);self.activity='hunt';self.role_label=None;self.last_event={}
         self.help_handler=None;self.market=None;self.sale_offer=None;self.last_offer=-1e9;self.party_size=0;self.conversations=conversations
+        self.friend_handler=self.party_handler=self.bot_handler=self.context_provider=None
+        self.urgent=deque(maxlen=4);self.personality=None
+        self.busy_state=False
+    def queue_line(self,text,now):
+        text=text.encode('cp1251',errors='replace')[:120].decode('cp1251')
+        if text and text not in [row[0] for row in self.urgent]:self.urgent.append((text,now+30))
 
     def event(self,kind,now):
         if kind not in PHRASES or now-self.last_event.get(kind,-1e9)<120:return
@@ -45,6 +51,8 @@ class Social:
 
     def reply(self,words):
         has=lambda *terms:any(w in words for w in terms)
+        if has('характер','личность'):return 'personality',('По характеру я '+self.personality.kind+'.' if self.personality else 'Сначала закончу своё дело, потом поболтаем.')
+        if has('друзья','друзься','друг','друзей','дружить'):return 'friend','Можешь отправить приглашение в друзья.'
         if has('привет','здравствуй','здравствуйте','ку','hello','hi','qq','хай','дарова','здарова'):
             return 'greeting',self.rng.choice(PHRASES['reply_greeting'])
         if has('ансил','ансилы','руны','кель','ларек','ларёк','ларьки','торгуешь') and self.market:
@@ -75,6 +83,7 @@ class Social:
 
     def hear(self, source, text, now):
         if len(text)>240 or any(ord(c)<32 for c in text):return
+        if self.bot_handler and self.bot_handler(source,text,now):return
         if self.conversations and self.conversations.receive(self.name,source,text,now):return
         if source not in {e.identity for e in self.visible_humans()} or self.pending:return
         words=re.findall(r'[\w]+',text.casefold())
@@ -87,14 +96,20 @@ class Social:
         if self.replied.get((source,intent),0)>now:return
         if self.conversations and not self.conversations.claim_human(self.world.map,source,intent,now):return
         if intent=='help' and self.help_handler:reply=self.help_handler(source,now)
+        if intent=='friend' and self.friend_handler:reply=self.friend_handler(source,now)
+        if intent=='party' and self.party_handler:reply=self.party_handler(source,now)
         self.pending=(source,intent,reply,now+self.rng.uniform(2,5),now+20)
 
     def tick(self,now,resting,safe):
         if self.next_situation is None:self.next_situation=now+self.rng.uniform(20,45)
         humans=self.visible_humans()
+        while self.urgent and self.urgent[0][1]<now:self.urgent.popleft()
+        if self.urgent and safe and now>=self.next_reply and self.budget.claim(now):
+            text,_=self.urgent.popleft();self.send(1,say_request(text));self.sent+=1;self.next_reply=now+5
+            return
         if self.conversations:
             self.conversations.register(self.name,self.world.map,self.world.own_id,self.world.position(now),now,
-                                        safe and not self.pending and now>=self.next_send)
+                                        safe and not self.busy_state and not self.pending and now>=self.next_send)
         level=self.world.own.values.get(0)
         if level and self.level and level>self.level:self.event('level',now)
         if resting and not self.resting:self.event('rest',now)
@@ -124,9 +139,10 @@ class Social:
                 offer=self.sale_offer() if self.sale_offer and now-self.last_offer>=900 else None
                 if offer and self.rng.random()<.25:text=offer;self.last_offer=now
                 else:
+                    context=self.context_provider() if self.context_provider else None
                     if not self.events and self.rng.random()<.35:event='joke'
                     pool=PHRASES['joke']+PHRASES['joke_extra'] if event=='joke' else PHRASES[event]
-                    text=self.rng.choice(pool)
+                    text=context or self.rng.choice(pool)
                 self.send(1,say_request(text));self.sent+=1
                 if self.events:self.events.popleft()
                 self.next_send=now+45;self.next_situation=now+self.rng.uniform(45,90)

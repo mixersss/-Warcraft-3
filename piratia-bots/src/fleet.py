@@ -15,7 +15,7 @@ class Fleet:
         self.peak=0
 
     def update(self,index,**values):
-        allowed={'phase','tactic','connected','map','level','job','body','state','hp','max_hp','moves','attacks','equips','quests','target_job','experience','start_experience'}
+        allowed={'phase','tactic','connected','map','level','job','body','state','hp','max_hp','moves','attacks','equips','quests','target_job','experience','start_experience','start_level','hunt_style','farm_models'}
         if values.keys()-allowed:raise ValueError('Unsupported population field')
         with self.lock:
             self.rows.setdefault(index,{}).update(values)
@@ -32,6 +32,9 @@ class Fleet:
                 'phases':dict(Counter(r.get('phase','unknown') for r in active)),
                 'tactics':dict(Counter(r.get('tactic','unknown') for r in active)),
                 'bodies':dict(Counter(r.get('body',0) for r in active)),
+                'levels':dict(Counter(r.get('level',0) for r in active)),
+                'with_progress_this_session':sum((r.get('level') or 0)>(r.get('start_level') or 9999)
+                    or (r.get('level')==r.get('start_level') and (r.get('experience') or 0)>(r.get('start_experience') or 0)) for r in active),
                 'target_jobs':dict(Counter(r.get('target_job',0) for r in active)), 'bots':rows}
 
     def write(self):

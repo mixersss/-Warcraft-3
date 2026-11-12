@@ -5,12 +5,12 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-20'
-NAME = 'Piratia-Auto-Bots-Alpha20'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-21'
+NAME = 'Piratia-Auto-Bots-Alpha21'
 
 
 def main():
-    sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md']
+    sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -31,14 +31,14 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Earned ordinary loot, source-confirmed damage, transmit timeout recovery and Forest Spirit starter policy; live Windows validation pending',
+        'status': 'Adaptive observed-fight learning, stable personalities, server-echo assistance and opt-in contacts; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 232,
-        'full_python_suite_total': 240,
-        'full_python_suite_passed': 240,
-        'socket_tests_not_rerun_this_release': 0,
+        'pure_python_tests_passed': 263,
+        'full_python_suite_total': 271,
+        'full_python_suite_passed': None,
+        'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
-        'current_network_regression': '8 local socket integration tests passed outside restricted sandbox',
+        'current_network_regression': '8 socket tests not rerun for Alpha21; previous Alpha20 full240 passed; final Alpha21 full rerun was interrupted',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
@@ -106,6 +106,17 @@ def main():
         'collect_all_earned_monster_loot': True,
         'pickup_requires_inventory_gain_and_ground_removal': True,
         'starter_monster_model': 103,
+        'adaptive_hunting_profiles': 6,
+        'stable_personality_profiles': 6,
+        'learning_uses_observed_hp_time_xp_gold': True,
+        'learning_persistence': 'data/hunt-learning-NNN.json',
+        'bot_help_requires_real_chat_request_echo': True,
+        'human_party_requests': True,
+        'human_friend_requests': True,
+        'private_replies': True,
+        'native_friend_private_serializers_verified': True,
+        'contacts_live_windows_tested': False,
+        'level_viewer': 'Show-Bot-Levels.cmd',
         'starter_monster_native_level': 3,
         'starter_character_levels': [1,2,3],
         'starter_map': 'garner',

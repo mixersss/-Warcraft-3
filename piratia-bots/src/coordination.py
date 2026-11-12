@@ -7,22 +7,37 @@ class Coordination:
         self.lock=threading.Lock()
         self.targets={}
         self.zones={}
+        self.assistants={}
 
     def _expire(self,now):
         for key,(_,until) in list(self.targets.items()):
             if until<=now:self.targets.pop(key,None)
         for owner,(_,until) in list(self.zones.items()):
             if until<=now:self.zones.pop(owner,None)
+        for pair,(_,until) in list(self.assistants.items()):
+            if until<=now:self.assistants.pop(pair,None)
+    def grant_assist(self,requester,helper,key,now):
+        with self.lock:
+            self._expire(now)
+            holder=self.targets.get(key)
+            if holder is None:return True
+            if holder[0]!=requester:return False
+            if any(k==key and h!=helper for (k,h) in self.assistants):return False
+            self.assistants[(key,helper)]=(requester,now+90);return True
+    def _assisting(self,owner,key,now):
+        grant=self.assistants.get((key,owner));holder=self.targets.get(key)
+        return bool(grant and holder and grant[0]==holder[0] and grant[1]>now)
 
     def available(self,owner,key,now):
         with self.lock:
             self._expire(now)
-            return key not in self.targets or self.targets[key][0]==owner
+            return key not in self.targets or self.targets[key][0]==owner or self._assisting(owner,key,now)
 
     def claim(self,owner,key,now):
         with self.lock:
             self._expire(now)
-            if key in self.targets and self.targets[key][0]!=owner:return False
+            if key in self.targets and self.targets[key][0]!=owner:
+                return self._assisting(owner,key,now)
             for previous,(holder,_) in list(self.targets.items()):
                 if holder==owner and previous!=key:self.targets.pop(previous,None)
             self.targets[key]=(owner,now+8)
@@ -33,6 +48,8 @@ class Coordination:
             for key,(holder,_) in list(self.targets.items()):
                 if holder==owner:self.targets.pop(key,None)
             if zone:self.zones.pop(owner,None)
+            for pair,(requester,_) in list(self.assistants.items()):
+                if pair[1]==owner or requester==owner:self.assistants.pop(pair,None)
 
     def choose_zone(self,owner,map_name,goals,now):
         """Keep a leased destination; otherwise prefer the least occupied real farm."""

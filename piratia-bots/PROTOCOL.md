@@ -727,3 +727,29 @@ Argent; existing newbies use paid/free native teleporter rules; no SQL warps.
 Normal home-city/class routes resume after starter levels. Full suite240 passed
 including8 socket integrations after sandbox permission; Windows live population
 and actual disconnect causes remain unverified.
+
+
+## Alpha 21: adaptive preferences and explicit social actions
+
+HuntLearning reads only server HP/XP/gold and credited deaths; no SQL stat writes.
+Same selected species feed destination generation and target filtering. Active
+class objectives retain precedence. Six stable hunting profiles and six distinct
+personality profiles use deterministic hashes, stored per-bot numerical outcomes
+in private data/hunt-learning-NNN.json. No chat transcripts/credentials saved there.
+
+Original Game.exe serializer captures now include CS_Frnd_Invite0x500be0:
+6011,string name; Confirm0x500ce0:6012,u32 ID; Refuse0x500c60:6013,u32 ID;
+CS_Say2You0x5007a0:6403,string recipient,string content. Incoming5011 uses
+name/ID/icon; 5403 source/destination/text with optional color u32. These incoming
+layouts are classic source comparisons, not a full live Windows contacts test.
+5012 is counted as refresh notification only; no fabricated friend confirmation.
+Human party invitations reuse audited6001/6002 and membership only actual5002.
+
+Bot help is recognized only from a registered visible peer's actual501 message
+addressed to the bot. One explicit assistance grant may share a reserved target;
+ordinary target uniqueness is unchanged. Personality/busy/health/visibility can
+refuse help. Helpers use normal movement/attack; no fake damage or teleports.
+
+263 offline tests passed; 8 socket integrations not rerun after interrupted full
+run (previous Alpha20 full240 passed). Native serializer audit passed new contact
+cases plus prior combat/NPC/party/stall cases. Live200 bot behavior unverified.

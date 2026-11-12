@@ -224,6 +224,10 @@ def main():
     # Native NET_STALL_ALLDATA: count + padding, 8-byte rows price/count/bag/grid.
     emulator.mem_write(0x2002300,bytes([2,0,0,0])+struct.pack('<IBBBxIBBBx',25000,2,7,0,50000,1,9,1))
     checks=[(0x508350,(456,7,12),308,sell_request(456,7,12)),
+            (0x500be0,(0x2002000,),6011,classic_wire.string('Bot12345678')),
+            (0x500ce0,(99,),6012,struct.pack('>I',99)),
+            (0x500c60,(99,),6013,struct.pack('>I',99)),
+            (0x5007a0,(0x2002000,0x2002200),6403,classic_wire.string('Bot12345678')+classic_wire.string('Market')),
             (0x51a3b0,(0,),7,b''),
             (0x5006a0,(0x2002000,),6401,classic_wire.string('Bot12345678')),
             (0x500720,(0x2002000,),6402,classic_wire.string('Bot12345678')),
@@ -248,7 +252,7 @@ def main():
             if kind=='string':body+=struct.pack('>H',len(value)+1)+value+b'\0'
             else:body+=struct.pack({'char':'>B','short':'>H','long':'>I'}[kind],value)
         if body!=expected:raise AssertionError(f'Native town/party body mismatch at {address:x}: {body.hex()}')
-    print('NPC shop, party and stall create/view/buy/close match native client serializers.')
+    print('NPC shop, party, friend invite/accept/refuse, private chat and stall serializers match native client.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

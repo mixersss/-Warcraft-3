@@ -11,6 +11,8 @@ class Regions:
         self.coordination=Coordination()
         from party import BotDirectory
         self.directory=BotDirectory()
+        from cooperation import HelpDirectory
+        self.help_directory=HelpDirectory()
         from conversations import Conversations
         self.conversations=Conversations(self.assets)
         from public_chat import PublicBudget
