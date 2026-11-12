@@ -49,7 +49,15 @@ def connect_bot(bot, report, port):
     client = Client(sock, report)
     try:
         chars = client.login(bot['account'], bot['password'])
-        client.ensure_secondary_password(bot['secondary_password'])
+        for attempt in range(3):
+            try:
+                client.ensure_secondary_password(bot['secondary_password'])
+                break
+            except ServerError as exc:
+                if exc.code!=532 or attempt==2:raise
+                report.result['secondary_password_busy_retries']=attempt+1
+                time.sleep(2*(attempt+1))
+
         return sock, client, chars
     except BaseException:
         sock.close()
@@ -75,7 +83,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha16'
+    report.result['version'] = 'AutoAccountsAlpha17'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -169,13 +177,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 16).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 17).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha16'
+    setup_report.result['version'] = 'AutoAccountsAlpha17'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

@@ -133,6 +133,7 @@ class World:
         self.damage_events = 0
         self.failed_actions = 0
         self.last_failed_action=None
+        self.failed_action_counts={};self.default_skill_updates=0;self.stop_revision=0;self.stop_packet_number=None;self.skill_action_state=None
         self.decode_info = {}
         self.item_types = item_types or {}
         self.bag = {}
@@ -278,6 +279,13 @@ class World:
             values = attrs(reader)
             if identity in self.entities:
                 self.entities[identity].values.update(values)
+        elif command == 510:
+            identity=reader.long()
+            if identity==self.own_id:
+                self.read_skills(reader);reader.end();self.default_skill_updates+=1
+        elif command == 531:
+            identity,skill=reader.long(),reader.short();reader.end()
+            if identity==self.own_id:self.default_skill=skill;self.default_skill_updates+=1
         elif command == 508:
             identity, packet_id, action = reader.long(), reader.long(), reader.byte()
             current = self.entities.get(identity)
@@ -301,10 +309,17 @@ class World:
                     if identity==self.own_id:
                         self.move_revision+=1
                         self.move_state=state
+                        if state:self.stop_revision+=1;self.stop_packet_number=packet_id
                     current.x, current.y = x, y
                     if stop is not None:
                         current.state = stop
                     current.seen_at = time.monotonic()
+            elif action == 3:
+                reader.byte();reader.short();state=reader.short()
+                if state:reader.short()
+                if identity==self.own_id:
+                    self.skill_action_state=state
+                    if state:self.stop_revision+=1;self.stop_packet_number=packet_id
             elif action == 4:
                 reader.byte()  # fight ID
                 state = reader.short()
@@ -333,6 +348,8 @@ class World:
             self.failed_actions += 1
             if len(payload)==6:
                 self.last_failed_action={'actor':reader.long(),'action':reader.byte(),'reason':reader.byte()}
+                key=str(self.last_failed_action['action'])+':'+str(self.last_failed_action['reason'])
+                self.failed_action_counts[key]=self.failed_action_counts.get(key,0)+1
 
         self.updates += 1
 
@@ -345,4 +362,4 @@ class World:
                 'max_hp': own.values.get(MAX_HP) if own else None,
                 'level': own.values.get(LV) if own else None,
                 'default_skill': self.default_skill, 'updates': self.updates,
-                'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action}
+                'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action,'failed_action_counts':self.failed_action_counts,'default_skill_updates':self.default_skill_updates,'stop_revision':self.stop_revision,'skill_action_state':self.skill_action_state}

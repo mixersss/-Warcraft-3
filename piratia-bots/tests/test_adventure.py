@@ -80,7 +80,7 @@ class QuestTests(unittest.TestCase):
             world.own.model = body
             world.own.values[primary] = 5
             Progression(world,send,first).tick(0,True)
-            send.assert_called_once_with(8,attribute_request(primary,6))
+            send.assert_called_once_with(8,attribute_request(primary,1))
 
     def test_native_journal_accepted_and_delivered_require_notifications(self):
         w,send,q,p = self.make()

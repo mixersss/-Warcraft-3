@@ -28,7 +28,7 @@ class ProgressionTests(unittest.TestCase):
         world, send = scene(), Mock()
         progress = Progression(world, send)
         progress.tick(0, True)
-        send.assert_called_once_with(8, attribute_request(25, 6))
+        send.assert_called_once_with(8, attribute_request(25, 1))
         for i in range(1, 5):
             progress.tick(i, True)
         self.assertEqual(send.call_count, 1)

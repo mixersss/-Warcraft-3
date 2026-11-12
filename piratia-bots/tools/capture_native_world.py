@@ -74,7 +74,7 @@ def main():
         elif address == 0x4c5550:  # ItemIsAppendLook, synthetic known append item
             ret(1,4)
         elif address == 0x4e5a60:  # changed skill count
-            ret(2)
+            ret(0 if state.get("empty_skills") else 2)
         elif address == 0x4e5a80:  # skill grid getter
             ret(0x2017000+arg(1)*16,4)
         elif address == 0x4dd070:  # temporary skill-table data getter
@@ -111,10 +111,12 @@ def main():
     fixtures = {}
     for label, model, identity, control, x, y in (
             ('own',1,123,1,223200,278700),('monster',75,456,5,223600,278900),
-            ('own_worn',1,123,1,223200,278700),('own_append',1,123,1,223200,278700)):
+            ('own_worn',1,123,1,223200,278700),('own_append',1,123,1,223200,278700),
+            ('own_sword_update',1,123,1,223200,278700)):
         state.update(model=model,id=identity,handle=identity+1000,
                      attrs={0:1,1:100,10:control,31:100,43:150,44:480},append=label=='own_append')
-        u.mem_write(actor+0x4974,struct.pack('<H',25))
+        state['empty_skills']=label=='own_sword_update'
+        u.mem_write(actor+0x4974,struct.pack('<H',28 if label=='own_sword_update' else 25))
         u.mem_write(actor+0x1e4,b'SyntheticActor\0')
         u.mem_write(actor+0x6e32,struct.pack('<H',model))
         u.mem_write(actor+0x7488,struct.pack('<H',2000))
@@ -131,7 +133,7 @@ def main():
         call(0x4e6070,[actor+0x4d20,0x2014000,1])
         fixtures[label+'_append'] = bytes(result).hex()
         result.clear()
-        call(0x4e5790,[0x2014000,0])
+        call(0x4e5790,[0x2014000,1 if label=="own_sword_update" else 0])
         fixtures[label+'_skills'] = bytes(result).hex()
         result.clear()
         call(0x505e80,[0x2014000])

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-16'
-NAME = 'Piratia-Auto-Bots-Alpha16'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-17'
+NAME = 'Piratia-Auto-Bots-Alpha17'
 
 
 def main():
@@ -31,10 +31,10 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': '200-bot combat/city/activity/chat pilot; native serializers and dispatch checked; live Windows validation pending',
+        'status': 'Report-driven action sequencing, skill update dispatch and stat increment fixes; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 174,
-        'full_python_suite_total': 182,
+        'pure_python_tests_passed': 185,
+        'full_python_suite_total': 193,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
@@ -87,6 +87,11 @@ def main():
         'trade_chat_shared_seconds': 180,
         'explicit_nearby_help_seconds': 120,
         'live_combat_fix_verified': False,
+        'skill_update_dispatch_fixed': [510,531],
+        'attribute_request_is_increment': True,
+        'native_attribute_increment_verified': True,
+        'deferred_action_stop_queue': True,
+        'private_owner_reports_packaged': False,
         'market_catalog_tradeable_item_count': 1575,
         'stall_data_writer_captured': 'GameServer 0x4637e0, plain and five instance attributes',
         'live_stall_transactions_tested': False,

@@ -42,6 +42,9 @@ class Hunter:
         self.sequence, self.fight = 1, 0
         self.attack_failure_seen=0;self.last_attack_stop=-1e9;self.attack_move_revision=-1
         self.end_action_requests=0
+        self.action_open=False
+        self.pending_action=None;self.clock=time.monotonic();self.queued_actions=self.flushed_actions=0
+        self.last_sent_sequence=None;self.sent_action_counts={}
         self.assist_target=None;self.helper=None
         self.target = None
         self.next_action = 0
@@ -180,14 +183,60 @@ class Hunter:
             self.mode = value
             self.tell('Состояние бота: ' + value)
 
+    def stop_action(self):
+        self.send(7,b'');self.end_action_requests+=1;self.action_open=False
+
+    def send_action(self,body):
+        self.send(6,body);self.action_open=True
+        self.last_sent_sequence=int.from_bytes(body[4:8],'big')
+        kind=str(body[8]);self.sent_action_counts[kind]=self.sent_action_counts.get(kind,0)+1
+        if body[8]==2:self.attacks+=1
+
     def emit(self, body):
-        self.send(6, body)
-        self.sequence = (self.sequence + 1) & 0xffffffff
+        if self.world.stop_packet_number==self.last_sent_sequence and self.last_sent_sequence is not None:
+            self.action_open=False
+        if self.action_open:
+            self.stop_action()
+            # EndAction requests a stop; native CAction ends on a later game tick.
+            self.pending_action=(body,self.clock+.15,self.clock+1.0,self.world.stop_revision)
+            self.queued_actions+=1
+        else:
+            self.send_action(body)
+        self.sequence=(self.sequence+1)&0xffffffff
+
+    def flush_action(self,now):
+        if not self.pending_action:return False
+        body,earliest,fallback,stop_revision=self.pending_action
+        ack=(self.world.stop_revision!=stop_revision and self.world.stop_packet_number==self.last_sent_sequence)
+        if now<earliest or (not ack and now<fallback):return True
+        self.pending_action=None
+        kind=body[8];number=int.from_bytes(body[4:8],'big')
+        own=self.world.own
+        if not own or not own.alive:return True
+        if kind==1 and self.move_goal:
+            points=self.nav.path(self.position(now),self.move_goal)[:32]
+            if len(points)<2:return True
+            body=movement(own.identity,number,points)
+            self.move_sent=now;self.move_revision=self.world.move_revision
+            speed=max(100,min(own.values.get(44,480),3000))
+            self.move_until=now+sum(distance(a,b) for a,b in zip(points,points[1:]))/speed
+        elif kind==2:
+            if not self.world.default_skill:return True
+            _,identity,handle=struct.unpack('>III',body[-12:])
+            target=self.world.entities.get(identity)
+            if not target or not target.alive or target.handle!=handle:return True
+            if distance(self.position(now),self.world.position(now,identity))>self.attack_reach(target):return True
+            body=normal_attack(own.identity,number,body[10],self.world.default_skill,identity,handle,self.position(now))
+        self.send_action(body);self.flushed_actions+=1
+        self.next_action=max(self.next_action,now+.2)
+        return True
 
     def position(self,now):
         return self.world.position(now)
 
     def move_to(self, goal, now):
+        self.clock=now
+        if self.pending_action:return True
         own = self.world.own
         origin = self.position(now)
         same_goal = self.move_goal and distance(self.move_goal,goal)<200
@@ -254,6 +303,7 @@ class Hunter:
 
     def tick(self, now=None):
         now = time.monotonic() if now is None else now
+        self.clock=now
         own = self.world.own
         self.update_tactic(now)
         if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
@@ -267,6 +317,7 @@ class Hunter:
             self.change('ожидание данных здоровья')
             return
         if hp <= 0 or own.state >= 5:
+            self.pending_action=None
             if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
             self.drop_target()
             self.clear_zone()
@@ -280,6 +331,8 @@ class Hunter:
             return
         self.dead_since=None
         self.death_attempts=0
+        if self.flush_action(now):
+            self.change("ожидание завершения предыдущего действия");return
         if self.market and self.market.busy:
             self.drop_target();self.clear_zone()
             self.market.tick(now,self,hp/maximum>.55)
@@ -412,16 +465,14 @@ class Hunter:
             if self.move_goal and self.attack_move_revision!=self.world.move_revision:
                 if self.world.move_state==0 and now<self.move_until+.25:
                     self.next_action=now+.2;self.change('завершает подход перед атакой');return
-                self.send(7,b'');self.end_action_requests+=1;self.last_attack_stop=now
                 self.attack_move_revision=self.world.move_revision;self.move_goal=None
-                self.next_action=now+.35;return
             if self.world.failed_actions>self.attack_failure_seen:
                 self.attack_failure_seen=self.world.failed_actions
                 failed=getattr(self.world,'last_failed_action',None)
                 if failed and failed.get('actor')==own.identity and failed.get('action')==2:
                     self.move_goal=None;self.world.motion.pop(own.identity,None)
                     if failed['reason']==1 and now-self.last_attack_stop>2:
-                        self.send(7,b'');self.end_action_requests+=1;self.last_attack_stop=now;self.next_action=now+.5;return
+                        self.action_open=True;self.last_attack_stop=now
             if not self.world.default_skill:
                 self.change('ожидание обычной атаки от сервера')
                 return
@@ -441,7 +492,6 @@ class Hunter:
                                     target.identity, target.handle, self.position(now)))
             self.world.freeze_prediction(now)
             self.move_goal=None
-            self.attacks += 1
             if self.loot:
                 self.loot.note_attack(target.identity,now)
             self.next_action = now+self.attack_interval
@@ -484,7 +534,7 @@ class Hunter:
 
     def summary(self):
         return {'tactic':self.tactic,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
-                'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'town_detours_yielded':self.task_budget.yields,
+                'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
@@ -634,6 +684,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if consumed:return
         if command==516:
             world.enter(payload)
+            policy.pending_action=None;policy.action_open=False
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)

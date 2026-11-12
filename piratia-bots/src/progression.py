@@ -55,7 +55,7 @@ class Progression:
         else:
             attribute = CON if strength > constitution * 2 else primary
         target = values[attribute] + 1
-        self.send(8, attribute_request(attribute, target))
+        self.send(8, attribute_request(attribute, 1))  # Server expects an INCREMENT, not the desired total.
         self.requests += 1
         self.pending = attribute, target, points, now + 10
 

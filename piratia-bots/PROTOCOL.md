@@ -621,3 +621,33 @@ Local chat shared2s, background per-worker45..90s,50 finite real-echo dialogues,
 human help lasts<=120s and retains normal PvE level/ownership constraints.
 174 offline tests and native serializer capture passed; live Windows transfer,
 combat, paid public channels and200-worker operation need owner validation.
+
+
+## Alpha 17 — corrections from the owner's Alpha16 runtime reports
+
+Aggregate evidence:184 entered;168 had no strike requests;75 last failures
+were action-busy reason1.16 failed PIN creation with532. Entered reports ended
+as interrupted (user stop), not a demonstrated autonomous crash. Raw reports,
+actor IDs and the uploaded archive are private and are not packaged/published.
+
+Root protocol omissions: skillbag510 was counted as received but discarded
+by Client.service. Native short skill change packet has owner:u32/default:u16/
+sync:u8/count:u16; count0 still changes default25 to28 after sword equip.
+Native writer0x4e5790 generated fixtures/native_skill_update.json with synthetic
+actor123.531 separate default change also handled. No invented skill IDs.
+
+Native CAction::End requests DesireMoveStop/DesireFightEnd; completion occurs
+on a later game tick. EndAction7 immediately followed by BeginAction6 can
+still be rejected as EXISTACT. New nonblocking action queue waits>=150ms plus
+matching actor stop packet ID, or bounded1s if no stop was generated. Actual
+transmission counters separate queue insertion from sent strikes. Paths and
+skill/target data are refreshed on flush; dead target cancels queued strike.
+
+Native Cmd_ReassignAttr0x4e01a0 was executed to stat writes: with AP4/BSTR5,
+increment1 yields AP3/BSTR6, whereas value6 is refused. Cmd8 body layout was
+already correct; the caller's meaning of its value was wrong. Now adds one
+and requires server stat+AP confirmation. No SQL attribute edits.
+
+185 offline tests passed. Native client serializers, skill writer and attribute
+increment behavior compared with supplied binaries. Live Windows combat and
+200-worker behavior remain unverified for this new release.
