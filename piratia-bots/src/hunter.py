@@ -59,6 +59,7 @@ class Hunter:
         self.equipment = None
         self.skills = None
         self.recovery = None
+        self.chests=self.town=self.party=self.career=self.story=None
         self.dead_since = None
         self.revive_requests = 0
         self.death_attempts = 0
@@ -80,6 +81,7 @@ class Hunter:
         self.next_recovery=0
         self.search_goal=None
         self.search_started=0
+        self.search_deadline=0
         self.goal_blacklist={}
         self.tactic='quests'
 
@@ -190,17 +192,19 @@ class Hunter:
     def farm_models(self):
         if not self.region:return (71,75)
         level=self.world.own.values.get(LV,1)
-        highest=max((r['level'] for r in self.region['farms'].values() if r['level']<=min(level,15)),default=1)
+        highest=max((r['level'] for r in self.region['farms'].values() if r['level']<=min(level,45)),default=1)
         return {int(m) for m,r in self.region['farms'].items() if max(1,highest-2)<=r['level']<=highest}
 
     def eligible(self, entity, now):
         own = self.world.own
         # Only the two passive beginner species from this server's CharacterInfo.
-        models = self.adventure.desired_models() if self.adventure else self.farm_models()
-        maximum_level = min(15,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
+        models=(self.career.desired_models() if self.career and self.career.desired_models() else
+                self.story.desired_models() if self.story and self.story.desired_models() else
+                self.adventure.desired_models() if self.adventure else self.farm_models())
+        maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
         return (entity.control == 5 and entity.model in models and entity.alive
                 and 0 < entity.values.get(LV, 9999) <= maximum_level
-                and entity.handle != 0 and distance(entity.position, self.home) <= (100000 if self.region else 45000 if self.adventure else 22000)
+                and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
                 and self.blacklist.get(entity.identity, 0) < now)
 
     def tick(self, now=None):
@@ -264,6 +268,16 @@ class Hunter:
         if self.stuck >= 5 and now>=self.next_recovery:
             self.recover_path(now)
             return
+        dialogue_busy=bool(self.adventure and self.adventure.context)
+        safe=not self.target and not self.resting and hp/maximum>.55
+        if self.chests and self.chests.tick(now,self,safe):
+            self.change('открывает собственный сундук');self.next_action=now+.3;return
+        if self.career and self.career.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.story and self.story.context)):
+            self.drop_target();self.clear_zone();self.change(self.career.reason);return
+        if self.story and self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)):
+            self.drop_target();self.clear_zone();self.change('сюжетное задание: жизненные навыки');return
+        if self.town and self.town.tick(now,self,safe,dialogue_busy or bool(self.career and self.career.context) or bool(self.story and self.story.context)):
+            self.drop_target();self.clear_zone();self.change(self.town.reason);return
         if self.adventure and self.adventure.tick(now,self):
             self.drop_target()
             self.clear_zone()
@@ -273,6 +287,13 @@ class Hunter:
             task = self.adventure.farm() if self.adventure else None
             needed = self.equipment.loot_needs() if self.equipment else set()
             if task and task[1]:needed.add(task[1])
+            if self.career:needed.update(self.career.needed_items())
+            if self.story:needed.update(self.story.needed_items())
+            if self.chests:needed.update(self.chests.catalog.chests)
+            if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
+            if self.chests and self.world.bag_ready and not self.world.bag_disabled:
+                free=(self.world.bag_capacity or 0)-len(self.world.bag)
+                if free>4:needed.update(item[0] for item in self.world.items.values() if item[0] in self.chests.catalog.names)
             if self.loot.tick(now,self,needed):
                 self.change('подбор квестового трофея')
                 return
@@ -353,7 +374,11 @@ class Hunter:
             self.next_action = now+self.attack_interval
             return
         self.change('поиск свободного места фарма')
-        if self.adventure:
+        if self.career and self.career.goals():
+            raw_goals=self.career.goals()
+        elif self.story and self.story.goals():
+            raw_goals=self.story.goals()
+        elif self.adventure:
             raw_goals=self.adventure.farm_goals()
         elif self.region:
             raw_goals=[pt for model in self.farm_models() for pt in self.region['farms'][str(model)]['points']]
@@ -369,8 +394,11 @@ class Hunter:
         goals.sort(key=lambda pt:((pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
         goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now)
               if self.coordination else goals[self.waypoint%len(goals)])
-        if goal!=self.search_goal:self.search_goal,self.search_started=goal,now
-        if distance(self.position(now),goal)<300 or now-self.search_started>45:
+        if goal!=self.search_goal:
+            self.search_goal,self.search_started=goal,now
+            speed=max(100,self.world.own.values.get(44,480))
+            self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
+        if distance(self.position(now),goal)<300 or now>self.search_deadline:
             self.goal_blacklist[goal]=now+20
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             self.clear_zone()
@@ -416,7 +444,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         progression.first_job = role['first_job']
         progression.target_job=role['target_job']
         from skills import Skills
-        policy.skills=Skills(world,role)
+        policy.skills=Skills(world,role,getattr(navigation,'life',None))
         social.role_label=role['label']
         tell('Закреплённый класс: '+role['label'])
         report.result['class_path'] = role
@@ -428,12 +456,47 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.adventure = Adventure(world,client.wire.send,tell,role,policy.region,tactic=tactic)
         policy.loot = QuestLoot(world)
 
+    life=getattr(navigation,'life',None)
+    if life and role:
+        from life import Chests
+        from town import Town
+        from career import Career
+        from story import Story
+        from party import Party
+        policy.chests=Chests(world,life)
+        policy.town=Town(world,life,catalog,role,policy.rng,policy.home)
+        policy.career=Career(world,client.wire.send,role,life,navigation)
+        policy.story=Story(world,client.wire.send,role,life,navigation)
+        policy.party=Party(world,client.wire.send,bot_name,bot_index,navigation.directory)
+
+    def sale_offer():
+        if not life or not world.bag_ready or world.bag_disabled:return None
+        protected=set()
+        if policy.career:protected.update(policy.career.needed_items())
+        if policy.story:protected.update(policy.story.needed_items())
+        if policy.adventure:
+            task=policy.adventure.farm()
+            if task and task[1]:protected.add(task[1])
+        for item in world.bag.values():
+            gear=catalog.gear.get(item.identity)
+            if not item.valid or not gear or item.identity in protected:continue
+            current=world.own.equipment.get(gear['links'][0],0)
+            worn=catalog.gear.get(current)
+            if worn and worn['score']>=gear['score']:
+                name=life.names.get(item.identity,str(item.identity)).encode('cp1251',errors='replace').decode('cp1251')[:40]
+                return 'Предлагаю лишнюю вещь: '+name+'. Есть в сумке.'
+        return None
+    social.sale_offer=sale_offer
+
     def snapshot(now):
         report.result['hunt']=policy.summary()
         report.result['progression']=progression.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['chat']=social.summary()
         report.result['recovery']=policy.recovery.summary()
+        for key in ('chests','town','career','story','party'):
+            feature=getattr(policy,key)
+            if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
         if policy.adventure:report.result['adventure']=policy.adventure.summary()
         report.write(Path(__file__).resolve().parents[1]/f'bot-report-{bot_index:02d}.json')
@@ -446,11 +509,28 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                          target_job=role['target_job'] if role else 0)
 
     def observe(command, payload):
+        now=time.monotonic()
+        if command in (5001,5002,5003):
+            if policy.party:
+                try:policy.party.observe(command,payload,now)
+                except ProtocolError:report.result['party_decode']='unsupported';policy.party=None
+            return
+        if command in (801,802,803,805,806,807,808,822,827,828,830,831,832):
+            consumed=False
+            for feature in (policy.career,policy.story):
+                if feature:
+                    used=feature.observe(command,payload,now)
+                    consumed=consumed or used
+            if policy.town and policy.town.context:
+                try:consumed=policy.town.observe(command,payload,now,client.wire.send) or consumed
+                except ProtocolError:policy.town.finish(now,600);report.result['shop_decode']='unsupported'
+            if consumed:return
         if command==516:
             world.enter(payload)
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
+            if policy.town:policy.town.home=policy.home;policy.town.finish(now,120)
             policy.drop_target()
             policy.clear_zone()
             policy.move_goal=None
@@ -483,6 +563,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
              f'здоровье {world.own.values[HP]}/{world.own.values[MAX_HP]}.')
         next_snapshot=0
         seen_equips=seen_skills=seen_quests=0
+        seen_party=seen_chests=seen_shopping=0
         deadline = time.monotonic()+seconds
         while time.monotonic() < deadline and not stop.is_set():
             try:
@@ -490,6 +571,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.service(command, payload)
             except TimeoutError:
                 pass
+            if policy.party:policy.party.tick(time.monotonic(),bot_index)
             policy.tick()
             now = time.monotonic()
             alive = world.own.alive
@@ -503,6 +585,14 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             seen_equips=policy.equipment.confirmed
             seen_skills=policy.skills.confirmed if policy.skills else 0
             seen_quests=policy.adventure.delivered if policy.adventure else 0
+            if policy.town and policy.town.rest_until:social.activity='city'
+            social.party_size=len(policy.party.members) if policy.party else 0
+            if social.party_size>seen_party and social.party_size>1:social.event('party',now)
+            if policy.chests and policy.chests.confirmed>seen_chests:social.event('chest',now)
+            if policy.town and policy.town.confirmed>seen_shopping:social.event('shopping',now)
+            seen_party=social.party_size
+            seen_chests=policy.chests.confirmed if policy.chests else 0
+            seen_shopping=policy.town.confirmed if policy.town else 0
             social.tick(now, policy.resting, alive and now-policy.started >= 3)
             if now>=next_snapshot:
                 snapshot(now)
@@ -515,10 +605,14 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['chat'] = social.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
+        for key in ('chests','town','career','story','party'):
+            feature=getattr(policy,key)
+            if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
         if policy.adventure:
             report.result['adventure'] = policy.adventure.summary()
             report.result['adventure']['quest_loot_requests'] = policy.loot.requests
         policy.drop_target()
         policy.clear_zone()
+        if hasattr(navigation,'directory'):navigation.directory.remove(bot_name)
         client.world_handler = None

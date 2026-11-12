@@ -5,6 +5,7 @@ import json
 import struct
 import sys
 import zlib
+import numpy as np
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -22,13 +23,14 @@ REGIONS={
 
 
 def main():
+ for info in REGIONS.values():info.update(origin=[0,0],width=4096,height=4096)
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('resource',type=Path);args=p.parse_args()
  actors={}
  for line in (args.resource/'CharacterInfo.txt').read_bytes().decode('gb18030',errors='replace').splitlines():
   a=line.split('\t')
   if a[0].isdigit() and len(a)>70 and a[4]=='5':
    level,hp=int(a[60]),int(a[61])
-   if 1<=level<=15 and 0<hp<2000 and int(a[0])<500:
+   if 1<=level<=45 and 0<hp<50000 and int(a[0])<500:
     actors[int(a[0])]={'level':level,'hp':hp,'drops':[int(n) for n in (a[46]+','+a[51]).split(',') if n.isdigit() and int(n)]}
  result={}
  for name,info in REGIONS.items():
@@ -36,8 +38,13 @@ def main():
   if (w,h)!=(8192,8192):raise ValueError('Unknown block format')
   ox,oy=info['origin'];width,height=info['width'],info['height']
   def blocked(x,y):return bool(raw[8+y*(w//8)+x//8]&(1<<(7-x%8)))
-  cells=bytearray(int(not any(blocked(x*2+1+dx,y*2+1+dy) for dx in (-1,0,1) for dy in (-1,0,1)))
-                  for y in range(oy,oy+height) for x in range(ox,ox+width))
+  blocks=np.unpackbits(np.frombuffer(raw[8:],dtype=np.uint8)).reshape(h,w).astype(bool)
+  clear=np.ones((4095,4095),dtype=bool)
+  for dy in (-1,0,1):
+   for dx in (-1,0,1):clear &= ~blocks[1+dy:8191+dy:2,1+dx:8191+dx:2]
+  grid=np.zeros((4096,4096),dtype=np.uint8);grid[:4095,:4095]=clear
+  cells=grid.tobytes()
+  del blocks,clear,grid
   data={'map':name,'origin':[ox,oy],'width':width,'height':height,'cell_cm':100,
         'source':'numeric crop of supplied .blk; 3x3 clearance; no map/model assets',
         'walkable_zlib':base64.b64encode(zlib.compress(cells,9)).decode(),'waypoints':[]}
@@ -58,6 +65,7 @@ def main():
    if x1>=x2 or y1>=y2:continue
    # Four sampled points inside the real spawn rectangle, closest to home first.
    points=[(int(x1+(x2-x1)*x),int(y1+(y2-y1)*y)) for x,y in ((.5,.5),(.25,.25),(.75,.75),(.25,.75))]
+   points.insert(0,(max(x1+100,min(x2-100,spawn[0])),max(y1+100,min(y2-100,spawn[1]))))
    points.sort(key=lambda pt:(pt[0]-spawn[0])**2+(pt[1]-spawn[1])**2)
    goal=None
    for pt in points:
@@ -66,7 +74,7 @@ def main():
    if not goal:continue
    for model in models:
     record=farm.setdefault(str(model),dict(actors[model],points=[]))
-    if goal not in record['points'] and len(record['points'])<3:record['points'].append(goal)
+    if goal not in record['points'] and len(record['points'])<4:record['points'].append(goal)
   # Limit point sets by proximity, retaining low-level and profession-required species.
   for record in farm.values():record['points'].sort(key=lambda pt:(pt[0]-spawn[0])**2+(pt[1]-spawn[1])**2)
   beginner=[p for r in farm.values() if r['level']<=3 for p in r['points']]

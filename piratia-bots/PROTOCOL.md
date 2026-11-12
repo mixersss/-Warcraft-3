@@ -473,3 +473,66 @@ unique mobs, balanced30-worker zone selection, release/expiry/respawn isolation,
 no-damage and permanent-stuck recovery, both tactics' real promotion requests
 for each first profession, and progressive level-appropriate mob selection.
 These are synthetic policy/world tests, not a live thirty-client server run.
+
+### Alpha 13: sixty-worker town/progression pilot
+
+Default count60 (cap60 retained), mixed30/30. Optional Start-60-Bots and a local
+Stop-Bots stop-request file. A watcher sets the shared stop Event; existing
+clients take their normal logout path. No server process is terminated.
+
+Native serializer emulation additionally executes original Game.exe functions:
+* NPC function0x5082a0:301,u32 NPC,u16 303,u8 actual page,u8 function index.
+* NPC buy0x508400:308,u32 NPC,u16 309,u8 buy1,u8 item page,u8 index,u8 0,u8 count.
+* Party invite0x500930:6001,string character name.
+* Party accept0x500a40/refuse0x5009c0:6002/6003,u32 inviter database character ID.
+The original UI permission getter is stubbed true; packet writers execute native
+code. This audits encoding, not successful transactions on a live server.
+
+Party incoming5001 is name,string +u32 DBID+u16 icon.5002 is kind/count bytes,
+then DBID/name/motto/icon records, cap5. Only directory-registered bots on the
+same nearby map are accepted. A subset of bot leaders invite, at most one per
+minute, up to three confirmed members. Unknown packet layout disables this
+optional feature. Membership requires server refresh; local plans do not form
+a party. Directory membership is cleared after disband/departure. No human
+invitations, automatic player exchanges, shared boss AI or forced XP grants.
+
+Shop805 parser accepts only ordinary buy type1: NPC u32,type u8,param u32,
+page count u8; pages are type/count u8 followed by itemIDs u16. Boat/trade goods
+pages are rejected. The actual server function menu must contain Trade; no
+hard-coded unrelated menu action is clicked. Numeric ItemInfo price and real
+server offer must both exist. Budget cap25% of current GD8, reserve100 gold.
+Confirmation requires BOTH bag increase and GD8 reduction. Only purchases,
+not NPC selling or player trading, are implemented. Unknown/timeout backs off.
+
+LifeItems projects83 skill-book functions from supplied ItemEffect, variable.lua
+and skillinfo.txt: actual skill ID, job/maxrank, learning level, prerequisite
+skill ranks and TP cost. Owned usable books use BeginAction11; upgrades use
+native command11, one rank, reserve2TP, max10. Server skill/rank and TP decrease
+must both confirm. No general active-skill combat rotation has been added.
+Known novice chests436/985/986/987/988 have level5/10/35/45/55, four empty slots
+and profession requirements as in the scripts. Owned chest consumption confirms
+use; equipment then follows ordinary bag/LOOK synchronization.
+
+Class-specific earned-AP tendencies are declared in progression.BUILDS and
+reported; no reset, injected AP or unconfirmed local stat changes. Full
+numerical walkability projections cover the three main4096x4096 maps with
+original3x3 clearance; shared runtime data ~48MiB. Octile A* heuristic matches
+10/14 movement cost, cache256 routes, expansion cap25000. Farm catalogs retain
+reachable ordinary model IDs<500, level<=45, HP<50000; new long routes have
+speed/distance-dependent search budgets. No dungeon/island server setup changes.
+
+Career knows six original level40 titles and journal737..742 for the pinned
+class; filters title again at native accept/deliver. It uses real journal
+state and collects available local objectives. Full chains require other maps,
+shops, dungeon/sea transport and additional NPCs; these are NOT complete in
+this release. Remote requirements are reported rather than bypassed. Story
+adds only Argent200/203/204 with real receiver coordinates and item objectives;
+rewards are server life EXP/points, distinct from combat TP. Other-city story
+transport and the full story progression remain unimplemented.
+
+Occasional city trips/rest40..100sec, shared chat8sec minimum, personal90sec,
+189 curated lines including40 jokes. Spare-gear announcements check real bag
+contents and exclude known active quest items; no actual player sale is claimed.
+Ordinary loot retains own recent attack+observed XP evidence and reserves four
+slots. Both synthetic policy regressions and PowerShell persistence pass, but
+new shop/party/chest/level40 behavior still needs the owner's Windows game test.

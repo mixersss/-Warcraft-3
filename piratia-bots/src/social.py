@@ -17,7 +17,8 @@ def say_request(text):
 
 class ChatBudget:
     """Shared by every bot in this process, including eventual larger populations."""
-    def __init__(self):
+    def __init__(self,interval=15):
+        self.interval=max(8,interval)
         self.next_send = 0
         self.lock = threading.Lock()
 
@@ -25,7 +26,7 @@ class ChatBudget:
         with self.lock:
             if now < self.next_send:
                 return False
-            self.next_send = now + 15
+            self.next_send = now + self.interval
             return True
 
 
@@ -48,6 +49,9 @@ class Social:
         self.activity = 'hunt'
         self.role_label = None
         self.last_event = {}
+        self.sale_offer=None
+        self.last_offer=-1e9
+        self.party_size=0
 
     def event(self, kind, now):
         if kind not in PHRASES or now-self.last_event.get(kind,-1e9)<120:
@@ -74,7 +78,8 @@ class Social:
         elif any(w in words for w in ('уровень', 'лвл', 'level')):
             reply = f'Сейчас у меня {self.world.own.values.get(0, 1)} уровень.'
         elif any(w in words for w in ('делаешь', 'занят', 'охотишься')):
-            reply = ('Восстанавливаюсь после боя.' if self.resting else
+            reply = ('Отдыхаю в городе, проверяю припасы.' if self.activity=='city' else
+                     'Восстанавливаюсь после боя.' if self.resting else
                      'Занимаюсь заданием.' if self.activity=='quest' else
                      f'Охочусь возле {CITIES.get(self.world.map,"города")}.')
         elif any(w in words for w in ('класс','профа','профессия')):
@@ -84,7 +89,11 @@ class Social:
         elif any(w in words for w in ('квест','квесты','задание')):
             reply = 'Выполняю начальные поручения и задания своей профессии.'
         elif any(w in words for w in ('пати','party','группа','инст')):
-            reply = 'Пока охочусь один, в группу вступать ещё не умею.'
+            reply = (f'Сейчас нас в пати {self.party_size}.' if self.party_size>1 else 'Пока без пати, могу объединяться с местными ботами.')
+        elif any(w in words for w in ('шутка','пошути','анекдот')):
+            reply=self.rng.choice(PHRASES['joke'])
+        elif any(w in words for w in ('куплю','продай','обмен')):
+            reply='Пока могу предложить вещь в чате; автоматический обмен ещё не освоил.'
         elif any(w in words for w in ('одежда','шмот','вещи')):
             reply = 'Надеваю подходящие вещи из своей сумки.'
         elif any(w in words for w in ('пока','бай','bye')):
@@ -122,7 +131,13 @@ class Social:
             return
         if safe and humans and now >= self.next_send and now >= self.next_situation:
             if self.budget.claim(now):
-                self.send(1, say_request(self.rng.choice(PHRASES[event])))
+                offer=self.sale_offer() if self.sale_offer and now-self.last_offer>=900 else None
+                if offer and self.rng.random()<.25:
+                    text=offer;self.last_offer=now
+                else:
+                    if not self.events and self.rng.random()<.35:event='joke'
+                    text=self.rng.choice(PHRASES[event])
+                self.send(1, say_request(text))
                 self.sent += 1
                 if self.events:self.events.popleft()
                 self.next_send = now + 90

@@ -69,16 +69,16 @@ class CohortCombatTests(unittest.TestCase):
         p.started=0;p.coordination=coordinator
         return w,p
 
-    def test_thirty_bots_attack_thirty_different_visible_monsters(self):
-        c=Coordination();policies=[self.policy(i,c,30)[1] for i in range(30)]
+    def test_sixty_bots_attack_sixty_different_visible_monsters(self):
+        c=Coordination();policies=[self.policy(i,c,60)[1] for i in range(60)]
         for p in policies:p.tick(100)
-        self.assertEqual(len({p.target for p in policies}),30)
+        self.assertEqual(len({p.target for p in policies}),60)
         self.assertTrue(all(p.attacks==1 for p in policies))
         # Renew target leases while their own clients report normal HP progress.
         for p in policies:
             p.world.entities[p.target].values[1]=80
             p.tick(104)
-        self.assertEqual(len({p.target for p in policies}),30)
+        self.assertEqual(len({p.target for p in policies}),60)
 
     def test_excess_bots_do_not_join_reserved_monster(self):
         c=Coordination();pairs=[self.policy(i,c,1) for i in range(3)]

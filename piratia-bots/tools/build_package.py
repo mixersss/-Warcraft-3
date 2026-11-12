@@ -5,12 +5,12 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-12'
-NAME = 'Piratia-Auto-Bots-Alpha12'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-13'
+NAME = 'Piratia-Auto-Bots-Alpha13'
 
 
 def main():
-    sources = sorted(ROOT.glob('Start*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md']
+    sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -31,24 +31,30 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'exclusive mob targets, balanced farm zones, bounded stuck/no-damage recovery; 15 quests + 15 farm with shared first-profession priority; live verification pending',
+        'status': '60-bot progression and town-life pilot; native shop/party serializers audited; new gameplay pending owner validation',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 102,
-        'full_python_suite_total': 110,
+        'pure_python_tests_passed': 119,
+        'full_python_suite_total': 127,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
-        'default_bot_count': 30,
+        'default_bot_count': 60,
         'default_mode': 'mixed',
-        'cohort_tactics_at_30': {'quests':15,'farm':15},
+        'cohort_tactics_at_60': {'quests':30,'farm':30},
         'first_profession_in_both_tactics': True,
-        'exclusive_target_and_zone_cohort_tested': 30,
+        'exclusive_target_cohort_tested': 60,
         'live_target_distribution_verified': False,
         'default_duration_seconds': 3600,
         'three_city_spawn_and_trainer_routes_verified': True,
-        'chat_phrase_count': 107,
-        'live_thirty_connections_tested': False,
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city'],
+        'chat_phrase_count': 189,
+        'live_sixty_connections_tested': False,
+        'advanced_profession_requests_implemented': True,
+        'advanced_profession_full_chains_implemented': False,
+        'player_item_exchange_implemented': False,
+        'story_chain': [200,203,204],
+        'combat_skill_book_catalog_count': 83,
+        'owned_chest_ids': [436,985,986,987,988],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60, rejection 0/61, credential preservation',
         'fix01': 'secondary-password helper population limit aligned with launcher: 1..60' ,

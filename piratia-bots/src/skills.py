@@ -5,8 +5,10 @@ BOOKS={1:(3164,66),2:(3187,74),5:(3206,97),4:(3227,210)}
 
 
 class Skills:
-    def __init__(self,world,role):
+    def __init__(self,world,role,catalog=None):
         self.world,self.role=world,role
+        self.catalog=catalog
+        self.paused={}
         self.pending=None
         self.next_action=0
         self.requests=self.confirmed=self.timeouts=0
@@ -17,11 +19,31 @@ class Skills:
             if self.world.skills.get(identity,{}).get('level',0)>=level and self.world.own.values.get(7,points)<points:
                 self.confirmed+=1;self.pending=None;self.next_action=now+3
             elif now>=deadline:
-                self.timeouts+=1;self.pending=None;self.next_action=now+300
+                self.timeouts+=1;self.pending=None;self.paused[identity]=now+300;self.next_action=now+3
             return False
         own=self.world.own
         if (not safe or now<self.next_action or not self.role or own.values.get(0,0)<10
                 or own.values.get(4) not in (self.role['first_job'],self.role['target_job'])):return False
+        if self.catalog:
+            points=own.values.get(7,0)
+            choices=[]
+            for book,info in self.catalog.books.items():
+                skill=info['skill'];current=self.world.skills.get(skill,{}).get('level',0)
+                if (not self.catalog.can_learn(self.world,info) or self.paused.get(skill,0)>now
+                        or points<info['cost']):continue
+                slot=next((slot for slot,item in self.world.bag.items() if item.identity==book and item.valid),None)
+                if not current and slot is not None and self.world.bag_ready and not self.world.bag_disabled:
+                    choices.append((0,skill,slot,1))
+                elif current and current<min(10,info['jobs'][str(own.values[4])]) and points>=info['cost']+2:
+                    choices.append((current,skill,None,current+1))
+            if not choices:return False
+            _,skill,slot,target=min(choices)
+            if slot is not None:
+                from hunter import action_header
+                policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,-1))
+            else:policy.send(11,struct.pack('>HB',skill,1))
+            self.requests+=1;self.pending=skill,target,points,now+12
+            return True
         book,skill=BOOKS[self.role['first_job']]
         current=self.world.skills.get(skill,{}).get('level',0)
         points=own.values.get(7,0)

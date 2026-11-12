@@ -196,7 +196,7 @@ class Adventure:
                 if droppers:
                     wanted.add(min(droppers,key=lambda m:farms[m][0]))
             if wanted:return wanted
-        highest=max((lv for lv,_ in farms.values() if lv<=min(level,15)),default=1)
+        highest=max((lv for lv,_ in farms.values() if lv<=min(level,45)),default=1)
         return {model for model,(lv,_) in farms.items() if max(1,highest-2)<=lv<=highest}
 
     def farm_goals(self):

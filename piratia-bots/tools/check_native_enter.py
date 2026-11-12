@@ -48,7 +48,9 @@ def main():
     writes, submitted = [], []
 
     def hook(uc, address, size, unused):
-        if address == 0x5516c0:  # GetWPacket by-value output pointer.
+        if address == 0x47c980:
+            return_stub(0,1)
+        elif address == 0x5516c0:  # GetWPacket by-value output pointer.
             return_stub(4, stack_arg(1))
         elif address == 0x54eb40:  # WriteCmd(u16).
             writes.append(('command', stack_arg(1)))
@@ -213,6 +215,27 @@ def main():
         if writes!=expected or submitted!=[True]:
             raise AssertionError(f'Native skill/revive mismatch at {address:x}: {writes}')
     print('Skill upgrade and return-to-city match native client serializers.')
+    from town import buy_request,function_request
+    import classic_wire
+    emulator.mem_write(0x2002000,b'Bot12345678\0')
+    checks=[(0x5082a0,(456,1,0),301,function_request(456,1,0)),
+            (0x508400,(456,2,3,0,5),308,buy_request(456,2,3,5)),
+            (0x500930,(0x2002000,),6001,classic_wire.string('Bot12345678')),
+            (0x500a40,(99,),6002,struct.pack('>I',99)),
+            (0x5009c0,(99,),6003,struct.pack('>I',99))]
+    for address,arguments,command,expected in checks:
+        writes.clear();submitted.clear()
+        emulator.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
+        emulator.reg_write(UC_X86_REG_ESP,0x1100000)
+        emulator.reg_write(UC_X86_REG_ECX,0x2000000)
+        emulator.emu_start(address,0xf00000,count=1000000)
+        if not writes or writes[0]!=('command',command) or submitted!=[True]:raise AssertionError('Native town/party command mismatch')
+        body=b''
+        for kind,value in writes[1:]:
+            if kind=='string':body+=struct.pack('>H',len(value)+1)+value+b'\0'
+            else:body+=struct.pack({'char':'>B','short':'>H','long':'>I'}[kind],value)
+        if body!=expected:raise AssertionError(f'Native town/party body mismatch at {address:x}: {body.hex()}')
+    print('NPC function, item purchase and party invite/accept/refuse match native client serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

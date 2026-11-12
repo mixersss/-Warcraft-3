@@ -75,7 +75,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha12'
+    report.result['version'] = 'AutoAccountsAlpha13'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -147,9 +147,19 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
     return succeeded
 
 
+def watch_stop_file(path,stop):
+    while not stop.wait(.5):
+        if path.is_file():
+            try:path.unlink()
+            except OSError:pass
+            print('Получена команда остановки. Вывожу ботов обычным выходом…')
+            stop.set()
+            return
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--count', type=int, default=30)
+    parser.add_argument('--count', type=int, default=60)
     parser.add_argument('--seconds', type=int, default=3600)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
@@ -159,13 +169,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — классы, задания и фарм без окна игры (Alpha 12).')
+    print('Пиратия — классы, задания и фарм без окна игры (Alpha 13).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha12'
+    setup_report.result['version'] = 'AutoAccountsAlpha13'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -183,6 +193,9 @@ def main():
             msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
         except OSError:
             raise RuntimeError('Этот набор ботов уже запущен. Закрой предыдущее окно программы.') from None
+        stop_file=ROOT/'stop-request.txt'
+        if stop_file.exists():stop_file.unlink()
+        threading.Thread(target=watch_stop_file,args=(stop_file,stop),daemon=True).start()
         setup_report.stage('checking_gate')
         # Refuse to create accounts if the local GateServer is not listening.
         with socket.create_connection(('127.0.0.1', args.port), timeout=5):
@@ -199,7 +212,7 @@ def main():
         from regions import Regions
         from social import ChatBudget
         navigation = Regions(ROOT/'assets')
-        chat_budget = ChatBudget()
+        chat_budget = ChatBudget(interval=8)
         from fleet import Fleet
         fleet=Fleet(args.count,ROOT/'population-status.json')
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=args.count)
@@ -237,6 +250,7 @@ def main():
             print(str(exc))
         return 1
     finally:
+        stop.set()
         if lock:
             lock.close()
         setup_report.write(report_path)

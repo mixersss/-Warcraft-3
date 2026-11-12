@@ -14,7 +14,7 @@ class Navigation:
         self.map = data.get('map','garner')
         self.origin = tuple(data['origin'])
         self.width, self.height = data['width'], data['height']
-        if not 1 <= self.width <= 1000 or not 1 <= self.height <= 1000:
+        if not 1 <= self.width <= 4096 or not 1 <= self.height <= 4096:
             raise ValueError('Invalid navigation crop size')
         self.cells = zlib.decompress(base64.b64decode(data['walkable_zlib']))
         if len(self.cells) != self.width * self.height:
@@ -72,6 +72,7 @@ class Navigation:
                 if cost >= costs.get(target, math.inf):
                     continue
                 previous[target], costs[target] = cell, cost
-                heuristic = 10 * max(abs(target[0]-goal[0]), abs(target[1]-goal[1]))
+                hx,hy=abs(target[0]-goal[0]),abs(target[1]-goal[1])
+                heuristic=14*min(hx,hy)+10*abs(hx-hy)
                 heapq.heappush(queue, (cost+heuristic, target))
         return []

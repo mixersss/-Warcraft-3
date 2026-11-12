@@ -8,3 +8,4 @@ bot-report-*.json
 data/
 population-status.json
 population-status.tmp
+stop-request.txt

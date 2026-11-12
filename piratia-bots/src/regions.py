@@ -9,8 +9,12 @@ class Regions:
         self.assets=Path(assets)
         from coordination import Coordination
         self.coordination=Coordination()
+        from party import BotDirectory
+        self.directory=BotDirectory()
         from equipment import ItemCatalog
         self.items=ItemCatalog(self.assets/'items.json')
+        from life import LifeItems
+        self.life=LifeItems(self.assets)
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
 
