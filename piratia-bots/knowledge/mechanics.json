@@ -1,0 +1,576 @@
+{
+  "as_of": "2026-11-12",
+  "scope": "Local build findings only, not a completed external forum survey. Do not execute as bot policy without native/in-game validation.",
+  "rules": [
+    {
+      "id": "PET-01",
+      "topic": "fairies",
+      "fact_ru": "Мордо — Mordo, предмет 680; его яйцо — 679.",
+      "status": "catalog_only",
+      "evidence": [
+        {
+          "source": "L01",
+          "line": 646,
+          "match": "0680\tMordo\tn1472\t10130005\t0\t0\t0\t0\t0\t00\t59\t0\t0\t0\t0\t0\t1\t1\t1\t1\t1\t1\t360\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t240,240\t5000,5000\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t518\t0\t0\tMordo"
+        },
+        {
+          "source": "L01",
+          "line": 645,
+          "match": "0679\tEgg of Mordo\tn0323\t10130005\t0\t0\t0\t0\t0\t00\t31\t0\t0\t0\t0\t0\t1\t1\t1\t1\t99\t0\t360\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t0\t0,0\t0\t0\t0\t0\t0\t0\t0\t0\t0\tItemUse_MDXZJLD\t0\t0\t0\t0\t0\t0\t"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PET-02",
+      "topic": "fairies",
+      "fact_ru": "Mordo Junior — предмет 681; Egg of Mordo Junior — 910. «Джуны» сопоставляются с Junior, не с обычным Мордо.",
+      "status": "catalog_only",
+      "evidence": [
+        {
+          "source": "L01",
+          "line": 647,
+          "match": "0681\tMordo Junior\tn1664\t10130005\t0\t0\t0\t0\t0\t00\t59\t0\t0\t0\t0\t0\t1\t1\t1\t1\t1\t1\t360\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t240,240\t5000,5000\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t526\t0\t0\tN"
+        },
+        {
+          "source": "L01",
+          "line": 876,
+          "match": "0910\tEgg of Mordo Junior\tn0323\t10130005\t0\t0\t0\t0\t0\t00\t67\t0\t0\t0\t0\t0\t1\t1\t1\t1\t99\t0\t360\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t0\t0,0\t0\t0\t0\t0\t0\t0\t0\t0\t0\tItemUse_MDXZESJLD\t0\t0"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Русский разговорный термин не верифицирован внешним форумом; соответствие по контексту и каталогу."
+    },
+    {
+      "id": "PET-03",
+      "topic": "fairies",
+      "fact_ru": "Корм Fairy Ration имеет ID 227 и обработчик ItemUse_SiLiao.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L01",
+          "line": 196,
+          "match": "0227\tFairy Ration\tn1351\t10130005\t0\t0\t0\t0\t0\t00\t57\t0\t0\t0\t0\t0\t1\t1\t1\t1\t99\t0\t360\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t0\t0,0\t0\t0\t0\t0\t0\t0\t0\t0\t0\tItemUse_SiLiao\t0\t0\t0\t0\t0\t0\tR"
+        },
+        {
+          "source": "L05",
+          "line": 7252,
+          "match": "function ItemUse_SiLiao ( role , Item , Item_Traget )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PET-04",
+      "topic": "fairy_marriage",
+      "fact_ru": "В can_jlborn_item_main нужны два разных предмета фей типа 59, поколение Part1=0, уровень обоих не ниже 20, минимум две свободные ячейки.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2558,
+          "match": "function can_jlborn_item_main ( Table )"
+        },
+        {
+          "source": "L04",
+          "line": 2691,
+          "match": "if  ItemType_JLone ~=59 or ItemType_JLother ~=59  then"
+        },
+        {
+          "source": "L04",
+          "line": 2706,
+          "match": "if  lv_JLone < 20 or lv_JLother < 20   then"
+        },
+        {
+          "source": "L04",
+          "line": 2615,
+          "match": "if Item_CanGet < 2 then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PET-05",
+      "topic": "fairy_marriage",
+      "fact_ru": "Список допустимых Demonic Fruit: 3918,3919,3920,3921,3922,3924,3925; дополнительные материалы проверяются отдельно.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2621,
+          "match": "if Item_EMstone_ID ~= 3918 and Item_EMstone_ID ~= 3919 and Item_EMstone_ID ~= 3920 and Item_EMstone_ID ~= 3921 and Item_EMstone_ID ~= 3922 and Item_EMstone_ID ~= 3924 and Item_EMstone_ID ~= 3925 then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PET-06",
+      "topic": "fairy_marriage",
+      "fact_ru": "Lua-цена скрещивания (60-L1)*(60-L2)*100; если хотя бы один уровень выше 60, функция возвращает нулевую цену.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2796,
+          "match": "local  Money_Need = ( 60 - lv_JLone )*(60 - lv_JLother )*100"
+        },
+        {
+          "source": "L04",
+          "line": 2797,
+          "match": "if lv_JLone>60 or lv_JLother>60 then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Это цена конкретной функции в этой сборке, не обещание бесплатной операции на любом классическом сервере."
+    },
+    {
+      "id": "PET-07",
+      "topic": "fairy_marriage",
+      "fact_ru": "Проверка полной stamina дважды сравнивает первого родителя и не сравнивает второго.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2711,
+          "match": "if URE_JLone < MAXURE_JLone or URE_JLone < MAXURE_JLone then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Вероятная ошибка сборки. Для ботов проверять обоих родителей; сервер сейчас не изменять."
+    },
+    {
+      "id": "PET-08",
+      "topic": "fairy_marriage",
+      "fact_ru": "Каждый базовый стат ребёнка вычисляется как floor((стат первого+стат второго)*0.125).",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2858,
+          "match": "local new_str = math.floor ((str_JLone+str_JLother)*0.125 )"
+        },
+        {
+          "source": "L04",
+          "line": 2862,
+          "match": "local new_sta = math.floor ((sta_JLone+sta_JLother)*0.125 )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PET-09",
+      "topic": "fairy_marriage",
+      "fact_ru": "В первой ветви плода два родителя Mordo создают 681; смешанные пары зависят от уровней и rad.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 2883,
+          "match": "if Item_JLone_ID ==680 or Item_JLother_ID ==680 then"
+        },
+        {
+          "source": "L04",
+          "line": 2886,
+          "match": "elseif lv_JLone>=20 and lv_JLone<25 and lv_JLother >=20 and lv_JLother<25 and rad>=88 then---12%为摩豆二世"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Ветви >=88, >=50, >=10 при random(1,100) дают 13/51/91 исход из 100, а комментарии пишут 12/50/90. Проверять каждую ветвь/плод отдельно, не переносить числа в общий гайд."
+    },
+    {
+      "id": "FORGE-01",
+      "topic": "gems",
+      "fact_ru": "Refining Gem 885, Gem Composition Scroll 886; камень-рефайнер и статовый камень — разные предметы.",
+      "status": "catalog_only",
+      "evidence": [
+        {
+          "source": "L01",
+          "line": 851,
+          "match": "0885\tRefining Gem\tn1181\trefinestone\t0\t0\t0\t0\t0\t0\t50\t0\t0\t0\t0\t0\t1\t1\t1\t1\t1\t1\t5000\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,10\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t412,0\t0\tA required gem for the forging of equipment"
+        },
+        {
+          "source": "L01",
+          "line": 852,
+          "match": "0886\tGem Composition Scroll\tn0347\t10130005\t0\t0\t0\t0\t0\t0\t47\t0\t0\t0\t0\t0\t1\t1\t1\t1\t1\t0\t5000\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\tCombine 2 gems of same grade to produce 1 of higher"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "FORGE-02",
+      "topic": "gems",
+      "fact_ru": "Для объединения проверяются одинаковые ID и уровни двух камней; для камней типа49 входной уровень>=9 отклоняется.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 100,
+          "match": "if ItemID2 ~= ItemID3 then\t\t\t\t\t\t--判断两个宝石是否同类"
+        },
+        {
+          "source": "L04",
+          "line": 110,
+          "match": "if Item2_Lv >= 9 or Item3_Lv >= 9 then"
+        },
+        {
+          "source": "L04",
+          "line": 116,
+          "match": "if Item2_Lv ~= Item3_Lv then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "FORGE-03",
+      "topic": "gems",
+      "fact_ru": "В Lua-формуле композиции вероятности различаются для типов49 и50; нельзя использовать одну вероятность для всех камней.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 1091,
+          "match": "function Check_CG_HechengBS ( Item_Lv , Item_Type , Sklv )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "FORGE-04",
+      "topic": "forging",
+      "fact_ru": "Расчёт денежной платы форжа: (GetItem_JinglianLv(item)+1)*100000.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 538,
+          "match": "function getforge_money_main ( Table )"
+        },
+        {
+          "source": "L04",
+          "line": 560,
+          "match": "local Money_Need = Jinglian_Lv * 100000"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "FORGE-05",
+      "topic": "forging",
+      "fact_ru": "Check_CG_Jinglian в предоставленном forge.lua выставляет b=1; формула случайного успеха закомментирована.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 1112,
+          "match": "function Check_CG_Jinglian ( Jinglian_Lv , Stone_Lv , Sklv )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Локальная особенность функции. Не объявлять весь форж гарантированным: проверить вызывающий код, требования, расход и фактический результат."
+    },
+    {
+      "id": "FORGE-06",
+      "topic": "forging",
+      "fact_ru": "Совместимость камня с предметом проверяется по StoneItemType, а не только по прибавке атаки.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L04",
+          "line": 1016,
+          "match": "function Check_StoneItemType ( Item , Stone1 , Stone2 )"
+        },
+        {
+          "source": "L08",
+          "line": 350,
+          "match": "StoneAttrType_Num = 16"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "APP-01",
+      "topic": "apparels",
+      "fact_ru": "Apparel Fusion и Apparel Upgrade — отдельные операции; Lua реализует can_fusion_item_main и can_beuplv_item_main.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L09",
+          "line": 3826,
+          "match": "Text( 1, \"Apparel Fusion\", OpenFusion)"
+        },
+        {
+          "source": "L04",
+          "line": 1880,
+          "match": "function can_fusion_item_main ( Table )"
+        },
+        {
+          "source": "L04",
+          "line": 2272,
+          "match": "function can_beuplv_item_main ( Table )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "RUNE-01",
+      "topic": "runes",
+      "fact_ru": "В каталоге есть Kal Runestone 3457. Это кандидат на пользовательское название «руна кель».",
+      "status": "catalog_only",
+      "evidence": [
+        {
+          "source": "L01",
+          "line": 3232,
+          "match": "3457\tKal Runestone\tn0163\t10130005\t0\t0\t0\t0\t0\t00\t41\t0\t0\t0\t0\t0\t1\t1\t1\t1\t99\t0\t50\t-1\t0\t-1\t0\t0\t-1\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0,0\t0\t0\t0,0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\tAncient rock t"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Точное соответствие русского сленга ещё нужно подтвердить, не путать с Kylin и другими рунами."
+    },
+    {
+      "id": "RUNE-02",
+      "topic": "runes",
+      "fact_ru": "NpcScript04 содержит обмены за Kal Runestone, включая 5 рун в некоторых рецептах; единого назначения у предмета нет.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L10",
+          "line": 1659,
+          "match": "Talk( 7, \"Heaven Teleporter: Angelic Dice is a treasure that is left by the Goddess. You will need to give me 10 Soul of Undead and 5 Kal Runestones in exchange\" )"
+        },
+        {
+          "source": "L10",
+          "line": 2595,
+          "match": "Talk( 5, \"Abaddon 1 Warden: Hi, I got some good stuff with me but don't expect me to give it for free. Bring me 1 Kal Runestone and I might reconsider\" )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "DUN-01",
+      "topic": "dungeons",
+      "fact_ru": "Вход Forsaken City проверяет уровень30..45 и Ancient Generator1812.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L14",
+          "line": 35,
+          "match": "if Lv(Cha) >=30 and Lv(Cha) <=45 then"
+        },
+        {
+          "source": "L14",
+          "line": 38,
+          "match": "Num = CheckBagItem(Cha, 1812)"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "DUN-02",
+      "topic": "dungeons",
+      "fact_ru": "Вход Dark Swamp проверяет уровень40..55.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L16",
+          "line": 34,
+          "match": "if Lv(Cha) >=40 and Lv(Cha) <=55 then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "DUN-03",
+      "topic": "dungeons",
+      "fact_ru": "Обе карты привязаны к magicsea; записанные интервалы входа0/3/0, исчезновения0/1/0, закрытия0/2/0.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L13",
+          "line": 24,
+          "match": "SetMapEntryTime(map, \"2005/8/30/0/0\", \"0/3/0\", \"0/1/0\", \"0/2/0\") --设置入口的时间，地图对象，首次开启时间（年/月/日/时/分），以后再次开启的间隔（日/时/分，全０表示只有首次开启），每次开启到入口消失的间隔（日/时/分，全０表示永不消失），每次开启到地图关闭的间隔（日/时/分，全０表示永不关闭）。。"
+        },
+        {
+          "source": "L15",
+          "line": 23,
+          "match": "SetMapEntryTime(map, \"2005/8/30/0/0\", \"0/3/0\", \"0/1/0\", \"0/2/0\") --设置入口的时间，地图对象，首次开启时间（年/月/日/时/分），以后再次开启的间隔（日/时/分，全０表示只有首次开启），每次开启到入口消失的间隔（日/时/分，全０表示永不消失），每次开启到地图关闭的间隔（日/时/分，全０表示永不关闭）。。"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Наличие ctrl.lua не доказывает, что карта запущена. Время интерпретировать по часам/настройкам самого сервера и реальным объявлениям портала."
+    },
+    {
+      "id": "PVP-01",
+      "topic": "pvp",
+      "fact_ru": "Chaos Argent (garner2) запрещает вход в пати; требуется ровно одна Medal of Valor3849, Honor20..30000, репутация>=30, уровень>=20 и золото level*50.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L17",
+          "line": 38,
+          "match": "if Team_In == 1 then"
+        },
+        {
+          "source": "L17",
+          "line": 53,
+          "match": "if HonorPoint < 20 then"
+        },
+        {
+          "source": "L17",
+          "line": 64,
+          "match": "if Credit_Garner2 < 30 then"
+        },
+        {
+          "source": "L17",
+          "line": 89,
+          "match": "local Money_Need = lv*50"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "PVP-02",
+      "topic": "arenas",
+      "fact_ru": "Получение Medal of Valor у Arena Administrator: Lua LvCheck >25, 50000 золота, свободная ячейка и отсутствие второй медали.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L09",
+          "line": 6346,
+          "match": "TriggerCondition( 1, LvCheck, \">\", 25 )"
+        },
+        {
+          "source": "L09",
+          "line": 6351,
+          "match": "TriggerAction( 1, GiveItem, 3849, 1, 97 )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Текст NPC и точная граница условия могут отличаться; для автоматизации использовать код и ответ сервера."
+    },
+    {
+      "id": "GUILD-01",
+      "topic": "guilds",
+      "fact_ru": "В NPC-условиях создания гильдии есть 100000G и Stone of Oath1780, типы Navy0 и Pirate1.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L09",
+          "line": 2185,
+          "match": "TriggerAction( 1, CreateGuild, 0 )"
+        },
+        {
+          "source": "L09",
+          "line": 5682,
+          "match": "TriggerAction( 1, CreateGuild, 1 )"
+        },
+        {
+          "source": "L09",
+          "line": 2183,
+          "match": "TriggerCondition( 1, HasItem, 1780, 1 )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Требования C++/SQL, ограничения размера, имён и прав ещё не проверены; список NPC-условий не является полным контрактом."
+    },
+    {
+      "id": "SHIP-01",
+      "topic": "ships",
+      "fact_ru": "ShipInfo содержит Guppy с ограничением15, Transporter Type I20, Flying Fish30, Turtle15; документ3988 не идентифицирует уникальный корабль сам по себе.",
+      "status": "catalog_only",
+      "evidence": [
+        {
+          "source": "L02",
+          "line": 2,
+          "match": "0001\tGuppy\t3988\t305\t405\t43\t15,16\t8,9,10\t53,54,55\t73,74\t15\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t24\t0\t0\t0\t0\t0\t0"
+        },
+        {
+          "source": "L02",
+          "line": 3,
+          "match": "0002\tTransporter Type I\t3988\t306\t405\t44\t17,18\t11,12,13\t56,57,58\t73,74\t20\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t24\t0\t0\t0\t0\t0\t0"
+        },
+        {
+          "source": "L02",
+          "line": 4,
+          "match": "0003\tFlying Fish\t3988\t307\t405\t45\t19,20\t14,113,114\t59,60,61\t73,74\t30\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t24\t0\t0\t0\t0\t0\t0"
+        },
+        {
+          "source": "L02",
+          "line": 5,
+          "match": "0004\tTurtle\t3988\t308\t405\t46\t146,147\t124,125,126\t71,72,157\t73,74\t15\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t24\t0\t0\t0\t0\t0\t0"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "SHIP-02",
+      "topic": "ships",
+      "fact_ru": "BoatLevelUpProc проверяет последовательность уровня, опыт корабля и золото персонажа, затем списывает опыт/деньги и выставляет уровень.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L07",
+          "line": 1121,
+          "match": "function BoatLevelUpProc ( cha, boat, levelup, exp, money )"
+        },
+        {
+          "source": "L07",
+          "line": 1135,
+          "match": "if boat_lv ~= lv_up - 1 then"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "SHIP-03",
+      "topic": "ships",
+      "fact_ru": "Корабельные атрибуты пересчитываются отдельными функциями ShipAttrRecheck/Ship_ExAttrCheck; нельзя применять сухопутную модель движения к кораблю.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L06",
+          "line": 2003,
+          "match": "function ShipAttrRecheck ( cha_role , ship_role )\t\t\t\t\t\t\t\t\t--船只属性设置"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": null
+    },
+    {
+      "id": "CLASS-01",
+      "topic": "leveling",
+      "fact_ru": "Вторая профессия имеет шесть отдельных целевых цепочек; текущая Alpha13 умеет запросить свою, но полное прохождение/острова ещё не реализованы.",
+      "status": "local_code_audited",
+      "evidence": [
+        {
+          "source": "L11",
+          "line": 752,
+          "match": "DefineMission( 749, \"Code of the Crusader\", 737 )"
+        },
+        {
+          "source": "L11",
+          "line": 227,
+          "match": "DefineMission( 758, \"Journey of the Voyager\", 742 )"
+        }
+      ],
+      "in_game_validated": false,
+      "caveat_ru": "Статус реализации берётся из исходников проекта Alpha13, не из заявления о тесте в игре."
+    }
+  ]
+}

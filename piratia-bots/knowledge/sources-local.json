@@ -1,0 +1,168 @@
+{
+  "as_of": "2026-11-12",
+  "provenance": "Owner-supplied PKO138 + Tools/resource, previously uploaded archive. Version/mutations not independently certified. No full original scripts included.",
+  "sources": [
+    {
+      "id": "L01",
+      "kind": "owner_supplied_server_resource",
+      "path": "ItemInfo.txt",
+      "sha256": "c02440ebc251e3d74dc11c6c15dc05b8f07cd5ac782404f4ae21105a4106a15e",
+      "lines": 5207,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L02",
+      "kind": "owner_supplied_server_resource",
+      "path": "ShipInfo.txt",
+      "sha256": "2fb158f3bb1c08041b45954a5fe70dd13bbcaac269c8db254bde269cdf8118bb",
+      "lines": 18,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L03",
+      "kind": "owner_supplied_server_resource",
+      "path": "skillinfo.txt",
+      "sha256": "a448eca3b4edd0e3495588c7c76f918ee2182db4cbaefa5eeb01dd4c67c6a5b9",
+      "lines": 421,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L04",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/calculate/forge.lua",
+      "sha256": "770bb8ca5bc5efc186e975e2e04d8eb0bc6e08e13c719442dddcda7715e3e969",
+      "lines": 9669,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L05",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/calculate/ItemEffect.lua",
+      "sha256": "b6761dfbb6e7ae8349a3e63c19c5ef1d7bbde3abb4808daf6d171af32048a4cc",
+      "lines": 20668,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L06",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/calculate/AttrCalculate.lua",
+      "sha256": "2cee8c8c74bcedee86a0b729e45db6250aba45b0d9f3edbc734eb405f5a8c806",
+      "lines": 2184,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L07",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/calculate/exp_and_level.lua",
+      "sha256": "1637c65bd698d06713dc5add23e398d87e8f11d3739cc886455e1a6212c4908d",
+      "lines": 1211,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L08",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/calculate/variable.lua",
+      "sha256": "240e175a2e0c9f4c6f89b3a700c69b47d94e1cd778c3ea491cf3887af91a04af",
+      "lines": 7874,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L09",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/MisScript/NpcScript01.lua",
+      "sha256": "258b9ee22f298f79e79599b4a1d978ba21dae0462b9c9facc1937b2682c4e0a7",
+      "lines": 14563,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L10",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/MisScript/NpcScript04.lua",
+      "sha256": "8107fe4de5c0880014ef65a1214da5731e3197b539bc7edf8185e0cd6455e32e",
+      "lines": 3184,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L11",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/MisScript/MissionScript01.lua",
+      "sha256": "556871e0d0823630d0a7d08e6b26ee776898bcc102ac6625756d17745be8902e",
+      "lines": 4004,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L12",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/MisScript/MissionScript02.lua",
+      "sha256": "ff12e16e0507af0fb057c4e471962d4b3719da473f6d9be9897ac378f6ef36a9",
+      "lines": 9403,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L13",
+      "kind": "owner_supplied_server_resource",
+      "path": "abandonedcity/ctrl.lua",
+      "sha256": "7f2ec332abc5257bd904f716a3dd37dbfe511463d18385eb95ec35c55fee241c",
+      "lines": 26,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L14",
+      "kind": "owner_supplied_server_resource",
+      "path": "abandonedcity/entry.lua",
+      "sha256": "632c0b57aa9524b11a2bcb5912b2b3e0fdeeb5729c035cc1f42ee07a1232958b",
+      "lines": 72,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L15",
+      "kind": "owner_supplied_server_resource",
+      "path": "darkswamp/ctrl.lua",
+      "sha256": "fbfc200aefec7b9c39e708eca85473cd55fa31294f46d8e6b6233e267877b699",
+      "lines": 25,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L16",
+      "kind": "owner_supplied_server_resource",
+      "path": "darkswamp/entry.lua",
+      "sha256": "d5f007185e676d0a774036758361f32bcc998e3907f73e01387bb3be59e75183",
+      "lines": 50,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L17",
+      "kind": "owner_supplied_server_resource",
+      "path": "garner2/entry.lua",
+      "sha256": "1bd18e8df15d6fb9bf615433617d9654d65eb49b9902d63252f096ca54bf6e51",
+      "lines": 115,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    },
+    {
+      "id": "L18",
+      "kind": "owner_supplied_server_resource",
+      "path": "script/monster/yeguai_guildwar.lua",
+      "sha256": "e8bac675b49a27e3c6547fb40e14be075e702b5d738a961c6a65dcdfb129237d",
+      "lines": 114,
+      "encoding": "gb18030 with replacement for inspection",
+      "status": "available_local_not_proven_official_classic"
+    }
+  ]
+}

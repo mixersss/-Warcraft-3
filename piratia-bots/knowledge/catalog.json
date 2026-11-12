@@ -1,0 +1,1265 @@
+{
+  "status": "catalog presence is not runtime availability or classical authenticity",
+  "items": [
+    {
+      "id": 183,
+      "name": "Fairy of Life",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 184,
+      "name": "Fairy of Darkness",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 185,
+      "name": "Fairy of Virtue",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 186,
+      "name": "Fairy of Kudos",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 187,
+      "name": "Fairy of Faith",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 188,
+      "name": "Fairy of Valor",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 189,
+      "name": "Fairy of Hope",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 190,
+      "name": "Fairy of Woe",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 191,
+      "name": "Fairy of Love",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 199,
+      "name": "Fairy of Heart",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 213,
+      "name": "Relic Armor Box (Fairy/Gold Fish)",
+      "type": 41,
+      "use_handler": "ItemUse_SCBoxSZZTZ"
+    },
+    {
+      "id": 227,
+      "name": "Fairy Ration",
+      "type": 57,
+      "use_handler": "ItemUse_SiLiao"
+    },
+    {
+      "id": 231,
+      "name": "Fairy of Luck",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 232,
+      "name": "Fairy of Strength",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 233,
+      "name": "Fairy of Constitution",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 234,
+      "name": "Fairy of Spirit",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 235,
+      "name": "Fairy of Accuracy",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 236,
+      "name": "Fairy of Agility",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 237,
+      "name": "Fairy of Evil",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 239,
+      "name": "Novice Fairy Possession",
+      "type": 34,
+      "use_handler": "Sk_Script_CJJLFT"
+    },
+    {
+      "id": 262,
+      "name": "Fairy Box",
+      "type": 31,
+      "use_handler": "ItemUse_JingLingBOX"
+    },
+    {
+      "id": 288,
+      "name": "Fairy's Adulation",
+      "type": 26,
+      "use_handler": "0"
+    },
+    {
+      "id": 333,
+      "name": "Unique Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 405,
+      "name": "Fairy Robe",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 408,
+      "name": "Fish Fairy Costume",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 453,
+      "name": "Fusion Scroll",
+      "type": 60,
+      "use_handler": "0"
+    },
+    {
+      "id": 454,
+      "name": "Fusion Catalyst",
+      "type": 61,
+      "use_handler": "0"
+    },
+    {
+      "id": 595,
+      "name": "Fairy Gloves",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 598,
+      "name": "Fish Fairy Muffs",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 608,
+      "name": "Standard Fairy Possession",
+      "type": 34,
+      "use_handler": "Sk_Script_ZJJLFT"
+    },
+    {
+      "id": 609,
+      "name": "Expert Fairy Possession",
+      "type": 34,
+      "use_handler": "Sk_Script_GJJLFT"
+    },
+    {
+      "id": 679,
+      "name": "Egg of Mordo",
+      "type": 31,
+      "use_handler": "ItemUse_MDXZJLD"
+    },
+    {
+      "id": 680,
+      "name": "Mordo",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 681,
+      "name": "Mordo Junior",
+      "type": 59,
+      "use_handler": "0"
+    },
+    {
+      "id": 755,
+      "name": "Fairy Shoes",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 758,
+      "name": "Fish Fairy Shoes",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 855,
+      "name": "Fairy Coin",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 856,
+      "name": "Fiery Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_lieyanBook"
+    },
+    {
+      "id": 857,
+      "name": "Furious Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_zhiyanBook"
+    },
+    {
+      "id": 858,
+      "name": "Explosive Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_huoyaoBook"
+    },
+    {
+      "id": 859,
+      "name": "Lustrious Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_manaoBook"
+    },
+    {
+      "id": 860,
+      "name": "Gem of the Wind",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 861,
+      "name": "Gem of Striking",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 862,
+      "name": "Gem of Colossus",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 863,
+      "name": "Gem of Rage",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 878,
+      "name": "Fiery Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 879,
+      "name": "Furious Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 880,
+      "name": "Explosive Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 881,
+      "name": "Lustrious Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 882,
+      "name": "Glowing Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 883,
+      "name": "Shining Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 884,
+      "name": "Shadow Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 885,
+      "name": "Refining Gem",
+      "type": 50,
+      "use_handler": "0"
+    },
+    {
+      "id": 886,
+      "name": "Gem Composition Scroll",
+      "type": 47,
+      "use_handler": "0"
+    },
+    {
+      "id": 887,
+      "name": "Spirit Gem",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 888,
+      "name": "Lv 1 Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 889,
+      "name": "Lv 2 Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 910,
+      "name": "Egg of Mordo Junior",
+      "type": 67,
+      "use_handler": "ItemUse_MDXZESJLD"
+    },
+    {
+      "id": 911,
+      "name": "Spirit Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_shengguangBook"
+    },
+    {
+      "id": 914,
+      "name": "Glowing Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_hanyuBook"
+    },
+    {
+      "id": 915,
+      "name": "Shining Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_yuezhixinBook"
+    },
+    {
+      "id": 916,
+      "name": "Shadow Gem Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_xianlingBook"
+    },
+    {
+      "id": 918,
+      "name": "Gem of the Wind Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_fenglingBook"
+    },
+    {
+      "id": 919,
+      "name": "Gem of Striking Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_yingyanBook"
+    },
+    {
+      "id": 920,
+      "name": "Gem of Colossus Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_yanyuBook"
+    },
+    {
+      "id": 921,
+      "name": "Gem of Rage Voucher",
+      "type": 31,
+      "use_handler": "ItemUse_tanyuBook"
+    },
+    {
+      "id": 953,
+      "name": "Eye of the Black Dragon Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 954,
+      "name": "Soul of the Black Dragon Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 955,
+      "name": "Heart of Black Dragon Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 958,
+      "name": "Sealed information",
+      "type": 42,
+      "use_handler": "0"
+    },
+    {
+      "id": 1002,
+      "name": "Sealed Blueprint",
+      "type": 31,
+      "use_handler": "ItemUse_MHDTZ"
+    },
+    {
+      "id": 1012,
+      "name": "Gem of Soul",
+      "type": 49,
+      "use_handler": "0"
+    },
+    {
+      "id": 1028,
+      "name": "Morph Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 1460,
+      "name": "Gemmed Dagger",
+      "type": 7,
+      "use_handler": "0"
+    },
+    {
+      "id": 1762,
+      "name": "Fairy Brooch",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 1767,
+      "name": "Devil Gem",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 1884,
+      "name": "Undead Sealed Armor of Revenant",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1885,
+      "name": "Earth Sealed Tattoo of the Cursed Warrior",
+      "type": 27,
+      "use_handler": "0"
+    },
+    {
+      "id": 1886,
+      "name": "Fire Sealed Tattoo of Evanescence",
+      "type": 27,
+      "use_handler": "0"
+    },
+    {
+      "id": 1887,
+      "name": "Ice Sealed Tattoo of Enigma",
+      "type": 27,
+      "use_handler": "0"
+    },
+    {
+      "id": 1888,
+      "name": "Earth Sealed Platemail of the Cursed Soul",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1889,
+      "name": "Fire Sealed Armor of Evanescence",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1890,
+      "name": "Ice Sealed Armor of Enigma",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1891,
+      "name": "Undead Sealed Sword of Grief",
+      "type": 2,
+      "use_handler": "0"
+    },
+    {
+      "id": 1892,
+      "name": "Earth Sealed Greatsword of Incantation",
+      "type": 2,
+      "use_handler": "0"
+    },
+    {
+      "id": 1893,
+      "name": "Fire Sealed Roar of Evanescence",
+      "type": 2,
+      "use_handler": "0"
+    },
+    {
+      "id": 1894,
+      "name": "Ice Sealed Judgment of Enigma",
+      "type": 2,
+      "use_handler": "0"
+    },
+    {
+      "id": 1895,
+      "name": "Earth Sealed Blade of Incantation",
+      "type": 1,
+      "use_handler": "0"
+    },
+    {
+      "id": 1896,
+      "name": "Fire Sealed Dance of Evanescence",
+      "type": 1,
+      "use_handler": "0"
+    },
+    {
+      "id": 1897,
+      "name": "Ice Sealed Blade of Enigma",
+      "type": 1,
+      "use_handler": "0"
+    },
+    {
+      "id": 1898,
+      "name": "Undead Sealed Robe of Death",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1899,
+      "name": "Earth Sealed Corset of Incantation",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1900,
+      "name": "Fire Sealed Coat of Evanescence",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1901,
+      "name": "Ice Sealed Mantle of Enigma",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1902,
+      "name": "Undead Sealed Touch of Death",
+      "type": 4,
+      "use_handler": "0"
+    },
+    {
+      "id": 1903,
+      "name": "Earth Sealed Kiss of the Cursed",
+      "type": 4,
+      "use_handler": "0"
+    },
+    {
+      "id": 1904,
+      "name": "Fire Sealed Bellow of Evanescence",
+      "type": 4,
+      "use_handler": "0"
+    },
+    {
+      "id": 1905,
+      "name": "Ice Sealed Rifle of Enigma",
+      "type": 4,
+      "use_handler": "0"
+    },
+    {
+      "id": 1906,
+      "name": "Undead Sealed Staff of the Avenger",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1907,
+      "name": "Earth Sealed Staff of Incantation",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1908,
+      "name": "Fire Sealed Staff of Evanescence",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1909,
+      "name": "Ice Sealed Staff of Enigma",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1910,
+      "name": "Undead Sealed Robe of the Venom Witch",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1911,
+      "name": "Earth Sealed Coat of Invocation",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1912,
+      "name": "Fire Sealed Robe of the Arcane",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1913,
+      "name": "Ice Sealed Robe of Enigma",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1914,
+      "name": "Earth Sealed Staff of Abraxas",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1915,
+      "name": "Fire Sealed Staff of Mirage",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1916,
+      "name": "Ice Sealed Staff of the Sphinx",
+      "type": 9,
+      "use_handler": "0"
+    },
+    {
+      "id": 1917,
+      "name": "Earth Sealed Robe of Abraxas",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1918,
+      "name": "Fire Sealed Robe of Malediction",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1919,
+      "name": "Ice Sealed Robe of the Sphinx",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1920,
+      "name": "Undead Sealed Tooth of Specter",
+      "type": 7,
+      "use_handler": "0"
+    },
+    {
+      "id": 1921,
+      "name": "Earth Sealed Tooth of the Cursed",
+      "type": 7,
+      "use_handler": "0"
+    },
+    {
+      "id": 1922,
+      "name": "Fire Sealed Tooth of Evanescence",
+      "type": 7,
+      "use_handler": "0"
+    },
+    {
+      "id": 1923,
+      "name": "Ice Sealed Kris of the Sphinx",
+      "type": 7,
+      "use_handler": "0"
+    },
+    {
+      "id": 1924,
+      "name": "Undead Sealed Mantle of the Naga",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1925,
+      "name": "Earth Sealed Mantle of the Cursed Flame",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1926,
+      "name": "Fire Sealed Cloak of Evanescence",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1927,
+      "name": "Ice Sealed Mantle of the Sphinx",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 1988,
+      "name": "Fire Sealed Gauntlets of Evanescence",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 1989,
+      "name": "Fire Sealed Greaves of Evanescence",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 1990,
+      "name": "Fire Sealed Gloves of Evanescence",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 1991,
+      "name": "Fire Sealed Shoes of Evanescence",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 1992,
+      "name": "Fire Sealed Gloves of Malediction",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 1993,
+      "name": "Fire Sealed Gloves of the Arcane",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 1994,
+      "name": "Fire Sealed Boots of Malediction",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 1995,
+      "name": "Fire Sealed Boots of the of the Arcane",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 1996,
+      "name": "Fire Sealed Heavy Gloves of Evanescence",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 1997,
+      "name": "Fire Sealed Boots of Evanescence",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 2221,
+      "name": "Fish Fairy Cap",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 2224,
+      "name": "Modern Apparel Chest",
+      "type": 31,
+      "use_handler": "ItemUse_MOLIBOX"
+    },
+    {
+      "id": 2899,
+      "name": "Christmas Gem Voucher",
+      "type": 31,
+      "use_handler": "0"
+    },
+    {
+      "id": 2927,
+      "name": "Sealed Soul of Hardin",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2928,
+      "name": "Sealed Soul of Darkness",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2929,
+      "name": "Sealed Soul of Abaddon",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2930,
+      "name": "Sealed Soul of Asura",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2931,
+      "name": "Sealed Soul of Abyss",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2932,
+      "name": "Sealed Soul of Styx",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 2955,
+      "name": "Aries Captain Apparel Chest",
+      "type": 31,
+      "use_handler": "ItemUse_CZBox"
+    },
+    {
+      "id": 3027,
+      "name": "Gemini Gate Ticket",
+      "type": 42,
+      "use_handler": "0"
+    },
+    {
+      "id": 3035,
+      "name": "Taurus Captain Apparel Chest",
+      "type": 31,
+      "use_handler": "ItemUse_JNCZBox"
+    },
+    {
+      "id": 3240,
+      "name": "Almighty Gem",
+      "type": 31,
+      "use_handler": "ItemUse_BirthCake"
+    },
+    {
+      "id": 3335,
+      "name": "Fairy March",
+      "type": 31,
+      "use_handler": "ItemUse_MarchElf"
+    },
+    {
+      "id": 3337,
+      "name": "Fairy Soul",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3425,
+      "name": "Nal Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3426,
+      "name": "Sol Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3427,
+      "name": "Ja Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3428,
+      "name": "El Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3429,
+      "name": "Cam Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3430,
+      "name": "Tef Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3431,
+      "name": "Yal Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3432,
+      "name": "Lum Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3433,
+      "name": "Fel Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3455,
+      "name": "Ter Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3456,
+      "name": "Fa Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3457,
+      "name": "Kal Runestone",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3682,
+      "name": "Water Fairy Card",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3784,
+      "name": "Cursed Water Fairy Card",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3877,
+      "name": "Lv 1 Refining Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3878,
+      "name": "Lv 2 Refining Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3885,
+      "name": "Refining Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 3886,
+      "name": "Gem Voucher",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 4035,
+      "name": "Fallacy Gem Eolith",
+      "type": 41,
+      "use_handler": "0"
+    },
+    {
+      "id": 4108,
+      "name": "Soul Gem",
+      "type": 42,
+      "use_handler": "0"
+    },
+    {
+      "id": 4691,
+      "name": "Ashen Gem",
+      "type": 25,
+      "use_handler": "0"
+    },
+    {
+      "id": 4695,
+      "name": "Red Nit Gem",
+      "type": 25,
+      "use_handler": "0"
+    },
+    {
+      "id": 5183,
+      "name": "Azure Robe of Fairy",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 5184,
+      "name": "Azure Gloves of Fairy",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 5185,
+      "name": "Azure Boots of Fairy",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 5186,
+      "name": "Azure Crown of Fairy",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 5372,
+      "name": "Lance Betrayal of Gemini",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 5373,
+      "name": "Lance Loneliness of Gemini",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 5374,
+      "name": "Lance Touch of Gemini",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 5375,
+      "name": "Lance Flowing Sand of Gemini",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 5376,
+      "name": "Carsise Betrayal of Gemini",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 5377,
+      "name": "Carsise Loneliness of Gemini",
+      "type": 27,
+      "use_handler": "0"
+    },
+    {
+      "id": 5378,
+      "name": "Carsise Touch of Gemini",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 5379,
+      "name": "Carsise Flowing Sand of Gemini",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 5380,
+      "name": "Phllyis Betrayal of Gemini",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 5381,
+      "name": "Phyllis Loneliness of Gemini",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 5382,
+      "name": "Phyllis moves of Gemini",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 5383,
+      "name": "Phyllis Flowing Sand of Gemini",
+      "type": 24,
+      "use_handler": "0"
+    },
+    {
+      "id": 5384,
+      "name": "Ami Betrayal of Gemini",
+      "type": 20,
+      "use_handler": "0"
+    },
+    {
+      "id": 5385,
+      "name": "Ami's Loneliness of Gemini",
+      "type": 22,
+      "use_handler": "0"
+    },
+    {
+      "id": 5386,
+      "name": "Ami Touch of Gemini",
+      "type": 23,
+      "use_handler": "0"
+    },
+    {
+      "id": 5387,
+      "name": "Ami Flowing Sand of Gemini",
+      "type": 24,
+      "use_handler": "0"
+    }
+  ],
+  "ships": [
+    {
+      "id": 1,
+      "name": "Guppy",
+      "deed_item": 3988,
+      "actor_model": 305,
+      "level_restriction": 15,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 2,
+      "name": "Transporter Type I",
+      "deed_item": 3988,
+      "actor_model": 306,
+      "level_restriction": 20,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 3,
+      "name": "Flying Fish",
+      "deed_item": 3988,
+      "actor_model": 307,
+      "level_restriction": 30,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 4,
+      "name": "Turtle",
+      "deed_item": 3988,
+      "actor_model": 308,
+      "level_restriction": 15,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 5,
+      "name": "Windseeker",
+      "deed_item": 3988,
+      "actor_model": 309,
+      "level_restriction": 20,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 6,
+      "name": "Swordfish",
+      "deed_item": 3988,
+      "actor_model": 310,
+      "level_restriction": 30,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 7,
+      "name": "Low level boat 7",
+      "deed_item": 3988,
+      "actor_model": 432,
+      "level_restriction": 0,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 8,
+      "name": "Boat 8",
+      "deed_item": 3988,
+      "actor_model": 432,
+      "level_restriction": 0,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 9,
+      "name": "Boat 9",
+      "deed_item": 3988,
+      "actor_model": 432,
+      "level_restriction": 0,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 10,
+      "name": "Boat 10",
+      "deed_item": 3988,
+      "actor_model": 432,
+      "level_restriction": 0,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 11,
+      "name": "Phantom Galley",
+      "deed_item": 3988,
+      "actor_model": 301,
+      "level_restriction": 35,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 12,
+      "name": "Silver Dolphin",
+      "deed_item": 3988,
+      "actor_model": 301,
+      "level_restriction": 40,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 13,
+      "name": "Great White Shark",
+      "deed_item": 3988,
+      "actor_model": 301,
+      "level_restriction": 45,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 14,
+      "name": "Torrent Galley",
+      "deed_item": 3988,
+      "actor_model": 302,
+      "level_restriction": 35,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 15,
+      "name": "Goddess",
+      "deed_item": 3988,
+      "actor_model": 302,
+      "level_restriction": 40,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 16,
+      "name": "Eagle",
+      "deed_item": 3988,
+      "actor_model": 303,
+      "level_restriction": 45,
+      "class_restriction": "-1"
+    },
+    {
+      "id": 17,
+      "name": "Ark",
+      "deed_item": 3988,
+      "actor_model": 304,
+      "level_restriction": 0,
+      "class_restriction": "-1"
+    }
+  ]
+}
