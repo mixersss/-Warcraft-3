@@ -559,3 +559,31 @@ is retained until server 5002 confirms change. No human invitation policy change
 
 134 offline Python tests and PowerShell state regression passed. Native action
 serializers audited; live 100-worker Windows SQL/network operation remains untested.
+
+
+## Alpha 15 — 200 workers and classic stalls
+
+All population validators accept 1..200; default 200 / 7200 seconds. Stable mixed
+cohorts are 80 farm / 120 hybrid. Existing DPAPI accounts are reused, not reset.
+
+Classic client native serializers captured: 0x509450 (330 create: string title,
+u8 count, repeated u8 grid/u32 unit-price/u8 count/u8 bag slot); 0x509530 (331
+view: u32 owner); 0x5095b0 (332 buy: u32 owner/u8 grid/u8 count, NO modern bag
+destination); 0x509650 (333 close: empty). Server PDB matched writer 0x4637e0
+emulated for packet 854: u32 owner/u8 count/string title, repeated grid/item/
+count/price/type and classic item endurance/energy/forge/valid/two parameters/
+optional five attribute pairs. No modern tradable or expiration bytes.
+`tests/fixtures/native_stall.json` contains synthetic data written by this native
+server function. Notifications 856 sale units, 857 close, 858 start, 859 title.
+
+Skill 241 is required: native GetStallNum 0x4d9a00 multiplies real skill level by
+six. Book3296 Sk_Script_Btjn adds skill241 through normal AddChaSkill; use only
+with earned life points, verify server skill and book consumption. NPC purchase
+uses existing audited shop flow. Marketplace state is transient; character
+inventory, gold and skills remain server-authoritative.
+
+157 offline tests, native client/server captures and PowerShell state populations
+1/10/30/60/100/200 passed. Live Windows 200-worker shop behavior is NOT validated.
+Reference prices are pilot policy, not external market observations. Gannon rune
+requirements are owner-script facts; NPC barter and dungeon farming are not
+implemented. No free rare goods or gold are created.

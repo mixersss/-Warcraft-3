@@ -32,6 +32,8 @@ class Town:
         if free<2:return None
         food=sum(item.count for item in w.bag.values() if item.identity==1847)
         if food<5:return 1847,min(10,15-food)
+        if (not w.skills.get(241,{}).get("level",0) and w.own.values.get(13,0)>0
+                and not any(i.identity==3296 for i in w.bag.values()) and cash>=20000):return 3296,1
         for identity,book in self.life.books.items():
             if (self.life.can_learn(w,book) and w.own.values.get(7,0)>=book['cost']
                     and not w.skills.get(book['skill'],{}).get('level',0)

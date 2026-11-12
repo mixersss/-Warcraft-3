@@ -74,6 +74,7 @@ class Entity:
     seen_at: float = field(default_factory=time.monotonic)
     name: str = ''  # Transient for addressed chat; never included in reports.
     equipment: dict = field(default_factory=dict)
+    stall: str = ''
 
     @property
     def position(self):
@@ -96,7 +97,7 @@ def entity(reader):
     reader.long()  # guild ID
     reader.string_bytes()
     reader.string_bytes()
-    reader.string_bytes()  # stall; NO modern guild-permission long
+    stall = reader.string()  # NO modern guild-permission long
     state = reader.short()
     x, y, radius = reader.long(), reader.long(), reader.long()
     reader.short()  # angle
@@ -118,7 +119,7 @@ def entity(reader):
         raise ProtocolError('Unrecognized classic entity fields')
     if not 0 <= x < 409600 or not 0 <= y < 409600 or radius > 2000 or state > 16:
         raise ProtocolError('Unrecognized classic position/state')
-    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment)
+    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment, stall=stall)
 
 
 class World:

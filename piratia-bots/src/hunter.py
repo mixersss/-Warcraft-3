@@ -59,7 +59,7 @@ class Hunter:
         self.equipment = None
         self.skills = None
         self.recovery = None
-        self.chests=self.town=self.party=self.career=self.story=None
+        self.chests=self.town=self.party=self.career=self.story=self.market=None
         self.dead_since = None
         self.revive_requests = 0
         self.death_attempts = 0
@@ -92,7 +92,7 @@ class Hunter:
         if not self.tactic_schedule or not self.world.own:return
         current=self.world.entities.get(self.target)
         busy=bool(current and current.alive) or self.resting
-        for feature in (self.adventure,self.career,self.story,self.town,self.equipment,self.skills,self.chests):
+        for feature in (self.adventure,self.career,self.story,self.town,self.equipment,self.skills,self.chests,self.market):
             if feature and (getattr(feature,'context',None) or getattr(feature,'pending',None)):busy=True
         mandatory=(self.world.own.values.get(4)==0 and self.world.own.values.get(0,1)>=9)
         if self.career and self.career.eligible():mandatory=True
@@ -212,11 +212,14 @@ class Hunter:
         highest=max((r['level'] for r in self.region['farms'].values() if r['level']<=min(level,45)),default=1)
         return {int(m) for m,r in self.region['farms'].items() if max(1,highest-2)<=r['level']<=highest}
 
+    def wants_story(self):
+        return self.optional_quests or bool(self.market and self.market.needs_life_study())
+
     def eligible(self, entity, now):
         own = self.world.own
         # Only the two passive beginner species from this server's CharacterInfo.
         models=(self.career.desired_models() if self.career and self.career.desired_models() else
-                self.story.desired_models() if self.optional_quests and self.story and self.story.desired_models() else
+                self.story.desired_models() if self.wants_story() and self.story and self.story.desired_models() else
                 self.adventure.desired_models() if self.adventure else self.farm_models())
         maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
         return (entity.control == 5 and entity.model in models and entity.alive
@@ -239,6 +242,7 @@ class Hunter:
             self.change('ожидание данных здоровья')
             return
         if hp <= 0 or own.state >= 5:
+            if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
             self.drop_target()
             self.clear_zone()
             self.change('персонаж погиб; обычное возвращение в город')
@@ -251,6 +255,10 @@ class Hunter:
             return
         self.dead_since=None
         self.death_attempts=0
+        if self.market and self.market.busy:
+            self.drop_target();self.clear_zone()
+            self.market.tick(now,self,hp/maximum>.55)
+            self.change(self.market.reason or 'ожидание торговли');return
         if self.recovery and self.recovery.tick(now,self):
             self.next_action=now+.3
             return
@@ -288,11 +296,15 @@ class Hunter:
             return
         dialogue_busy=bool(self.adventure and self.adventure.context)
         safe=not self.target and not self.resting and hp/maximum>.55
+        market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party) if f)
+        mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
+        if self.market and self.market.tick(now,self,safe and not mandatory,market_dialogue):
+            self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
         if self.chests and self.chests.tick(now,self,safe):
             self.change('открывает собственный сундук');self.next_action=now+.3;return
         if self.career and self.career.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.story and self.story.context)):
             self.drop_target();self.clear_zone();self.change(self.career.reason);return
-        if self.optional_quests and self.story and self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)):
+        if self.wants_story() and self.story and self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)):
             self.drop_target();self.clear_zone();self.change('сюжетное задание: жизненные навыки');return
         if self.town and self.town.tick(now,self,safe,dialogue_busy or bool(self.career and self.career.context) or bool(self.story and self.story.context)):
             self.drop_target();self.clear_zone();self.change(self.town.reason);return
@@ -308,6 +320,7 @@ class Hunter:
             if self.career:needed.update(self.career.needed_items())
             if self.story:needed.update(self.story.needed_items())
             if self.chests:needed.update(self.chests.catalog.chests)
+            if self.market:needed.update(self.market.loot_needs())
             if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
             if self.chests and self.world.bag_ready and not self.world.bag_disabled:
                 free=(self.world.bag_capacity or 0)-len(self.world.bag)
@@ -394,7 +407,7 @@ class Hunter:
         self.change('поиск свободного места фарма')
         if self.career and self.career.goals():
             raw_goals=self.career.goals()
-        elif self.optional_quests and self.story and self.story.goals():
+        elif self.wants_story() and self.story and self.story.goals():
             raw_goals=self.story.goals()
         elif self.adventure:
             raw_goals=self.adventure.farm_goals()
@@ -488,6 +501,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.career=Career(world,client.wire.send,role,life,navigation)
         policy.story=Story(world,client.wire.send,role,life,navigation)
         policy.party=Party(world,client.wire.send,bot_name,bot_index,navigation.directory)
+        if hasattr(navigation,'market_catalog'):
+            from market import Market
+            policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
 
     def sale_offer():
         if not life or not world.bag_ready or world.bag_disabled:return None
@@ -507,6 +523,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 return 'Предлагаю лишнюю вещь: '+name+'. Есть в сумке.'
         return None
     social.sale_offer=sale_offer
+    social.market=policy.market
 
     def snapshot(now):
         report.result['hunt']=policy.summary()
@@ -515,7 +532,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['chat']=social.summary()
         if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party'):
+        for key in ('chests','town','career','story','party','market'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
@@ -531,9 +548,22 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
 
     def observe(command, payload):
         now=time.monotonic()
+        if command in (854,856,857,858,859):
+            if policy.market:
+                try:policy.market.observe(command,payload,now)
+                except ProtocolError:
+                    report.result['market_decode']='unsupported'
+                    policy.market.disabled=True
+                    if policy.market.state in ('opening','selling','closing'):policy.market.request_close(now)
+                    else:policy.market.finish(now);policy.market.context=None
+            return
         if command in (5001,5002,5003):
             if policy.party:
-                try:policy.party.observe(command,payload,now)
+                try:
+                    if command==5001 and policy.market and policy.market.busy:
+                        reader=Reader(payload);reader.string_bytes();identity=reader.long()
+                        client.wire.send(6003,struct.pack('>I',identity))
+                    else:policy.party.observe(command,payload,now)
                 except ProtocolError:report.result['party_decode']='unsupported';policy.party=None
             return
         if command in (801,802,803,805,806,807,808,822,827,828,830,831,832):
@@ -548,6 +578,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if consumed:return
         if command==516:
             world.enter(payload)
+            if policy.market:
+                policy.market.finish(now);policy.market.context=None;policy.market.pending=None
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
@@ -596,13 +628,13 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
             if policy.party:
                 dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story) if f)
-                policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting)
+                policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not (policy.market and policy.market.busy))
             policy.tick()
             now = time.monotonic()
             alive = world.own.alive
             safe = (alive and now-policy.started >= 3 and not policy.resting
                     and world.own.values.get(HP, 0) > world.own.values.get(MAX_HP, 1) * .5)
-            progression.tick(now, safe)
+            progression.tick(now, safe and not (policy.market and policy.market.busy))
             social.activity='quest' if policy.adventure and ('NPC' in policy.mode or 'задани' in policy.mode or 'поручен' in policy.mode) else 'hunt'
             if policy.equipment.confirmed>seen_equips:social.event('equipment',now)
             if policy.skills and policy.skills.confirmed>seen_skills:social.event('skill',now)
@@ -630,7 +662,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['chat'] = social.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party'):
+        for key in ('chests','town','career','story','party','market'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
@@ -641,4 +673,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.clear_zone()
         if hasattr(navigation,'directory'):navigation.directory.remove(bot_name)
         if social.conversations:social.conversations.remove(bot_name,time.monotonic())
+        if policy.market:
+            if policy.market.state in ('opening','selling','closing'):
+                policy.market.request_close(time.monotonic())
+            policy.market.directory.release(bot_name)
         client.world_handler = None

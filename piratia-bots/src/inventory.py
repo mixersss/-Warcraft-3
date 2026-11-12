@@ -13,6 +13,8 @@ class BagItem:
     max_energy: int
     forge: int
     valid: bool
+    parameters: tuple = (0,0)
+    instance_attributes: tuple = ()
 
 
 def kitbag(reader, item_types):
@@ -34,9 +36,9 @@ def kitbag(reader, item_types):
         kind=item_types.get(identity)
         if kind is None:raise ProtocolError('Unknown item type; inventory actions paused')
         if kind==43:reader.long()  # Boat owner/world ID, only for boat deeds.
-        reader.take(8)  # Two item DB parameters, not modern item DBID/expiry.
+        parameters=(reader.long(),reader.long())  # Native forge/instance parameters.
         instance=reader.byte()
         if instance not in (0,1):raise ProtocolError('Invalid item instance flag')
-        if instance:reader.take(20)  # Exactly five (u16 ID,u16 value) pairs.
-        changed[slot]=BagItem(identity,count,endurance,max_endurance,energy,max_energy,forge,bool(valid))
+        instance_attributes=tuple((reader.short(),reader.short()) for _ in range(5)) if instance else ()
+        changed[slot]=BagItem(identity,count,endurance,max_endurance,energy,max_energy,forge,bool(valid),parameters,instance_attributes)
     raise ProtocolError('Too many kitbag entries')

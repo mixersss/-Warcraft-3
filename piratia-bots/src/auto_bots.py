@@ -75,7 +75,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha14'
+    report.result['version'] = 'AutoAccountsAlpha15'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -159,23 +159,23 @@ def watch_stop_file(path,stop):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--count', type=int, default=100)
-    parser.add_argument('--seconds', type=int, default=3600)
+    parser.add_argument('--count', type=int, default=200)
+    parser.add_argument('--seconds', type=int, default=7200)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
     args = parser.parse_args()
-    if not 1 <= args.count <= 100 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
-        parser.error('count: 1..100; seconds: 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 200 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
+        parser.error('count: 1..200; seconds: 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — классы, задания и фарм без окна игры (Alpha 14).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 15).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha14'
+    setup_report.result['version'] = 'AutoAccountsAlpha15'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-14'
-NAME = 'Piratia-Auto-Bots-Alpha14'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-15'
+NAME = 'Piratia-Auto-Bots-Alpha15'
 
 
 def main():
@@ -31,37 +31,37 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': '100-bot pilot; 40 percent farm / 60 percent hybrid, bounded real-echo dialogues; live owner validation pending',
+        'status': '200-bot stall pilot; real inventory/gold, native serializers audited; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 134,
-        'full_python_suite_total': 142,
+        'pure_python_tests_passed': 157,
+        'full_python_suite_total': 165,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
-        'default_bot_count': 100,
+        'default_bot_count': 200,
         'default_mode': 'mixed',
-        'cohort_tactics_at_100': {'farm':40,'hybrid':60},
+        'cohort_tactics_at_200': {'farm':80,'hybrid':120},
         'hybrid_phase_seconds': [240,480],
         'finite_dialogue_scripts': 20,
         'dialogue_advances_on_real_peer_echo': True,
         'first_profession_in_both_tactics': True,
-        'exclusive_target_cohort_tested': 100,
+        'exclusive_target_cohort_tested': 200,
         'live_target_distribution_verified': False,
-        'default_duration_seconds': 3600,
+        'default_duration_seconds': 7200,
         'three_city_spawn_and_trainer_routes_verified': True,
         'chat_phrase_count': 389,
         'new_chat_phrases': 200,
-        'live_hundred_connections_tested': False,
+        'live_two_hundred_connections_tested': False,
         'advanced_profession_requests_implemented': True,
         'advanced_profession_full_chains_implemented': False,
         'player_item_exchange_implemented': False,
         'story_chain': [200,203,204],
         'combat_skill_book_catalog_count': 83,
         'owned_chest_ids': [436,985,986,987,988],
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave', 'stall create/view/buy/close'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
-        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100, rejection 0/101, credential preservation',
-        'population_validation': 'both PowerShell helpers and Python launcher aligned: 1..100' ,
+        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100/200, rejection 0/201, credential preservation',
+        'population_validation': 'both PowerShell helpers and Python launcher aligned: 1..200' ,
         'windows_sql_dpapi_runtime_tested': False,
         'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'alpha11_fix01_spawn_and_initial_quest_movement':True, 'hunting_and_chat_alpha09': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
@@ -74,8 +74,16 @@ def main():
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
         'population_target': 400,
-        'maximum_enabled_bots': 100,
+        'maximum_enabled_bots': 200,
         'four_hundred_live_connections_tested': False,
+        'stall_session_seconds': 2400,
+        'maximum_concurrent_stalls_per_city': 10,
+        'market_catalog_tradeable_item_count': 1575,
+        'stall_data_writer_captured': 'GameServer 0x4637e0, plain and five instance attributes',
+        'live_stall_transactions_tested': False,
+        'black_market_npc_barter_implemented': False,
+        'prices_are_pilot_references': True,
+        'free_inventory_or_gold_grants': False,
         'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',
     }

@@ -17,6 +17,9 @@ class Regions:
         self.items=ItemCatalog(self.assets/'items.json')
         from life import LifeItems
         self.life=LifeItems(self.assets)
+        from market import MarketCatalog,MarketDirectory
+        self.market_catalog=MarketCatalog(self.assets)
+        self.market_directory=MarketDirectory()
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
 

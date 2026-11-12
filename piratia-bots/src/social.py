@@ -33,7 +33,7 @@ class Social:
         self.replied=OrderedDict();self.sent=self.replies=self.dialogue_lines=0
         self.level=world.own.values.get(0);self.resting=False
         self.events=deque(maxlen=4);self.activity='hunt';self.role_label=None;self.last_event={}
-        self.sale_offer=None;self.last_offer=-1e9;self.party_size=0;self.conversations=conversations
+        self.market=None;self.sale_offer=None;self.last_offer=-1e9;self.party_size=0;self.conversations=conversations
 
     def event(self,kind,now):
         if kind not in PHRASES or now-self.last_event.get(kind,-1e9)<120:return
@@ -47,6 +47,9 @@ class Social:
         has=lambda *terms:any(w in words for w in terms)
         if has('привет','здравствуй','здравствуйте','ку','hello','hi','qq','хай','дарова','здарова'):
             return 'greeting',self.rng.choice(PHRASES['reply_greeting'])
+        if has('ансил','ансилы','руны','кель','ларек','ларёк','ларьки','торгуешь') and self.market:
+            if self.market.state=='selling':return 'market','Мой ларёк открыт. Выставлены настоящие вещи из моей сумки.'
+            return 'market','Коплю на экипировку, сохраняю нужные руны; заглядываю в ларьки по средствам.'
         if has('бот','bot','живой','настоящий'):return 'identity','Да, я местный игровой бот. Отвечаю простыми правилами :)'
         if has('уровень','лвл','level','левел'):return 'level',f'Сейчас у меня {self.world.own.values.get(0,1)} уровень.'
         if has('класс','профа','профессия','профессии'):return 'class',('Мой путь: '+self.role_label+'.') if self.role_label else 'Пока начинающий.'
@@ -58,7 +61,7 @@ class Social:
         if has('спасибо','спс','благодарю'):return 'thanks',self.rng.choice(PHRASES['reply_thanks'])
         if has('пока','бай','bye','увидимся'):return 'farewell',self.rng.choice(PHRASES['reply_farewell'])
         if has('устал','надоело','проиграл','умер','застрял'):return 'empathy',self.rng.choice(PHRASES['reply_empathy'])
-        if has('куплю','продай','обмен','почем','почём'):return 'trade','Пока могу предложить вещь в чате; автоматический обмен ещё не освоил.'
+        if has('куплю','продай','обмен','почем','почём'):return 'trade',('Покупаю нужное в ларьках, а лишнее выставляю сам. Личный обмен пока не умею.' if self.market else 'Пока могу предложить вещь в чате; автоматический обмен ещё не освоил.')
         if has('одежда','шмот','вещи'):return 'equipment','Надеваю подходящие вещи из своей сумки.'
         if has('квест','квесты','задание','задания'):return 'quest','Мои задания зависят от класса и текущего занятия; профессию не меняю случайно.'
         if has('фея','феи','мордо','джун'):return 'pets','Фей пока не выращиваю. Эта часть ещё впереди.'

@@ -38,13 +38,13 @@ class CohortTests(unittest.TestCase):
         s=TacticSchedule('farm','test')
         for now in (0,500,1000,10000):self.assertEqual(s.tick(now),'farm')
         self.assertEqual(s.switches,0)
-    def test_hundred_policies_hold_hundred_unique_targets(self):
+    def test_two_hundred_policies_hold_two_hundred_unique_targets(self):
         # Reuse the same native-world based setup, not mocked claim decisions.
         setup=base_tests.CohortCombatTests();setup.nav=Navigation(ROOT/'assets/argent-navigation.json')
         coordinator=Coordination()
-        policies=[setup.policy(i,coordinator,100)[1] for i in range(100)]
+        policies=[setup.policy(i,coordinator,200)[1] for i in range(200)]
         for policy in policies:policy.tick(100)
-        self.assertEqual(len({p.target for p in policies}),100)
+        self.assertEqual(len({p.target for p in policies}),200)
         self.assertTrue(all(p.attacks==1 for p in policies))
 
 class DialogueTests(unittest.TestCase):

@@ -1,4 +1,4 @@
-param([ValidateRange(1,100)][int]$Count = 3)
+param([ValidateRange(1,200)][int]$Count = 3)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)

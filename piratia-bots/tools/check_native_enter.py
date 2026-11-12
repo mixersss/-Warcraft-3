@@ -218,7 +218,14 @@ def main():
     from town import buy_request,function_request
     import classic_wire
     emulator.mem_write(0x2002000,b'Bot12345678\0')
-    checks=[(0x5082a0,(456,1,0),301,function_request(456,1,0)),
+    from market import start_request,buy_request as stall_buy
+    emulator.mem_write(0x2002200,b'Market\0')
+    # Native NET_STALL_ALLDATA: count + padding, 8-byte rows price/count/bag/grid.
+    emulator.mem_write(0x2002300,bytes([2,0,0,0])+struct.pack('<IBBBxIBBBx',25000,2,7,0,50000,1,9,1))
+    checks=[(0x509450,(0x2002200,0x2002300),330,start_request('Market',[(0,25000,2,7),(1,50000,1,9)])),
+            (0x509530,(456,),331,struct.pack('>I',456)),
+            (0x5095b0,(456,2,3),332,stall_buy(456,2,3)),
+            (0x509650,(),333,b''),(0x5082a0,(456,1,0),301,function_request(456,1,0)),
             (0x508400,(456,2,3,0,5),308,buy_request(456,2,3,5)),
             (0x500930,(0x2002000,),6001,classic_wire.string('Bot12345678')),
             (0x500a40,(99,),6002,struct.pack('>I',99)),
@@ -236,7 +243,7 @@ def main():
             if kind=='string':body+=struct.pack('>H',len(value)+1)+value+b'\0'
             else:body+=struct.pack({'char':'>B','short':'>H','long':'>I'}[kind],value)
         if body!=expected:raise AssertionError(f'Native town/party body mismatch at {address:x}: {body.hex()}')
-    print('NPC function, item purchase and party invite/accept/refuse/leave match native client serializers.')
+    print('NPC shop, party and stall create/view/buy/close match native client serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 
