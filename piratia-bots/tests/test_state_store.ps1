@@ -57,7 +57,39 @@ try {
     $changed = Initialize-BotSecondaryPasswordState -State $migrated -Count 3 -CreateProtectedPassword { throw 'Repeated migration must not generate credentials.' }
     Assert-True (-not $changed) 'Repeated migration changed saved PINs.'
     Assert-True ($migrated.bots[2].secondary_password_dpapi -eq 'protected-secondary-placeholder') 'Migrated encrypted field was lost.'
-    [Console]::Out.WriteLine('PASS: old exception reproduced; saves, backups, restart and idempotent PIN migration preserve credentials.')
+    # The Alpha 11 launcher accepts 30/60, so the helper must accept them too.
+    # Mix legacy missing PIN fields with already-provisioned records; never reroll.
+    foreach ($populationCount in @(1, 10, 30, 60)) {
+        $population = [PSCustomObject]@{version=1;windows_sid='test';bots=@()}
+        for ($index=1; $index -le $populationCount; $index++) {
+            $entry = [PSCustomObject]@{account="test$index";password_dpapi="keep-login-$index"}
+            if ($index % 2 -eq 0) {
+                Add-Member -InputObject $entry -NotePropertyName 'secondary_password_dpapi' -NotePropertyValue "keep-pin-$index"
+            }
+            $population.bots += $entry
+        }
+        $changed = Initialize-BotSecondaryPasswordState -State $population -Count $populationCount -CreateProtectedPassword { 'new-pin-placeholder' }
+        Assert-True $changed "Missing PINs were not migrated for count $populationCount."
+        Save-BotState -State $population -Path $path
+        $reloaded = [IO.File]::ReadAllText($path) | ConvertFrom-Json
+        Assert-True (@($reloaded.bots).Count -eq $populationCount) 'Population size changed on save.'
+        for ($index=1; $index -le $populationCount; $index++) {
+            $entry = @($reloaded.bots)[$index-1]
+            Assert-True ($entry.password_dpapi -eq "keep-login-$index") 'Login credential was changed.'
+            $expected = if ($index % 2 -eq 0) { "keep-pin-$index" } else { 'new-pin-placeholder' }
+            Assert-True ($entry.secondary_password_dpapi -eq $expected) 'PIN was lost or overwritten.'
+        }
+        $changed = Initialize-BotSecondaryPasswordState -State $reloaded -Count $populationCount -CreateProtectedPassword { throw 'Existing population must not generate credentials.' }
+        Assert-True (-not $changed) 'Population migration was not idempotent.'
+    }
+    foreach ($invalidCount in @(0,61)) {
+        $rejected = $false
+        try {
+            Initialize-BotSecondaryPasswordState -State $population -Count $invalidCount -CreateProtectedPassword { throw 'Invalid count reached generator.' }
+        } catch { $rejected = $_.FullyQualifiedErrorId -like 'ParameterArgumentValidationError*' }
+        Assert-True $rejected 'Unsupported population count was accepted.'
+    }
+    [Console]::Out.WriteLine('PASS: saves, backups, restart and PIN migration preserve credentials; populations 1/10/30/60 accepted, 0/61 rejected.')
 } finally {
     [IO.Directory]::Delete($root, $true)
 }

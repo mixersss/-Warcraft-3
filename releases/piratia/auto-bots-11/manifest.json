@@ -1,6 +1,6 @@
 {
-  "artifact": "Piratia-Auto-Bots-Alpha11.zip",
-  "sha256": "6bc52ad452b659b4be72db47f975b15414ea8771deb17e3531f34e33aecbfefd",
+  "artifact": "Piratia-Auto-Bots-Alpha11-Fix01.zip",
+  "sha256": "ad275aa0d0abd757254e1bf06c10c54f288282b7ead35510d14276b4509df565",
   "status": "30-bot default; continuous movement, native inventory/equipment, three-city quest pilot; live test pending",
   "native_windows_server_tested": false,
   "pure_python_tests_passed": 83,
@@ -37,7 +37,8 @@
     "initial kitbag with boat/instance",
     "kitbag delta"
   ],
-  "powershell_state_regression": "passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced",
+  "powershell_state_regression": "passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60, rejection 0/61, credential preservation",
+  "fix01": "secondary-password helper population limit aligned with launcher: 1..60",
   "windows_sql_dpapi_runtime_tested": false,
   "owner_confirmed_previous_release": {
     "account_creation": true,

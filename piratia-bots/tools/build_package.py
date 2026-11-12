@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-11'
-NAME = 'Piratia-Auto-Bots-Alpha11'
+NAME = 'Piratia-Auto-Bots-Alpha11-Fix01'
 
 
 def main():
@@ -45,7 +45,8 @@ def main():
         'live_thirty_connections_tested': False,
         'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
-        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; old ArgumentException reproduced',
+        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60, rejection 0/61, credential preservation',
+        'fix01': 'secondary-password helper population limit aligned with launcher: 1..60' ,
         'windows_sql_dpapi_runtime_tested': False,
         'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'hunting_and_chat_alpha09': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
