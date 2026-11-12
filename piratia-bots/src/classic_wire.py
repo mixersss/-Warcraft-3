@@ -122,10 +122,20 @@ class Wire:
         packet = rpc + body
         if len(packet) + 2 > 65535:
             raise ProtocolError('Packet is too large')
-        self.sock.sendall(struct.pack('>H', len(packet) + 2) + packet)
+        # Reads use short polling deadlines. Do not inherit their tiny timeout
+        # for sendall, which may need longer under a 200-client burst.
+        self.write_frame(struct.pack('>H', len(packet) + 2) + packet)
         self.last_send = time.monotonic()
         self.report('send', command, len(payload))
 
     def heartbeat(self):
-        self.sock.sendall(b'\0\x02')
+        self.write_frame(b'\0\x02')
         self.last_send = time.monotonic()
+
+    def write_frame(self,packet):
+        self.sock.settimeout(10)
+        try:self.sock.sendall(packet)
+        except socket.timeout as exc:
+            # Polling receive timeouts are harmless; an incomplete encrypted
+            # write is not. Close/reconnect rather than continuing that stream.
+            raise ConnectionError('Timed out sending packet') from exc

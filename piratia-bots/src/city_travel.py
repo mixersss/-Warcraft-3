@@ -20,11 +20,13 @@ class CityTravel:
         self.requests=self.arrivals=self.failures=0;self.reason=''
     def destination(self,policy):
         w=self.world;level=w.own.values.get(0,0);job=w.own.values.get(4,0)
+        if 1<=level<=3:return 'garner'
         if job==0 and level>=9:return TRAINER_MAP[self.role['first_job']]
         career=getattr(policy,'career',None)
         if career and career.eligible() and (not career.active() or career.quest.get('talk')):
             return career.quest['map']
         return self.home_city
+    def starter_trip(self):return 1<=self.world.own.values.get(0,0)<=3 and self.world.map!='garner'
     def abort(self,now):
         self.context=None;self.pending=None;self.target=None;self.trip_started=None
         self.failures+=1;self.next_trip=now+300;self.reason='переход отложен; продолжает развитие на текущей карте'

@@ -48,6 +48,8 @@ def connect_bot(bot, report, port):
     sock = socket.create_connection(('127.0.0.1', port), timeout=10)
     client = Client(sock, report)
     try:
+        sock.setsockopt(socket.IPPROTO_TCP,socket.TCP_NODELAY,1)
+        sock.setsockopt(socket.SOL_SOCKET,socket.SO_KEEPALIVE,1)
         chars = client.login(bot['account'], bot['password'])
         for attempt in range(3):
             try:
@@ -83,10 +85,10 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha19'
+    report.result['version'] = 'AutoAccountsAlpha20'
     report.result['bot_index'] = index
     report.result['session_history']=list(history or [])
-    report.result['reconnect_attempts']=len(history or [])
+    report.result['reconnect_attempts']=(history[-1].get('recovery_number',len(history)) if history else 0)
     started=time.monotonic()
     report.result['entered_world']=False
     sock = client = None
@@ -162,7 +164,7 @@ def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navi
         report.result['error_locations']=[{'file':Path(f.filename).name,'line':f.lineno,'function':f.name} for f in frames]
         print(f'Бот {index}: ошибка программы {type(exc).__name__}; подробности в отчёте.')
     finally:
-        if client:
+        if client and report.result.get('exit_reason')!='network_error':
             try:
                 client.logout()
             except (OSError, ProtocolError):
@@ -177,8 +179,8 @@ def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navi
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     deadline=float('inf') if seconds==0 else time.monotonic()+seconds
-    history=[];had_entered=False
-    for attempt in range(4):
+    history=[];had_entered=False;attempt=0;recoveries=0
+    while True:
         if stop.is_set():return False
         remaining=0 if deadline==float('inf') else max(0,deadline-time.monotonic())
         if deadline!=float('inf') and remaining<=0:return True
@@ -187,15 +189,20 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         had_entered=had_entered or result.get('entered_world',False)
         reason=result.get('exit_reason')
         retryable=reason=='network_error' or (had_entered and result.get('server_error_code')==1104)
-        if stop.is_set() or not retryable or attempt==3:return False
-        history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds') if k in result})
-        delay=(5,15,30)[attempt]+index%5
-        result['reconnect_attempts']=attempt+1;result['reconnect_wait_seconds']=delay
+        if stop.is_set() or not retryable:return False
+        if result.get('entered_world') and result.get('session_elapsed_seconds',0)>=120:attempt=0
+        if attempt>=3 and seconds!=0:return False
+        history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds','error_locations','network_errno','last_receive','last_send') if k in result})
+        history[-1]['recovery_number']=recoveries+1
+        history=history[-20:]
+        delay=(5,15,30)[attempt]+index%5 if attempt<3 else 120+index%15
+        attempt+=1;recoveries+=1
+        result['reconnect_attempts']=recoveries;result['reconnect_wait_seconds']=delay
         result['stage']='reconnecting';result['session_history']=list(history)
         retry_report_path=report_dir / f'bot-report-{index:02d}.json'
         retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
         if fleet:fleet.update(index,connected=False,state='reconnecting')
-        print(f'Бот {index}: сетевое восстановление {attempt+1}/3 через {delay} сек.')
+        print(f'Бот {index}: сетевое восстановление {recoveries} через {delay} сек.')
         if stop.wait(delay):
             result['stage']='interrupted';result['exit_reason']='stop_requested'
             retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
@@ -225,14 +232,14 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 19).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 20).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
     print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha19'
+    setup_report.result['version'] = 'AutoAccountsAlpha20'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -266,7 +273,7 @@ def main():
         for index, bot in enumerate(bots):
             bot['creation_body'] = index % 4 + 1
             from city_travel import home_city_for,BIRTHPLACES
-            bot['birthplace']=BIRTHPLACES[home_city_for(index+1)]
+            bot['birthplace']=BIRTHPLACES['garner']
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
         from regions import Regions
         from social import ChatBudget

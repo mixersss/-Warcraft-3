@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-19'
-NAME = 'Piratia-Auto-Bots-Alpha19'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-20'
+NAME = 'Piratia-Auto-Bots-Alpha20'
 
 
 def main():
@@ -31,13 +31,14 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Alpha18 report-derived combined action phase and continuous normal attack fixes; live Windows validation pending',
+        'status': 'Earned ordinary loot, source-confirmed damage, transmit timeout recovery and Forest Spirit starter policy; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 212,
-        'full_python_suite_total': 220,
-        'socket_tests_not_rerun_this_release': 8,
-        'last_full_network_regression': '24 passed in Alpha 06',
-        'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
+        'pure_python_tests_passed': 232,
+        'full_python_suite_total': 240,
+        'full_python_suite_passed': 240,
+        'socket_tests_not_rerun_this_release': 0,
+        'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
+        'current_network_regression': '8 local socket integration tests passed outside restricted sandbox',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
@@ -98,7 +99,17 @@ def main():
         'movement_segment_early_cancel_removed': True,
         'two_hundred_acknowledged_fight_policy_simulation': 'passed; offline only',
         'owner_alpha18_population': {'connected':200,'zero_attack_requests':116,'waiting_action':73},
-        'network_reconnect_attempts': 3,
+        'network_reconnect_attempts_finite_unstable_sessions': 3,
+        'continuous_network_recovery': True,
+        'continuous_recovery_backoff_seconds': [5,15,30,120],
+        'history_max_entries': 20,
+        'collect_all_earned_monster_loot': True,
+        'pickup_requires_inventory_gain_and_ground_removal': True,
+        'starter_monster_model': 103,
+        'starter_monster_native_level': 3,
+        'starter_character_levels': [1,2,3],
+        'starter_map': 'garner',
+        'native_damage_prefix_verified': True,
         'npc_junk_whitelist_count': 38,
         'npc_sale_requires_bag_and_gold': True,
         'spawn_counts_modified': False,

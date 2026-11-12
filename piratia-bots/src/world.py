@@ -146,6 +146,7 @@ class World:
         self.stop_packet_kind = None
         self.skill_packet_number = None
         self.skill_revision = 0
+        self.own_hits = {}
         self.look_revision = 0
         self.skills = {}
 
@@ -234,6 +235,7 @@ class World:
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
             raise ProtocolError('Initial health/level could not be decoded')
         self.motion.clear()
+        self.own_hits.clear()
         self.items.clear()
         self.move_revision += 1
         self.move_state = 1
@@ -283,6 +285,8 @@ class World:
             values = attrs(reader)
             if identity in self.entities:
                 self.entities[identity].values.update(values)
+                if values.get(HP,1)<=0 and identity in self.own_hits:
+                    self.own_hits[identity]=(self.own_hits[identity][0],True)
         elif command == 510:
             identity=reader.long()
             if identity==self.own_id:
@@ -338,11 +342,19 @@ class World:
                     if current:
                         current.x, current.y = x, y
                         self.motion.pop(identity,None)
-                reader.take(24)  # source, source position, skill, two target fields
+                source=reader.long()
+                reader.take(20)  # source position, skill, two target fields
                 reader.short()  # effect time
                 values = attrs(reader)
                 if current:
+                    before=current.values.get(HP)
                     current.values.update(values)
+                    if (source==self.own_id and current.control==5 and before is not None
+                            and HP in values and values[HP]<before):
+                        self.own_hits[identity]=(time.monotonic(),values[HP]<=0 or bool(state & 0x100))
+                        if len(self.own_hits)>128:self.own_hits.pop(next(iter(self.own_hits)))
+                    if (values.get(HP,1)<=0 or state & 0x100) and identity in self.own_hits:
+                        self.own_hits[identity]=(self.own_hits[identity][0],True)
                     if state & 0x100:
                         current.state = 7
                 self.damage_events += 1

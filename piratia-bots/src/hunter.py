@@ -308,15 +308,22 @@ class Hunter:
         return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
 
     def opportunity_models(self):
+        if self.starter_models():return self.starter_models()
         if not self.region:return self.farm_models()
         level=min(45,self.world.own.values.get(LV,1))
         return {int(m) for m,r in self.region['farms'].items() if max(1,level-5)<=r['level']<=level}
 
     def farm_models(self):
+        if self.starter_models():return self.starter_models()
         if not self.region:return (71,75)
         level=self.world.own.values.get(LV,1)
         highest=max((r['level'] for r in self.region['farms'].values() if r['level']<=min(level,45)),default=1)
         return {int(m) for m,r in self.region['farms'].items() if max(1,highest-2)<=r['level']<=highest}
+
+    def starter_models(self):
+        # Owner's CharacterInfo: Forest Spirit 103 is level 3, Argent only.
+        return {103} if (self.region and self.world.map=='garner'
+                        and '103' in self.region['farms'] and self.world.own.values.get(LV,1)<=3) else set()
 
     def task(self,key,feature,callback,now):
         if self.helper and self.helper.source is not None:return False
@@ -354,7 +361,10 @@ class Hunter:
         models=(self.opportunity_models() if self.activity.hunting(now) and not self.mandatory_work() and not self.assist_target else {self.assist_target and self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.career.desired_models() if self.career and self.career.desired_models() else
                 self.story.desired_models() if self.wants_story() and self.story and self.story.desired_models() else
                 self.adventure.desired_models() if self.adventure else self.farm_models())
+        if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:return False
         maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
+        if self.starter_models() and not self.assist_target:
+            models=self.starter_models();maximum_level=3
         return (entity.control == 5 and (not self.assist_target or entity.identity==self.assist_target) and entity.model in models and entity.alive
                 and 0 < entity.values.get(LV, 9999) <= maximum_level
                 and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
@@ -447,7 +457,25 @@ class Hunter:
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         if self.helper and self.helper.tick(now,self):return
-        if self.travel and (not self.activity.hunting(now) or self.mandatory_work()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
+        loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
+        if not loot_dialogue:
+            if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
+                task = self.adventure.farm() if self.adventure else None
+                needed = self.equipment.loot_needs() if self.equipment else set()
+                if task and task[1]:needed.add(task[1])
+                if self.career:needed.update(self.career.needed_items())
+                if self.story:needed.update(self.story.needed_items())
+                if self.chests:needed.update(self.chests.catalog.chests)
+                if self.market:needed.update(self.market.loot_needs())
+                if self.vendor:needed.update(self.vendor.junk)
+                if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
+                if self.chests and self.world.bag_ready and not self.world.bag_disabled:
+                    free=(self.world.bag_capacity or 0)-len(self.world.bag)
+                    if free>4:needed.update(item[0] for item in self.world.items.values() if item[0] in self.chests.catalog.names)
+                if self.loot.tick(now,self,needed):
+                    self.change('подбор своего лута')
+                    return
+        if self.travel and (not self.activity.hunting(now) or self.mandatory_work() or self.travel.starter_trip()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
@@ -466,22 +494,6 @@ class Hunter:
             self.clear_zone()
             self.change(self.adventure.reason)
             return
-        if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
-            task = self.adventure.farm() if self.adventure else None
-            needed = self.equipment.loot_needs() if self.equipment else set()
-            if task and task[1]:needed.add(task[1])
-            if self.career:needed.update(self.career.needed_items())
-            if self.story:needed.update(self.story.needed_items())
-            if self.chests:needed.update(self.chests.catalog.chests)
-            if self.market:needed.update(self.market.loot_needs())
-            if self.vendor:needed.update(self.vendor.junk)
-            if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
-            if self.chests and self.world.bag_ready and not self.world.bag_disabled:
-                free=(self.world.bag_capacity or 0)-len(self.world.bag)
-                if free>4:needed.update(item[0] for item in self.world.items.values() if item[0] in self.chests.catalog.names)
-            if self.loot.tick(now,self,needed):
-                self.change('подбор квестового трофея')
-                return
         target = self.world.entities.get(self.target)
         if self.target and (not target or not target.alive):
             if target and target.values.get(HP,1)<=0:self.kills+=1
@@ -587,8 +599,12 @@ class Hunter:
                 self.loot.note_attack(target.identity,now)
             self.next_action = now+self.attack_interval
             return
+        if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:
+            self.change('ожидание перехода в Аргент: старт на Forest Spirit');self.next_action=now+1;return
         self.change('поиск свободного места фарма')
-        if self.activity.hunting(now) and not self.mandatory_work() and self.region:
+        if self.starter_models():
+            raw_goals=self.region['farms']['103']['points']
+        elif self.activity.hunting(now) and not self.mandatory_work() and self.region:
             raw_goals=[pt for model in self.opportunity_models() for pt in self.region['farms'][str(model)]['points']]
         elif self.career and self.career.goals():
             raw_goals=self.career.goals()
@@ -677,7 +693,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if role is None:
             raise ProtocolError('Для квестов требуется сохранённый путь класса.')
         policy.adventure = Adventure(world,client.wire.send,tell,role,policy.region,tactic=tactic)
-        policy.loot = QuestLoot(world)
+        policy.loot = QuestLoot(world,collect_all=True)
 
     life=getattr(navigation,'life',None)
     if life and role:
@@ -726,6 +742,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
 
     def snapshot(now):
         report.result['hunt']=policy.summary()
+        if policy.loot:report.result['loot']=policy.loot.summary()
         report.result['progression']=progression.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['chat']=social.summary()
@@ -879,6 +896,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.wire.heartbeat()
     finally:
         report.result['hunt'] = policy.summary()
+        if policy.loot:report.result['loot']=policy.loot.summary()
         report.result['progression'] = progression.summary()
         report.result['chat'] = social.summary()
         report.result['equipment']=policy.equipment.summary()

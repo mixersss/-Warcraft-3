@@ -700,3 +700,30 @@ instead of deliberately cancelling the final .65 seconds on every segment.
 212 pure Python regressions passed including 200 independent policy worlds
 with simulated native-shaped movement/skill acknowledgements. Native client
 serializer capture passed unchanged. No live 200-player Windows run is claimed.
+
+
+## Alpha 20: owned ordinary drops and resilient transport
+
+MC508/action4 source actor is the first u32 after critical/miss/knockback fields
+and optional knockback coordinates; native CFightAble::NotiSkillTarToEyeshot
+0x5048f0..0x504a61 verified by Unicorn in supplied SHA256-f60aa51c GameServer.
+Captured synthetic prefixes with/without knockback are in native_damage_prefix.json.
+Actual own damage plus subsequent observed death permits loot without personal
+XP gain, including another party member's final blow. MC506 kind0/source links
+to the defeated monster. Player throws/natural items are not assumed owned.
+CS6/action8 still uses native world ID and handle. Bag count gain AND ground
+removal confirm a pickup; timeout/retry and approach budgets are bounded.
+
+Separate socket write timeout10s from short receive polling. A write timeout
+raises ConnectionError rather than TimeoutError, so the hunt loop cannot swallow
+a partially sent encrypted frame as a benign receive timeout. Never reuse that
+stream. Continuous mode retries network failures with capped backoff, retains
+same account/identity and <=20 diagnostic entries, never resets SQL login flags.
+Protocol/program failures remain visible, not blindly retried.
+
+Forest Spirit103 from original CharacterInfo is level3; starter character
+levels1..3 explicitly permit this target in garner. New characters start in
+Argent; existing newbies use paid/free native teleporter rules; no SQL warps.
+Normal home-city/class routes resume after starter levels. Full suite240 passed
+including8 socket integrations after sandbox permission; Windows live population
+and actual disconnect causes remain unverified.

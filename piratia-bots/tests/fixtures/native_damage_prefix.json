@@ -1,0 +1,7 @@
+{
+  "source_sha256": "f60aa51c8a8d08ee097bc4a6003b5a07dd97f6dc5d6ea8ae4c8425fa3660f6c5",
+  "writer": "CFightAble::NotiSkillTarToEyeshot 0x5048f0 through 0x504a61",
+  "scope": "Original native prefix captured with synthetic actors; excludes command and attribute tail.",
+  "knockback_0": "000000580000007b040701000000000000000100000064000000c80000001c0000012c000001900000",
+  "knockback_1": "000000580000007b0407010000000100000258000002bc0000000100000064000000c80000001c0000012c000001900000"
+}
