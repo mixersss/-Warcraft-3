@@ -83,7 +83,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha18'
+    report.result['version'] = 'AutoAccountsAlpha19'
     report.result['bot_index'] = index
     report.result['session_history']=list(history or [])
     report.result['reconnect_attempts']=len(history or [])
@@ -225,14 +225,14 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 18).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 19).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
     print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha18'
+    setup_report.result['version'] = 'AutoAccountsAlpha19'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

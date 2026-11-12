@@ -45,6 +45,11 @@ class Hunter:
         self.action_open=False
         self.pending_action=None;self.clock=time.monotonic();self.queued_actions=self.flushed_actions=0
         self.last_sent_sequence=None;self.sent_action_counts={}
+        self.last_sent_kind=None;self.last_attack_target=None
+        self.active_fight_waits=0
+        self.rejected_target_releases=0
+        self.motion_anchor=None;self.motion_progress_at=None
+        self.move_endpoint=None;self.move_packet=None
         self.assist_target=None;self.helper=None
         self.target = None
         self.next_action = 0
@@ -162,6 +167,7 @@ class Hunter:
         if self.search_goal:self.goal_blacklist[self.search_goal]=now+45
         self.clear_zone()
         self.stuck=0
+        self.motion_anchor=self.position(now);self.motion_progress_at=now
         self.recoveries+=1
         self.next_recovery=now+8
         self.move_sent=-1e9
@@ -192,10 +198,17 @@ class Hunter:
         self.send(6,body);self.action_open=True
         self.last_sent_sequence=int.from_bytes(body[4:8],'big')
         kind=str(body[8]);self.sent_action_counts[kind]=self.sent_action_counts.get(kind,0)+1
-        if body[8]==2:self.attacks+=1
+        self.last_sent_kind=body[8]
+        if body[8]==2:
+            self.attacks+=1
+            self.motion_anchor=None;self.motion_progress_at=None;self.stuck=0
+            self.last_attack_target=struct.unpack('>III',body[-12:])[1:]
+        elif body[8]==1:
+            self.move_packet=self.last_sent_sequence
+            self.move_endpoint=struct.unpack('<ii',body[-8:])
 
     def emit(self, body):
-        if self.world.stop_packet_number==self.last_sent_sequence and self.last_sent_sequence is not None:
+        if self.action_stopped():
             self.action_open=False
         if self.action_open:
             self.stop_action()
@@ -209,7 +222,7 @@ class Hunter:
     def flush_action(self,now):
         if not self.pending_action:return False
         body,earliest,fallback,stop_revision=self.pending_action
-        ack=(self.world.stop_revision!=stop_revision and self.world.stop_packet_number==self.last_sent_sequence)
+        ack=(self.world.stop_revision!=stop_revision and self.action_stopped())
         if now<earliest or (not ack and now<fallback):return True
         self.pending_action=None
         kind=body[8];number=int.from_bytes(body[4:8],'big')
@@ -227,6 +240,7 @@ class Hunter:
             _,identity,handle=struct.unpack('>III',body[-12:])
             target=self.world.entities.get(identity)
             if not target or not target.alive or target.handle!=handle:return True
+            if self.combat_since is not None and now-self.last_damage_at>=14:return False
             if distance(self.position(now),self.world.position(now,identity))>self.attack_reach(target):return True
             body=normal_attack(own.identity,number,body[10],self.world.default_skill,identity,handle,self.position(now))
         self.send_action(body);self.flushed_actions+=1
@@ -235,6 +249,13 @@ class Hunter:
 
     def position(self,now):
         return self.world.position(now)
+
+    def action_stopped(self):
+        if self.last_sent_sequence is None or self.world.stop_packet_number!=self.last_sent_sequence:return False
+        kind=self.world.stop_packet_kind
+        # A combined move+attack emits a movement INRANGE notification before
+        # its fight starts. Only SKILL_SRC termination ends that whole action.
+        return kind is None or (self.last_sent_kind==1 and kind==1) or (self.last_sent_kind==2 and kind==3)
 
     def move_to(self, goal, now):
         self.clock=now
@@ -249,7 +270,8 @@ class Hunter:
                 self.move_waits+=1
                 return True  # Wait for server acceptance; never extrapolate a requested route.
             if (self.world.move_revision!=self.move_revision and self.world.move_state==0
-                    and now<self.move_until-.65):
+                    and (self.world.move_packet_number is None or self.world.move_packet_number==self.move_packet)
+                    and now<self.move_until+.5):
                 self.move_waits+=1
                 return True
         path = self.nav.path(origin,goal)
@@ -263,12 +285,24 @@ class Hunter:
         self.move_goal,self.move_sent,self.move_until=tuple(goal),now,now+travelled/speed
         self.move_revision=self.world.move_revision
         self.next_action=now+.15
-        if distance(origin,self.last_position)<40:
-            self.stuck+=1
-        else:
-            self.stuck=0
+        # Count elapsed lack of server-backed progress, not fast calls while an
+        # action is still being accepted. Five near-identical requests were
+        # enough to send the old policy back into city detours repeatedly.
+        if self.motion_anchor is None or distance(origin,self.motion_anchor)>=100:
+            self.motion_anchor=origin;self.motion_progress_at=now;self.stuck=0
+        elif now-self.motion_progress_at>=10:
+            self.stuck=5
         self.last_position=origin
         return True
+
+    def fight_running(self,target,now):
+        """A normal attack is a server-side repeating action, not one click/hit."""
+        if self.last_sent_kind!=2 or self.last_attack_target!=(target.identity,target.handle):return False
+        if self.world.failed_actions>self.attack_failure_seen:return False
+        if self.action_stopped():return False
+        # Let the server complete wind-up and subsequent swings. No-progress
+        # recovery below still bounds the wait; never cancel a productive fight.
+        return now-self.last_damage_at<6
 
     def mandatory_work(self):
         return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
@@ -454,6 +488,18 @@ class Hunter:
             self.drop_target()
             target=None
         if target:
+            stopped=(self.world.skill_packet_number==self.last_sent_sequence
+                     and self.world.skill_action_state in (16,64,512)
+                     and self.last_sent_kind==2)
+            failed=self.world.last_failed_action
+            disappeared=(self.world.failed_actions>self.attack_failure_seen and failed
+                         and failed['actor']==own.identity and failed['action']==2 and failed['reason']==5)
+            if stopped or disappeared:
+                self.rejected_target_releases+=1
+                self.attack_failure_seen=self.world.failed_actions
+                self.drop_target(now,avoid=True)
+                target=None
+        if target:
             key=(self.world.map,target.identity,target.handle)
             if (not self.eligible(target,now) or key!=self.target_key
                     or (self.coordination and not self.coordination.claim(self.owner,key,now))):
@@ -493,6 +539,11 @@ class Hunter:
                 self.clear_zone()
                 break
         if target:
+            if self.fight_running(target,now):
+                self.active_fight_waits+=1
+                self.change('продолжает бой: ожидает следующий серверный удар')
+                self.next_action=now+.25
+                return
             reach = self.attack_reach(target)
             if distance(self.position(now),self.world.position(now,target.identity)) > reach:
                 self.change('подход к слабому мобу')
@@ -502,7 +553,8 @@ class Hunter:
                 return
             # Finish an accepted movement action before asking the server to begin a fight.
             if self.move_goal and self.attack_move_revision!=self.world.move_revision:
-                if self.world.move_state==0 and now<self.move_until+.25:
+                if (self.last_sent_kind==1 and self.world.move_state==0
+                        and now<self.move_until+.25):
                     self.next_action=now+.2;self.change('завершает подход перед атакой');return
                 self.attack_move_revision=self.world.move_revision;self.move_goal=None
             if self.world.failed_actions>self.attack_failure_seen:
@@ -555,7 +607,11 @@ class Hunter:
             self.next_action=now+2
             return
         # Stable per-bot ordering, independent of the order of the JSON species.
-        goals.sort(key=lambda pt:((pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
+        # Choose a nearby available farm instead of crossing the whole region
+        # in a hash-random order. Reservation ties remain different per bot.
+        origin=self.position(now)
+        goals.sort(key=lambda pt:(int(distance(origin,pt)//1500),
+                    (pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
         goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now)
               if self.coordination else goals[self.waypoint%len(goals)])
         if goal!=self.search_goal:
@@ -576,6 +632,7 @@ class Hunter:
     def summary(self):
         return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
                 'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
+                'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
@@ -686,6 +743,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             fleet.update(bot_index,connected=True,map=world.map,level=values.get(0),job=values.get(4),
                          body=world.own.model,state=policy.mode,tactic=policy.tactic,phase=policy.tactic_schedule.effective_phase,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
+                         experience=values.get(15),start_experience=progression.start_xp,
                          quests=policy.adventure.delivered if policy.adventure else 0,
                          target_job=role['target_job'] if role else 0)
 

@@ -109,7 +109,7 @@ class MovementTests(unittest.TestCase):
         self.assertEqual(world.position(200),(initial[0]+1000,initial[1]))
         self.assertEqual(world.own.position,initial)
 
-    def test_prefetch_continues_long_route_before_previous_segment_ends(self):
+    def test_long_route_waits_for_previous_segment_to_finish(self):
         world,send,policy=self.make()
         goal=policy.nav.waypoints[-1]
         policy.move_to(goal,100)
@@ -121,6 +121,9 @@ class MovementTests(unittest.TestCase):
         policy.move_to(goal,policy.move_until-1)
         self.assertEqual(send.call_count,1)
         policy.move_to(goal,policy.move_until-.5)
+        self.assertEqual(send.call_count,1)
+        # Do not cancel the last half-second of every acknowledged segment.
+        policy.move_to(goal,policy.move_until+.6)
         self.assertEqual(send.call_count,2)
         send.assert_called_with(7,b'')
         policy.flush_action(policy.clock+1.1)

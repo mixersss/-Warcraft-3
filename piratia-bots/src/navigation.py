@@ -33,6 +33,7 @@ class Navigation:
 
     def nearest(self, position, radius=6):
         x,y = self.cell(position)
+        if self.free((x,y)):return self.position((x,y))
         cells = ((x+dx,y+dy) for dx in range(-radius,radius+1) for dy in range(-radius,radius+1))
         for cell in sorted(cells,key=lambda c:(c[0]-x)**2+(c[1]-y)**2):
             if self.free(cell):

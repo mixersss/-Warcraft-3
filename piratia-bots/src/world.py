@@ -142,6 +142,10 @@ class World:
         self.motion = {}
         self.move_revision = 0
         self.move_state = 0
+        self.move_packet_number = None
+        self.stop_packet_kind = None
+        self.skill_packet_number = None
+        self.skill_revision = 0
         self.look_revision = 0
         self.skills = {}
 
@@ -309,7 +313,9 @@ class World:
                     if identity==self.own_id:
                         self.move_revision+=1
                         self.move_state=state
-                        if state:self.stop_revision+=1;self.stop_packet_number=packet_id
+                        self.move_packet_number=packet_id
+                        if state:
+                            self.stop_revision+=1;self.stop_packet_number=packet_id;self.stop_packet_kind=1
                     current.x, current.y = x, y
                     if stop is not None:
                         current.state = stop
@@ -319,7 +325,10 @@ class World:
                 if state:reader.short()
                 if identity==self.own_id:
                     self.skill_action_state=state
-                    if state:self.stop_revision+=1;self.stop_packet_number=packet_id
+                    self.skill_packet_number=packet_id
+                    self.skill_revision+=1
+                    if state:
+                        self.stop_revision+=1;self.stop_packet_number=packet_id;self.stop_packet_kind=3
             elif action == 4:
                 reader.byte()  # fight ID
                 state = reader.short()

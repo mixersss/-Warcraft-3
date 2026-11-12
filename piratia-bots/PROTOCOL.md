@@ -677,3 +677,26 @@ Start-World.cmd, still stoppable by stop file. Diagnostic records contain only
 metadata, error location and bounded prior-session reasons, never credentials.
 201 offline tests pass. Native sale serialization compared; actual live Windows
 network recovery, sales and crowd activity remain unverified for Alpha18.
+
+
+## Alpha 19: combined action phase continuity
+
+Owner Alpha18 metadata: all 200 connected; 116 had zero attack requests;
+73 waiting for previous action. Three detailed reports had 41/65/82 attack
+requests, 10/19/19 busy-action refusals and 14/11/13 path recoveries. Their
+NPC purchase/rest counters were zero; private reports are not distributed.
+
+MC508/action1 stop (including INRANGE) is a movement phase notification;
+for CS6/type2 combined movement+skill it does not prove the whole fight
+is finished. Track phase plus matching packet ID, not packet ID alone.
+MC508/action3 nonzero skill state terminates the combat phase. A productive
+normal attack is allowed to repeat server-side; no periodic EndAction/restart
+while observed target HP decreases. No-damage recovery remains bounded.
+Native enum diagnostics 0x10/0x40/0x200 release disappeared/invalid/dead
+targets; 520 action2 reason5 releases a missing target, reason1 does not
+blacklist it. Segment continuation waits through its acknowledged endpoint
+instead of deliberately cancelling the final .65 seconds on every segment.
+
+212 pure Python regressions passed including 200 independent policy worlds
+with simulated native-shaped movement/skill acknowledgements. Native client
+serializer capture passed unchanged. No live 200-player Windows run is claimed.
