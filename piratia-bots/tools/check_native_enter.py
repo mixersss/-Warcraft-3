@@ -216,13 +216,15 @@ def main():
             raise AssertionError(f'Native skill/revive mismatch at {address:x}: {writes}')
     print('Skill upgrade and return-to-city match native client serializers.')
     from town import buy_request,function_request
+    from vendor import sell_request
     import classic_wire
     emulator.mem_write(0x2002000,b'Bot12345678\0')
     from market import start_request,buy_request as stall_buy
     emulator.mem_write(0x2002200,b'Market\0')
     # Native NET_STALL_ALLDATA: count + padding, 8-byte rows price/count/bag/grid.
     emulator.mem_write(0x2002300,bytes([2,0,0,0])+struct.pack('<IBBBxIBBBx',25000,2,7,0,50000,1,9,1))
-    checks=[(0x51a3b0,(0,),7,b''),
+    checks=[(0x508350,(456,7,12),308,sell_request(456,7,12)),
+            (0x51a3b0,(0,),7,b''),
             (0x5006a0,(0x2002000,),6401,classic_wire.string('Bot12345678')),
             (0x500720,(0x2002000,),6402,classic_wire.string('Bot12345678')),
             (0x509450,(0x2002200,0x2002300),330,start_request('Market',[(0,25000,2,7),(1,50000,1,9)])),

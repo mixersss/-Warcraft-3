@@ -68,7 +68,7 @@ class Hunter:
         self.equipment = None
         self.skills = None
         self.recovery = None
-        self.chests=self.town=self.party=self.career=self.story=self.market=self.travel=None
+        self.chests=self.town=self.party=self.career=self.story=self.market=self.travel=self.vendor=None
         from task_budget import TaskBudget
         self.task_budget=TaskBudget()
         self.dead_since = None
@@ -98,6 +98,8 @@ class Hunter:
         self.quest_phase='quests'
         self.tactic_schedule=None
         self.optional_quests=True
+        from activity import Activity
+        self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
 
     def update_tactic(self,now):
         if not self.tactic_schedule or not self.world.own:return
@@ -268,6 +270,14 @@ class Hunter:
         self.last_position=origin
         return True
 
+    def mandatory_work(self):
+        return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
+
+    def opportunity_models(self):
+        if not self.region:return self.farm_models()
+        level=min(45,self.world.own.values.get(LV,1))
+        return {int(m) for m,r in self.region['farms'].items() if max(1,level-5)<=r['level']<=level}
+
     def farm_models(self):
         if not self.region:return (71,75)
         level=self.world.own.values.get(LV,1)
@@ -276,23 +286,38 @@ class Hunter:
 
     def task(self,key,feature,callback,now):
         if self.helper and self.helper.source is not None:return False
+        target=self.world.entities.get(self.target)
+        if target and target.alive:return False  # Finish the chosen fight before another errand.
+        if key=='adventure' and not self.mandatory_work() and feature:
+            destination=feature.choose_destination()
+            point=feature.npcs.get(destination)
+            if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
+        if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()):return False
         if not feature or not self.task_budget.allow(key,now):return False
         used=callback()
         allowed=self.task_budget.track(key,feature,used,self.position(now),now)
         if used and not allowed:
-            if key=='town':feature.finish(now,180)
+            if key=='vendor':feature.finish_sale(now,180)
+            elif key=='town':feature.finish(now,180)
             elif key=='market':feature.next_scan=now+180
             elif hasattr(feature,'next_visit'):feature.next_visit=now+180
             self.move_goal=None
         return allowed
 
     def wants_story(self):
-        return self.optional_quests or bool(self.market and self.market.needs_life_study())
+        return (self.optional_quests or bool(self.market and self.market.needs_life_study())) and not self.activity.hunting(self.clock)
+
+    def target_score(self,entity,now):
+        # Prefer reachable nearby fights, weakened targets and useful level-appropriate XP.
+        own=self.world.own;maximum=max(1,entity.values.get(MAX_HP,entity.values.get(HP,1)))
+        health=entity.values.get(HP,maximum)/maximum
+        gap=max(0,own.values.get(LV,1)-entity.values.get(LV,1))
+        return distance(self.position(now),self.world.position(now,entity.identity))+health*200+gap*60
 
     def eligible(self, entity, now):
         own = self.world.own
         # Only the two passive beginner species from this server's CharacterInfo.
-        models=({self.assist_target and self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.career.desired_models() if self.career and self.career.desired_models() else
+        models=(self.opportunity_models() if self.activity.hunting(now) and not self.mandatory_work() and not self.assist_target else {self.assist_target and self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.career.desired_models() if self.career and self.career.desired_models() else
                 self.story.desired_models() if self.wants_story() and self.story and self.story.desired_models() else
                 self.adventure.desired_models() if self.adventure else self.farm_models())
         maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
@@ -306,11 +331,22 @@ class Hunter:
         self.clock=now
         own = self.world.own
         self.update_tactic(now)
+        completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
+        protected=self.resting or bool(self.market and self.market.state in ('opening','selling','closing')) or bool(self.town and self.town.rest_until)
+        if own:self.activity.update(now,own.values.get(LV),own.values.get(15),self.kills,completed,protected)
         if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
             # A server correction can invalidate interpolation; prefer its raw position.
             self.world.motion.pop(self.world.own_id,None)
         if not own or self.world.map != self.nav.map or not self.nav.free(self.nav.cell(self.position(now))):
             self.change('ожидание достоверных данных карты')
+            if self.pending_action and own and own.alive:
+                if self.flush_action(now):return
+            if own and own.alive and self.world.map==self.nav.map and now>=self.offmesh_next and self.offmesh_requests<3:
+                goal=self.nav.nearest(own.position,3)
+                if goal and distance(own.position,goal)<=400:
+                    self.move_goal=None
+                    self.emit(movement(own.identity,self.sequence,[own.position,goal]))
+                    self.offmesh_requests+=1;self.offmesh_next=now+10
             return
         hp, maximum = own.values.get(HP), own.values.get(MAX_HP)
         if hp is None or not maximum:
@@ -374,11 +410,13 @@ class Hunter:
             return
         dialogue_busy=bool(self.adventure and self.adventure.context)
         safe=not self.target and not self.resting and hp/maximum>.55
-        market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party) if f)
+        market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         if self.helper and self.helper.tick(now,self):return
-        if self.travel and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
+        if self.travel and (not self.activity.hunting(now) or self.mandatory_work()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
+        if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
+            self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
         if self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
         if self.chests and self.chests.tick(now,self,safe):
@@ -394,7 +432,7 @@ class Hunter:
             self.clear_zone()
             self.change(self.adventure.reason)
             return
-        if self.loot:
+        if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
             task = self.adventure.farm() if self.adventure else None
             needed = self.equipment.loot_needs() if self.equipment else set()
             if task and task[1]:needed.add(task[1])
@@ -402,6 +440,7 @@ class Hunter:
             if self.story:needed.update(self.story.needed_items())
             if self.chests:needed.update(self.chests.catalog.chests)
             if self.market:needed.update(self.market.loot_needs())
+            if self.vendor:needed.update(self.vendor.junk)
             if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
             if self.chests and self.world.bag_ready and not self.world.bag_disabled:
                 free=(self.world.bag_capacity or 0)-len(self.world.bag)
@@ -434,7 +473,7 @@ class Hunter:
         if not target:
             candidates=[e for e in self.world.entities.values() if self.eligible(e,now)]
             self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
-            candidates.sort(key=lambda e:distance(self.position(now),self.world.position(now,e.identity)))
+            candidates.sort(key=lambda e:self.target_score(e,now))
             for candidate in candidates:
                 key=(self.world.map,candidate.identity,candidate.handle)
                 if self.coordination and not self.coordination.available(self.owner,key,now):
@@ -497,7 +536,9 @@ class Hunter:
             self.next_action = now+self.attack_interval
             return
         self.change('поиск свободного места фарма')
-        if self.career and self.career.goals():
+        if self.activity.hunting(now) and not self.mandatory_work() and self.region:
+            raw_goals=[pt for model in self.opportunity_models() for pt in self.region['farms'][str(model)]['points']]
+        elif self.career and self.career.goals():
             raw_goals=self.career.goals()
         elif self.wants_story() and self.story and self.story.goals():
             raw_goals=self.story.goals()
@@ -533,7 +574,7 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'tactic':self.tactic,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
+        return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
                 'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
@@ -590,6 +631,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         from party import Party
         policy.chests=Chests(world,life)
         policy.town=Town(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"rest_directory",None),bot_name)
+        from vendor import Vendor
+        policy.vendor=Vendor(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"assets",Path(__file__).resolve().parents[1]/"assets"))
         policy.career=Career(world,client.wire.send,role,life,navigation)
         policy.story=Story(world,client.wire.send,role,life,navigation)
         policy.party=Party(world,client.wire.send,bot_name,bot_index,navigation.directory)
@@ -632,7 +675,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['public_chat']=public_chat.summary()
         if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
@@ -670,6 +713,11 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                     else:policy.party.observe(command,payload,now)
                 except ProtocolError:report.result['party_decode']='unsupported';policy.party=None
             return
+        if policy.vendor and policy.vendor.context and command in (801,802,803,805,806,807,808):
+            try:
+                if policy.vendor.observe(command,payload,now,client.wire.send):return
+            except ProtocolError:
+                policy.vendor.finish_sale(now,300);report.result['vendor_decode']='unsupported'
         if policy.travel and command==802 and policy.travel.context:
             if policy.travel.observe(command,payload,now):return
         if command in (801,802,803,805,806,807,808,822,827,828,830,831,832):
@@ -688,6 +736,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
+            if policy.vendor:policy.vendor.home=world.own.position;policy.vendor.finish_sale(now,120)
             if policy.market:
                 policy.market.finish(now);policy.market.context=None;policy.market.pending=None
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
@@ -727,7 +776,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         next_snapshot=0
         seen_equips=seen_skills=seen_quests=0
         seen_party=seen_chests=seen_shopping=0
-        deadline = time.monotonic()+seconds
+        deadline = float('inf') if seconds==0 else time.monotonic()+seconds
         while time.monotonic() < deadline and not stop.is_set():
             try:
                 command, payload = client.wire.receive(min(deadline, time.monotonic()+.25))
@@ -776,7 +825,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['chat'] = social.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()

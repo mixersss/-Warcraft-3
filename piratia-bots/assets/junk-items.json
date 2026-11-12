@@ -1,0 +1,158 @@
+{
+  "source": "Owner ItemInfo.txt, explicit common-trophy ID range1590..1629 plus1678/1779; type41, tradeable, price<=100; sale value remains server-owned",
+  "keep_each": 5,
+  "items": {
+    "1590": {
+      "name": "Cirrus",
+      "table_price": 4
+    },
+    "1591": {
+      "name": "Young Branch",
+      "table_price": 6
+    },
+    "1592": {
+      "name": "Split Branch",
+      "table_price": 8
+    },
+    "1593": {
+      "name": "Magical Branch",
+      "table_price": 64
+    },
+    "1594": {
+      "name": "Unripe Fruit",
+      "table_price": 10
+    },
+    "1595": {
+      "name": "Poisoned Fruit",
+      "table_price": 42
+    },
+    "1596": {
+      "name": "Tasty Fruit",
+      "table_price": 66
+    },
+    "1597": {
+      "name": "Seed",
+      "table_price": 12
+    },
+    "1598": {
+      "name": "Seedling",
+      "table_price": 14
+    },
+    "1599": {
+      "name": "Magical Seed",
+      "table_price": 68
+    },
+    "1600": {
+      "name": "Corm",
+      "table_price": 16
+    },
+    "1601": {
+      "name": "Green Corm",
+      "table_price": 44
+    },
+    "1602": {
+      "name": "Mystical Corm",
+      "table_price": 70
+    },
+    "1603": {
+      "name": "Hair",
+      "table_price": 46
+    },
+    "1604": {
+      "name": "Mane",
+      "table_price": 18
+    },
+    "1605": {
+      "name": "Tail Hair",
+      "table_price": 48
+    },
+    "1606": {
+      "name": "Beard",
+      "table_price": 74
+    },
+    "1607": {
+      "name": "Beast Leather",
+      "table_price": 30
+    },
+    "1608": {
+      "name": "Animal Skin",
+      "table_price": 32
+    },
+    "1609": {
+      "name": "Beautiful Skin",
+      "table_price": 98
+    },
+    "1610": {
+      "name": "Broken Horn",
+      "table_price": 2
+    },
+    "1611": {
+      "name": "Animal Horn",
+      "table_price": 100
+    },
+    "1613": {
+      "name": "Carapace Fragment",
+      "table_price": 4
+    },
+    "1614": {
+      "name": "Hard Shell",
+      "table_price": 36
+    },
+    "1615": {
+      "name": "Claw",
+      "table_price": 6
+    },
+    "1616": {
+      "name": "Sharp Claw",
+      "table_price": 38
+    },
+    "1617": {
+      "name": "Tooth",
+      "table_price": 8
+    },
+    "1618": {
+      "name": "Sharp Tooth",
+      "table_price": 40
+    },
+    "1620": {
+      "name": "Wing",
+      "table_price": 12
+    },
+    "1622": {
+      "name": "Insect Hind Leg",
+      "table_price": 42
+    },
+    "1623": {
+      "name": "Bone Fragment",
+      "table_price": 14
+    },
+    "1624": {
+      "name": "Bone",
+      "table_price": 44
+    },
+    "1625": {
+      "name": "Sharp Bone",
+      "table_price": 76
+    },
+    "1627": {
+      "name": "Animal Sweat",
+      "table_price": 16
+    },
+    "1628": {
+      "name": "Animal Saliva",
+      "table_price": 46
+    },
+    "1629": {
+      "name": "Animal Blood",
+      "table_price": 48
+    },
+    "1678": {
+      "name": "Cashmere",
+      "table_price": 12
+    },
+    "1779": {
+      "name": "Bottle",
+      "table_price": 10
+    }
+  }
+}

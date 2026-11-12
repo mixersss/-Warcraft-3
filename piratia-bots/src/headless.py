@@ -40,6 +40,7 @@ class Report:
         self.result['stage'] = value
 
     def event(self, direction, command, length):
+        self.result['last_'+direction]={'command':command,'bytes':length}
         events = self.result['events']
         if len(events) < 1000:
             events.append({'direction': direction, 'command': command, 'bytes': length})
@@ -198,7 +199,7 @@ class Client:
         self.report.stage('character_created')
 
     def idle(self, seconds, stop=None):
-        deadline = time.monotonic() + seconds
+        deadline = float('inf') if seconds==0 else time.monotonic() + seconds
         while time.monotonic() < deadline and not (stop and stop.is_set()):
             try:
                 command, payload = self.wire.receive(min(deadline, time.monotonic() + 1))

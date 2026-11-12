@@ -18,6 +18,7 @@ class QuestLoot:
             self.attacked.pop(next(iter(self.attacked)))
 
     def tick(self, now, policy, needed):
+        if self.world.bag_ready and self.world.bag_capacity is not None and len(self.world.bag)>=self.world.bag_capacity:return False
         if not needed:
             return False
         for identity,(_,_,when) in list(self.attacked.items()):

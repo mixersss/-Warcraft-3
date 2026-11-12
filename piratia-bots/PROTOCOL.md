@@ -651,3 +651,29 @@ and requires server stat+AP confirmation. No SQL attribute edits.
 185 offline tests passed. Native client serializers, skill writer and attribute
 increment behavior compared with supplied binaries. Live Windows combat and
 200-worker behavior remain unverified for this new release.
+
+
+## Alpha 18 — productive activity and recoverable transport
+
+A live target prevents optional NPC tasks from interrupting its fight. Optional
+Senna/tutorial detours require proximity1500cm. Earned progress watchdog after
+120s triggers180s ordinary farm focus, preserving mandatory first/second class
+work, deliberate rest and active stalls. Targets use distance/health/level-gap
+score, safe existing level cap, and existing per-target reservation. New numeric
+farm destinations lie in owner ChaSpn rectangles and pass the existing pathfinder;
+spawn counts and refresh times are unchanged.
+
+Native NPC sale client0x508350 captured:308 with owner:u32/subcommand309:u16/
+sale0:u8/slot:u8/count:u8. New vendor whitelist has38 plain common trophies,
+keeps5 each and all currently-needed quest items, excludes rare/enhanced items.
+Actual bag decrease AND gold increase confirm a sale. Loot still needs own
+attack/earned-XP evidence; full bag does not start endless pickup requests.
+
+Supervisor retries only network OSError (up to3) and transient1104 after a
+previous established session loss. Keeps same persisted identity/class; no
+account re-creation/reset, no generic protocol retry. Original finite deadline
+is retained across reconnects. seconds0 supports continuous operation via
+Start-World.cmd, still stoppable by stop file. Diagnostic records contain only
+metadata, error location and bounded prior-session reasons, never credentials.
+201 offline tests pass. Native sale serialization compared; actual live Windows
+network recovery, sales and crowd activity remain unverified for Alpha18.

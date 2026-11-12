@@ -81,16 +81,20 @@ def ensure_character(bot, client, chars):
     return None  # Reconnect to retrieve the authoritative server-side character list.
 
 
-def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
+def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha17'
+    report.result['version'] = 'AutoAccountsAlpha18'
     report.result['bot_index'] = index
+    report.result['session_history']=list(history or [])
+    report.result['reconnect_attempts']=len(history or [])
+    started=time.monotonic()
+    report.result['entered_world']=False
     sock = client = None
     succeeded = False
     try:
         if stop.is_set():
             report.stage('cancelled')
-            return False
+            return False,report.result
         sock, client, chars = connect_bot(bot, report, port)
         if report.result.get('secondary_password_created'):
             print(f'Бот {index}: второй пароль задан автоматически.')
@@ -103,7 +107,7 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
             # Let AccountServer process the normal logout; never reset login flags in SQL.
             for attempt in range(3):
                 if stop.wait(1 + attempt):
-                    return False
+                    return False,report.result
                 try:
                     sock, client, chars = connect_bot(bot, report, port)
                     break
@@ -116,8 +120,11 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
             selected_name = matching[0]['name']
         if stop.is_set():
             report.stage('cancelled')
-            return False
+            return False,report.result
         client.enter(selected_name)
+        report.result['entered_world']=True
+        if total_deadline is not None and total_deadline!=float('inf'):
+            seconds=max(0.01,total_deadline-time.monotonic())
         print(f"Бот {index}: {bot['character']} вошёл в мир без окна игры.")
         if mode in ('hunt','adventure','mixed'):
             from hunter import hunt
@@ -134,14 +141,26 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         else:
             client.idle(seconds, stop)
         report.stage('interrupted' if stop.is_set() else 'completed')
+        report.result['exit_reason']='stop_requested' if stop.is_set() else 'session_duration_elapsed'
         succeeded = True
     except ServerError as exc:
         report.result['error_type'] = 'server_error'
+        report.result['exit_reason']='server_refusal'
         report.result['server_error_code'] = exc.code
         print(f'Бот {index}: отказ сервера на этапе {exc.stage}, код {exc.code}.')
     except (OSError, ProtocolError, ValueError) as exc:
         report.result['error_type'] = type(exc).__name__
+        report.result['exit_reason']='network_error' if isinstance(exc,OSError) else 'protocol_or_state_error'
+        if isinstance(exc,OSError):report.result['network_errno']=getattr(exc,'errno',None)
+        import traceback
+        report.result['error_locations']=[{'file':Path(f.filename).name,'line':f.lineno,'function':f.name} for f in traceback.extract_tb(exc.__traceback__)[-3:]]
         print(f'Бот {index}: {exc}')
+    except Exception as exc:
+        report.result['error_type']=type(exc).__name__;report.result['exit_reason']='unexpected_program_error'
+        import traceback
+        frames=traceback.extract_tb(exc.__traceback__)[-3:]
+        report.result['error_locations']=[{'file':Path(f.filename).name,'line':f.lineno,'function':f.name} for f in frames]
+        print(f'Бот {index}: ошибка программы {type(exc).__name__}; подробности в отчёте.')
     finally:
         if client:
             try:
@@ -151,8 +170,37 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         if sock:
             sock.close()
         if fleet:fleet.update(index,connected=False,state=report.result.get('stage','finished'))
+        report.result['session_elapsed_seconds']=round(time.monotonic()-started,2)
         report.write(report_dir / f'bot-report-{index:02d}.json')
-    return succeeded
+    return succeeded,report.result
+
+
+def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
+    deadline=float('inf') if seconds==0 else time.monotonic()+seconds
+    history=[];had_entered=False
+    for attempt in range(4):
+        if stop.is_set():return False
+        remaining=0 if deadline==float('inf') else max(0,deadline-time.monotonic())
+        if deadline!=float('inf') and remaining<=0:return True
+        success,result=_run_bot_once(index,bot,port,remaining,stop,report_dir,mode,navigation,chat_budget,fleet,history,deadline)
+        if success:return True
+        had_entered=had_entered or result.get('entered_world',False)
+        reason=result.get('exit_reason')
+        retryable=reason=='network_error' or (had_entered and result.get('server_error_code')==1104)
+        if stop.is_set() or not retryable or attempt==3:return False
+        history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds') if k in result})
+        delay=(5,15,30)[attempt]+index%5
+        result['reconnect_attempts']=attempt+1;result['reconnect_wait_seconds']=delay
+        result['stage']='reconnecting';result['session_history']=list(history)
+        retry_report_path=report_dir / f'bot-report-{index:02d}.json'
+        retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        if fleet:fleet.update(index,connected=False,state='reconnecting')
+        print(f'Бот {index}: сетевое восстановление {attempt+1}/3 через {delay} сек.')
+        if stop.wait(delay):
+            result['stage']='interrupted';result['exit_reason']='stop_requested'
+            retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+            return False
+    return False
 
 
 def watch_stop_file(path,stop):
@@ -172,18 +220,19 @@ def main():
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
     args = parser.parse_args()
-    if not 1 <= args.count <= 200 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
-        parser.error('count: 1..200; seconds: 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 200 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
+        parser.error('count: 1..200; seconds: 0 (continuous) or 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 17).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 18).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
-    print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
+    duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
+    print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha17'
+    setup_report.result['version'] = 'AutoAccountsAlpha18'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

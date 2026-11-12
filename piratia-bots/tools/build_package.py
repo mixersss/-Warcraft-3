@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-17'
-NAME = 'Piratia-Auto-Bots-Alpha17'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-18'
+NAME = 'Piratia-Auto-Bots-Alpha18'
 
 
 def main():
@@ -33,8 +33,8 @@ def main():
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
         'status': 'Report-driven action sequencing, skill update dispatch and stat increment fixes; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 185,
-        'full_python_suite_total': 193,
+        'pure_python_tests_passed': 201,
+        'full_python_suite_total': 209,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
@@ -58,7 +58,7 @@ def main():
         'story_chain': [200,203,204],
         'combat_skill_book_catalog_count': 83,
         'owned_chest_ids': [436,985,986,987,988],
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave', 'stall create/view/buy/close', 'end action', 'world/trade chat'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'NPC sale', 'party invite/accept/refuse/leave', 'stall create/view/buy/close', 'end action', 'world/trade chat'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100/200, rejection 0/201, credential preservation',
         'population_validation': 'both PowerShell helpers and Python launcher aligned: 1..200' ,
@@ -92,6 +92,13 @@ def main():
         'native_attribute_increment_verified': True,
         'deferred_action_stop_queue': True,
         'private_owner_reports_packaged': False,
+        'continuous_world_launcher': 'Start-World.cmd',
+        'network_reconnect_attempts': 3,
+        'npc_junk_whitelist_count': 38,
+        'npc_sale_requires_bag_and_gold': True,
+        'spawn_counts_modified': False,
+        'beginner_farm_point_cap_per_species': 64,
+        'no_progress_farm_focus_seconds': [120,180],
         'market_catalog_tradeable_item_count': 1575,
         'stall_data_writer_captured': 'GameServer 0x4637e0, plain and five instance attributes',
         'live_stall_transactions_tested': False,

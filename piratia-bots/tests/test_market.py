@@ -122,7 +122,7 @@ class IntegrationTests(unittest.TestCase):
   from navigation import Navigation
   from headless import Report
   w=scene();send=Mock();h=Hunter(w,Navigation(ROOT/'assets/argent-navigation.json'),send,Report(),Mock(),'stall-test')
-  h.started=0;h.market=SimpleNamespace(busy=True,tick=Mock(),reason='selling')
+  h.started=0;h.market=SimpleNamespace(busy=True,tick=Mock(),reason='selling',state='selling')
   h.equipment=SimpleNamespace(tick=Mock());h.tick(100)
   h.market.tick.assert_called_once();h.equipment.tick.assert_not_called();send.assert_not_called()
   self.assertEqual(h.attacks,0)
