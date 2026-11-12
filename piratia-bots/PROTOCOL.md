@@ -587,3 +587,37 @@ inventory, gold and skills remain server-authoritative.
 Reference prices are pilot policy, not external market observations. Gannon rune
 requirements are owner-script facts; NPC barter and dungeon farming are not
 implemented. No free rare goods or gold are created.
+
+
+## Alpha 16 — combat transition, activity quotas, city NPCs and chat
+
+FIX: Client.service previously omitted stall854/856..859 despite native codecs;
+these now reach the actual world handler. Added routing for public5401/5402.
+Native client captured CS_EndAction0x51a3b0 -> command7, empty body;
+trade0x5006a0 ->6401 string; world0x500720 ->6402 string. Own server echoes
+must match the pending exact request for confirmation. No incoming world chat
+text is retained in diagnostics or used for bot-to-bot reply loops.
+
+Combat reach now comes from owner skillinfo.txt[16], IDs25..38. Server
+CFightAble uses apply-distance plus actor/target radii; ATTR_ADIS alone is not
+the actual unarmed/weapon skill range. Finish movement before strike; handle
+native 520 six-byte actor/action/reason. Native range facts and transition
+regressions are verified, not a claim of live Windows combat success.
+
+Deterministic index home split150/25/25 at200 workers. Native NPC301 function
+menus GoToWhere, known city label then Teleport. Server516 confirms transfer;
+first/second class trainer trips override preferred home. No SQL relocation,
+free teleport, race reset or class reassignment. Level>10 requires500G.
+
+Voluntary rest requires12 observed target deaths or2 quest hand-ins and a
+10-minute cooldown. Rest and stalls have separate10-percent live-online
+quotas, leases and city weights75/15/10 percent for stalls. Low-health recovery
+is separate from voluntary rest. Optional town tasks yield after35 seconds
+without progress or180 seconds continuous diversion; active stalls excluded.
+
+Local chat shared2s, background per-worker45..90s,50 finite real-echo dialogues,
+589 unique CP1251-safe phrases. World shared120s/trade180s, personal1800s and
+>=20000 earned gold; restrictions/fees remain server-owned. Explicit nearby
+human help lasts<=120s and retains normal PvE level/ownership constraints.
+174 offline tests and native serializer capture passed; live Windows transfer,
+combat, paid public channels and200-worker operation need owner validation.

@@ -89,6 +89,7 @@ class CohortCombatTests(unittest.TestCase):
         _,waiting=next((w,p) for w,p in pairs if p is not winner)
         waiting.tick(104)
         self.assertEqual(waiting.target,1000)
+        if waiting.attacks==0:waiting.tick(107)
         self.assertEqual(waiting.attacks,1)
 
     def test_no_damage_target_is_released_and_blacklisted_instead_of_permanent_stop(self):

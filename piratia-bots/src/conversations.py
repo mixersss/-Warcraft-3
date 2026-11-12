@@ -15,11 +15,11 @@ class Conversations:
             old=self.rows.get(name,{})
             self.rows[name]={'map':map_name,'identity':identity,'position':tuple(position),
                              'until':now+15,'ready':ready,'last':old.get('last',-1e9)}
-            if self.next_start is None:self.next_start=now+self.rng.uniform(90,180)
+            if self.next_start is None:self.next_start=now+self.rng.uniform(20,40)
     def _end(self,now,completed=False):
         if completed:self.completed+=1
         else:self.expired+=1
-        self.active=None;self.next_start=now+self.rng.uniform(120,240)
+        self.active=None;self.next_start=now+self.rng.uniform(30,60)
     def _clean(self,now):
         for key,until in list(self.humans.items()):
             if until<=now:self.humans.pop(key,None)
@@ -43,9 +43,9 @@ class Conversations:
             if not self.active:
                 if self.next_start is None or now<self.next_start:return None
                 own=self.rows.get(name)
-                if not own or not own['ready'] or now-own['last']<600:return None
+                if not own or not own['ready'] or now-own['last']<180:return None
                 peers=[(n,r) for n,r in self.rows.items() if n!=name and r['ready']
-                       and r['map']==own['map'] and r['identity'] in visible_ids and now-r['last']>=600
+                       and r['map']==own['map'] and r['identity'] in visible_ids and now-r['last']>=180
                        and math.dist(r['position'],own['position'])<=1800]
                 if not peers:return None
                 self.rng.shuffle(peers);peer,row=peers[0];dialogue=self.rng.choice(self.dialogues)

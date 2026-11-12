@@ -8,6 +8,8 @@ class BotDirectory:
         with self.lock:
             old=self.rows.get(name,{})
             self.rows[name]=dict(old,index=index,map=map_name,position=position,level=level,until=now+15)
+    def active_count(self,now):
+        with self.lock:return sum(row["until"]>now for row in self.rows.values())
     def reserve_invite(self,leader,recipient,now):
         with self.lock:
             self.invites={n:v for n,v in self.invites.items() if v[1]>now}

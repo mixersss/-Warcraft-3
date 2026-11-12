@@ -132,6 +132,7 @@ class World:
         self.updates = 0
         self.damage_events = 0
         self.failed_actions = 0
+        self.last_failed_action=None
         self.decode_info = {}
         self.item_types = item_types or {}
         self.bag = {}
@@ -330,6 +331,9 @@ class World:
                 self.read_bag(reader)
         elif command == 520:
             self.failed_actions += 1
+            if len(payload)==6:
+                self.last_failed_action={'actor':reader.long(),'action':reader.byte(),'reason':reader.byte()}
+
         self.updates += 1
 
     def summary(self):
@@ -341,4 +345,4 @@ class World:
                 'max_hp': own.values.get(MAX_HP) if own else None,
                 'level': own.values.get(LV) if own else None,
                 'default_skill': self.default_skill, 'updates': self.updates,
-                'damage_events': self.damage_events, 'failed_actions': self.failed_actions}
+                'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action}

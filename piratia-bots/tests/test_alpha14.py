@@ -125,8 +125,8 @@ class PhraseTests(unittest.TestCase):
     def test_two_hundred_new_unique_lines_and_classic_packet_limit(self):
         bank=json.loads((ROOT/'assets/chat-phrases.json').read_text())
         rows=[line for lines in bank.values() for line in lines]
-        self.assertEqual(len(rows),389)
-        self.assertEqual(len(set(rows)),389)
+        self.assertEqual(len(rows),589)
+        self.assertEqual(len(set(rows)),589)
         for line in rows:say_request(line)
         pairs=json.loads((ROOT/'assets/bot-dialogues.json').read_text())
         for p in pairs:

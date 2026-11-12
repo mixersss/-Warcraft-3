@@ -19,12 +19,23 @@ def trade_page(payload):
     r.end();return npc,offers
 
 class Town:
-    def __init__(self,world,life,gear,role,rng,home):
+    def __init__(self,world,life,gear,role,rng,home,rest_directory=None,owner=None):
         self.world,self.life,self.gear,self.role,self.rng=world,life,gear,role,rng
         self.home=home;self.next_break=None;self.rest_until=0;self.rest_arrived=None
         self.next_shop=0;self.context=None;self.pending=None
         self.requests=self.confirmed=self.timeouts=self.breaks=0
         self.target_shop=None;self.wanted=None;self.reason=''
+        self.rest_directory=rest_directory;self.owner=owner or str(world.own_id)
+        self.work_kills=self.work_quests=0;self.work_baseline=None;self.last_rest=0;self.rest_due=False
+    def note_progress(self,kills,quests):
+        if self.work_baseline is None:self.work_baseline=(kills,quests)
+        self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
+        if self.work_kills>=12 or self.work_quests>=2:self.rest_due=True
+    def end_rest(self,now):
+        if self.rest_directory:self.rest_directory.release(self.owner)
+        self.rest_until=0;self.rest_arrived=None;self.rest_due=False;self.last_rest=now
+        self.work_baseline=None;self.work_kills=self.work_quests=0
+        self.next_break=now+600
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
@@ -78,7 +89,7 @@ class Town:
     def finish(self,now,delay=120):
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
     def tick(self,now,policy,safe,dialogue_busy=False):
-        if self.next_break is None:self.next_break=now+self.rng.uniform(900,1800)
+        if self.next_break is None:self.next_break=now+600
         w=self.world
         if self.pending:
             identity,before,cash,deadline=self.pending
@@ -91,16 +102,18 @@ class Town:
             return True
         if not safe or dialogue_busy:return False
         if self.rest_until:
+            if self.rest_directory and not self.rest_directory.acquire(self.owner,now):self.end_rest(now);return False
             self.reason='отдыхает в городе'
             if math.dist(policy.position(now),self.home)>500:
                 goal=policy.nav.nearest(self.home,6)
-                if not goal or not policy.move_to(goal,now):self.rest_until=0;self.next_break=now+600;return False
-                if now>self.rest_until:self.rest_until=0;self.next_break=now+600
+                if not goal or not policy.move_to(goal,now):self.end_rest(now);return False
+                if now>self.rest_until:self.end_rest(now)
                 return True
             if self.rest_arrived is None:self.rest_arrived=now;self.rest_until=now+self.rng.uniform(40,100);self.breaks+=1
             if now<self.rest_until:return True
-            self.rest_until=0;self.rest_arrived=None;self.next_break=now+self.rng.uniform(900,1800)
-        if now>=self.next_break:
+            self.end_rest(now)
+        if self.rest_due and now>=self.next_break:
+            if self.rest_directory and not self.rest_directory.acquire(self.owner,now):return False
             self.rest_until=now+180;return True
         if now<self.next_shop:return False
         if not self.wanted:
@@ -116,4 +129,4 @@ class Town:
         goal=policy.nav.nearest(point,6)
         if goal and policy.move_to(goal,now):return True
         self.finish(now,300);return False
-    def summary(self):return {'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'state':self.reason}
+    def summary(self):return {'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests}

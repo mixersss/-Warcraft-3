@@ -67,7 +67,7 @@ def ensure_character(bot, client, chars):
         from roles import RoleStore
         from regions import birthplace_for
         role=RoleStore(ROOT/'data/bot-roles.json').resolve(bot['character'],bot['creation_body'],0)
-        client.create_character(bot['character'],body=bot['creation_body'],birthplace=birthplace_for(role['first_job']))
+        client.create_character(bot['character'],body=bot['creation_body'],birthplace=bot.get('birthplace',birthplace_for(role['first_job'])))
     else:
         client.create_character(bot['character'])
     return None  # Reconnect to retrieve the authoritative server-side character list.
@@ -75,7 +75,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha15'
+    report.result['version'] = 'AutoAccountsAlpha16'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -169,13 +169,13 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 15).')
+    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 16).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha15'
+    setup_report.result['version'] = 'AutoAccountsAlpha16'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -208,13 +208,16 @@ def main():
         setup_report.write(report_path)
         for index, bot in enumerate(bots):
             bot['creation_body'] = index % 4 + 1
+            from city_travel import home_city_for,BIRTHPLACES
+            bot['birthplace']=BIRTHPLACES[home_city_for(index+1)]
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
         from regions import Regions
         from social import ChatBudget
-        navigation = Regions(ROOT/'assets')
-        chat_budget = ChatBudget(interval=8)
+        navigation = Regions(ROOT/'assets',population_count=args.count)
+        chat_budget = ChatBudget(interval=2)
         from fleet import Fleet
         fleet=Fleet(args.count,ROOT/'population-status.json')
+        fleet.write()
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=args.count)
         try:
             futures = []
@@ -228,6 +231,9 @@ def main():
                 while remaining:
                     _,remaining=concurrent.futures.wait(remaining,timeout=30)
                     status=fleet.write()
+                    setup_report.stage('running')
+                    setup_report.result.update(connected_bots=status['connected'],peak_connected=status['peak_connected'])
+                    setup_report.write(report_path)
                     print(f"В мире: {status['connected']}/{args.count}; города: {status['cities']}")
                 results = [future.result() for future in futures]
             except KeyboardInterrupt:

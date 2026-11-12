@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-15'
-NAME = 'Piratia-Auto-Bots-Alpha15'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-16'
+NAME = 'Piratia-Auto-Bots-Alpha16'
 
 
 def main():
@@ -31,10 +31,10 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': '200-bot stall pilot; real inventory/gold, native serializers audited; live Windows validation pending',
+        'status': '200-bot combat/city/activity/chat pilot; native serializers and dispatch checked; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 157,
-        'full_python_suite_total': 165,
+        'pure_python_tests_passed': 174,
+        'full_python_suite_total': 182,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
@@ -42,14 +42,14 @@ def main():
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
         'hybrid_phase_seconds': [240,480],
-        'finite_dialogue_scripts': 20,
+        'finite_dialogue_scripts': 50,
         'dialogue_advances_on_real_peer_echo': True,
         'first_profession_in_both_tactics': True,
         'exclusive_target_cohort_tested': 200,
         'live_target_distribution_verified': False,
         'default_duration_seconds': 7200,
         'three_city_spawn_and_trainer_routes_verified': True,
-        'chat_phrase_count': 389,
+        'chat_phrase_count': 589,
         'new_chat_phrases': 200,
         'live_two_hundred_connections_tested': False,
         'advanced_profession_requests_implemented': True,
@@ -58,7 +58,7 @@ def main():
         'story_chain': [200,203,204],
         'combat_skill_book_catalog_count': 83,
         'owned_chest_ids': [436,985,986,987,988],
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave', 'stall create/view/buy/close'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave', 'stall create/view/buy/close', 'end action', 'world/trade chat'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100/200, rejection 0/201, credential preservation',
         'population_validation': 'both PowerShell helpers and Python launcher aligned: 1..200' ,
@@ -77,7 +77,16 @@ def main():
         'maximum_enabled_bots': 200,
         'four_hundred_live_connections_tested': False,
         'stall_session_seconds': 2400,
-        'maximum_concurrent_stalls_per_city': 10,
+        'stall_live_population_fraction': .10,
+        'voluntary_rest_live_population_fraction': .10,
+        'stall_city_caps_at_200': {'garner':15,'magicsea':3,'darkblue':2},
+        'preferred_home_cities_at_200': {'garner':150,'magicsea':25,'darkblue':25},
+        'npc_city_transfer_live_tested': False,
+        'local_chat_shared_seconds': 2,
+        'world_chat_shared_seconds': 120,
+        'trade_chat_shared_seconds': 180,
+        'explicit_nearby_help_seconds': 120,
+        'live_combat_fix_verified': False,
         'market_catalog_tradeable_item_count': 1575,
         'stall_data_writer_captured': 'GameServer 0x4637e0, plain and five instance attributes',
         'live_stall_transactions_tested': False,

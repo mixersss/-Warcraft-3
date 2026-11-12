@@ -5,7 +5,7 @@ from navigation import Navigation
 
 
 class Regions:
-    def __init__(self,assets):
+    def __init__(self,assets,population_count=200):
         self.assets=Path(assets)
         from coordination import Coordination
         self.coordination=Coordination()
@@ -13,13 +13,19 @@ class Regions:
         self.directory=BotDirectory()
         from conversations import Conversations
         self.conversations=Conversations(self.assets)
+        from public_chat import PublicBudget
+        self.public_chat_budget=PublicBudget()
         from equipment import ItemCatalog
         self.items=ItemCatalog(self.assets/'items.json')
         from life import LifeItems
         self.life=LifeItems(self.assets)
         from market import MarketCatalog,MarketDirectory
         self.market_catalog=MarketCatalog(self.assets)
-        self.market_directory=MarketDirectory()
+        total=population_count//10
+        argent=round(total*.75);remaining=total-argent
+        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count)
+        from activity_slots import ActivitySlots
+        self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
 

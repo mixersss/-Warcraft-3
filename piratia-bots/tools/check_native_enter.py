@@ -222,7 +222,10 @@ def main():
     emulator.mem_write(0x2002200,b'Market\0')
     # Native NET_STALL_ALLDATA: count + padding, 8-byte rows price/count/bag/grid.
     emulator.mem_write(0x2002300,bytes([2,0,0,0])+struct.pack('<IBBBxIBBBx',25000,2,7,0,50000,1,9,1))
-    checks=[(0x509450,(0x2002200,0x2002300),330,start_request('Market',[(0,25000,2,7),(1,50000,1,9)])),
+    checks=[(0x51a3b0,(0,),7,b''),
+            (0x5006a0,(0x2002000,),6401,classic_wire.string('Bot12345678')),
+            (0x500720,(0x2002000,),6402,classic_wire.string('Bot12345678')),
+            (0x509450,(0x2002200,0x2002300),330,start_request('Market',[(0,25000,2,7),(1,50000,1,9)])),
             (0x509530,(456,),331,struct.pack('>I',456)),
             (0x5095b0,(456,2,3),332,stall_buy(456,2,3)),
             (0x509650,(),333,b''),(0x5082a0,(456,1,0),301,function_request(456,1,0)),

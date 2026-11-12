@@ -1,0 +1,61 @@
+{
+  "source": "Owner skillinfo.txt column16 apply-distance; native server includes both entity radii",
+  "skills": {
+    "25": {
+      "name": "Bare Hand",
+      "range_cm": 100
+    },
+    "26": {
+      "name": "Dual Implosion",
+      "range_cm": 800
+    },
+    "27": {
+      "name": "Cannon Shot",
+      "range_cm": 1000
+    },
+    "28": {
+      "name": "Sword",
+      "range_cm": 150
+    },
+    "29": {
+      "name": "Greatsword",
+      "range_cm": 200
+    },
+    "30": {
+      "name": "Bow",
+      "range_cm": 900
+    },
+    "31": {
+      "name": "Firegun",
+      "range_cm": 700
+    },
+    "32": {
+      "name": "Blade",
+      "range_cm": 200
+    },
+    "33": {
+      "name": "Boxing Gloves",
+      "range_cm": 100
+    },
+    "34": {
+      "name": "Dagger",
+      "range_cm": 100
+    },
+    "35": {
+      "name": "Gold Pouch",
+      "range_cm": 200
+    },
+    "36": {
+      "name": "Short Staff",
+      "range_cm": 100
+    },
+    "37": {
+      "name": "Hammer",
+      "range_cm": 150
+    },
+    "38": {
+      "name": "Dual Weapon",
+      "range_cm": 200
+    }
+  }
+}

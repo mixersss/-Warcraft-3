@@ -48,13 +48,20 @@ class MarketCatalog:
 
 class MarketDirectory:
     """One live lease per character and one spaced city pitch, bounded by 200 workers."""
-    def __init__(self,limit=10):self.lock=threading.Lock();self.rows={};self.limit=limit
+    def __init__(self,limit=10,city_limits=None,live_count=None):self.lock=threading.Lock();self.rows={};self.limit=limit;self.city_limits=city_limits;self.live_count=live_count
     def reserve(self,name,city,now):
         with self.lock:
             self.rows={k:v for k,v in self.rows.items() if v['until']>now}
-            if name in self.rows:self.rows[name]['until']=now+30;return self.rows[name]['slot']
+            limits=self.city_limits
+            if self.live_count:
+                total=self.live_count(now)//10;argent=round(total*.75);rest=total-argent
+                limits={'garner':argent,'magicsea':(rest+1)//2,'darkblue':rest//2}
+            limit=limits.get(city,0) if limits is not None else self.limit
+            if name in self.rows:
+                if self.rows[name]['slot']>=limit:self.rows.pop(name,None);return None
+                self.rows[name]['until']=now+30;return self.rows[name]['slot']
             taken={v['slot'] for v in self.rows.values() if v['city']==city}
-            for slot in range(self.limit):
+            for slot in range(limit):
                 if slot not in taken:
                     self.rows[name]={'city':city,'slot':slot,'until':now+30};return slot
             return None
@@ -214,7 +221,8 @@ class Market:
         w=self.world
         if self.next_shift is None:self.next_shift=now+self.rng.uniform(60,600)
         if self.state in ('opening','selling','closing'):
-            self.directory.reserve(self.name,w.map,now)
+            if self.directory.reserve(self.name,w.map,now) is None and self.state!='closing':
+                self.request_close(now);return True
             if self.state=='closing':
                 if now>=self.deadline:
                     if self.active_confirmed:self.request_close(now)
@@ -236,7 +244,7 @@ class Market:
         if self.disabled or not safe or dialogue_busy or not w.bag_ready or w.bag_disabled:return False
         if self.learn(now,policy):return True
         if self.state=='travelling':
-            self.directory.reserve(self.name,w.map,now)
+            if self.directory.reserve(self.name,w.map,now) is None:self.finish(now);return False
             if now>=self.deadline:self.finish(now);return False
             if math.dist(policy.position(now),self.pitch)>120:
                 self.reason='идёт на городское место торговли'
@@ -249,7 +257,8 @@ class Market:
             self.send(START,start_request('Оружие и находки',self.stock));self.open_requests+=1
             self.state='opening';self.deadline=now+15;return True
         # Scan visible real player/bot stalls only. Never use shared stock as a fake server view.
-        if now>=self.next_scan:
+        can_shop=w.own.values.get(8,0)>1000 and (w.bag_capacity or 0)-len(w.bag)>=2
+        if can_shop and now>=self.next_scan:
             self.scanned={k:v for k,v in self.scanned.items() if v>now}
             candidates=[e for e in w.entities.values() if e.identity!=w.own_id and e.stall and e.control==1 and self.scanned.get(e.identity,0)<=now and math.dist(policy.position(now),e.position)<2400]
             if candidates:
