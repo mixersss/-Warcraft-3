@@ -222,7 +222,8 @@ def main():
             (0x508400,(456,2,3,0,5),308,buy_request(456,2,3,5)),
             (0x500930,(0x2002000,),6001,classic_wire.string('Bot12345678')),
             (0x500a40,(99,),6002,struct.pack('>I',99)),
-            (0x5009c0,(99,),6003,struct.pack('>I',99))]
+            (0x5009c0,(99,),6003,struct.pack('>I',99)),
+            (0x500b60,(),6004,b'')]
     for address,arguments,command,expected in checks:
         writes.clear();submitted.clear()
         emulator.mem_write(0x1100000,struct.pack('<'+'I'*(len(arguments)+1),0xf00000,*arguments))
@@ -235,7 +236,7 @@ def main():
             if kind=='string':body+=struct.pack('>H',len(value)+1)+value+b'\0'
             else:body+=struct.pack({'char':'>B','short':'>H','long':'>I'}[kind],value)
         if body!=expected:raise AssertionError(f'Native town/party body mismatch at {address:x}: {body.hex()}')
-    print('NPC function, item purchase and party invite/accept/refuse match native client serializers.')
+    print('NPC function, item purchase and party invite/accept/refuse/leave match native client serializers.')
     print('This capture checks the EXE serialization calls, not live map entry.')
 
 

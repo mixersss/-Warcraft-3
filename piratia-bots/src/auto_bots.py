@@ -75,7 +75,7 @@ def ensure_character(bot, client, chars):
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha13'
+    report.result['version'] = 'AutoAccountsAlpha14'
     report.result['bot_index'] = index
     sock = client = None
     succeeded = False
@@ -118,7 +118,7 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
             from roles import RoleStore
             from coordination import tactic_for
             selected_tactic=tactic_for(index,mode)
-            print(f'Бот {index}: тактика '+('задания и профессия' if selected_tactic=='quests' else 'фарм и профессия'))
+            print(f'Бот {index}: тактика '+{'quests':'задания и профессия','farm':'фарм и профессия','hybrid':'чередование заданий и фарма'}[selected_tactic])
             hunt(client, seconds, stop, report, nav, lambda text: print(f'Бот {index}: {text}'),
                  bot_name=bot['character'], chat_budget=chat_budget, adventure_mode=True,
                  tactic=selected_tactic,
@@ -159,23 +159,23 @@ def watch_stop_file(path,stop):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--count', type=int, default=60)
+    parser.add_argument('--count', type=int, default=100)
     parser.add_argument('--seconds', type=int, default=3600)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
     args = parser.parse_args()
-    if not 1 <= args.count <= 60 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
-        parser.error('count: 1..60; seconds: 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 100 or not 5 <= args.seconds <= 86400 or not 1 <= args.port <= 65535:
+        parser.error('count: 1..100; seconds: 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — классы, задания и фарм без окна игры (Alpha 13).')
+    print('Пиратия — классы, задания и фарм без окна игры (Alpha 14).')
     print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
     print(f'Режим: {args.mode}. Время: {args.seconds} секунд. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha13'
+    setup_report.result['version'] = 'AutoAccountsAlpha14'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

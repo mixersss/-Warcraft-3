@@ -536,3 +536,26 @@ contents and exclude known active quest items; no actual player sale is claimed.
 Ordinary loot retains own recent attack+observed XP evidence and reserves four
 slots. Both synthetic policy regressions and PowerShell persistence pass, but
 new shop/party/chest/level40 behavior still needs the owner's Windows game test.
+
+
+## Alpha 14 — population and social scheduling
+
+Default/enabled maximum: 100; Python and both provisioning/state PowerShell
+validation ranges agree (1..100). Mixed cohorts: index modulo five 0/1 farm,
+2/3/4 hybrid, giving 40/60 at 100. Hybrid phases alternate every 240–480 seconds
+when no combat or NPC transaction is pending; profession logic remains mandatory.
+The population report separates permanent tactic cohort and effective phase.
+
+Local dialogue coordinator uses only native local chat command 1. Twenty paired
+scripts, three turns per conversation, advance only on an exact server-delivered
+peer echo. Unknown bot messages cannot start generic reply loops. Shared chat
+budget is eight seconds; human broadcast intent has one shared responder lease.
+The phrase bank contains 389 unique CP1251-safe lines, 200 added this release.
+
+Party invitations share an expiring recipient reservation. After 600–1200 seconds
+in a confirmed group, a safe-time leave request uses command 6004, empty body.
+Native client serializer at 0x500b60 was captured and compared. Local membership
+is retained until server 5002 confirms change. No human invitation policy changed.
+
+134 offline Python tests and PowerShell state regression passed. Native action
+serializers audited; live 100-worker Windows SQL/network operation remains untested.

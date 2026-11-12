@@ -169,10 +169,10 @@ class TacticsTests(unittest.TestCase):
         q.journal_ready=True
         return w,q
 
-    def test_default_cohort_has_fifteen_of_each_stable_tactic(self):
-        styles=[tactic_for(i) for i in range(1,31)]
-        self.assertEqual(styles.count('quests'),15)
-        self.assertEqual(styles.count('farm'),15)
+    def test_default_cohort_has_forty_percent_farm_and_sixty_percent_hybrid(self):
+        styles=[tactic_for(i) for i in range(1,101)]
+        self.assertEqual(styles.count('hybrid'),60)
+        self.assertEqual(styles.count('farm'),40)
         self.assertEqual(tactic_for(4,'adventure'),'quests')
         self.assertEqual(tactic_for(5,'hunt'),'farm')
 

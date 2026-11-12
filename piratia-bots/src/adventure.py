@@ -72,8 +72,9 @@ def mission_page(payload):
 
 class Adventure:
     def __init__(self, world, send, tell=lambda text:None, role=None, region=None, tactic='quests'):
-        if tactic not in ('quests','farm'):raise ValueError('Unknown tactic')
-        self.tactic=tactic
+        if tactic not in ('quests','farm','hybrid'):raise ValueError('Unknown tactic')
+        self.configured_tactic=tactic
+        self.tactic='quests' if tactic=='hybrid' else tactic
         self.world, self.send, self.tell = world, send, tell
         self.role = role or {'first_job':1,'target_job':9,'promotion':'Swordsman Promotion','label':'крестоносец'}
         self.destinations = {k:v for k,v in DESTINATIONS.items() if k in (1,701,702,703,704)}
@@ -374,7 +375,7 @@ class Adventure:
         return True
 
     def summary(self):
-        return {'tactic':self.tactic,'state':self.reason,'journal_received':self.journal_ready,
+        return {'cohort':self.configured_tactic,'tactic':self.tactic,'state':self.reason,'journal_received':self.journal_ready,
                 'active_missions':dict(self.journal),'accepted_confirmed':self.accepted,
                 'deliveries_confirmed':self.delivered,'npc_requests':self.requests,
                 'npc_pages':self.seen_pages,'missing_offers':self.missing_offers,

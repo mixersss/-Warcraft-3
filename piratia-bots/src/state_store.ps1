@@ -1,7 +1,7 @@
 # Shared by the Windows setup helper and the standalone persistence regression test.
 function Initialize-BotSecondaryPasswordState {
     param([Parameter(Mandatory=$true)]$State,
-          [ValidateRange(1,60)][int]$Count,
+          [ValidateRange(1,100)][int]$Count,
           [Parameter(Mandatory=$true)][scriptblock]$CreateProtectedPassword)
     $changed = $false
     foreach ($entry in @($State.bots | Select-Object -First $Count)) {

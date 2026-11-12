@@ -54,5 +54,41 @@ class Coordination:
 
 
 def tactic_for(index,mode='mixed'):
-    if mode=='mixed':return 'quests' if index%2 else 'farm'
+    if mode=='mixed':return 'farm' if index%5 in (0,1) else 'hybrid'
     return 'farm' if mode=='hunt' else 'quests'
+
+
+class TacticSchedule:
+    """Stable cohort, variable-length phases; never interrupt combat or NPC exchange."""
+    def __init__(self,tactic,seed):
+        import random
+        if tactic not in ('farm','quests','hybrid'):raise ValueError('Unknown tactic')
+        self.tactic=tactic
+        self.rng=random.Random(str(seed)+':phases')
+        self.phase=('quests' if self.rng.randrange(2) else 'farm') if tactic=='hybrid' else tactic
+        self.next_switch=None
+        self.switches=0
+        self.profession_hold=False
+        self.effective_phase=self.phase
+
+    def tick(self,now,busy=False,mandatory=False):
+        if self.tactic!='hybrid':
+            self.effective_phase=self.phase
+            return self.phase
+        if self.next_switch is None:self.next_switch=now+self.rng.uniform(240,480)
+        if mandatory:
+            self.profession_hold=True
+            self.effective_phase='quests'
+            return self.effective_phase
+        if self.profession_hold:
+            self.profession_hold=False;self.next_switch=now+self.rng.uniform(240,480)
+        if now>=self.next_switch and not busy:
+            self.phase='farm' if self.phase=='quests' else 'quests'
+            self.switches+=1
+            self.next_switch=now+self.rng.uniform(240,480)
+        self.effective_phase=self.phase
+        return self.phase
+
+    def summary(self):
+        return {'cohort':self.tactic,'phase':self.effective_phase,'switches':self.switches,
+                'mandatory_profession_priority':self.profession_hold}

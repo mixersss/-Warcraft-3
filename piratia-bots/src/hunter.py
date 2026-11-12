@@ -84,6 +84,23 @@ class Hunter:
         self.search_deadline=0
         self.goal_blacklist={}
         self.tactic='quests'
+        self.quest_phase='quests'
+        self.tactic_schedule=None
+        self.optional_quests=True
+
+    def update_tactic(self,now):
+        if not self.tactic_schedule or not self.world.own:return
+        current=self.world.entities.get(self.target)
+        busy=bool(current and current.alive) or self.resting
+        for feature in (self.adventure,self.career,self.story,self.town,self.equipment,self.skills,self.chests):
+            if feature and (getattr(feature,'context',None) or getattr(feature,'pending',None)):busy=True
+        mandatory=(self.world.own.values.get(4)==0 and self.world.own.values.get(0,1)>=9)
+        if self.career and self.career.eligible():mandatory=True
+        phase=self.tactic_schedule.tick(now,busy=busy,mandatory=mandatory)
+        if phase!=self.quest_phase and not busy:self.clear_zone()
+        self.quest_phase=phase
+        self.optional_quests=phase=='quests'
+        if self.adventure:self.adventure.tactic=phase
 
     def drop_target(self,now=None,avoid=False):
         had_target=self.target is not None or self.target_key is not None
@@ -199,7 +216,7 @@ class Hunter:
         own = self.world.own
         # Only the two passive beginner species from this server's CharacterInfo.
         models=(self.career.desired_models() if self.career and self.career.desired_models() else
-                self.story.desired_models() if self.story and self.story.desired_models() else
+                self.story.desired_models() if self.optional_quests and self.story and self.story.desired_models() else
                 self.adventure.desired_models() if self.adventure else self.farm_models())
         maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
         return (entity.control == 5 and entity.model in models and entity.alive
@@ -210,6 +227,7 @@ class Hunter:
     def tick(self, now=None):
         now = time.monotonic() if now is None else now
         own = self.world.own
+        self.update_tactic(now)
         if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
             # A server correction can invalidate interpolation; prefer its raw position.
             self.world.motion.pop(self.world.own_id,None)
@@ -274,7 +292,7 @@ class Hunter:
             self.change('открывает собственный сундук');self.next_action=now+.3;return
         if self.career and self.career.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.story and self.story.context)):
             self.drop_target();self.clear_zone();self.change(self.career.reason);return
-        if self.story and self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)):
+        if self.optional_quests and self.story and self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)):
             self.drop_target();self.clear_zone();self.change('сюжетное задание: жизненные навыки');return
         if self.town and self.town.tick(now,self,safe,dialogue_busy or bool(self.career and self.career.context) or bool(self.story and self.story.context)):
             self.drop_target();self.clear_zone();self.change(self.town.reason);return
@@ -376,7 +394,7 @@ class Hunter:
         self.change('поиск свободного места фарма')
         if self.career and self.career.goals():
             raw_goals=self.career.goals()
-        elif self.story and self.story.goals():
+        elif self.optional_quests and self.story and self.story.goals():
             raw_goals=self.story.goals()
         elif self.adventure:
             raw_goals=self.adventure.farm_goals()
@@ -410,7 +428,7 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'tactic':self.tactic,'state': self.mode,
+        return {'tactic':self.tactic,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
                 'target_id':self.target,'path_recoveries':self.recoveries,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
@@ -431,13 +449,15 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     nav=navigation.nav(world.map) if hasattr(navigation,'nav') else navigation
     policy = Hunter(world, nav, client.wire.send, report, tell, bot_name)
     policy.tactic=tactic
+    from coordination import TacticSchedule
+    policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
     from recovery import Recovery
     policy.recovery=Recovery(world)
     progression = Progression(world, client.wire.send)
-    social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name)
+    social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name,conversations=getattr(navigation,'conversations',None))
     role = None
     if role_store:
         role = role_store.resolve(bot_name,world.own.model,world.own.values.get(4))
@@ -493,6 +513,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['progression']=progression.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['chat']=social.summary()
+        if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
         for key in ('chests','town','career','story','party'):
             feature=getattr(policy,key)
@@ -503,7 +524,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if fleet:
             values=world.own.values
             fleet.update(bot_index,connected=True,map=world.map,level=values.get(0),job=values.get(4),
-                         body=world.own.model,state=policy.mode,tactic=policy.tactic,hp=values.get(HP),max_hp=values.get(MAX_HP),
+                         body=world.own.model,state=policy.mode,tactic=policy.tactic,phase=policy.tactic_schedule.effective_phase,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
                          quests=policy.adventure.delivered if policy.adventure else 0,
                          target_job=role['target_job'] if role else 0)
@@ -571,7 +592,11 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.service(command, payload)
             except TimeoutError:
                 pass
-            if policy.party:policy.party.tick(time.monotonic(),bot_index)
+            if hasattr(navigation,'directory'):
+                navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
+            if policy.party:
+                dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story) if f)
+                policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting)
             policy.tick()
             now = time.monotonic()
             alive = world.own.alive
@@ -615,4 +640,5 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.drop_target()
         policy.clear_zone()
         if hasattr(navigation,'directory'):navigation.directory.remove(bot_name)
+        if social.conversations:social.conversations.remove(bot_name,time.monotonic())
         client.world_handler = None

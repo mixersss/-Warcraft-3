@@ -11,6 +11,8 @@ class Regions:
         self.coordination=Coordination()
         from party import BotDirectory
         self.directory=BotDirectory()
+        from conversations import Conversations
+        self.conversations=Conversations(self.assets)
         from equipment import ItemCatalog
         self.items=ItemCatalog(self.assets/'items.json')
         from life import LifeItems

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-13'
-NAME = 'Piratia-Auto-Bots-Alpha13'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-14'
+NAME = 'Piratia-Auto-Bots-Alpha14'
 
 
 def main():
@@ -31,33 +31,37 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': '60-bot progression and town-life pilot; native shop/party serializers audited; new gameplay pending owner validation',
+        'status': '100-bot pilot; 40 percent farm / 60 percent hybrid, bounded real-echo dialogues; live owner validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 119,
-        'full_python_suite_total': 127,
+        'pure_python_tests_passed': 134,
+        'full_python_suite_total': 142,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '24 passed in Alpha 06',
         'current_network_regression': '8 socket tests not rerun; previous run was blocked by sandbox',
-        'default_bot_count': 60,
+        'default_bot_count': 100,
         'default_mode': 'mixed',
-        'cohort_tactics_at_60': {'quests':30,'farm':30},
+        'cohort_tactics_at_100': {'farm':40,'hybrid':60},
+        'hybrid_phase_seconds': [240,480],
+        'finite_dialogue_scripts': 20,
+        'dialogue_advances_on_real_peer_echo': True,
         'first_profession_in_both_tactics': True,
-        'exclusive_target_cohort_tested': 60,
+        'exclusive_target_cohort_tested': 100,
         'live_target_distribution_verified': False,
         'default_duration_seconds': 3600,
         'three_city_spawn_and_trainer_routes_verified': True,
-        'chat_phrase_count': 189,
-        'live_sixty_connections_tested': False,
+        'chat_phrase_count': 389,
+        'new_chat_phrases': 200,
+        'live_hundred_connections_tested': False,
         'advanced_profession_requests_implemented': True,
         'advanced_profession_full_chains_implemented': False,
         'player_item_exchange_implemented': False,
         'story_chain': [200,203,204],
         'combat_skill_book_catalog_count': 83,
         'owned_chest_ids': [436,985,986,987,988],
-        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse'],
+        'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'party invite/accept/refuse/leave'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
-        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60, rejection 0/61, credential preservation',
-        'fix01': 'secondary-password helper population limit aligned with launcher: 1..60' ,
+        'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100, rejection 0/101, credential preservation',
+        'population_validation': 'both PowerShell helpers and Python launcher aligned: 1..100' ,
         'windows_sql_dpapi_runtime_tested': False,
         'owner_confirmed_previous_release': {'account_creation': True, 'login': True, 'character_creation': True, 'map_entry': True, 'movement_and_combat_alpha08': True, 'alpha11_fix01_spawn_and_initial_quest_movement':True, 'hunting_and_chat_alpha09': True},
         'begin_play_format': 'classic character-name string, native client 0x51a4d0',
@@ -70,7 +74,7 @@ def main():
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
         'population_target': 400,
-        'maximum_enabled_bots': 60,
+        'maximum_enabled_bots': 100,
         'four_hundred_live_connections_tested': False,
         'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',
