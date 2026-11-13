@@ -775,3 +775,22 @@ City leisure routes use derived navigation and different final positions, no
 bench pose packets. Stall slots>=10 use a larger ring, actual skill241 is checked
 at arrival. Random scripted conversation disabled in runtime, explicit requests
 and real-state messages remain.279 offline regressions passed; no live200 run.
+
+## Alpha24 — ground recovery pose and bounded planning
+
+Classic Game.exe SHA c819f09b…: BeginAction0x5198b0 action21 dispatches
+to0x51a19b; stNetFace stores pose at+0 and angle at+2, and writes angle
+then pose as two u16 after actor/sequence/action. Unicorn writer capture now
+compares this with pose_request. The original GameServer action21 branch
+starts0x4eb892, reads angle then pose, sends MC508 and calls g_IsSeatPose
+0x4ebc80 (exactly pose16). Its seated/standing scripts use skill202.
+The controller waits for own sequence/pose echo and observes real HP increases.
+Pose1 stands; no HP generation or coordinates are fabricated. This is ground
+sitting, not bench action16/LEAN. Live regen still requires Windows testing.
+
+Revival runs before navigation checks. Reaching attack range cancels a prior
+route through the existing EndAction/ack queue, without waiting for its far
+endpoint. Active repeating server attacks are preserved. Runtime A* jobs use
+512-pop slices with a6 ms deadline check, resume instead of reporting no path,
+and share bounded completed routes. Supercover checks include both side cells
+at corners. None of these changes alter server attack speed or XP rewards.

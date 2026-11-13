@@ -65,7 +65,7 @@ class Hunter:
         self.target_since = 0
         self.started = time.monotonic()
         self.rng = random.Random(str(seed or world.own.identity))
-        self.attack_interval = self.rng.uniform(2.0, 2.5)
+        self.attack_interval = self.rng.uniform(.35, .5)
         self.route = list(range(len(navigation.waypoints)))
         self.rng.shuffle(self.route)
         self.adventure = None
@@ -109,6 +109,9 @@ class Hunter:
         from farm_plan import HuntLearning
         self.learning=HuntLearning(self.owner)
         self.farm_plan_key=None;self.farm_plan_changes=0
+        self.starter_search_since=None
+        from sitting import Sitting
+        self.sitting=Sitting(world)
 
     def update_tactic(self,now):
         if not self.tactic_schedule or not self.world.own:return
@@ -204,6 +207,7 @@ class Hunter:
         self.last_sent_sequence=int.from_bytes(body[4:8],'big')
         kind=str(body[8]);self.sent_action_counts[kind]=self.sent_action_counts.get(kind,0)+1
         self.last_sent_kind=body[8]
+        if body[8]==21:self.action_open=False
         if body[8]==2:
             self.attacks+=1
             self.motion_anchor=None;self.motion_progress_at=None;self.stuck=0
@@ -326,10 +330,13 @@ class Hunter:
 
     def starter_models(self):
         # Owner's CharacterInfo: Forest Spirit 103 is level 3, Argent only.
-        return {103} if (self.region and self.world.map=='garner'
+        preferred=(self.region and self.world.map=='garner'
                         and '103' in self.region['farms'] and self.world.own.values.get(LV,1)<=3
                         and not self.learning.blocked(103,self.clock)
-                        and not self.learning.rows) else set()
+                        and not self.learning.rows)
+        if not preferred:return set()
+        if self.starter_search_since is None:self.starter_search_since=self.clock
+        return {103} if self.clock-self.starter_search_since<90 else set()
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
@@ -409,10 +416,37 @@ class Hunter:
                 and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
                 and self.blacklist.get(entity.identity, 0) < now)
 
-    def tick(self, now=None):
+    def tick(self,now=None):
+        nav=self.nav
+        if getattr(nav,'incremental',False) is not True:return self._tick(now)
+        from route_search import RoutePending
+        nav.begin_turn()
+        try:return self._tick(now)
+        except RoutePending:self.change('планирует безопасный маршрут; продолжает принимать сеть')
+        finally:nav.end_turn()
+
+    def _tick(self, now=None):
         now = time.monotonic() if now is None else now
         self.clock=now
         own = self.world.own
+        if own and (own.values.get(HP,1)<=0 or own.state>=5):
+            self.learning.observe(self.world,now)
+            self.pending_action=None;self.action_open=False
+            self.sitting.reset()
+            if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
+            self.drop_target()
+            self.clear_zone()
+            self.change('персонаж погиб; обычное возвращение в город')
+            if self.dead_since is None:self.dead_since=now
+            if self.death_attempts>=3 and now>=self.next_revive+60:self.death_attempts=0
+            if now-self.dead_since>=4 and now>=self.next_revive and self.death_attempts<3:
+                self.send(10,b'\x01')
+                self.revive_requests+=1
+                self.death_attempts+=1
+                self.next_revive=now+15
+            return
+        self.dead_since=None
+        self.death_attempts=0
         self.learning.observe(self.world,now)
         self.update_tactic(now)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
@@ -440,22 +474,6 @@ class Hunter:
         if hp is None or not maximum:
             self.change('ожидание данных здоровья')
             return
-        if hp <= 0 or own.state >= 5:
-            self.pending_action=None
-            if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
-            self.drop_target()
-            self.clear_zone()
-            self.change('персонаж погиб; обычное возвращение в город')
-            if self.dead_since is None:self.dead_since=now
-            if self.death_attempts>=3 and now>=self.next_revive+60:self.death_attempts=0
-            if now-self.dead_since>=8 and now>=self.next_revive and self.death_attempts<3:
-                self.send(10,b'\x01')
-                self.revive_requests+=1
-                self.death_attempts+=1
-                self.next_revive=now+30
-            return
-        self.dead_since=None
-        self.death_attempts=0
         if self.learning.waiting_reward(now):
             self.change('проверяет опыт после боя');self.next_action=now+.15;return
         before_flush=self.flushed_actions
@@ -472,6 +490,8 @@ class Hunter:
         if self.recovery and self.recovery.tick(now,self):
             self.next_action=now+.3
             return
+        if not self.resting and self.sitting.tick(now,self,False):
+            self.change('встаёт перед продолжением дел');return
         if hp / maximum <= .35:
             if not self.resting:
                 self.cancel_pending = True
@@ -480,9 +500,13 @@ class Hunter:
             self.clear_zone()
         if self.resting:
             if hp / maximum >= .85:
+                if self.sitting.tick(now,self,False):
+                    self.change('встаёт после восстановления');return
                 self.resting = False
             else:
                 self.change('отступление и восстановление')
+                if not self.cancel_pending and self.sitting.tick(now,self,True):
+                    self.change('восстанавливает HP сидя' if self.world.seated else 'присаживается для восстановления');return
                 # Food is a prerequisite for recovery, not optional leisure.
                 # Only shop after reaching the city vicinity; never fake healing.
                 if (self.town and not self.cancel_pending and distance(self.position(now),self.home)<2000
@@ -622,11 +646,10 @@ class Hunter:
                 if not goal or not self.move_to(goal,now):
                     self.drop_target(now,avoid=True)
                 return
-            # Finish an accepted movement action before asking the server to begin a fight.
-            if self.move_goal and self.attack_move_revision!=self.world.move_revision:
-                if (self.last_sent_kind==1 and self.world.move_state==0
-                        and now<self.move_until+.25):
-                    self.next_action=now+.2;self.change('завершает подход перед атакой');return
+            # Already in attack range: stop the previous search/approach route
+            # now, instead of waiting for its distant endpoint. emit/flush still
+            # wait for the matching server stop before submitting the attack.
+            if self.move_goal:
                 self.attack_move_revision=self.world.move_revision;self.move_goal=None
             if self.world.failed_actions>self.attack_failure_seen:
                 self.attack_failure_seen=self.world.failed_actions
@@ -707,7 +730,7 @@ class Hunter:
                 'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
-                'revive_requests':self.revive_requests, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
+                'revive_requests':self.revive_requests, 'revival':{'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
 
 def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None, fleet=None, bot_index=0, tactic='quests'):
@@ -851,6 +874,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     def snapshot(now):
         policy.learning.save(now)
         report.result['decision_loop']=dict(think_stats)
+        report.result['route_planning']=policy.nav.planning_stats()
+        report.result['sitting']=policy.sitting.summary()
         report.result['hunt']=policy.summary()
         if policy.loot:report.result['loot']=policy.loot.summary()
         if contacts:report.result['contacts']=contacts.summary()
@@ -925,6 +950,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             was_dead=world.own is not None and not world.own.alive
             world.enter(payload)
             policy.pending_action=None;policy.action_open=False
+            policy.sitting.reset()
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
@@ -1032,6 +1058,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     finally:
         policy.learning.save(time.monotonic(),force=True)
         report.result['hunt'] = policy.summary()
+        report.result['sitting']=policy.sitting.summary()
+        report.result['route_planning']=policy.nav.planning_stats()
         if policy.loot:report.result['loot']=policy.loot.summary()
         if contacts:report.result['contacts']=contacts.summary()
         if cooperation:

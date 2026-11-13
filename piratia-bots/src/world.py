@@ -149,6 +149,7 @@ class World:
         self.own_hits = {}
         self.look_revision = 0
         self.skills = {}
+        self.seated=False;self.pose_packet_number=None;self.pose_revision=0
 
     def position(self, now=None, identity=None):
         """Bounded prediction along the SERVER's route; raw x/y remain authoritative."""
@@ -234,6 +235,7 @@ class World:
         own.values = attrs(reader)
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
             raise ProtocolError('Initial health/level could not be decoded')
+        self.seated=False;self.pose_packet_number=None;self.pose_revision+=1
         self.motion.clear()
         self.own_hits.clear()
         self.items.clear()
@@ -324,6 +326,10 @@ class World:
                     if stop is not None:
                         current.state = stop
                     current.seen_at = time.monotonic()
+            elif action == 21:
+                angle,pose=reader.short(),reader.short();reader.end()
+                if identity==self.own_id:
+                    self.seated=pose==16;self.pose_packet_number=packet_id;self.pose_revision+=1
             elif action == 3:
                 reader.byte();reader.short();state=reader.short()
                 if state:reader.short()

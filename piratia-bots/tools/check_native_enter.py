@@ -120,7 +120,7 @@ def main():
     emulator.mem_write(0x6001d0, struct.pack('<I', 0x201f000))
     put(0x2003014, 123)
     points = ((223200,278700),(223700,278900))
-    for kind in (1, 2, 8, 11):
+    for kind in (1, 2, 8, 11, 21):
         writes.clear()
         submitted.clear()
         put(0x200131c, kind)
@@ -129,6 +129,12 @@ def main():
             emulator.mem_write(0x2004004, struct.pack('<iiii', *points[0], *points[1]))
             put(0x2004104, 2)
             expected = movement(123,1,points)
+        elif kind == 21:
+            # Audited classic stNetFace stores pose first and angle second;
+            # its serializer at 0x51a19b emits angle first, then pose.
+            emulator.mem_write(0x2004000,struct.pack('<HH',16,37))
+            from sitting import pose_request
+            expected=pose_request(123,21,True,37)
         elif kind == 11:
             emulator.mem_write(0x2004000,struct.pack('<hh',3,-1))
             from hunter import action_header
@@ -160,7 +166,7 @@ def main():
             else: raise AssertionError('Unexpected action writer')
         if bytes(encoded) != expected:
             raise AssertionError(f'Action {kind} does not match native serialization calls')
-    print('Movement, normal attack, item pickup and item use match native BeginAction serialization.')
+    print('Movement, normal attack, item pickup, item use and ground sitting match native BeginAction serialization.')
     from social import say_request
     from progression import attribute_request
     text = 'Привет :)'

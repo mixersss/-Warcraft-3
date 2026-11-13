@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-23'
-NAME = 'Piratia-Auto-Bots-Alpha23'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-24'
+NAME = 'Piratia-Auto-Bots-Alpha24'
 
 
 def main():
@@ -31,8 +31,16 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Spatial patch reservations, NPC admission, checked native turn routes, bounded decision rate and recovery food; live Windows validation pending',
+        'status': 'Immediate in-range transition, incremental route planning, native ground sitting and pre-navigation revival; live Windows validation pending',
         'native_windows_server_tested': False,
+        'ground_sitting_native_client_capture_passed': True,
+        'ground_sitting_server_branch_disassembled': True,
+        'ground_sitting_live_windows_tested': False,
+        'runtime_astar_slice_pop_limit': 512,
+        'runtime_astar_deadline_check_ms': 6,
+        'death_handled_before_navigation': True,
+        'in_range_old_route_stop_before_attack': True,
+        'starter_exclusive_search_seconds': 90,
         'decision_frequency_max_hz': 4,
         'npc_destination_capacity': 2,
         'optional_npc_population_fraction': .1,
@@ -40,12 +48,12 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 290,
-        'full_python_suite_total': 298,
+        'pure_python_tests_passed': 309,
+        'full_python_suite_total': 317,
         'full_python_suite_passed': None,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
-        'current_network_regression': '8 socket tests not rerun for Alpha23; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
+        'current_network_regression': '8 socket tests not rerun for Alpha24; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
@@ -119,6 +127,8 @@ def main():
         'unfamiliar_trial_every_third_completed_fight': True,
         'xp_after_death_settlement_seconds': 2,
         'revival_retry_batches_continue_after_backoff': True,
+        'revival_first_delay_seconds': 4,
+        'revival_retry_seconds': 15,
         'city_leisure': 'checked walking routes and brief stops',
         'bench_sitting_implemented': False,
         'runtime_unsolicited_speech_is_contextual': True,

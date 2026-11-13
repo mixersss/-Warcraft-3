@@ -1,0 +1,22 @@
+{
+  "client_sha256": "c819f09bacb1f058f6040a5fe3bdab7d6264ade44c89cd93123b54c471653dd8",
+  "server_sha256": "f60aa51c8a8d08ee097bc4a6003b5a07dd97f6dc5d6ea8ae4c8425fa3660f6c5",
+  "client_begin_action": "0x5198b0",
+  "client_action21_serializer": "0x51a19b",
+  "server_action21_branch": "0x4eb892",
+  "server_seat_predicate": "0x4ebc80",
+  "command": 6,
+  "action": 21,
+  "wire_fields": [
+    "actor:u32",
+    "sequence:u32",
+    "action:u8",
+    "angle:u16",
+    "pose:u16"
+  ],
+  "seated_pose": 16,
+  "standing_pose": 1,
+  "server_recovery_skill": 202,
+  "seat_payload_actor123_seq21_angle37": "0000007b000000151500250010",
+  "verification": "Original client BeginAction writers emulated with Unicorn; original server branch/predicate disassembled; live Windows recovery pending"
+}

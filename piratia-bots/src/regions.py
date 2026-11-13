@@ -30,6 +30,7 @@ class Regions:
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
+        for nav in self.navigation.values():nav.enable_incremental()
 
     def get(self,name):
         return self.data.get(name)

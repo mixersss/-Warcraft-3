@@ -28,12 +28,12 @@ class CombatTests(unittest.TestCase):
  def test_bow_uses_native_range_instead_of_melee_cap(self):
   w,p=self.policy();w.default_skill=30;w.entities[1000].x=w.own.x+700
   p.tick(100);self.assertEqual(p.attacks,1);self.assertEqual(p.moves,0)
- def test_approach_finishes_then_end_action_then_strike(self):
+ def test_in_range_stops_route_then_waits_for_ack_before_strike(self):
   w,p=self.policy();p.move_to((223300,278700),99);p.move_until=101;w.move_revision=1;w.move_state=0
-  p.tick(100);self.assertEqual(p.attacks,0)
-  p.tick(101.5);self.assertEqual(p.attacks,0);p.send.assert_called_with(7,b'')
-  w.stop_revision+=1;w.stop_packet_number=p.last_sent_sequence
-  p.tick(102);self.assertEqual(p.attacks,1)
+  p.tick(100);self.assertEqual(p.attacks,0);p.send.assert_called_with(7,b'')
+  p.tick(100.1);self.assertEqual(p.attacks,0)
+  w.stop_revision+=1;w.stop_packet_number=p.last_sent_sequence;w.stop_packet_kind=1
+  p.tick(100.3);self.assertEqual(p.attacks,1)
  def test_native_failed_action_reason_is_recorded(self):
   w,p=self.policy();w.observe(520,struct.pack('>IBB',w.own_id,2,1))
   self.assertEqual(w.summary()['last_failed_action'],{'actor':w.own_id,'action':2,'reason':1})

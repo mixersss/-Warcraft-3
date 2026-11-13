@@ -1,6 +1,10 @@
 """Bounded A* over a derived walkability crop from the owner's garner.blk."""
 import base64
 import heapq
+import threading
+import time
+from collections import OrderedDict
+from route_search import Search,RoutePending
 from functools import lru_cache
 import json
 import math
@@ -41,7 +45,8 @@ class Navigation:
         return None
 
     def path(self, start, end, limit=25000):
-        cached = self._path(self.cell(start), self.cell(end), limit)
+        key=(self.cell(start),self.cell(end),limit)
+        cached = self._runtime_path(key) if getattr(self,'incremental',False) and getattr(self.local,'active',False) else self._path(*key)
         result = list(cached)
         if result:
             result[0] = tuple(start)
@@ -49,6 +54,9 @@ class Navigation:
 
     def segment(self,start,end):
         """Native routes contain turns, not every A* grid cell (maximum 32)."""
+        if self.cell(start)!=self.cell(end):
+            endpoint=self.position(self.cell(end))
+            if self.line_clear(start,endpoint):return [tuple(start),endpoint]
         path=self.path(start,end)
         if len(path)<3:return path
         # Keep the first centred cell: arbitrary sub-cell start positions must
@@ -61,33 +69,86 @@ class Navigation:
         turns.append(path[-1])
         return turns[:32]
 
+    def line_clear(self,start,end):
+        """Supercover of the actual segment, including both sides of corners."""
+        x,y=self.cell(start);gx,gy=self.cell(end)
+        dx,dy=end[0]-start[0],end[1]-start[1]
+        sx=1 if dx>0 else -1;sy=1 if dy>0 else -1
+        tx=(((x+(1 if dx>0 else 0)+self.origin[0])*100-start[0])/dx) if dx else math.inf
+        ty=(((y+(1 if dy>0 else 0)+self.origin[1])*100-start[1])/dy) if dy else math.inf
+        step_x=100/abs(dx) if dx else math.inf;step_y=100/abs(dy) if dy else math.inf
+        if not self.free((x,y)):return False
+        while (x,y)!=(gx,gy):
+            if abs(tx-ty)<1e-12:
+                if not self.free((x+sx,y)) or not self.free((x,y+sy)):return False
+                x+=sx;y+=sy;tx+=step_x;ty+=step_y
+            elif tx<ty:x+=sx;tx+=step_x
+            else:y+=sy;ty+=step_y
+            if not self.free((x,y)):return False
+        return True
+
+    def enable_incremental(self):
+        self.incremental=True;self.local=threading.local()
+        self.completed=OrderedDict();self.cache_lock=threading.Lock()
+
+    def begin_turn(self,expansions=512):
+        local=self.local
+        if not hasattr(local,'searches'):
+            local.searches=OrderedDict();local.yields=local.expansions=local.finished=0
+        local.remaining=expansions;local.deadline=time.perf_counter()+.006;local.active=True
+
+    def end_turn(self):self.local.active=False
+
+    def planning_stats(self):
+        if not getattr(self,'incremental',False):return {}
+        l=self.local
+        return {'yields':getattr(l,'yields',0),'expanded_nodes':getattr(l,'expansions',0),
+                'completed_searches':getattr(l,'finished',0),'pending_searches':len(getattr(l,'searches',{}))}
+
+    def direct(self,start,goal):
+        """Checked grid line: every diagonal also requires both side cells free."""
+        dx,dy=goal[0]-start[0],goal[1]-start[1];steps=max(abs(dx),abs(dy))
+        route=[];previous=None
+        for i in range(steps+1):
+            cell=(start[0]+round(dx*i/steps),start[1]+round(dy*i/steps)) if steps else start
+            if not self.free(cell):return ()
+            if previous and cell[0]!=previous[0] and cell[1]!=previous[1]:
+                if not self.free((cell[0],previous[1])) or not self.free((previous[0],cell[1])):return ()
+            route.append(self.position(cell));previous=cell
+        return tuple(route)
+
+    def _runtime_path(self,key):
+        with self.cache_lock:
+            if key in self.completed:
+                self.completed.move_to_end(key);return self.completed[key]
+        local=self.local
+        if key not in local.searches and local.searches:
+            # Finish the existing bounded job before accepting a changed goal.
+            # Random candidate ties must not discard half-built searches forever.
+            self._runtime_path(next(iter(local.searches)))
+        if key not in local.searches:
+            start,goal,limit=key
+            if not self.free(start) or not self.free(goal):return ()
+            direct=self.direct(start,goal)
+            if direct:return self._remember(key,direct)
+            local.searches[key]=Search(start,goal)
+            while len(local.searches)>2:local.searches.popitem(last=False)
+        search=local.searches[key];local.searches.move_to_end(key)
+        def spend():
+            if local.remaining<=0 or time.perf_counter()>=local.deadline:
+                local.yields+=1;raise RoutePending()
+            local.remaining-=1;local.expansions+=1
+        result=search.advance(self,key[2],spend)
+        local.finished+=1;local.searches.pop(key,None)
+        return self._remember(key,result)
+
+    def _remember(self,key,result):
+        with self.cache_lock:
+            self.completed[key]=result;self.completed.move_to_end(key)
+            while len(self.completed)>512:self.completed.popitem(last=False)
+        return result
+
     @lru_cache(maxsize=256)
-    def _path(self, start_cell, goal, limit):
-        if not self.free(start_cell) or not self.free(goal):
-            return []
-        queue = [(0, start_cell)]
-        previous, costs = {start_cell: None}, {start_cell: 0}
-        while queue and len(costs) <= limit:
-            _, cell = heapq.heappop(queue)
-            if cell == goal:
-                result = []
-                while cell is not None:
-                    result.append(self.position(cell))
-                    cell = previous[cell]
-                result.reverse()
-                return tuple(result)
-            x, y = cell
-            for dx, dy in ((1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,-1),(1,-1),(-1,1)):
-                target = x+dx, y+dy
-                if not self.free(target):
-                    continue
-                if dx and dy and not (self.free((x+dx,y)) and self.free((x,y+dy))):
-                    continue  # no diagonal cuts through walls
-                cost = costs[cell] + (14 if dx and dy else 10)
-                if cost >= costs.get(target, math.inf):
-                    continue
-                previous[target], costs[target] = cell, cost
-                hx,hy=abs(target[0]-goal[0]),abs(target[1]-goal[1])
-                heuristic=14*min(hx,hy)+10*abs(hx-hy)
-                heapq.heappush(queue, (cost+heuristic, target))
-        return []
+    def _path(self,start_cell,goal,limit):
+        if not self.free(start_cell) or not self.free(goal):return ()
+        return self.direct(start_cell,goal) or Search(start_cell,goal).advance(self,limit,lambda:None)

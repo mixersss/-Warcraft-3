@@ -67,9 +67,9 @@ class RouteTests(unittest.TestCase):
   for a,b in zip(indexes,indexes[1:]):
    deltas={(path[i+1][0]-path[i][0],path[i+1][1]-path[i][1]) for i in range(a,b)}
    self.assertEqual(len(deltas),1)
- def test_sub_cell_start_keeps_first_turn(self):
+ def test_sub_cell_start_is_preserved_on_checked_direct_line(self):
   nav=self.nav();start=(11,29);path=nav.path(start,(5050,5050));turns=nav.segment(start,path[-1])
-  self.assertEqual(turns[:2],path[:2])
+  self.assertEqual(turns,[start,path[-1]]);self.assertTrue(nav.line_clear(*turns))
 
 class DataTests(unittest.TestCase):
  def test_fresh_state_and_existing_state_only_report_counts(self):
