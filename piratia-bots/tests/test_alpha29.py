@@ -13,7 +13,7 @@ class FullBagTests(unittest.TestCase):
  def test_full_bag_sells_even_small_plain_stack_not_a_permanent_five_item_reserve(self):
   f=vendor_base.VendorTests();w,v,p=f.make();w.bag_capacity=1;w.bag={0:f.item(1613,3)}
   self.assertEqual(v.choices(p),[(0,1613,3)])
-  w.bag_capacity=48;self.assertEqual(v.choices(p),[])
+  w.bag_capacity=48;self.assertEqual(v.choices(p),[(0,1613,3)])
  def test_quest_items_and_modified_items_survive_space_pressure(self):
   f=vendor_base.VendorTests();w,v,p=f.make();w.bag_capacity=1;w.bag={0:f.item(1613,3)}
   p.career=__import__('types').SimpleNamespace(needed_items=lambda:{1613})

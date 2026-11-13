@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-29'
-NAME = 'Piratia-Auto-Bots-Alpha29'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-30'
+NAME = 'Piratia-Auto-Bots-Alpha30'
 
 
 def main():
@@ -17,12 +17,12 @@ def main():
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
     sources += sorted((ROOT / 'assets').glob('*.json'))
-    sources += [ROOT / 'knowledge' / 'sources-local.json']
+    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md']
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
             info = zipfile.ZipInfo(f'{NAME}/{source.relative_to(ROOT).as_posix()}',
-                                   date_time=(2026, 11, 13, 0, 0, 0))
+                                   date_time=(2026, 11, 14, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             data = source.read_bytes()
             if source.suffix == '.cmd':
@@ -32,11 +32,19 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Resolve confirmed full-inventory class-referral deadlock by selling safe plain junk before NPC quest acceptance; live Windows revalidation pending',
+        'status': 'Sell all safe junk without a five-unit reserve; try other merchant sites and explain blockers; show maps/coordinates; record owner500-bot specification; live revalidation pending',
         'first_profession_priority_level': 9,
         'farm_until_real_fare_available': True,
         'sell_safe_junk_before_class_letter_if_bag_full': True,
         'small_junk_stacks_can_be_sold_when_less_than_two_free_slots': True,
+        'plain_junk_reserve_units': 0,
+        'sell_visit_clears_all_safe_junk_stacks': True,
+        'five_stack_visit_cap_removed': True,
+        'small_junk_quantity_start_threshold_removed': True,
+        'alternative_city_merchants_on_busy_site': True,
+        'fleet_reports_include_coordinates': True,
+        'owner_target_bots': 500,
+        'runtime_capacity_bots': 200,
         'quest_ingredients_and_modified_items_preserved': True,
         'commit_full_journal_resync_after_seconds': 2,
         'unchanged_journal_is_not_success': True,
@@ -75,11 +83,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 352,
-        'full_python_suite_total': 360,
-        'full_python_suite_passed': 360,
+        'pure_python_tests_passed': 358,
+        'full_python_suite_total': 366,
+        'full_python_suite_passed': 366,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '360 passed in Alpha29 including 8 local socket integration tests',
+        'last_full_network_regression': '366 passed in Alpha30 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

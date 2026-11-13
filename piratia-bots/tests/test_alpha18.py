@@ -49,14 +49,14 @@ class VendorTests(unittest.TestCase):
  def test_native_npc_sale_has_exact_legacy_fields(self):
   self.assertEqual(sell_request(77,2,20),struct.pack('>IHBBB',77,309,0,2,20))
   with self.assertRaises(ValueError):sell_request(77,2,0)
- def test_common_surplus_only_and_five_items_reserved(self):
+ def test_plain_whitelisted_junk_is_sold_without_reserve(self):
   w,v,p=self.make();w.bag={0:self.item(1613,30),1:self.item(3457,50),2:self.item(885,50),3:self.item(3296,50)}
-  self.assertEqual(v.choices(p),[(0,1613,25)])
+  self.assertEqual(v.choices(p),[(0,1613,30)])
   p.career=SimpleNamespace(needed_items=lambda:{1613});self.assertEqual(v.choices(p),[])
  def test_no_sale_without_both_real_count_and_gold_updates(self):
   w,v,p=self.make();w.bag={0:self.item(1613,30)};w.entities[77]=__import__('dataclasses').replace(w.own,identity=77,control=2)
-  v.context=77,'ready',60;v.tick(1,p,True);p.send.assert_called_once_with(308,sell_request(77,0,25));self.assertEqual(v.confirmed_sales,0)
-  w.bag[0]=self.item(1613,5);v.tick(2,p,True);self.assertEqual(v.confirmed_sales,0)
+  v.context=77,'ready',60;v.tick(1,p,True);p.send.assert_called_once_with(308,sell_request(77,0,30));self.assertEqual(v.confirmed_sales,0)
+  w.bag.clear();v.tick(2,p,True);self.assertEqual(v.confirmed_sales,0)
   w.own.values[8]=75;v.tick(3,p,True);self.assertEqual(v.confirmed_sales,1)
  def test_refused_sale_backs_off_without_deleting_items(self):
   w,v,p=self.make();w.bag={0:self.item(1613,30)};v.context=77,'confirmation',10;v.pending=0,1613,30,50,10

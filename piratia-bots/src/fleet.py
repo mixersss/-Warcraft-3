@@ -15,7 +15,7 @@ class Fleet:
         self.peak=0
 
     def update(self,index,**values):
-        allowed={'phase','tactic','connected','map','level','job','body','state','hp','max_hp','moves','attacks','equips','quests','target_job','experience','start_experience','start_level','hunt_style','farm_models'}
+        allowed={'position','phase','tactic','connected','map','level','job','body','state','hp','max_hp','moves','attacks','equips','quests','target_job','experience','start_experience','start_level','hunt_style','farm_models'}
         if values.keys()-allowed:raise ValueError('Unsupported population field')
         with self.lock:
             self.rows.setdefault(index,{}).update(values)

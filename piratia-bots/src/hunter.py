@@ -586,7 +586,7 @@ class Hunter:
                 self.adventure.pending=None;self.adventure.settle(now,3)
             if self.vendor and self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,False),now):
                 self.change('освобождает место для квестового письма: продаёт обычные трофеи');return
-            self.change('нет места для квестового письма; ждёт безопасной продажи лишних трофеев')
+            self.change('нет места для квестового письма; '+(self.vendor.reason if self.vendor else 'нет обработчика продажи'))
             self.next_action=now+1
             return
         self.raising_travel_funds=bool(first_profession and self.travel
@@ -1015,7 +1015,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.write(Path(__file__).resolve().parents[1]/f'bot-report-{bot_index:02d}.json')
         if fleet:
             values=world.own.values
-            fleet.update(bot_index,connected=True,map=world.map,level=values.get(0),job=values.get(4),
+            fleet.update(bot_index,connected=True,map=world.map,position=list(world.position(now)),level=values.get(0),job=values.get(4),
                          body=world.own.model,state=policy.mode,tactic=policy.tactic,phase=policy.tactic_schedule.effective_phase,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
                          experience=values.get(15),start_experience=progression.start_xp,

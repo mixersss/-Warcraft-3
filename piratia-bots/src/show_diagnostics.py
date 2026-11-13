@@ -8,6 +8,7 @@ def render_report(report):
     quest=report.get('adventure',{})
     travel=report.get('travel',{})
     role=report.get('class_path',{})
+    vendor=report.get('vendor',{})
     lines=[f"Бот {report.get('bot_index','?')}: класс {role.get('label','?')}",
            f"  Уровень={quest.get('level','?')}; золото={quest.get('gold','?')}; состояние={report.get('hunt',{}).get('state','?')}",
            f"  Сумка: {quest.get('bag_used','?')}/{quest.get('bag_capacity','?')}; свободно={quest.get('free_bag_slots','?')}",
@@ -17,6 +18,7 @@ def render_report(report):
            f"  Предложения NPC: {json.dumps(quest.get('last_offers',[]),ensure_ascii=False)}",
            f"  Переход: {travel.get('state','нет данных')}; город={travel.get('destination')}; этап={travel.get('dialogue_stage')}; прибытия={travel.get('confirmed_arrivals',0)}",
            f"  Меню телепортера: {json.dumps(travel.get('last_menu',[]),ensure_ascii=False)}"]
+    lines.extend([f"  Продажа: {vendor.get('state','нет данных')}; запросы={vendor.get('sale_requests',0)}; подтверждено={vendor.get('confirmed_sales',0)}; тайм-ауты={vendor.get('confirmation_timeouts',0)}",f"  Предметы: {json.dumps(vendor.get('bag_items',[]),ensure_ascii=False)}"])
     return '\n'.join(lines)
 
 
