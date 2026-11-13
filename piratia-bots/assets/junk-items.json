@@ -1,7 +1,31 @@
 {
-  "source": "Owner ItemInfo.txt, explicit common-trophy ID range1590..1629 plus1678/1779; type41, tradeable, price<=100; sale value remains server-owned",
-  "keep_each": 5,
+  "source": "Explicit common trophy/material IDs audited against owner ItemInfo and observed bags; owner requests sale of ordinary junk. Never classify by price/type alone; active quest ingredients and modified instances remain protected. Sale value remains server-owned.",
+  "keep_each": 0,
   "items": {
+    "1573": {
+      "name": "Shriveled Leaf",
+      "table_price": 2
+    },
+    "1574": {
+      "name": "Green Leaf",
+      "table_price": 4
+    },
+    "1575": {
+      "name": "Sparkling Leaf",
+      "table_price": 30
+    },
+    "1577": {
+      "name": "Three Leaf Clover",
+      "table_price": 8
+    },
+    "1579": {
+      "name": "Flower Bud",
+      "table_price": 10
+    },
+    "1585": {
+      "name": "Grass Juice",
+      "table_price": 18
+    },
     "1590": {
       "name": "Cirrus",
       "table_price": 4
@@ -146,13 +170,193 @@
       "name": "Animal Blood",
       "table_price": 48
     },
+    "1653": {
+      "name": "Smelly Gas",
+      "table_price": 4
+    },
+    "1676": {
+      "name": "Honey",
+      "table_price": 38
+    },
     "1678": {
       "name": "Cashmere",
       "table_price": 12
     },
+    "1679": {
+      "name": "Pure Wool",
+      "table_price": 40
+    },
+    "1690": {
+      "name": "Snail Feeler",
+      "table_price": 46
+    },
+    "1691": {
+      "name": "Cactus Hairball",
+      "table_price": 2
+    },
+    "1692": {
+      "name": "Cactus Blossom",
+      "table_price": 48
+    },
+    "1704": {
+      "name": "Octopus Tentacle",
+      "table_price": 34
+    },
+    "1725": {
+      "name": "Poison Mushroom",
+      "table_price": 6
+    },
+    "1777": {
+      "name": "Glass",
+      "table_price": 48
+    },
     "1779": {
       "name": "Bottle",
       "table_price": 10
+    },
+    "1838": {
+      "name": "Coagulated Liquid",
+      "table_price": 5
+    },
+    "1844": {
+      "name": "Tortoise Blood",
+      "table_price": 26
+    },
+    "3116": {
+      "name": "Elven Fruit",
+      "table_price": 3
+    },
+    "3117": {
+      "name": "Red Date",
+      "table_price": 15
+    },
+    "3118": {
+      "name": "Mushroom",
+      "table_price": 50
+    },
+    "3129": {
+      "name": "Medicated Grass",
+      "table_price": 42
+    },
+    "3130": {
+      "name": "Fancy Petal",
+      "table_price": 148
+    },
+    "3372": {
+      "name": "Withered Branch",
+      "table_price": 10
+    },
+    "4314": {
+      "name": "Frozen Grass",
+      "table_price": 2
+    },
+    "4315": {
+      "name": "Green Grass",
+      "table_price": 2
+    },
+    "4316": {
+      "name": "Sparkling Grass",
+      "table_price": 2
+    },
+    "4317": {
+      "name": "Thorny Thick Skin",
+      "table_price": 2
+    },
+    "4318": {
+      "name": "Frozen Squid Ink",
+      "table_price": 4
+    },
+    "4319": {
+      "name": "Flowery Snail Shell",
+      "table_price": 4
+    },
+    "4322": {
+      "name": "Sweet Smelling Flower",
+      "table_price": 7
+    },
+    "4325": {
+      "name": "Snowy Pig Tail",
+      "table_price": 10
+    },
+    "4328": {
+      "name": "Grass Tortoise Shell",
+      "table_price": 12
+    },
+    "4332": {
+      "name": "Black Wings",
+      "table_price": 15
+    },
+    "4396": {
+      "name": "Frozen Root",
+      "table_price": 2
+    },
+    "4397": {
+      "name": "Root",
+      "table_price": 2
+    },
+    "4398": {
+      "name": "Ancient Root",
+      "table_price": 2
+    },
+    "4399": {
+      "name": "White Squirt Bandana",
+      "table_price": 4
+    },
+    "4400": {
+      "name": "Green Scale",
+      "table_price": 7
+    },
+    "4401": {
+      "name": "Fresh Flower Petal",
+      "table_price": 9
+    },
+    "4402": {
+      "name": "White Squidy Cap",
+      "table_price": 9
+    },
+    "4404": {
+      "name": "Bee Antenna",
+      "table_price": 12
+    },
+    "4406": {
+      "name": "Fungus Spore",
+      "table_price": 14
+    },
+    "4408": {
+      "name": "Dark Tortoise Bones",
+      "table_price": 16
+    },
+    "4410": {
+      "name": "Short Goat Horn",
+      "table_price": 19
+    },
+    "4414": {
+      "name": "Black Scale",
+      "table_price": 21
+    },
+    "4483": {
+      "name": "Cactus Thorn",
+      "table_price": 7
+    },
+    "4484": {
+      "name": "Fat Squid Tentacle",
+      "table_price": 7
+    },
+    "4485": {
+      "name": "Bee Wing",
+      "table_price": 9
+    },
+    "4486": {
+      "name": "Camel Mane",
+      "table_price": 10
+    },
+    "4506": {
+      "name": "Melon Tuber",
+      "table_price": 2
+    },
+    "4508": {
+      "name": "Cacus Tuber",
+      "table_price": 9
     }
   }
 }

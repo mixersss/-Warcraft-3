@@ -80,17 +80,15 @@ class CohortCombatTests(unittest.TestCase):
             p.tick(104)
         self.assertEqual(len({p.target for p in policies}),60)
 
-    def test_excess_bots_do_not_join_reserved_monster(self):
+    def test_excess_bots_join_busy_monster_when_no_free_target_exists(self):
         c=Coordination();pairs=[self.policy(i,c,1) for i in range(3)]
         for w,p in pairs:p.tick(100)
-        self.assertEqual(sum(p.attacks for _,p in pairs),1)
-        winner=next(p for _,p in pairs if p.target)
-        winner.drop_target()
-        _,waiting=next((w,p) for w,p in pairs if p is not winner)
-        waiting.tick(104)
-        self.assertEqual(waiting.target,1000)
-        if waiting.attacks==0:waiting.tick(107)
-        self.assertEqual(waiting.attacks,1)
+        self.assertEqual(sum(p.attacks for _,p in pairs),3)
+        self.assertTrue(all(p.target==1000 for _,p in pairs))
+        self.assertTrue(all(p.shared_target for _,p in pairs[1:]))
+        for w,p in pairs:
+            w.entities[1000].values[1]=50;p.tick(104)
+            self.assertEqual(p.target,1000)
 
     def test_no_damage_target_is_released_and_blacklisted_instead_of_permanent_stop(self):
         c=Coordination();w,p=self.policy(0,c,2)

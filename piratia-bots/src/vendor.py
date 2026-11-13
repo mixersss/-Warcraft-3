@@ -18,7 +18,12 @@ class Vendor(Town):
   if not w.bag_ready or w.bag_disabled:return []
   protected=policy.market.protected(policy) if policy.market else set()
   for feature in (policy.career,policy.story):
-   if feature:protected.update(feature.needed_items())
+   if feature:
+    protected.update(feature.needed_items())
+    # A filled objective still needs its complete stack for delivery.
+    quest=getattr(feature,'quest',None)
+    if isinstance(quest,dict) and feature.active():
+     protected.update(n['id'] for n in quest.get('needs',[]) if n['kind']==1)
   if policy.adventure:
    task=policy.adventure.farm()
    if task and task[1]:protected.add(task[1])

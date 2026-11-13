@@ -18,6 +18,9 @@ def render_report(report):
            f"  Предложения NPC: {json.dumps(quest.get('last_offers',[]),ensure_ascii=False)}",
            f"  Переход: {travel.get('state','нет данных')}; город={travel.get('destination')}; этап={travel.get('dialogue_stage')}; прибытия={travel.get('confirmed_arrivals',0)}",
            f"  Меню телепортера: {json.dumps(travel.get('last_menu',[]),ensure_ascii=False)}"]
+    fight=report.get('hunt',{})
+    lines.append(f"  Бой: цель={fight.get('target_id')}; HP={fight.get('target_hp')}; совместная={fight.get('shared_target')}; без урона={fight.get('seconds_since_target_damage')}; смены без урона={fight.get('no_damage_retargets',0)}")
+    lines.append(f"  Версия: {report.get('version','не указана')}")
     lines.extend([f"  Продажа: {vendor.get('state','нет данных')}; запросы={vendor.get('sale_requests',0)}; подтверждено={vendor.get('confirmed_sales',0)}; тайм-ауты={vendor.get('confirmation_timeouts',0)}",f"  Предметы: {json.dumps(vendor.get('bag_items',[]),ensure_ascii=False)}"])
     return '\n'.join(lines)
 

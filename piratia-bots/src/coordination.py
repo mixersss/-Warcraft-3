@@ -33,16 +33,16 @@ class Coordination:
         grant=self.assistants.get((key,owner));holder=self.targets.get(key)
         return bool(grant and holder and grant[0]==holder[0] and grant[1]>now)
 
-    def available(self,owner,key,now):
+    def available(self,owner,key,now,shared=False):
         with self.lock:
             self._expire(now)
-            return key not in self.targets or self.targets[key][0]==owner or self._assisting(owner,key,now)
+            return shared or key not in self.targets or self.targets[key][0]==owner or self._assisting(owner,key,now)
 
-    def claim(self,owner,key,now):
+    def claim(self,owner,key,now,shared=False):
         with self.lock:
             self._expire(now)
             if key in self.targets and self.targets[key][0]!=owner:
-                return self._assisting(owner,key,now)
+                return shared or self._assisting(owner,key,now)
             for previous,(holder,_) in list(self.targets.items()):
                 if holder==owner and previous!=key:self.targets.pop(previous,None)
             self.targets[key]=(owner,now+8)

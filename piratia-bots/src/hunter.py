@@ -52,6 +52,7 @@ class Hunter:
         self.move_endpoint=None;self.move_packet=None
         self.assist_target=None;self.helper=None
         self.target = None
+        self.shared_target = False
         self.opportunity_model=None;self.opportunity_targets=0;self.last_target_at=None
         self.next_action = 0
         self.mode = 'observe'
@@ -141,6 +142,7 @@ class Hunter:
             if len(self.blacklist)>256:self.blacklist.pop(next(iter(self.blacklist)))
         if self.coordination:self.coordination.release(self.owner)
         self.target=None
+        self.shared_target=False
         self.opportunity_model=None
         self.target_key=None
         self.combat_since=None
@@ -162,7 +164,18 @@ class Hunter:
         base=NORMAL_ATTACKS.get(self.world.default_skill,min(100,self.world.own.values.get(ATTACK_DISTANCE,100)))
         return max(40,base+self.world.own.radius+target.radius-20)
 
-    def approach(self,target,reach,now):
+    def quest_models(self):
+        """Only actual active kill/drop objectives may share local target leases."""
+        models=set()
+        if self.adventure and self.adventure.farm():
+            models.update(self.adventure.desired_models())
+        for feature in (self.career,self.story):
+            if feature:
+                desired=feature.desired_models()
+                if isinstance(desired,(set,list,tuple)):models.update(desired)
+        return models
+
+    def approach(self,target,reach,now,shared=False):
         center=self.world.position(now,target.identity)
         radius=max(70,reach-65)
         options=[]
@@ -173,6 +186,14 @@ class Hunter:
             if (point and distance(point,center)<=reach-20
                     and self.available_spot(point,now)):
                 options.append(point)
+        # Prefer free endpoints, but nearby players must not block every attack
+        # position for a shared quest mob. Geometry/path checks still apply.
+        if not options and (shared or self.shared_target or target.model in self.quest_models()):
+            for i in range(12):
+                angle=self.approach_angle+i*math.tau/12
+                point=self.nav.nearest((round(center[0]+math.cos(angle)*radius),
+                                        round(center[1]+math.sin(angle)*radius)),1)
+                if point and distance(point,center)<=reach-20:options.append(point)
         for point in sorted(set(options),key=lambda pt:distance(self.position(now),pt)):
             if self.nav.path(self.position(now),point):return point
         return None
@@ -631,6 +652,10 @@ class Hunter:
             if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
                 task = self.adventure.farm() if self.adventure else None
                 needed = self.equipment.loot_needs() if self.equipment else set()
+                competitive={task[1]} if task and task[1] else set()
+                if self.career:competitive.update(self.career.needed_items())
+                if self.story:competitive.update(self.story.needed_items())
+                self.loot.competitive=competitive
                 if task and task[1]:needed.add(task[1])
                 if self.career:needed.update(self.career.needed_items())
                 if self.story:needed.update(self.story.needed_items())
@@ -642,7 +667,7 @@ class Hunter:
                     free=(self.world.bag_capacity or 0)-len(self.world.bag)
                     if free>4:needed.update(item[0] for item in self.world.items.values() if item[0] in self.chests.catalog.names)
                 if self.loot.tick(now,self,needed):
-                    self.change('подбор своего лута')
+                    self.change('подбор нужного лута; результат подтверждает сервер')
                     return
         if self.travel and (not self.activity.hunting(now) or self.mandatory_work() or self.travel.starter_trip()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
@@ -663,6 +688,7 @@ class Hunter:
             self.clear_zone()
             self.change(self.adventure.reason)
             return
+        shared_models=self.quest_models()
         target = self.world.entities.get(self.target)
         if self.target and (not target or not target.alive):
             if target and target.values.get(HP,1)<=0:self.kills+=1
@@ -683,7 +709,7 @@ class Hunter:
         if target:
             key=(self.world.map,target.identity,target.handle)
             if (not self.eligible(target,now) or key!=self.target_key
-                    or (self.coordination and not self.coordination.claim(self.owner,key,now))):
+                    or (self.coordination and not self.coordination.claim(self.owner,key,now,shared=self.shared_target or target.model in shared_models))):
                 self.drop_target(now,avoid=True)
                 target=None
             else:
@@ -709,27 +735,34 @@ class Hunter:
                         if e.identity not in known and self.eligible(e,now,models)]
                 extras.sort(key=lambda e:self.target_score(e,now))
                 candidates.extend(extras)
-            for candidate in candidates:
-                key=(self.world.map,candidate.identity,candidate.handle)
-                if self.coordination and not self.coordination.available(self.owner,key,now):
-                    self.busy_targets+=1
-                    continue
-                reach=self.attack_reach(candidate)
-                in_range=distance(self.position(now),self.world.position(now,candidate.identity))<=reach
-                if not in_range and self.approach(candidate,reach,now) is None:continue
-                if self.coordination and not self.coordination.claim(self.owner,key,now):continue
-                target=candidate
-                if candidate.model not in self.planned_models():
-                    self.opportunity_model=candidate.model;self.opportunity_targets+=1
-                self.last_target_at=now
-                self.target,self.target_since=target.identity,now
-                self.target_key=key
-                self.last_target_hp=target.values.get(HP)
-                self.last_damage_at=now
-                self.combat_since=None
-                self.approach_probe=False
-                self.clear_zone()
-                break
+            # Prefer unclaimed reachable mobs. If every viable target is busy,
+            # join a real fight instead of waiting for another bot's lease.
+            # Active quest mobs can be shared on the first pass.
+            for join_busy in (False,True):
+                for candidate in candidates:
+                    shared=join_busy or candidate.model in shared_models
+                    key=(self.world.map,candidate.identity,candidate.handle)
+                    if self.coordination and not self.coordination.available(self.owner,key,now,shared=shared):
+                        self.busy_targets+=1
+                        continue
+                    reach=self.attack_reach(candidate)
+                    in_range=distance(self.position(now),self.world.position(now,candidate.identity))<=reach
+                    if not in_range and self.approach(candidate,reach,now,shared=shared) is None:continue
+                    if self.coordination and not self.coordination.claim(self.owner,key,now,shared=shared):continue
+                    target=candidate
+                    self.shared_target=shared
+                    if candidate.model not in self.planned_models():
+                        self.opportunity_model=candidate.model;self.opportunity_targets+=1
+                    self.last_target_at=now
+                    self.target,self.target_since=target.identity,now
+                    self.target_key=key
+                    self.last_target_hp=target.values.get(HP)
+                    self.last_damage_at=now
+                    self.combat_since=None
+                    self.approach_probe=False
+                    self.clear_zone()
+                    break
+                if target:break
         if target:
             if self.fight_running(target,now):
                 self.active_fight_waits+=1
@@ -824,7 +857,7 @@ class Hunter:
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
                                'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
-                'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
+                'shared_target':self.shared_target,'target_hp':self.last_target_hp,'seconds_since_target_damage':max(0,self.clock-self.last_damage_at) if self.target else None,'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}

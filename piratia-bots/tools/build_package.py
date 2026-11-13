@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-31'
-NAME = 'Piratia-Auto-Bots-Alpha31'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-32'
+NAME = 'Piratia-Auto-Bots-Alpha32'
 
 
 def main():
@@ -32,7 +32,12 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Remove artificial visitor admission limits for ordinary NPC buying/selling; verified200 independent bot sales to same NPC in simulation; live revalidation pending',
+        'status': 'Expand audited common junk sale catalog; share active quest mobs and join busy targets when no reachable free target remains; verified post-promotion development; live revalidation pending',
+        'shared_active_quest_targets': True,
+        'ordinary_busy_target_fallback': True,
+        'competitive_active_quest_drop_pickup': 'native requests only; server ownership and inventory confirmation required; bounded retries',
+        'post_first_profession_development_regression_passed': True,
+        'all_life_professions_and_fast_travel_routes_implemented': False,
         'first_profession_priority_level': 9,
         'farm_until_real_fare_available': True,
         'sell_safe_junk_before_class_letter_if_bag_full': True,
@@ -84,11 +89,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 358,
-        'full_python_suite_total': 366,
-        'full_python_suite_passed': 366,
+        'pure_python_tests_passed': 368,
+        'full_python_suite_total': 376,
+        'full_python_suite_passed': 376,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '366 passed in Alpha31 including 8 local socket integration tests',
+        'last_full_network_regression': '376 passed in Alpha32 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',
@@ -183,7 +188,7 @@ def main():
         'starter_character_levels': [1,2,3],
         'starter_map': 'garner',
         'native_damage_prefix_verified': True,
-        'npc_junk_whitelist_count': 38,
+        'npc_junk_whitelist_count': 89,
         'npc_sale_requires_bag_and_gold': True,
         'spawn_counts_modified': False,
         'beginner_farm_point_cap_per_species': 64,
