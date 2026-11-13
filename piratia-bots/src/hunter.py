@@ -116,6 +116,8 @@ class Hunter:
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
         self.refresh_class_intent=None
+        self.inventory_blocked=False
+        self.inventory_blocker=None
         self.raising_travel_funds=False
         from sitting import Sitting
         self.sitting=Sitting(world)
@@ -400,6 +402,7 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        if self.inventory_blocked and key in ('adventure','career','story','market','town'):return False
         if self.raising_travel_funds and key in ('adventure','career','story','market','town'):return False
         if self.helper and self.helper.source is not None and not self.mandatory_work():return False
         target=self.world.entities.get(self.target)
@@ -409,7 +412,7 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()):return False
-        if not feature or not self.task_budget.allow(key,now):return False
+        if not feature or (key!='vendor' and not self.task_budget.allow(key,now)):return False
         point=None
         if self.coordination and feature and not getattr(feature,'context',None):
             if key=='adventure' and not feature.farm():point=feature.npcs.get(feature.choose_destination())
@@ -418,9 +421,11 @@ class Hunter:
             return False
         used=callback()
         if not used and point and self.coordination:self.coordination.leave_visit(self.owner)
-        allowed=self.task_budget.track(key,feature,used,self.position(now),now)
+        allowed=self.task_budget.track(key,feature,used,self.position(now),now,progress_only=key=='vendor')
         if used and not allowed:
-            if key=='vendor':feature.finish_sale(now,180)
+            if key=='vendor':
+                self.task_budget.paused.pop(key,None)
+                feature.finish_sale(now)
             elif key=='town':feature.finish(now,180)
             elif key=='market':feature.next_scan=now+180
             elif hasattr(feature,'next_visit'):feature.next_visit=now+180
@@ -599,23 +604,26 @@ class Hunter:
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         first_profession = bool(self.adventure and self.adventure.profession_priority())
-        if (first_profession and not self.target and self.world.bag_ready and not self.world.bag_disabled
-                and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)<1):
-            # Native class-referral acceptance needs one slot for its letter.
-            # Resolve inventory before opening another Senna dialogue.
+        self.inventory_blocked=bool(first_profession and self.world.bag_ready and not self.world.bag_disabled
+                and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)<1)
+        self.inventory_blocker=('нет места в сумке; завершает текущий бой перед продажей'
+                                if self.inventory_blocked and self.target else None)
+        if self.inventory_blocked and not self.target:
+            # Inventory relief precedes another NPC exchange, but a blocked
+            # seller must not freeze active kill quests or ordinary XP farming.
             if self.adventure.context:
                 self.adventure.pending=None;self.adventure.settle(now,3)
             if self.vendor and self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,False),now):
-                self.change('освобождает место для квестового письма: продаёт обычные трофеи');return
-            self.change('нет места для квестового письма; '+(self.vendor.reason if self.vendor else 'нет обработчика продажи'))
-            self.next_action=now+1
-            return
+                self.change('освобождает сумку: продаёт обычные трофеи');return
+            self.inventory_blocker='нет места в сумке; '+(self.vendor.reason if self.vendor else 'нет обработчика продажи')
+            # Keep hunting when the seller cannot make progress. No quest
+            # NPC acceptance or optional purchases until a slot is really free.
         self.raising_travel_funds=bool(first_profession and self.travel
             and self.travel.destination(self)!=self.world.map and self.travel.needs_funds())
         if self.raising_travel_funds:
             self.travel.reason='зарабатывает 500G на переход к наставнику'
             self.travel.next_trip=0
-        if first_profession and not self.raising_travel_funds and not self.target and not self.adventure.farm():
+        if first_profession and not self.inventory_blocked and not self.raising_travel_funds and not self.target and not self.adventure.farm():
             # No new shopping, help, ordinary loot or ordinary combat while the
             # next profession step is a journal/NPC visit. Existing paid market
             # transactions and medical recovery were serviced above.
@@ -852,7 +860,7 @@ class Hunter:
 
     def summary(self):
         return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
-                'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
+                'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
@@ -1087,7 +1095,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             try:
                 if policy.vendor.observe(command,payload,now,client.wire.send):return
             except ProtocolError:
-                policy.vendor.finish_sale(now,300);report.result['vendor_decode']='unsupported'
+                policy.vendor.finish_sale(now);report.result['vendor_decode']='unsupported'
         if policy.travel and command==802 and policy.travel.context:
             if policy.travel.observe(command,payload,now):return
         if command in (801,802,803,805,806,807,808,822,827,828,830,831,832):
@@ -1109,7 +1117,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
-            if policy.vendor:policy.vendor.home=world.own.position;policy.vendor.finish_sale(now,120)
+            if policy.vendor:policy.vendor.home=world.own.position;policy.vendor.finish_sale(now)
             if policy.market:
                 policy.market.finish(now);policy.market.context=None;policy.market.pending=None
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav

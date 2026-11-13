@@ -1,5 +1,6 @@
 """Create dedicated local accounts and characters, then run headless connection tests."""
 import argparse
+import hashlib
 import concurrent.futures
 import json
 import os
@@ -88,8 +89,9 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha33'
+    report.result['version'] = 'AutoAccountsAlpha34'
     report.result['bot_index'] = index
+    report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
     report.result['reconnect_attempts']=(history[-1].get('recovery_number',len(history)) if history else 0)
     started=time.monotonic()
@@ -237,7 +239,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 33).')
+    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 34).')
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
     print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
@@ -245,7 +247,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha33'
+    setup_report.result['version'] = 'AutoAccountsAlpha34'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

@@ -46,6 +46,7 @@ class FullBagTests(unittest.TestCase):
   before=dict(w.bag)
   for now in (100,101,102):p.tick(now)
   self.assertEqual(w.bag,before);self.assertEqual(q.requests,0)
-  self.assertIn('нет места',p.mode)
+  self.assertIn('нет места',p.inventory_blocker)
+  self.assertNotIn('нет места',p.mode)
 
 if __name__=='__main__':unittest.main()

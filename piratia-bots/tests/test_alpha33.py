@@ -44,11 +44,11 @@ class BroadJunkTests(unittest.TestCase):
         p.adventure.journal.clear()
         self.assertEqual(v.choices(p),[(0,4500,3)])
 
-    def test_missing_sale_confirmation_keeps_new_material_and_backs_off(self):
+    def test_missing_sale_confirmation_keeps_new_material(self):
         f=base.VendorTests();w,v,p=f.make();w.bag={0:f.item(4500,3)}
         w.entities[77]=dataclasses.replace(w.own,identity=77,control=2)
         v.context=77,'ready',200;v.tick(100,p,True);v.tick(113,p,True)
         self.assertEqual(w.bag[0].count,3);self.assertEqual(v.confirmed_sales,0)
-        self.assertEqual(v.sale_timeouts,1);self.assertGreater(v.next_sale,113)
+        self.assertEqual(v.sale_timeouts,1);self.assertLessEqual(v.next_sale,113)
 
 if __name__=='__main__':unittest.main()

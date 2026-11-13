@@ -37,14 +37,14 @@ class Vendor(Town):
    count=min(99,item.count)
    if count>0:choices.append((slot,item.identity,count))
   return choices
- def finish_sale(self,now,delay=120):
-  self.context=None;self.pending=None;self.sale_target=None;self.sale_slot=None;self.batch=0;self.next_sale=now+delay
+ def finish_sale(self,now):
+  self.context=None;self.pending=None;self.sale_target=None;self.sale_slot=None;self.batch=0;self.next_sale=now
  def observe(self,command,payload,now,send):
   if not self.context:return False
   npc,stage,deadline=self.context
   if command==802 and stage=='talk':
    result=super().observe(command,payload,now,send)
-   if not self.context:self.finish_sale(now,300)
+   if not self.context:self.finish_sale(now)
    return result
   if command==805 and stage=='shop':
    source,_=trade_page(payload)
@@ -59,11 +59,11 @@ class Vendor(Town):
    if after<before and w.own.values.get(8,cash)>cash:
     self.confirmed_sales+=1;self.pending=None;self.batch+=1
     self.context=self.context[0],'ready',now+60
-   elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now,300)
+   elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now)
    return True
   if self.context:
    npc,stage,deadline=self.context
-   if now>=deadline:self.sale_timeouts+=1;self.finish_sale(now,300);return False
+   if now>=deadline:self.sale_timeouts+=1;self.finish_sale(now);return False
    if stage=='ready':
     choices=self.choices(policy)
     actor=w.entities.get(npc)
@@ -75,13 +75,11 @@ class Vendor(Town):
    return True
   if not safe or dialogue_busy:
    self.reason='ожидает безопасного завершения боя или другого диалога';return False
-  if now<self.next_sale:
-   self.reason='пауза до повторной продажи: '+str(max(0,round(self.next_sale-now)))+' сек.';return False
   choices=self.choices(policy)
   if not choices:
-   self.reason='нет разрешённых простых трофеев для продажи';self.next_sale=now+60;return False
+   self.reason='нет разрешённых простых трофеев для продажи';return False
   shops=self.life.services['shops'].get(w.map,[])
-  if not shops:self.next_sale=now+300;return False
+  if not shops:self.reason='нет известного торговца на текущей карте';return False
   if not self.sale_target:self.sale_target=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
   point=self.sale_target['position']
   self.reason='продаёт лишние обычные трофеи торговцу'
@@ -90,5 +88,5 @@ class Vendor(Town):
    policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True
   goal=policy.nav.nearest(point,6)
   if goal and policy.move_to(goal,now):return True
-  self.finish_sale(now,300);return False
+  self.finish_sale(now);return False
  def summary(self):return {'sale_requests':self.sales,'confirmed_sales':self.confirmed_sales,'confirmation_timeouts':self.sale_timeouts,'state':self.reason or 'ожидание лишних трофеев','pending_sale':bool(self.pending),'free_bag_slots':max(0,(self.world.bag_capacity or 0)-len(self.world.bag)), 'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),'bag_items':[{'slot':slot,'id':item.identity,'count':item.count,'plain':not(item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes)),'junk_whitelisted':item.identity in self.junk} for slot,item in sorted(self.world.bag.items())]}

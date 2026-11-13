@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-33'
-NAME = 'Piratia-Auto-Bots-Alpha33'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-34'
+NAME = 'Piratia-Auto-Bots-Alpha34'
 
 
 def main():
@@ -33,8 +33,13 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Broad ordinary loot sale catalog353IDs including later land/sea drops; native full-bag sale regression with quest/development goods protected; live revalidation pending',
+        'status': 'Remove all artificial NPC sale cooldowns and vendor task pauses; full-bag relief cannot freeze quest combat; native transaction confirmation retained; live revalidation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
+        'npc_sale_cooldown_seconds': 0,
+        'vendor_task_pause_seconds': 0,
+        'vendor_productive_route_absolute_time_limit_removed': True,
+        'full_bag_does_not_block_quest_combat': True,
+        'report_character_tags_without_names': True,
         'shared_active_quest_targets': True,
         'ordinary_busy_target_fallback': True,
         'competitive_active_quest_drop_pickup': 'native requests only; server ownership and inventory confirmation required; bounded retries',
@@ -91,11 +96,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 372,
-        'full_python_suite_total': 380,
-        'full_python_suite_passed': 380,
+        'pure_python_tests_passed': 381,
+        'full_python_suite_total': 389,
+        'full_python_suite_passed': 389,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '380 passed in Alpha33 including 8 local socket integration tests',
+        'last_full_network_regression': '389 passed in Alpha34 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

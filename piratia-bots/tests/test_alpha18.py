@@ -58,9 +58,9 @@ class VendorTests(unittest.TestCase):
   v.context=77,'ready',60;v.tick(1,p,True);p.send.assert_called_once_with(308,sell_request(77,0,30));self.assertEqual(v.confirmed_sales,0)
   w.bag.clear();v.tick(2,p,True);self.assertEqual(v.confirmed_sales,0)
   w.own.values[8]=75;v.tick(3,p,True);self.assertEqual(v.confirmed_sales,1)
- def test_refused_sale_backs_off_without_deleting_items(self):
+ def test_missing_sale_confirmation_never_deletes_items(self):
   w,v,p=self.make();w.bag={0:self.item(1613,30)};v.context=77,'confirmation',10;v.pending=0,1613,30,50,10
-  v.tick(11,p,True);self.assertEqual(w.bag[0].count,30);self.assertEqual(v.sale_timeouts,1);self.assertGreater(v.next_sale,11)
+  v.tick(11,p,True);self.assertEqual(w.bag[0].count,30);self.assertEqual(v.sale_timeouts,1);self.assertLessEqual(v.next_sale,11)
  def test_junk_whitelist_excludes_expensive_and_rare_names(self):
   w,v,p=self.make()
   for i in (1612,1619,1621,3457,885,1012,3400,3296):self.assertNotIn(i,v.junk)
