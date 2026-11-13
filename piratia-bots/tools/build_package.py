@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-28'
-NAME = 'Piratia-Auto-Bots-Alpha28'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-29'
+NAME = 'Piratia-Auto-Bots-Alpha29'
 
 
 def main():
@@ -32,9 +32,12 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Fix live-report paid-travel starvation; reconcile pending quest commits against authoritative full journal; preserve existing characters; live Windows revalidation pending',
+        'status': 'Resolve confirmed full-inventory class-referral deadlock by selling safe plain junk before NPC quest acceptance; live Windows revalidation pending',
         'first_profession_priority_level': 9,
         'farm_until_real_fare_available': True,
+        'sell_safe_junk_before_class_letter_if_bag_full': True,
+        'small_junk_stacks_can_be_sold_when_less_than_two_free_slots': True,
+        'quest_ingredients_and_modified_items_preserved': True,
         'commit_full_journal_resync_after_seconds': 2,
         'unchanged_journal_is_not_success': True,
         'dead_target_released_before_npc_travel': True,
@@ -72,11 +75,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 348,
-        'full_python_suite_total': 356,
-        'full_python_suite_passed': 356,
+        'pure_python_tests_passed': 352,
+        'full_python_suite_total': 360,
+        'full_python_suite_passed': 360,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '356 passed in Alpha28 including 8 local socket integration tests',
+        'last_full_network_regression': '360 passed in Alpha29 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

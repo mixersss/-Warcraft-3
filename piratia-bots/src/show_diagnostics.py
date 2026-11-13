@@ -10,6 +10,7 @@ def render_report(report):
     role=report.get('class_path',{})
     lines=[f"Бот {report.get('bot_index','?')}: класс {role.get('label','?')}",
            f"  Уровень={quest.get('level','?')}; золото={quest.get('gold','?')}; состояние={report.get('hunt',{}).get('state','?')}",
+           f"  Сумка: {quest.get('bag_used','?')}/{quest.get('bag_capacity','?')}; свободно={quest.get('free_bag_slots','?')}",
            f"  Миссии: {json.dumps(quest.get('active_missions',{}),ensure_ascii=False)}; принятия={quest.get('accepted_confirmed',0)}; сдачи={quest.get('deliveries_confirmed',0)}",
            f"  Квест: {quest.get('state','нет данных')}; NPC={quest.get('destination_npc','?')}; этап={quest.get('dialogue_stage')}",
            f"  Причина: {quest.get('last_problem') or 'не указана'}; журнал={quest.get('journal_received')}; расстояние={quest.get('npc_distance')}",

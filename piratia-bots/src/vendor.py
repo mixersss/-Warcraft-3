@@ -22,11 +22,15 @@ class Vendor(Town):
   if policy.adventure:
    task=policy.adventure.farm()
    if task and task[1]:protected.add(task[1])
+   for identity in policy.adventure.journal:
+    objective=policy.adventure.grind.get(identity)
+    if objective and objective[1]:protected.add(objective[1])
+  needs_space=w.bag_capacity is not None and w.bag_capacity-len(w.bag)<2
   choices=[];reserved={}
   for slot,item in sorted(w.bag.items()):
    if item.identity not in self.junk or item.identity in protected or not item.valid:continue
    if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
-   keep=max(0,5-reserved.get(item.identity,0));reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
+   keep=max(0,(0 if needs_space else 5)-reserved.get(item.identity,0));reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
    count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))
   return choices

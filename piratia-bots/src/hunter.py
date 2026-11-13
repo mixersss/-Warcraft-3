@@ -578,6 +578,17 @@ class Hunter:
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         first_profession = bool(self.adventure and self.adventure.profession_priority())
+        if (first_profession and not self.target and self.world.bag_ready and not self.world.bag_disabled
+                and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)<1):
+            # Native class-referral acceptance needs one slot for its letter.
+            # Resolve inventory before opening another Senna dialogue.
+            if self.adventure.context:
+                self.adventure.pending=None;self.adventure.settle(now,3)
+            if self.vendor and self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,False),now):
+                self.change('освобождает место для квестового письма: продаёт обычные трофеи');return
+            self.change('нет места для квестового письма; ждёт безопасной продажи лишних трофеев')
+            self.next_action=now+1
+            return
         self.raising_travel_funds=bool(first_profession and self.travel
             and self.travel.destination(self)!=self.world.map and self.travel.needs_funds())
         if self.raising_travel_funds:

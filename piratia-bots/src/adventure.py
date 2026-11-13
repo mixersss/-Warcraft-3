@@ -442,6 +442,8 @@ class Adventure:
                 'last_objectives':[list(n) for n in self.last_needs],
                 'destination_npc':self.choose_destination(),'npc_seen':self.npc_seen,
                 'level':self.world.own.values.get(0),'gold':self.world.own.values.get(8),
+                'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),
+                'free_bag_slots':max(0,self.world.bag_capacity-len(self.world.bag)) if self.world.bag_capacity is not None else None,
                 'npc_distance':self.npc_distance,'dialogue_stage':self.context[2] if self.context else None,
                 'expected_promotion':self.role['promotion'],'last_problem':self.last_problem,
                 'last_response_command':self.last_response,'last_offers':self.last_offers,
