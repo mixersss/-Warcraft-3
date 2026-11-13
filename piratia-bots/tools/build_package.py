@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-25'
-NAME = 'Piratia-Auto-Bots-Alpha25'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-26'
+NAME = 'Piratia-Auto-Bots-Alpha26'
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
             info = zipfile.ZipInfo(f'{NAME}/{source.relative_to(ROOT).as_posix()}',
-                                   date_time=(2026, 11, 11, 0, 0, 0))
+                                   date_time=(2026, 11, 13, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             data = source.read_bytes()
             if source.suffix == '.cmd':
@@ -31,7 +31,16 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Fix observed zero-node planning starvation, safe visible alternatives and no-XP exploration; live Windows validation pending',
+        'status': 'First-profession priority at level9, delayed journal recovery, random new compatible class intents and existing-population guard; live Windows validation pending',
+        'first_profession_priority_level': 9,
+        'dead_target_released_before_npc_travel': True,
+        'missing_journal_retries_seconds': 30,
+        'new_class_selection': 'random compatible target, saved once; existing registry unchanged',
+        'requires_saved_population_by_default': True,
+        'explicit_new_population_flag': '--allow-new-bots',
+        'account_state_format_changed': False,
+        'server_rates_modified': False,
+        'live_x2_leveling_rate_verified': False,
         'native_windows_server_tested': False,
         'planning_budget_clock': 'thread CPU, started at first search work',
         'minimum_search_pops_if_budget_allows': 32,
@@ -55,12 +64,12 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 322,
-        'full_python_suite_total': 330,
-        'full_python_suite_passed': None,
-        'socket_tests_not_rerun_this_release': 8,
-        'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
-        'current_network_regression': '8 socket tests not rerun for Alpha25; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
+        'pure_python_tests_passed': 335,
+        'full_python_suite_total': 343,
+        'full_python_suite_passed': 343,
+        'socket_tests_not_rerun_this_release': 0,
+        'last_full_network_regression': '343 passed in Alpha26 including 8 local socket integration tests',
+        'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},

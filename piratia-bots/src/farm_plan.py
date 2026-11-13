@@ -118,7 +118,9 @@ class HuntLearning:
     safety=(wins+1)/(wins+losses+1)
     base*=safety/(1+row.get('hp_cost',0)/max(1,wins+losses))
     if best_rate>0 and wins>=2:
-     rate=row.get('xp',0)/max(1,row.get('seconds',0));base*=.3+min(1.7,rate/best_rate)
+     # Real XP/time must outweigh modest level/HP/personality preferences.
+     # A safe species earning ten times less XP is not an equivalent farm.
+     rate=row.get('xp',0)/max(1,row.get('seconds',0));base*=.15+4*min(1,rate/best_rate)
     if row.get('level_ups',0):base*=1.15
     if wins>=2 and not row.get('xp') and not row.get('level_ups'):base*=.3
     if row.get('dry_wins',0)>=2:base*=.2

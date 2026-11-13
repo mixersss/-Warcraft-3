@@ -354,7 +354,14 @@ class Hunter:
         # kill/drop task may override the current earned level's farming tier.
         if self.adventure and self.adventure.farm():
             models=self.adventure.desired_models()
-            if isinstance(models,(set,list,tuple)) and models:return set(models)
+            if isinstance(models,(set,list,tuple)) and models:
+                tutorial=self.adventure.active() in self.adventure.tutorial_ids
+                # Optional starter chores must not pin a growing character to
+                # level-three mobs for the whole pre-profession progression.
+                useful=not tutorial or not self.region or any(
+                    self.region['farms'].get(str(m),{}).get('level',0)>=self.world.own.values.get(LV,1)-3
+                    for m in models)
+                if useful:return set(models)
         return set(self.farm_models())
 
     def refresh_farm_plan(self):
@@ -493,6 +500,16 @@ class Hunter:
             return
         if self.learning.waiting_reward(now):
             self.change('проверяет опыт после боя');self.next_action=now+.15;return
+        # Clear a finished fight before computing `safe` for NPC travel. Doing
+        # this after errands caused a dead target to deny every trip, followed
+        # immediately by another ordinary fight in the same decision.
+        previous_target = self.world.entities.get(self.target)
+        if self.target and (not previous_target or not previous_target.alive):
+            if previous_target and previous_target.values.get(HP,1)<=0:self.kills+=1
+            self.drop_target()
+        if self.adventure and self.adventure.prepare_priority():
+            self.task_budget.paused.pop('adventure',None)
+            self.task_budget.rows.pop('adventure',None)
         before_flush=self.flushed_actions
         if self.flush_action(now):
             if self.pending_action:self.change('ожидание завершения предыдущего действия')
@@ -509,7 +526,8 @@ class Hunter:
             return
         if not self.resting and self.sitting.tick(now,self,False):
             self.change('встаёт перед продолжением дел');return
-        if hp / maximum <= .35:
+        profession_trip = bool(self.adventure and self.adventure.profession_priority() and not self.adventure.farm())
+        if hp / maximum <= .35 or (profession_trip and not self.target and hp / maximum <= .55):
             if not self.resting:
                 self.cancel_pending = True
             self.resting = True
@@ -555,6 +573,24 @@ class Hunter:
         safe=not self.target and not self.resting and hp/maximum>.55
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
+        first_profession = bool(self.adventure and self.adventure.profession_priority())
+        if first_profession and not self.target and not self.adventure.farm():
+            # No new shopping, help, ordinary loot or ordinary combat while the
+            # next profession step is a journal/NPC visit. Existing paid market
+            # transactions and medical recovery were serviced above.
+            if self.travel and self.travel.tick(now,self,safe,market_dialogue):
+                self.clear_zone();self.change(self.travel.reason);return
+            if not market_dialogue or self.adventure.context:
+                if self.task('adventure',self.adventure,lambda:self.adventure.tick(now,self),now):
+                    self.clear_zone();self.change(self.adventure.reason);return
+            else:
+                # Finish an exchange already in flight; do not start a new one.
+                for feature in (self.town,self.story,self.career,self.vendor):
+                    if feature and getattr(feature,'context',None):
+                        feature.tick(now,self,safe,False)
+            self.change('первая профессия: '+self.adventure.reason)
+            self.next_action=now+.5
+            return
         if self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
         if not loot_dialogue:

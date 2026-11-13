@@ -181,7 +181,7 @@ class RegionalTests(unittest.TestCase):
     def test_thirty_new_roles_cover_three_cities_with_compatible_jobs(self):
         from collections import Counter
         with tempfile.TemporaryDirectory() as tmp:
-            store=RoleStore(Path(tmp)/'roles.json')
+            store=RoleStore(Path(tmp)/'roles.json',rng=__import__('random').Random(0))
             roles=[store.resolve(f'Bot{i:08x}',i%4+1,0) for i in range(30)]
             cities=Counter(birthplace_for(r['first_job']) for r in roles)
             self.assertEqual(len(cities),3)

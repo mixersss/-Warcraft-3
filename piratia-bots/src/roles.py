@@ -1,6 +1,7 @@
 """Persistent per-character class intent, constrained by native race/job compatibility."""
 import json
 import os
+import random
 import threading
 from pathlib import Path
 from population import ALLOWED
@@ -13,8 +14,9 @@ LABELS = {8:'чемпион',9:'крестоносец',12:'стрелок',13:'
 
 
 class RoleStore:
-    def __init__(self, path):
+    def __init__(self, path, rng=None):
         self.path = Path(path)
+        self.rng = rng if rng is not None else random.SystemRandom()
 
     def resolve(self, character, body, actual_job):
         if body not in ALLOWED or actual_job is None:
@@ -40,8 +42,7 @@ class RoleStore:
                 allowed = [job for job in ALLOWED[body] if actual_job in (0,FIRST_JOB[job],job)]
                 if not allowed:
                     raise ProtocolError('Для существующей профессии нет настроенного пути развития.')
-                counts = {job:sum(p['target_job']==job for p in records.values()) for job in allowed}
-                target = min(allowed,key=lambda job:(counts[job]/(100 if job==8 else 60),job))
+                target = self.rng.choice(allowed)
                 records[character] = {'body':body,'target_job':target}
                 self.path.parent.mkdir(parents=True,exist_ok=True)
                 temporary = self.path.with_suffix('.tmp')

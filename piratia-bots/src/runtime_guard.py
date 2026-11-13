@@ -20,6 +20,15 @@ def inspect_data(path):
     return {'saved_state':True,'saved_bots':len(value['bots'])}
 
 
+def require_population(path,count,allow_new=False):
+    status=inspect_data(path)
+    if not allow_new and (not status['saved_state'] or status['saved_bots']<count):
+        raise RuntimeError('Текущие боты не найдены в полном количестве. Верни прежнюю папку data '
+                           'или выбери --count не больше сохранённого числа. Новые аккаунты не созданы. '
+                           'Только для намеренного создания новых ботов: --allow-new-bots.')
+    return status
+
+
 class SessionGuard:
     """One new launcher per Windows session/Gate port, even in copied folders."""
     def __init__(self,port):

@@ -84,7 +84,7 @@ class PlanIntegrationTests(unittest.TestCase):
    travel=CityTravel(w,Mock(),1,role(first));self.assertEqual(travel.destination(p),city)
  def test_mandatory_class_objective_is_not_replaced_by_adaptive_probe(self):
   w,p=self.make();w.own.values.update({0:10,4:0});p.clock=100;p.activity.force_until=500
-  p.adventure=SimpleNamespace(farm=lambda:(237,None),desired_models=lambda:{237})
+  p.adventure=SimpleNamespace(farm=lambda:(237,None),desired_models=lambda:{237},active=lambda:62,tutorial_ids={704})
   self.assertTrue(p.mandatory_work());self.assertEqual(p.planned_models(),{237})
 
 class ContactTests(unittest.TestCase):

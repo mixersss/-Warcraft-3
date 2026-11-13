@@ -134,6 +134,7 @@ class Adventure:
         self.last_needs = []
         self.start_job = world.own.values.get(4)
         self.reason = 'чтение журнала заданий'
+        self.priority_started = False
 
     def observe(self, command, payload):
         r = Reader(payload)
@@ -171,6 +172,19 @@ class Adventure:
 
     def profession_priority(self):
         return self.world.own.values.get(4)==0 and self.world.own.values.get(0,1)>=9
+
+    def prepare_priority(self):
+        if not self.profession_priority() or self.priority_started:
+            return False
+        self.priority_started = True
+        # A tutorial delay or an unfinished tutorial dialogue must not postpone
+        # the first profession. Journal notifications remain authoritative.
+        if self.context and self.context[3] != self.role['promotion']:
+            self.context = self.pending = None
+            self.events.clear()
+        self.next_visit = self.next_log = 0
+        self.subvisit = None
+        return True
 
     def active(self):
         profession=[identity for identity in self.destinations
@@ -303,6 +317,7 @@ class Adventure:
 
     def tick(self, now, policy):
         if self.started is None: self.started = now
+        self.prepare_priority()
         if self.disabled: return False
         if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):
             self.reason = 'первая профессия подтверждена сервером; охота'
@@ -339,9 +354,7 @@ class Adventure:
             if now >= self.next_log:
                 self.send(325,b'')
                 self.next_log = now+30
-            if now-self.started > 15:
-                self.disabled = True
-                self.reason = 'журнал не получен; сохранена обычная охота'
+            self.reason = 'ожидает журнал заданий; повторный запрос каждые 30 секунд'
             return False
         if self.tactic=='farm' and not self.profession_priority() and self.active() is None:
             self.reason='фарм до уровня задания профессии'

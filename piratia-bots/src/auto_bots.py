@@ -73,6 +73,9 @@ def ensure_character(bot, client, chars):
         return matching[0]['name']
     if chars:
         raise ProtocolError('На аккаунте бота найден другой персонаж. Автосоздание остановлено.')
+    if bot.get('preserve_existing'):
+        raise ProtocolError('Сохранённый персонаж отсутствует на сервере. Создание замены отключено; '
+                            'проверь прежнюю базу сервера и полную папку data.')
     if 'creation_body' in bot:
         from roles import RoleStore
         from regions import birthplace_for
@@ -85,7 +88,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha25'
+    report.result['version'] = 'AutoAccountsAlpha26'
     report.result['bot_index'] = index
     report.result['session_history']=list(history or [])
     report.result['reconnect_attempts']=(history[-1].get('recovery_number',len(history)) if history else 0)
@@ -226,31 +229,33 @@ def main():
     parser.add_argument('--seconds', type=int, default=7200)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
+    parser.add_argument('--allow-new-bots', action='store_true',
+                        help='explicitly allow a new population or extending saved accounts')
     args = parser.parse_args()
     if not 1 <= args.count <= 200 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
         parser.error('count: 1..200; seconds: 0 (continuous) or 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — 200 ботов, развитие и торговые ларьки (Alpha 25).')
-    print(f'Количество: {args.count}. Логины и пароли вводить не нужно.')
+    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 26).')
+    print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
     print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
     stop = threading.Event()
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha25'
+    setup_report.result['version'] = 'AutoAccountsAlpha26'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
             raise RuntimeError('Запускай Start-Bot.cmd на Windows-ПК, где установлен сервер.')
         import msvcrt
         data = ROOT / 'data'
-        data.mkdir(exist_ok=True)
-        from runtime_guard import inspect_data,SessionGuard
+        from runtime_guard import require_population,SessionGuard
         setup_report.stage('checking_local_data')
-        setup_report.result['local_data']=inspect_data(data)
+        setup_report.result['local_data']=require_population(data,args.count,args.allow_new_bots)
+        data.mkdir(exist_ok=True)
         session_guard=SessionGuard(args.port)
         lock = (data / 'run.lock').open('a+b')
         lock.seek(0)
@@ -276,6 +281,7 @@ def main():
         setup_report.result['bot_count'] = len(bots)
         setup_report.write(report_path)
         for index, bot in enumerate(bots):
+            bot['preserve_existing'] = not args.allow_new_bots
             bot['creation_body'] = index % 4 + 1
             from city_travel import home_city_for,BIRTHPLACES
             bot['birthplace']=BIRTHPLACES['garner']

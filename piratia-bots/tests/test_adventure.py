@@ -189,7 +189,7 @@ class QuestTests(unittest.TestCase):
 class RoleTests(unittest.TestCase):
     def test_saved_targets_are_stable_and_existing_lances_get_legal_varied_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
-            store = RoleStore(Path(tmp)/'roles.json')
+            store = RoleStore(Path(tmp)/'roles.json',rng=Mock(choice=Mock(side_effect=[9,12,16,13])))
             targets = [store.resolve(f'Bot{i:08x}',1,0)['target_job'] for i in range(3)]
             self.assertEqual(targets,[9,12,16])
             self.assertEqual(RoleStore(Path(tmp)/'roles.json').resolve('Bot00000001',1,0)['target_job'],12)
