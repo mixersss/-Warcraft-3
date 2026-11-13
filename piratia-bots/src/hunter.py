@@ -114,6 +114,7 @@ class Hunter:
         self.learning=HuntLearning(self.owner)
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
+        self.refresh_class_intent=None
         from sitting import Sitting
         self.sitting=Sitting(world)
 
@@ -377,7 +378,7 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
-        if self.helper and self.helper.source is not None:return False
+        if self.helper and self.helper.source is not None and not self.mandatory_work():return False
         target=self.world.entities.get(self.target)
         if target and target.alive:return False  # Finish the chosen fight before another errand.
         if key=='adventure' and not self.mandatory_work() and feature:
@@ -472,6 +473,7 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
+        if self.refresh_class_intent:self.refresh_class_intent()
         self.update_tactic(now)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
         protected=self.resting or bool(self.market and self.market.state in ('opening','selling','closing')) or bool(self.town and self.town.rest_until)
@@ -578,6 +580,20 @@ class Hunter:
             # No new shopping, help, ordinary loot or ordinary combat while the
             # next profession step is a journal/NPC visit. Existing paid market
             # transactions and medical recovery were serviced above.
+            if self.travel and self.travel.destination(self)!=self.world.map:
+                # A Senna dialogue/retry in the wrong city must not keep
+                # restarting while the remote class trainer is the next task.
+                self.adventure.pause_for_travel()
+                other_dialogue=any(getattr(f,'context',None) or getattr(f,'pending',None)
+                                   for f in (self.town,self.career,self.story,self.vendor,self.party) if f)
+                if other_dialogue:
+                    for feature in (self.town,self.career,self.story,self.vendor):
+                        if feature and getattr(feature,'context',None):feature.tick(now,self,safe,False)
+                else:self.travel.tick(now,self,safe,False)
+                self.clear_zone()
+                self.change('первая профессия: '+(self.travel.reason or 'ожидает перехода в город наставника'))
+                self.next_action=now+.5
+                return
             if self.travel and self.travel.tick(now,self,safe,market_dialogue):
                 self.clear_zone();self.change(self.travel.reason);return
             if not market_dialogue or self.adventure.context:
@@ -862,6 +878,30 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
+
+    balance_checked=False
+    def refresh_class_intent():
+        nonlocal balance_checked
+        old=policy.adventure
+        if (balance_checked or not role_store or not role or not old
+                or not old.journal_snapshot_received or old.context or old.pending):return
+        balance_checked=True
+        updated=role_store.rebalance_novice(bot_name,world.own.model,world.own.values.get(4),old.journal)
+        report.result['class_balance']={'checked':True,'changed_unpromoted_intent':updated['target_job']!=role['target_job']}
+        if updated['target_job']==role['target_job']:return
+        role.update(updated)
+        progression.first_job=role['first_job'];progression.target_job=role['target_job']
+        social.role_label=role['label']
+        if policy.career:policy.career.quest=life.services['quests'][str(role['target_job'])]
+        replacement=Adventure(world,client.wire.send,tell,role,policy.region,tactic=old.configured_tactic)
+        replacement.tactic=old.tactic
+        replacement.journal=dict(old.journal)
+        replacement.journal_ready=replacement.journal_snapshot_received=True
+        replacement.accepted=old.accepted;replacement.delivered=old.delivered
+        replacement.requests=old.requests;replacement.timeouts=old.timeouts
+        policy.adventure=replacement
+        tell('Будущий класс новичка для выравнивания состава: '+role['label']+'. Персонаж и его прогресс сохранены.')
+    policy.refresh_class_intent=refresh_class_intent
 
     def sale_offer():
         if not life or not world.bag_ready or world.bag_disabled:return None

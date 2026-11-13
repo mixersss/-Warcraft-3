@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-26'
-NAME = 'Piratia-Auto-Bots-Alpha26'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-27'
+NAME = 'Piratia-Auto-Bots-Alpha27'
 
 
 def main():
@@ -17,6 +17,7 @@ def main():
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
     sources += sorted((ROOT / 'assets').glob('*.json'))
+    sources += [ROOT / 'knowledge' / 'sources-local.json']
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -31,14 +32,18 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'First-profession priority at level9, delayed journal recovery, random new compatible class intents and existing-population guard; live Windows validation pending',
+        'status': 'Remote trainer travel supersedes wrong-city Senna waits; balance unpromoted uncommitted class intents and expose NPC/server resource diagnostics; live Windows validation pending',
         'first_profession_priority_level': 9,
         'dead_target_released_before_npc_travel': True,
         'missing_journal_retries_seconds': 30,
-        'new_class_selection': 'random compatible target, saved once; existing registry unchanged',
+        'new_class_selection': 'least represented compatible target, random ties; verified novices may rebalance only before a profession quest is started',
         'requires_saved_population_by_default': True,
         'explicit_new_population_flag': '--allow-new-bots',
         'account_state_format_changed': False,
+        'existing_professions_and_started_quests_preserved': True,
+        'remote_class_travel_router_tests': ['garner to darkblue, native menu/map confirmation/referral acceptance', 'garner to magicsea, native menu/map confirmation/referral acceptance'],
+        'server_quest_and_newbie_chest_issue_fixed': False,
+        'server_issue_status': 'Owner MissionScript01 and NpcScript01 match prior audited SHA256 and parse as Lua; Senna has four class referrals and mission pages28/29; current SDK/loader/new-character initialization and actual startup evidence still needed',
         'server_rates_modified': False,
         'live_x2_leveling_rate_verified': False,
         'native_windows_server_tested': False,
@@ -64,11 +69,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 335,
-        'full_python_suite_total': 343,
-        'full_python_suite_passed': 343,
+        'pure_python_tests_passed': 343,
+        'full_python_suite_total': 351,
+        'full_python_suite_passed': 351,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '343 passed in Alpha26 including 8 local socket integration tests',
+        'last_full_network_regression': '351 passed in Alpha27 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

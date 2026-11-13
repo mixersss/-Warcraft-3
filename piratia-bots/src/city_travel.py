@@ -18,6 +18,7 @@ class CityTravel:
         self.home_city=home_city_for(index);self.target=None;self.context=None;self.pending=None
         self.next_trip=0;self.trip_started=None;self.last_position=None;self.last_progress=0
         self.requests=self.arrivals=self.failures=0;self.reason=''
+        self.last_menu=[];self.last_problem=''
     def destination(self,policy):
         w=self.world;level=w.own.values.get(0,0);job=w.own.values.get(4,0)
         if 1<=level<=3:return 'garner'
@@ -27,9 +28,11 @@ class CityTravel:
             return career.quest['map']
         return self.home_city
     def starter_trip(self):return 1<=self.world.own.values.get(0,0)<=3 and self.world.map!='garner'
-    def abort(self,now):
+    def abort(self,now,problem='переход не подтверждён'):
         self.context=None;self.pending=None;self.target=None;self.trip_started=None
-        self.failures+=1;self.next_trip=now+300;self.reason='переход отложен; продолжает развитие на текущей карте'
+        required=self.world.own.values.get(4)==0 and self.world.own.values.get(0,0)>=9
+        self.failures+=1;self.next_trip=now+(30 if required else 300)
+        self.last_problem=problem;self.reason=problem+'; повтор через '+('30' if required else '300')+' секунд'
     def on_map(self,now):
         if self.target and self.world.map==self.target:self.arrivals+=1
         self.context=None;self.pending=None;self.target=None;self.trip_started=None;self.next_trip=now+15
@@ -40,16 +43,18 @@ class CityTravel:
         labels=[r.string() for _ in range(n)]
         npc,stage,deadline=self.context
         if source!=npc:return False
+        self.last_menu=[label[:160] for label in labels]
         if stage=='menu':
             wanted='Go to '+CITIES[self.target]+'!'
             index=next((i for i,label in enumerate(labels) if label==wanted),None)
-            if index is None:self.abort(now);return True
+            if index is None:self.abort(now,'в меню телепортера нет '+wanted);return True
             self.send(301,function_request(npc,page,index));self.requests+=1
             self.context=npc,'confirm',now+8
         elif stage=='confirm':
             index=next((i for i,label in enumerate(labels) if label=='Teleport'),None)
             w=self.world
-            if index is None or (w.own.values.get(0,0)>10 and w.own.values.get(8,0)<500):self.abort(now);return True
+            if index is None:self.abort(now,'нет кнопки Teleport');return True
+            if w.own.values.get(0,0)>10 and w.own.values.get(8,0)<500:self.abort(now,'для перехода требуется 500G');return True
             self.send(301,function_request(npc,page,index));self.requests+=1
             self.context=npc,'map',now+20;self.pending=self.target
         return True
@@ -59,11 +64,12 @@ class CityTravel:
             if self.target:self.on_map(now)
             return False
         if self.context:
-            if now>=self.context[2]:self.abort(now);return False
+            if now>=self.context[2]:self.abort(now,'нет ответа телепортера на этапе '+self.context[1]);return False
             return True
         if not safe or dialogue_busy or now<self.next_trip:return False
         w=self.world
         if w.map not in TELEPORTERS or (w.own.values.get(0,0)>10 and w.own.values.get(8,0)<500):
+            self.reason='для перехода требуется 500G' if w.map in TELEPORTERS else 'неизвестна точка телепортера на текущей карте'
             self.next_trip=now+120;return False
         if self.target!=wanted:
             self.target=wanted;self.trip_started=now;self.last_progress=now;self.last_position=policy.position(now)
@@ -80,4 +86,6 @@ class CityTravel:
         self.abort(now);return False
     def summary(self):
         return {'home_city':self.home_city,'destination':self.target,'state':self.reason,
-                'npc_requests':self.requests,'confirmed_arrivals':self.arrivals,'postponed_trips':self.failures}
+                'npc_requests':self.requests,'confirmed_arrivals':self.arrivals,'postponed_trips':self.failures,
+                'dialogue_stage':self.context[1] if self.context else None,
+                'last_problem':self.last_problem,'last_menu':self.last_menu}

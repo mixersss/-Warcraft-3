@@ -120,6 +120,7 @@ class Adventure:
         self.tutorial_ids=set(self.letter_stops) | {1,2,3,704,710,716}
         self.journal = {}
         self.journal_ready = False
+        self.journal_snapshot_received = False
         self.events = deque(maxlen=64)
         self.deadline = self.next_visit = self.next_log = 0
         self.context = None
@@ -135,8 +136,15 @@ class Adventure:
         self.start_job = world.own.values.get(4)
         self.reason = 'чтение журнала заданий'
         self.priority_started = False
+        self.last_offers = []
+        self.last_functions = []
+        self.last_response = None
+        self.last_problem = ''
+        self.npc_seen = False
+        self.npc_distance = None
 
     def observe(self, command, payload):
+        self.last_response = command
         r = Reader(payload)
         if command == 828:
             count = r.byte()
@@ -146,6 +154,7 @@ class Adventure:
             r.end()
             self.journal = dict(entries)
             self.journal_ready = True
+            self.journal_snapshot_received = True
         elif command in (830,832):
             identity, state = r.short(),r.byte()
             r.end()
@@ -192,6 +201,13 @@ class Adventure:
         if profession:return profession[0]
         if self.tactic=='farm' or self.profession_priority():return None
         return next((identity for identity in self.destinations if identity in self.journal),None)
+
+    def pause_for_travel(self):
+        # Journal notifications remain authoritative across the transfer.
+        self.context = self.pending = None
+        self.events.clear()
+        self.next_visit = 0
+        self.reason = 'первая профессия: сначала переход в город наставника'
 
     def farm(self):
         if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):return None
@@ -245,11 +261,12 @@ class Adventure:
             functions = r.byte()
             if functions > 64:
                 raise ProtocolError('Too many NPC functions')
-            for _ in range(functions): r.string_bytes()
+            self.last_functions = [r.string()[:160] for _ in range(functions)]
             count = r.byte()
             if count > 64:
                 raise ProtocolError('Too many NPC missions')
             offers = [(r.string(),r.byte()) for _ in range(count)]
+            self.last_offers = [(title[:160],state) for title,state in offers]
             r.end()
             self.seen_pages += 1
             allowed = {'Welcome',"Blacksmith's Greetings","Tailor's Greetings","Physician's Greetings",'Battle training'} if key == 'senna' else set()
@@ -272,6 +289,8 @@ class Adventure:
                 self.deadline = now+8
             else:
                 self.missing_offers += 1
+                self.last_problem = 'NPC не предложил доступный квест '+self.role['promotion']
+                self.reason = self.last_problem
                 if active in self.letter_stops:
                     self.subvisit = active if key == 'senna' else None
                     self.settle(now)
@@ -287,6 +306,7 @@ class Adventure:
         elif command == 827 and stage == 'select':
             button,source,title,needs,choice,prizes = mission_page(payload)
             if source != npc or title != selected_title or title not in TITLES or ('Promotion' in title and title != self.role['promotion']):
+                self.last_problem = 'ответ задания не совпал с выбранным NPC/названием'
                 return
             if ((self.tactic=='farm' or self.profession_priority()) and title!=self.role['promotion']):
                 self.settle(now,10)
@@ -344,6 +364,8 @@ class Adventure:
             if now < self.deadline:
                 return True
             self.timeouts += 1
+            self.last_problem = 'нет подтверждения NPC на этапе '+self.context[2]
+            self.reason = self.last_problem
             key = self.context[1]
             if key in ('goldie','nila','ditto'):
                 self.subvisit = None
@@ -366,6 +388,8 @@ class Adventure:
         # Use only a real visible NPC at the audited location, never a saved world ID.
         npc = next((e for e in self.world.entities.values() if e.control in (2,3)
                     and math.dist(e.position,position)<450),None)
+        self.npc_seen = npc is not None
+        self.npc_distance = round(math.dist(npc.position,policy.position(now))) if npc else None
         self.reason = 'задание: путь к '+key
         if policy.target:
             from hunter import movement
@@ -397,4 +421,9 @@ class Adventure:
                 'profession_confirmed':self.world.own.values.get(4)==self.role['first_job'],
                 'target_class':self.role['label'],'target_job':self.role['target_job'],
                 'first_job':self.role['first_job'],
-                'last_objectives':[list(n) for n in self.last_needs]}
+                'last_objectives':[list(n) for n in self.last_needs],
+                'destination_npc':self.choose_destination(),'npc_seen':self.npc_seen,
+                'npc_distance':self.npc_distance,'dialogue_stage':self.context[2] if self.context else None,
+                'expected_promotion':self.role['promotion'],'last_problem':self.last_problem,
+                'last_response_command':self.last_response,'last_offers':self.last_offers,
+                'last_functions':self.last_functions}
