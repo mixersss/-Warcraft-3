@@ -52,8 +52,11 @@ class Hunter:
         self.move_endpoint=None;self.move_packet=None
         self.assist_target=None;self.helper=None
         self.target = None
+        self.opportunity_model=None;self.opportunity_targets=0;self.last_target_at=None
         self.next_action = 0
         self.mode = 'observe'
+        self.mode_since=self.clock
+        self.next_console_state=0;self.last_console_mode=None
         self.resting = False
         self.cancel_pending = False
         self.waypoint = 0
@@ -76,6 +79,7 @@ class Hunter:
         self.chests=self.town=self.party=self.career=self.story=self.market=self.travel=self.vendor=None
         from task_budget import TaskBudget
         self.task_budget=TaskBudget()
+        self.death_episodes=0;self.confirmed_revivals=0;self.last_death_at=None;self.last_return_at=None
         self.dead_since = None
         self.revive_requests = 0
         self.death_attempts = 0
@@ -135,6 +139,7 @@ class Hunter:
             if len(self.blacklist)>256:self.blacklist.pop(next(iter(self.blacklist)))
         if self.coordination:self.coordination.release(self.owner)
         self.target=None
+        self.opportunity_model=None
         self.target_key=None
         self.combat_since=None
         self.last_target_hp=None
@@ -196,8 +201,8 @@ class Hunter:
 
     def change(self, value):
         if self.mode != value:
-            self.mode = value
-            self.tell('Состояние бота: ' + value)
+            self.mode = value;self.mode_since=self.clock
+
 
     def stop_action(self):
         self.send(7,b'');self.end_action_requests+=1;self.action_open=False
@@ -402,28 +407,36 @@ class Hunter:
         preference=self.learning.scores.get(entity.model,0)
         return distance(self.position(now),self.world.position(now,entity.identity))+health*200+gap*20-preference*300
 
-    def eligible(self, entity, now):
+    def eligible(self, entity, now, models=None):
         own = self.world.own
-        models=({self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.planned_models())
+        models=set(models) if models is not None else ({self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.planned_models())
+        if entity.identity==self.target and self.opportunity_model:models=set(models)|{self.opportunity_model}
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:return False
         maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
-        if self.starter_models() and not self.assist_target:
+        if self.starter_models() and not self.assist_target and models==self.starter_models():
             models=self.starter_models();maximum_level=3
         elif self.region:
             maximum_level=max([maximum_level]+[self.region['farms'][str(m)]['level'] for m in models if str(m) in self.region['farms']])
         return (entity.control == 5 and (not self.assist_target or entity.identity==self.assist_target) and entity.model in models and entity.alive
                 and 0 < entity.values.get(LV, 9999) <= maximum_level
                 and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
-                and self.blacklist.get(entity.identity, 0) < now)
+                and self.blacklist.get(entity.identity, 0) < now and not self.learning.dangerous(entity.model,now))
 
     def tick(self,now=None):
-        nav=self.nav
-        if getattr(nav,'incremental',False) is not True:return self._tick(now)
+        nav=self.nav;incremental=getattr(nav,'incremental',False) is True
         from route_search import RoutePending
-        nav.begin_turn()
+        previous,since=self.mode,self.mode_since
+        if incremental:nav.begin_turn()
         try:return self._tick(now)
         except RoutePending:self.change('планирует безопасный маршрут; продолжает принимать сеть')
-        finally:nav.end_turn()
+        finally:
+            if incremental:nav.end_turn()
+            # Ignore transient states within one decision in both diagnostics
+            # and the Windows console. Report the final state, not every branch.
+            if self.mode==previous:self.mode_since=since
+            if self.mode!=self.last_console_mode and (self.clock>=self.next_console_state or self.mode.startswith('персонаж погиб')):
+                self.tell('Состояние бота: '+self.mode)
+                self.last_console_mode=self.mode;self.next_console_state=self.clock+30
 
     def _tick(self, now=None):
         now = time.monotonic() if now is None else now
@@ -437,7 +450,9 @@ class Hunter:
             self.drop_target()
             self.clear_zone()
             self.change('персонаж погиб; обычное возвращение в город')
-            if self.dead_since is None:self.dead_since=now
+            if self.dead_since is None:
+                self.dead_since=now;self.next_revive=0;self.death_episodes+=1;self.last_death_at=now
+                if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending()
             if self.death_attempts>=3 and now>=self.next_revive+60:self.death_attempts=0
             if now-self.dead_since>=4 and now>=self.next_revive and self.death_attempts<3:
                 self.send(10,b'\x01')
@@ -445,8 +460,10 @@ class Hunter:
                 self.death_attempts+=1
                 self.next_revive=now+15
             return
-        self.dead_since=None
+        if self.dead_since is not None:self.confirmed_revivals+=1;self.last_return_at=now
+        self.dead_since=None;self.next_revive=0
         self.death_attempts=0
+        if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
         self.update_tactic(now)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
@@ -615,6 +632,13 @@ class Hunter:
             candidates=[e for e in self.world.entities.values() if self.eligible(e,now)]
             self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
             candidates.sort(key=lambda e:self.target_score(e,now))
+            if self.region and now-self.last_target_at>=20 and not self.assist_target:
+                known={e.identity for e in candidates}
+                models=self.learning.admissible(self.region,own,now)
+                extras=[e for e in self.world.entities.values()
+                        if e.identity not in known and self.eligible(e,now,models)]
+                extras.sort(key=lambda e:self.target_score(e,now))
+                candidates.extend(extras)
             for candidate in candidates:
                 key=(self.world.map,candidate.identity,candidate.handle)
                 if self.coordination and not self.coordination.available(self.owner,key,now):
@@ -625,6 +649,9 @@ class Hunter:
                 if not in_range and self.approach(candidate,reach,now) is None:continue
                 if self.coordination and not self.coordination.claim(self.owner,key,now):continue
                 target=candidate
+                if candidate.model not in self.planned_models():
+                    self.opportunity_model=candidate.model;self.opportunity_targets+=1
+                self.last_target_at=now
                 self.target,self.target_since=target.identity,now
                 self.target_key=key
                 self.last_target_hp=target.values.get(HP)
@@ -721,16 +748,16 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
+        return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
                                'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
-                'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
+                'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
-                'revive_requests':self.revive_requests, 'revival':{'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
+                'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
 
 
 def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None, fleet=None, bot_index=0, tactic='quests'):
@@ -948,6 +975,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if consumed:return
         if command==516:
             was_dead=world.own is not None and not world.own.alive
+            if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             world.enter(payload)
             policy.pending_action=None;policy.action_open=False
             policy.sitting.reset()
@@ -958,10 +986,12 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if policy.market:
                 policy.market.finish(now);policy.market.context=None;policy.market.pending=None
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
+            if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
             if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
             if was_dead:
+                policy.confirmed_revivals+=1;policy.last_return_at=now
                 policy.learning.events.append('revived');policy.learning.events=policy.learning.events[-8:]
             if policy.town:policy.town.end_rest(now);policy.town.home=policy.home;policy.town.finish(now,120)
             policy.drop_target()
@@ -971,7 +1001,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.offmesh_batch=0;policy.offmesh_next=0
             policy.resting=False
             policy.cancel_pending=False
-            policy.dead_since=None
+            policy.dead_since=None;policy.next_revive=0
             policy.death_attempts=0
             policy.equipment.pending=None
             policy.recovery.pending=None

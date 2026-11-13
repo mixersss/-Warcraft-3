@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-24'
-NAME = 'Piratia-Auto-Bots-Alpha24'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-25'
+NAME = 'Piratia-Auto-Bots-Alpha25'
 
 
 def main():
@@ -31,8 +31,15 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Immediate in-range transition, incremental route planning, native ground sitting and pre-navigation revival; live Windows validation pending',
+        'status': 'Fix observed zero-node planning starvation, safe visible alternatives and no-XP exploration; live Windows validation pending',
         'native_windows_server_tested': False,
+        'planning_budget_clock': 'thread CPU, started at first search work',
+        'minimum_search_pops_if_budget_allows': 32,
+        'console_final_state_interval_seconds': 30,
+        'visible_opportunity_after_seconds': 20,
+        'no_xp_trial_after_seconds': 90,
+        'owner_alpha24_snapshot': {'reports':200,'level4':37,'level5':126,'level6':37,'planning':150,'xp_gained':84,'level_gained':16,'positive_hp':200,'revival_requests':68},
+        'offline_report_route_replay': {'destinations':147,'reachable':146,'offmesh_origins':1,'unfinished':0},
         'ground_sitting_native_client_capture_passed': True,
         'ground_sitting_server_branch_disassembled': True,
         'ground_sitting_live_windows_tested': False,
@@ -48,12 +55,12 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 309,
-        'full_python_suite_total': 317,
+        'pure_python_tests_passed': 322,
+        'full_python_suite_total': 330,
         'full_python_suite_passed': None,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
-        'current_network_regression': '8 socket tests not rerun for Alpha24; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
+        'current_network_regression': '8 socket tests not rerun for Alpha25; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},

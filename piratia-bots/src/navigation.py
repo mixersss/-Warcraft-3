@@ -95,9 +95,12 @@ class Navigation:
         local=self.local
         if not hasattr(local,'searches'):
             local.searches=OrderedDict();local.yields=local.expansions=local.finished=0
-        local.remaining=expansions;local.deadline=time.perf_counter()+.006;local.active=True
+        local.remaining=expansions;local.turn_expanded=0;local.deadline=None;local.active=True
 
     def end_turn(self):self.local.active=False
+
+    def cancel_pending(self):
+        if getattr(self,'incremental',False) and hasattr(self.local,'searches'):self.local.searches.clear()
 
     def planning_stats(self):
         if not getattr(self,'incremental',False):return {}
@@ -135,9 +138,12 @@ class Navigation:
             while len(local.searches)>2:local.searches.popitem(last=False)
         search=local.searches[key];local.searches.move_to_end(key)
         def spend():
-            if local.remaining<=0 or time.perf_counter()>=local.deadline:
+            # Start the clock at actual search work, and count this thread's
+            # CPU time: waiting for other bots/GIL must not consume its slice.
+            if local.deadline is None:local.deadline=time.thread_time()+.006
+            if local.remaining<=0 or (local.turn_expanded>=32 and time.thread_time()>=local.deadline):
                 local.yields+=1;raise RoutePending()
-            local.remaining-=1;local.expansions+=1
+            local.remaining-=1;local.expansions+=1;local.turn_expanded+=1
         result=search.advance(self,key[2],spend)
         local.finished+=1;local.searches.pop(key,None)
         return self._remember(key,result)

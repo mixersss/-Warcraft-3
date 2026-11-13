@@ -387,6 +387,7 @@ class World:
                 'position': list(own.position) if own else None,
                 'hp': own.values.get(HP) if own else None,
                 'max_hp': own.values.get(MAX_HP) if own else None,
+                'existence_state':own.state if own else None,
                 'level': own.values.get(LV) if own else None,
                 'default_skill': self.default_skill, 'updates': self.updates,
                 'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action,'failed_action_counts':self.failed_action_counts,'default_skill_updates':self.default_skill_updates,'stop_revision':self.stop_revision,'skill_action_state':self.skill_action_state}

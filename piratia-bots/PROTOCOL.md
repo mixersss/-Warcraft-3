@@ -794,3 +794,18 @@ endpoint. Active repeating server attacks are preserved. Runtime A* jobs use
 512-pop slices with a6 ms deadline check, resume instead of reporting no path,
 and share bounded completed routes. Supercover checks include both side cells
 at corners. None of these changes alter server attack speed or XP rewards.
+
+## Alpha25 — observed planning starvation
+
+All200 Alpha24 owner reports were inspected;150 were planning, median377.5
+yields with1459 expanded nodes per character. The wall deadline had been set
+before policy work. Fixed: initialise the budget at the first search pop,
+use time.thread_time and allow at least32 pops subject to the512 cap.
+Offline replay of147 reported destinations completes146 paths and rejects
+one off-mesh origin, with no unfinished jobs. This is not a live game replay.
+
+Safe visible alternatives after20s and real-XP idle trials after90s do not
+change packets, rewards or server ownership. Revival remains native10/1;
+its episode timer and cancelled approach are reset on death/authoritative
+map entry. The snapshot contains200 live characters, so other reported corpse
+failures remain unconfirmed. New lifecycle counters support future diagnosis.
