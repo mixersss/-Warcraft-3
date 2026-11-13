@@ -143,8 +143,6 @@ class Town:
             if not shops:self.finish(now,300);return False
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
         point=self.target_shop['position']
-        if not policy.allow_visit(point,now):
-            self.finish(now,30+self.rng.uniform(0,30));return False
         self.reason='покупки у городского торговца'
         npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
         if npc and math.dist(policy.position(now),npc.position)<=220:

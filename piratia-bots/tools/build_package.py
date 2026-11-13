@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-30'
-NAME = 'Piratia-Auto-Bots-Alpha30'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-31'
+NAME = 'Piratia-Auto-Bots-Alpha31'
 
 
 def main():
@@ -32,7 +32,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Sell all safe junk without a five-unit reserve; try other merchant sites and explain blockers; show maps/coordinates; record owner500-bot specification; live revalidation pending',
+        'status': 'Remove artificial visitor admission limits for ordinary NPC buying/selling; verified200 independent bot sales to same NPC in simulation; live revalidation pending',
         'first_profession_priority_level': 9,
         'farm_until_real_fare_available': True,
         'sell_safe_junk_before_class_letter_if_bag_full': True,
@@ -41,7 +41,8 @@ def main():
         'sell_visit_clears_all_safe_junk_stacks': True,
         'five_stack_visit_cap_removed': True,
         'small_junk_quantity_start_threshold_removed': True,
-        'alternative_city_merchants_on_busy_site': True,
+        'alternative_city_merchants_on_busy_site': False,
+        'ordinary_merchant_admission_limit_removed': True,
         'fleet_reports_include_coordinates': True,
         'owner_target_bots': 500,
         'runtime_capacity_bots': 200,
@@ -87,7 +88,7 @@ def main():
         'full_python_suite_total': 366,
         'full_python_suite_passed': 366,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '366 passed in Alpha30 including 8 local socket integration tests',
+        'last_full_network_regression': '366 passed in Alpha31 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

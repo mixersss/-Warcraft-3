@@ -77,14 +77,8 @@ class Vendor(Town):
    self.reason='нет разрешённых простых трофеев для продажи';self.next_sale=now+60;return False
   shops=self.life.services['shops'].get(w.map,[])
   if not shops:self.next_sale=now+300;return False
-  if not self.sale_target:
-   for shop in sorted(shops,key=lambda s:math.dist(policy.position(now),s['position'])):
-    if policy.allow_visit(shop['position'],now):self.sale_target=shop;break
-   if not self.sale_target:
-    self.finish_sale(now,15);self.reason='все подходящие торговцы заняты; повтор через 15 сек.';return False
+  if not self.sale_target:self.sale_target=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
   point=self.sale_target['position']
-  if not policy.allow_visit(point,now):
-   self.finish_sale(now,45);return False
   self.reason='продаёт лишние обычные трофеи торговцу'
   npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
   if npc and math.dist(policy.position(now),npc.position)<=220:

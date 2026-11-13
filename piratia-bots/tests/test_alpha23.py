@@ -41,14 +41,14 @@ class DistributionTests(unittest.TestCase):
   self.assertFalse(town.tick(1,policy,True));policy.move_to.assert_not_called()
   world.own.values[1]=30
   self.assertTrue(town.tick(2,policy,True,medical=True));self.assertEqual(town.wanted[0],1847)
- def test_denied_shop_does_not_block_hunting(self):
+ def test_shop_does_not_require_artificial_visitor_admission(self):
   from town import Town
   from life import LifeItems
   from equipment import ItemCatalog
   world=scene();world.own.values.update({0:4,8:1000});world.bag_ready=True;world.bag_capacity=24
   town=Town(world,LifeItems(ROOT/'assets'),ItemCatalog(ROOT/'assets/items.json'),{},random.Random(1),world.own.position)
-  policy=SimpleNamespace(position=lambda now:world.own.position,allow_visit=Mock(return_value=False))
-  self.assertFalse(town.tick(1,policy,True));self.assertIsNone(town.target_shop);self.assertIsNone(town.context)
+  policy=SimpleNamespace(position=lambda now:world.own.position,allow_visit=Mock(return_value=False),nav=Mock(),move_to=Mock(return_value=True))
+  self.assertTrue(town.tick(1,policy,True));policy.allow_visit.assert_not_called();self.assertIsNotNone(town.target_shop)
 
 class RouteTests(unittest.TestCase):
  def nav(self):

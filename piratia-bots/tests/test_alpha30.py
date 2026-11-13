@@ -25,17 +25,12 @@ class SaleAndLocationTests(unittest.TestCase):
  def test_one_piece_of_plain_junk_is_offered_without_any_reserve(self):
   f=base.VendorTests();w,v,p=f.make();w.bag={0:f.item(1613,1)}
   self.assertEqual(v.choices(p),[(0,1613,1)])
- def test_busy_nearest_merchant_does_not_block_all_other_city_shops(self):
+ def test_merchant_selection_ignores_artificial_admission_and_uses_nearest(self):
   f=base.VendorTests();w,v,p=f.make();w.bag_capacity=1;w.bag={0:f.item(1613,1)}
   v.life.services={'shops':{'garner':[{'position':[w.own.x+100,w.own.y],'offers':[]},{'position':[w.own.x+500,w.own.y],'offers':[]}]}}
   p.allow_visit=lambda point,now:point[0]>w.own.x+100
   self.assertTrue(v.tick(100,p,True))
-  self.assertEqual(v.sale_target['position'],[w.own.x+500,w.own.y])
- def test_all_merchants_busy_preserves_inventory_and_explains_retry(self):
-  f=base.VendorTests();w,v,p=f.make();w.bag_capacity=1;w.bag={0:f.item(1613,1)}
-  p.allow_visit=lambda point,now:False
-  self.assertFalse(v.tick(100,p,True));self.assertEqual(w.bag[0].count,1)
-  self.assertIn('заняты',v.reason);self.assertEqual(v.next_sale,115)
+  self.assertEqual(v.sale_target['position'],[w.own.x+100,w.own.y])
  def test_population_view_shows_map_coordinates_and_disconnected_status(self):
   with tempfile.TemporaryDirectory() as d:
    f=Fleet(200,Path(d)/'population-status.json')
