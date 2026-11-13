@@ -5,12 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-32'
-NAME = 'Piratia-Auto-Bots-Alpha32'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-33'
+NAME = 'Piratia-Auto-Bots-Alpha33'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
+    sources += [ROOT / 'tools' / 'build_junk.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -32,7 +33,8 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Expand audited common junk sale catalog; share active quest mobs and join busy targets when no reachable free target remains; verified post-promotion development; live revalidation pending',
+        'status': 'Broad ordinary loot sale catalog353IDs including later land/sea drops; native full-bag sale regression with quest/development goods protected; live revalidation pending',
+        'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'shared_active_quest_targets': True,
         'ordinary_busy_target_fallback': True,
         'competitive_active_quest_drop_pickup': 'native requests only; server ownership and inventory confirmation required; bounded retries',
@@ -89,11 +91,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 368,
-        'full_python_suite_total': 376,
-        'full_python_suite_passed': 376,
+        'pure_python_tests_passed': 372,
+        'full_python_suite_total': 380,
+        'full_python_suite_passed': 380,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '376 passed in Alpha32 including 8 local socket integration tests',
+        'last_full_network_regression': '380 passed in Alpha33 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',
@@ -188,7 +190,7 @@ def main():
         'starter_character_levels': [1,2,3],
         'starter_map': 'garner',
         'native_damage_prefix_verified': True,
-        'npc_junk_whitelist_count': 89,
+        'npc_junk_whitelist_count': len(json.loads((ROOT / 'assets' / 'junk-items.json').read_text())['items']),
         'npc_sale_requires_bag_and_gold': True,
         'spawn_counts_modified': False,
         'beginner_farm_point_cap_per_species': 64,

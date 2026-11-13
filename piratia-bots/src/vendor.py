@@ -1,4 +1,4 @@
-"""Sell a conservative whitelist of plain common surplus to real NPCs; bag+gold confirm."""
+"""Sell broad audited ordinary loot to real NPCs; quest/valuable items stay protected."""
 import json,math,struct
 from pathlib import Path
 from town import Town,trade_page

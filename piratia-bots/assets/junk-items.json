@@ -1,7 +1,12 @@
 {
-  "source": "Explicit common trophy/material IDs audited against owner ItemInfo and observed bags; owner requests sale of ordinary junk. Never classify by price/type alone; active quest ingredients and modified instances remain protected. Sale value remains server-owned.",
+  "source": "Owner table projections: all ordinary type41 monster drops in regions plus audited common trophy block4319..4542 and explicit common type31 plants. Exclude development materials, books, blueprints, chests and market goods. Active quest ingredients and modified instances protected at runtime; server sets sale value.",
+  "policy": "broad_ordinary_loot",
   "keep_each": 0,
   "items": {
+    "1218": {
+      "name": "Gigantic Polliwog Tail",
+      "table_price": 140
+    },
     "1573": {
       "name": "Shriveled Leaf",
       "table_price": 2
@@ -21,6 +26,10 @@
     "1579": {
       "name": "Flower Bud",
       "table_price": 10
+    },
+    "1584": {
+      "name": "Poisoned Thorn",
+      "table_price": 34
     },
     "1585": {
       "name": "Grass Juice",
@@ -170,9 +179,65 @@
       "name": "Animal Blood",
       "table_price": 48
     },
+    "1630": {
+      "name": "Life Stone Fragment",
+      "table_price": 78
+    },
+    "1645": {
+      "name": "Pill Fragment",
+      "table_price": 66
+    },
+    "1648": {
+      "name": "Murky Water",
+      "table_price": 18
+    },
+    "1649": {
+      "name": "Pure Water",
+      "table_price": 2
+    },
+    "1650": {
+      "name": "Healing Water",
+      "table_price": 30
+    },
+    "1651": {
+      "name": "Counteragent",
+      "table_price": 68
+    },
+    "1652": {
+      "name": "Extender",
+      "table_price": 98
+    },
     "1653": {
       "name": "Smelly Gas",
       "table_price": 4
+    },
+    "1654": {
+      "name": "Strong Gas",
+      "table_price": 32
+    },
+    "1655": {
+      "name": "Hypnotic Gas",
+      "table_price": 34
+    },
+    "1657": {
+      "name": "Special Gas",
+      "table_price": 100
+    },
+    "1658": {
+      "name": "Earthen Element Fragment",
+      "table_price": 74
+    },
+    "1661": {
+      "name": "Scrap Iron",
+      "table_price": 6
+    },
+    "1662": {
+      "name": "Iron",
+      "table_price": 36
+    },
+    "1673": {
+      "name": "Strange Metal Fragment",
+      "table_price": 114
     },
     "1676": {
       "name": "Honey",
@@ -186,6 +251,30 @@
       "name": "Pure Wool",
       "table_price": 40
     },
+    "1680": {
+      "name": "Pig Tail",
+      "table_price": 14
+    },
+    "1681": {
+      "name": "Tear",
+      "table_price": 62
+    },
+    "1685": {
+      "name": "Bamboo Leaf",
+      "table_price": 18
+    },
+    "1686": {
+      "name": "Bamboo Shoot",
+      "table_price": 66
+    },
+    "1688": {
+      "name": "Tusk",
+      "table_price": 44
+    },
+    "1689": {
+      "name": "Crab Pincer",
+      "table_price": 30
+    },
     "1690": {
       "name": "Snail Feeler",
       "table_price": 46
@@ -198,29 +287,149 @@
       "name": "Cactus Blossom",
       "table_price": 48
     },
+    "1695": {
+      "name": "Camel Eyelash",
+      "table_price": 30
+    },
+    "1696": {
+      "name": "Wolf Claw",
+      "table_price": 76
+    },
+    "1698": {
+      "name": "Wind Mirror",
+      "table_price": 78
+    },
     "1704": {
       "name": "Octopus Tentacle",
       "table_price": 34
+    },
+    "1706": {
+      "name": "Naiad Stone",
+      "table_price": 124
+    },
+    "1707": {
+      "name": "Kingfisher Feather",
+      "table_price": 38
+    },
+    "1708": {
+      "name": "Bat Wing",
+      "table_price": 40
+    },
+    "1709": {
+      "name": "Antler",
+      "table_price": 42
+    },
+    "1719": {
+      "name": "Little Snow Ball",
+      "table_price": 48
+    },
+    "1722": {
+      "name": "Bear Paw",
+      "table_price": 70
     },
     "1725": {
       "name": "Poison Mushroom",
       "table_price": 6
     },
+    "1726": {
+      "name": "Stramonium Juice",
+      "table_price": 74
+    },
+    "1747": {
+      "name": "Fake Documentation",
+      "table_price": 182
+    },
+    "1752": {
+      "name": "Strange Mask",
+      "table_price": 196
+    },
+    "1753": {
+      "name": "Knight Attest",
+      "table_price": 100
+    },
+    "1773": {
+      "name": "Teary Ice Stone",
+      "table_price": 304
+    },
     "1777": {
       "name": "Glass",
       "table_price": 48
+    },
+    "1778": {
+      "name": "Rainbow Glass",
+      "table_price": 428
     },
     "1779": {
       "name": "Bottle",
       "table_price": 10
     },
+    "1784": {
+      "name": "Clarion Sand",
+      "table_price": 100
+    },
+    "1787": {
+      "name": "Red Dye",
+      "table_price": 100
+    },
+    "1788": {
+      "name": "Orange Dye",
+      "table_price": 100
+    },
+    "1789": {
+      "name": "Yellow Dye",
+      "table_price": 100
+    },
+    "1790": {
+      "name": "Green Dye",
+      "table_price": 100
+    },
+    "1791": {
+      "name": "Cyan Dye",
+      "table_price": 100
+    },
+    "1792": {
+      "name": "Blue Dye",
+      "table_price": 100
+    },
+    "1793": {
+      "name": "Purple Dye",
+      "table_price": 100
+    },
+    "1806": {
+      "name": "Hair Gel",
+      "table_price": 420
+    },
     "1838": {
       "name": "Coagulated Liquid",
       "table_price": 5
     },
+    "1839": {
+      "name": "Squirt Handkerchief",
+      "table_price": 10
+    },
+    "1840": {
+      "name": "Squidy Cap",
+      "table_price": 10
+    },
+    "1841": {
+      "name": "Bandit Necklace",
+      "table_price": 20
+    },
+    "1843": {
+      "name": "Animal Sharp Horn",
+      "table_price": 22
+    },
     "1844": {
       "name": "Tortoise Blood",
       "table_price": 26
+    },
+    "1845": {
+      "name": "Wolf Skin",
+      "table_price": 16
+    },
+    "1846": {
+      "name": "Phantom Tree Branch",
+      "table_price": 5
     },
     "3116": {
       "name": "Elven Fruit",
@@ -246,6 +455,22 @@
       "name": "Withered Branch",
       "table_price": 10
     },
+    "3923": {
+      "name": "Golden Camel Bell",
+      "table_price": 100
+    },
+    "3929": {
+      "name": "Mystic Pen Head",
+      "table_price": 48
+    },
+    "3933": {
+      "name": "Robot Core",
+      "table_price": 150
+    },
+    "4088": {
+      "name": "Stramonium Sharp Spike",
+      "table_price": 20
+    },
     "4314": {
       "name": "Frozen Grass",
       "table_price": 2
@@ -270,21 +495,305 @@
       "name": "Flowery Snail Shell",
       "table_price": 4
     },
+    "4320": {
+      "name": "Scorpion Tail",
+      "table_price": 5
+    },
+    "4321": {
+      "name": "Little Wings",
+      "table_price": 5
+    },
     "4322": {
       "name": "Sweet Smelling Flower",
       "table_price": 7
+    },
+    "4323": {
+      "name": "Icy Flower",
+      "table_price": 7
+    },
+    "4324": {
+      "name": "Spikey Spike",
+      "table_price": 63
     },
     "4325": {
       "name": "Snowy Pig Tail",
       "table_price": 10
     },
+    "4326": {
+      "name": "Venom Mushroom",
+      "table_price": 10
+    },
+    "4327": {
+      "name": "Broken Antler",
+      "table_price": 12
+    },
     "4328": {
       "name": "Grass Tortoise Shell",
       "table_price": 12
     },
+    "4329": {
+      "name": "Scorpion Stinger",
+      "table_price": 13
+    },
+    "4330": {
+      "name": "Trumpet Shell",
+      "table_price": 13
+    },
+    "4331": {
+      "name": "Blue Conch",
+      "table_price": 15
+    },
     "4332": {
       "name": "Black Wings",
       "table_price": 15
+    },
+    "4333": {
+      "name": "Flowery Lizard Skin",
+      "table_price": 17
+    },
+    "4334": {
+      "name": "Penguin Pelt",
+      "table_price": 17
+    },
+    "4335": {
+      "name": "Wolf Fang",
+      "table_price": 18
+    },
+    "4336": {
+      "name": "Flowery Conch",
+      "table_price": 20
+    },
+    "4337": {
+      "name": "Razor Sharp Beak",
+      "table_price": 21
+    },
+    "4338": {
+      "name": "Sharp Cactus Thorn",
+      "table_price": 23
+    },
+    "4339": {
+      "name": "Gigantic Antler",
+      "table_price": 23
+    },
+    "4340": {
+      "name": "Concentrated Squid Ink",
+      "table_price": 25
+    },
+    "4341": {
+      "name": "Tough Penguin Pelt",
+      "table_price": 25
+    },
+    "4342": {
+      "name": "Rigid Crab Carapace",
+      "table_price": 26
+    },
+    "4343": {
+      "name": "Strange Branch",
+      "table_price": 28
+    },
+    "4344": {
+      "name": "Chilling Snail Shell",
+      "table_price": 31
+    },
+    "4345": {
+      "name": "Poisonous Mushroom",
+      "table_price": 31
+    },
+    "4346": {
+      "name": "Razor Wolf Fang",
+      "table_price": 33
+    },
+    "4347": {
+      "name": "Black Feather",
+      "table_price": 34
+    },
+    "4348": {
+      "name": "Kangaroo Pouch",
+      "table_price": 37
+    },
+    "4349": {
+      "name": "Mud Cake",
+      "table_price": 39
+    },
+    "4350": {
+      "name": "Bandit Bandana",
+      "table_price": 41
+    },
+    "4351": {
+      "name": "Ice Crystal",
+      "table_price": 41
+    },
+    "4352": {
+      "name": "Stramonium Flower",
+      "table_price": 42
+    },
+    "4353": {
+      "name": "Giant Wolf Fang",
+      "table_price": 42
+    },
+    "4354": {
+      "name": "Smelly Water",
+      "table_price": 42
+    },
+    "4355": {
+      "name": "Sticky Spider Legs",
+      "table_price": 42
+    },
+    "4356": {
+      "name": "Gigantic Tortoise Shell",
+      "table_price": 45
+    },
+    "4357": {
+      "name": "Rugged Pig Tail",
+      "table_price": 47
+    },
+    "4358": {
+      "name": "Blue Snowball",
+      "table_price": 47
+    },
+    "4359": {
+      "name": "Burly Lizard Skin",
+      "table_price": 52
+    },
+    "4360": {
+      "name": "Red Snowball",
+      "table_price": 55
+    },
+    "4361": {
+      "name": "King-Sized Kangaroo Pouch",
+      "table_price": 57
+    },
+    "4362": {
+      "name": "Old Quiver",
+      "table_price": 58
+    },
+    "4363": {
+      "name": "Sticky Mud Cake",
+      "table_price": 60
+    },
+    "4364": {
+      "name": "Snowy White Plume",
+      "table_price": 60
+    },
+    "4365": {
+      "name": "Solid Tortoise Shell",
+      "table_price": 61
+    },
+    "4366": {
+      "name": "Solid Bear Paw",
+      "table_price": 61
+    },
+    "4367": {
+      "name": "Broken Ninja Sword",
+      "table_price": 61
+    },
+    "4368": {
+      "name": "Solid Rock",
+      "table_price": 65
+    },
+    "4369": {
+      "name": "Rusty Katana",
+      "table_price": 65
+    },
+    "4370": {
+      "name": "Soldier Bee Wing",
+      "table_price": 33
+    },
+    "4371": {
+      "name": "Low Grade Antler",
+      "table_price": 41
+    },
+    "4372": {
+      "name": "Rigid Deer Hoof",
+      "table_price": 50
+    },
+    "4373": {
+      "name": "Small Tooth",
+      "table_price": 37
+    },
+    "4374": {
+      "name": "Steel Pig Tooth",
+      "table_price": 49
+    },
+    "4376": {
+      "name": "Hard Trumpet Shell",
+      "table_price": 36
+    },
+    "4377": {
+      "name": "Snowy Trumpet Shell",
+      "table_price": 44
+    },
+    "4378": {
+      "name": "Half Eaten Foilage",
+      "table_price": 45
+    },
+    "4379": {
+      "name": "Coarse Tortoise Shell",
+      "table_price": 34
+    },
+    "4380": {
+      "name": "Cracked Tortoise Shell",
+      "table_price": 57
+    },
+    "4381": {
+      "name": "Blunt Nail",
+      "table_price": 60
+    },
+    "4382": {
+      "name": "Ruffled Wolf Tail",
+      "table_price": 53
+    },
+    "4383": {
+      "name": "Mighty Wolf Claw",
+      "table_price": 39
+    },
+    "4384": {
+      "name": "Mangled Sheep Horn",
+      "table_price": 60
+    },
+    "4385": {
+      "name": "Dangerous Sharp Claw",
+      "table_price": 60
+    },
+    "4386": {
+      "name": "Cumbersome Carapace",
+      "table_price": 57
+    },
+    "4387": {
+      "name": "Lizard Tail",
+      "table_price": 63
+    },
+    "4388": {
+      "name": "Slightly Poisonous Thorn",
+      "table_price": 25
+    },
+    "4389": {
+      "name": "Poisonous Spore",
+      "table_price": 37
+    },
+    "4390": {
+      "name": "Hypnotic Spore",
+      "table_price": 28
+    },
+    "4391": {
+      "name": "Lock Pick",
+      "table_price": 31
+    },
+    "4392": {
+      "name": "Damaged Puck",
+      "table_price": 36
+    },
+    "4393": {
+      "name": "Unusable Crab Feet",
+      "table_price": 42
+    },
+    "4394": {
+      "name": "Snow Spirit Wings",
+      "table_price": 45
+    },
+    "4395": {
+      "name": "Deadly Poisonous Stinger",
+      "table_price": 61
     },
     "4396": {
       "name": "Frozen Root",
@@ -314,25 +823,325 @@
       "name": "White Squidy Cap",
       "table_price": 9
     },
+    "4403": {
+      "name": "Frozen Flower Petal",
+      "table_price": 9
+    },
     "4404": {
       "name": "Bee Antenna",
       "table_price": 12
+    },
+    "4405": {
+      "name": "Furry Pig Mane",
+      "table_price": 14
     },
     "4406": {
       "name": "Fungus Spore",
       "table_price": 14
     },
+    "4407": {
+      "name": "Soft Deer Skin",
+      "table_price": 16
+    },
     "4408": {
       "name": "Dark Tortoise Bones",
       "table_price": 16
+    },
+    "4409": {
+      "name": "Rigid Scorpion Carapace",
+      "table_price": 19
     },
     "4410": {
       "name": "Short Goat Horn",
       "table_price": 19
     },
+    "4411": {
+      "name": "Fresh Whelk Meat",
+      "table_price": 19
+    },
+    "4412": {
+      "name": "Small Conch Fragment",
+      "table_price": 21
+    },
+    "4413": {
+      "name": "Thick Deer Skin",
+      "table_price": 21
+    },
     "4414": {
       "name": "Black Scale",
       "table_price": 21
+    },
+    "4415": {
+      "name": "Long Lizard Tongue",
+      "table_price": 24
+    },
+    "4416": {
+      "name": "Soft Pig Mane",
+      "table_price": 24
+    },
+    "4417": {
+      "name": "Webbed Penguin Feet",
+      "table_price": 24
+    },
+    "4418": {
+      "name": "Heart of Naiad",
+      "table_price": 26
+    },
+    "4419": {
+      "name": "Fermented Honey",
+      "table_price": 28
+    },
+    "4420": {
+      "name": "Great Conch Fragment",
+      "table_price": 28
+    },
+    "4421": {
+      "name": "Large Cactus Tuber",
+      "table_price": 33
+    },
+    "4422": {
+      "name": "Tough Deer Skin",
+      "table_price": 33
+    },
+    "4423": {
+      "name": "Pointed Goat Horn",
+      "table_price": 36
+    },
+    "4424": {
+      "name": "Demon Wings",
+      "table_price": 50
+    },
+    "4425": {
+      "name": "Strong Penguin Feet",
+      "table_price": 36
+    },
+    "4426": {
+      "name": "Razer Sharp Pincers",
+      "table_price": 38
+    },
+    "4427": {
+      "name": "Bat Fangs",
+      "table_price": 38
+    },
+    "4428": {
+      "name": "Frozen Snail Feeler",
+      "table_price": 45
+    },
+    "4429": {
+      "name": "Poisonous Fungus Spore",
+      "table_price": 45
+    },
+    "4430": {
+      "name": "Razor Wolf Claw",
+      "table_price": 48
+    },
+    "4431": {
+      "name": "Glacier Heart",
+      "table_price": 50
+    },
+    "4432": {
+      "name": "Owl Talon",
+      "table_price": 50
+    },
+    "4433": {
+      "name": "Short Boar Tail",
+      "table_price": 52
+    },
+    "4434": {
+      "name": "Torn Pouch",
+      "table_price": 52
+    },
+    "4435": {
+      "name": "Boxing Gloves",
+      "table_price": 55
+    },
+    "4436": {
+      "name": "Polluted Mud",
+      "table_price": 57
+    },
+    "4437": {
+      "name": "Bandit Pass",
+      "table_price": 60
+    },
+    "4438": {
+      "name": "Perfect Snowflake",
+      "table_price": 60
+    },
+    "4439": {
+      "name": "Huge Wolf Claw",
+      "table_price": 62
+    },
+    "4440": {
+      "name": "Broken Heart of Naiad",
+      "table_price": 62
+    },
+    "4441": {
+      "name": "Spider Venom",
+      "table_price": 62
+    },
+    "4442": {
+      "name": "Herbal Jelly",
+      "table_price": 67
+    },
+    "4443": {
+      "name": "Razor Sharp Tusk",
+      "table_price": 69
+    },
+    "4444": {
+      "name": "Frosty Heart",
+      "table_price": 69
+    },
+    "4445": {
+      "name": "Horse Whip",
+      "table_price": 72
+    },
+    "4446": {
+      "name": "Yeti Nail",
+      "table_price": 74
+    },
+    "4447": {
+      "name": "Chilled Heart",
+      "table_price": 81
+    },
+    "4448": {
+      "name": "Miner Mole Safety Helmet",
+      "table_price": 84
+    },
+    "4449": {
+      "name": "Skeletal Ribs",
+      "table_price": 86
+    },
+    "4450": {
+      "name": "Strange Candle",
+      "table_price": 88
+    },
+    "4451": {
+      "name": "Sharp Beak",
+      "table_price": 88
+    },
+    "4452": {
+      "name": "Cracked Tortoise Egg",
+      "table_price": 91
+    },
+    "4453": {
+      "name": "Great Bear Tooth",
+      "table_price": 91
+    },
+    "4454": {
+      "name": "Ninja Mask",
+      "table_price": 91
+    },
+    "4455": {
+      "name": "Slippery Rock",
+      "table_price": 96
+    },
+    "4456": {
+      "name": "Warrior Certificate",
+      "table_price": 96
+    },
+    "4457": {
+      "name": "Bee Ration",
+      "table_price": 48
+    },
+    "4458": {
+      "name": "Thin Deer Skin",
+      "table_price": 60
+    },
+    "4459": {
+      "name": "High Quality Deer Skin",
+      "table_price": 100000
+    },
+    "4460": {
+      "name": "Unusual Satchet",
+      "table_price": 55
+    },
+    "4461": {
+      "name": "Chameleon Pig Trotter",
+      "table_price": 72
+    },
+    "4462": {
+      "name": "Rugged Pig Trotter",
+      "table_price": 93
+    },
+    "4463": {
+      "name": "Inedible Conch Meat",
+      "table_price": 52
+    },
+    "4464": {
+      "name": "Frozen Conch Meat",
+      "table_price": 64
+    },
+    "4465": {
+      "name": "Well-Formed Tortoise Shell",
+      "table_price": 67
+    },
+    "4466": {
+      "name": "Desert Seed",
+      "table_price": 50
+    },
+    "4467": {
+      "name": "Earthen Stone",
+      "table_price": 84
+    },
+    "4468": {
+      "name": "Heated Tortoise Shell",
+      "table_price": 88
+    },
+    "4469": {
+      "name": "Swift Wolf Claw",
+      "table_price": 79
+    },
+    "4470": {
+      "name": "High Quality Wolf Pelt",
+      "table_price": 57
+    },
+    "4471": {
+      "name": "Dingle Bell",
+      "table_price": 88
+    },
+    "4472": {
+      "name": "Glossy Feather",
+      "table_price": 88
+    },
+    "4473": {
+      "name": "Short Snail Feeler",
+      "table_price": 84
+    },
+    "4474": {
+      "name": "Greasy Lizard Skin",
+      "table_price": 93
+    },
+    "4475": {
+      "name": "Bitter Fruit",
+      "table_price": 36
+    },
+    "4476": {
+      "name": "Umbrella Mushroom",
+      "table_price": 55
+    },
+    "4477": {
+      "name": "Edible Mushroom",
+      "table_price": 40
+    },
+    "4478": {
+      "name": "Master Key",
+      "table_price": 45
+    },
+    "4479": {
+      "name": "Snowy Fluff",
+      "table_price": 52
+    },
+    "4480": {
+      "name": "Edgy Carapace",
+      "table_price": 62
+    },
+    "4481": {
+      "name": "Heart of Purity",
+      "table_price": 67
+    },
+    "4482": {
+      "name": "Scorpion Blood",
+      "table_price": 91
     },
     "4483": {
       "name": "Cactus Thorn",
@@ -350,13 +1159,261 @@
       "name": "Camel Mane",
       "table_price": 10
     },
+    "4487": {
+      "name": "Well-Formed Antler",
+      "table_price": 15
+    },
+    "4488": {
+      "name": "Contaminated Water",
+      "table_price": 18
+    },
+    "4489": {
+      "name": "Silky Soft Wool",
+      "table_price": 25
+    },
+    "4490": {
+      "name": "Crab Carapace",
+      "table_price": 25
+    },
+    "4491": {
+      "name": "Strong Squid Tentacle",
+      "table_price": 26
+    },
+    "4492": {
+      "name": "Snowball",
+      "table_price": 34
+    },
+    "4493": {
+      "name": "Boar Spine",
+      "table_price": 36
+    },
+    "4494": {
+      "name": "Huge Crab Pincers",
+      "table_price": 900
+    },
+    "4495": {
+      "name": "Bandit Sash",
+      "table_price": 600
+    },
+    "4496": {
+      "name": "Cracked Iron Sword",
+      "table_price": 500
+    },
+    "4497": {
+      "name": "Golden Conch Shell",
+      "table_price": 600
+    },
+    "4498": {
+      "name": "Iron Hook",
+      "table_price": 1400
+    },
+    "4499": {
+      "name": "Metal Earring",
+      "table_price": 52
+    },
+    "4500": {
+      "name": "Blood Red Crab Carapace",
+      "table_price": 1000
+    },
+    "4501": {
+      "name": "Spikey Cuffs",
+      "table_price": 600
+    },
+    "4502": {
+      "name": "Skeletal Bandana",
+      "table_price": 700
+    },
+    "4503": {
+      "name": "Crown",
+      "table_price": 1000
+    },
+    "4504": {
+      "name": "Pirate Hat",
+      "table_price": 1600
+    },
+    "4505": {
+      "name": "Misshapen Demonic Blade",
+      "table_price": 76
+    },
     "4506": {
       "name": "Melon Tuber",
       "table_price": 2
     },
+    "4507": {
+      "name": "Scorpion Carapace",
+      "table_price": 7
+    },
     "4508": {
       "name": "Cacus Tuber",
       "table_price": 9
+    },
+    "4509": {
+      "name": "Vampiric Fangs",
+      "table_price": 74
+    },
+    "4510": {
+      "name": "Red Boxing Gloves",
+      "table_price": 84
+    },
+    "4511": {
+      "name": "Glistening Shrub",
+      "table_price": 60
+    },
+    "4512": {
+      "name": "Transparent Sea Jelly Skin",
+      "table_price": 62
+    },
+    "4513": {
+      "name": "Speckled Fish Scale",
+      "table_price": 64
+    },
+    "4514": {
+      "name": "Squid Ink",
+      "table_price": 67
+    },
+    "4515": {
+      "name": "Arabic Bandana",
+      "table_price": 72
+    },
+    "4516": {
+      "name": "Glittery Sea Jelly Skin",
+      "table_price": 76
+    },
+    "4517": {
+      "name": "Blood Red Polliwog skin",
+      "table_price": 81
+    },
+    "4518": {
+      "name": "Heart of Merman",
+      "table_price": 84
+    },
+    "4519": {
+      "name": "Slimy Sea Jelly Skin",
+      "table_price": 86
+    },
+    "4520": {
+      "name": "Glittery Dolphin Skin",
+      "table_price": 88
+    },
+    "4521": {
+      "name": "Fish Bone",
+      "table_price": 91
+    },
+    "4522": {
+      "name": "Black Polliwog Skin",
+      "table_price": 93
+    },
+    "4523": {
+      "name": "Broken Long Spear",
+      "table_price": 96
+    },
+    "4524": {
+      "name": "Shark Tooth",
+      "table_price": 100
+    },
+    "4525": {
+      "name": "Slimy Dolphin Skin",
+      "table_price": 103
+    },
+    "4526": {
+      "name": "Rusty Long Spear",
+      "table_price": 108
+    },
+    "4527": {
+      "name": "Thorny Water Shrub",
+      "table_price": 90
+    },
+    "4528": {
+      "name": "Long Tentacle",
+      "table_price": 93
+    },
+    "4529": {
+      "name": "Fresh Fish Meat",
+      "table_price": 97
+    },
+    "4530": {
+      "name": "Tasty Squid Meat",
+      "table_price": 100
+    },
+    "4531": {
+      "name": "Cracked Arabic Pearl",
+      "table_price": 108
+    },
+    "4532": {
+      "name": "Shocking Tentacle",
+      "table_price": 115
+    },
+    "4533": {
+      "name": "Polliwog Tail",
+      "table_price": 122
+    },
+    "4534": {
+      "name": "Twinkling Merman Scale",
+      "table_price": 126
+    },
+    "4535": {
+      "name": "Large Tentacle",
+      "table_price": 129
+    },
+    "4536": {
+      "name": "Magical Stone Fragment",
+      "table_price": 133
+    },
+    "4537": {
+      "name": "Fish Spike",
+      "table_price": 136
+    },
+    "4538": {
+      "name": "Gigantic Polliwog Tail",
+      "table_price": 140
+    },
+    "4539": {
+      "name": "Big Tail Scale",
+      "table_price": 144
+    },
+    "4540": {
+      "name": "Shark Fin",
+      "table_price": 151
+    },
+    "4541": {
+      "name": "Mystic Crystal Fragment",
+      "table_price": 154
+    },
+    "4542": {
+      "name": "Sparkling Fin",
+      "table_price": 162
+    },
+    "4606": {
+      "name": "Black Dye",
+      "table_price": 200
+    },
+    "4610": {
+      "name": "Decolorant",
+      "table_price": 200
+    },
+    "4803": {
+      "name": "Broken Werewolf Warrior Emblem",
+      "table_price": 68
+    },
+    "4804": {
+      "name": "Thorny Stramonium Flower",
+      "table_price": 68
+    },
+    "4805": {
+      "name": "Tribal Feather",
+      "table_price": 69
+    },
+    "4907": {
+      "name": "Broken Hammer",
+      "table_price": 100
+    },
+    "4908": {
+      "name": "Long Stramonium Spike",
+      "table_price": 100
+    },
+    "4909": {
+      "name": "Broken Strange Bone",
+      "table_price": 103
     }
   }
 }
