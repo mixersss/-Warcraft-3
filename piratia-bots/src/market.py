@@ -253,7 +253,7 @@ class Market:
             if any(e.identity!=w.own_id and e.stall and math.dist(e.position,policy.position(now))<350 for e in w.entities.values()):
                 self.finish(now);return False
             self.stock=self.offers(policy)
-            if not self.stock:self.finish(now);return False
+            if not self.stock or not w.skills.get(241,{}).get('level',0):self.finish(now);return False
             self.send(START,start_request('Оружие и находки',self.stock));self.open_requests+=1
             self.state='opening';self.deadline=now+15;return True
         # Scan visible real player/bot stalls only. Never use shared stock as a fake server view.
@@ -274,8 +274,8 @@ class Market:
         slot=self.directory.reserve(self.name,w.map,now)
         if slot is None:self.next_shift=now+60;return False
         # Separate cells in a ring near the existing home city; never stack stalls on an NPC.
-        angle=slot*2*math.pi/10
-        point=(policy.home[0]+int(1200*math.cos(angle)),policy.home[1]+int(1200*math.sin(angle)))
+        angle=(slot%10)*2*math.pi/10;radius=1200+600*(slot//10)
+        point=(policy.home[0]+int(radius*math.cos(angle)),policy.home[1]+int(radius*math.sin(angle)))
         goal=policy.nav.nearest(point,6)
         if not goal or any(e.control in (2,3) and math.dist(e.position,goal)<350 for e in w.entities.values()):
             self.directory.release(self.name);self.next_shift=now+120;return False

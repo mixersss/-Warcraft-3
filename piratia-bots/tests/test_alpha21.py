@@ -40,7 +40,7 @@ class LearningTests(unittest.TestCase):
   w.own_hits[88]=(2,True);w.own.values[15]=14;l.observe(w,3)
   self.assertEqual(l.rows['103']['wins'],1);self.assertEqual(l.rows['103']['xp'],4)
  def test_party_credited_win_without_xp_is_not_invented_xp(self):
-  w,l,t=self.make();l.begin(w,t,0);t.values[1]=0;w.own_hits[88]=(2,True);l.observe(w,3)
+  w,l,t=self.make();l.begin(w,t,0);t.values[1]=0;w.own_hits[88]=(2,True);l.observe(w,3);l.observe(w,5)
   self.assertEqual(l.rows['103']['xp'],0);self.assertEqual(l.rows['103']['wins'],1)
  def test_stalled_battle_gets_a_bounded_cooldown(self):
   w,l,t=self.make();l.begin(w,t,0);l.finish(w,15,'stalled')

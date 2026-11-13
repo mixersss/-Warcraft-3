@@ -753,3 +753,25 @@ refuse help. Helpers use normal movement/attack; no fake damage or teleports.
 263 offline tests passed; 8 socket integrations not rerun after interrupted full
 run (previous Alpha20 full240 passed). Native serializer audit passed new contact
 cases plus prior combat/NPC/party/stall cases. Live200 bot behavior unverified.
+
+
+## Alpha22: finite state recovery and observed trial rewards
+
+No command byte layouts changed. Native city revival remains command10,u8(1).
+Three missed requests no longer permanently disable retries: bounded batches
+continue after backoff until a real alive/map state is observed. No health/SQL
+teleport writes. Offmesh recovery also uses retry batches rather than a lifetime
+limit. A dispatched pending command no longer leaves the visible waiting label;
+hunt.action_wait reports actual queued type and age separately.
+
+Starter source-table reproduction: with Forest103 avoided at level1, 5/6 prior
+profiles had no selectable species. All6 now have bounded alternative selection.
+Starter103 is initial trial only. Every third completed result reserves a viable
+unfamiliar trial, with limited route retry; safety cooldowns remain authoritative.
+XP may arrive after a death notification; up to2s is allowed before recording a
+zero-XP win. Old own-hit death credit predating a fight is not reused.
+
+City leisure routes use derived navigation and different final positions, no
+bench pose packets. Stall slots>=10 use a larger ring, actual skill241 is checked
+at arrival. Random scripted conversation disabled in runtime, explicit requests
+and real-state messages remain.279 offline regressions passed; no live200 run.

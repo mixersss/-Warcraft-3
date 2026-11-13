@@ -62,6 +62,8 @@ class PopulationTests(unittest.TestCase):
   from equipment import ItemCatalog
   w=scene();w.bag_ready=False;t=Town(w,LifeItems(ROOT/'assets'),ItemCatalog(ROOT/'assets/items.json'),{},random.Random(1),w.own.position)
   p=Mock();p.position.return_value=w.own.position;t.note_progress(0,0)
+  from navigation import Navigation
+  p.nav=Navigation(ROOT/'assets/argent-navigation.json')
   for now in (1,1000,10000):t.tick(now,p,True)
   self.assertEqual(t.breaks,0);self.assertEqual(t.rest_until,0)
   t.note_progress(12,0);t.tick(10001,p,True);t.tick(10002,p,True);self.assertEqual(t.breaks,1)

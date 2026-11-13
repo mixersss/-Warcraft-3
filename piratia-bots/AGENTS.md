@@ -8,4 +8,8 @@ The owner explicitly prioritizes earned character development above chat or idle
 5. Stable personalities affect helping/refusing. Bot-to-bot help must produce real actions only after a server chat request, not only scripted claims. Human party/friend/private-message requests use validated native protocol and real server confirmations; no fake success.
 6. Weapon forge, gems, dungeons, full advanced-class island chains and PvP remain future stages until actually implemented and verified. Do not describe them as working merely because they are in the roadmap.
 
+7. Forest Spirit is only the initial completed trial. Force periodic viable unfamiliar trials and compare real XP/time and HP cost. Keep observations across restarts; allow asynchronously delivered XP to settle before scoring a kill.
+8. Avoid permanent idle/dead states: bounded retries with backoff must continue after missed revival or movement acknowledgements. Do not fabricate health/position to recover. Leisure means distinct checked city walks under the existing 10% quota; do not send everyone to one home point. Actual bench sitting needs verified object placements and native pose behavior.
+9. Runtime unsolicited speech must reflect actual events/state. Generic scripted dialogue is disabled; real help/refusals, observed-level congratulations and direct human replies remain. Stalls require a server-confirmed trade skill and owned surplus stock; no fake goods.
+
 User authorized continued implementation/testing and GitHub releases. Never publish data, credentials, owner binaries/dumps, or private raw reports. Local simulations/native serializer checks are not live Windows game validation. Do not promise that disconnects cannot happen.

@@ -37,6 +37,7 @@ class Social:
         self.friend_handler=self.party_handler=self.bot_handler=self.context_provider=None
         self.urgent=deque(maxlen=4);self.personality=None
         self.busy_state=False
+        self.scripted_dialogues=True
     def queue_line(self,text,now):
         text=text.encode('cp1251',errors='replace')[:120].decode('cp1251')
         if text and text not in [row[0] for row in self.urgent]:self.urgent.append((text,now+30))
@@ -75,7 +76,8 @@ class Social:
         if has('фея','феи','мордо','джун'):return 'pets','Фей пока не выращиваю. Эта часть ещё впереди.'
         if has('корабль','корабли','море'):return 'sea','Морские походы ещё не освоил, пока хожу по суше.'
         if has('делаешь','занят','охотишься','фармишь'):
-            return 'activity',('Отдыхаю в городе, проверяю припасы.' if self.activity=='city' else
+            context=self.context_provider() if self.context_provider else None
+            return 'activity',context or ('Отдыхаю в городе, проверяю припасы.' if self.activity=='city' else
                                'Восстанавливаюсь после боя.' if self.resting else
                                'Занимаюсь заданием.' if self.activity=='quest' else 'Пока охочусь на подходящих мобов.')
         if has('дела','настроение','норм','как'):return 'status',self.rng.choice(PHRASES['reply_status'])
@@ -109,7 +111,7 @@ class Social:
             return
         if self.conversations:
             self.conversations.register(self.name,self.world.map,self.world.own_id,self.world.position(now),now,
-                                        safe and not self.busy_state and not self.pending and now>=self.next_send)
+                                        self.scripted_dialogues and safe and not self.busy_state and not self.pending and now>=self.next_send)
         level=self.world.own.values.get(0)
         if level and self.level and level>self.level:self.event('level',now)
         if resting and not self.resting:self.event('rest',now)
@@ -125,7 +127,7 @@ class Social:
                 self.replied[(source,intent)]=now+300;self.replied.move_to_end((source,intent))
                 while len(self.replied)>128:self.replied.popitem(last=False)
             return
-        if self.conversations:
+        if self.conversations and self.scripted_dialogues:
             visible={e.identity for e in self.world.entities.values() if e.control==1 and e.identity!=self.world.own_id}
             line=self.conversations.prepare(self.name,visible,now,safe)
             if line:
@@ -135,11 +137,12 @@ class Social:
                     self.sent+=1;self.dialogue_lines+=1;self.next_send=now+45
                 return
         if safe and humans and now>=self.next_send and now>=self.next_situation:
+            context=self.context_provider() if self.context_provider else None
+            if self.context_provider and not context and not self.events:return
             if self.budget.claim(now):
                 offer=self.sale_offer() if self.sale_offer and now-self.last_offer>=900 else None
                 if offer and self.rng.random()<.25:text=offer;self.last_offer=now
                 else:
-                    context=self.context_provider() if self.context_provider else None
                     if not self.events and self.rng.random()<.35:event='joke'
                     pool=PHRASES['joke']+PHRASES['joke_extra'] if event=='joke' else PHRASES[event]
                     text=context or self.rng.choice(pool)

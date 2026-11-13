@@ -135,8 +135,10 @@ class MovementTests(unittest.TestCase):
     def test_city_revive_uses_native_command_and_bounded_retries(self):
         world,send,policy=self.make()
         world.own.values[1]=0
-        for stamp in (100,107,108,109,138,168,200,300):policy.tick(stamp)
+        for stamp in (100,107,108,109,138,168,200):policy.tick(stamp)
         self.assertEqual(send.call_count,3)
+        policy.tick(300);self.assertEqual(send.call_count,4)
+        policy.tick(301);self.assertEqual(send.call_count,4)
         self.assertTrue(all(call.args==(10,b'\x01') for call in send.call_args_list))
 
     def test_cache_never_returns_shared_mutable_paths(self):

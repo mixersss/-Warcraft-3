@@ -71,6 +71,8 @@ class ShopTests(unittest.TestCase):
         self.assertEqual(send.call_args.args,(301,struct.pack('>IHBB',99,303,1,1)))
     def test_city_rest_has_arrival_and_finite_duration(self):
         w,t=self.make();p=Mock();p.position.return_value=w.own.position
+        from navigation import Navigation
+        p.nav=Navigation(ROOT/'assets/argent-navigation.json')
         t.next_break=0;t.note_progress(0,0);t.note_progress(12,0)
         self.assertTrue(t.tick(1,p,True));self.assertTrue(t.tick(2,p,True))
         self.assertEqual(t.breaks,1);t.next_shop=999

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-21'
-NAME = 'Piratia-Auto-Bots-Alpha21'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-22'
+NAME = 'Piratia-Auto-Bots-Alpha22'
 
 
 def main():
@@ -31,14 +31,14 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Adaptive observed-fight learning, stable personalities, server-echo assistance and opt-in contacts; live Windows validation pending',
+        'status': 'Starter dead-end recovery, practical trials, revival backoff, dispersed city leisure and factual action status; live Windows validation pending',
         'native_windows_server_tested': False,
-        'pure_python_tests_passed': 263,
-        'full_python_suite_total': 271,
+        'pure_python_tests_passed': 279,
+        'full_python_suite_total': 287,
         'full_python_suite_passed': None,
         'socket_tests_not_rerun_this_release': 8,
         'last_full_network_regression': '240 passed in Alpha 20 including 8 local socket integration tests',
-        'current_network_regression': '8 socket tests not rerun for Alpha21; previous Alpha20 full240 passed; final Alpha21 full rerun was interrupted',
+        'current_network_regression': '8 socket tests not rerun for Alpha22; transport unchanged from Alpha20 full240; Alpha21 full rerun was interrupted',
         'default_bot_count': 200,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
@@ -107,6 +107,15 @@ def main():
         'pickup_requires_inventory_gain_and_ground_removal': True,
         'starter_monster_model': 103,
         'adaptive_hunting_profiles': 6,
+        'starter_species_is_initial_trial_only': True,
+        'novice_empty_plan_fallback_tested_profiles': 6,
+        'unfamiliar_trial_every_third_completed_fight': True,
+        'xp_after_death_settlement_seconds': 2,
+        'revival_retry_batches_continue_after_backoff': True,
+        'city_leisure': 'checked walking routes and brief stops',
+        'bench_sitting_implemented': False,
+        'runtime_unsolicited_speech_is_contextual': True,
+        'random_scripted_bot_dialogues_enabled': False,
         'stable_personality_profiles': 6,
         'learning_uses_observed_hp_time_xp_gold': True,
         'learning_persistence': 'data/hunt-learning-NNN.json',

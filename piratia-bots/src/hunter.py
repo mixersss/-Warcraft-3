@@ -105,6 +105,7 @@ class Hunter:
         self.optional_quests=True
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
+        self.offmesh_batch=0
         from farm_plan import HuntLearning
         self.learning=HuntLearning(self.owner)
         self.farm_plan_key=None;self.farm_plan_changes=0
@@ -328,8 +329,7 @@ class Hunter:
         return {103} if (self.region and self.world.map=='garner'
                         and '103' in self.region['farms'] and self.world.own.values.get(LV,1)<=3
                         and not self.learning.blocked(103,self.clock)
-                        and not (self.learning.rows.get('103',{}).get('losses',0)>=2
-                                 and not self.learning.rows.get('103',{}).get('wins',0))) else set()
+                        and not self.learning.rows) else set()
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
@@ -416,13 +416,16 @@ class Hunter:
             self.change('ожидание достоверных данных карты')
             if self.pending_action and own and own.alive:
                 if self.flush_action(now):return
-            if own and own.alive and self.world.map==self.nav.map and now>=self.offmesh_next and self.offmesh_requests<3:
+            if own and own.alive and self.world.map==self.nav.map and now>=self.offmesh_next:
+                if self.offmesh_batch>=3:
+                    self.offmesh_batch=0;self.offmesh_next=now+60;return
                 goal=self.nav.nearest(own.position,3)
                 if goal and distance(own.position,goal)<=400:
                     self.move_goal=None
                     self.emit(movement(own.identity,self.sequence,[own.position,goal]))
-                    self.offmesh_requests+=1;self.offmesh_next=now+10
+                    self.offmesh_requests+=1;self.offmesh_batch+=1;self.offmesh_next=now+10
             return
+        self.offmesh_batch=0
         hp, maximum = own.values.get(HP), own.values.get(MAX_HP)
         if hp is None or not maximum:
             self.change('ожидание данных здоровья')
@@ -434,6 +437,7 @@ class Hunter:
             self.clear_zone()
             self.change('персонаж погиб; обычное возвращение в город')
             if self.dead_since is None:self.dead_since=now
+            if self.death_attempts>=3 and now>=self.next_revive+60:self.death_attempts=0
             if now-self.dead_since>=8 and now>=self.next_revive and self.death_attempts<3:
                 self.send(10,b'\x01')
                 self.revive_requests+=1
@@ -442,8 +446,15 @@ class Hunter:
             return
         self.dead_since=None
         self.death_attempts=0
+        if self.learning.waiting_reward(now):
+            self.change('проверяет опыт после боя');self.next_action=now+.15;return
+        before_flush=self.flushed_actions
         if self.flush_action(now):
-            self.change("ожидание завершения предыдущего действия");return
+            if self.pending_action:self.change('ожидание завершения предыдущего действия')
+            elif self.flushed_actions>before_flush:
+                self.change('маршрут отправлен' if self.last_sent_kind==1 else 'атака отправлена; ожидает результат' if self.last_sent_kind==2 else 'действие с предметом отправлено')
+            else:self.change('повторная проверка цели после остановки')
+            return
         if self.market and self.market.busy:
             self.drop_target();self.clear_zone()
             self.market.tick(now,self,hp/maximum>.55)
@@ -674,6 +685,9 @@ class Hunter:
         return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,
                 'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
+                'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
+                               'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
+                               'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
                 'target_id':self.target,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
@@ -700,6 +714,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
+    if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
     from recovery import Recovery
     policy.recovery=Recovery(world)
@@ -707,6 +722,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name,conversations=getattr(navigation,'conversations',None))
     from personality import Personality
     personality=Personality(bot_name);social.personality=personality
+    social.scripted_dialogues=False
     role = None
     if role_store:
         role = role_store.resolve(bot_name,world.own.model,world.own.values.get(4))
@@ -780,21 +796,41 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         cooperation=Cooperation(world,policy,social,personality,navigation.help_directory)
         social.bot_handler=cooperation.hear
     def context_line():
-        if policy.learning.events:
-            event=policy.learning.events.pop(0)
-            if event=='danger':return 'Слишком больно бьёт. Восстановлюсь и попробую другую охоту.'
-            if event=='stalled':return 'На этой цели толку нет. Поищу другую.'
-            return 'Этот бой вышел нормально. Проверю добычу и продолжу.'
         if policy.resting:return 'Сначала восстановлю здоровье, потом снова за дело.'
+        if policy.market and policy.market.state=='selling':return 'Ларёк открыт. Продаю то, что действительно есть в сумке.'
         if policy.vendor and policy.vendor.sale_target:return 'Отнесу лишние трофеи торговцу, место в сумке заканчивается.'
         if policy.town and policy.town.target_shop:return 'Проверю припасы и подходящие вещи у торговца.'
-        if policy.market and policy.market.state=='selling':return 'Ларёк открыт. Продаю то, что действительно есть в сумке.'
-        if policy.target:return 'Сейчас добью моба, потом разберу добычу.'
+        if policy.town and policy.town.rest_until:return 'Немного прогуляюсь по городу и вернусь к охоте.'
+        if policy.travel and policy.travel.target:return 'Иду к портальщице, нужно перейти в другой город.'
+        target=world.entities.get(policy.target)
+        if target and target.alive:return 'Сейчас закончу бой, потом разберу добычу.'
+        if policy.learning.waiting_reward(time.monotonic()):return 'Проверяю добычу и полученный опыт.'
+        if policy.learning.events:
+            event=policy.learning.events.pop();policy.learning.events.clear()
+            if event=='danger':return 'Слишком больно бьёт. Восстановлюсь и попробую другую охоту.'
+            if event=='stalled':return 'На этой цели толку нет. Поищу другую.'
+            if event=='revived':return 'Вернулся после гибели. Проверю припасы и подберу охоту полегче.'
+            return 'Этот бой вышел нормально. Проверю добычу и продолжу.'
         if policy.mandatory_work():return 'Хочу получить свою профессию. Проверяю задание наставника.'
+        if policy.learning.probing:return 'Проверю другой вид мобов и сравню, сколько получаю опыта.'
         return None
     social.context_provider=context_line
     from public_chat import PublicChat,PublicBudget
     public_chat=PublicChat(world,client.wire.send,getattr(navigation,"public_chat_budget",None) or PublicBudget(),bot_name)
+    def public_context(channel):
+        if channel=='trade':
+            if not policy.market or policy.market.state!='selling' or not policy.market.stock:return None
+            _,price,count,slot=policy.market.stock[0];item=world.bag.get(slot)
+            if not item:return None
+            name=(life.names.get(item.identity,str(item.identity)) if life else str(item.identity)).encode('cp1251',errors='replace')[:32].decode('cp1251')
+            return f'В моём ларьке: {name}, {count} шт., цена {price} за штуку.'
+        if (policy.market and policy.market.busy) or (policy.town and (policy.town.rest_until or policy.town.target_shop)) or (policy.vendor and policy.vendor.sale_target) or (policy.travel and policy.travel.target):return None
+        if policy.mandatory_work():return f'На {world.own.values.get(0,1)} уровне разбираюсь с заданием профессии.'
+        if policy.learning.probing:return 'Пробую другую охоту: сравню опыт и потери здоровья.'
+        target=world.entities.get(policy.target)
+        if target and target.alive:return f'Охочусь. У меня сейчас {world.own.values.get(0,1)} уровень.'
+        return None
+    public_chat.context_provider=public_context
 
     def snapshot(now):
         policy.learning.save(now)
@@ -869,6 +905,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 except ProtocolError:policy.town.finish(now,600);report.result['shop_decode']='unsupported'
             if consumed:return
         if command==516:
+            was_dead=world.own is not None and not world.own.alive
             world.enter(payload)
             policy.pending_action=None;policy.action_open=False
             policy.assist_target=None
@@ -880,11 +917,15 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
+            if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
+            if was_dead:
+                policy.learning.events.append('revived');policy.learning.events=policy.learning.events[-8:]
             if policy.town:policy.town.end_rest(now);policy.town.home=policy.home;policy.town.finish(now,120)
             policy.drop_target()
             policy.clear_zone()
             policy.move_goal=None
             policy.stuck=0
+            policy.offmesh_batch=0;policy.offmesh_next=0
             policy.resting=False
             policy.cancel_pending=False
             policy.dead_since=None

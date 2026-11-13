@@ -27,6 +27,7 @@ class Town:
         self.target_shop=None;self.wanted=None;self.reason=''
         self.rest_directory=rest_directory;self.owner=owner or str(world.own_id)
         self.work_kills=self.work_quests=0;self.work_baseline=None;self.last_rest=0;self.rest_due=False
+        self.rest_goal=None;self.rest_pause_until=0;self.walk_stops=0
     def note_progress(self,kills,quests):
         if self.work_baseline is None:self.work_baseline=(kills,quests)
         self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
@@ -36,6 +37,16 @@ class Town:
         self.rest_until=0;self.rest_arrived=None;self.rest_due=False;self.last_rest=now
         self.work_baseline=None;self.work_kills=self.work_quests=0
         self.next_break=now+600
+        self.rest_goal=None;self.rest_pause_until=0
+    def choose_walk_stop(self,now,policy):
+        for _ in range(12):
+            angle=self.rng.uniform(0,math.tau);radius=self.rng.uniform(600,1600)
+            raw=(round(self.home[0]+radius*math.cos(angle)),round(self.home[1]+radius*math.sin(angle)))
+            goal=policy.nav.nearest(raw,3)
+            if not goal or math.dist(goal,policy.position(now))<350:continue
+            if any(e.identity!=self.world.own_id and e.control in (1,2,3) and math.dist(e.position,goal)<250 for e in self.world.entities.values()):continue
+            if policy.nav.path(policy.position(now),goal):return goal
+        return None
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
@@ -103,15 +114,20 @@ class Town:
         if not safe or dialogue_busy:return False
         if self.rest_until:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):self.end_rest(now);return False
-            self.reason='отдыхает в городе'
-            if math.dist(policy.position(now),self.home)>500:
+            if now>=self.rest_until:self.end_rest(now);return False
+            self.reason='идёт на короткую прогулку по городу'
+            if math.dist(policy.position(now),self.home)>1800:
                 goal=policy.nav.nearest(self.home,6)
                 if not goal or not policy.move_to(goal,now):self.end_rest(now);return False
-                if now>self.rest_until:self.end_rest(now)
                 return True
             if self.rest_arrived is None:self.rest_arrived=now;self.rest_until=now+self.rng.uniform(40,100);self.breaks+=1
-            if now<self.rest_until:return True
-            self.end_rest(now)
+            if now<self.rest_pause_until:
+                self.reason='короткая остановка во время прогулки';return True
+            if self.rest_goal and math.dist(policy.position(now),self.rest_goal)<200:
+                self.walk_stops+=1;self.rest_goal=None;self.rest_pause_until=now+self.rng.uniform(3,8);return True
+            if not self.rest_goal:self.rest_goal=self.choose_walk_stop(now,policy)
+            if self.rest_goal and policy.move_to(self.rest_goal,now):return True
+            self.end_rest(now);return False
         if self.rest_due and now>=self.next_break:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):return False
             self.rest_until=now+180;return True
@@ -129,4 +145,4 @@ class Town:
         goal=policy.nav.nearest(point,6)
         if goal and policy.move_to(goal,now):return True
         self.finish(now,300);return False
-    def summary(self):return {'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests}
+    def summary(self):return {'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}
