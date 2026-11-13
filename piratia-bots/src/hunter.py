@@ -50,6 +50,8 @@ class Hunter:
         self.rejected_target_releases=0
         self.motion_anchor=None;self.motion_progress_at=None
         self.move_endpoint=None;self.move_packet=None
+        self.sent_move_points=();self.move_map=None;self.cancelled_move_packet=None
+        self.move_stop_seen=-1;self.blocked_move_stops=0;self.last_blocked_step=None
         self.assist_target=None;self.helper=None
         self.target = None
         self.shared_target = False
@@ -116,6 +118,7 @@ class Hunter:
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
         self.refresh_class_intent=None
+        self.quest_combat_ready=False
         self.inventory_blocked=False
         self.inventory_blocker=None
         self.raising_travel_funds=False
@@ -230,6 +233,7 @@ class Hunter:
 
 
     def stop_action(self):
+        if self.last_sent_kind==1:self.cancelled_move_packet=self.move_packet
         self.send(7,b'');self.end_action_requests+=1;self.action_open=False
 
     def send_action(self,body):
@@ -246,6 +250,9 @@ class Hunter:
             if target:self.learning.begin(self.world,target,self.clock)
         elif body[8]==1:
             self.move_packet=self.last_sent_sequence
+            self.move_map=self.world.map
+            count=int.from_bytes(body[9:11],'big')
+            self.sent_move_points=tuple(struct.iter_unpack('<ii',body[11:11+count]))
             self.move_endpoint=struct.unpack('<ii',body[-8:])
 
     def emit(self, body):
@@ -298,8 +305,57 @@ class Hunter:
         # its fight starts. Only SKILL_SRC termination ends that whole action.
         return kind is None or (self.last_sent_kind==1 and kind==1) or (self.last_sent_kind==2 and kind==3)
 
+    def observe_movement(self,now):
+        """Respect real stops before the requested end; do not blacklist our EndAction."""
+        w=self.world
+        if not self.sent_move_points or self.move_map!=w.map or self.last_sent_kind!=1:return
+        origin=self.position(now)
+        if w.move_revision!=self.move_stop_seen:
+            self.move_stop_seen=w.move_revision
+            if (w.move_state and w.move_packet_number==self.move_packet
+                    and self.cancelled_move_packet!=self.move_packet
+                    and distance(origin,self.move_endpoint)>150):
+                self.blocked_move_stops+=1;self.stuck=5
+                self.action_open=False;self.move_until=now
+                # Locate the rejected forward step, never the occupied origin.
+                # Corrections far from the sent route do not imply a new obstacle.
+                closest=None
+                for a,b in zip(self.sent_move_points,self.sent_move_points[1:]):
+                    dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+                    if not length:continue
+                    t=max(0,min(1,((origin[0]-a[0])*dx+(origin[1]-a[1])*dy)/(length*length)))
+                    projected=(a[0]+dx*t,a[1]+dy*t)
+                    score=distance(origin,projected)
+                    if t<1 and (closest is None or score<closest[0]):closest=(score,projected,(dx/length,dy/length),length*(1-t))
+                if closest and closest[0]<=150 and hasattr(self.nav,'avoid_cell'):
+                    _,point,direction,left=closest
+                    for step in (80,120,160):
+                        step=min(step,left)
+                        ahead=(round(point[0]+direction[0]*step),round(point[1]+direction[1]*step))
+                        cell=self.nav.cell(ahead)
+                        if cell!=self.nav.cell(origin) and self.nav.avoid_cell(cell,now):
+                            self.last_blocked_step={'map':w.map,'position':list(self.nav.position(cell)),
+                                                    'stop_position':list(origin),'packet':self.move_packet}
+                            break
+                return
+        if self.move_goal and self.cancelled_move_packet!=self.move_packet:
+            if distance(origin,self.move_endpoint)<=100:
+                self.motion_anchor=origin;self.motion_progress_at=now;return
+            if self.motion_anchor is None or distance(origin,self.motion_anchor)>=100:
+                self.motion_anchor=origin;self.motion_progress_at=now;self.stuck=0
+            elif now-self.motion_progress_at>=10:self.stuck=5
+
+    def acknowledged_move_deadline(self):
+        motion=self.world.motion.get(self.world.own_id)
+        if motion and self.world.move_packet_number==self.move_packet:
+            points,started,speed=motion
+            return started+sum(distance(a,b) for a,b in zip(points,points[1:]))/max(1,speed)
+        return self.move_until
+
     def move_to(self, goal, now):
         self.clock=now
+        self.observe_movement(now)
+        if self.stuck>=5:return False
         if self.pending_action:return True
         own = self.world.own
         origin = self.position(now)
@@ -312,7 +368,7 @@ class Hunter:
                 return True  # Wait for server acceptance; never extrapolate a requested route.
             if (self.world.move_revision!=self.move_revision and self.world.move_state==0
                     and (self.world.move_packet_number is None or self.world.move_packet_number==self.move_packet)
-                    and now<self.move_until+.5):
+                    and now<self.acknowledged_move_deadline()+.5):
                 self.move_waits+=1
                 return True
         path = self.nav.segment(origin,goal)
@@ -402,6 +458,7 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
         if self.inventory_blocked and key in ('adventure','career','story','market','town'):return False
         if self.raising_travel_funds and key in ('adventure','career','story','market','town'):return False
         if self.helper and self.helper.source is not None and not self.mandatory_work():return False
@@ -462,6 +519,7 @@ class Hunter:
         nav=self.nav;incremental=getattr(nav,'incremental',False) is True
         from route_search import RoutePending
         previous,since=self.mode,self.mode_since
+        if hasattr(nav,'expire_obstacles'):nav.expire_obstacles(time.monotonic() if now is None else now)
         if incremental:nav.begin_turn()
         try:return self._tick(now)
         except RoutePending:self.change('планирует безопасный маршрут; продолжает принимать сеть')
@@ -540,6 +598,7 @@ class Hunter:
         if self.adventure and self.adventure.prepare_priority():
             self.task_budget.paused.pop('adventure',None)
             self.task_budget.rows.pop('adventure',None)
+        self.observe_movement(now)
         before_flush=self.flushed_actions
         if self.flush_action(now):
             if self.pending_action:self.change('ожидание завершения предыдущего действия')
@@ -603,6 +662,7 @@ class Hunter:
         safe=not self.target and not self.resting and hp/maximum>.55
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
+        self.quest_combat_ready=False
         first_profession = bool(self.adventure and self.adventure.profession_priority())
         self.inventory_blocked=bool(first_profession and self.world.bag_ready and not self.world.bag_disabled
                 and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)<1)
@@ -654,9 +714,17 @@ class Hunter:
             self.change('первая профессия: '+self.adventure.reason)
             self.next_action=now+.5
             return
-        if not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
+        kill_task=self.adventure.farm() if self.adventure else None
+        self.quest_combat_ready=bool(first_profession and isinstance(kill_task,(tuple,list))
+            and len(kill_task)==2 and kill_task[0] and kill_task[1] is None
+            and not self.inventory_blocked and not market_dialogue
+            and not (self.travel and self.travel.context)
+            and any(e.model==kill_task[0] and self.eligible(e,now)
+                    and distance(self.position(now),self.world.position(now,e.identity))<=2000
+                    for e in self.world.entities.values()))
+        if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
-        if not loot_dialogue:
+        if not loot_dialogue and not self.quest_combat_ready:
             if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
                 task = self.adventure.farm() if self.adventure else None
                 needed = self.equipment.loot_needs() if self.equipment else set()
@@ -677,13 +745,13 @@ class Hunter:
                 if self.loot.tick(now,self,needed):
                     self.change('подбор нужного лута; результат подтверждает сервер')
                     return
-        if self.travel and (not self.activity.hunting(now) or self.mandatory_work() or self.travel.starter_trip()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
+        if not self.quest_combat_ready and self.travel and (not self.activity.hunting(now) or self.mandatory_work() or self.travel.starter_trip()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
         if self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
-        if self.chests and self.chests.tick(now,self,safe):
+        if not self.quest_combat_ready and self.chests and self.chests.tick(now,self,safe):
             self.change('открывает собственный сундук');self.next_action=now+.3;return
         if self.task('career',self.career,lambda:self.career.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.story and self.story.context)),now):
             self.drop_target();self.clear_zone();self.change(self.career.reason);return
@@ -860,7 +928,7 @@ class Hunter:
 
     def summary(self):
         return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
-                'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
+                'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
@@ -1117,6 +1185,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
+            policy.sent_move_points=();policy.move_map=None;policy.cancelled_move_packet=None
+            policy.motion_anchor=None;policy.motion_progress_at=None;policy.stuck=0
             if policy.vendor:policy.vendor.home=world.own.position;policy.vendor.finish_sale(now)
             if policy.market:
                 policy.market.finish(now);policy.market.context=None;policy.market.pending=None

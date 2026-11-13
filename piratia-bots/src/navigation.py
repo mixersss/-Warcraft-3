@@ -15,6 +15,7 @@ from pathlib import Path
 class Navigation:
     def __init__(self, path):
         data = json.loads(Path(path).read_text(encoding='utf-8'))
+        self.local = threading.local()
         self.map = data.get('map','garner')
         self.origin = tuple(data['origin'])
         self.width, self.height = data['width'], data['height']
@@ -33,7 +34,31 @@ class Navigation:
 
     def free(self, cell):
         x, y = cell
-        return 0 <= x < self.width and 0 <= y < self.height and self.cells[y*self.width+x] == 1
+        return 0 <= x < self.width and 0 <= y < self.height and self.cells[y*self.width+x] == 1 and cell not in getattr(getattr(self,'local',None),'blocked_cells',())
+
+    def expire_obstacles(self,now):
+        local=getattr(self,'local',None)
+        if local is None or not getattr(local,'blocked_cells',None):return
+        keep={cell:until for cell,until in local.obstacles.items() if until>now}
+        if len(keep)!=len(local.obstacles):
+            local.obstacles=keep;local.blocked_cells=frozenset(keep)
+            if hasattr(local,'searches'):local.searches.clear()
+
+    def avoid_cell(self,cell,now,seconds=30):
+        """Short per-worker avoidance after an unrequested server movement stop.
+
+        Never edit shared map cells or infer a whole lake from a single collision.
+        """
+        x,y=cell
+        if not (0<=x<self.width and 0<=y<self.height and self.cells[y*self.width+x]==1):return False
+        if not hasattr(self,'local'):self.local=threading.local()
+        local=self.local
+        self.expire_obstacles(now)
+        rows=getattr(local,'obstacles',{});rows[cell]=now+seconds
+        while len(rows)>64:rows.pop(next(iter(rows)))
+        local.obstacles=rows;local.blocked_cells=frozenset(rows)
+        if hasattr(local,'searches'):local.searches.clear()
+        return True
 
     def nearest(self, position, radius=6):
         x,y = self.cell(position)
@@ -45,7 +70,7 @@ class Navigation:
         return None
 
     def path(self, start, end, limit=25000):
-        key=(self.cell(start),self.cell(end),limit)
+        key=(self.cell(start),self.cell(end),limit,tuple(sorted(getattr(getattr(self,'local',None),'blocked_cells',()))))
         cached = self._runtime_path(key) if getattr(self,'incremental',False) and getattr(self.local,'active',False) else self._path(*key)
         result = list(cached)
         if result:
@@ -130,7 +155,7 @@ class Navigation:
             # Random candidate ties must not discard half-built searches forever.
             self._runtime_path(next(iter(local.searches)))
         if key not in local.searches:
-            start,goal,limit=key
+            start,goal,limit=key[:3]
             if not self.free(start) or not self.free(goal):return ()
             direct=self.direct(start,goal)
             if direct:return self._remember(key,direct)
@@ -155,6 +180,6 @@ class Navigation:
         return result
 
     @lru_cache(maxsize=256)
-    def _path(self,start_cell,goal,limit):
+    def _path(self,start_cell,goal,limit,blocked=()):
         if not self.free(start_cell) or not self.free(goal):return ()
         return self.direct(start_cell,goal) or Search(start_cell,goal).advance(self,limit,lambda:None)

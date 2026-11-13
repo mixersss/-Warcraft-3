@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-34'
-NAME = 'Piratia-Auto-Bots-Alpha34'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-35'
+NAME = 'Piratia-Auto-Bots-Alpha35'
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
     sources += sorted((ROOT / 'assets').glob('*.json'))
-    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md']
+    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md', ROOT / 'knowledge' / 'navigation-audit.json']
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -33,8 +33,18 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Remove all artificial NPC sale cooldowns and vendor task pauses; full-bag relief cannot freeze quest combat; native transaction confirmation retained; live revalidation pending',
+        'status': 'Recover from unsolicited server movement stops with worker-local temporary obstacle avoidance; use acknowledged path duration; prioritize visible profession kill targets; find reports by nickname; live revalidation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
+        'unexpected_server_stop_replans_route': True,
+        'our_endaction_stop_is_not_obstacle': True,
+        'temporary_obstacle_seconds': 30,
+        'temporary_obstacle_limit_per_worker': 64,
+        'temporary_obstacles_are_worker_local': True,
+        'movement_wait_uses_server_accepted_route_duration': True,
+        'visible_first_profession_kills_precede_optional_loot_and_shopping': True,
+        'find_bot_by_public_nickname': 'Find-Bot.cmd; tags from Alpha34+ reports; no data or credentials read',
+        'pond_shoreline_from_owner_atr_confirmed': False,
+        'original_navigation_grid_changed': False,
         'npc_sale_cooldown_seconds': 0,
         'vendor_task_pause_seconds': 0,
         'vendor_productive_route_absolute_time_limit_removed': True,
@@ -96,11 +106,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 381,
-        'full_python_suite_total': 389,
-        'full_python_suite_passed': 389,
+        'pure_python_tests_passed': 401,
+        'full_python_suite_total': 409,
+        'full_python_suite_passed': 409,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '389 passed in Alpha34 including 8 local socket integration tests',
+        'last_full_network_regression': '409 passed in Alpha35 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

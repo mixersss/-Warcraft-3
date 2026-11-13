@@ -1,0 +1,37 @@
+{
+  "source": "Owner supplied garner.blk and garner.rar containing garner.atr; original binary assets remain private",
+  "attr_crop": {
+    "width": 4096,
+    "height": 4096,
+    "bounds": [
+      2018,
+      2534,
+      2059,
+      2585
+    ],
+    "sha256": "0e342939b728e06573255b60b1a71c8cc5484d909522dec6b91e4e844471c9cc",
+    "raw_attribute_region_counts": [
+      {
+        "attribute_word": 5,
+        "region_byte": 3,
+        "tiles": 2091
+      }
+    ],
+    "land_sea_semantics_inferred": false
+  },
+  "block_file": {
+    "sha256": "923775821a44aadb3ff542e6a6353a27d9152137250d2577e403460a23c73f97",
+    "width": 8192,
+    "height": 8192,
+    "bytes": 8388616,
+    "differences_against_current_garner_navigation_cells": 0,
+    "differences_against_current_argent_navigation_cells": 0
+  },
+  "crop_block_clearance": {
+    "tiles": 2091,
+    "walkable_tiles": 1962,
+    "largest_four_connected_blocked_group_tiles": 12
+  },
+  "conclusion": "ATR raw attributes are uniform across the reported pond region; no pond shoreline or land/sea boundary can be derived from this crop. Do not invent a water polygon. Implement recovery from actual server stops and shorten wait to the acknowledged route duration.",
+  "server_live_collision_fix_verified": false
+}
