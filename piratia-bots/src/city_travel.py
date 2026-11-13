@@ -28,6 +28,8 @@ class CityTravel:
             return career.quest['map']
         return self.home_city
     def starter_trip(self):return 1<=self.world.own.values.get(0,0)<=3 and self.world.map!='garner'
+    def needs_funds(self):
+        return self.world.own.values.get(0,0)>10 and self.world.own.values.get(8,0)<500
     def abort(self,now,problem='переход не подтверждён'):
         self.context=None;self.pending=None;self.target=None;self.trip_started=None
         required=self.world.own.values.get(4)==0 and self.world.own.values.get(0,0)>=9
@@ -68,8 +70,10 @@ class CityTravel:
             return True
         if not safe or dialogue_busy or now<self.next_trip:return False
         w=self.world
-        if w.map not in TELEPORTERS or (w.own.values.get(0,0)>10 and w.own.values.get(8,0)<500):
-            self.reason='для перехода требуется 500G' if w.map in TELEPORTERS else 'неизвестна точка телепортера на текущей карте'
+        if self.needs_funds():
+            self.reason='для перехода требуется 500G';return False
+        if w.map not in TELEPORTERS:
+            self.reason='неизвестна точка телепортера на текущей карте'
             self.next_trip=now+120;return False
         if self.target!=wanted:
             self.target=wanted;self.trip_started=now;self.last_progress=now;self.last_position=policy.position(now)

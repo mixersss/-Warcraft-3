@@ -142,6 +142,8 @@ class Adventure:
         self.last_problem = ''
         self.npc_seen = False
         self.npc_distance = None
+        self.commit_journal_before = {}
+        self.commit_resync_sent = False
 
     def observe(self, command, payload):
         self.last_response = command
@@ -155,6 +157,17 @@ class Adventure:
             self.journal = dict(entries)
             self.journal_ready = True
             self.journal_snapshot_received = True
+            if self.pending:
+                button,identity,deadline=self.pending
+                added=set(self.journal)-set(self.commit_journal_before)
+                expected=set(self.destinations)
+                if self.context and self.context[3]==self.role['promotion']:expected-=self.tutorial_ids
+                else:expected&=self.tutorial_ids
+                if button==6 and added.intersection(expected):
+                    self.accepted+=1;self.pending=None;self.context=None;self.next_visit=0
+                elif button==7 and identity is not None and identity in self.commit_journal_before and identity not in self.journal:
+                    # Reuse the same state transition as a native clear notice.
+                    self.observe(831,struct.pack('>H',identity))
         elif command in (830,832):
             identity, state = r.short(),r.byte()
             r.end()
@@ -324,6 +337,8 @@ class Adventure:
                 return
             self.send(301,commit_request(npc,button))
             self.requests += 1
+            self.commit_journal_before=dict(self.journal)
+            self.commit_resync_sent=False
             self.pending = button,self.active(),now+8
             self.context = npc,key,'commit',title
             self.deadline = now+8
@@ -361,6 +376,9 @@ class Adventure:
                 self.reason = 'неизвестный формат задания; квесты остановлены'
                 return False
         if self.context:
+            if (self.pending and self.context[2]=='commit' and not self.commit_resync_sent
+                    and now>=self.deadline-6):
+                self.send(325,b'');self.commit_resync_sent=True
             if now < self.deadline:
                 return True
             self.timeouts += 1
@@ -423,6 +441,7 @@ class Adventure:
                 'first_job':self.role['first_job'],
                 'last_objectives':[list(n) for n in self.last_needs],
                 'destination_npc':self.choose_destination(),'npc_seen':self.npc_seen,
+                'level':self.world.own.values.get(0),'gold':self.world.own.values.get(8),
                 'npc_distance':self.npc_distance,'dialogue_stage':self.context[2] if self.context else None,
                 'expected_promotion':self.role['promotion'],'last_problem':self.last_problem,
                 'last_response_command':self.last_response,'last_offers':self.last_offers,

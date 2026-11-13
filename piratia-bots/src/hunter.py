@@ -115,6 +115,7 @@ class Hunter:
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
         self.refresh_class_intent=None
+        self.raising_travel_funds=False
         from sitting import Sitting
         self.sitting=Sitting(world)
 
@@ -378,6 +379,7 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        if self.raising_travel_funds and key in ('adventure','career','story','market','town'):return False
         if self.helper and self.helper.source is not None and not self.mandatory_work():return False
         target=self.world.entities.get(self.target)
         if target and target.alive:return False  # Finish the chosen fight before another errand.
@@ -576,7 +578,12 @@ class Hunter:
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         first_profession = bool(self.adventure and self.adventure.profession_priority())
-        if first_profession and not self.target and not self.adventure.farm():
+        self.raising_travel_funds=bool(first_profession and self.travel
+            and self.travel.destination(self)!=self.world.map and self.travel.needs_funds())
+        if self.raising_travel_funds:
+            self.travel.reason='зарабатывает 500G на переход к наставнику'
+            self.travel.next_trip=0
+        if first_profession and not self.raising_travel_funds and not self.target and not self.adventure.farm():
             # No new shopping, help, ordinary loot or ordinary combat while the
             # next profession step is a journal/NPC visit. Existing paid market
             # transactions and medical recovery were serviced above.
@@ -607,7 +614,7 @@ class Hunter:
             self.change('первая профессия: '+self.adventure.reason)
             self.next_action=now+.5
             return
-        if self.helper and self.helper.tick(now,self):return
+        if not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
         if not loot_dialogue:
             if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-27'
-NAME = 'Piratia-Auto-Bots-Alpha27'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-28'
+NAME = 'Piratia-Auto-Bots-Alpha28'
 
 
 def main():
@@ -32,8 +32,11 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Remote trainer travel supersedes wrong-city Senna waits; balance unpromoted uncommitted class intents and expose NPC/server resource diagnostics; live Windows validation pending',
+        'status': 'Fix live-report paid-travel starvation; reconcile pending quest commits against authoritative full journal; preserve existing characters; live Windows revalidation pending',
         'first_profession_priority_level': 9,
+        'farm_until_real_fare_available': True,
+        'commit_full_journal_resync_after_seconds': 2,
+        'unchanged_journal_is_not_success': True,
         'dead_target_released_before_npc_travel': True,
         'missing_journal_retries_seconds': 30,
         'new_class_selection': 'least represented compatible target, random ties; verified novices may rebalance only before a profession quest is started',
@@ -69,11 +72,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 343,
-        'full_python_suite_total': 351,
-        'full_python_suite_passed': 351,
+        'pure_python_tests_passed': 348,
+        'full_python_suite_total': 356,
+        'full_python_suite_passed': 356,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '351 passed in Alpha27 including 8 local socket integration tests',
+        'last_full_network_regression': '356 passed in Alpha28 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',
