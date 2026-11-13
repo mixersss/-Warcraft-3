@@ -99,7 +99,7 @@ class Town:
         return command in (801,802,803,805,806,807,808)
     def finish(self,now,delay=120):
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
-    def tick(self,now,policy,safe,dialogue_busy=False):
+    def tick(self,now,policy,safe,dialogue_busy=False,medical=False):
         if self.next_break is None:self.next_break=now+600
         w=self.world
         if self.pending:
@@ -112,7 +112,7 @@ class Town:
             if now>self.context[2]:self.timeouts+=1;self.finish(now,300)
             return True
         if not safe or dialogue_busy:return False
-        if self.rest_until:
+        if self.rest_until and not medical:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):self.end_rest(now);return False
             if now>=self.rest_until:self.end_rest(now);return False
             self.reason='идёт на короткую прогулку по городу'
@@ -128,17 +128,24 @@ class Town:
             if not self.rest_goal:self.rest_goal=self.choose_walk_stop(now,policy)
             if self.rest_goal and policy.move_to(self.rest_goal,now):return True
             self.end_rest(now);return False
-        if self.rest_due and now>=self.next_break:
+        if self.rest_due and not medical and now>=self.next_break:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):return False
             self.rest_until=now+180;return True
         if now<self.next_shop:return False
         if not self.wanted:
+            # Healthy beginners must first earn something, not all shop on login.
+            hp=w.own.values.get(1,0);maximum=max(1,w.own.values.get(31,1))
+            earned=(self.work_kills>=2 or self.work_quests>0 or w.own.values.get(0,1)>=4)
+            if not earned and hp>=maximum*.85:return False
             self.wanted=self.choose_want()
             if not self.wanted:self.next_shop=now+120;return False
             shops=[s for s in self.life.services['shops'].get(w.map,[]) if self.wanted[0] in s['offers']]
             if not shops:self.finish(now,300);return False
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
-        point=self.target_shop['position'];self.reason='покупки у городского торговца'
+        point=self.target_shop['position']
+        if not policy.allow_visit(point,now):
+            self.finish(now,30+self.rng.uniform(0,30));return False
+        self.reason='покупки у городского торговца'
         npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
         if npc and math.dist(policy.position(now),npc.position)<=220:
             policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True

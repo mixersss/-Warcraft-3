@@ -236,7 +236,7 @@ class Hunter:
         own=self.world.own
         if not own or not own.alive:return True
         if kind==1 and self.move_goal:
-            points=self.nav.path(self.position(now),self.move_goal)[:32]
+            points=self.nav.segment(self.position(now),self.move_goal)
             if len(points)<2:return True
             body=movement(own.identity,number,points)
             self.move_sent=now;self.move_revision=self.world.move_revision
@@ -281,10 +281,10 @@ class Hunter:
                     and now<self.move_until+.5):
                 self.move_waits+=1
                 return True
-        path = self.nav.path(origin,goal)
+        path = self.nav.segment(origin,goal)
         if len(path)<2:
             return False
-        points=path[:32]  # Native maximum, contiguous checked cells, not six-metre bursts.
+        points=path  # Checked collinear cells are represented by native turn points.
         travelled=sum(distance(a,b) for a,b in zip(points,points[1:]))
         speed=max(100,min(own.values.get(44,480),3000))
         self.emit(movement(own.identity,self.sequence,points))
@@ -354,6 +354,9 @@ class Hunter:
                 if not self.target:self.move_goal=None
             self.farm_plan_key=key
 
+    def allow_visit(self,point,now,mandatory=False):
+        return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
+
     def task(self,key,feature,callback,now):
         if self.helper and self.helper.source is not None:return False
         target=self.world.entities.get(self.target)
@@ -364,7 +367,14 @@ class Hunter:
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()):return False
         if not feature or not self.task_budget.allow(key,now):return False
+        point=None
+        if self.coordination and feature and not getattr(feature,'context',None):
+            if key=='adventure' and not feature.farm():point=feature.npcs.get(feature.choose_destination())
+            elif key in ('career','story') and not feature.desired_models():point=feature.quest.get('position')
+        if isinstance(point,(tuple,list)) and len(point)==2 and not self.allow_visit(point,now,self.mandatory_work()):
+            return False
         used=callback()
+        if not used and point and self.coordination:self.coordination.leave_visit(self.owner)
         allowed=self.task_budget.track(key,feature,used,self.position(now),now)
         if used and not allowed:
             if key=='vendor':feature.finish_sale(now,180)
@@ -473,6 +483,12 @@ class Hunter:
                 self.resting = False
             else:
                 self.change('отступление и восстановление')
+                # Food is a prerequisite for recovery, not optional leisure.
+                # Only shop after reaching the city vicinity; never fake healing.
+                if (self.town and not self.cancel_pending and distance(self.position(now),self.home)<2000
+                        and not any(i.identity==1847 and i.valid and i.count>0 for i in self.world.bag.values())
+                        and self.town.tick(now,self,True,medical=True)):
+                    self.change('восстановление: покупает еду');return
                 if self.cancel_pending:
                     self.emit(movement(own.identity,self.sequence,[self.position(now),self.position(now)]))
                     self.cancel_pending = False
@@ -664,7 +680,7 @@ class Hunter:
         origin=self.position(now)
         goals.sort(key=lambda pt:(int(distance(origin,pt)//1500),
                     (pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
-        goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now)
+        goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now,self.position(now))
               if self.coordination else goals[self.waypoint%len(goals)])
         if goal!=self.search_goal:
             self.search_goal,self.search_started=goal,now
@@ -834,6 +850,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
 
     def snapshot(now):
         policy.learning.save(now)
+        report.result['decision_loop']=dict(think_stats)
         report.result['hunt']=policy.summary()
         if policy.loot:report.result['loot']=policy.loot.summary()
         if contacts:report.result['contacts']=contacts.summary()
@@ -953,6 +970,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         tell(f'Данные мира: {world.map}, координаты {world.own.x//100},{world.own.y//100}, '
              f'здоровье {world.own.values[HP]}/{world.own.values[MAX_HP]}.')
         next_snapshot=0
+        next_think=0
+        think_stats={"count":0,"max_seconds":0,"total_seconds":0}
         seen_equips=seen_skills=seen_quests=0
         seen_party=seen_chests=seen_shopping=0
         deadline = float('inf') if seconds==0 else time.monotonic()+seconds
@@ -962,41 +981,49 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.service(command, payload)
             except TimeoutError:
                 pass
-            if hasattr(navigation,'directory'):
-                navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
-            if policy.party:
-                dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel) if f)
-                policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not (policy.market and policy.market.busy))
-            if policy.town:
-                completed=sum(getattr(f,'delivered',0) for f in (policy.adventure,policy.career,policy.story) if f)
-                policy.town.note_progress(policy.kills,completed)
-            policy.tick()
-            now = time.monotonic()
-            if cooperation:cooperation.tick(now)
-            if contacts:contacts.tick(now)
-            alive = world.own.alive
-            safe = (alive and now-policy.started >= 3 and not policy.resting
-                    and world.own.values.get(HP, 0) > world.own.values.get(MAX_HP, 1) * .5)
-            progression.tick(now, safe and not (policy.market and policy.market.busy))
-            social.activity='quest' if policy.adventure and ('NPC' in policy.mode or 'задани' in policy.mode or 'поручен' in policy.mode) else 'hunt'
-            if policy.equipment.confirmed>seen_equips:social.event('equipment',now)
-            if policy.skills and policy.skills.confirmed>seen_skills:social.event('skill',now)
-            if policy.adventure and policy.adventure.delivered>seen_quests:social.event('quest_done',now)
-            seen_equips=policy.equipment.confirmed
-            seen_skills=policy.skills.confirmed if policy.skills else 0
-            seen_quests=policy.adventure.delivered if policy.adventure else 0
-            if policy.town and policy.town.rest_until:social.activity='city'
-            social.party_size=len(policy.party.members) if policy.party else 0
-            if social.party_size>seen_party and social.party_size>1:social.event('party',now)
-            if policy.chests and policy.chests.confirmed>seen_chests:social.event('chest',now)
-            if policy.town and policy.town.confirmed>seen_shopping:social.event('shopping',now)
-            seen_party=social.party_size
-            seen_chests=policy.chests.confirmed if policy.chests else 0
-            seen_shopping=policy.town.confirmed if policy.town else 0
-            social.busy_state=bool(policy.target or (policy.market and policy.market.busy)
-                or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel) if f))
-            social.tick(now, policy.resting, alive and now-policy.started >= 3)
-            public_chat.tick(now,alive and now-policy.started>=3,policy.market)
+            now=time.monotonic()
+            if now>=next_think:
+                think_started=now
+                next_think=now+.25
+                if hasattr(navigation,'directory'):
+                    navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
+                if policy.party:
+                    dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel) if f)
+                    policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not (policy.market and policy.market.busy))
+                if policy.town:
+                    completed=sum(getattr(f,'delivered',0) for f in (policy.adventure,policy.career,policy.story) if f)
+                    policy.town.note_progress(policy.kills,completed)
+                policy.tick()
+                now = time.monotonic()
+                if cooperation:cooperation.tick(now)
+                if contacts:contacts.tick(now)
+                alive = world.own.alive
+                safe = (alive and now-policy.started >= 3 and not policy.resting
+                        and world.own.values.get(HP, 0) > world.own.values.get(MAX_HP, 1) * .5)
+                progression.tick(now, safe and not (policy.market and policy.market.busy))
+                social.activity='quest' if policy.adventure and ('NPC' in policy.mode or 'задани' in policy.mode or 'поручен' in policy.mode) else 'hunt'
+                if policy.equipment.confirmed>seen_equips:social.event('equipment',now)
+                if policy.skills and policy.skills.confirmed>seen_skills:social.event('skill',now)
+                if policy.adventure and policy.adventure.delivered>seen_quests:social.event('quest_done',now)
+                seen_equips=policy.equipment.confirmed
+                seen_skills=policy.skills.confirmed if policy.skills else 0
+                seen_quests=policy.adventure.delivered if policy.adventure else 0
+                if policy.town and policy.town.rest_until:social.activity='city'
+                social.party_size=len(policy.party.members) if policy.party else 0
+                if social.party_size>seen_party and social.party_size>1:social.event('party',now)
+                if policy.chests and policy.chests.confirmed>seen_chests:social.event('chest',now)
+                if policy.town and policy.town.confirmed>seen_shopping:social.event('shopping',now)
+                seen_party=social.party_size
+                seen_chests=policy.chests.confirmed if policy.chests else 0
+                seen_shopping=policy.town.confirmed if policy.town else 0
+                social.busy_state=bool(policy.target or (policy.market and policy.market.busy)
+                    or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel) if f))
+                social.tick(now, policy.resting, alive and now-policy.started >= 3)
+                public_chat.tick(now,alive and now-policy.started>=3,policy.market)
+                think_stats['count']+=1
+                elapsed=time.monotonic()-think_started
+                think_stats['max_seconds']=max(think_stats['max_seconds'],elapsed)
+                think_stats['total_seconds']+=elapsed
             if now>=next_snapshot:
                 snapshot(now)
                 next_snapshot=now+15

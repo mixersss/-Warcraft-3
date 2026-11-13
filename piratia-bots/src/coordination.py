@@ -1,15 +1,20 @@
 """Process-local expiring reservations; game ownership and loot rights remain server-owned."""
 import threading
+import math
 
 
 class Coordination:
-    def __init__(self):
+    def __init__(self,population=200):
+        self.population=population
+        self.visits={}
         self.lock=threading.Lock()
         self.targets={}
         self.zones={}
         self.assistants={}
 
     def _expire(self,now):
+        for owner,(_,_,until) in list(self.visits.items()):
+            if until<=now:self.visits.pop(owner,None)
         for key,(_,until) in list(self.targets.items()):
             if until<=now:self.targets.pop(key,None)
         for owner,(_,until) in list(self.zones.items()):
@@ -51,7 +56,7 @@ class Coordination:
             for pair,(requester,_) in list(self.assistants.items()):
                 if pair[1]==owner or requester==owner:self.assistants.pop(pair,None)
 
-    def choose_zone(self,owner,map_name,goals,now):
+    def choose_zone(self,owner,map_name,goals,now,origin=None):
         """Keep a leased destination; otherwise prefer the least occupied real farm."""
         if not goals:return None
         goals=list(dict.fromkeys(tuple(p) for p in goals))
@@ -61,10 +66,34 @@ class Coordination:
             if previous and previous[0][0]==map_name and previous[0][1] in goals:
                 selected=previous[0][1]
             else:
-                counts={p:sum(k==(map_name,p) for k,_ in self.zones.values()) for p in goals}
-                selected=min(goals,key=lambda p:counts[p])
+                occupied=[p for (m,p),_ in self.zones.values() if m==map_name]
+                def cost(point):
+                    # Nearby coordinates belong to the same hunting patch. Counting
+                    # only identical destinations sent everyone to adjacent tiles.
+                    density=sum(max(0,1-math.dist(point,p)/2500) for p in occupied)
+                    exact=sum(point==p for p in occupied)
+                    travel=math.dist(origin,point)*.2 if origin is not None else 0
+                    return density*2500+exact*1000+travel
+                selected=min(goals,key=cost)
             self.zones[owner]=((map_name,selected),now+45)
             return selected
+
+    def visit(self,owner,map_name,point,now,mandatory=False):
+        """Admission, not a queue: denied optional visitors continue hunting."""
+        site=(map_name,tuple(point))
+        with self.lock:
+            self._expire(now)
+            previous=self.visits.get(owner)
+            if previous and previous[0]==site:
+                self.visits[owner]=(site,mandatory,now+15);return True
+            nearby=sum(m==map_name and math.dist(p,point)<500
+                       for (m,p),_,_ in self.visits.values())
+            optional=sum(not required for _,required,_ in self.visits.values())
+            if nearby>=2 or (not mandatory and optional>=max(1,self.population//10)):return False
+            self.visits[owner]=(site,mandatory,now+15);return True
+
+    def leave_visit(self,owner):
+        with self.lock:self.visits.pop(owner,None)
 
     def leave_zone(self,owner):
         with self.lock:self.zones.pop(owner,None)

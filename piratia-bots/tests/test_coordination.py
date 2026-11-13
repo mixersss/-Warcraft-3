@@ -45,7 +45,7 @@ class ReservationsTests(unittest.TestCase):
 
     def test_30_farm_destinations_are_balanced_and_stable(self):
         from collections import Counter
-        c=Coordination();goals=[(100,200),(300,400),(500,600)]
+        c=Coordination();goals=[(100,200),(10300,400),(20500,600)]
         chosen=[c.choose_zone(str(i),'garner',goals,0) for i in range(30)]
         self.assertEqual(sorted(Counter(chosen).values()),[10,10,10])
         self.assertEqual(c.choose_zone('0','garner',goals,20),chosen[0])

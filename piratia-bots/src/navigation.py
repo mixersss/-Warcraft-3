@@ -47,6 +47,20 @@ class Navigation:
             result[0] = tuple(start)
         return result
 
+    def segment(self,start,end):
+        """Native routes contain turns, not every A* grid cell (maximum 32)."""
+        path=self.path(start,end)
+        if len(path)<3:return path
+        # Keep the first centred cell: arbitrary sub-cell start positions must
+        # not change the angle of a checked diagonal around a wall.
+        turns=[path[0]]
+        for i in range(1,len(path)-1):
+            before=(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1])
+            after=(path[i+1][0]-path[i][0],path[i+1][1]-path[i][1])
+            if before!=after:turns.append(path[i])
+        turns.append(path[-1])
+        return turns[:32]
+
     @lru_cache(maxsize=256)
     def _path(self, start_cell, goal, limit):
         if not self.free(start_cell) or not self.free(goal):

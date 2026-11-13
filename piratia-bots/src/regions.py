@@ -8,7 +8,7 @@ class Regions:
     def __init__(self,assets,population_count=200):
         self.assets=Path(assets)
         from coordination import Coordination
-        self.coordination=Coordination()
+        self.coordination=Coordination(population_count)
         from party import BotDirectory
         self.directory=BotDirectory()
         from cooperation import HelpDirectory

@@ -13,3 +13,6 @@ The owner explicitly prioritizes earned character development above chat or idle
 9. Runtime unsolicited speech must reflect actual events/state. Generic scripted dialogue is disabled; real help/refusals, observed-level congratulations and direct human replies remain. Stalls require a server-confirmed trade skill and owned surplus stock; no fake goods.
 
 User authorized continued implementation/testing and GitHub releases. Never publish data, credentials, owner binaries/dumps, or private raw reports. Local simulations/native serializer checks are not live Windows game validation. Do not promise that disconnects cannot happen.
+
+10. Count neighbouring farm coordinates as one crowded patch, and admit bounded NPC visitors instead of queues. Denied optional visits must yield to productive work. Healthy new bots should hunt before shopping; real recovery food is urgent. Keep network servicing independent of the bounded decision pulse and preserve checked A* turns in native routes.
+11. Owner clarified the old data folder was deleted several patches ago and the replacement accounts were created on the same PC. Do not blame cross-PC DPAPI migration for that reported case. Preserve the current replacement data.

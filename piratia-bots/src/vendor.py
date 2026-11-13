@@ -73,7 +73,10 @@ class Vendor(Town):
   shops=self.life.services['shops'].get(w.map,[])
   if not shops:self.next_sale=now+300;return False
   if not self.sale_target:self.sale_target=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
-  point=self.sale_target['position'];self.reason='продаёт лишние обычные трофеи торговцу'
+  point=self.sale_target['position']
+  if not policy.allow_visit(point,now):
+   self.finish_sale(now,45);return False
+  self.reason='продаёт лишние обычные трофеи торговцу'
   npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
   if npc and math.dist(policy.position(now),npc.position)<=220:
    policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True

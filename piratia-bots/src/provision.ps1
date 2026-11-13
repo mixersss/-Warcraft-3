@@ -53,9 +53,10 @@ try {
     $sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
     if ([IO.File]::Exists($statePath)) {
         $state = [IO.File]::ReadAllText($statePath) | ConvertFrom-Json
-        if ($state.version -ne 1 -or $state.windows_sid -ne $sid) {
-            throw 'State belongs to another Windows user or format.'
-        }
+        $setupStage = 'state_format'
+        if ($state.version -ne 1) { throw 'Unsupported state format.' }
+        $setupStage = 'state_windows_user_mismatch'
+        if ($state.windows_sid -ne $sid) { throw 'State belongs to another Windows user.' }
         $state.bots = @($state.bots)
     } else {
         $state = [PSCustomObject]@{version=1; windows_sid=$sid; bots=@()}
@@ -131,8 +132,10 @@ FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.account_login', N'U');
         # A saved record cannot redirect this helper onto arbitrary existing accounts.
         if ($entry.account -cnotmatch '^PB[0-9a-f]{12}$' -or
             $entry.character -cnotmatch '^Bot[0-9a-f]{8}$') { throw 'Invalid saved bot identity.' }
+        $setupStage = 'decrypt_saved_credentials'
         $password = Unprotect-Password $entry.password_dpapi
         $secondaryPassword = Unprotect-Password $entry.secondary_password_dpapi
+        $setupStage = 'account_creation'
         $hash = Password-Hash $password
         $transaction = $connection.BeginTransaction([Data.IsolationLevel]::Serializable)
         $command = $connection.CreateCommand()
