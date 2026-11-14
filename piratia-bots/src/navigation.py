@@ -114,7 +114,7 @@ class Navigation:
 
     def enable_incremental(self):
         self.incremental=True;self.local=threading.local()
-        self.completed=OrderedDict();self.cache_lock=threading.Lock()
+        self.completed=OrderedDict();self.corridors=OrderedDict();self.cache_lock=threading.Lock()
 
     def begin_turn(self,expansions=512):
         local=self.local
@@ -131,7 +131,11 @@ class Navigation:
         if not getattr(self,'incremental',False):return {}
         l=self.local
         return {'yields':getattr(l,'yields',0),'expanded_nodes':getattr(l,'expansions',0),
-                'completed_searches':getattr(l,'finished',0),'pending_searches':len(getattr(l,'searches',{}))}
+                'completed_searches':getattr(l,'finished',0),'pending_searches':len(getattr(l,'searches',{})),
+                'shared_route_hits':getattr(l,'shared_route_hits',0),
+                'pending_jobs':[{'start':list(self.position(k[0])),'goal':list(self.position(k[1])),
+                                 'known_cells':len(s.costs),'expanded_cells':len(s.closed),'open_nodes':len(s.queue),
+                                 'heuristic_weight':s.weight} for k,s in getattr(l,'searches',{}).items()]}
 
     def direct(self,start,goal):
         """Checked grid line: every diagonal also requires both side cells free."""
@@ -150,6 +154,11 @@ class Navigation:
             if key in self.completed:
                 self.completed.move_to_end(key);return self.completed[key]
         local=self.local
+        reused=self._reuse_corridor(key)
+        if reused:
+            local.shared_route_hits=getattr(local,'shared_route_hits',0)+1
+            local.searches.clear()
+            return self._remember(key,reused)
         if key not in local.searches and local.searches:
             # Finish the existing bounded job before accepting a changed goal.
             # Random candidate ties must not discard half-built searches forever.
@@ -159,7 +168,7 @@ class Navigation:
             if not self.free(start) or not self.free(goal):return ()
             direct=self.direct(start,goal)
             if direct:return self._remember(key,direct)
-            local.searches[key]=Search(start,goal)
+            local.searches[key]=Search(start,goal,heuristic_weight=4)
             while len(local.searches)>2:local.searches.popitem(last=False)
         search=local.searches[key];local.searches.move_to_end(key)
         def spend():
@@ -173,13 +182,46 @@ class Navigation:
         local.finished+=1;local.searches.pop(key,None)
         return self._remember(key,result)
 
+    def _reuse_corridor(self,key):
+        """Join a checked route to the same destination; no unchecked shortcuts."""
+        goal_key=(key[1],key[3])
+        with self.cache_lock:routes=tuple(self.corridors.get(goal_key,()))
+        if not routes or not self.free(key[0]) or not self.free(key[1]):return ()
+        start=self.position(key[0]);candidates={}
+        for route in routes:
+            for index in range(0,len(route),4):
+                point=route[index];dist=math.dist(start,point)
+                if dist>1600:continue
+                old=candidates.get(point)
+                if old is None or len(route)-index<len(old[2])-old[1]:candidates[point]=(dist,index,route)
+        for _,index,route in sorted(candidates.values(),key=lambda row:row[0])[:16]:
+            prefix=self.direct(key[0],self.cell(route[index]))
+            if prefix:
+                # Joining a corridor may cross its later suffix. Erase the
+                # resulting loop, retaining only already checked grid edges.
+                result=[];seen={}
+                for point in prefix+route[index+1:]:
+                    if point in seen:
+                        cut=seen[point]
+                        for old in result[cut+1:]:seen.pop(old,None)
+                        del result[cut+1:]
+                    else:seen[point]=len(result);result.append(point)
+                return tuple(result)
+        return ()
+
     def _remember(self,key,result):
         with self.cache_lock:
             self.completed[key]=result;self.completed.move_to_end(key)
             while len(self.completed)>512:self.completed.popitem(last=False)
+            if len(result)>1:
+                goal_key=(key[1],key[3]);routes=self.corridors.setdefault(goal_key,[])
+                if not routes or routes[-1]!=result:routes.append(result)
+                del routes[:-4]
+                self.corridors.move_to_end(goal_key)
+                while len(self.corridors)>128:self.corridors.popitem(last=False)
         return result
 
     @lru_cache(maxsize=256)
     def _path(self,start_cell,goal,limit,blocked=()):
         if not self.free(start_cell) or not self.free(goal):return ()
-        return self.direct(start_cell,goal) or Search(start_cell,goal).advance(self,limit,lambda:None)
+        return self.direct(start_cell,goal) or Search(start_cell,goal,heuristic_weight=4).advance(self,limit,lambda:None)

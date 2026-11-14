@@ -44,6 +44,7 @@ class VendorTests(unittest.TestCase):
   w=scene();w.bag_ready=True;w.bag_disabled=False;w.bag_capacity=48;w.own.values[8]=50
   v=Vendor(w,LifeItems(ROOT/'assets'),ItemCatalog(ROOT/'assets/items.json'),{},random.Random(1),w.own.position,ROOT/'assets')
   p=SimpleNamespace(market=None,career=None,story=None,adventure=None,send=Mock(),position=lambda now:w.own.position,nav=Mock(),move_to=Mock(return_value=True))
+  p.nav.nearest.side_effect=lambda point,radius=6:tuple(point)
   return w,v,p
  def item(self,i,n):return BagItem(i,n,0,0,0,0,0,True)
  def test_native_npc_sale_has_exact_legacy_fields(self):

@@ -12,7 +12,7 @@ class Vendor(Town):
  def __init__(self,world,life,gear,role,rng,home,assets):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
-  self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None
+  self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
  def choices(self,policy):
   w=self.world
   if not w.bag_ready or w.bag_disabled:return []
@@ -38,7 +38,7 @@ class Vendor(Town):
    if count>0:choices.append((slot,item.identity,count))
   return choices
  def finish_sale(self,now):
-  self.context=None;self.pending=None;self.sale_target=None;self.sale_slot=None;self.batch=0;self.next_sale=now
+  self.context=None;self.pending=None;self.sale_target=None;self.sale_slot=None;self.batch=0;self.next_sale=now;self.sale_goals=[];self.failed_shops.clear()
  def observe(self,command,payload,now,send):
   if not self.context:return False
   npc,stage,deadline=self.context
@@ -80,13 +80,26 @@ class Vendor(Town):
    self.reason='нет разрешённых простых трофеев для продажи';return False
   shops=self.life.services['shops'].get(w.map,[])
   if not shops:self.reason='нет известного торговца на текущей карте';return False
-  if not self.sale_target:self.sale_target=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
+  if not self.sale_target:
+   available=[s for s in shops if tuple(s['position']) not in self.failed_shops]
+   if not available:
+    self.failed_shops.clear();self.reason='ищет доступный путь к другому торговцу';return False
+   self.sale_target=min(available,key=lambda s:math.dist(policy.position(now),s['position']))
+   point=self.sale_target['position'];goals=[]
+   # Stop beside the merchant within interaction range, rather than its centre.
+   for dx,dy in ((-150,0),(0,-150),(150,0),(0,150),(-100,-100),(100,-100),(-100,100),(100,100),(0,0)):
+    g=policy.nav.nearest((point[0]+dx,point[1]+dy),1)
+    if isinstance(g,(tuple,list)) and len(g)==2 and math.dist(g,point)<=220 and tuple(g) not in goals:goals.append(tuple(g))
+   goals.sort(key=lambda g:math.dist(policy.position(now),g))
+   self.sale_goals=goals
   point=self.sale_target['position']
   self.reason='продаёт лишние обычные трофеи торговцу'
   npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
   if npc and math.dist(policy.position(now),npc.position)<=220:
    policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True
-  goal=policy.nav.nearest(point,6)
-  if goal and policy.move_to(goal,now):return True
-  self.finish_sale(now);return False
- def summary(self):return {'sale_requests':self.sales,'confirmed_sales':self.confirmed_sales,'confirmation_timeouts':self.sale_timeouts,'state':self.reason or 'ожидание лишних трофеев','pending_sale':bool(self.pending),'free_bag_slots':max(0,(self.world.bag_capacity or 0)-len(self.world.bag)), 'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),'bag_items':[{'slot':slot,'id':item.identity,'count':item.count,'plain':not(item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes)),'junk_whitelisted':item.identity in self.junk} for slot,item in sorted(self.world.bag.items())]}
+  while self.sale_goals:
+   if policy.move_to(self.sale_goals[0],now):return True
+   self.sale_goals.pop(0)
+  self.failed_shops.add(tuple(point));self.sale_target=None
+  self.reason='ищет доступный путь к другому торговцу';return False
+ def summary(self):return {'destination':self.sale_target['position'] if self.sale_target else None,'route_goal':list(self.sale_goals[0]) if self.sale_goals else None,'sale_requests':self.sales,'confirmed_sales':self.confirmed_sales,'confirmation_timeouts':self.sale_timeouts,'state':self.reason or 'ожидание лишних трофеев','pending_sale':bool(self.pending),'free_bag_slots':max(0,(self.world.bag_capacity or 0)-len(self.world.bag)), 'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),'bag_items':[{'slot':slot,'id':item.identity,'count':item.count,'plain':not(item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes)),'junk_whitelisted':item.identity in self.junk} for slot,item in sorted(self.world.bag.items())]}

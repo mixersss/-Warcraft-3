@@ -23,6 +23,8 @@ def render_report(report):
            f"  Переход: {travel.get('state','нет данных')}; город={travel.get('destination')}; этап={travel.get('dialogue_stage')}; прибытия={travel.get('confirmed_arrivals',0)}",
            f"  Меню телепортера: {json.dumps(travel.get('last_menu',[]),ensure_ascii=False)}"]
     fight=report.get('hunt',{})
+    lines.append(f"  Планировщик: {json.dumps(report.get('route_planning',{}),ensure_ascii=False)}")
+    lines.append(f"  Путь к продавцу: NPC={vendor.get('destination')}; точка подхода={vendor.get('route_goal')}; снимок={report.get('time_utc')}")
     obstacles=fight.get('movement_obstacles',{})
     lines.append(f"  Препятствия: неожиданных остановок={obstacles.get('unexpected_stops',0)}; последний шаг={json.dumps(obstacles.get('last_step'),ensure_ascii=False)}")
     world=fight.get('world',{})
@@ -55,7 +57,8 @@ def collect(root,name=None):
             found+=1
             if wanted:lines.append('Отчёт нужного бота: '+path.name)
             lines.append(render_report(report))
-        except (OSError,ValueError,TypeError,AttributeError):lines.append(path.name+': отчёт пока недоступен; повтори позже.')
+        except (OSError,ValueError,TypeError,AttributeError):
+            if not wanted:lines.append(path.name+': отчёт пока недоступен; повтори позже.')
     if wanted and not found:lines.append('Ник не найден среди отчётов. Метки доступны с Alpha34: запусти обновлённых ботов, подожди 30 секунд и повтори поиск. Не удаляй data.')
     return '\n\n'.join(lines)
 

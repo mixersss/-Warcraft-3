@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-35'
-NAME = 'Piratia-Auto-Bots-Alpha35'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-36'
+NAME = 'Piratia-Auto-Bots-Alpha36'
 
 
 def main():
@@ -33,8 +33,17 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Recover from unsolicited server movement stops with worker-local temporary obstacle avoidance; use acknowledged path duration; prioritize visible profession kill targets; find reports by nickname; live revalidation pending',
+        'status': 'Faster checked weighted search, bounded shared destination corridors, merchant interaction approaches and fallback; replayed Bot78 full-bag movement from screenshot coordinates; live revalidation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
+        'route_search_heuristic_weight': 4,
+        'route_search_closed_cells_not_reexpanded': True,
+        'shared_destination_corridor_limit': 128,
+        'shared_corridors_per_destination': 4,
+        'shared_route_join_checked_on_grid': True,
+        'merchant_approach_within_centimetres': 220,
+        'unreachable_merchant_goals_try_alternatives_without_cooldown': True,
+        'bot78_screenshot_position_movement_replay_passed': True,
+        'nearby_origin_corridor_replay_count': 200,
         'unexpected_server_stop_replans_route': True,
         'our_endaction_stop_is_not_obstacle': True,
         'temporary_obstacle_seconds': 30,
@@ -106,11 +115,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 401,
-        'full_python_suite_total': 409,
-        'full_python_suite_passed': 409,
+        'pure_python_tests_passed': 407,
+        'full_python_suite_total': 415,
+        'full_python_suite_passed': 415,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '409 passed in Alpha35 including 8 local socket integration tests',
+        'last_full_network_regression': '415 passed in Alpha36 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

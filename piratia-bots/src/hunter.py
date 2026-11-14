@@ -249,6 +249,7 @@ class Hunter:
             target=self.world.entities.get(self.last_attack_target[0])
             if target:self.learning.begin(self.world,target,self.clock)
         elif body[8]==1:
+            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending()
             self.move_packet=self.last_sent_sequence
             self.move_map=self.world.map
             count=int.from_bytes(body[9:11],'big')
