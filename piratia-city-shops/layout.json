@@ -1,0 +1,53 @@
+{
+  "center_m": [
+    2247,
+    2777
+  ],
+  "placements": [
+    {
+      "name": "Apparel and Wings",
+      "key": "apparel",
+      "position_m": [
+        2247,
+        2777
+      ]
+    },
+    {
+      "name": "Fairies and Food",
+      "key": "fairies",
+      "position_m": [
+        2247,
+        2779
+      ]
+    },
+    {
+      "name": "Forge Supplies",
+      "key": "forge",
+      "position_m": [
+        2247,
+        2781
+      ]
+    },
+    {
+      "name": "Travel Tickets",
+      "key": "tickets",
+      "position_m": [
+        2247,
+        2783
+      ]
+    },
+    {
+      "name": "Experience and Luck",
+      "key": "boosts",
+      "position_m": [
+        2247,
+        2784
+      ]
+    }
+  ],
+  "water_and_safe_zone_checked": true,
+  "fountain_object_exact_coordinate_verified": false,
+  "note": "Exact five positions supplied by owner, in merchant order; minimum1m between new NPCs is explicit owner choice",
+  "owner_supplied_exact_points": true,
+  "minimum_existing_npc_distance_m": 4.71
+}
