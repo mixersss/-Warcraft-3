@@ -74,7 +74,7 @@ class Social:
         if has('спасибо','спс','благодарю'):return 'thanks',self.rng.choice(PHRASES['reply_thanks'])
         if has('пока','бай','bye','увидимся'):return 'farewell',self.rng.choice(PHRASES['reply_farewell'])
         if has('устал','надоело','проиграл','умер','застрял'):return 'empathy',self.rng.choice(PHRASES['reply_empathy'])
-        if has('куплю','продай','обмен','почем','почём'):return 'trade',('Покупаю нужное в ларьках, а лишнее выставляю сам. Личный обмен пока не умею.' if self.market else 'Пока могу предложить вещь в чате; автоматический обмен ещё не освоил.')
+        if has('куплю','продай','обмен','почем','почём'):return 'trade',('Назови предмет или ID и цену: проверю сумку и условия сделки.' if getattr(self,'commerce_provider',None) else 'Пока могу предложить вещь в чате; автоматический обмен ещё не освоил.')
         if has('одежда','шмот','вещи'):return 'equipment','Надеваю подходящие вещи из своей сумки.'
         if has('квест','квесты','задание','задания'):return 'quest','Мои задания зависят от класса и текущего занятия; профессию не меняю случайно.'
         if has('фея','феи','мордо','джун'):return 'pets','Фей пока не выращиваю. Эта часть ещё впереди.'
@@ -96,11 +96,19 @@ class Social:
         addressed=self.name.casefold() in words
         if not addressed and any(re.fullmatch(r'bot[0-9a-f]{8}',w) for w in words):return
         if not addressed and not self.conversations:return
-        result=self.reply(words)
+        person=self.world.entities.get(source)
+        commerce=getattr(self,'commerce_provider',None)
+        trade_words={'куплю','купить','продам','продаю','продай','продашь','продаешь','продаёшь','продаете','продаёте',
+                     'цена','цену','почем','почём','торг','торговать','обмен','дорого','дешевле','скидка',
+                     'встретимся','встретиться','встреча','подойти'}
+        trade_context=commerce and person and bool(trade_words.intersection(words))
+        if trade_context and self.conversations and not self.conversations.claim_trade(self.world.map,source,self.name,now,addressed):return
+        answer=commerce(person.name,text,now) if trade_context else None
+        result=('trade',answer) if answer else self.reply(words)
         if not result:return
         intent,reply=result
         if self.replied.get((source,intent),0)>now:return
-        if self.conversations and not self.conversations.claim_human(self.world.map,source,intent,now):return
+        if self.conversations and (intent!='trade' or not trade_context) and not self.conversations.claim_human(self.world.map,source,intent,now):return
         if intent=='help' and self.help_handler:reply=self.help_handler(source,now)
         if intent=='friend' and self.friend_handler:reply=self.friend_handler(source,now)
         if intent=='party' and self.party_handler:reply=self.party_handler(source,now)
@@ -128,7 +136,7 @@ class Social:
             elif safe and now>=due and now>=self.next_reply and self.budget.claim(now):
                 self.send(1,say_request(text));self.sent+=1;self.replies+=1;self.pending=None
                 self.next_send=now+45;self.next_reply=now+12
-                self.replied[(source,intent)]=now+300;self.replied.move_to_end((source,intent))
+                self.replied[(source,intent)]=now+(3 if intent=='trade' else 300);self.replied.move_to_end((source,intent))
                 while len(self.replied)>128:self.replied.popitem(last=False)
             return
         if self.conversations and self.scripted_dialogues:
@@ -139,6 +147,14 @@ class Social:
                 if self.budget.claim(now):
                     self.send(1,say_request(text));self.conversations.sent(self.name,token,now)
                     self.sent+=1;self.dialogue_lines+=1;self.next_send=now+45
+                return
+        provider=getattr(self,'trade_ad_provider',None)
+        if provider and safe and now>=self.next_reply:
+            text=provider(now)
+            if text and self.budget.claim(now):
+                self.send(1,say_request(text));self.sent+=1;self.next_reply=now+5
+                callback=getattr(self,'trade_ad_sent',None)
+                if callback:callback(now)
                 return
         if safe and humans and now>=self.next_send and now>=self.next_situation:
             context=self.context_provider() if self.context_provider else None

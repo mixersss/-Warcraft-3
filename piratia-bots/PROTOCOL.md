@@ -850,3 +850,47 @@ Skillbag's existing SP/endurance/energy/interval fields now remain in World.
 Look full-sync and short-sync keep current endurance/energy/valid in per-slot
 metadata without changing packet sizes or consuming additional bytes. Identical
 coral ID refill requires a real charge increase, not an unchanged appearance ID.
+
+## Alpha44: bank and personal trade (source based; live owner validation pending)
+
+Personal bank uses508(actor u32, packet u32, action26) followed by the existing
+classic kitbag layout. The initial sync must include capacity; malformed/outside
+capacity/delta-without-initial packets disable bank automation without changing
+bag or cached bank items. Bank transfer BeginAction26 carries srcType u8,
+srcGrid u16, count u16, dstType u8, dstGrid u16; personal bag0, bank1.
+Close uses BeginAction27. NPC301/303 selects the actual200G vault function first;
+fees are charged by the server. A transfer requires matching quantity changes
+for the complete item fingerprint in both bag and bank. No local item/gold writes.
+No-progress bank travel yields after35s, whole trip180s; transfer wait12s.
+
+Player trade CM312request/313accept/315cancel/316item/317lock/318final/319gold.
+Requests/accept/cancel/lock/final carry tradeType0 u8 and peerID u32.
+Item carries additional op4,tradeGrid,bagSlot,count (four u8).
+Classic money carries op6 u8 and amount u32; a seen explicit zero currency
+byte in the server money update permits that extension for outgoing money.
+Server messages use OUTER811 then inner u16 subcommand812..819. Decoder also
+accepts already-demultiplexed subcommands. Classic item details have no modern
+tradable/expiration fields; unknown layouts cancel rather than approving stock.
+
+Crucially CTradeSystem::ValidateItemData sends816 only to the OTHER player.
+Do not wait for an own816echo: request our lock after checking exact quote,
+wait for the native peer lock, then request318; the server enforces both locks.
+Any item/money change after our lock cancels the exchange.818result7 plus exact
+own bag AND gold deltas confirms settlement. Timeout, failure, death or map
+transition never creates inventory, gold, refunds or a successful trade locally.
+Busy bank/market/native inventory operation, real fight or unhealthy character
+must not accept a new trade. Quotes expire180s; open exchange90s; settlement15s.
+
+Source references: public TalesOfPirateDX9 sources/Client/src/PacketCmd_CS.cpp,
+PacketCmd_SC.cpp, UITradeForm.cpp; sources/Server/GameServer/src/CharTrade.cpp,
+Player.cpp; common/include/CompCommand.h and RoleCommon.h. Modern extra item
+fields in that fork are intentionally not assumed for the owner's classic2008
+inventory. These are source-based checks and synthetic packet/session tests,
+not fresh owner Game.exe/GameServer.exe serializer captures or live Windows tests.
+
+SkillInfo field15 is TARGET HABITAT1land/2sea/3both; it is not a point/entity
+selector. Illusion Slash81 and Dual Shot90 use habitat3 but field17enemy4 and
+field18single1: use the established target-entity BeginAction2. Native activation,
+SP/cooldown/weapon and range are still required. Healing97 may target self or
+visible living members named in the confirmed native party; queued healing
+rechecks membership, handle, HP and range. No HP is predicted or granted locally.

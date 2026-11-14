@@ -1,5 +1,5 @@
 """Classic real-inventory stalls: finite shifts, authoritative confirmations and earned budgets."""
-import json,math,random,struct,threading
+import hashlib,json,math,random,struct,threading
 from pathlib import Path
 from classic_wire import Reader,ProtocolError,string
 from inventory import BagItem
@@ -44,11 +44,26 @@ class MarketCatalog:
     def __init__(self,assets):
         self.data=json.loads((Path(assets)/'market-items.json').read_text())
         self.items={int(k):v for k,v in self.data['items'].items()}
-    def price(self,identity):return self.items.get(identity,{}).get('reference_price',0)
+        self.prices=None
+    def price(self,identity):
+        base=self.items.get(identity,{}).get('reference_price',0)
+        return self.prices.guide(identity,base) if self.prices else base
+    def confirmed_price(self,identity,price):
+        if self.prices:self.prices.confirmed(identity,price,self.items.get(identity,{}).get('reference_price',0))
 
 class MarketDirectory:
     """One live lease per character and one spaced city pitch, bounded by 200 workers."""
-    def __init__(self,limit=10,city_limits=None,live_count=None):self.lock=threading.Lock();self.rows={};self.limit=limit;self.city_limits=city_limits;self.live_count=live_count
+    def __init__(self,limit=10,city_limits=None,live_count=None,argent_target=None):
+        self.lock=threading.Lock();self.rows={};self.limit=limit;self.city_limits=city_limits;self.live_count=live_count
+        self.argent_target=argent_target
+        self.pitch_cache={}
+    def pitches(self,city,home,nav,npcs,spawns):
+        from stall_pitches import city_pitches
+        if spawns:home=spawns[0]
+        key=(city,tuple(home))
+        with self.lock:
+            if key not in self.pitch_cache:self.pitch_cache[key]=city_pitches(city,home,nav,npcs,spawns)
+            return self.pitch_cache[key]
     def reserve(self,name,city,now):
         with self.lock:
             self.rows={k:v for k,v in self.rows.items() if v['until']>now}
@@ -56,6 +71,7 @@ class MarketDirectory:
             if self.live_count:
                 total=self.live_count(now)//10;argent=round(total*.75);rest=total-argent
                 limits={'garner':argent,'magicsea':(rest+1)//2,'darkblue':rest//2}
+                if self.argent_target is not None:limits['garner']=min(self.argent_target,self.live_count(now))
             limit=limits.get(city,0) if limits is not None else self.limit
             if name in self.rows:
                 if self.rows[name]['slot']>=limit:self.rows.pop(name,None);return None
@@ -83,11 +99,18 @@ class Market:
     def protected(self,policy):
         result={3296,1847,3141}
         for feature in (policy.career,policy.story):
-            if feature:result.update(feature.needed_items())
+            if feature:
+                result.update(feature.needed_items())
+                quest=getattr(feature,'quest',None)
+                if isinstance(quest,dict) and feature.active():
+                    result.update(n['id'] for n in quest.get('needs',[]) if n['kind']==1)
         if policy.chests:result.update(policy.chests.catalog.chests)
         if policy.adventure:
             task=policy.adventure.farm()
             if task and task[1]:result.add(task[1])
+            for identity in policy.adventure.journal:
+                objective=policy.adventure.grind.get(identity)
+                if objective and objective[1]:result.add(objective[1])
         result.update(self.life.books)
         return result
     def useful_gear(self,identity):
@@ -117,7 +140,7 @@ class Market:
     def offers(self,policy):
         w=self.world;protected=self.protected(policy);result=[];reserved={}
         if not w.bag_ready or w.bag_disabled:return []
-        priority={'kal':0,'refining':0,'gem':0,'rune':0,'sealed':1,'gear':2}
+        priority={'kal':0,'refining':0,'gem':0,'rune':0,'scroll':0,'blueprint':0,'sealed':1,'gear':2}
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
             meta=self.catalog.items.get(item.identity)
             if not meta or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
@@ -128,9 +151,17 @@ class Market:
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
             count=min(99,item.count-keep)
             if count<=0:continue
-            result.append((len(result),self.catalog.price(item.identity),count,slot))
+            result.append((len(result),self.ask_price(item.identity),count,slot))
             if len(result)==6:break
         return result
+    def ask_price(self,identity):
+        price=self.catalog.price(identity)
+        if not self.catalog.prices:return price
+        # Stable per-seller negotiation margins plus current surplus; no personality reset.
+        digest=hashlib.sha256(f'{self.name}:{identity}'.encode()).digest()
+        margin=.95+digest[0]/255*.10
+        surplus=min(.10,self.count(identity)/1000)
+        return max(1,min(2000000000,round(price*(margin-surplus))))
     def needed(self):
         w=self.world;wanted={}
         if not w.skills.get(241,{}).get('level',0) and not self.count(3296) and w.own.values.get(13,0)>0:wanted[3296]=1
@@ -148,7 +179,8 @@ class Market:
         return wanted
     def fair_cap(self,identity):
         # Explicit ceilings prevent players setting a huge price from draining bots.
-        return self.catalog.price(identity) or self.life.prices.get(identity,0)
+        price=self.catalog.price(identity) or self.life.prices.get(identity,0)
+        return round(price*1.1) if self.catalog.prices else price
     def observe(self,command,payload,now):
         r=Reader(payload)
         if command==NAME:
@@ -190,10 +222,10 @@ class Market:
                 # One item at a time. Only bag AND gold changes confirm a purchase.
                 if price>budget:continue
                 self.send(BUY,buy_request(owner,grid));self.buy_requests+=1
-                self.pending=(identity,self.count(identity),cash,now+15)
+                self.pending=(identity,self.count(identity),cash,now+15,price)
                 self.next_scan=now+120;break
     def opened(self,now):
-        self.state='selling';self.trade_until=now+2400;self.confirmed_opens+=1;self.active_confirmed=True
+        self.state='selling';self.trade_until=now+3600;self.confirmed_opens+=1;self.active_confirmed=True
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None
@@ -233,8 +265,9 @@ class Market:
             if self.state=='selling' and (not safe or now>=self.trade_until or not self.stock):self.request_close(now)
             return True
         if self.pending:
-            identity,count,cash,deadline=self.pending
-            if self.count(identity)>count and w.own.values.get(8,cash)<cash:self.confirmed_buys+=1;self.pending=None
+            identity,count,cash,deadline,price=self.pending
+            if self.count(identity)==count+1 and w.own.values.get(8,cash)==cash-price:
+                self.confirmed_buys+=1;self.pending=None;self.catalog.confirmed_price(identity,price)
             elif now>=deadline:self.pending=None;self.timeouts+=1;self.next_scan=now+300
             return True
         if self.context:
@@ -270,13 +303,17 @@ class Market:
                     self.send(VIEW,struct.pack('>I',seller.identity));self.context=seller.identity,now+10
                     self.scanned[seller.identity]=now+300;self.next_scan=now+30;return True
             self.next_scan=now+30
-        if now<self.next_shift or not w.skills.get(241,{}).get('level',0) or not self.offers(policy):return False
+        if now<self.next_shift or w.own.values.get(0,0)<30 or not w.skills.get(241,{}).get('level',0) or not self.offers(policy):return False
         slot=self.directory.reserve(self.name,w.map,now)
         if slot is None:self.next_shift=now+60;return False
-        # Separate cells in a ring near the existing home city; never stack stalls on an NPC.
-        angle=(slot%10)*2*math.pi/10;radius=1200+600*(slot//10)
-        point=(policy.home[0]+int(radius*math.cos(angle)),policy.home[1]+int(radius*math.sin(angle)))
-        goal=policy.nav.nearest(point,6)
+        if self.directory.argent_target is not None and self.life.npcs:
+            pitches=self.directory.pitches(w.map,policy.home,policy.nav,self.life.npcs,
+                                          (getattr(policy,'region',None) or {}).get('spawns',()))
+            goal=pitches[slot] if slot<len(pitches) else None
+        else:
+            angle=(slot%10)*2*math.pi/10;radius=1200+600*(slot//10)
+            point=(policy.home[0]+int(radius*math.cos(angle)),policy.home[1]+int(radius*math.sin(angle)))
+            goal=policy.nav.nearest(point,6)
         if not goal or any(e.control in (2,3) and math.dist(e.position,goal)<350 for e in w.entities.values()):
             self.directory.release(self.name);self.next_shift=now+120;return False
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True

@@ -36,10 +36,13 @@ class Contacts:
    r.end()
    if receiver.casefold()!=self.social.name.casefold() or not sender or sender.lower().startswith('bot') or len(text)>240 or any(ord(c)<32 for c in sender+text):return
    if self.next_reply.get(sender,0)>now:return
-   self.next_reply[sender]=now+20
+   commerce=getattr(self,'commerce_provider',None)
+   trade_answer=commerce(sender,text,now) if commerce else None
+   self.next_reply[sender]=now+(3 if trade_answer else 20)
    if len(self.next_reply)>128:self.next_reply.pop(next(iter(self.next_reply)))
    words=re.findall(r'[\w]+',text.casefold());reply=self.social.reply(words)
-   if any(w in words for w in ('друзья','друзься','друг','друзей','дружить')):answer=self.invite_friend(sender,now)
+   if trade_answer:answer=trade_answer
+   elif any(w in words for w in ('друзья','друзься','друг','друзей','дружить')):answer=self.invite_friend(sender,now)
    elif reply and reply[0]=='party':answer=self.party.request_name(sender,now)
    elif reply:answer=reply[1]
    else:answer='Я отвечаю простыми правилами. Можешь спросить про уровень, занятие, пати или друзей.'

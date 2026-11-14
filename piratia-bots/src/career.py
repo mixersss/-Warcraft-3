@@ -67,7 +67,10 @@ class Career:
             self.context=None;self.pending=None;self.timeouts+=1;self.next_visit=now+300
         if not safe or dialogue_busy or now<self.next_visit:return False
         if not self.ready:self.send(325,b'');self.next_visit=now+30;return False
-        if self.active() and self.journal[self.quest['journal']]!=1 and not self.quest.get('talk'):
+        needs=self.quest.get('needs',[])
+        items_ready=bool(needs) and all(n['kind']==1 and
+            sum(i.count for i in self.world.bag.values() if i.identity==n['id'])>=n['count'] for n in needs)
+        if self.active() and self.journal[self.quest['journal']]!=1 and not self.quest.get('talk') and not items_ready:
             self.reason='вторая профессия: сбор настоящих квестовых предметов'
             if not self.desired_models():self.reason='вторая профессия: нужна другая карта, магазин или остров'
             return False

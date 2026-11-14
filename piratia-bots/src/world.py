@@ -149,6 +149,7 @@ class World:
         self.bag = {}
         self.bag_ready = self.bag_disabled = False
         self.bag_capacity = None
+        self.bank={};self.bank_capacity=None;self.bank_ready=False;self.bank_disabled=False;self.bank_revision=0
         self.motion = {}
         self.move_revision = 0
         self.move_state = 0
@@ -221,6 +222,24 @@ class World:
     @property
     def own(self):
         return self.entities.get(self.own_id)
+
+    def read_bank(self,reader):
+        from inventory import kitbag
+        try:
+            sync,capacity,changes=kitbag(reader,self.item_types)
+            reader.end()
+            limit=capacity if sync==0 else self.bank_capacity
+            if limit is None or any(slot>=limit for slot in changes):
+                raise ProtocolError('Bank update without valid capacity')
+            updated={} if sync==0 else dict(self.bank)
+            for slot,item in changes.items():
+                if item is None:updated.pop(slot,None)
+                else:updated[slot]=item
+            self.bank,self.bank_capacity=updated,limit
+            if sync==0:self.bank_ready=True
+            self.bank_revision+=1
+        except ProtocolError:
+            self.bank_disabled=True;self.decode_info['bank']='unsupported_packet'
 
     def enter(self, payload):
         reader = Reader(payload)
@@ -381,6 +400,8 @@ class World:
                 self.read_skills(reader)
             elif action == 6 and identity==self.own_id:
                 self.read_bag(reader)
+            elif action == 26 and identity==self.own_id:
+                self.read_bank(reader)
         elif command == 520:
             self.failed_actions += 1
             if len(payload)==6:

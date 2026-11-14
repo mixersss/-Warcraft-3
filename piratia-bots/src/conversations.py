@@ -10,6 +10,14 @@ class Conversations:
         self.dialogues=json.loads((assets/'bot-dialogues.json').read_text(encoding='utf-8'))
         self.rows={};self.humans={};self.active=None;self.next_start=None;self.serial=0
         self.started=self.completed=self.expired=0
+        self.trade_owners={}
+    def claim_trade(self,map_name,source,name,now,addressed=False):
+        with self.lock:
+            self.trade_owners={k:v for k,v in self.trade_owners.items() if v[1]>now}
+            key=(map_name,source);current=self.trade_owners.get(key)
+            if current and current[0]!=name and not addressed:return False
+            if len(self.trade_owners)>=128 and key not in self.trade_owners:return False
+            self.trade_owners[key]=(name,now+180);return True
     def register(self,name,map_name,identity,position,now,ready):
         with self.lock:
             old=self.rows.get(name,{})

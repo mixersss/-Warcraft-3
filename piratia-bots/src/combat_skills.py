@@ -1,5 +1,6 @@
 """Verified targeted spells through native BeginAction, with real SP/coral gates."""
 import json
+import math
 from pathlib import Path
 
 CASTER_JOBS={4,5,13,14,16}
@@ -48,6 +49,19 @@ class CombatSkills:
 
     def reach(self,identity,target):
         return max(40,self.rules[identity]['range_cm']+self.world.own.radius+target.radius-20)
+
+    def healing_target_valid(self,target,party,now):
+        w=self.world
+        if not target or not target.alive or not target.handle or target.control!=1:return False
+        if target.identity!=w.own_id and target.name not in getattr(party,'members',()):return False
+        maximum=target.values.get(31,0);hp=target.values.get(1)
+        return maximum>0 and hp is not None and 0<hp<maximum*.65
+
+    def healing_target(self,skill,party,now):
+        w=self.world
+        candidates=[e for e in w.entities.values() if self.healing_target_valid(e,party,now)
+                    and math.dist(w.position(now),w.position(now,e.identity))<=self.reach(skill,e)]
+        return min(candidates,key=lambda e:(e.values[1]/e.values[31],e.identity!=w.own_id),default=None)
 
     def sent(self,identity,now):
         if identity not in self.rules:return

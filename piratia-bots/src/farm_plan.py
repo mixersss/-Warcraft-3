@@ -22,6 +22,7 @@ class HuntLearning:
   self.rows={};self.avoid={};self.danger_until={};self.active=None;self.path=None;self.dirty=False;self.save_errors=0
   self.signature=None;self.selected=set();self.until=0;self.scores={};self.last_save=0
   self.events=[]
+  self.inefficient_models=set();self.candidate_details={}
   self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
   self.session_start=None;self.session_xp=None;self.session_last_xp=None;self.session_gain=0;self.session_loss=0
   self.progress_signature=None;self.last_progress_at=None;self.last_clock=0;self.next_idle_probe=0;self.idle_probes=0
@@ -104,11 +105,26 @@ class HuntLearning:
   floor=self.minimum_farm_level(region,own,now)
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
-   if not record['points'] or self.blocked(model,now):continue
+   if not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
    if not floor<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
-  return result
+  return result-self.inefficient(region,result,level)
+ def inefficient(self,region,models,level):
+  """Reject demonstrated poor XP farms only against a currently viable benchmark.
+
+  The two-win minimum and same-level buckets prevent a lone late XP packet or
+  old low-level history from vetoing a species. Quest objectives bypass this
+  ordinary-farming shortlist in Hunter.planned_models.
+  """
+  rates={}
+  for model in models:
+   row=self.rows.get(str(model),{})
+   if (str(model) in region['farms'] and row.get('observed_level')==level
+       and row.get('level_wins',0)>=2 and row.get('level_seconds',0)>0):
+    rates[model]=row.get('level_xp',0)/row['level_seconds']
+  best=max(rates.values(),default=0)
+  return {model for model,rate in rates.items() if best>0 and rate<best*.5}
  def choose(self,region,own,now,fallback=False,hold=False,position=None):
   progress=(own.values.get(0,1),own.values.get(15,0))
   self.last_clock=now
@@ -128,10 +144,10 @@ class HuntLearning:
   self.signature=signature;level=own.values.get(0,1);max_hp=max(1,own.values.get(31,1))
   floor=self.minimum_farm_level(region,own,now)
   best_rate=max((r.get('level_xp',0)/max(1,r.get('level_seconds',0)) for r in self.rows.values() if r.get('observed_level')==level),default=0)
-  scored=[];alternatives=[];self.scores={}
+  scored=[];alternatives=[];self.scores={};self.candidate_details={}
   for model,record in region['farms'].items():
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
-   if not record['points'] or self.blocked(model,now):continue
+   if not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
    if level<=3 and model==75 and not self.rows:continue
    primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
             and not (level<=3 and model==71))
@@ -168,10 +184,17 @@ class HuntLearning:
    jitter=int.from_bytes(hashlib.sha256(f'{self.seed}:{model}'.encode()).digest()[:2],'big')/65535
    score=base*(.82+jitter*.36)
    (scored if primary else alternatives).append((score,model));self.scores[model]=score
+   self.candidate_details[model]={'level':ml,'score':score,
+     'observed_level':row.get('observed_level'),'observed_wins':row.get('level_wins',0),
+     'combat_xp_per_minute':60*row.get('level_xp',0)/max(1,row.get('level_seconds',0))
+       if row.get('observed_level')==level else None,
+     'level_divisor':xp_level_divisor(level,ml)}
   # A failed starter must not leave cautious profiles with zero legal species.
   # Keep cooldowns, real HP limits and routes; relax only the untested level margin.
   self.alternative_search=not bool(scored) and bool(alternatives)
   if not scored:scored=alternatives;alternatives=[]
+  self.inefficient_models=self.inefficient(region,{m for _,m in scored},level)
+  scored=[(s,m) for s,m in scored if m not in self.inefficient_models]
   trials=sum(r.get('wins',0)+r.get('losses',0)+r.get('stalls',0) for r in self.rows.values())
   self.probing=False
   if (trials>0 and trials%3==1 and trials!=self.last_probe_trial) or idle_trial:
@@ -204,6 +227,7 @@ class HuntLearning:
   return set(self.selected)
  def summary(self):
   return {'level_penalty_model':'owner-ShareTeamExp','profile':self.profile[0],'selected_models':sorted(self.selected),'learned_species':len(self.rows),
+          'inefficient_models':sorted(self.inefficient_models),'candidate_details':self.candidate_details,
           'wins':sum(r.get('wins',0) for r in self.rows.values()),'dangerous_fights':sum(r.get('losses',0) for r in self.rows.values()),
           'stalled_fights':sum(r.get('stalls',0) for r in self.rows.values()),'save_errors':self.save_errors,
           'session_seconds':max(0,self.last_clock-self.session_start) if self.session_start is not None else 0,

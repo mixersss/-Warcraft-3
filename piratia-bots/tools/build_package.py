@@ -5,13 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-43'
-NAME = 'Piratia-Auto-Bots-Alpha43'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-44'
+NAME = 'Piratia-Auto-Bots-Alpha44'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py', ROOT / 'tools' / 'build_npc_knowledge.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py', ROOT / 'tools' / 'build_npc_knowledge.py', ROOT / 'tools' / 'build_market.py', ROOT / 'tools' / 'build_story.py', ROOT / 'tools' / 'build_quest_rewards_package.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Full supplied static NPC knowledge, real3city supply plans/accessories through verified portals,8persistent owner stat builds, native level-XP penalty/current-level learning; existing300 identities and all prior features preserved; live Alpha43 validation pending',
+        'status': 'Current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha44 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -154,7 +154,7 @@ def main():
         'coral_purchase_and_renewal_recorded_as_requirement': True,
         'coral_purchase_and_renewal_implemented': True,
         'coral_supply_scope': 'verified sellers;3city shopping plans through confirmed known portals; real owned replacements/server charge confirmation',
-        'targeted_combat_skill_ids': [82,85,86,91,96,97,99,213,214,216,224],
+        'targeted_combat_skill_ids': [81,82,85,86,90,91,96,97,99,213,214,216,224],
         'full_skill_rotation_and_party_healing_implemented': False,
         'native_activated_skills_sp_cooldown_weapon_coral_gates': True,
         'native_look_energy_and_skillbag_energy_preserved_without_layout_change': True,
@@ -226,11 +226,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 570,
-        'full_python_suite_total': 578,
-        'full_python_suite_passed': 578,
+        'pure_python_tests_passed': 639,
+        'full_python_suite_total': 647,
+        'full_python_suite_passed': 647,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '578 passed in Alpha43 including 8 local socket integration tests',
+        'last_full_network_regression': '647 passed in Alpha44 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',
@@ -267,13 +267,15 @@ def main():
         'creation_appearance': {'type': 1, 'hair': 2000, 'face': 2554, 'source': 'native client character creator tables'},
         'native_gate_crypto_compared': ['3DES encrypt/decrypt', 'B encrypt/decrypt',
                                        'Noise encrypt/decrypt with evolving state'],
-        'population_target': 400,
+        'population_target': 500,
         'maximum_enabled_bots': 300,
         'four_hundred_live_connections_tested': False,
-        'stall_session_seconds': 2400,
-        'stall_live_population_fraction': .10,
+        'stall_session_seconds': 3600,
+        'stall_live_population_fraction': None,
+        'argent_target_stalls': 80,
+        'stall_minimum_level': 30,
         'voluntary_rest_live_population_fraction': .10,
-        'stall_city_caps_at_200': {'garner':15,'magicsea':3,'darkblue':2},
+        'stall_city_caps_at_200': {'garner':80,'magicsea':3,'darkblue':2},
         'preferred_home_cities_at_200': {'garner':150,'magicsea':25,'darkblue':25},
         'npc_city_transfer_live_tested': False,
         'local_chat_shared_seconds': 2,
@@ -330,11 +332,26 @@ def main():
         'spawn_counts_modified': False,
         'beginner_farm_point_cap_per_species': 64,
         'no_progress_farm_focus_seconds': [120,180],
-        'market_catalog_tradeable_item_count': 1575,
+        'market_catalog_tradeable_item_count': 1586,
         'stall_data_writer_captured': 'GameServer 0x4637e0, plain and five instance attributes',
         'live_stall_transactions_tested': False,
         'black_market_npc_barter_implemented': False,
         'prices_are_pilot_references': True,
+        'bounded_prices_learn_from_confirmed_transactions': True,
+        'history_journals_projected': 19,
+        'later_history_exhaustively_supported': False,
+        'basic_visible_confirmed_party_healing': True,
+        'bank_actions_public_source_based': [26,27],
+        'personal_trade_server_envelope': 811,
+        'personal_trade_subcommands': list(range(812,820)),
+        'own_trade_lock_has_no_server_echo': True,
+        'bank_and_personal_trade_owner_binary_capture_this_release': False,
+        'live_bank_or_personal_trade_windows_verified': False,
+        'fountain_exact_object_location_verified': False,
+        'city_pitches_use_verified_spawns_banks_and_guards': True,
+        'sale_phrase_combinations_for_short_facts': 4800,
+        'thirty_personalities_deferred': True,
+        'quest_rewards_configurator': {'experience':9,'gold':5,'automatic_backup':True,'idempotent':True,'server_scripts_bundled':False},
         'free_inventory_or_gold_grants': False,
         'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',

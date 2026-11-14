@@ -65,13 +65,13 @@ class MarketTests(unittest.TestCase):
   m.tick(2,p,True);p.move_to.assert_called_once();s.assert_not_called()
   m.pitch=w.own.position;m.tick(3,p,True);self.assertEqual(s.call_args.args[0],330);self.assertEqual(m.confirmed_opens,0)
   m.observe(858,struct.pack('>I',2),4);self.assertEqual(m.confirmed_opens,0)
-  m.observe(858,struct.pack('>I',1),5);self.assertEqual(m.confirmed_opens,1);self.assertEqual(m.trade_until,2405)
- def test_forty_minute_rotation_needs_server_closure(self):
+  m.observe(858,struct.pack('>I',1),5);self.assertEqual(m.confirmed_opens,1);self.assertEqual(m.trade_until,3605)
+ def test_one_hour_rotation_needs_server_closure(self):
   w,s,m,p=self.make();m.stock=[(0,25000,1,0)];m.opened(10)
-  m.tick(2409,p,True);s.assert_not_called()
-  m.tick(2410,p,True);s.assert_called_once_with(333,b'');self.assertEqual(m.state,'closing')
-  m.tick(2411,p,True);self.assertEqual(m.state,'closing')
-  m.observe(857,struct.pack('>I',1),2412);self.assertEqual(m.state,'idle');self.assertGreaterEqual(m.next_shift,3612)
+  m.tick(3609,p,True);s.assert_not_called()
+  m.tick(3610,p,True);s.assert_called_once_with(333,b'');self.assertEqual(m.state,'closing')
+  m.tick(3611,p,True);self.assertEqual(m.state,'closing')
+  m.observe(857,struct.pack('>I',1),3612);self.assertEqual(m.state,'idle');self.assertGreaterEqual(m.next_shift,4812)
  def test_open_timeout_requests_close_and_never_assumes_success(self):
   w,s,m,p=self.make();m.state='opening';m.deadline=10
   m.tick(11,p,True);self.assertEqual(m.state,'closing');self.assertEqual(m.confirmed_opens,0);s.assert_called_once_with(333,b'')

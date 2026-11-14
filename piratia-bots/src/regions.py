@@ -23,11 +23,15 @@ class Regions:
         from life import LifeItems
         self.life=LifeItems(self.assets)
         self.npc_knowledge=self.life.npcs
+        from study_queue import StudyQueue
+        self.study_queue=StudyQueue(limit=max(1,min(20,population_count//10)))
         from market import MarketCatalog,MarketDirectory
         self.market_catalog=MarketCatalog(self.assets)
+        from market_prices import MarketPrices
+        self.market_catalog.prices=MarketPrices(self.assets.parent/'data'/'market-prices.json')
         total=population_count//10
         argent=round(total*.75);remaining=total-argent
-        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count)
+        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=80)
         from activity_slots import ActivitySlots
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         from mob_knowledge import MobKnowledge
