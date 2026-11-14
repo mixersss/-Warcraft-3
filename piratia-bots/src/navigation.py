@@ -20,6 +20,8 @@ class Navigation:
         self.local = threading.local()
         self.map = data.get('map','garner')
         self.geometry_revision=data.get('geometry_revision','legacy-blk')
+        self.connected_bits=(zlib.decompress(base64.b64decode(data['connected_ground_zlib']))
+                             if 'connected_ground_zlib' in data else None)
         self.origin = tuple(data['origin'])
         self.width, self.height = data['width'], data['height']
         if not 1 <= self.width <= 4096 or not 1 <= self.height <= 4096:
@@ -33,6 +35,10 @@ class Navigation:
             raise ValueError('Incomplete physical recovery grid')
         self.recovery_bits=(zlib.decompress(base64.b64decode(data['recovery50_free_zlib']))
                             if 'recovery50_free_zlib' in data else None)
+        self.safe_recovery_bits=(zlib.decompress(base64.b64decode(data['recovery50_dry_zlib']))
+                                 if 'recovery50_dry_zlib' in data else None)
+        if self.safe_recovery_bits is not None and len(self.safe_recovery_bits)!=(self.width*self.height*4+7)//8:
+            raise ValueError('Incomplete dry recovery grid')
         if self.recovery_bits is not None and len(self.recovery_bits)!=(self.width*self.height*4+7)//8:
             raise ValueError('Incomplete 50cm recovery grid')
         self.combat_bits=(zlib.decompress(base64.b64decode(data['combat_no_fight_zlib']))
@@ -41,6 +47,16 @@ class Navigation:
             raise ValueError('Incomplete no-fight grid')
         self.combat_zone_revision=data.get('combat_zone_revision','unknown')
         self.waypoints = [tuple(p) for p in data['waypoints']]
+        if self.connected_bits is not None and len(self.connected_bits)!=(self.width*self.height+7)//8:
+            raise ValueError('Incomplete connected ground grid')
+
+    def needs_recovery(self,position):
+        cell=self.cell(position)
+        if not self.free(cell):return True
+        bits=getattr(self,'connected_bits',None)
+        if bits is None:return False
+        index=cell[1]*self.width+cell[0]
+        return not bool(bits[index//8]&(1<<(7-index%8)))
 
     def cell(self, position):
         return position[0] // 100 - self.origin[0], position[1] // 100 - self.origin[1]
@@ -107,7 +123,7 @@ class Navigation:
         as a shortcut. Server movement remains authoritative.
         """
         physical=getattr(self,'recovery_cells',None)
-        bits=getattr(self,'recovery_bits',None)
+        bits=getattr(self,'safe_recovery_bits',None) or getattr(self,'recovery_bits',None)
         if physical is None and bits is None:return []
         scale=2 if bits is not None else 1;step=100//scale
         width,height=self.width*scale,self.height*scale
@@ -117,11 +133,13 @@ class Navigation:
             if not (0<=x<width and 0<=y<height) or (c!=start and c in blocked):return False
             index=y*width+x
             return bool(bits[index//8]&(1<<(7-index%8))) if bits is not None else physical[index]==1
-        if not free(start) or self.free(self.cell(position)):return []
+        if not free(start) or not self.needs_recovery(position):return []
         parents={start:None};queue=deque([start]);goal=None
         while queue and len(parents)<=limit:
             current=queue.popleft()
-            if current!=start and self.free((current[0]//scale,current[1]//scale)):goal=current;break
+            point=((current[0]+self.origin[0]*scale)*step+step//2,
+                   (current[1]+self.origin[1]*scale)*step+step//2)
+            if current!=start and not self.needs_recovery(point):goal=current;break
             x,y=current
             for dx,dy in ((0,-1),(-1,0),(1,0),(0,1),(-1,-1),(1,-1),(-1,1),(1,1)):
                 cell=x+dx,y+dy

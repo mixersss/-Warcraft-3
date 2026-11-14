@@ -32,6 +32,9 @@ class ShoreRegressionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.navs={name:Navigation(ROOT/'assets'/(name+'-navigation.json')) for name in ('garner','magicsea','darkblue')}
+        # This suite freezes Alpha39 physical-only egress. Alpha46 separately
+        # tests the stricter dry mask and isolated-component recovery policy.
+        for nav in cls.navs.values():nav.safe_recovery_bits=None;nav.connected_bits=None
 
     def assert_physical(self,n,points):
         for a,b in zip(points,points[1:]):

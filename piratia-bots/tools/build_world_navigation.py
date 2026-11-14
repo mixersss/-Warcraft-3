@@ -44,7 +44,7 @@ class MapFile:
         return {'height_cm':values[3]*10,'region':values[4],'blocks':values[6:]}
 
 
-def project(map_file,block_raw,attr_raw=None,with_recovery=False):
+def project(map_file,block_raw,attr_raw=None,with_recovery=False,water_safe_recovery=False):
     import numpy as np
     m=MapFile(map_file);w,h=m.width,m.height
     height=np.zeros((h,w),dtype=np.int16);region=np.zeros((h,w),dtype=np.uint16)
@@ -103,7 +103,9 @@ def project(map_file,block_raw,attr_raw=None,with_recovery=False):
     if with_recovery:
         # Native client pathfinding tests individual 50cm cells. Egress must
         # work from a legal subcell inside a conservatively excluded 1m cell.
-        return clear.astype(np.uint8),audit,~physical
+        recovery=~physical
+        if water_safe_recovery:recovery&=~np.repeat(np.repeat(water,2,axis=0),2,axis=1)
+        return clear.astype(np.uint8),audit,recovery
     return clear.astype(np.uint8),audit
 
 

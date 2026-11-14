@@ -117,6 +117,8 @@ class Hunter:
         self.optional_quests=True
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
+        from stuck_return import StuckReturn
+        self.stuck_return=StuckReturn();self.offmesh_since=None
         self.offmesh_batch=0
         self.offmesh_route=();self.offmesh_origin=None;self.offmesh_blocked={};self.offmesh_reason=''
         from farm_plan import HuntLearning
@@ -349,12 +351,12 @@ class Hunter:
 
     def recover_to_ground(self,now):
         own=self.world.own
-        if now<self.offmesh_next and not self.action_stopped():return
+        if now<self.offmesh_next:return
         self.offmesh_blocked={c:t for c,t in self.offmesh_blocked.items() if t>now}
         if self.offmesh_origin is not None and distance(own.position,self.offmesh_origin)<50:
             convert=getattr(self.nav,'recovery_cell',self.nav.cell)
             origin_cell=convert(own.position)
-            step=next((convert(p) for p in self.offmesh_route if convert(p)!=origin_cell),None)
+            step=next((convert(p) for p in self.offmesh_route if distance(p,own.position)>=50 and convert(p)!=origin_cell),None)
             if step is not None:self.offmesh_blocked[step]=now+30
         scale=2 if getattr(self.nav,'recovery_bits',None) is not None else 1
         blocked=set(self.offmesh_blocked)|{(x*scale+dx,y*scale+dy)
@@ -368,6 +370,11 @@ class Hunter:
         if len(route)<2:
             self.offmesh_reason='нет выхода по физической сетке; повторная проверка через 5 секунд'
             self.offmesh_next=now+5;self.offmesh_route=();self.offmesh_origin=None
+            if self.offmesh_since is not None and now-self.offmesh_since>=30:
+                if self.stuck_return.tick(now,self):self.offmesh_reason=self.stuck_return.reason
+                elif self.stuck_return.reason=='билет требует полные HP и SP':
+                    self.sitting.tick(now,self,True);self.offmesh_reason=self.stuck_return.reason
+                elif self.stuck_return.reason:self.offmesh_reason+='; '+self.stuck_return.reason
             return
         self.move_goal=None
         self.emit(movement(own.identity,self.sequence,route))
@@ -561,6 +568,11 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()):return False
+        if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
+                and (self.world.bag_capacity or 0)-len(self.world.bag)>2
+                and not self.raising_travel_funds and feature
+                and not getattr(feature,'context',None) and not getattr(feature,'pending',None)):
+            return False # A stalled optional selling trip must yield to the earned-XP watchdog.
         if not feature or (key!='vendor' and not self.task_budget.allow(key,now)):return False
         point=None
         if self.coordination and feature and not getattr(feature,'context',None):
@@ -698,6 +710,10 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
+        if self.stuck_return.pending and self.pending_action:
+            self.flush_action(now)
+        if self.stuck_return.poll(now,self):
+            self.change(self.stuck_return.reason);return
         self.cancel_protected_fight(now)
         if self.refresh_class_intent:self.refresh_class_intent()
         if self.adventure and hasattr(self.adventure,'review_objective'):
@@ -711,15 +727,19 @@ class Hunter:
         if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
             # A server correction can invalidate interpolation; prefer its raw position.
             self.world.motion.pop(self.world.own_id,None)
-        if not own or self.world.map != self.nav.map or not self.nav.free(self.nav.cell(self.position(now))):
+        needs_recovery=(own and (self.nav.needs_recovery(self.position(now)) if hasattr(self.nav,'needs_recovery')
+                                else not self.nav.free(self.nav.cell(self.position(now)))))
+        if not own or self.world.map != self.nav.map or needs_recovery:
             self.change('ожидание достоверных данных карты')
             if self.pending_action and own and own.alive:
                 if self.flush_action(now):return
             if own and own.alive and self.world.map==self.nav.map:
+                if self.offmesh_since is None:self.offmesh_since=now
                 self.recover_to_ground(now)
                 self.change(self.offmesh_reason or 'проверяет выход на сушу')
             return
         self.offmesh_batch=0
+        self.offmesh_since=None
         self.offmesh_route=();self.offmesh_origin=None;self.offmesh_reason=''
         hp, maximum = own.values.get(HP), own.values.get(MAX_HP)
         if hp is None or not maximum:
@@ -921,7 +941,7 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
-        if self.bank and not mandatory and self.bank.tick(now,self,safe,market_dialogue):
+        if self.bank and not mandatory and not self.activity.hunting(now) and self.bank.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.bank.reason);return
         if self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
@@ -1128,7 +1148,7 @@ class Hunter:
         return adaptive
 
     def summary(self):
-        return {'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -1430,6 +1450,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             was_dead=world.own is not None and not world.own.alive
             if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             world.enter(payload)
+            policy.stuck_return.on_map(world.map)
             if policy.bank:policy.bank.end(now)
             if policy.direct_trade:policy.direct_trade.reset()
             world.own.build_id=progression.build_id
