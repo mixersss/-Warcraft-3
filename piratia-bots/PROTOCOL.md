@@ -894,3 +894,13 @@ field18single1: use the established target-entity BeginAction2. Native activatio
 SP/cooldown/weapon and range are still required. Healing97 may target self or
 visible living members named in the confirmed native party; queued healing
 rechecks membership, handle, HP and range. No HP is predicted or granted locally.
+
+## Alpha45 source-backed knowledge
+
+No new native action/opcode is enabled by the mechanics catalog. Read-only
+plans consume existing observed BagItem attributes, endurance, energy and
+forge parameters; they never mutate items, money, position or quest state.
+Function indexing and source-based formulas do not prove native engine
+execution or complete dynamic coverage. Local private caches are validated
+and loaded once per shared Regions instance; invalid caches fall back to
+the bundled snapshot with an explicit diagnostic.

@@ -37,6 +37,9 @@ class Regions:
         from mob_knowledge import MobKnowledge
         knowledge=self.assets/'world-mobs.json'
         self.mob_knowledge=MobKnowledge(knowledge) if knowledge.exists() else None
+        from mechanics import load_knowledge
+        mechanics=self.assets/'mechanics.json'
+        self.mechanics=load_knowledge(self.assets,self.npc_knowledge,self.mob_knowledge) if mechanics.exists() else None
         portals=self.assets/'portals.json'
         self.portal_catalog=json.loads(portals.read_text(encoding='utf-8')) if portals.exists() else None
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))

@@ -5,13 +5,14 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-44'
-NAME = 'Piratia-Auto-Bots-Alpha44'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-45'
+NAME = 'Piratia-Auto-Bots-Alpha45'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
     sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py', ROOT / 'tools' / 'build_npc_knowledge.py', ROOT / 'tools' / 'build_market.py', ROOT / 'tools' / 'build_story.py', ROOT / 'tools' / 'build_quest_rewards_package.py']
+    sources += [ROOT / 'tools/lua_inventory.py', ROOT / 'tools/build_mechanics.py', ROOT / 'knowledge/mechanics-evidence-lock.json', ROOT / 'knowledge/MECHANICS-COVERAGE.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -23,7 +24,7 @@ def main():
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
             info = zipfile.ZipInfo(f'{NAME}/{source.relative_to(ROOT).as_posix()}',
-                                   date_time=(2026, 11, 14, 0, 0, 0))
+                                   date_time=(2026, 11, 15, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             data = source.read_bytes()
             if source.suffix == '.cmd':
@@ -33,7 +34,8 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha44 validation pending',
+        'mechanics_knowledge': {'lua_files':242,'named_functions':4135,'reviewed_source_cards':22,'indexed_only_cards':6,'all_mechanics_understood':False,'new_native_operations_enabled':False,'local_learner':'Learn-Mechanics.cmd','finder':'Find-Mechanic.cmd','audit':'Audit-Mechanics.cmd'},
+        'status': 'Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha45 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -226,11 +228,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 639,
-        'full_python_suite_total': 647,
-        'full_python_suite_passed': 647,
+        'pure_python_tests_passed': 677,
+        'full_python_suite_total': 685,
+        'full_python_suite_passed': 685,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '647 passed in Alpha44 including 8 local socket integration tests',
+        'last_full_network_regression': '685 passed in Alpha45 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',

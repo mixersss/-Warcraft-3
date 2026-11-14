@@ -126,6 +126,7 @@ class Hunter:
         self.refresh_class_intent=None
         self.background_task=None
         self.mob_knowledge=None;self.npc_knowledge=None
+        self.mechanics=None
         self.shortcut=None
         self.quest_combat_ready=False
         self.protected_fights_stopped=0;self.immune_fights_released=0
@@ -1159,6 +1160,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
     policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
+    policy.mechanics=getattr(navigation,'mechanics',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.npc_knowledge=getattr(navigation,'npc_knowledge',None)
@@ -1170,6 +1172,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     progression = Progression(world, client.wire.send)
     social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name,conversations=getattr(navigation,'conversations',None))
     if policy.npc_knowledge:social.npc_provider=lambda words:policy.npc_knowledge.answer(words,world.map,world.own.position)
+    if policy.mechanics:social.mechanics_provider=lambda words:policy.mechanics.answer(words,world)
     from personality import Personality
     personality=Personality(bot_name);social.personality=personality
     social.scripted_dialogues=False
@@ -1341,6 +1344,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['route_planning']=policy.nav.planning_stats()
         report.result['sitting']=policy.sitting.summary()
         report.result['hunt']=policy.summary()
+        if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
         if policy.loot:report.result['loot']=policy.loot.summary()
         if contacts:report.result['contacts']=contacts.summary()
         if cooperation:report.result['cooperation']=cooperation.summary()
@@ -1544,6 +1548,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.learning.save(time.monotonic(),force=True)
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save(force=True)
         report.result['hunt'] = policy.summary()
+        if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
         report.result['sitting']=policy.sitting.summary()
         report.result['route_planning']=policy.nav.planning_stats()
         if policy.loot:report.result['loot']=policy.loot.summary()

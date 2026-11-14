@@ -1,0 +1,145 @@
+{
+  "gem_combine": {
+    "script/calculate/forge.lua:can_unite_item_main": "a339823ce27ed08decf4df471138433093a10e0b1fae7aa5311c07d5e2b26358",
+    "script/calculate/forge.lua:begin_unite_item": "a327d6ca945d87bc7aa59316d92d1a4a6c641cb1c61b6f56b0de66a2c7e5045e",
+    "script/calculate/forge.lua:getunite_money_main": "2251c93f5f3ea60cf30315c54f2fad13b1255af9e24ad2755838ec3fa83cdb4e",
+    "script/calculate/forge.lua:Check_CG_HechengBS": "4baff5a732376a67c95059531bed64623a0ed6359b9e5326621b6b94524e43f5",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "forge": {
+    "script/calculate/forge.lua:can_forge_item_main": "2c8d9465f8866e1f4cd5691c437e24c249c6f18aa3f464209d0da3d507d37a3d",
+    "script/calculate/forge.lua:CheckItem_HaveHole": "20b404af046ad2f4c8c47ff457d9113269902b711124f14efccf5fc944cf5403",
+    "script/calculate/forge.lua:Check_StoneLv": "87646b8f0d478c5d3847a9f90700c83d4abdf07ff5bc9902d5ef1b9f7a6ae50c",
+    "script/calculate/forge.lua:Check_StoneItemType": "8f2fa0d969d058a6d389702d2d35a762869027a84d34fcc893c51938c161234f",
+    "script/calculate/forge.lua:getforge_money_main": "c4e1c0f534dbfce904b10121c918698339ee346b81636fe564670d2ccea1eab4",
+    "script/calculate/forge.lua:Check_CG_Jinglian": "6d88610e5209051fb04340f8d861a82f04b55b9a667d38245d599ed5de85a04c",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "sockets": {
+    "script/calculate/forge.lua:can_milling_item_main": "82517094aa6775d6626e712f30eaa7b2d38f6ac9c12067f491437fa049d7a72f",
+    "script/calculate/forge.lua:Check_Jiaguji": "676ee8c9a2e39bfce137b97aadff9889851ff8fa6b5394849bd9fb221ad5fb13",
+    "script/calculate/forge.lua:Check_Cuihuafen": "73744d58a3a9fd502bbe2cb073d0f9c8e96a87a087d3fb5d90fbdfc7d107926d",
+    "script/calculate/forge.lua:Check_CG_damo": "12ed463d4f3a313c77c8918e2c0543a92b7cb043a68d6433f2eee71db661fa3c",
+    "script/calculate/forge.lua:get_milling_money_main": "9382478d9c279e4933518c4856f1f41d32fda746c243c5a67380b807f76f249c",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "gem_extract": {
+    "script/calculate/forge.lua:can_getstone_item_main": "4482873e523fc254921058dbe0424d5a10f4732e8694f05a961bedcceddddf5b",
+    "script/calculate/forge.lua:getstone_money_main": "efea77d360b0a90038b1e684f4d9caeaabed6e08d6bdaffd15c4523f990bee83",
+    "script/calculate/forge.lua:getstone_item": "0a58c3adf6bf41961cd853e3649086af74951b3a1b87663d78637ce10f813057",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "apparel_upgrade": {
+    "script/calculate/forge.lua:can_beuplv_item_main": "5be79a94fc628948fecff357eedda1937ebdd3d244ea4bbdd83f7194cfc80f3b",
+    "script/calculate/forge.lua:Check_CG_beuplv": "c8dccad9238c1fbf20f4eacb44433953b5281c598902e403ab1847faf4a42b99",
+    "script/calculate/forge.lua:getupgrade_money_main": "8f450ffab909522dd27375a68d7c1e9494824f081d47ece1855ebd43260d19ef",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "special_upgrade": {
+    "script/calculate/forge.lua:can_tichun_item_main": "b7e3c851db45fe46fad0fcc5279f1dfe70619ae8620c93d9cb9394e4852d9991",
+    "script/calculate/forge.lua:tichun_item": "eb52a85c83932827575263c5887faf6189c8fe310432e80fc9f4d17aa7fe8735",
+    "script/calculate/forge.lua:gettichun_money_main": "9e89edbeff40b87b681f0adc2e0c055c7cccec60b8a2460e96bf202210aed9f4",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "coral_recharge": {
+    "script/calculate/forge.lua:can_energy_item_main": "9daa9eddd1afbe9618333f7c690fa13b1a722d3f2007ae865916ae919cd41340",
+    "script/calculate/forge.lua:energy_money_main": "c410d5e7564fc0acd28f8276ab67b07688bf7fb4fe6561fbe51201da70094a85",
+    "script/calculate/forge.lua:energy_item": "303c01af9e02846a0dc0362e7d5196b95049606e13fa639361a95c5972e058c8",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "tool_repair": {
+    "script/calculate/forge.lua:can_shtool_item_main": "1bd49e8eb77ad7e6dc5fbf9dd98e5498473a905cdad06dbcf76d89c47d87f25e",
+    "script/calculate/forge.lua:shtool_money_main": "979854c796933b6d4abf9f642a219fbf6dc1f8c4c18b31663431598b0c65bedd",
+    "script/calculate/forge.lua:shtool_item": "35e3e730283d0c9ed058c5f5bd581d2ac619340e845d8bb16aff7bb5b666c475",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "manufacturing": {
+    "script/calculate/forge.lua:can_manufacture_item_main": "659782bb8129ec007bdad8c80976fe9f5ffa4f3ef9758d13df44bccbde5f0768",
+    "script/calculate/forge.lua:Read_manufacture": "057c5dd7a489bbf3d20b51a9b3651120f415e6da60667f24a6b4670286bb3be5",
+    "script/calculate/forge.lua:end_manufacture_item": "342352510bbed2ac712936d1eb0c01b0ad558b4e9f3f428590c3167944b57947",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "crafting": {
+    "script/calculate/forge.lua:can_manufacture_item_main": "659782bb8129ec007bdad8c80976fe9f5ffa4f3ef9758d13df44bccbde5f0768",
+    "script/calculate/forge.lua:Read_manufacture": "057c5dd7a489bbf3d20b51a9b3651120f415e6da60667f24a6b4670286bb3be5",
+    "script/calculate/forge.lua:end_manufacture_item": "342352510bbed2ac712936d1eb0c01b0ad558b4e9f3f428590c3167944b57947",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "cooking": {
+    "script/calculate/forge.lua:can_manufacture_item_main": "659782bb8129ec007bdad8c80976fe9f5ffa4f3ef9758d13df44bccbde5f0768",
+    "script/calculate/forge.lua:Read_manufacture": "057c5dd7a489bbf3d20b51a9b3651120f415e6da60667f24a6b4670286bb3be5",
+    "script/calculate/forge.lua:end_manufacture_item": "342352510bbed2ac712936d1eb0c01b0ad558b4e9f3f428590c3167944b57947",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "fairy_feed": {
+    "script/calculate/ItemEffect.lua:ItemUse_SiLiao": "c53a3c79e8e234c903385f8fc1a5378a4bd6f73b5b49f5462a9ad3cbeb4c0f0e",
+    "script/calculate/ItemEffect.lua:ItemUse_CWSiLiao": "f95218654a00af1a63c053d5e8952c431f7b84b93a9d45e7f1643d76b254e22f",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "fairy_growth": {
+    "script/calculate/functions.lua:Elf_LvUp": "d5055e9e59b008232432b15e4af8b005a99754fe27d519252eed2982b3f19ad0",
+    "script/calculate/functions.lua:Elf_LvUp_1": "0daf9c87df6f71ed963d92c539f64cca544246923e4ed1f70161b95afecaf621",
+    "script/calculate/functions.lua:Give_ElfEXP_MISSION": "f71776a978827aff1042f4a97714fd20195ded28714be4768e90b7d6a69d6cdd",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "fairy_breeding": {
+    "script/calculate/forge.lua:can_jlborn_item_main": "417a23ec1ae8ac46cdeca3fc9c5c685563b7f939b6edc8f2bd8e81ee7ddc79cc",
+    "script/calculate/forge.lua:getjlborn_money_main": "a70255ac9d3f17c802111dc053fb961a9f960d3ab1cd3f9eb6b3781c898baf16",
+    "script/calculate/forge.lua:jlborn_item": "339bcdde71f631b0d02bb3aeb4952a32dffa648be8f3bcabadd012fb3b01d510",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "ship_build": {
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "ship_level": {
+    "script/calculate/exp_and_level.lua:BoatLevelUpProc": "5dab225fb382306e296ef4240ab6986ffa0025e0d99d851120a580612ce2827f",
+    "script/calculate/exp_and_level.lua:Ship_Tran": "74af099ec2ef113e479780de7914c873e6602cae02489005d0b0b7ecc0456af9",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "pvp": {
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "demonic_world": {
+    "puzzleworld/entry.lua:check_can_enter_puzzleworld": "e89b76ef712338f1926a28503f4f355fcbdd19701ebc08985febe8e326c6b118",
+    "puzzleworld/entry.lua:begin_enter_puzzleworld": "b844910d3b629a741c16911ac47772bbc3a512e73bcf4a72d72f95a27bad59d1",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "dark_swamp": {
+    "darkswamp/entry.lua:check_can_enter_darkswamp": "d3f172961bbf7e3c853f55e51a77f5f74fbcfeaa6789efd334c0879274fa842b",
+    "darkswamp/entry.lua:begin_enter_darkswamp": "d64b7a09a5c2b173733578aa01b13fd09d948d95211d7bf26704eb76f6534eef",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "forsaken_city": {
+    "abandonedcity/entry.lua:check_can_enter_abandonedcity": "518f63eaa7327bb543771af2a89fe8316e576bcb07142ca2332c06ebba6080de",
+    "abandonedcity/entry.lua:begin_enter_abandonedcity": "a8c2e6454ed5107a85cdb499b09bf3af7181839fbef6fc04a4d7db4dda233c13",
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "materials": {
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  },
+  "life_skills": {
+    "constant_projection": "f8707b799058168b77f19106e82965381a1f95597bb242231254ff540f0a1a1c",
+    "source_snapshot": "25e107eb4bf64ae03616143fe9ef93ca88764f5a3df580ab9ac7543585b5d622"
+  }
+}

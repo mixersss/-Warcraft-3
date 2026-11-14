@@ -52,6 +52,9 @@ class Social:
                 and e.name and not e.name.lower().startswith('bot')]
 
     def reply(self,words):
+        mechanics=getattr(self,'mechanics_provider',None)
+        explanation=mechanics(words) if mechanics else None
+        if explanation:return 'mechanics',explanation
         if self.npc_provider:
             answer=self.npc_provider(words)
             if answer:return 'npc',answer
@@ -98,13 +101,15 @@ class Social:
         if not addressed and not self.conversations:return
         person=self.world.entities.get(source)
         commerce=getattr(self,'commerce_provider',None)
+        mechanics=getattr(self,'mechanics_provider',None)
+        mechanic_answer=mechanics(words) if mechanics else None
         trade_words={'куплю','купить','продам','продаю','продай','продашь','продаешь','продаёшь','продаете','продаёте',
                      'цена','цену','почем','почём','торг','торговать','обмен','дорого','дешевле','скидка',
                      'встретимся','встретиться','встреча','подойти'}
-        trade_context=commerce and person and bool(trade_words.intersection(words))
+        trade_context=commerce and person and not mechanic_answer and bool(trade_words.intersection(words))
         if trade_context and self.conversations and not self.conversations.claim_trade(self.world.map,source,self.name,now,addressed):return
         answer=commerce(person.name,text,now) if trade_context else None
-        result=('trade',answer) if answer else self.reply(words)
+        result=('mechanics',mechanic_answer) if mechanic_answer else ('trade',answer) if answer else self.reply(words)
         if not result:return
         intent,reply=result
         if self.replied.get((source,intent),0)>now:return

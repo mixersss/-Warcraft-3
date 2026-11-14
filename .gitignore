@@ -12,3 +12,6 @@ naruto-rpg/user-music/compact/
 
 # X Hero Siege reproducible bot build.
 xhero-siege/dist/
+
+# Private comparison of a user's live Piratia resource files.
+piratia-bots/server-mechanics-audit.json

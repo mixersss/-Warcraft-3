@@ -31,10 +31,13 @@ class Vendor(Town):
     objective=policy.adventure.grind.get(identity)
     if objective and objective[1]:protected.add(objective[1])
   choices=[]
+  mechanics=getattr(policy,'mechanics',None)
+  reserved=dict(mechanics.craft_reservations(w)) if mechanics else {}
   for slot,item in sorted(w.bag.items()):
    if item.identity not in self.junk or item.identity in protected or not item.valid:continue
    if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
-   count=min(99,item.count)
+   keep=min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
+   count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))
   return choices
  def finish_sale(self,now):

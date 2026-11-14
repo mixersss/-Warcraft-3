@@ -37,11 +37,15 @@ class Contacts:
    if receiver.casefold()!=self.social.name.casefold() or not sender or sender.lower().startswith('bot') or len(text)>240 or any(ord(c)<32 for c in sender+text):return
    if self.next_reply.get(sender,0)>now:return
    commerce=getattr(self,'commerce_provider',None)
-   trade_answer=commerce(sender,text,now) if commerce else None
+   words=re.findall(r'[\w]+',text.casefold())
+   mechanics=getattr(self.social,'mechanics_provider',None)
+   knowledge_answer=mechanics(words) if mechanics else None
+   trade_answer=commerce(sender,text,now) if commerce and not knowledge_answer else None
    self.next_reply[sender]=now+(3 if trade_answer else 20)
    if len(self.next_reply)>128:self.next_reply.pop(next(iter(self.next_reply)))
    words=re.findall(r'[\w]+',text.casefold());reply=self.social.reply(words)
-   if trade_answer:answer=trade_answer
+   if knowledge_answer:answer=knowledge_answer
+   elif trade_answer:answer=trade_answer
    elif any(w in words for w in ('друзья','друзься','друг','друзей','дружить')):answer=self.invite_friend(sender,now)
    elif reply and reply[0]=='party':answer=self.party.request_name(sender,now)
    elif reply:answer=reply[1]
