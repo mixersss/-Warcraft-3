@@ -41,12 +41,11 @@ def main():
    body='\n'.join(line.split('--')[0] for line in body.splitlines())
    for questid in (749,750,751,755,757,758):
     if re.search(r'AddNpcMission\s*\(\s*'+str(questid)+r'\s*\)',body):advanced[questid]={'map':mapname,'position':list(map(int,a[5].split(','))),'name':a[1]}
-   if a[8] not in ('Argent City','Shaitan City','Lower Icicle Castle'):continue
    funcs=re.findall(r'Text\s*\(\s*1\s*,\s*"([^"]+)"\s*,\s*(\w+)',body)
    idx=next((i for i,(_,fn) in enumerate(funcs) if fn=='BuyPage'),None)
    offered=[int(v) for v in re.findall(r'(?:Weapon|Defence|Other)\s*\(\s*(\d+)\s*\)',body)]
    if idx is not None and offered:
-    meta[mapname].append({'position':list(map(int,a[5].split(','))),'menu':idx,'name':a[1],'offers':offered})
+    meta[mapname].append({'position':list(map(int,a[5].split(','))),'menu':idx,'name':a[1],'offers':offered,'region':a[8]})
  script=text(r/'script/MisScript/MissionScript01.lua');quests={}
  for target,sid in ((9,749),(8,750),(12,757),(13,751),(14,755),(16,758)):
   m=re.search(r'DefineMission\(\s*'+str(sid)+r'\s*,\s*"([^"]+)"\s*,\s*(\d+)',script)

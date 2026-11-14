@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from professions import describe
 
 
 def render_report(report):
@@ -13,7 +14,7 @@ def render_report(report):
     travel=report.get('travel',{})
     role=report.get('class_path',{})
     vendor=report.get('vendor',{})
-    lines=[f"Бот {report.get('bot_index','?')}: класс {role.get('label','?')}",
+    lines=[f"Бот {report.get('bot_index','?')}: цель развития {role.get('label','?')}",
            f"  Уровень={quest.get('level','?')}; золото={quest.get('gold','?')}; состояние={report.get('hunt',{}).get('state','?')}",
            f"  Сумка: {quest.get('bag_used','?')}/{quest.get('bag_capacity','?')}; свободно={quest.get('free_bag_slots','?')}",
            f"  Миссии: {json.dumps(quest.get('active_missions',{}),ensure_ascii=False)}; принятия={quest.get('accepted_confirmed',0)}; сдачи={quest.get('deliveries_confirmed',0)}",
@@ -23,8 +24,11 @@ def render_report(report):
            f"  Переход: {travel.get('state','нет данных')}; город={travel.get('destination')}; этап={travel.get('dialogue_stage')}; прибытия={travel.get('confirmed_arrivals',0)}",
            f"  Меню телепортера: {json.dumps(travel.get('last_menu',[]),ensure_ascii=False)}"]
     fight=report.get('hunt',{})
+    actual=quest.get('profession',fight.get('world',{}).get('profession'))
+    lines.append(f"  Фактическая профессия: {describe(actual)}; проверка задания={json.dumps(quest.get('objective_review',{}),ensure_ascii=False)}")
+    lines.append(f"  Поиск в фоне: {fight.get('background_planning_task')}; ожидание действия={json.dumps(fight.get('action_wait',{}),ensure_ascii=False)}")
     lines.append(f"  Планировщик: {json.dumps(report.get('route_planning',{}),ensure_ascii=False)}")
-    lines.append(f"  Путь к продавцу: NPC={vendor.get('destination')}; точка подхода={vendor.get('route_goal')}; снимок={report.get('time_utc')}")
+    lines.append(f"  Путь к продавцу: {vendor.get('merchant')} ({vendor.get('merchant_region')}); NPC={vendor.get('destination')}; точка подхода={vendor.get('route_goal')}; снимок={report.get('time_utc')}")
     obstacles=fight.get('movement_obstacles',{})
     lines.append(f"  Препятствия: неожиданных остановок={obstacles.get('unexpected_stops',0)}; последний шаг={json.dumps(obstacles.get('last_step'),ensure_ascii=False)}")
     world=fight.get('world',{})

@@ -33,6 +33,8 @@ class Fleet:
                 'tactics':dict(Counter(r.get('tactic','unknown') for r in active)),
                 'bodies':dict(Counter(r.get('body',0) for r in active)),
                 'levels':dict(Counter(r.get('level',0) for r in active)),
+                'actual_professions':dict(Counter(r.get('job') for r in active)),
+                'with_profession':sum(type(r.get('job')) is int and r['job']!=0 for r in active),
                 'with_progress_this_session':sum((r.get('level') or 0)>(r.get('start_level') or 9999)
                     or (r.get('level')==r.get('start_level') and (r.get('experience') or 0)>(r.get('start_experience') or 0)) for r in active),
                 'target_jobs':dict(Counter(r.get('target_job',0) for r in active)), 'bots':rows}

@@ -5,13 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-36'
-NAME = 'Piratia-Auto-Bots-Alpha36'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-37'
+NAME = 'Piratia-Auto-Bots-Alpha37'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -33,8 +33,19 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Faster checked weighted search, bounded shared destination corridors, merchant interaction approaches and fallback; replayed Bot78 full-bag movement from screenshot coordinates; live revalidation pending',
+        'status': 'Review saved/earned first-profession objectives through native NPCs; optional planning yields to work with reserved foreground budget; display authoritative professions; bounded earned-stat retry; live revalidation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
+        'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
+        'garner_verified_merchants': 19,
+        'garner_merchants_include_mines_and_field_shops': True,
+        'unavailable_trade_function_selects_alternative': True,
+        'npc_not_ready_returns_to_farming': True,
+        'optional_planning_cannot_monopolize_decision': True,
+        'background_planning_node_slice_when_nearby_work': 128,
+        'foreground_and_background_search_jobs_are_independent': True,
+        'nonurgent_sale_yields_to_active_class_farming': True,
+        'reports_distinguish_actual_profession_from_planned_class': True,
+        'attribute_refusal_retry_seconds': 300,
         'route_search_heuristic_weight': 4,
         'route_search_closed_cells_not_reexpanded': True,
         'shared_destination_corridor_limit': 128,
@@ -115,11 +126,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 407,
-        'full_python_suite_total': 415,
-        'full_python_suite_passed': 415,
+        'pure_python_tests_passed': 429,
+        'full_python_suite_total': 437,
+        'full_python_suite_passed': 437,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '415 passed in Alpha36 including 8 local socket integration tests',
+        'last_full_network_regression': '437 passed in Alpha37 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

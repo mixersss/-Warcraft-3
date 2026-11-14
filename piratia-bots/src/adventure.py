@@ -17,6 +17,11 @@ TITLES = {'Welcome', "Blacksmith's Greetings", "Tailor's Greetings",
 DESTINATIONS = {1:'senna',701:'senna',702:'senna',703:'senna',704:'senna',
                 58:'peter',62:'peter',63:'william',64:'william',65:'peter'}
 LETTER_STOPS = {701:'goldie',702:'nila',703:'ditto'}
+# Numeric requirements audited from the owner's MissionScript01; hints only.
+# The server's NPC button/conditions remain the sole delivery authority.
+PROFESSION_OBJECTIVES={62:('kill',237,12),158:('kill',237,12),98:('kill',240,12),
+                       80:('kill',43,2),64:('item',1678,3),160:('item',1595,2),
+                       150:('item',1779,3),82:('item',3129,3)}
 GRIND = {704:(103,1620),62:(237,None),64:(125,1678)}
 # Model: real level, practical search points inside the audited navigation crop.
 FARMS = {75:(1,[(213050,269050)]),71:(2,[(219050,263950)]),
@@ -118,6 +123,10 @@ class Adventure:
         if not self.profession_local:
             self.destinations[{1:58,2:59,4:61,5:60}[self.role['first_job']]]='other_map'
         self.tutorial_ids=set(self.letter_stops) | {1,2,3,704,710,716}
+        self.accepted_here=set()
+        self.review_identity=None;self.review_started=None;self.review_last=None
+        self.review_after=0;self.review_seen=set();self.review_deaths=0;self.review_baseline=0
+        self.verification_task=None;self.review_reconnect_pending=False
         self.journal = {}
         self.journal_ready = False
         self.journal_snapshot_received = False
@@ -164,6 +173,7 @@ class Adventure:
                 if self.context and self.context[3]==self.role['promotion']:expected-=self.tutorial_ids
                 else:expected&=self.tutorial_ids
                 if button==6 and added.intersection(expected):
+                    self.accepted_here.update(added.intersection(expected))
                     self.accepted+=1;self.pending=None;self.context=None;self.next_visit=0
                 elif button==7 and identity is not None and identity in self.commit_journal_before and identity not in self.journal:
                     # Reuse the same state transition as a native clear notice.
@@ -172,6 +182,7 @@ class Adventure:
             identity, state = r.short(),r.byte()
             r.end()
             self.journal[identity] = state
+            if command==832:self.accepted_here.add(identity)
             self.journal_ready = True
             if command == 832 and self.pending and self.pending[0] == 6:
                 self.accepted += 1
@@ -222,10 +233,52 @@ class Adventure:
         self.next_visit = 0
         self.reason = 'первая профессия: сначала переход в город наставника'
 
+    def review_objective(self,now,busy=False):
+        """Choose NPC verification from evidence/time, never fake a journal flag.
+
+        A reconnect may already have completed a saved objective. New tasks first
+        collect genuine evidence; an NPC refusal returns to farming between checks.
+        """
+        identity=self.active()
+        objective=PROFESSION_OBJECTIVES.get(identity)
+        if (self.disabled or not self.profession_priority() or identity not in self.grind
+                or objective is None or self.journal.get(identity)!=0):
+            self.verification_task=None
+            return
+        kind,model,count=objective
+        evidence={(actor,hit[0]) for actor,hit in self.world.own_hits.items()
+                  if hit[1] and 0<=now-hit[0]<=180
+                  and self.world.entities.get(actor) is not None
+                  and self.world.entities[actor].model==model}
+        # Only identifiable species count as evidence. Periodic NPC checks
+        # cover deaths whose source entity already disappeared.
+        if self.review_identity!=identity:
+            self.review_identity=identity;self.review_started=now;self.review_last=now
+            self.review_seen=evidence;self.review_deaths=self.review_baseline=0;self.review_after=0
+            self.review_reconnect_pending=self.journal_snapshot_received and identity not in self.accepted_here
+        else:
+            self.review_deaths+=len(evidence-self.review_seen)
+            self.review_seen=evidence
+        if self.verification_task==identity or busy or now<self.review_after:return
+        if self.review_reconnect_pending:
+            self.review_reconnect_pending=False;self.verification_task=identity
+            self.reason='проверяет сохранённое задание у NPC после подключения'
+            return
+        enough=(sum(item.count for item in self.world.bag.values() if item.identity==model)>=count
+                if kind=='item' else self.review_deaths-self.review_baseline>=count)
+        if enough or now-self.review_last>=180:
+            self.verification_task=identity
+            self.reason='проверяет готовность задания у NPC по фактическому прогрессу'
+
+    def defer_verification(self,now,delay=60):
+        if self.verification_task is None:return
+        self.verification_task=None;self.review_last=now
+        self.review_baseline=self.review_deaths;self.review_after=now+max(30,delay)
+
     def farm(self):
         if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):return None
         active = self.active()
-        return self.grind.get(active) if active in self.grind and self.journal[active] == 0 else None
+        return self.grind.get(active) if active in self.grind and self.journal[active] == 0 and self.verification_task!=active else None
 
     def desired_models(self):
         level=self.world.own.values.get(0,1)
@@ -257,6 +310,7 @@ class Adventure:
         return self.destination
 
     def settle(self, now, delay=3):
+        self.defer_verification(now,delay)
         self.context = None
         self.next_visit = now + delay
         self.events.clear()
@@ -355,6 +409,7 @@ class Adventure:
         self.prepare_priority()
         if self.disabled: return False
         if self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']):
+            self.context=None;self.pending=None;self.verification_task=None
             self.reason = 'первая профессия подтверждена сервером; охота'
             return False
         if self.world.own.values.get(4) != 0:
@@ -436,7 +491,9 @@ class Adventure:
                 'npc_pages':self.seen_pages,'missing_offers':self.missing_offers,
                 'dialogue_timeouts':self.timeouts,'disabled':self.disabled,
                 'start_profession':self.start_job,'profession':self.world.own.values.get(4),
-                'profession_confirmed':self.world.own.values.get(4)==self.role['first_job'],
+                'profession_confirmed':self.world.own.values.get(4) in (self.role['first_job'],self.role['target_job']),
+                'objective_review':{'mission':self.review_identity,'verification_due':self.verification_task is not None,
+                                    'observed_credited_deaths':self.review_deaths,'not_a_server_completion_count':True},
                 'target_class':self.role['label'],'target_job':self.role['target_job'],
                 'first_job':self.role['first_job'],
                 'last_objectives':[list(n) for n in self.last_needs],

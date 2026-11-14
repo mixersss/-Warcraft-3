@@ -8,6 +8,8 @@ from pathlib import Path
 NORMAL_ATTACKS={int(k):v["range_cm"] for k,v in json.loads((Path(__file__).resolve().parents[1]/"assets/normal-attacks.json").read_text())["skills"].items()}
 from classic_wire import sequence
 from classic_wire import ProtocolError, Reader
+from route_search import RoutePending
+from contextlib import nullcontext
 from progression import Progression
 from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
@@ -118,6 +120,7 @@ class Hunter:
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
         self.refresh_class_intent=None
+        self.background_task=None
         self.quest_combat_ready=False
         self.inventory_blocked=False
         self.inventory_blocker=None
@@ -477,7 +480,22 @@ class Hunter:
             elif key in ('career','story') and not feature.desired_models():point=feature.quest.get('position')
         if isinstance(point,(tuple,list)) and len(point)==2 and not self.allow_visit(point,now,self.mandatory_work()):
             return False
-        used=callback()
+        if (key=='vendor' and self.adventure and self.adventure.profession_priority()
+                and isinstance(self.adventure.farm(),(tuple,list)) and self.world.bag_ready
+                and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)>2
+                and not self.raising_travel_funds and not getattr(feature,'context',None)
+                and not getattr(feature,'pending',None)):
+            return False  # Finish required farming instead of leaving camp for a small sale.
+        optional=key in ('vendor','market','town','story')
+        nearby=optional and any(self.eligible(e,now) and distance(self.position(now),self.world.position(now,e.identity))<=2000
+                                for e in self.world.entities.values())
+        scope=self.nav.background_work(nearby) if optional and hasattr(self.nav,'background_work') else nullcontext()
+        try:
+            with scope:used=callback()
+        except RoutePending:
+            if key not in ('vendor','market','town','story'):raise
+            self.background_task=key
+            return False  # Keep the planning job, but allow a visible fight/direct move.
         if not used and point and self.coordination:self.coordination.leave_visit(self.owner)
         allowed=self.task_budget.track(key,feature,used,self.position(now),now,progress_only=key=='vendor')
         if used and not allowed:
@@ -536,6 +554,7 @@ class Hunter:
     def _tick(self, now=None):
         now = time.monotonic() if now is None else now
         self.clock=now
+        self.background_task=None
         own = self.world.own
         if own and (own.values.get(HP,1)<=0 or own.state>=5):
             self.learning.observe(self.world,now)
@@ -561,6 +580,9 @@ class Hunter:
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
         if self.refresh_class_intent:self.refresh_class_intent()
+        if self.adventure and hasattr(self.adventure,'review_objective'):
+            current=self.world.entities.get(self.target)
+            self.adventure.review_objective(now,busy=bool(current and current.alive))
         self.update_tactic(now)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
         protected=self.resting or bool(self.market and self.market.state in ('opening','selling','closing')) or bool(self.town and self.town.rest_until)
@@ -929,7 +951,7 @@ class Hunter:
 
     def summary(self):
         return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
-                'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
+                'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,

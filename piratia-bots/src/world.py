@@ -382,7 +382,7 @@ class World:
 
     def summary(self):
         own = self.own
-        return {'map': self.map, 'entities': len(self.entities),
+        return {'map': self.map, 'profession':own.values.get(4) if own else None, 'entities': len(self.entities),
                 'monsters': sum(e.control == 5 for e in self.entities.values()),
                 'position': list(own.position) if own else None,
                 'hp': own.values.get(HP) if own else None,

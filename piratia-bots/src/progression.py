@@ -30,16 +30,17 @@ class Progression:
         if self.pending:
             attribute, target, points_before, deadline = self.pending
             # Both the requested value and point deduction must come from the server.
-            if values.get(attribute) == target and values.get(AP, points_before) < points_before:
+            if values.get(attribute,0) >= target and values.get(AP, points_before) < points_before:
                 self.confirmed += 1
                 self.pending = None
                 self.next_action = now + 2
             elif now >= deadline:
                 self.pending = None
-                self.disabled = True  # Refusal/unknown response must not trigger a retry storm.
+                self.disabled = True
+                self.next_action=now+300  # Retry later with real server values, never permanently freeze.
             return
-        if self.disabled or not safe or now < self.next_action:
-            return
+        if not safe or now < self.next_action:return
+        if self.disabled:self.disabled=False
         points = values.get(AP, 0)
         primary = {1:25,2:26,4:29,5:29}.get(self.first_job)
         compatible = {1:(1,2),2:(1,3),4:(1,3,4),5:(3,4)}.get(self.first_job,())

@@ -4,6 +4,7 @@ import heapq
 import threading
 import time
 from collections import OrderedDict
+from contextlib import contextmanager
 from route_search import Search,RoutePending
 from functools import lru_cache
 import json
@@ -70,7 +71,7 @@ class Navigation:
         return None
 
     def path(self, start, end, limit=25000):
-        key=(self.cell(start),self.cell(end),limit,tuple(sorted(getattr(getattr(self,'local',None),'blocked_cells',()))))
+        key=(self.cell(start),self.cell(end),limit,tuple(sorted(getattr(getattr(self,'local',None),'blocked_cells',()))),getattr(getattr(self,'local',None),'lane','foreground'))
         cached = self._runtime_path(key) if getattr(self,'incremental',False) and getattr(self.local,'active',False) else self._path(*key)
         result = list(cached)
         if result:
@@ -120,7 +121,24 @@ class Navigation:
         local=self.local
         if not hasattr(local,'searches'):
             local.searches=OrderedDict();local.yields=local.expansions=local.finished=0
-        local.remaining=expansions;local.turn_expanded=0;local.deadline=None;local.active=True
+        local.remaining=expansions;local.turn_expanded=0;local.deadline=None;local.active=True;local.lane='foreground'
+
+    @contextmanager
+    def background_work(self,reserve_foreground=False):
+        local=getattr(self,'local',None)
+        if not getattr(local,'active',False):
+            yield
+            return
+        old_lane=local.lane;old_remaining=local.remaining
+        outer_deadline=local.deadline
+        if outer_deadline is None:outer_deadline=time.thread_time()+.006
+        allowance=min(old_remaining,128) if reserve_foreground else old_remaining
+        local.lane='background';local.remaining=allowance
+        local.deadline=min(outer_deadline,time.thread_time()+.0015) if reserve_foreground else outer_deadline
+        try:yield
+        finally:
+            used=allowance-local.remaining
+            local.remaining=max(0,old_remaining-used);local.deadline=outer_deadline;local.lane=old_lane
 
     def end_turn(self):self.local.active=False
 
@@ -135,7 +153,7 @@ class Navigation:
                 'shared_route_hits':getattr(l,'shared_route_hits',0),
                 'pending_jobs':[{'start':list(self.position(k[0])),'goal':list(self.position(k[1])),
                                  'known_cells':len(s.costs),'expanded_cells':len(s.closed),'open_nodes':len(s.queue),
-                                 'heuristic_weight':s.weight} for k,s in getattr(l,'searches',{}).items()]}
+                                 'heuristic_weight':s.weight,'lane':k[4]} for k,s in getattr(l,'searches',{}).items()]}
 
     def direct(self,start,goal):
         """Checked grid line: every diagonal also requires both side cells free."""
@@ -157,12 +175,14 @@ class Navigation:
         reused=self._reuse_corridor(key)
         if reused:
             local.shared_route_hits=getattr(local,'shared_route_hits',0)+1
-            local.searches.clear()
+            for previous in list(local.searches):
+                if previous[4]==key[4]:local.searches.pop(previous,None)
             return self._remember(key,reused)
-        if key not in local.searches and local.searches:
+        same_lane=[previous for previous in local.searches if previous[4]==key[4]]
+        if key not in local.searches and same_lane:
             # Finish the existing bounded job before accepting a changed goal.
             # Random candidate ties must not discard half-built searches forever.
-            self._runtime_path(next(iter(local.searches)))
+            self._runtime_path(same_lane[0])
         if key not in local.searches:
             start,goal,limit=key[:3]
             if not self.free(start) or not self.free(goal):return ()
@@ -222,6 +242,6 @@ class Navigation:
         return result
 
     @lru_cache(maxsize=256)
-    def _path(self,start_cell,goal,limit,blocked=()):
+    def _path(self,start_cell,goal,limit,blocked=(),lane='foreground'):
         if not self.free(start_cell) or not self.free(goal):return ()
         return self.direct(start_cell,goal) or Search(start_cell,goal,heuristic_weight=4).advance(self,limit,lambda:None)
