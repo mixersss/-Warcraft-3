@@ -1,5 +1,14 @@
 # Piratia bots — persistent owner priorities
 
+Latest owner clarification: mandatory full-server mob knowledge (all levels, real
+spawn regions across maps), adaptive comfortable hunting by reachable travel time,
+actual class/gear/skills, danger/recovery cost and observed XP/income efficiency.
+Mandatory portal-aware travel for farming, quests, merchants and other goals:
+compare the complete walking versus approach+paid transition+arrival route, use
+verified time-saving affordable portal women, require native arrival confirmation,
+and keep working if a transition is unavailable. Existing <=45 farm catalog and
+trainer-city transfers are partial implementations, not completion of this goal.
+
 Read [OWNER-GOAL-500.md](knowledge/OWNER-GOAL-500.md) as the authoritative full owner specification. Latest target is500 bots with15/45/15/25 activity cohorts; old200 runtime/400 roadmap and40/60 cohorts describe implementation history, not the final goal. Do not claim the target is implemented. Preserve all existing characters/data. Latest owner says plain junk is unnecessary: sell all safe whitelisted nonquest junk, without a five-item reserve; protect valuable gear/materials and quest items.
 
 The owner explicitly prioritizes earned character development above chat or idle activity:
