@@ -26,7 +26,7 @@ def attrs(reader):
     return result
 
 
-def skip_look(reader, equipment=None):
+def skip_look(reader, equipment=None, details=None):
     synchronization, model, boat = reader.byte(), reader.short(), reader.byte()
     if synchronization not in (0, 1) or boat not in (0, 1):
         raise ProtocolError('Unsupported classic appearance')
@@ -36,6 +36,8 @@ def skip_look(reader, equipment=None):
     reader.short()  # hair
     if equipment is not None:
         equipment.clear()
+    previous=dict(details or {})
+    if details is not None:details.clear()
     # Native WriteLookData 0x4e5d60 uses TEN slots, no modern DBID/level fields.
     for slot in range(10):
         item = reader.short()
@@ -44,9 +46,15 @@ def skip_look(reader, equipment=None):
         if equipment is not None:
             equipment[slot] = item
         if synchronization == 1:
-            reader.take(5)  # current endurance/energy, valid
+            endurance,energy,valid=reader.short(),reader.short(),reader.byte()
+            info=dict(previous.get(slot,{})) if previous.get(slot,{}).get('identity')==item else {}
+            info.update(identity=item,endurance=endurance,energy=energy,valid=bool(valid))
+            if details is not None:details[slot]=info
             continue
-        reader.take(12)  # count, endurance pair, energy pair, forge, valid
+        count,endurance,max_endurance,energy,max_energy=[reader.short() for _ in range(5)]
+        forge,valid=reader.byte(),reader.byte()
+        if details is not None:details[slot]={'identity':item,'count':count,'endurance':endurance,
+            'max_endurance':max_endurance,'energy':energy,'max_energy':max_energy,'forge':forge,'valid':bool(valid)}
         detail = reader.byte()
         if detail not in (0, 1):
             raise ProtocolError('Invalid appearance detail flag')
@@ -75,6 +83,7 @@ class Entity:
     name: str = ''  # Transient for addressed chat; never included in reports.
     equipment: dict = field(default_factory=dict)
     stall: str = ''
+    equipment_details: dict = field(default_factory=dict)
 
     @property
     def position(self):
@@ -108,7 +117,8 @@ def entity(reader):
     reader.short()  # event ID
     reader.string_bytes()
     equipment = {}
-    skip_look(reader, equipment)
+    details={}
+    skip_look(reader, equipment, details)
     reader.byte()  # PK control
     # Append-look is a separate FOUR-slot block (defESPE_KBGRID_NUM), not
     # the ten normal equipment slots consumed by skip_look above.
@@ -119,7 +129,7 @@ def entity(reader):
         raise ProtocolError('Unrecognized classic entity fields')
     if not 0 <= x < 409600 or not 0 <= y < 409600 or radius > 2000 or state > 16:
         raise ProtocolError('Unrecognized classic position/state')
-    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment, stall=stall)
+    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment, stall=stall,equipment_details=details)
 
 
 class World:
@@ -185,7 +195,7 @@ class World:
             sp,endurance,energy=reader.short(),reader.short(),reader.short()
             interval=reader.long()
             if reader.short():reader.take(6)
-            if level:self.skills[identity]={'level':level,'state':state,'sp':sp,'interval_ms':interval}
+            if level:self.skills[identity]={'level':level,'state':state,'sp':sp,'endurance':endurance,'energy':energy,'interval_ms':interval}
             else:self.skills.pop(identity,None)
         self.decode_info['skill_count']=count
 
@@ -365,7 +375,7 @@ class World:
                         current.state = 7
                 self.damage_events += 1
             elif action == 5 and current:
-                skip_look(reader,current.equipment)
+                skip_look(reader,current.equipment,current.equipment_details)
                 if identity==self.own_id:self.look_revision+=1
             elif action == 7 and identity==self.own_id:
                 self.read_skills(reader)

@@ -5,13 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-41'
-NAME = 'Piratia-Auto-Bots-Alpha41'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-42'
+NAME = 'Piratia-Auto-Bots-Alpha42'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Fixed native XP source and levelup accounting, nearby bounded exploration, XP/min diagnostics; resumable protected200to300 expansion; native two-hand occupancy/exact-slot equipment confirmation and basic owned dual-sword loadout scoring; full build DPS and live Alpha41 validation pending',
+        'status': 'Complete audited beginner chest chain, native class wardrobe/real body restrictions, verified targeted damage/heal spells and real SP/coral gates; current-map essential purchases and charged-coral replacement; protected300growth/Alpha41 fixes preserved; live Windows Alpha42 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -130,7 +130,17 @@ def main():
         'complete_dungeon_ai_or_all_teleports_implemented': False,
         'field_merchants_by_home_map': {'garner':19,'magicsea':7,'darkblue':11},
         'coral_purchase_and_renewal_recorded_as_requirement': True,
-        'coral_purchase_and_renewal_implemented': False,
+        'coral_purchase_and_renewal_implemented': True,
+        'coral_supply_scope': 'verified current-map merchants only; real owned replacements and server charge confirmation',
+        'targeted_combat_skill_ids': [82,85,86,91,96,97,99,213,214,216,224],
+        'full_skill_rotation_and_party_healing_implemented': False,
+        'native_activated_skills_sp_cooldown_weapon_coral_gates': True,
+        'native_look_energy_and_skillbag_energy_preserved_without_layout_change': True,
+        'queued_spell_keeps_selected_skill_id': True,
+        'native_item_allowed_bodies_column': 23,
+        'equipment_catalog_entries': 1673,
+        'pending_wardrobe_drained_before_new_hunt': True,
+        'class_chest_open10_gear_requires15_respected': True,
         'live_first_profession_completion_verified': False,
         'npc_sale_cooldown_seconds': 0,
         'vendor_task_pause_seconds': 0,
@@ -194,11 +204,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 512,
-        'full_python_suite_total': 520,
-        'full_python_suite_passed': 520,
+        'pure_python_tests_passed': 540,
+        'full_python_suite_total': 548,
+        'full_python_suite_passed': 548,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '520 passed in Alpha41 including 8 local socket integration tests',
+        'last_full_network_regression': '548 passed in Alpha42 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',
@@ -219,7 +229,7 @@ def main():
         'player_item_exchange_implemented': False,
         'story_chain': [200,203,204],
         'combat_skill_book_catalog_count': 83,
-        'owned_chest_ids': [436,985,986,987,988],
+        'owned_chest_ids': [436,437,438,439,440,441,442,443,985,986,987,988],
         'native_action_serialization_compared': ['movement', 'normal attack', 'local speech', 'base attributes', 'NPC talk', 'quest selection', 'quest accept/deliver', 'item pickup', 'item use/equip', 'skill upgrade', 'return to city', 'NPC function selection', 'NPC purchase', 'NPC sale', 'party invite/accept/refuse/leave', 'stall create/view/buy/close', 'end action', 'world/trade chat'],
         'native_world_writers_captured': ['base info', 'look', 'append-look (4 slots)', 'skillbag', 'skill state', 'event', 'attribute range', 'initial kitbag with boat/instance', 'kitbag delta'],
         'powershell_state_regression': 'passed with PowerShell 7.4.6 on Linux; idempotent populations 1/10/30/60/100/200/300, rejection0/301, credential/PIN/backup preservation, protected account creation refused; runtime PS syntax parsed',

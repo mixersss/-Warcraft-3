@@ -23,7 +23,7 @@ class ItemCatalog:
         """
         if not self.compatible(own,identity):return None
         gear=self.gear[identity];links=gear['links']
-        if not links or any(link not in (2,3,4,6,9) for link in links):return None
+        if not links or any(link not in (0,2,3,4,5,6,7,8,9) for link in links):return None
         chosen=next((link for link in links if not own.equipment.get(link)),links[0])
         affected=set(gear.get('requires_links',gear.get('displaces',[chosen]))) or {chosen}
         affected.add(chosen)
@@ -56,13 +56,25 @@ class ItemCatalog:
             if not identity or identity==9999:continue
             gear=self.gear.get(identity)
             if gear is None:return None
-            total+=gear['score']
+            job=own.values.get(4)
+            weights=({'constitution':3,'strength':1} if job==8 else
+                     {'agility':3,'strength':2} if job==9 else
+                     {'accuracy':3,'agility':1,'constitution':1} if job in (2,12) else
+                     {'spirit':3,'constitution':1} if job in (4,5,13,14,16) else
+                     {'strength':2,'agility':1,'constitution':1})
+            total+=gear['score']+sum(gear.get(k,0)*v for k,v in weights.items())
         return total
 
-    def upgrade(self,own,identity,free_slots=None):
+    def upgrade(self,own,identity,free_slots=None,item=None,energy_need=1):
         change=self.transition(own,identity,free_slots)
         if change is None:return None
         equipment,chosen,_=change
+        # A depleted coral may be replaced by a fresh copy of the same item ID.
+        if self.gear[identity].get('kind')==29:
+            old_id=own.equipment.get(chosen,0);old=own.equipment_details.get(chosen,{})
+            if old_id and old.get('identity')==old_id and (old.get('energy',energy_need)<energy_need or old.get('valid') is False):
+                if item is None or item.energy>=energy_need:return 1,[chosen]
+                return None
         # Compare only affected links: unrelated unknown armour is not a blocker.
         affected={k for k in own.equipment.keys()|equipment.keys() if own.equipment.get(k)!=equipment.get(k)}
         before=self.loadout_score(own,{k:own.equipment.get(k,0) for k in affected})
@@ -111,7 +123,7 @@ class ItemCatalog:
 class Equipment:
     def __init__(self,world,catalog,send,tell=lambda text:None):
         self.world,self.catalog,self.send,self.tell=world,catalog,send,tell
-        self.pending=None
+        self.pending=None;self.pending_refill=None;self.blockers=[];self.settling=False
         self.next_action=0
         self.blacklist={}
         self.requests=self.confirmed=self.failed=0
@@ -127,23 +139,35 @@ class Equipment:
         own=self.world.own
         if self.pending:
             identity,links,deadline=self.pending
-            if any(own.equipment.get(link)==identity for link in links):
-                self.confirmed+=1;self.pending=None;self.next_action=now+1
+            refill_ok=not self.pending_refill or own.equipment_details.get(self.pending_refill[0],{}).get('energy',0)>self.pending_refill[1]
+            if any(own.equipment.get(link)==identity for link in links) and refill_ok:
+                self.confirmed+=1;self.pending=None;self.next_action=now+1;self.settling=True
                 self.tell('Экипировка подтверждена сервером.')
             elif now>deadline:
                 self.failed+=1;self.blacklist[identity]=now+300;self.pending=None
-            return False
-        if not safe or now<self.next_action or not self.world.bag_ready or self.world.bag_disabled:
-            return False
+            return self.pending is not None or self.settling
+        if not safe or not self.world.bag_ready or self.world.bag_disabled:return False
+        if now<self.next_action:return self.settling
+        self.settling=False
         level,job=own.values.get(0),own.values.get(4)
         if level is None or job is None:return False
-        options=[]
+        options=[];self.blockers=[]
         for slot,item in self.world.bag.items():
-            if (not item.valid or (item.max_endurance>0 and item.endurance<=0)
+            if (not item.valid or (self.catalog.gear.get(item.identity,{}).get('kind')==29 and item.energy<=0) or (item.max_endurance>0 and item.endurance<=0)
                     or self.blacklist.get(item.identity,0)>now):continue
             free=max(0,(self.world.bag_capacity or 0)-len(self.world.bag))
-            upgrade=self.catalog.upgrade(own,item.identity,free)
+            gear=self.catalog.gear.get(item.identity,{})
+            coral_skill={5:213,6:216,7:214}.get(next(iter(gear.get('links',[])),None))
+            need=max(1,self.world.skills.get(coral_skill,{}).get('energy',1))
+            upgrade=self.catalog.upgrade(own,item.identity,free,item,need)
             if upgrade:options.append((upgrade[0],slot,item.identity,upgrade[1]))
+            elif item.identity in self.catalog.gear:
+                gear=self.catalog.gear[item.identity]
+                reason=('нужен уровень '+str(gear['level']) if gear['level']>level else
+                        'не подходит раса' if own.model not in gear['bodies'] else
+                        'не подходит профессия' if gear['jobs']!=[-1] and job not in gear['jobs'] else
+                        'нужно место для снятой вещи' if free<1 else 'нет подтверждённого улучшения комплекта')
+                self.blockers.append({'slot':slot,'id':item.identity,'reason':reason})
         pair=self.catalog.pair_upgrade(self.world,self.blacklist,now)
         if pair:options.append(pair)
         if not options:return False
@@ -152,12 +176,15 @@ class Equipment:
         # Native stNetUseItem: bag slot, automatic target=-1, exactly like double click.
         policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,-1))
         self.requests+=1
+        self.pending_refill=None
+        if self.catalog.gear[identity].get('kind')==29 and own.equipment.get(links[0])==identity:
+            self.pending_refill=(links[0],own.equipment_details.get(links[0],{}).get('energy',0))
         self.pending=identity,links,now+12
         self.next_action=now+1.5
         return True
 
     def summary(self):
-        return {'requests':self.requests,'confirmed_equips':self.confirmed,
+        return {'candidate_blockers':self.blockers[:24],'pending_item':self.pending[0] if self.pending else None,'requests':self.requests,'confirmed_equips':self.confirmed,
                 'confirmation_timeouts':self.failed,'bag_received':self.world.bag_ready,
                 'inventory_paused':self.world.bag_disabled,
                 'equipped_items':dict(self.world.own.equipment)}

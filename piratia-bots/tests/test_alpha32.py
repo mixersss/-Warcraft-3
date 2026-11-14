@@ -116,7 +116,8 @@ class PostProfessionTests(unittest.TestCase):
         w.own.equipment[gear[1]['links'][0]]=gear[0]
         w.entities[1000].model=next(iter(p.planned_models()))
         p.tick(106);self.assertEqual(p.equipment.confirmed,1)
-        p.tick(107.1)  # Native attack may wait for the preceding item action to stop.
+        p.tick(107.1)  # Finish wardrobe settling before starting another fight.
+        p.tick(108.3)  # Native attack waits for the preceding item action to stop.
         self.assertEqual(p.target,1000);self.assertGreater(p.attacks,0);self.assertEqual(w.own.values[4],1)
 
     def test_diagnostic_shows_runtime_version(self):

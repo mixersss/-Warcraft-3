@@ -80,6 +80,7 @@ class Hunter:
         self.loot = None
         self.equipment = None
         self.skills = None
+        self.combat_skills=None;self.last_attack_skill=None;self.mana_resting=False
         self.recovery = None
         self.chests=self.town=self.party=self.career=self.story=self.market=self.travel=self.vendor=None
         from task_budget import TaskBudget
@@ -277,9 +278,11 @@ class Hunter:
         if body[8]==2:
             self.attacks+=1
             self.motion_anchor=None;self.motion_progress_at=None;self.stuck=0
-            self.last_attack_target=struct.unpack('>III',body[-12:])[1:]
+            self.last_attack_skill,*victim=struct.unpack('>III',body[-12:])
+            self.last_attack_target=tuple(victim)
+            if self.combat_skills:self.combat_skills.sent(self.last_attack_skill,self.clock)
             target=self.world.entities.get(self.last_attack_target[0])
-            if target:self.learning.begin(self.world,target,self.clock)
+            if target and target.control==5:self.learning.begin(self.world,target,self.clock)
         elif body[8]==1:
             if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending()
             self.move_packet=self.last_sent_sequence
@@ -317,14 +320,19 @@ class Hunter:
             speed=max(100,min(own.values.get(44,480),3000))
             self.move_until=now+sum(distance(a,b) for a,b in zip(points,points[1:]))/speed
         elif kind==2:
-            if not self.world.default_skill:return True
-            _,identity,handle=struct.unpack('>III',body[-12:])
+            skill,identity,handle=struct.unpack('>III',body[-12:])
+            if not skill:return True
             target=self.world.entities.get(identity)
             if not target or not target.alive or target.handle!=handle:return True
             if not self.combat_allowed(self.position(now)) or not self.combat_allowed(self.world.position(now,identity)):return True
             if self.combat_since is not None and now-self.last_damage_at>=14:return False
-            if distance(self.position(now),self.world.position(now,identity))>self.attack_reach(target):return True
-            body=normal_attack(own.identity,number,body[10],self.world.default_skill,identity,handle,self.position(now))
+            if self.combat_skills and skill in self.combat_skills.rules:
+                if not self.combat_skills.usable(skill,now):return True
+                reach=self.combat_skills.reach(skill,target)
+            elif skill==self.world.default_skill:reach=self.attack_reach(target)
+            else:return True
+            if distance(self.position(now),self.world.position(now,identity))>reach:return True
+            body=normal_attack(own.identity,number,body[10],skill,identity,handle,self.position(now))
         self.send_action(body);self.flushed_actions+=1
         self.next_action=max(self.next_action,now+.2)
         return True
@@ -471,6 +479,8 @@ class Hunter:
         if not self.combat_allowed(self.position(now)) or not self.combat_allowed(self.world.position(now,target.identity)):return False
         # Let the server complete wind-up and subsequent swings. No-progress
         # recovery below still bounds the wait; never cancel a productive fight.
+        if self.combat_skills and self.last_attack_skill in self.combat_skills.rules:
+            return now-self.combat_skills.last_sent_at<2
         return now-self.last_damage_at<6
 
     def mandatory_work(self):
@@ -714,6 +724,15 @@ class Hunter:
             return
         if not self.resting and self.sitting.tick(now,self,False):
             self.change('встаёт перед продолжением дел');return
+        # A learned heal can prevent the retreat; one-shot native targeted cast.
+        if self.combat_skills and hp/maximum<.65 and not self.pending_action:
+            heal=self.combat_skills.select(now,healing=True)
+            if heal:
+                self.fight=(self.fight+1)&255
+                self.emit(normal_attack(own.identity,self.sequence,self.fight,heal,own.identity,own.handle,self.position(now)))
+                self.change('применяет лечение');self.next_action=now+.5;return
+        if self.combat_skills and self.combat_skills.needs_mana(now):
+            self.mana_resting=True;self.resting=True;self.drop_target();self.clear_zone()
         profession_trip = bool(self.adventure and self.adventure.profession_priority() and not self.adventure.farm())
         if hp / maximum <= .35 or (profession_trip and not self.target and hp / maximum <= .55):
             if not self.resting:
@@ -722,12 +741,12 @@ class Hunter:
             self.drop_target()
             self.clear_zone()
         if self.resting:
-            if hp / maximum >= .85:
+            if hp / maximum >= .85 and not (self.mana_resting and self.combat_skills and self.combat_skills.needs_mana(now,True)):
                 if self.sitting.tick(now,self,False):
                     self.change('встаёт после восстановления');return
-                self.resting = False
+                self.resting = False;self.mana_resting=False
             else:
-                self.change('отступление и восстановление')
+                self.change('восстанавливает SP для боевых навыков' if self.mana_resting else 'отступление и восстановление')
                 if not self.cancel_pending and self.sitting.tick(now,self,True):
                     self.change('восстанавливает HP сидя' if self.world.seated else 'присаживается для восстановления');return
                 # Food is a prerequisite for recovery, not optional leisure.
@@ -749,13 +768,18 @@ class Hunter:
                 self.change(self.shortcut.reason);return
         if now < self.next_action or now-self.started < 2:
             return
-        if self.skills and self.skills.tick(now,self,safe=not self.target):
-            self.next_action=now+.2
-            self.change('изучает навыки своего класса')
-            return
+        if self.skills and self.skills.pending:self.skills.tick(now,self,False)
+        if self.chests and self.chests.pending:
+            self.chests.tick(now,self,False)
+            if self.chests.pending:
+                self.change('ожидает содержимое сундука от сервера');self.next_action=now+.2;return
         if self.equipment and self.equipment.tick(now,self,safe=not self.target):
             self.next_action=now+.2
             self.change('надевает подходящую экипировку')
+            return
+        if self.skills and self.skills.tick(now,self,safe=not self.target):
+            self.next_action=now+.2
+            self.change('изучает навыки своего класса')
             return
         if self.stuck >= 5 and now>=self.next_recovery:
             self.recover_path(now)
@@ -952,12 +976,17 @@ class Hunter:
                     break
                 if target:break
         if target:
-            if self.fight_running(target,now):
+            spell=(self.combat_skills.select(now) or self.combat_skills.control(now)) if self.combat_skills else None
+            ranged=self.combat_skills.select(now,ignore_cooldown=True) if self.combat_skills else None
+            # Finish a current one-shot cast; a ready spell may replace repeating melee.
+            casting=bool(self.combat_skills and self.last_attack_skill in self.combat_skills.rules
+                         and self.fight_running(target,now))
+            if casting or (not spell and self.fight_running(target,now)):
                 self.active_fight_waits+=1
                 self.change('продолжает бой: ожидает следующий серверный удар')
                 self.next_action=now+.25
                 return
-            reach = self.attack_reach(target)
+            reach = self.combat_skills.reach(ranged or spell,target) if (ranged or spell) else self.attack_reach(target)
             if (not self.combat_allowed(self.position(now)) or
                     distance(self.position(now),self.world.position(now,target.identity)) > reach):
                 self.change('подход к слабому мобу')
@@ -977,7 +1006,9 @@ class Hunter:
                     self.move_goal=None;self.world.motion.pop(own.identity,None)
                     if failed['reason']==1 and now-self.last_attack_stop>2:
                         self.action_open=True;self.last_attack_stop=now
-            if not self.world.default_skill:
+            if not spell and ranged and own.values.get(4) in (4,5,13,14,16):
+                self.change('боевой навык перезаряжается');self.next_action=now+.25;return
+            if not spell and not self.world.default_skill:
                 self.change('ожидание обычной атаки от сервера')
                 return
             if self.combat_since is None:self.combat_since=self.last_damage_at=now
@@ -990,9 +1021,9 @@ class Hunter:
                     self.move_to(goal,now)
                     self.change('повторный подход: нет подтверждённого урона')
                     return
-            self.change('обычная атака')
+            self.change('применяет боевой навык '+str(spell) if spell else 'обычная атака')
             self.fight = (self.fight+1) & 255
-            self.emit(normal_attack(own.identity, self.sequence, self.fight, self.world.default_skill,
+            self.emit(normal_attack(own.identity, self.sequence, self.fight, spell or self.world.default_skill,
                                     target.identity, target.handle, self.position(now)))
             self.world.freeze_prediction(now)
             self.move_goal=None
@@ -1040,7 +1071,7 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -1075,6 +1106,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
+    from combat_skills import CombatSkills
+    policy.combat_skills=CombatSkills(world,catalog,Path(__file__).resolve().parents[1]/'assets')
     from recovery import Recovery
     policy.recovery=Recovery(world)
     progression = Progression(world, client.wire.send)

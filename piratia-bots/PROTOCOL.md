@@ -838,3 +838,15 @@ EndAction. Legal firing endpoints are required when actor stands in safety.
 ECharFightState TARGET_NO0x10/IMMUNE0x40/TARGET_DIE0x200 can be combined, hence bit
 checks with matching source packet. OFF0x400(1024) by itself does not prove immune.
 No new native opcodes or fabricated damage/positions. Live Alpha40 validation pending.
+
+
+## Alpha42: targeted spells and equipment details
+
+The same classic BeginAction2 envelope carries verified target-entity spell IDs;
+queued dispatch must preserve that ID, recheck learned/activated skill, resources,
+weapon/coral, target handle, range and protected zones. Do not substitute default
+attack on flush. A skill request is not proof of delivered damage/healing.
+Skillbag's existing SP/endurance/energy/interval fields now remain in World.
+Look full-sync and short-sync keep current endurance/energy/valid in per-slot
+metadata without changing packet sizes or consuming additional bytes. Identical
+coral ID refill requires a real charge increase, not an unchanged appearance ID.

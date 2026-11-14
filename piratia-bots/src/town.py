@@ -47,6 +47,32 @@ class Town:
             if any(e.identity!=self.world.own_id and e.control in (1,2,3) and math.dist(e.position,goal)<250 for e in self.world.entities.values()):continue
             if policy.nav.path(policy.position(now),goal):return goal
         return None
+    def critical_items(self):
+        w=self.world;job=w.own.values.get(4);result=[]
+        if job in (5,13,14) and self.gear.types.get(w.own.equipment.get(9))!=9:
+            if not any(self.gear.types.get(i.identity)==9 and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
+                staves=[i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers'] if self.gear.types.get(i)==9 and self.gear.compatible(w.own,i)]
+                if staves:result.append(min(staves,key=lambda i:(self.life.prices.get(i,10**9),i)))
+        # Damage first, then its directly audited prerequisites. No class grants.
+        wanted={5:(99,),13:(99,),14:(99,),4:(214,210,213,211),16:(216,214,210,213,211,212)}.get(job,())
+        for skill in wanted:
+            for identity,book in self.life.books.items():
+                if (book['skill']==skill and self.life.can_learn(w,book) and w.own.values.get(7,0)>=book['cost']
+                        and not w.skills.get(skill,{}).get('level') and not any(i.identity==identity for i in w.bag.values())):
+                    result.append(identity)
+        if job in (4,16):
+            for link in ((6,7,5) if job==16 and w.skills.get(216,{}).get('level') else (7,5)): # Strike, Thunder, Wind.
+                current=w.own.equipment.get(link,0);details=w.own.equipment_details.get(link,{})
+                cost=max(1,w.skills.get({5:213,6:216,7:214}[link],{}).get('energy',1))
+                if self.gear.types.get(current)==29 and details.get('valid') and details.get('energy',0)>=cost:continue
+                if any(self.gear.gear.get(i.identity,{}).get('kind')==29 and link in self.gear.gear[i.identity]['links'] and i.energy>=cost for i in w.bag.values()):continue
+                options=[i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers']
+                         if self.gear.gear.get(i,{}).get('kind')==29 and link in self.gear.gear[i]['links'] and self.gear.compatible(w.own,i)]
+                if options:result.append(min(options,key=lambda i:(self.life.prices.get(i,10**9),i)))
+        return result
+    def spend_limit(self,identity):
+        cash=self.world.own.values.get(8,0)
+        return max(0,cash-100) if identity in self.critical_items() else min(cash//4,max(0,cash-100))
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
@@ -54,6 +80,8 @@ class Town:
         if free<2:return None
         food=sum(item.count for item in w.bag.values() if item.identity==1847)
         if food<5:return 1847,min(10,15-food)
+        for identity in self.critical_items():
+            if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         if (not w.skills.get(241,{}).get("level",0) and w.own.values.get(13,0)>0
                 and not any(i.identity==3296 for i in w.bag.values()) and cash>=20000):return 3296,1
         for identity,book in self.life.books.items():
@@ -86,8 +114,8 @@ class Town:
             identity,count=self.wanted
             offer=next(((page,index) for model,page,index in offers if model==identity),None)
             price=self.life.prices.get(identity,0);cash=self.world.own.values.get(8,0)
-            if price>0:count=min(count,max(0,min(cash//4,cash-100)//price))
-            if offer and count>0 and price>0 and price*count<=max(0,cash-100) and price*count<=cash//4:
+            if price>0:count=min(count,max(0,self.spend_limit(identity)//price))
+            if offer and count>0 and price>0 and price*count<=max(0,cash-100) and price*count<=self.spend_limit(identity):
                 send(308,buy_request(npc,*offer,count));self.requests+=1
                 self.pending=identity,self.count(identity),cash,now+12
                 self.context=npc,'confirmation',now+12

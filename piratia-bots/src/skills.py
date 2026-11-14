@@ -37,7 +37,8 @@ class Skills:
                 elif current and current<min(10,info['jobs'][str(own.values[4])]) and points>=info['cost']+2:
                     choices.append((current,skill,None,current+1))
             if not choices:return False
-            _,skill,slot,target=min(choices)
+            from combat_skills import PRIORITY
+            _,skill,slot,target=min(choices,key=lambda c:(0 if c[1] in PRIORITY else 1,PRIORITY.index(c[1]) if c[1] in PRIORITY else 99,c[0],c[1]))
             if slot is not None:
                 from hunter import action_header
                 policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,-1))

@@ -26,9 +26,10 @@ def main():
     prerequisites=[] if sk[12]=='-1' else [list(map(int,p.split(','))) for p in sk[12].split(';')]
     books[i]={'skill':identity,'level':max(10,int(sk[11])),'jobs':jobs,'prerequisites':prerequisites,
                'cost':max(1,int(sk[13])),'name':a[1],'active':sk[9]=='1'}
-  if a[86] in ('ItemUse_XRBOX','ItemUse_SANWUBOX','ItemUse_SIWUBOX','ItemUse_WUWUBOX','ItemUse_LIUWUBOX'):
+  if re.fullmatch(r'ItemUse_XRBOX[1-7]?',a[86]) or a[86] in ('ItemUse_SANWUBOX','ItemUse_SIWUBOX','ItemUse_WUWUBOX','ItemUse_LIUWUBOX'):
    lv=re.search(r'if lv < (\d+)',body)
-   chests[i]={'level':int(lv[1]) if lv else 999,'free_slots':4,'job_required':a[86]!='ItemUse_XRBOX'}
+   space=re.search(r'if Item_CanGet < (\d+)',body)
+   chests[i]={'level':int(lv[1]) if lv else 999,'free_slots':int(space[1]) if space else 4,'job_required':a[86]!='ItemUse_XRBOX'}
  (ROOT/'assets/life-items.json').write_text(json.dumps({'books':books,'chests':chests,'names':names,'prices':prices},ensure_ascii=False,separators=(',',':'))+'\n')
  npc=functions('\n'.join(text(f) for f in (r/'script/MisScript').glob('NpcScript*.lua')))
  meta={};advanced={}
