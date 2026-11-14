@@ -28,6 +28,7 @@ class Town:
         self.rest_directory=rest_directory;self.owner=owner or str(world.own_id)
         self.work_kills=self.work_quests=0;self.work_baseline=None;self.last_rest=0;self.rest_due=False
         self.rest_goal=None;self.rest_pause_until=0;self.walk_stops=0
+        self.npcs=getattr(life,'npcs',None);self.supply_plan=None;self.failed_suppliers={};self.next_supply_check=0;self.knowledge_plans=0
     def note_progress(self,kills,quests):
         if self.work_baseline is None:self.work_baseline=(kills,quests)
         self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
@@ -47,12 +48,16 @@ class Town:
             if any(e.identity!=self.world.own_id and e.control in (1,2,3) and math.dist(e.position,goal)<250 for e in self.world.entities.values()):continue
             if policy.nav.path(policy.position(now),goal):return goal
         return None
-    def critical_items(self):
-        w=self.world;job=w.own.values.get(4);result=[]
+    def critical_items(self,map_name=None):
+        w=self.world;job=w.own.values.get(4);result=[];shop_map=map_name or w.map
         if job in (5,13,14) and self.gear.types.get(w.own.equipment.get(9))!=9:
             if not any(self.gear.types.get(i.identity)==9 and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
-                staves=[i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers'] if self.gear.types.get(i)==9 and self.gear.compatible(w.own,i)]
+                staves=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i)==9 and self.gear.compatible(w.own,i)]
                 if staves:result.append(min(staves,key=lambda i:(self.life.prices.get(i,10**9),i)))
+        if job in (2,12) and self.gear.types.get(w.own.equipment.get(6)) not in (3,4):
+            if not any(self.gear.types.get(i.identity) in (3,4) and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
+                bows=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i) in (3,4) and self.gear.compatible(w.own,i)]
+                if bows:result.append(min(bows,key=lambda i:(self.life.prices.get(i,10**9),i)))
         # Damage first, then its directly audited prerequisites. No class grants.
         wanted={5:(99,),13:(99,),14:(99,),4:(214,210,213,211),16:(216,214,210,213,211,212)}.get(job,())
         for skill in wanted:
@@ -66,13 +71,14 @@ class Town:
                 cost=max(1,w.skills.get({5:213,6:216,7:214}[link],{}).get('energy',1))
                 if self.gear.types.get(current)==29 and details.get('valid') and details.get('energy',0)>=cost:continue
                 if any(self.gear.gear.get(i.identity,{}).get('kind')==29 and link in self.gear.gear[i.identity]['links'] and i.energy>=cost for i in w.bag.values()):continue
-                options=[i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers']
+                options=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers']
                          if self.gear.gear.get(i,{}).get('kind')==29 and link in self.gear.gear[i]['links'] and self.gear.compatible(w.own,i)]
                 if options:result.append(min(options,key=lambda i:(self.life.prices.get(i,10**9),i)))
         return result
     def spend_limit(self,identity):
         cash=self.world.own.values.get(8,0)
-        return max(0,cash-100) if identity in self.critical_items() else min(cash//4,max(0,cash-100))
+        reserve=100+(self.supply_plan.get('reserved_travel_gold',0)//2 if self.supply_plan else 0)
+        return max(0,cash-reserve) if identity in self.critical_items() else min(cash//4,max(0,cash-reserve))
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
@@ -95,6 +101,65 @@ class Town:
                 if identity in owned or not self.gear.upgrade(w.own,identity,free):continue
                 if 0<self.life.prices.get(identity,0)<=cash//4:return identity,1
         return None
+    def plan_supplies(self,now,policy):
+        """Use all known city sellers; a source record never bypasses live menus."""
+        if not self.npcs or now<self.next_supply_check or self.world.own.values.get(4,0)==0:return None
+        self.next_supply_check=now+60
+        w=self.world;own=w.own;cash=own.values.get(8,0);free=(w.bag_capacity or 0)-len(w.bag)
+        if not w.bag_ready or w.bag_disabled or free<2:return None
+        if sum(i.count for i in w.bag.values() if i.identity==1847)<5:return None
+        portals=getattr(getattr(policy,'travel',None),'portals',None)
+        if not isinstance(portals,dict):portals=None
+        owned={i.identity for i in w.bag.values()};options=[]
+        for map_name in ('garner','magicsea','darkblue'):
+            fee=0;approach=0
+            if map_name!=w.map:
+                edges=[(n,e) for n in (portals or {}).get('nodes',[]) if n['map']==w.map
+                       for e in n['routes'] if e['map']==map_name]
+                if not edges:continue
+                node,edge=min(edges,key=lambda ne:math.dist(own.position,ne[0]['position']))
+                fee=0 if own.values.get(0,0)<=edge['free_through_level'] else edge['fare']
+                # Reserve the paid return journey as well as the next100G of supplies.
+                reserve=2*fee+100;approach=math.dist(own.position,node['position'])+9600
+                arrival=edge['arrival_cm']
+            else:reserve=100;arrival=own.position
+            essentials=set(self.critical_items(map_name))
+            for shop in self.npcs.shops(map_name):
+                if self.failed_suppliers.get(shop['key'],0)>now:continue
+                for identity in shop['offers']:
+                    if identity in owned:continue
+                    price=self.life.prices.get(identity,0)
+                    if price<=0 or price+reserve>cash:continue
+                    critical=identity in essentials
+                    if not critical and price>cash//4:continue
+                    upgrade=self.gear.upgrade(own,identity,free)
+                    if not critical and not upgrade:continue
+                    if not critical:
+                        change=self.gear.transition(own,identity,free)
+                        # A ring or necklace cannot evict a coral required for spells.
+                        if change and any(self.gear.types.get(own.equipment.get(link,0))==29
+                                and self.gear.types.get(identity)!=29 for link in own.equipment
+                                if own.equipment.get(link)!=change[0].get(link)):
+                            continue
+                    kind=self.gear.types.get(identity);empty_accessory=False
+                    if kind in (25,26):
+                        empty_accessory=any(not own.equipment.get(link) for link in self.gear.gear[identity]['links'])
+                    gain=upgrade[0] if upgrade else 1
+                    priority=0 if critical else 1 if empty_accessory else 2
+                    travel=approach+math.dist(arrival,shop['position'])
+                    score=gain/max(1,price)/(1+travel/12000)
+                    options.append(((priority,-score,travel,price,shop['key'],identity),
+                        {'map':map_name,'shop':shop,'item':identity,'critical':critical,'reserved_travel_gold':2*fee,
+                         'started':now,'price':price,'reason':'основное снабжение' if critical else 'заполняет слот украшения' if empty_accessory else 'улучшает экипировку'}))
+        if not options:return None
+        self.knowledge_plans+=1;return min(options,key=lambda row:row[0])[1]
+
+    def on_map(self,now,was_dead=False):
+        plan=self.supply_plan
+        self.finish(now,0)
+        if plan and not was_dead and plan['map']==self.world.map:
+            self.supply_plan=plan;self.next_shop=now
+
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     def observe(self,command,payload,now,send):
         if not self.context:return False
@@ -123,6 +188,10 @@ class Town:
             return True
         return command in (801,802,803,805,806,807,808)
     def finish(self,now,delay=120):
+        if self.supply_plan and delay>=180:
+            self.failed_suppliers[self.supply_plan['shop']['key']]=now+300
+            if len(self.failed_suppliers)>128:self.failed_suppliers.pop(next(iter(self.failed_suppliers)))
+        self.supply_plan=None
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
     def tick(self,now,policy,safe,dialogue_busy=False,medical=False):
         if self.next_break is None:self.next_break=now+600
@@ -157,6 +226,17 @@ class Town:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):return False
             self.rest_until=now+180;return True
         if now<self.next_shop:return False
+        if self.supply_plan and now-self.supply_plan['started']>300:self.finish(now,180);return False
+        if not self.supply_plan and not self.wanted and not medical:
+            self.supply_plan=self.plan_supplies(now,policy)
+        if self.supply_plan:
+            plan=self.supply_plan
+            if plan['map']!=w.map:
+                travel=getattr(policy,'travel',None)
+                self.reason='ищет покупку в другом городе: '+plan['shop']['name']
+                if travel and travel.tick(now,policy,safe,dialogue_busy):return True
+                return False # No fare/route: keep productive hunting.
+            self.wanted=(plan['item'],1);self.target_shop=plan['shop']
         if not self.wanted:
             # Healthy beginners must first earn something, not all shop on login.
             hp=w.own.values.get(1,0);maximum=max(1,w.own.values.get(31,1))
@@ -175,4 +255,4 @@ class Town:
         goal=policy.nav.nearest(point,6)
         if goal and policy.move_to(goal,now):return True
         self.finish(now,300);return False
-    def summary(self):return {'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}
+    def summary(self):return {'knowledge_purchase_plans':self.knowledge_plans,'shopping_destination':self.supply_plan['map'] if self.supply_plan else None,'planned_item':self.supply_plan['item'] if self.supply_plan else None,'shopping_goal':self.supply_plan['reason'] if self.supply_plan else None,'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}

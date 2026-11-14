@@ -27,6 +27,9 @@ class CityTravel:
         career=getattr(policy,'career',None)
         if career and career.eligible() and (not career.active() or career.quest.get('talk')):
             return career.quest['map']
+        town=getattr(policy,'town',None)
+        plan=getattr(town,'supply_plan',None)
+        if plan:return plan['map']
         return self.home_city
     def starter_trip(self):return 1<=self.world.own.values.get(0,0)<=3 and self.world.map!='garner'
     def needs_funds(self):

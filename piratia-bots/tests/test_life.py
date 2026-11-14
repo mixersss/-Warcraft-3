@@ -126,7 +126,7 @@ class LearningTests(unittest.TestCase):
             w.own.values.update({4:first,25:10,26:10,27:10,28:10,29:10})
             send=Mock();p=Progression(w,send,first);p.target_job=job;p.tick(0,True)
             attr=struct.unpack('>H',send.call_args.args[1][1:3])[0];choices[job]=attr
-        self.assertEqual(choices[12],26);self.assertEqual(choices[13],29);self.assertEqual(choices[16],28)
+        self.assertEqual(choices[12],26);self.assertEqual(choices[13],29);self.assertEqual(choices[16],29);self.assertEqual(choices[8],28);self.assertEqual(choices[9],27)
         self.assertGreater(len(set(choices.values())),2)
 
 class QuestCareerTests(unittest.TestCase):

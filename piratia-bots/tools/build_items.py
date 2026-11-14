@@ -22,7 +22,7 @@ def main():
   def value(text):
    try:return max(0,float(text.split(',')[0]))
    except ValueError:return 0
-  score=value(a[60])+value(a[61]) if weapon else value(a[62])*4+value(a[63])*.05
+  score=value(a[60])+value(a[61])+value(a[62])*4+value(a[63])*.05+value(a[64])*.05
   if kind==29:score=10+int(a[24]) # Native coral utility, not physical damage.
   gear[identity]={'level':int(a[24]),'jobs':[int(v) for v in a[25].split(',')],
                   'links':links,'bodies':[1,2,3,4] if a[23]=='-1' else sorted({int(v) for v in a[23].split(',') if v in ('1','2','3','4')}),

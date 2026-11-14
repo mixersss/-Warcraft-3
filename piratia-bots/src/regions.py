@@ -22,6 +22,7 @@ class Regions:
         self.items=ItemCatalog(self.assets/'items.json')
         from life import LifeItems
         self.life=LifeItems(self.assets)
+        self.npc_knowledge=self.life.npcs
         from market import MarketCatalog,MarketDirectory
         self.market_catalog=MarketCatalog(self.assets)
         total=population_count//10

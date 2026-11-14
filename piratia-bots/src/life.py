@@ -10,6 +10,15 @@ class LifeItems:
         self.names={int(k):v for k,v in data['names'].items()}
         self.prices={int(k):v for k,v in data['prices'].items()}
         self.services=json.loads((Path(assets)/'town-services.json').read_text(encoding='utf-8'))
+        self.npcs=None
+        if (Path(assets)/'world-npcs.json').exists():
+            from npc_knowledge import NpcKnowledge
+            item_types={int(k):v for k,v in json.loads((Path(assets)/'items.json').read_text())['types'].items()}
+            self.npcs=NpcKnowledge(Path(assets)/'world-npcs.json',item_types,self.names,self.prices)
+            for npc in self.npcs.shops():
+                shops=self.services['shops'].setdefault(npc['map'],[])
+                if not any(s['position']==npc['position'] and s['name']==npc['name'] for s in shops):
+                    shops.append({'name':npc['name'],'position':npc['position'],'offers':npc['offers'],'region':npc['region']})
 
     def can_learn(self,world,book):
         own=world.own

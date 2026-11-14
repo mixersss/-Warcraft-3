@@ -37,6 +37,8 @@ class ItemCatalog:
                 if not partner or not {6,9}<=set(partner.get('requires_links',partner.get('displaces',[]))):return None
                 affected.add(other)
             elif old and {6,9}<=set(old.get('requires_links',old.get('displaces',[]))):affected.add(other)
+        if own.values.get(4) in (4,16) and gear.get('kind')!=29:
+            if any(self.types.get(own.equipment.get(link,0))==29 for link in affected):return None
         equipment=dict(own.equipment);removed=[]
         for link in affected:
             current=equipment.get(link,0)
@@ -62,6 +64,12 @@ class ItemCatalog:
                      {'accuracy':3,'agility':1,'constitution':1} if job in (2,12) else
                      {'spirit':3,'constitution':1} if job in (4,5,13,14,16) else
                      {'strength':2,'agility':1,'constitution':1})
+            from builds import PROFILES
+            spec=PROFILES.get(getattr(own,'build_id',None))
+            if spec:
+                names={25:'strength',26:'accuracy',27:'agility',28:'constitution',29:'spirit'}
+                peak=max(spec['weights'].values())
+                weights={names[k]:3*v/peak for k,v in spec['weights'].items()}
             total+=gear['score']+sum(gear.get(k,0)*v for k,v in weights.items())
         return total
 

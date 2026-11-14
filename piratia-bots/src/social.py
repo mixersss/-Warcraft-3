@@ -34,6 +34,7 @@ class Social:
         self.level=world.own.values.get(0);self.resting=False
         self.events=deque(maxlen=4);self.activity='hunt';self.role_label=None;self.last_event={}
         self.help_handler=None;self.market=None;self.sale_offer=None;self.last_offer=-1e9;self.party_size=0;self.conversations=conversations
+        self.npc_provider=None
         self.friend_handler=self.party_handler=self.bot_handler=self.context_provider=None
         self.urgent=deque(maxlen=4);self.personality=None
         self.busy_state=False
@@ -51,6 +52,9 @@ class Social:
                 and e.name and not e.name.lower().startswith('bot')]
 
     def reply(self,words):
+        if self.npc_provider:
+            answer=self.npc_provider(words)
+            if answer:return 'npc',answer
         has=lambda *terms:any(w in words for w in terms)
         if has('характер','личность'):return 'personality',('По характеру я '+self.personality.kind+'.' if self.personality else 'Сначала закончу своё дело, потом поболтаем.')
         if has('друзья','друзься','друг','друзей','дружить'):return 'friend','Можешь отправить приглашение в друзья.'

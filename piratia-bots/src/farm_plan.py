@@ -6,7 +6,14 @@ PROFILES=(
  ('осторожный',0,.75,2.0,.9),('уравновешенный',2,.65,3.0,.7),
  ('искатель вызова',3,.6,4.0,.6),('практичный',1,.7,2.5,.8),
  ('собиратель',2,.7,3.0,.75),('упорный',2,.65,3.5,.65))
-FIELDS=('wins','losses','stalls','seconds','hp_cost','xp','gold','level_ups','dry_wins')
+FIELDS=('wins','losses','stalls','seconds','hp_cost','xp','gold','level_ups','dry_wins','observed_level','level_xp','level_seconds','level_wins')
+
+def xp_level_divisor(actor_level,monster_level):
+ # Exact level-only divisor from the supplied ShareTeamExp, before other bonuses.
+ gap=actor_level-monster_level
+ if gap>=4:return min(10,1+abs(gap-4)*.4)
+ if gap<=-10:return min(4,1+abs(gap-10)*.1)
+ return 1
 
 class HuntLearning:
  def __init__(self,seed):
@@ -32,7 +39,7 @@ class HuntLearning:
   if not self.path or not self.dirty or (not force and now-self.last_save<60):return
   try:
    self.path.parent.mkdir(parents=True,exist_ok=True)
-   temp=self.path.with_suffix('.tmp');temp.write_text(json.dumps({'version':1,'profile':self.profile[0],'models':self.rows},ensure_ascii=False),encoding='utf-8');temp.replace(self.path)
+   temp=self.path.with_suffix('.tmp');temp.write_text(json.dumps({'version':1,'level_penalty_model':'owner-ShareTeamExp','profile':self.profile[0],'models':self.rows},ensure_ascii=False),encoding='utf-8');temp.replace(self.path)
    self.dirty=False;self.last_save=now
   except OSError:self.save_errors+=1;self.last_save=now
  def blocked(self,model,now):return self.avoid.get(model,0)>now
@@ -50,12 +57,15 @@ class HuntLearning:
   row=self.rows.setdefault(str(a['model']),{k:0 for k in FIELDS})
   duration=max(1,now-a['start']);cost=max(0,a['hp']-a['low'])/a['max_hp']
   row['seconds']+=duration;row['hp_cost']+=cost
+  if row.get('observed_level')!=a['level']:
+   row.update(observed_level=a['level'],level_xp=0,level_seconds=0,level_wins=0)
+  row['level_seconds']+=duration
   if outcome=='win':
    row['wins']+=1
    level_ups=max(0,own.values.get(0,a['level'])-a['level']);row['level_ups']+=level_ups
    # Native ATTR_CEXP is cumulative, including a level transition.
    earned=max(0,own.values.get(15,a['xp'])-a['xp'])
-   row['xp']+=earned
+   row['xp']+=earned;row['level_xp']+=earned;row['level_wins']+=1
    row['dry_wins']=0 if earned or level_ups else row.get('dry_wins',0)+1
    if row['dry_wins']>=4:self.avoid[a['model']]=now+120
    row['gold']+=max(0,own.values.get(8,0)-a['gold'])
@@ -80,13 +90,22 @@ class HuntLearning:
    if progressed or now-a['death_seen']>=2:self.finish(world,now,'win')
  def waiting_reward(self,now):
   return bool(self.active and 'death_seen' in self.active and now-self.active['death_seen']<2)
+ def minimum_farm_level(self,region,own,now):
+  level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
+  for model,r in region['farms'].items():
+   if (r['points'] and level-3<=r['level']<=level+max(3,self.profile[1])
+       and not self.blocked(int(model),now) and not self.dangerous(int(model),now)
+       and r['hp']<=hp*self.profile[3]):
+    return max(1,level-5)
+  return max(1,level-9) # Safe recovery fallback when the higher band is unavailable.
  def admissible(self,region,own,now):
   """Safe observed opportunities, even if the current shortlist is elsewhere."""
   level=own.values.get(0,1);maximum=max(1,own.values.get(31,1));result=set()
+  floor=self.minimum_farm_level(region,own,now)
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
    if not record['points'] or self.blocked(model,now):continue
-   if not max(1,level-9)<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
+   if not floor<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
   return result
@@ -107,7 +126,8 @@ class HuntLearning:
   if signature==self.signature and now<self.until and not idle_trial:return set(self.selected)
   if self.signature and signature[:3]!=self.signature[:3]:self.avoid.clear();self.danger_until.clear()
   self.signature=signature;level=own.values.get(0,1);max_hp=max(1,own.values.get(31,1))
-  best_rate=max((r['xp']/max(1,r['seconds']) for r in self.rows.values()),default=0)
+  floor=self.minimum_farm_level(region,own,now)
+  best_rate=max((r.get('level_xp',0)/max(1,r.get('level_seconds',0)) for r in self.rows.values() if r.get('observed_level')==level),default=0)
   scored=[];alternatives=[];self.scores={}
   for model,record in region['farms'].items():
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
@@ -116,7 +136,7 @@ class HuntLearning:
    primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
             and not (level<=3 and model==71))
    if not primary and ml>(level+max(3,self.profile[1])):continue
-   if ml<max(1,level-9):continue # preserve a chance of useful experience
+   if ml<floor:continue # Do not camp very weak mobs when a viable closer-level band exists.
    if not row.get('wins') and record['hp']>max_hp*self.profile[3]:continue
    base=max(.12,1-abs(ml-level)*.07)/(1+record['hp']/max_hp*.25)
    if position is not None:
@@ -128,7 +148,7 @@ class HuntLearning:
     attack=(own.values.get(33,0)+own.values.get(34,0))/2
     physical=own.values.get(4) in (0,1,2,8,9,10,11,12)
     effective=max(1,attack-record.get('defence',0)) if attack>0 and physical else 1
-    efficiency=record['base_xp']*effective/max(1,record['hp'])
+    efficiency=record['base_xp']/xp_level_divisor(level,ml)*effective/max(1,record['hp'])
     base*=max(.15,min(3,math.sqrt(efficiency)))
    if self.profile[0]=='искатель вызова':base*=1+max(0,ml-level)*.12
    if self.profile[0]=='собиратель':base*=1+min(10,len(record.get('drops',[])))*.035
@@ -136,10 +156,10 @@ class HuntLearning:
     wins=row.get('wins',0);losses=row.get('losses',0)+row.get('stalls',0)*.5
     safety=(wins+1)/(wins+losses+1)
     base*=safety/(1+row.get('hp_cost',0)/max(1,wins+losses))
-    if best_rate>0 and wins>=2:
+    if best_rate>0 and row.get('level_wins',0)>=2 and row.get('observed_level')==level:
      # Real XP/time must outweigh modest level/HP/personality preferences.
      # A safe species earning ten times less XP is not an equivalent farm.
-     rate=row.get('xp',0)/max(1,row.get('seconds',0));base*=.15+4*min(1,rate/best_rate)
+     rate=row.get('level_xp',0)/max(1,row.get('level_seconds',0));base*=.15+4*min(1,rate/best_rate)
     if row.get('level_ups',0):base*=1.15
     if wins>=2 and not row.get('xp') and not row.get('level_ups'):base*=.3
     if row.get('dry_wins',0)>=2:base*=.2
@@ -183,7 +203,7 @@ class HuntLearning:
   self.selected={m for _,m in chosen};self.until=now+60
   return set(self.selected)
  def summary(self):
-  return {'profile':self.profile[0],'selected_models':sorted(self.selected),'learned_species':len(self.rows),
+  return {'level_penalty_model':'owner-ShareTeamExp','profile':self.profile[0],'selected_models':sorted(self.selected),'learned_species':len(self.rows),
           'wins':sum(r.get('wins',0) for r in self.rows.values()),'dangerous_fights':sum(r.get('losses',0) for r in self.rows.values()),
           'stalled_fights':sum(r.get('stalls',0) for r in self.rows.values()),'save_errors':self.save_errors,
           'session_seconds':max(0,self.last_clock-self.session_start) if self.session_start is not None else 0,

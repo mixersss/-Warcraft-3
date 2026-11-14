@@ -61,7 +61,7 @@ class RemoteProfessionTests(unittest.TestCase):
 
     def test_hunt_router_transfers_to_both_cities_and_accepts_local_promotion(self):
         for first,destination,label,mission in ((2,'darkblue','Icicle City',59),(5,'magicsea','Shaitan City',60)):
-            with self.subTest(first=first):
+            with self.subTest(first=first), tempfile.TemporaryDirectory() as data_dir:
                 clock=[100.0]
                 captured=[]
                 stop=threading.Event()
@@ -73,6 +73,7 @@ class RemoteProfessionTests(unittest.TestCase):
                 navigation=Regions(ROOT/'assets')
                 chosen=role(first)
                 store=Mock()
+                store.path=Path(data_dir)/'bot-roles.json'
                 store.resolve.return_value=chosen
                 store.rebalance_novice.return_value=chosen
                 def factory(*args,**kwargs):

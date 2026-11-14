@@ -123,7 +123,7 @@ class Hunter:
         self.starter_search_since=None
         self.refresh_class_intent=None
         self.background_task=None
-        self.mob_knowledge=None
+        self.mob_knowledge=None;self.npc_knowledge=None
         self.shortcut=None
         self.quest_combat_ready=False
         self.protected_fights_stopped=0;self.immune_fights_released=0
@@ -1070,8 +1070,21 @@ class Hunter:
             self.clear_zone()
             self.next_action=now+1
 
+    def farm_reason(self):
+        models=set(self.planned_models())
+        adaptive={'source':'adaptive_xp_hunt','models':sorted(models),
+                  'minimum_candidate_level':self.learning.minimum_farm_level(self.region,self.world.own,self.clock) if self.region else None}
+        if self.starter_models():return {'source':'initial_trial','models':sorted(models)}
+        if self.activity.hunting(self.clock) and not self.mandatory_work():return adaptive
+        for name,feature in (('advanced_profession',self.career),('story_quest',self.story if self.wants_story() else None),('profession_quest',self.adventure)):
+            if feature:
+                required=feature.desired_models()
+                if isinstance(required,(set,list,tuple)) and required and set(required)==models:
+                    if feature is not self.adventure or feature.farm():return {'source':name,'models':sorted(models)}
+        return adaptive
+
     def summary(self):
-        return {'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -1105,6 +1118,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
+    policy.npc_knowledge=getattr(navigation,'npc_knowledge',None)
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
     from combat_skills import CombatSkills
     policy.combat_skills=CombatSkills(world,catalog,Path(__file__).resolve().parents[1]/'assets')
@@ -1112,14 +1126,20 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.recovery=Recovery(world)
     progression = Progression(world, client.wire.send)
     social = Social(world, client.wire.send, bot_name, chat_budget or ChatBudget(), bot_name,conversations=getattr(navigation,'conversations',None))
+    if policy.npc_knowledge:social.npc_provider=lambda words:policy.npc_knowledge.answer(words,world.map,world.own.position)
     from personality import Personality
     personality=Personality(bot_name);social.personality=personality
     social.scripted_dialogues=False
     role = None
+    build_store=None
     if role_store:
         role = role_store.resolve(bot_name,world.own.model,world.own.values.get(4))
         progression.first_job = role['first_job']
         progression.target_job=role['target_job']
+        from builds import BuildStore
+        build_store=BuildStore(role_store.path.parent/'bot-builds.json')
+        progression.build_id=build_store.resolve(bot_name,role['target_job'])
+        world.own.build_id=progression.build_id
         from skills import Skills
         policy.skills=Skills(world,role,getattr(navigation,'life',None))
         social.role_label=role['label']
@@ -1168,6 +1188,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if updated['target_job']==role['target_job']:return
         role.update(updated)
         progression.first_job=role['first_job'];progression.target_job=role['target_job']
+        if build_store:
+            progression.build_id=build_store.resolve(bot_name,role['target_job'],allow_novice_change=world.own.values.get(4)==0)
+            world.own.build_id=progression.build_id
         social.role_label=role['label']
         if policy.career:policy.career.quest=life.services['quests'][str(role['target_job'])]
         replacement=Adventure(world,client.wire.send,tell,role,policy.region,tactic=old.configured_tactic)
@@ -1334,6 +1357,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             was_dead=world.own is not None and not world.own.alive
             if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             world.enter(payload)
+            world.own.build_id=progression.build_id
             policy.pending_action=None;policy.action_open=False
             policy.sitting.reset()
             policy.assist_target=None
@@ -1353,7 +1377,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if was_dead:
                 policy.confirmed_revivals+=1;policy.last_return_at=now
                 policy.learning.events.append('revived');policy.learning.events=policy.learning.events[-8:]
-            if policy.town:policy.town.end_rest(now);policy.town.home=policy.home;policy.town.finish(now,120)
+            if policy.town:policy.town.end_rest(now);policy.town.home=policy.home;policy.town.on_map(now,was_dead)
             policy.drop_target()
             policy.clear_zone()
             policy.move_goal=None

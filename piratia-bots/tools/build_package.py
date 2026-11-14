@@ -5,13 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-42'
-NAME = 'Piratia-Auto-Bots-Alpha42'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-43'
+NAME = 'Piratia-Auto-Bots-Alpha43'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py', ROOT / 'tools' / 'build_npc_knowledge.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Complete audited beginner chest chain, native class wardrobe/real body restrictions, verified targeted damage/heal spells and real SP/coral gates; current-map essential purchases and charged-coral replacement; protected300growth/Alpha41 fixes preserved; live Windows Alpha42 validation pending',
+        'status': 'Full supplied static NPC knowledge, real3city supply plans/accessories through verified portals,8persistent owner stat builds, native level-XP penalty/current-level learning; existing300 identities and all prior features preserved; live Alpha43 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -94,6 +94,28 @@ def main():
         'new_profiles_balance_compatible_class_deficits_without_changing_old_roles': True,
         'repeated_world_launch_adds_more_than300': False,
         'live300_connections_verified': False,
+        'known_static_npc_placements': 521,
+        'all_runtime_npc_source_tables': 29,
+        'maps_with_static_npc_placements': 20,
+        'npc_model_definitions': 131,
+        'npc_models_without_verified_static_coordinates': 30,
+        'dynamic_npc_spawns_exhaustively_known': False,
+        'all_known_npc_services_automated': False,
+        'npc_knowledge_shared_by_all_workers': True,
+        'npc_finder': 'Find-NPC.cmd',
+        'shop_lookup_across_three_home_cities': True,
+        'shopping_reserves_roundtrip_fare_and_100gold': True,
+        'accessory_goals_keep_marine_corals': True,
+        'owner_build_variant_count': 8,
+        'build_variants_persist_separately_from_roles': 'data/bot-builds.json',
+        'only_future_unspent_stat_points_affected': True,
+        'old_earned_stats_reset': False,
+        'native_observed_speed_target': 210,
+        'observed_speed_excludes_temporary_buffs': False,
+        'native_level_xp_divisor_20vs12': 2.6,
+        'current_level_xp_observations_separate_from_lifetime': True,
+        'ordinary_low_level_hunt_yields_to_viable_near_level_band': True,
+        'required_low_level_quest_targets_preserved': True,
         'owner_execution_tracker': 'knowledge/OWNER-EXECUTION.md',
         'native50cm_egress_grid_for_occupied_excluded_cells': True,
         'reported_offmesh_positions_replayed': 17,
@@ -131,7 +153,7 @@ def main():
         'field_merchants_by_home_map': {'garner':19,'magicsea':7,'darkblue':11},
         'coral_purchase_and_renewal_recorded_as_requirement': True,
         'coral_purchase_and_renewal_implemented': True,
-        'coral_supply_scope': 'verified current-map merchants only; real owned replacements and server charge confirmation',
+        'coral_supply_scope': 'verified sellers;3city shopping plans through confirmed known portals; real owned replacements/server charge confirmation',
         'targeted_combat_skill_ids': [82,85,86,91,96,97,99,213,214,216,224],
         'full_skill_rotation_and_party_healing_implemented': False,
         'native_activated_skills_sp_cooldown_weapon_coral_gates': True,
@@ -204,11 +226,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 540,
-        'full_python_suite_total': 548,
-        'full_python_suite_passed': 548,
+        'pure_python_tests_passed': 570,
+        'full_python_suite_total': 578,
+        'full_python_suite_passed': 578,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '548 passed in Alpha42 including 8 local socket integration tests',
+        'last_full_network_regression': '578 passed in Alpha43 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',

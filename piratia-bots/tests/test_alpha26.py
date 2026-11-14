@@ -220,7 +220,7 @@ class ProductiveHuntingTests(unittest.TestCase):
             'points':[[m,m]],'drops':[]} for m in (1,2,3,4)}}
         for model in (1,2,3,4):
             learning.rows[str(model)] = dict.fromkeys(FIELDS,0)
-            learning.rows[str(model)].update(wins=3,seconds=100,xp=100 if model==4 else 10)
+            learning.rows[str(model)].update(wins=3,seconds=100,xp=100 if model==4 else 10,observed_level=world.own.values.get(0),level_wins=3,level_seconds=100,level_xp=100 if model==4 else 10)
         selected = learning.choose(region,world.own,100)
         self.assertIn(4,selected)
         self.assertGreater(learning.scores[4],max(learning.scores[m] for m in (1,2,3)))
