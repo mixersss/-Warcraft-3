@@ -1,5 +1,6 @@
 """Cohort regressions: unique combat targets, timeout recovery and promotion in both tactics."""
 import concurrent.futures
+import copy
 import math
 import struct
 import sys
@@ -65,7 +66,11 @@ class CohortCombatTests(unittest.TestCase):
         for i in range(monsters):
             identity=1000+i
             w.entities[identity]=Entity(75,identity,2000+i,5,1,223300,278700,40,{0:1,1:100,31:100})
-        p=Hunter(w,self.nav,Mock(),Report(),Mock(),f'Bot{index:08x}')
+        # These synthetic combat packets use the original city coordinates.
+        # Keep navigation, but remove the real city's no-fight overlay only in
+        # this fixture. Alpha40 separately exercises the actual zone masks.
+        nav=copy.copy(self.nav);nav.combat_bits=None
+        p=Hunter(w,nav,Mock(),Report(),Mock(),f'Bot{index:08x}')
         p.started=0;p.coordination=coordinator
         return w,p
 

@@ -27,6 +27,7 @@ def render_report(report):
     actual=quest.get('profession',fight.get('world',{}).get('profession'))
     lines.append(f"  Фактическая профессия: {describe(actual)}; проверка задания={json.dumps(quest.get('objective_review',{}),ensure_ascii=False)}")
     lines.append(f"  Поиск в фоне: {fight.get('background_planning_task')}; ожидание действия={json.dumps(fight.get('action_wait',{}),ensure_ascii=False)}")
+    lines.append(f"  Проверка зоны боя: {json.dumps(fight.get('combat_safety',{}),ensure_ascii=False)}")
     lines.append(f"  Выход на сушу: {json.dumps(fight.get('offmesh_recovery',{}),ensure_ascii=False)}")
     lines.append(f"  Знания мобов: {json.dumps(fight.get('mob_knowledge',{}),ensure_ascii=False)}")
     lines.append(f"  Портал для сокращения пути: {json.dumps(fight.get('portal_shortcut',{}),ensure_ascii=False)}")

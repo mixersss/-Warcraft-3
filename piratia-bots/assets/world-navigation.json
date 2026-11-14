@@ -16,7 +16,9 @@
       "client_map_sha256": "ffd6e6a8650ad319d1d76483e66380c74f0cc761c58be7b0a98ecf834f248b9c",
       "server_block_sha256": "a32ef949e6403e10b5fffbc9356eafb96f323ca445e56722c9951ddbfe5be7af",
       "server_attribute_sha256": "1563607d07e585a78696651f05ac146632d97ce5c1ff389ecafb8deb9b7b761b",
-      "navigation": "07xmas-navigation.json"
+      "navigation": "07xmas-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 87616,
+      "combat_attribute_sha256": "1563607d07e585a78696651f05ac146632d97ce5c1ff389ecafb8deb9b7b761b"
     },
     "07xmas2": {
       "width": 296,
@@ -34,7 +36,9 @@
       "client_map_sha256": "934ee20c6bfdf641a0a703e6e3646a5f28164ad572ccea41c6614205b196ac22",
       "server_block_sha256": "a32ef949e6403e10b5fffbc9356eafb96f323ca445e56722c9951ddbfe5be7af",
       "server_attribute_sha256": "ff45da52ac60878e7c005daed3a7f8cdfbdabb433a3aeb4d7ac58f84901c6eda",
-      "navigation": "07xmas2-navigation.json"
+      "navigation": "07xmas2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 42432,
+      "combat_attribute_sha256": "ff45da52ac60878e7c005daed3a7f8cdfbdabb433a3aeb4d7ac58f84901c6eda"
     },
     "abandonedcity": {
       "width": 384,
@@ -52,7 +56,9 @@
       "client_map_sha256": "c50339b54c174b943c7cf9c76ac7ecfb6757e00e358bfe41b114a934b7607010",
       "server_block_sha256": "ed7bd50b15f3af52447939c6aa671e11a175449d3f5535fa94c06dea72bf34c1",
       "server_attribute_sha256": "aa25799e03cfc06f39e3cdfa86bf5764b129215f141aefd0f060707f8a78caf4",
-      "navigation": "abandonedcity-navigation.json"
+      "navigation": "abandonedcity-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 35712,
+      "combat_attribute_sha256": "aa25799e03cfc06f39e3cdfa86bf5764b129215f141aefd0f060707f8a78caf4"
     },
     "abandonedcity2": {
       "width": 496,
@@ -70,7 +76,9 @@
       "client_map_sha256": "3d2e1b0728ae7e71971a81262bcaf16b031d5b4611fdb29c4d3f5f3a8ad19c42",
       "server_block_sha256": "66afba7bc534bb69bf75dcc2cccd7a876efb09f4694ca92baaf3c51a10d9c2cf",
       "server_attribute_sha256": "04cfad6cb2136a968386579295f0a803b0049bc7b24cacf8bb6279e904aed984",
-      "navigation": "abandonedcity2-navigation.json"
+      "navigation": "abandonedcity2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 0,
+      "combat_attribute_sha256": "04cfad6cb2136a968386579295f0a803b0049bc7b24cacf8bb6279e904aed984"
     },
     "abandonedcity3": {
       "width": 496,
@@ -88,7 +96,9 @@
       "client_map_sha256": "fed9425b56152f2e78395027adabb1595cf791d2a59d76da4de4b2ae41702afe",
       "server_block_sha256": "6e8888a90f6971f22b2efd895ceeaf86d90229db9c2ae44d3df81ea4cadf3106",
       "server_attribute_sha256": "b8fe9a53e23b0c4280306899900d52a233bb2c830ae0bcbdc9d60508a1553fa6",
-      "navigation": "abandonedcity3-navigation.json"
+      "navigation": "abandonedcity3-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 0,
+      "combat_attribute_sha256": "b8fe9a53e23b0c4280306899900d52a233bb2c830ae0bcbdc9d60508a1553fa6"
     },
     "binglang2": {
       "width": 304,
@@ -106,7 +116,9 @@
       "client_map_sha256": "9c83162e448588619a3f6a76f093d33e734abfc2c4a5e6c707fa6c8971945035",
       "server_block_sha256": "a4f83f34e9e8acbf7bb4e687302654d480d2d2874df8883d4d403e84964697c8",
       "server_attribute_sha256": "b88e72b52f9bff568c15df3165a9bd188d3e62529997e2d73f3cf6cc87632176",
-      "navigation": "binglang2-navigation.json"
+      "navigation": "binglang2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 42240,
+      "combat_attribute_sha256": "b88e72b52f9bff568c15df3165a9bd188d3e62529997e2d73f3cf6cc87632176"
     },
     "darkblue": {
       "width": 4096,
@@ -124,7 +136,10 @@
       "client_map_sha256": "9472983896515bb95f2f716dbda1d84ff62dc27f70ca17070e1dec436f934458",
       "server_block_sha256": "ad7980d4728af8c923380989c1f8dfd21002be2d63947fa143c2b756d5669f9a",
       "server_attribute_sha256": "0822de9a31404589d30f9b5606ad35d2f4a74ea95f3cc8357aa4015175f45664",
-      "navigation": "darkblue-navigation.json"
+      "navigation": "darkblue-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 14165986,
+      "combat_attribute_sha256": "0822de9a31404589d30f9b5606ad35d2f4a74ea95f3cc8357aa4015175f45664",
+      "farm_points_filtered_for_combat": true
     },
     "darkswamp": {
       "width": 544,
@@ -142,7 +157,9 @@
       "client_map_sha256": "ef89b6f48a820da423800f99c24d5c621074efd98c6bee6c496e63bc8c448ff9",
       "server_block_sha256": "1aa09e44e74f270d93ec8a0a1cdd0e89e1d0c47225d49eff3ccd4c00a2b6717d",
       "server_attribute_sha256": "1a47f11f2382f9b81a2dfe42c4cca0e543dbe7f3fe214b776632f1490536cb21",
-      "navigation": "darkswamp-navigation.json"
+      "navigation": "darkswamp-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 108544,
+      "combat_attribute_sha256": "1a47f11f2382f9b81a2dfe42c4cca0e543dbe7f3fe214b776632f1490536cb21"
     },
     "eastgoaf": {
       "width": 1024,
@@ -160,7 +177,9 @@
       "client_map_sha256": "f0cecd03b4e78f0974d44f0c3be0ae8975e4bbee12ad23a2a2fe06e74d12ec55",
       "server_block_sha256": "41029fa0e5daafba7af86c5b0b674901e992bed09cd541f96cbd305a7b7aa3f8",
       "server_attribute_sha256": "287817417bcbd529824d3da8cd29855199bebf0daac79d9939dbeb6bcd6ffcc6",
-      "navigation": "eastgoaf-navigation.json"
+      "navigation": "eastgoaf-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 785359,
+      "combat_attribute_sha256": "287817417bcbd529824d3da8cd29855199bebf0daac79d9939dbeb6bcd6ffcc6"
     },
     "garner": {
       "width": 4096,
@@ -178,7 +197,10 @@
       "client_map_sha256": "ccc3bfeda748249933cfae8256bcc352e6247c8d5fccb9a57695c909d37974b7",
       "server_block_sha256": "923775821a44aadb3ff542e6a6353a27d9152137250d2577e403460a23c73f97",
       "server_attribute_sha256": "0e342939b728e06573255b60b1a71c8cc5484d909522dec6b91e4e844471c9cc",
-      "navigation": "garner-navigation.json"
+      "navigation": "garner-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 13572236,
+      "combat_attribute_sha256": "0e342939b728e06573255b60b1a71c8cc5484d909522dec6b91e4e844471c9cc",
+      "farm_points_filtered_for_combat": true
     },
     "garner2": {
       "width": 280,
@@ -196,7 +218,9 @@
       "client_map_sha256": "84b463c8efdc554e43c378aeeea811d6dd82cb2893aac8ee6fda0db3ac9582e0",
       "server_block_sha256": "076dc653e1f37b91526b3341bded501037d519272ac971e5aa86506f22496709",
       "server_attribute_sha256": "5fd785ed62e7b42d75106110dd48e0df6efb02e09851b3283bee3b093d4a4acb",
-      "navigation": "garner2-navigation.json"
+      "navigation": "garner2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 39424,
+      "combat_attribute_sha256": "5fd785ed62e7b42d75106110dd48e0df6efb02e09851b3283bee3b093d4a4acb"
     },
     "guildwar": {
       "width": 624,
@@ -214,7 +238,9 @@
       "client_map_sha256": "0460f893654fbcc8ea3de987cd0bb7c00f44166d1d302a656dd92e9493030d99",
       "server_block_sha256": "80e5de9ce8636cb7625c38d3804c2255d61a656329b3f6167694732bdd15da70",
       "server_attribute_sha256": "100edd53cf0c3c4364ef50d4f5fd1b6578eb3be937d6fcbf255a804c7bfc06fc",
-      "navigation": "guildwar-navigation.json"
+      "navigation": "guildwar-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 140480,
+      "combat_attribute_sha256": "100edd53cf0c3c4364ef50d4f5fd1b6578eb3be937d6fcbf255a804c7bfc06fc"
     },
     "guildwar2": {
       "width": 624,
@@ -232,7 +258,9 @@
       "client_map_sha256": "c772e3caada5d0cd8ed8c06b0f2147ca318d601b25e9a5bc14eb1ffff6a8746b",
       "server_block_sha256": "80e5de9ce8636cb7625c38d3804c2255d61a656329b3f6167694732bdd15da70",
       "server_attribute_sha256": "1e9e7ce11a31b4b8e43c91ce557387db27e22d724c42cbccfe2df915ca60df0b",
-      "navigation": "guildwar2-navigation.json"
+      "navigation": "guildwar2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 140480,
+      "combat_attribute_sha256": "1e9e7ce11a31b4b8e43c91ce557387db27e22d724c42cbccfe2df915ca60df0b"
     },
     "hell": {
       "width": 256,
@@ -250,7 +278,9 @@
       "client_map_sha256": "ba315ce4315f93021371b2a2a6a77764d9a2754e03734888240db85abf9dff3b",
       "server_block_sha256": "c9a8115e1a8d4115793a3f48ed0bf959887e6fa9257171093d591bbbefc177f7",
       "server_attribute_sha256": "beb46900d9915a72a93ea91d68d0bed2d6dca445b961a997f2f5783baa982c43",
-      "navigation": "hell-navigation.json"
+      "navigation": "hell-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 7936,
+      "combat_attribute_sha256": "beb46900d9915a72a93ea91d68d0bed2d6dca445b961a997f2f5783baa982c43"
     },
     "hell2": {
       "width": 280,
@@ -268,7 +298,9 @@
       "client_map_sha256": "6caad002dad245f9a7af4797c0a74bb9e59f5cb116c053f87c409115cc1e26a3",
       "server_block_sha256": "1c83bc8302c5bb7dae8d84a910f9c0d6e1e6b40b35993b055ef4e23359108c80",
       "server_attribute_sha256": "cb8eb6898176fc43b75f4211e355027c38efffd4440ec1ae169cfb65d13db3cb",
-      "navigation": "hell2-navigation.json"
+      "navigation": "hell2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 11648,
+      "combat_attribute_sha256": "cb8eb6898176fc43b75f4211e355027c38efffd4440ec1ae169cfb65d13db3cb"
     },
     "hell3": {
       "width": 384,
@@ -286,7 +318,9 @@
       "client_map_sha256": "dcc6039817db79afbef544149c59707346bb1d61fd54b894aa3ee4f47ecdb43b",
       "server_block_sha256": "bacdde6888efb5e309db772192bc561b2386430afb35e0ef019219585e7a60de",
       "server_attribute_sha256": "36c197bd36ec9f122e9b95129d62990fee3bae7a5e8271a17527b8206e55ae77",
-      "navigation": "hell3-navigation.json"
+      "navigation": "hell3-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 17856,
+      "combat_attribute_sha256": "36c197bd36ec9f122e9b95129d62990fee3bae7a5e8271a17527b8206e55ae77"
     },
     "hell4": {
       "width": 128,
@@ -304,7 +338,9 @@
       "client_map_sha256": "f8e87dbd76587e65461af92881b63e1e6353c317beb5d460c97ec651af53ae2c",
       "server_block_sha256": "84c7187e74fac263372a33f70493174bf0272c1d2812abcc80c6297e46793c2f",
       "server_attribute_sha256": "298fe8a05c32ef037bb791abd1a0d4ae6f94eb01428c7ebdc0cbc23ae0ae219b",
-      "navigation": "hell4-navigation.json"
+      "navigation": "hell4-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 8064,
+      "combat_attribute_sha256": "298fe8a05c32ef037bb791abd1a0d4ae6f94eb01428c7ebdc0cbc23ae0ae219b"
     },
     "hell5": {
       "width": 256,
@@ -322,7 +358,9 @@
       "client_map_sha256": "30087e852f8614eb0fdd8eac61a9f82ea73aca2093ccd7046b365efff4a360b6",
       "server_block_sha256": "bc96e9b4c9ed0f4eff517890aa85db2aaf3ee39bf17bd7fe462e50c18fdeab83",
       "server_attribute_sha256": "aaa0b238be54c5b949a62597468d2d7fe392fe15cc18ee3cfdb55aa92d5d2a71",
-      "navigation": "hell5-navigation.json"
+      "navigation": "hell5-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 15744,
+      "combat_attribute_sha256": "aaa0b238be54c5b949a62597468d2d7fe392fe15cc18ee3cfdb55aa92d5d2a71"
     },
     "jialebi": {
       "width": 1840,
@@ -340,7 +378,9 @@
       "client_map_sha256": "c5883675304f03f0979b4eb7f384d01ba23e4b48a4290bededbf80e4617a4100",
       "server_block_sha256": "a37968ede9e925741a0934ed87214aa705ca684019348b50d8555a5f552c0e1e",
       "server_attribute_sha256": "d4866fb0f6d3f6221a30239e2d766e88086cdd4d8a038b7bebdf12a1548648ef",
-      "navigation": "jialebi-navigation.json"
+      "navigation": "jialebi-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 1892416,
+      "combat_attribute_sha256": "d4866fb0f6d3f6221a30239e2d766e88086cdd4d8a038b7bebdf12a1548648ef"
     },
     "leiting2": {
       "width": 336,
@@ -358,7 +398,9 @@
       "client_map_sha256": "4f10c561e288bec4aa6b4080e3cd4c89a4df3b40b01ae7bc1bcbbaa801233b3c",
       "server_block_sha256": "c5625d339ee7b5d10ba95b6733f903b05a041588803a95e97f71bd6519c49954",
       "server_attribute_sha256": "f35c741efba4dabfaae679b42e0be2016c54abbba172daecf0a8042f41d5c124",
-      "navigation": "leiting2-navigation.json"
+      "navigation": "leiting2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 34752,
+      "combat_attribute_sha256": "f35c741efba4dabfaae679b42e0be2016c54abbba172daecf0a8042f41d5c124"
     },
     "lonetower": {
       "width": 1024,
@@ -376,7 +418,9 @@
       "client_map_sha256": "b1a868d26a3982f35b7649a08e2711f0824b0af8098c6774438fd527a760fd91",
       "server_block_sha256": "5020defa351a770a470205fbed27223dbe760eda2b332ab73f8d4880d031ed20",
       "server_attribute_sha256": "a30a87aa2191079bc6a345baebbf220e564a03d0bd3b0e5f4e28d632ed8159f8",
-      "navigation": "lonetower-navigation.json"
+      "navigation": "lonetower-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 788992,
+      "combat_attribute_sha256": "a30a87aa2191079bc6a345baebbf220e564a03d0bd3b0e5f4e28d632ed8159f8"
     },
     "magicsea": {
       "width": 4096,
@@ -394,7 +438,10 @@
       "client_map_sha256": "a3aef45f9c97ecad261c791d63d0d7942733f0cb835d36d5b679630d28ed1db3",
       "server_block_sha256": "a29810a1fbba7ae24d724b9ab011a3f8525a90e429400ddd936e1a3877cc92fa",
       "server_attribute_sha256": "3c24847881e4817d2a87322df58155176a81ce0007fd19bfc198c2f6df38bd1c",
-      "navigation": "magicsea-navigation.json"
+      "navigation": "magicsea-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 15231236,
+      "combat_attribute_sha256": "3c24847881e4817d2a87322df58155176a81ce0007fd19bfc198c2f6df38bd1c",
+      "farm_points_filtered_for_combat": true
     },
     "puzzleworld": {
       "width": 544,
@@ -412,7 +459,9 @@
       "client_map_sha256": "d867dfd947272f5836a5e750d0ed71620d9436ec52723440bb4665fbee0d056b",
       "server_block_sha256": "e0f019d5bded2b528ab4bb20130396a1cf41c4400d6fc7dab80585f675eaf817",
       "server_attribute_sha256": "ac6f77a4c21da0747f8e94fbb4fd39c5d0715d164143b10c4cdac7184e7a6320",
-      "navigation": "puzzleworld-navigation.json"
+      "navigation": "puzzleworld-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 30603,
+      "combat_attribute_sha256": "ac6f77a4c21da0747f8e94fbb4fd39c5d0715d164143b10c4cdac7184e7a6320"
     },
     "puzzleworld2": {
       "width": 544,
@@ -430,7 +479,9 @@
       "client_map_sha256": "5b43072892b4b720ee1a25c932c58a51806cf880464994ce3e0503a06638eeec",
       "server_block_sha256": "6f9d11841328733593647a39c5d4d8b97c5d5f0cd80f863f82987c311d374c1c",
       "server_attribute_sha256": "47458df1509a6454934de95a4c530dec760b740b46d3f9dcb93edf205572cdd4",
-      "navigation": "puzzleworld2-navigation.json"
+      "navigation": "puzzleworld2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 31659,
+      "combat_attribute_sha256": "47458df1509a6454934de95a4c530dec760b740b46d3f9dcb93edf205572cdd4"
     },
     "sdBoss": {
       "width": 1024,
@@ -448,7 +499,9 @@
       "client_map_sha256": "477a735010173fdfc46d2c7b510c48b3fd5129bfa8bde45627814b98d6051730",
       "server_block_sha256": "b939e4dfa0e510d0295ae41a7518eb250b1ca95cab72821c15ad2f90d80af244",
       "server_attribute_sha256": "dabfc2e3bd33aa9858606db32806823355e0980007404bd0f602989e082d7781",
-      "navigation": "sdBoss-navigation.json"
+      "navigation": "sdBoss-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 452288,
+      "combat_attribute_sha256": "dabfc2e3bd33aa9858606db32806823355e0980007404bd0f602989e082d7781"
     },
     "secretgarden": {
       "width": 480,
@@ -466,7 +519,9 @@
       "client_map_sha256": "716463f582fd324eaae98b3a1fe20e12fe0fd085b846e6f9be9d7e4375c35c79",
       "server_block_sha256": "e9f272f381f85d7e69da3208abbad62b1ef6a655d02c324dfa710b379a18baa9",
       "server_attribute_sha256": "859c2901aa9c2a646aa6db324386dbe08a5d4e31553815fce1ab1204b7a1f6dd",
-      "navigation": "secretgarden-navigation.json"
+      "navigation": "secretgarden-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 39552,
+      "combat_attribute_sha256": "859c2901aa9c2a646aa6db324386dbe08a5d4e31553815fce1ab1204b7a1f6dd"
     },
     "shalan2": {
       "width": 304,
@@ -484,7 +539,9 @@
       "client_map_sha256": "b96967eebea0bd01cbbe7f0d622f5b6c91b653af0e568bd19fc38721d51c707f",
       "server_block_sha256": "793554f4106a954f68e0f0c3fd402acf038e2b8111749fc65c1e9b9112195b09",
       "server_attribute_sha256": "690421a541cb815e29ffab6e0ae42a6999ec2ec278b2ef44e8eb156d472fe6fb",
-      "navigation": "shalan2-navigation.json"
+      "navigation": "shalan2-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 74752,
+      "combat_attribute_sha256": "690421a541cb815e29ffab6e0ae42a6999ec2ec278b2ef44e8eb156d472fe6fb"
     },
     "teampk": {
       "width": 96,
@@ -502,7 +559,9 @@
       "client_map_sha256": "92d711900934e0dd5489faf80bff7fce8bdebea948a19d9db80231f65032bbe0",
       "server_block_sha256": "b1e2003c48b158cb0fccf49f12d83d6a772b3667f676bad622fd0a75ecadf715",
       "server_attribute_sha256": "8c816ff80a612499643a8926cf499437bd99993c4582ef941c5acff9cf0c87f6",
-      "navigation": "teampk-navigation.json"
+      "navigation": "teampk-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 0,
+      "combat_attribute_sha256": "8c816ff80a612499643a8926cf499437bd99993c4582ef941c5acff9cf0c87f6"
     },
     "yschurch": {
       "width": 512,
@@ -520,7 +579,9 @@
       "client_map_sha256": "f392f0cc24fe0cbc235103a42d1182c24d924cc4173c19f65227ae7086fe5ae9",
       "server_block_sha256": "dc12f13f3610f47af5dd86d5fe026440d3c869791ec0918b0ffda126fee03929",
       "server_attribute_sha256": "5c617711b9305a7fc22462eb3d50d773e2397f0a469bf32002c2e126fb1f6bd3",
-      "navigation": "yschurch-navigation.json"
+      "navigation": "yschurch-navigation.json",
+      "combat_forbidden_or_unknown_tiles": 188032,
+      "combat_attribute_sha256": "5c617711b9305a7fc22462eb3d50d773e2397f0a469bf32002c2e126fb1f6bd3"
     }
   },
   "client_only_maps": [
@@ -595,5 +656,12 @@
       "species_with_points": 55,
       "points": 691
     }
+  },
+  "combat_zone_revision": "alpha40-native-no-fight-v1",
+  "combat_policy": "native NOT_FIGHT bit0x0002 from client and server; independent from walkability",
+  "alpha40_combat_farm_points": {
+    "garner": 748,
+    "magicsea": 381,
+    "darkblue": 688
   }
 }

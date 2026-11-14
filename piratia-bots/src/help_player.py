@@ -32,7 +32,8 @@ class HelpPlayer:
   if not policy.target and now-self.last_progress>35:self.source=None;policy.assist_target=None;self.expired+=1;return False
   if self.bot_target is not None:
    target=self.world.entities.get(self.bot_target)
-   if not target or not target.alive:
+   rule=getattr(policy,'combat_allowed',None)
+   if not target or not target.alive or (rule and not rule(target.position)):
     self.source=None;self.bot_target=None;policy.assist_target=None;self.finished+=1;return False
    policy.assist_target=self.bot_target
    return False
@@ -45,6 +46,11 @@ class HelpPlayer:
               and 0<e.values.get(0,999)<=min(45,self.world.own.values.get(0,1))
               and math.dist(e.position,person.position)<1200
               and (not policy.coordination or policy.coordination.available(policy.owner,(self.world.map,e.identity,e.handle),now))]
+  rule=getattr(policy,'combat_allowed',None)
+  allowed=[e for e in candidates if not rule or rule(e.position)]
+  if candidates and not allowed:
+   self.source=None;policy.assist_target=None;self.expired+=1;return False
+  candidates=allowed
   if candidates:
    policy.assist_target=min(candidates,key=lambda e:math.dist(pos,e.position)).identity
   else:

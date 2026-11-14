@@ -22,7 +22,7 @@ def main():
     anchor=tuple(record['points'][0])
     for fx,fy in tuple((x,y) for x in (.15,.38,.62,.85) for y in (.15,.38,.62,.85)):
      goal=nav.nearest((int(lo[0]+(hi[0]-lo[0])*fx),int(lo[1]+(hi[1]-lo[1])*fy)),4)
-     if goal and all(__import__('math').dist(goal,old)>500 for old in record['points']) and nav.path(anchor,goal):
+     if goal and nav.combat_allowed(goal) and all(__import__('math').dist(goal,old)>500 for old in record['points']) and nav.path(anchor,goal):
       record['points'].append(list(goal));added+=1
      if len(record['points'])>=cap:break
   print(city,'added',added,'numeric farm destinations',flush=True)

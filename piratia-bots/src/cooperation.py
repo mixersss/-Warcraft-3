@@ -60,6 +60,8 @@ class Cooperation:
    if (row['map']!=self.world.map or not target or target.control!=5 or not target.alive or target.handle!=row.get('handle')
        or math.dist(self.world.position(now),target.position)>2200):
     allowed=False;reply='Не вижу твоего моба. Подойди ближе.'
+   elif not self.policy.combat_allowed(target.position):
+    allowed=False;reply='Моб в безопасной зоне, удар не пройдёт. Выбери другого.'
    elif (target.values.get(0,999)>own.values.get(0,1)+3
          or self.policy.learning.blocked(target.model,now)):
     allowed=False;reply='Этого моба я пока не потяну. Лучше отойди и восстановись.'

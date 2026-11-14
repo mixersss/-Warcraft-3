@@ -125,6 +125,8 @@ class Hunter:
         self.mob_knowledge=None
         self.shortcut=None
         self.quest_combat_ready=False
+        self.protected_fights_stopped=0;self.immune_fights_released=0
+        self.protected_target_checks=0;self.last_protected_target=None
         self.inventory_blocked=False
         self.inventory_blocker=None
         self.raising_travel_funds=False
@@ -175,6 +177,29 @@ class Hunter:
         base=NORMAL_ATTACKS.get(self.world.default_skill,min(100,self.world.own.values.get(ATTACK_DISTANCE,100)))
         return max(40,base+self.world.own.radius+target.radius-20)
 
+    def combat_allowed(self,position):
+        rule=getattr(self.nav,'combat_allowed',None)
+        return bool(rule(position)) if rule else True
+
+    def cancel_protected_fight(self,now):
+        target=self.world.entities.get(self.target)
+        if target is None:return
+        protected=not self.combat_allowed(self.world.position(now,target.identity))
+        own_protected=not self.combat_allowed(self.position(now))
+        if not (protected or own_protected):return
+        if self.pending_action and self.pending_action[0][8]==2:
+            identity=struct.unpack('>III',self.pending_action[0][-12:])[1]
+            if identity==target.identity:self.pending_action=None
+        if self.action_open and self.last_sent_kind==2:
+            self.stop_action();self.protected_fights_stopped+=1
+            self.next_action=max(self.next_action,now+.2)
+        if protected:
+            self.last_protected_target={'map':self.world.map,'model':target.model,
+                                        'position':list(self.world.position(now,target.identity))}
+            # Exclude its current zone, not its species or permanent identity.
+            # It may be selected again once the server moves it outside.
+            self.drop_target(now)
+
     def quest_models(self):
         """Only actual active kill/drop objectives may share local target leases."""
         models=set()
@@ -188,13 +213,14 @@ class Hunter:
 
     def approach(self,target,reach,now,shared=False):
         center=self.world.position(now,target.identity)
+        if not self.combat_allowed(center):return None
         radius=max(70,reach-65)
         options=[]
         for i in range(12):
             angle=self.approach_angle+i*math.tau/12
             point=(round(center[0]+math.cos(angle)*radius),round(center[1]+math.sin(angle)*radius))
             point=self.nav.nearest(point,1)
-            if (point and distance(point,center)<=reach-20
+            if (point and self.combat_allowed(point) and distance(point,center)<=reach-20
                     and self.available_spot(point,now)):
                 options.append(point)
         # Prefer free endpoints, but nearby players must not block every attack
@@ -204,7 +230,7 @@ class Hunter:
                 angle=self.approach_angle+i*math.tau/12
                 point=self.nav.nearest((round(center[0]+math.cos(angle)*radius),
                                         round(center[1]+math.sin(angle)*radius)),1)
-                if point and distance(point,center)<=reach-20:options.append(point)
+                if point and self.combat_allowed(point) and distance(point,center)<=reach-20:options.append(point)
         for point in sorted(set(options),key=lambda pt:distance(self.position(now),pt)):
             if self.nav.path(self.position(now),point):return point
         return None
@@ -295,6 +321,7 @@ class Hunter:
             _,identity,handle=struct.unpack('>III',body[-12:])
             target=self.world.entities.get(identity)
             if not target or not target.alive or target.handle!=handle:return True
+            if not self.combat_allowed(self.position(now)) or not self.combat_allowed(self.world.position(now,identity)):return True
             if self.combat_since is not None and now-self.last_damage_at>=14:return False
             if distance(self.position(now),self.world.position(now,identity))>self.attack_reach(target):return True
             body=normal_attack(own.identity,number,body[10],self.world.default_skill,identity,handle,self.position(now))
@@ -437,9 +464,11 @@ class Hunter:
 
     def fight_running(self,target,now):
         """A normal attack is a server-side repeating action, not one click/hit."""
+        if not self.action_open:return False
         if self.last_sent_kind!=2 or self.last_attack_target!=(target.identity,target.handle):return False
         if self.world.failed_actions>self.attack_failure_seen:return False
         if self.action_stopped():return False
+        if not self.combat_allowed(self.position(now)) or not self.combat_allowed(self.world.position(now,target.identity)):return False
         # Let the server complete wind-up and subsequent swings. No-progress
         # recovery below still bounds the wait; never cancel a productive fight.
         return now-self.last_damage_at<6
@@ -568,10 +597,17 @@ class Hunter:
             models=self.starter_models();maximum_level=3
         elif self.region:
             maximum_level=max([maximum_level]+[self.region['farms'][str(m)]['level'] for m in models if str(m) in self.region['farms']])
-        return (entity.control == 5 and (not self.assist_target or entity.identity==self.assist_target) and entity.model in models and entity.alive
+        valid=(entity.control == 5 and (not self.assist_target or entity.identity==self.assist_target) and entity.model in models and entity.alive
                 and 0 < entity.values.get(LV, 9999) <= maximum_level
                 and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
                 and self.blacklist.get(entity.identity, 0) < now and not self.learning.dangerous(entity.model,now))
+        if not valid:return False
+        point=self.world.position(now,entity.identity) or entity.position
+        if not self.combat_allowed(point):
+            self.protected_target_checks+=1
+            self.last_protected_target={'map':self.world.map,'model':entity.model,'position':list(point)}
+            return False
+        return True
 
     def tick(self,now=None):
         nav=self.nav;incremental=getattr(nav,'incremental',False) is True
@@ -622,6 +658,7 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
+        self.cancel_protected_fight(now)
         if self.refresh_class_intent:self.refresh_class_intent()
         if self.adventure and hasattr(self.adventure,'review_objective'):
             current=self.world.entities.get(self.target)
@@ -844,12 +881,14 @@ class Hunter:
             target=None
         if target:
             stopped=(self.world.skill_packet_number==self.last_sent_sequence
-                     and self.world.skill_action_state in (16,64,512)
+                     and self.world.skill_action_state is not None
+                     and self.world.skill_action_state & (16|64|512)
                      and self.last_sent_kind==2)
             failed=self.world.last_failed_action
             disappeared=(self.world.failed_actions>self.attack_failure_seen and failed
                          and failed['actor']==own.identity and failed['action']==2 and failed['reason']==5)
             if stopped or disappeared:
+                if stopped and self.world.skill_action_state & 64:self.immune_fights_released+=1
                 self.rejected_target_releases+=1
                 self.attack_failure_seen=self.world.failed_actions
                 self.drop_target(now,avoid=True)
@@ -894,7 +933,8 @@ class Hunter:
                         self.busy_targets+=1
                         continue
                     reach=self.attack_reach(candidate)
-                    in_range=distance(self.position(now),self.world.position(now,candidate.identity))<=reach
+                    in_range=(self.combat_allowed(self.position(now)) and
+                              distance(self.position(now),self.world.position(now,candidate.identity))<=reach)
                     if not in_range and self.approach(candidate,reach,now,shared=shared) is None:continue
                     if self.coordination and not self.coordination.claim(self.owner,key,now,shared=shared):continue
                     target=candidate
@@ -918,7 +958,8 @@ class Hunter:
                 self.next_action=now+.25
                 return
             reach = self.attack_reach(target)
-            if distance(self.position(now),self.world.position(now,target.identity)) > reach:
+            if (not self.combat_allowed(self.position(now)) or
+                    distance(self.position(now),self.world.position(now,target.identity)) > reach):
                 self.change('подход к слабому мобу')
                 goal=self.approach(target,reach,now)
                 if not goal or not self.move_to(goal,now):
@@ -999,7 +1040,7 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,

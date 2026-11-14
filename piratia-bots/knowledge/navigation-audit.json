@@ -75,5 +75,19 @@
     "stale_quest_combat_gate_reset": true,
     "required_npc_visitors_unlimited": true,
     "live_alpha39_verified": false
+  },
+  "alpha40": {
+    "combat_mask_maps": 29,
+    "native_no_fight_flag": 2,
+    "source": "client sRegion and server ATR; island byte ignored",
+    "walking_and_recovery_geometry_changed": false,
+    "protected_target_reselection_after_exit": true,
+    "live_windows_verified": false,
+    "report14_has_current_target": false,
+    "report14_actual_job": 1,
+    "report14_confirmed_equips": 4,
+    "report14_session_xp_gain": 686,
+    "protected_farm_destinations_removed": 8,
+    "bear_cub_farm_destinations_removed": 3
   }
 }

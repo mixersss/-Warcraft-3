@@ -5,20 +5,20 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-39'
-NAME = 'Piratia-Auto-Bots-Alpha39'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-40'
+NAME = 'Piratia-Auto-Bots-Alpha40'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
     sources += sorted((ROOT / 'assets').glob('*.json'))
-    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md', ROOT / 'knowledge' / 'navigation-audit.json', ROOT / 'knowledge' / 'pond-navigation-alpha38.png']
+    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'OWNER-EXECUTION.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md', ROOT / 'knowledge' / 'navigation-audit.json', ROOT / 'knowledge' / 'pond-navigation-alpha38.png']
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Checked 50cm egress from all17 excluded Alpha38 snapshot positions; reset stale quest-combat gate and remove mandatory NPC visitor cap; full608monster knowledge, verified portal shortcuts and compatible class equipment including bows; live Alpha39 validation pending',
+        'status': 'Native no-fight masks on29maps; skip protected monsters, cancel active and queued attacks, use legal firing positions and release immune bit combinations; preserve Alpha39 progression and owner ordered500goal; live Alpha40 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -67,6 +67,18 @@ def main():
         'original_navigation_grid_changed': True,
         'navigation_geometry_revision': 'alpha39-ground-recovery-v1',
         'paired_client_server_navigation_maps': 29,
+        'combat_zone_revision': 'alpha40-native-no-fight-v1',
+        'native_no_fight_bit': 2,
+        'combat_zone_maps': 29,
+        'combat_masks_change_walking_grid': False,
+        'protected_monsters_skipped_before_attack': True,
+        'protected_targets_release_without_species_blacklist': True,
+        'protected_queued_attacks_discarded': True,
+        'firing_position_must_allow_combat': True,
+        'combined_native_immune_bits_release_target': True,
+        'help_requests_do_not_pin_to_protected_targets': True,
+        'full_dual_sword_or_two_handed_loadout_choice_implemented': False,
+        'owner_execution_tracker': 'knowledge/OWNER-EXECUTION.md',
         'native50cm_egress_grid_for_occupied_excluded_cells': True,
         'reported_offmesh_positions_replayed': 17,
         'offmesh_recovery_moves_fabricated_positions': False,
@@ -166,11 +178,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 470,
-        'full_python_suite_total': 478,
-        'full_python_suite_passed': 478,
+        'pure_python_tests_passed': 484,
+        'full_python_suite_total': 492,
+        'full_python_suite_passed': 492,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '478 passed in Alpha39 including 8 local socket integration tests',
+        'last_full_network_regression': '492 passed in Alpha40 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

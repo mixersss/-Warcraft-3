@@ -828,3 +828,13 @@ native paths, but only server replies update actual positions. Portal shortcuts
 use the same ordinary302/303menu flow and a real Teleport confirmation, then516or
 an authoritative raw position update near the audited arrival; never synthesize a
 map entry, gold deduction or quest completion. Live Alpha39 validation pending.
+
+
+Alpha40 adds independent no-fight masks: EAreaMask enumAREA_TYPE_NOT_FIGHT0x0002
+from SNewFileTile.sRegion and server ATR, not the opaque island byte. Walkability
+and50cm egress remain byte-identical to Alpha39. Protected targets cannot be chosen
+or sent from a queued item/action replacement; active attacks receive ordinary
+EndAction. Legal firing endpoints are required when actor stands in safety.
+ECharFightState TARGET_NO0x10/IMMUNE0x40/TARGET_DIE0x200 can be combined, hence bit
+checks with matching source packet. OFF0x400(1024) by itself does not prove immune.
+No new native opcodes or fabricated damage/positions. Live Alpha40 validation pending.

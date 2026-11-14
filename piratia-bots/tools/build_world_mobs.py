@@ -85,7 +85,7 @@ def build(resource):
             for lo,hi in bounds:
                 for fx,fy in ((.5,.5),(.15,.15),(.85,.85),(.15,.85),(.85,.15)):
                     p=n.nearest((int(lo[0]+(hi[0]-lo[0])*fx),int(lo[1]+(hi[1]-lo[1])*fy)),6)
-                    if not p or not (lo[0]<=p[0]<=hi[0] and lo[1]<=p[1]<=hi[1]):continue
+                    if not p or not n.combat_allowed(p) or not (lo[0]<=p[0]<=hi[0] and lo[1]<=p[1]<=hi[1]):continue
                     x,y=n.cell(p)
                     if labels[y,x]!=home_component:continue
                     if list(p) not in points:points.append(list(p))

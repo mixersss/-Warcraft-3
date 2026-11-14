@@ -35,6 +35,11 @@ class Navigation:
                             if 'recovery50_free_zlib' in data else None)
         if self.recovery_bits is not None and len(self.recovery_bits)!=(self.width*self.height*4+7)//8:
             raise ValueError('Incomplete 50cm recovery grid')
+        self.combat_bits=(zlib.decompress(base64.b64decode(data['combat_no_fight_zlib']))
+                          if 'combat_no_fight_zlib' in data else None)
+        if self.combat_bits is not None and len(self.combat_bits)!=(self.width*self.height+7)//8:
+            raise ValueError('Incomplete no-fight grid')
+        self.combat_zone_revision=data.get('combat_zone_revision','unknown')
         self.waypoints = [tuple(p) for p in data['waypoints']]
 
     def cell(self, position):
@@ -46,6 +51,15 @@ class Navigation:
     def free(self, cell):
         x, y = cell
         return 0 <= x < self.width and 0 <= y < self.height and self.cells[y*self.width+x] == 1 and cell not in getattr(getattr(self,'local',None),'blocked_cells',())
+
+    def combat_allowed(self,position):
+        if position is None:return False
+        bits=getattr(self,'combat_bits',None)
+        if bits is None:return True # Legacy/unknown maps retain server-stall recovery.
+        x,y=self.cell(position)
+        if not (0<=x<self.width and 0<=y<self.height):return False
+        index=y*self.width+x
+        return not bool(bits[index//8]&(1<<(7-index%8)))
 
     def expire_obstacles(self,now):
         local=getattr(self,'local',None)

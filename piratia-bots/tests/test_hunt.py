@@ -125,6 +125,7 @@ class PolicyTests(unittest.TestCase):
     def setUp(self):
         self.world = world_fixture()
         self.nav = Navigation(ROOT/'assets/argent-navigation.json')
+        self.nav.combat_bits=None # Synthetic combat location; actual zones tested in Alpha40.
         self.send = Mock()
         self.policy = Hunter(self.world,self.nav,self.send,Report(),lambda text:None)
         self.policy.started = 0

@@ -35,7 +35,7 @@ def recheck(resource):
             bounds=rectangles.get(model,[]);points=[]
             def allowed(p):
                 x,y=nav.cell(p)
-                return nav.free((x,y)) and labels[y,x]==component and any(lo[0]<=p[0]<hi[0] and lo[1]<=p[1]<hi[1] for lo,hi in bounds)
+                return nav.free((x,y)) and nav.combat_allowed(p) and labels[y,x]==component and any(lo[0]<=p[0]<hi[0] and lo[1]<=p[1]<hi[1] for lo,hi in bounds)
             for old in record['points']:
                 if allowed(old):p=old
                 else:
