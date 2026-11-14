@@ -5,20 +5,20 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-37'
-NAME = 'Piratia-Auto-Bots-Alpha37'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-38'
+NAME = 'Piratia-Auto-Bots-Alpha38'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
     sources += sorted((ROOT / 'tests').glob('test_*.ps1'))
     sources += sorted((ROOT / 'tests' / 'fixtures').glob('*.json'))
     sources += sorted((ROOT / 'assets').glob('*.json'))
-    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md', ROOT / 'knowledge' / 'navigation-audit.json']
+    sources += [ROOT / 'knowledge' / 'sources-local.json', ROOT / 'knowledge' / 'OWNER-GOAL-500.md', ROOT / 'knowledge' / 'IMPLEMENTATION.md', ROOT / 'knowledge' / 'navigation-audit.json', ROOT / 'knowledge' / 'pond-navigation-alpha38.png']
     OUT.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(OUT / f'{NAME}.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for source in sources:
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Review saved/earned first-profession objectives through native NPCs; optional planning yields to work with reserved foreground budget; display authoritative professions; bounded earned-stat retry; live revalidation pending',
+        'status': 'Client terrain ground navigation for29paired maps; conservative water exclusion and explicit bridges; rechecked reachable farm goals and field merchants; native Windows validation and profession completion remain pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -64,7 +64,19 @@ def main():
         'visible_first_profession_kills_precede_optional_loot_and_shopping': True,
         'find_bot_by_public_nickname': 'Find-Bot.cmd; tags from Alpha34+ reports; no data or credentials read',
         'pond_shoreline_from_owner_atr_confirmed': False,
-        'original_navigation_grid_changed': False,
+        'original_navigation_grid_changed': True,
+        'navigation_geometry_revision': 'alpha38-client-ground-v1',
+        'paired_client_server_navigation_maps': 29,
+        'client_only_maps_not_enabled': ['darkhouse','prisonisland'],
+        'server_attribute_masks_checked': True,
+        'underwater_terrain_exclusion_except_explicit_bridges': True,
+        'farm_points_rechecked_on_ground_connected_to_home': True,
+        'additional_map_navigation_loaded_on_demand': True,
+        'complete_dungeon_ai_or_all_teleports_implemented': False,
+        'field_merchants_by_home_map': {'garner':19,'magicsea':7,'darkblue':11},
+        'coral_purchase_and_renewal_recorded_as_requirement': True,
+        'coral_purchase_and_renewal_implemented': False,
+        'live_first_profession_completion_verified': False,
         'npc_sale_cooldown_seconds': 0,
         'vendor_task_pause_seconds': 0,
         'vendor_productive_route_absolute_time_limit_removed': True,
@@ -126,11 +138,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 429,
-        'full_python_suite_total': 437,
-        'full_python_suite_passed': 437,
+        'pure_python_tests_passed': 445,
+        'full_python_suite_total': 453,
+        'full_python_suite_passed': 453,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '437 passed in Alpha37 including 8 local socket integration tests',
+        'last_full_network_regression': '453 passed in Alpha38 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

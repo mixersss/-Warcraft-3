@@ -1,5 +1,5 @@
 {
-  "source": "Owner supplied garner.blk and garner.rar containing garner.atr; original binary assets remain private",
+  "source": "Alpha35 owner BLK/ATR audit; Alpha38 full owner client map and server resource archives; originals remain private",
   "attr_crop": {
     "width": 4096,
     "height": 4096,
@@ -24,14 +24,40 @@
     "width": 8192,
     "height": 8192,
     "bytes": 8388616,
-    "differences_against_current_garner_navigation_cells": 0,
-    "differences_against_current_argent_navigation_cells": 0
+    "differences_against_alpha35_garner_navigation_cells": 0,
+    "differences_against_alpha35_argent_navigation_cells": 0
   },
   "crop_block_clearance": {
     "tiles": 2091,
     "walkable_tiles": 1962,
     "largest_four_connected_blocked_group_tiles": 12
   },
-  "conclusion": "ATR raw attributes are uniform across the reported pond region; no pond shoreline or land/sea boundary can be derived from this crop. Do not invent a water polygon. Implement recovery from actual server stops and shorten wait to the acknowledged route duration.",
-  "server_live_collision_fix_verified": false
+  "server_live_collision_fix_verified": false,
+  "alpha35_conclusion": "ATR raw attributes are uniform across the reported pond region; no pond shoreline or land/sea boundary can be derived from this crop. Do not invent a water polygon. Implement recovery from actual server stops and shorten wait to the acknowledged route duration.",
+  "conclusion": "Alpha38 client map780627 supplies negative-height pond geometry absent from the old BLK-only projection. Ground grids union client/server collision, land/bridge flags and conservative exclusion of tiles touching negative terrain, except explicit bridges. The earlier ATR-only crop remains uniform; native Windows traversal is not verified.",
+  "alpha38": {
+    "client_maps_supplied": 31,
+    "paired_client_server_maps": 29,
+    "client_only_not_enabled": [
+      "darkhouse",
+      "prisonisland"
+    ],
+    "water_probe_game_coordinates": [
+      2025,
+      2659
+    ],
+    "pond_route_probe_start_cm": [
+      201450,
+      266350
+    ],
+    "pond_route_probe_end_cm": [
+      203650,
+      266350
+    ],
+    "route_points": 29,
+    "route_all_segments_grid_checked": true,
+    "ground_route_length_cm": 3214,
+    "new_catalog": "assets/world-navigation.json",
+    "original_map_binaries_published": false
+  }
 }

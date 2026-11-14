@@ -1,4 +1,4 @@
-"""Bounded A* over a derived walkability crop from the owner's garner.blk."""
+"""Bounded A* over numerical ground grids derived from owner map resources."""
 import base64
 import heapq
 import threading
@@ -18,6 +18,7 @@ class Navigation:
         data = json.loads(Path(path).read_text(encoding='utf-8'))
         self.local = threading.local()
         self.map = data.get('map','garner')
+        self.geometry_revision=data.get('geometry_revision','legacy-blk')
         self.origin = tuple(data['origin'])
         self.width, self.height = data['width'], data['height']
         if not 1 <= self.width <= 4096 or not 1 <= self.height <= 4096:
@@ -148,7 +149,8 @@ class Navigation:
     def planning_stats(self):
         if not getattr(self,'incremental',False):return {}
         l=self.local
-        return {'yields':getattr(l,'yields',0),'expanded_nodes':getattr(l,'expansions',0),
+        return {'geometry_revision':getattr(self,'geometry_revision','legacy-blk'),
+                'yields':getattr(l,'yields',0),'expanded_nodes':getattr(l,'expansions',0),
                 'completed_searches':getattr(l,'finished',0),'pending_searches':len(getattr(l,'searches',{})),
                 'shared_route_hits':getattr(l,'shared_route_hits',0),
                 'pending_jobs':[{'start':list(self.position(k[0])),'goal':list(self.position(k[1])),

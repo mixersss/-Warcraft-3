@@ -55,7 +55,7 @@ class Career:
         if not region:return set()
         items=self.needed_items();level=self.world.own.values.get(0,1)
         kills={n['id'] for n in self.quest['needs'] if n['kind']==0}
-        return {int(m) for m,r in region['farms'].items() if r['level']<=level and (int(m) in kills or items.intersection(r['drops']))}
+        return {int(m) for m,r in region['farms'].items() if r['points'] and r['level']<=level and (int(m) in kills or items.intersection(r['drops']))}
     def goals(self):
         region=self.regions.get(self.world.map)
         return [p for m in self.desired_models() for p in region['farms'][str(m)]['points']] if region else []

@@ -282,14 +282,14 @@ class Adventure:
 
     def desired_models(self):
         level=self.world.own.values.get(0,1)
-        farms = ({int(m):(r['level'],r['points']) for m,r in self.region['farms'].items()}
+        farms = ({int(m):(r['level'],r['points']) for m,r in self.region['farms'].items() if r['points']}
                  if self.region else FARMS)
         task=self.farm()
         wanted=set()
         if task:
             if task[0] in farms and farms[task[0]][0]<=level:wanted.add(task[0])
             if task[1] and self.region:
-                droppers=[int(m) for m,r in self.region['farms'].items() if task[1] in r['drops'] and r['level']<=level]
+                droppers=[int(m) for m,r in self.region['farms'].items() if r['points'] and task[1] in r['drops'] and r['level']<=level]
                 if droppers:
                     wanted.add(min(droppers,key=lambda m:farms[m][0]))
             if wanted:return wanted
