@@ -1,7 +1,7 @@
 # Shared by the Windows setup helper and the standalone persistence regression test.
 function Initialize-BotSecondaryPasswordState {
     param([Parameter(Mandatory=$true)]$State,
-          [ValidateRange(1,200)][int]$Count,
+          [ValidateRange(1,300)][int]$Count,
           [Parameter(Mandatory=$true)][scriptblock]$CreateProtectedPassword)
     $changed = $false
     foreach ($entry in @($State.bots | Select-Object -First $Count)) {
@@ -31,5 +31,14 @@ function Save-BotState {
         [IO.File]::Replace($temporary, $fullPath, $backup)
     } else {
         [IO.File]::Move($temporary, $fullPath)
+    }
+}
+
+function Assert-BotAccountMayBeCreated {
+    param([ValidateRange(1,300)][int]$Ordinal,
+          [ValidateRange(0,300)][int]$ExistingCount,
+          [int[]]$ConfirmedIndices = @())
+    if ($Ordinal -le $ExistingCount -or $Ordinal -in $ConfirmedIndices) {
+        throw 'A protected saved account is missing. Restore the database; no replacement created.'
     }
 }

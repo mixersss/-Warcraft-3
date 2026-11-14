@@ -1241,10 +1241,12 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.write(Path(__file__).resolve().parents[1]/f'bot-report-{bot_index:02d}.json')
         if fleet:
             values=world.own.values
+            xp=policy.learning.summary()
             fleet.update(bot_index,connected=True,map=world.map,position=list(world.position(now)),level=values.get(0),job=values.get(4),
                          body=world.own.model,state=policy.mode,tactic=policy.tactic,phase=policy.tactic_schedule.effective_phase,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
                          experience=values.get(15),start_experience=progression.start_xp,
+                         xp_per_minute=xp['session_xp_per_minute'],session_xp_net=xp['session_xp_net'],seconds_without_xp=xp['seconds_without_xp'],
                          start_level=progression.start_level,hunt_style=policy.learning.profile[0],farm_models=sorted(policy.planned_models()),
                          quests=policy.adventure.delivered if policy.adventure else 0,
                          target_job=role['target_job'] if role else 0)

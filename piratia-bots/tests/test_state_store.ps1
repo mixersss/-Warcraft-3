@@ -57,9 +57,9 @@ try {
     $changed = Initialize-BotSecondaryPasswordState -State $migrated -Count 3 -CreateProtectedPassword { throw 'Repeated migration must not generate credentials.' }
     Assert-True (-not $changed) 'Repeated migration changed saved PINs.'
     Assert-True ($migrated.bots[2].secondary_password_dpapi -eq 'protected-secondary-placeholder') 'Migrated encrypted field was lost.'
-    # The Alpha 15 launcher accepts 200, so the helper must accept them too.
+    # Alpha41 accepts300; preserve every existing encrypted credential.
     # Mix legacy missing PIN fields with already-provisioned records; never reroll.
-    foreach ($populationCount in @(1, 10, 30, 60, 100, 200)) {
+    foreach ($populationCount in @(1, 10, 30, 60, 100, 200, 300)) {
         $population = [PSCustomObject]@{version=1;windows_sid='test';bots=@()}
         for ($index=1; $index -le $populationCount; $index++) {
             $entry = [PSCustomObject]@{account="test$index";password_dpapi="keep-login-$index"}
@@ -82,14 +82,23 @@ try {
         $changed = Initialize-BotSecondaryPasswordState -State $reloaded -Count $populationCount -CreateProtectedPassword { throw 'Existing population must not generate credentials.' }
         Assert-True (-not $changed) 'Population migration was not idempotent.'
     }
-    foreach ($invalidCount in @(0,201)) {
+    foreach ($invalidCount in @(0,301)) {
         $rejected = $false
         try {
             Initialize-BotSecondaryPasswordState -State $population -Count $invalidCount -CreateProtectedPassword { throw 'Invalid count reached generator.' }
         } catch { $rejected = $_.FullyQualifiedErrorId -like 'ParameterArgumentValidationError*' }
         Assert-True $rejected 'Unsupported population count was accepted.'
     }
-    [Console]::Out.WriteLine('PASS: saves, backups, restart and PIN migration preserve credentials; populations 1/10/30/60/100/200 accepted, 0/201 rejected.')
+    foreach ($ordinal in @(1, 78, 200, 203)) {
+        $rejected = $false
+        try { Assert-BotAccountMayBeCreated -Ordinal $ordinal -ExistingCount 200 -ConfirmedIndices @(203) }
+        catch { $rejected = $true }
+        Assert-True $rejected 'A saved or confirmed account was allowed to be recreated.'
+    }
+    foreach ($ordinal in @(201, 202, 300)) {
+        Assert-BotAccountMayBeCreated -Ordinal $ordinal -ExistingCount 200 -ConfirmedIndices @(203)
+    }
+    [Console]::Out.WriteLine('PASS: saves, backups, restart and PIN migration preserve credentials; populations 1/10/30/60/100/200/300 accepted, 0/301 rejected.')
 } finally {
     [IO.Directory]::Delete($root, $true)
 }

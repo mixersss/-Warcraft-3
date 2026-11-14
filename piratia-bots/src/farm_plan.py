@@ -15,7 +15,8 @@ class HuntLearning:
   self.rows={};self.avoid={};self.danger_until={};self.active=None;self.path=None;self.dirty=False;self.save_errors=0
   self.signature=None;self.selected=set();self.until=0;self.scores={};self.last_save=0
   self.events=[]
-  self.probe_attempts={};self.probing=False
+  self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
+  self.session_start=None;self.session_xp=None;self.session_last_xp=None;self.session_gain=0;self.session_loss=0
   self.progress_signature=None;self.last_progress_at=None;self.last_clock=0;self.next_idle_probe=0;self.idle_probes=0
  def load(self,path):
   self.path=Path(path)
@@ -52,7 +53,8 @@ class HuntLearning:
   if outcome=='win':
    row['wins']+=1
    level_ups=max(0,own.values.get(0,a['level'])-a['level']);row['level_ups']+=level_ups
-   earned=max(0,own.values.get(15,0)-a['xp']) if own.values.get(0)==a['level'] else 0
+   # Native ATTR_CEXP is cumulative, including a level transition.
+   earned=max(0,own.values.get(15,a['xp'])-a['xp'])
    row['xp']+=earned
    row['dry_wins']=0 if earned or level_ups else row.get('dry_wins',0)+1
    if row['dry_wins']>=4:self.avoid[a['model']]=now+120
@@ -89,11 +91,17 @@ class HuntLearning:
    result.add(model)
   return result
  def choose(self,region,own,now,fallback=False,hold=False,position=None):
-  if hold and self.selected:return set(self.selected)
   progress=(own.values.get(0,1),own.values.get(15,0))
   self.last_clock=now
-  if progress!=self.progress_signature:
-   self.progress_signature=progress;self.last_progress_at=now
+  if 15 in own.values:
+   xp=own.values[15]
+   if self.session_start is None:
+    self.session_start=now;self.session_xp=xp;self.session_last_xp=xp
+   delta=xp-self.session_last_xp
+   self.session_gain+=max(0,delta);self.session_loss+=max(0,-delta);self.session_last_xp=xp
+  previous=self.progress_signature;self.progress_signature=progress
+  if previous is None or progress[0]>previous[0] or progress[1]>previous[1]:self.last_progress_at=now
+  if hold and self.selected:return set(self.selected)
   idle_trial=now-self.last_progress_at>=90 and now>=self.next_idle_probe
   signature=(own.values.get(0,1),own.values.get(4,0),tuple(sorted(own.equipment.items())),fallback)
   if signature==self.signature and now<self.until and not idle_trial:return set(self.selected)
@@ -114,6 +122,14 @@ class HuntLearning:
    if position is not None:
     travel=min(math.dist(position,p) for p in record['points'])
     base/=1+travel/12000
+   # Audited native monster XP and defence; observed XP/time takes priority below.
+   # Low-damage armoured targets must not look as comfortable as soft ones.
+   if record.get('base_xp') is not None:
+    attack=(own.values.get(33,0)+own.values.get(34,0))/2
+    physical=own.values.get(4) in (0,1,2,8,9,10,11,12)
+    effective=max(1,attack-record.get('defence',0)) if attack>0 and physical else 1
+    efficiency=record['base_xp']*effective/max(1,record['hp'])
+    base*=max(.15,min(3,math.sqrt(efficiency)))
    if self.profile[0]=='искатель вызова':base*=1+max(0,ml-level)*.12
    if self.profile[0]=='собиратель':base*=1+min(10,len(record.get('drops',[])))*.035
    if row:
@@ -138,7 +154,7 @@ class HuntLearning:
   if not scored:scored=alternatives;alternatives=[]
   trials=sum(r.get('wins',0)+r.get('losses',0)+r.get('stalls',0) for r in self.rows.values())
   self.probing=False
-  if (trials>0 and trials%3==1) or idle_trial:
+  if (trials>0 and trials%3==1 and trials!=self.last_probe_trial) or idle_trial:
    unseen=[(s,m) for s,m in scored+alternatives
            if not sum(self.rows.get(str(m),{}).get(k,0) for k in ('wins','losses','stalls'))
            and now-self.probe_attempts.get(m,-1e9)>=300]
@@ -150,7 +166,13 @@ class HuntLearning:
     self.next_idle_probe=now+120
    if unseen:
     if idle_trial:self.idle_probes+=1
-    unseen.sort(reverse=True);_,probe=self.rng.choice(unseen[:4])
+    self.last_probe_trial=trials
+    # Finish one trial before spending another trip on the same fight counter.
+    # Explore a nearby viable camp rather than randomly crossing the map.
+    if position is not None:
+     near=min(min(math.dist(position,p) for p in region['farms'][str(m)]['points']) for _,m in unseen)
+     unseen=[(s,m) for s,m in unseen if min(math.dist(position,p) for p in region['farms'][str(m)]['points'])<=near+2500]
+    unseen.sort(reverse=True);_,probe=unseen[0]
     self.selected={probe};self.probe_attempts[probe]=now;self.probing=True;self.until=now+75
     return set(self.selected)
   scored.sort(reverse=True)
@@ -164,5 +186,9 @@ class HuntLearning:
   return {'profile':self.profile[0],'selected_models':sorted(self.selected),'learned_species':len(self.rows),
           'wins':sum(r.get('wins',0) for r in self.rows.values()),'dangerous_fights':sum(r.get('losses',0) for r in self.rows.values()),
           'stalled_fights':sum(r.get('stalls',0) for r in self.rows.values()),'save_errors':self.save_errors,
+          'session_seconds':max(0,self.last_clock-self.session_start) if self.session_start is not None else 0,
+          'session_xp_gained':self.session_gain,'session_xp_lost':self.session_loss,
+          'session_xp_net':self.session_gain-self.session_loss,
+          'session_xp_per_minute':round(60*(self.session_gain-self.session_loss)/max(1,self.last_clock-self.session_start),2) if self.session_start is not None else 0,
           'idle_probe_count':self.idle_probes,'seconds_without_xp':max(0,self.last_clock-self.last_progress_at) if self.last_progress_at is not None else 0,
           'using_alternative_search':getattr(self,'alternative_search',False),'probing_unfamiliar_species':self.probing}

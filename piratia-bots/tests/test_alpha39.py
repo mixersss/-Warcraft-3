@@ -171,7 +171,7 @@ class ClassGearTests(unittest.TestCase):
     def setUpClass(cls):cls.catalog=ItemCatalog(ROOT/'assets/items.json')
 
     def test_all_four_first_professions_request_compatible_weapon_then_wait_for_confirmation(self):
-        for job,body,identity,link in ((1,1,1,9),(2,3,25,6),(4,1,73,9),(5,3,97,9)):
+        for job,body,identity,link in ((1,1,1,6),(2,3,25,6),(4,1,73,9),(5,3,97,9)):
             w=scene();w.own.model=body;w.own.values.update({0:15,4:job})
             w.own.equipment={9:8};w.bag_ready=True;w.bag_capacity=24
             w.bag={0:BagItem(identity,1,20,20,0,0,0,True)}

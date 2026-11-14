@@ -24,11 +24,11 @@ def build(resource):
     source=resource/'CharacterInfo.txt'
     for line in source.read_bytes().decode('gb18030',errors='replace').splitlines():
         a=line.split('\t')
-        if not a[0].isdigit() or len(a)<79:continue
+        if not a[0].isdigit() or len(a)<91:continue
         identity=int(a[0])
         if identity in definitions:raise ValueError('Duplicate character definition')
         definitions[identity]={'name':a[1],'control':int(a[4]),'territory':int(a[26]),
-            'level':int(a[60]),'hp':int(a[61]),'base_xp':int(a[59]),
+            'level':int(a[60]),'hp':int(a[61]),'base_xp':int(a[90]),
             'attack_min':int(a[65]),'attack_max':int(a[66]),'defence':int(a[68]),
             'speed':int(a[78]),'drops':sorted(set(n for field in (46,51) for n in numbers(a[field]) if n>0)),
             'locations':[]}
@@ -93,7 +93,7 @@ def build(resource):
                 if len(points)>=4:break
         if not points and old is None:continue
         if old is None:added+=1
-        region['farms'][str(model)]={'level':monster['level'],'hp':monster['hp'],'drops':monster['drops'],'points':points}
+        region['farms'][str(model)]={'level':monster['level'],'hp':monster['hp'],'drops':monster['drops'],'base_xp':monster['base_xp'],'defence':monster['defence'],'attack_max':monster['attack_max'],'points':points}
     monsters={str(k):v for k,v in definitions.items() if v['control']==5}
     other={str(k):v for k,v in definitions.items() if v['control']!=5 and v['locations']}
     data={'monsters_with_located_source_spawns':sum(bool(v['locations']) for v in monsters.values()),

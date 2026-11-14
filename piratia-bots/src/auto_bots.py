@@ -18,13 +18,13 @@ from headless import Client, Report, ServerError
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def prepare_accounts(count):
+def prepare_accounts(count,existing_count=0):
     if os.name != 'nt':
         raise RuntimeError('Автосоздание аккаунтов запускается на Windows-ПК с твоим сервером.')
     powershell = Path(os.environ.get('SystemRoot', r'C:\Windows')) / 'System32/WindowsPowerShell/v1.0/powershell.exe'
     result = subprocess.run(
         [str(powershell), '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy',
-         'Bypass', '-File', str(ROOT / 'src/provision.ps1'), '-Count', str(count)],
+         'Bypass', '-File', str(ROOT / 'src/provision.ps1'), '-Count', str(count), '-ExistingCount', str(existing_count)],
         capture_output=True, timeout=600, encoding='utf-8', errors='replace')
     if result.returncode:
         # Helper stderr contains only a stage/type/SQL number, never SQL or credentials.
@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha40'
+    report.result['version'] = 'AutoAccountsAlpha41'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -129,6 +129,9 @@ def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navi
             report.stage('cancelled')
             return False,report.result
         client.enter(selected_name)
+        if bot.get('_growth_confirmation'):
+            growth,ordinal=bot['_growth_confirmation'];growth.confirm(ordinal)
+            bot['preserve_existing']=True
         report.result['entered_world']=True
         if total_deadline is not None and total_deadline!=float('inf'):
             seconds=max(0.01,total_deadline-time.monotonic())
@@ -231,15 +234,17 @@ def main():
     parser.add_argument('--seconds', type=int, default=7200)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
+    parser.add_argument('--grow-to', type=int, choices=[300], help='resume the authorised saved200 to300 expansion')
     parser.add_argument('--allow-new-bots', action='store_true',
                         help='explicitly allow a new population or extending saved accounts')
     args = parser.parse_args()
-    if not 1 <= args.count <= 200 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
-        parser.error('count: 1..200; seconds: 0 (continuous) or 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 300 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
+        parser.error('count: 1..300; seconds: 0 (continuous) or 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 40).')
+    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 41).')
+    if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
     print(f'Режим: {args.mode}. Время: {duration_label}. Остановка — Ctrl+C.\n')
@@ -247,7 +252,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha40'
+    setup_report.result['version'] = 'AutoAccountsAlpha41'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -256,7 +261,7 @@ def main():
         data = ROOT / 'data'
         from runtime_guard import require_population,SessionGuard
         setup_report.stage('checking_local_data')
-        setup_report.result['local_data']=require_population(data,args.count,args.allow_new_bots)
+        setup_report.result['local_data']=require_population(data,args.count,args.allow_new_bots or bool(args.grow_to))
         data.mkdir(exist_ok=True)
         session_guard=SessionGuard(args.port)
         lock = (data / 'run.lock').open('a+b')
@@ -278,15 +283,25 @@ def main():
             pass
         setup_report.stage('preparing_accounts')
         print('Проверяю SQL Server и подготавливаю отдельные аккаунты ботов…')
-        bots = prepare_accounts(args.count)
+        # The run lock and live Gate check precede every state mutation.
+        from population_growth import PopulationGrowth
+        growth=PopulationGrowth(data) if args.grow_to else None
+        saved_count=setup_report.result['local_data']['saved_bots']
+        bots = prepare_accounts(args.count,growth.existing_count if growth else saved_count)
         setup_report.stage('accounts_ready')
         setup_report.result['bot_count'] = len(bots)
         setup_report.write(report_path)
         for index, bot in enumerate(bots):
-            bot['preserve_existing'] = not args.allow_new_bots
+            bot['preserve_existing'] = index < saved_count or not args.allow_new_bots
             bot['creation_body'] = index % 4 + 1
             from city_travel import home_city_for,BIRTHPLACES
             bot['birthplace']=BIRTHPLACES['garner']
+        if growth:
+            growth.assign(bots)
+            pending=sum(not b['preserve_existing'] for b in bots)
+            setup_report.result['population_growth']={'target_count':300,'protected_count':300-pending,'pending_new_characters':pending}
+            print(f'Расширение до300: защищено{300-pending}, новых персонажей осталось создать{pending}. Повторный запуск не добавляет ещё100.')
+            setup_report.write(report_path)
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
         from regions import Regions
         from social import ChatBudget

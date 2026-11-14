@@ -31,6 +31,8 @@ def render_report(report):
     lines.append(f"  Выход на сушу: {json.dumps(fight.get('offmesh_recovery',{}),ensure_ascii=False)}")
     lines.append(f"  Знания мобов: {json.dumps(fight.get('mob_knowledge',{}),ensure_ascii=False)}")
     lines.append(f"  Портал для сокращения пути: {json.dumps(fight.get('portal_shortcut',{}),ensure_ascii=False)}")
+    xp=fight.get('hunting_learning',{})
+    lines.append(f"  Прокачка: опыт/мин={xp.get('session_xp_per_minute','?')}; прирост={xp.get('session_xp_net','?')}; без опыта={xp.get('seconds_without_xp','?')} сек. (текущая сессия)")
     lines.append(f"  Планировщик: {json.dumps(report.get('route_planning',{}),ensure_ascii=False)}")
     lines.append(f"  Путь к продавцу: {vendor.get('merchant')} ({vendor.get('merchant_region')}); NPC={vendor.get('destination')}; точка подхода={vendor.get('route_goal')}; снимок={report.get('time_utc')}")
     obstacles=fight.get('movement_obstacles',{})
