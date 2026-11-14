@@ -1,0 +1,10 @@
+{
+  "artifact": "Piratia-Quest-Rewards-x9-Gold-x5.zip",
+  "sha256": "78e3d67e801b1ee807c6e3a924471795be408104922e6376cf855816d08183c8",
+  "quest_xp_multiplier": 9,
+  "quest_gold_multiplier": 5,
+  "repeated_run_compounds": false,
+  "owner_server_scripts_included": false,
+  "automatic_tests_passed": 11,
+  "live_windows_server_tested": false
+}
