@@ -115,12 +115,15 @@ class Hunter:
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
         self.offmesh_batch=0
+        self.offmesh_route=();self.offmesh_origin=None;self.offmesh_blocked={};self.offmesh_reason=''
         from farm_plan import HuntLearning
         self.learning=HuntLearning(self.owner)
         self.farm_plan_key=None;self.farm_plan_changes=0
         self.starter_search_since=None
         self.refresh_class_intent=None
         self.background_task=None
+        self.mob_knowledge=None
+        self.shortcut=None
         self.quest_combat_ready=False
         self.inventory_blocked=False
         self.inventory_blocker=None
@@ -302,6 +305,36 @@ class Hunter:
     def position(self,now):
         return self.world.position(now)
 
+    def recover_to_ground(self,now):
+        own=self.world.own
+        if now<self.offmesh_next and not self.action_stopped():return
+        self.offmesh_blocked={c:t for c,t in self.offmesh_blocked.items() if t>now}
+        if self.offmesh_origin is not None and distance(own.position,self.offmesh_origin)<50:
+            convert=getattr(self.nav,'recovery_cell',self.nav.cell)
+            origin_cell=convert(own.position)
+            step=next((convert(p) for p in self.offmesh_route if convert(p)!=origin_cell),None)
+            if step is not None:self.offmesh_blocked[step]=now+30
+        scale=2 if getattr(self.nav,'recovery_bits',None) is not None else 1
+        blocked=set(self.offmesh_blocked)|{(x*scale+dx,y*scale+dy)
+            for x,y in getattr(getattr(self.nav,'local',None),'blocked_cells',())
+            for dx in range(scale) for dy in range(scale)}
+        route=self.nav.recovery_path(own.position,blocked) if hasattr(self.nav,'recovery_path') else []
+        if not route and getattr(self.nav,'recovery_cells',None) is None and getattr(self.nav,'recovery_bits',None) is None:
+            # Compatibility with older small grids; new maps use checked egress.
+            goal=self.nav.nearest(own.position,3)
+            if goal and distance(own.position,goal)<=400:route=[own.position,goal]
+        if len(route)<2:
+            self.offmesh_reason='нет выхода по физической сетке; повторная проверка через 5 секунд'
+            self.offmesh_next=now+5;self.offmesh_route=();self.offmesh_origin=None
+            return
+        self.move_goal=None
+        self.emit(movement(own.identity,self.sequence,route))
+        self.offmesh_requests+=1;self.offmesh_batch+=1
+        self.offmesh_origin=own.position;self.offmesh_route=tuple(route)
+        seconds=sum(distance(a,b) for a,b in zip(route,route[1:]))/max(100,own.values.get(44,480))
+        self.offmesh_next=now+max(2,min(10,seconds+1))
+        self.offmesh_reason='выходит из исключённой клетки по проверенным физическим ячейкам'
+
     def action_stopped(self):
         if self.last_sent_sequence is None or self.world.stop_packet_number!=self.last_sent_sequence:return False
         kind=self.world.stop_packet_kind
@@ -356,8 +389,14 @@ class Hunter:
             return started+sum(distance(a,b) for a,b in zip(points,points[1:]))/max(1,speed)
         return self.move_until
 
-    def move_to(self, goal, now):
+    def move_to(self, goal, now,use_portals=True):
         self.clock=now
+        own=self.world.own
+        if (use_portals and self.shortcut and not self.target and not self.resting
+                and own and own.values.get(HP,0)>own.values.get(MAX_HP,1)*.55
+                and not (self.travel and self.travel.target)
+                and self.shortcut.consider(goal,now,self)):
+            return True
         self.observe_movement(now)
         if self.stuck>=5:return False
         if self.pending_action:return True
@@ -411,12 +450,12 @@ class Hunter:
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return self.farm_models()
-        return self.learning.choose(self.region,self.world.own,self.clock,fallback=True,hold=bool(self.target))
+        return self.learning.choose(self.region,self.world.own,self.clock,fallback=True,hold=bool(self.target),position=self.position(self.clock))
 
     def farm_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return (71,75)
-        return self.learning.choose(self.region,self.world.own,self.clock,hold=bool(self.target))
+        return self.learning.choose(self.region,self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
 
     def starter_models(self):
         # Owner's CharacterInfo: Forest Spirit 103 is level 3, Argent only.
@@ -524,7 +563,7 @@ class Hunter:
         models=set(models) if models is not None else ({self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.planned_models())
         if entity.identity==self.target and self.opportunity_model:models=set(models)|{self.opportunity_model}
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:return False
-        maximum_level = min(45,own.values[LV]) if self.region or self.adventure else min(2,own.values[LV]+1)
+        maximum_level = own.values[LV] if self.region or self.adventure else min(2,own.values[LV]+1)
         if self.starter_models() and not self.assist_target and models==self.starter_models():
             models=self.starter_models();maximum_level=3
         elif self.region:
@@ -555,8 +594,12 @@ class Hunter:
         now = time.monotonic() if now is None else now
         self.clock=now
         self.background_task=None
+        # Recompute per decision: a previous quest fight must not suppress the
+        # NPC visit after objective review switches from farming to verification.
+        self.quest_combat_ready=False
         own = self.world.own
         if own and (own.values.get(HP,1)<=0 or own.state>=5):
+            if self.shortcut and self.shortcut.busy:self.shortcut.abort(now,'персонаж погиб')
             self.learning.observe(self.world,now)
             self.pending_action=None;self.action_open=False
             self.sitting.reset()
@@ -595,16 +638,12 @@ class Hunter:
             self.change('ожидание достоверных данных карты')
             if self.pending_action and own and own.alive:
                 if self.flush_action(now):return
-            if own and own.alive and self.world.map==self.nav.map and now>=self.offmesh_next:
-                if self.offmesh_batch>=3:
-                    self.offmesh_batch=0;self.offmesh_next=now+60;return
-                goal=self.nav.nearest(own.position,3)
-                if goal and distance(own.position,goal)<=400:
-                    self.move_goal=None
-                    self.emit(movement(own.identity,self.sequence,[own.position,goal]))
-                    self.offmesh_requests+=1;self.offmesh_batch+=1;self.offmesh_next=now+10
+            if own and own.alive and self.world.map==self.nav.map:
+                self.recover_to_ground(now)
+                self.change(self.offmesh_reason or 'проверяет выход на сушу')
             return
         self.offmesh_batch=0
+        self.offmesh_route=();self.offmesh_origin=None;self.offmesh_reason=''
         hp, maximum = own.values.get(HP), own.values.get(MAX_HP)
         if hp is None or not maximum:
             self.change('ожидание данных здоровья')
@@ -668,6 +707,9 @@ class Hunter:
                 if now >= self.next_action and distance(self.position(now), self.home) > 300:
                     self.move_to(self.home, now)
                 return
+        if self.shortcut and self.shortcut.busy:
+            if self.shortcut.resume(now,self):
+                self.change(self.shortcut.reason);return
         if now < self.next_action or now-self.started < 2:
             return
         if self.skills and self.skills.tick(now,self,safe=not self.target):
@@ -734,9 +776,16 @@ class Hunter:
                 for feature in (self.town,self.story,self.career,self.vendor):
                     if feature and getattr(feature,'context',None):
                         feature.tick(now,self,safe,False)
-            self.change('первая профессия: '+self.adventure.reason)
-            self.next_action=now+.5
-            return
+            waiting_retry=bool(self.adventure.journal_ready and not self.adventure.context
+                               and not self.adventure.pending and
+                               (now<self.adventure.next_visit or not self.task_budget.allow('adventure',now)))
+            if not waiting_retry:
+                self.change('первая профессия: '+self.adventure.reason)
+                self.next_action=now+.5
+                return
+            # A real NPC/path retry delay must not become a whole-AI pause.
+            # Finish useful nearby work, then give the teacher priority again.
+            self.change('визит к учителю отложен; продолжает охоту до повторной попытки')
         kill_task=self.adventure.farm() if self.adventure else None
         self.quest_combat_ready=bool(first_profession and isinstance(kill_task,(tuple,list))
             and len(kill_task)==2 and kill_task[0] and kill_task[1] is None
@@ -950,7 +999,7 @@ class Hunter:
             self.next_action=now+1
 
     def summary(self):
-        return {'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -981,6 +1030,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     from coordination import TacticSchedule
     policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
+    policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
     if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
@@ -1024,7 +1074,10 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.story=Story(world,client.wire.send,role,life,navigation)
         policy.party=Party(world,client.wire.send,bot_name,bot_index,navigation.directory)
         from city_travel import CityTravel
-        policy.travel=CityTravel(world,client.wire.send,bot_index,role)
+        policy.travel=CityTravel(world,client.wire.send,bot_index,role,getattr(navigation,'portal_catalog',None))
+        if getattr(navigation,'portal_catalog',None):
+            from portal_shortcut import PortalShortcut
+            policy.shortcut=PortalShortcut(world,client.wire.send,navigation.portal_catalog)
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
@@ -1187,6 +1240,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 if policy.vendor.observe(command,payload,now,client.wire.send):return
             except ProtocolError:
                 policy.vendor.finish_sale(now);report.result['vendor_decode']='unsupported'
+        if policy.shortcut and command==802 and policy.shortcut.context:
+            if policy.shortcut.observe(command,payload,now):return
         if policy.travel and command==802 and policy.travel.context:
             if policy.travel.observe(command,payload,now):return
         if command in (801,802,803,805,806,807,808,822,827,828,830,831,832):
@@ -1208,6 +1263,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
+            if policy.shortcut and policy.shortcut.busy:policy.shortcut.on_map(now)
             policy.sent_move_points=();policy.move_map=None;policy.cancelled_move_packet=None
             policy.motion_anchor=None;policy.motion_progress_at=None;policy.stuck=0
             if policy.vendor:policy.vendor.home=world.own.position;policy.vendor.finish_sale(now)
@@ -1272,7 +1328,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 if hasattr(navigation,'directory'):
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
                 if policy.party:
-                    dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel) if f)
+                    dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel,policy.shortcut) if f)
                     policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not (policy.market and policy.market.busy))
                 if policy.town:
                     completed=sum(getattr(f,'delivered',0) for f in (policy.adventure,policy.career,policy.story) if f)
@@ -1301,7 +1357,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 seen_chests=policy.chests.confirmed if policy.chests else 0
                 seen_shopping=policy.town.confirmed if policy.town else 0
                 social.busy_state=bool(policy.target or (policy.market and policy.market.busy)
-                    or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel) if f))
+                    or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel,policy.shortcut) if f))
                 social.tick(now, policy.resting, alive and now-policy.started >= 3)
                 public_chat.tick(now,alive and now-policy.started>=3,policy.market)
                 think_stats['count']+=1

@@ -5,13 +5,13 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-38'
-NAME = 'Piratia-Auto-Bots-Alpha38'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-39'
+NAME = 'Piratia-Auto-Bots-Alpha39'
 
 
 def main():
     sources = sorted(ROOT.glob('*.cmd')) + [ROOT / 'README.md', ROOT / 'PROTOCOL.md', ROOT / 'AGENTS.md']
-    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py']
+    sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -33,7 +33,7 @@ def main():
     manifest = {
         'artifact': artifact.name,
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        'status': 'Client terrain ground navigation for29paired maps; conservative water exclusion and explicit bridges; rechecked reachable farm goals and field merchants; native Windows validation and profession completion remain pending',
+        'status': 'Checked 50cm egress from all17 excluded Alpha38 snapshot positions; reset stale quest-combat gate and remove mandatory NPC visitor cap; full608monster knowledge, verified portal shortcuts and compatible class equipment including bows; live Alpha39 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -65,8 +65,35 @@ def main():
         'find_bot_by_public_nickname': 'Find-Bot.cmd; tags from Alpha34+ reports; no data or credentials read',
         'pond_shoreline_from_owner_atr_confirmed': False,
         'original_navigation_grid_changed': True,
-        'navigation_geometry_revision': 'alpha38-client-ground-v1',
+        'navigation_geometry_revision': 'alpha39-ground-recovery-v1',
         'paired_client_server_navigation_maps': 29,
+        'native50cm_egress_grid_for_occupied_excluded_cells': True,
+        'reported_offmesh_positions_replayed': 17,
+        'offmesh_recovery_moves_fabricated_positions': False,
+        'stale_quest_combat_flag_reset_each_decision': True,
+        'mandatory_profession_npc_admission_limit_removed': True,
+        'pending_native_promotion_conditions_inspected': True,
+        'teacher_retry_delay_allows_productive_hunting': True,
+        'known_monster_definitions': 608,
+        'monster_types_with_located_source_spawns': 426,
+        'monster_types_without_verified_coordinates': 182,
+        'maximum_known_monster_level': 300,
+        'spawn_source_tables': 29,
+        'normal_monster_spawn_regions_including_conditional_literals': 7725,
+        'script_conditions_or_expression_spawns_evaluated': False,
+        'level45_farm_selection_cap_removed': True,
+        'observed_results_and_distance_affect_hunt_selection': True,
+        'verified_portal_npcs': 4,
+        'active_verified_portal_routes': 9,
+        'same_map_shortcut_compares_checked_approach_and_arrival_routes': True,
+        'portal_arrival_requires_native_state': True,
+        'conditional_unverified_portals_enabled': False,
+        'bows_in_native_left_weapon_slot_supported': True,
+        'shields_scored_by_defence': True,
+        'replacement_gear_requires_bag_space_and_native_confirmation': True,
+        'all_four_first_profession_weapon_cases_passed': True,
+        'latest_owner_alpha38_fleet_actual_professions': {'novice':188,'hunter':11,'swordsman':1},
+        'latest_owner_alpha38_snapshot_proves_all_classes_completed': False,
         'client_only_maps_not_enabled': ['darkhouse','prisonisland'],
         'server_attribute_masks_checked': True,
         'underwater_terrain_exclusion_except_explicit_bridges': True,
@@ -133,16 +160,17 @@ def main():
         'starter_exclusive_search_seconds': 90,
         'decision_frequency_max_hz': 4,
         'npc_destination_capacity': 2,
+        'npc_destination_capacity_applies_to': 'optional visits only; mandatory profession visits unlimited',
         'optional_npc_population_fraction': .1,
         'spatial_hunt_density_radius_cm': 2500,
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 445,
-        'full_python_suite_total': 453,
-        'full_python_suite_passed': 453,
+        'pure_python_tests_passed': 470,
+        'full_python_suite_total': 478,
+        'full_python_suite_passed': 478,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '453 passed in Alpha38 including 8 local socket integration tests',
+        'last_full_network_regression': '478 passed in Alpha39 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 200,
         'default_mode': 'mixed',

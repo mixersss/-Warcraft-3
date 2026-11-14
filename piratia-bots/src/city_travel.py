@@ -13,12 +13,13 @@ def home_city_for(index):
     return 'garner' if (index-1)%8<6 else 'magicsea' if (index-1)%8==6 else 'darkblue'
 
 class CityTravel:
-    def __init__(self,world,send,index,role):
+    def __init__(self,world,send,index,role,portals=None):
         self.world,self.send,self.role=world,send,role
         self.home_city=home_city_for(index);self.target=None;self.context=None;self.pending=None
         self.next_trip=0;self.trip_started=None;self.last_position=None;self.last_progress=0
         self.requests=self.arrivals=self.failures=0;self.reason=''
         self.last_menu=[];self.last_problem=''
+        self.portals=portals;self.portal=None;self.failed_portals={}
     def destination(self,policy):
         w=self.world;level=w.own.values.get(0,0);job=w.own.values.get(4,0)
         if 1<=level<=3:return 'garner'
@@ -31,6 +32,8 @@ class CityTravel:
     def needs_funds(self):
         return self.world.own.values.get(0,0)>10 and self.world.own.values.get(8,0)<500
     def abort(self,now,problem='переход не подтверждён'):
+        if self.portal:self.failed_portals[tuple(self.portal['position'])]=now+300
+        self.portal=None
         self.context=None;self.pending=None;self.target=None;self.trip_started=None
         required=self.world.own.values.get(4)==0 and self.world.own.values.get(0,0)>=9
         self.failures+=1;self.next_trip=now+(30 if required else 300)
@@ -38,6 +41,7 @@ class CityTravel:
     def on_map(self,now):
         if self.target and self.world.map==self.target:self.arrivals+=1
         self.context=None;self.pending=None;self.target=None;self.trip_started=None;self.next_trip=now+15
+        self.portal=None
     def observe(self,command,payload,now):
         if not self.context or command!=802:return False
         r=Reader(payload);source,page=r.long(),r.byte();r.string_bytes();n=r.byte()
@@ -80,7 +84,15 @@ class CityTravel:
         pos=policy.position(now)
         if math.dist(pos,self.last_position)>=100:self.last_position=pos;self.last_progress=now
         if now-self.trip_started>180 or now-self.last_progress>35:self.abort(now);return False
-        point=TELEPORTERS[w.map]
+        if self.portals and self.portal is None:
+            options=[n for n in self.portals['nodes'] if n['map']==w.map
+                     and self.failed_portals.get(tuple(n['position']),0)<=now
+                     and any(r['map']==wanted for r in n['routes'])]
+            if not options:
+                self.reason='нет доступного проверенного телепортера; продолжает искать альтернативу'
+                self.next_trip=now+5;return False
+            self.portal=min(options,key=lambda n:math.dist(pos,n['position']))
+        point=self.portal['position'] if self.portal else TELEPORTERS[w.map]
         npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
         self.reason='переход в '+CITIES[wanted]
         if npc and math.dist(pos,npc.position)<=220:

@@ -44,7 +44,7 @@ class MapFile:
         return {'height_cm':values[3]*10,'region':values[4],'blocks':values[6:]}
 
 
-def project(map_file,block_raw,attr_raw=None):
+def project(map_file,block_raw,attr_raw=None,with_recovery=False):
     import numpy as np
     m=MapFile(map_file);w,h=m.width,m.height
     height=np.zeros((h,w),dtype=np.int16);region=np.zeros((h,w),dtype=np.uint16)
@@ -80,7 +80,9 @@ def project(map_file,block_raw,attr_raw=None):
     water=wet.copy()
     water[:-1,:]|=wet[1:,:];water[:,:-1]|=wet[:,1:];water[:-1,:-1]|=wet[1:,1:]
     water&=((region&BRIDGE)==0)|((server_region&BRIDGE)==0)
-    forbidden=~valid|((region&(LAND|BRIDGE))==0)|((server_region&(LAND|BRIDGE))==0)|water
+    native_forbidden=~valid|((region&(LAND|BRIDGE))==0)|((server_region&(LAND|BRIDGE))==0)
+    physical=client|server|np.repeat(np.repeat(native_forbidden,2,axis=0),2,axis=1)
+    forbidden=native_forbidden|water
     blocked=client|server|np.repeat(np.repeat(forbidden,2,axis=0),2,axis=1)
     padded=np.pad(blocked,1,constant_values=True)
     clear=np.ones((h,w),dtype=bool)
@@ -98,14 +100,22 @@ def project(map_file,block_raw,attr_raw=None):
            'walkable_tiles':int(clear.sum()),'client_map_sha256':hashlib.sha256(map_file).hexdigest(),
            'server_block_sha256':hashlib.sha256(block_raw).hexdigest()}
     if attr_raw is not None:audit['server_attribute_sha256']=hashlib.sha256(attr_raw).hexdigest()
+    if with_recovery:
+        # Native client pathfinding tests individual 50cm cells. Egress must
+        # work from a legal subcell inside a conservatively excluded 1m cell.
+        return clear.astype(np.uint8),audit,~physical
     return clear.astype(np.uint8),audit
 
 
-def encode(name,cells,waypoints=(),origin=(0,0)):
-    return {'map':name,'origin':list(origin),'width':cells.shape[1],'height':cells.shape[0],'cell_cm':100,
-            'geometry_revision':'alpha38-client-ground-v1',
+def encode(name,cells,waypoints=(),origin=(0,0),recovery=None):
+    data={'map':name,'origin':list(origin),'width':cells.shape[1],'height':cells.shape[0],'cell_cm':100,
+            'geometry_revision':'alpha39-ground-recovery-v1',
             'source':'client 780627 .map collision + server .blk + native land/bridge flags; conservative underwater terrain exclusion; 3x3 50cm clearance',
             'walkable_zlib':base64.b64encode(zlib.compress(cells.tobytes(),9)).decode(),'waypoints':list(waypoints)}
+    if recovery is not None:
+        import numpy as np
+        data['recovery50_free_zlib']=base64.b64encode(zlib.compress(np.packbits(recovery).tobytes(),9)).decode()
+    return data
 
 
 def main():
@@ -121,19 +131,19 @@ def main():
         if not server.exists():catalog['client_only_maps'].append(name);continue
         attributes=args.server_resource/name/(name+'.atr')
         if not attributes.exists():raise ValueError('Server attributes missing: '+name)
-        cells,audit=project(path.read_bytes(),server.read_bytes(),attributes.read_bytes())
+        cells,audit,recovery=project(path.read_bytes(),server.read_bytes(),attributes.read_bytes(),with_recovery=True)
         target=ROOT/'assets'/(name+'-navigation.json')
         old=json.loads(target.read_text()) if target.exists() else {}
         waypoints=[]
         for point in old.get('waypoints',[]):
             x,y=point[0]//100,point[1]//100
             if 0<=x<cells.shape[1] and 0<=y<cells.shape[0] and cells[y,x]:waypoints.append(point)
-        target.write_text(json.dumps(encode(name,cells,waypoints),separators=(',',':'))+'\n')
+        target.write_text(json.dumps(encode(name,cells,waypoints,recovery=recovery),separators=(',',':'))+'\n')
         if name=='garner':
             crop=cells[2400:2900,1900:2450]
             argent=ROOT/'assets/argent-navigation.json';previous=json.loads(argent.read_text())
             points=[q for q in previous['waypoints'] if crop[q[1]//100-2400,q[0]//100-1900]]
-            argent.write_text(json.dumps(encode(name,crop,points,(1900,2400)),separators=(',',':'))+'\n')
+            argent.write_text(json.dumps(encode(name,crop,points,(1900,2400),recovery[4800:5800,3800:4900]),separators=(',',':'))+'\n')
         audit['navigation']=target.name;catalog['maps'][name]=audit
         print(name,audit['walkable_tiles'],'walkable;',audit['water_excluded_tiles'],'water exclusions',flush=True)
     (ROOT/'assets/world-navigation.json').write_text(json.dumps(catalog,indent=2)+'\n')

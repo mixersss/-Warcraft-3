@@ -64,11 +64,8 @@ class Town:
         owned={i.identity for i in w.bag.values()}
         for shop in self.life.services['shops'].get(w.map,[]):
             for identity in shop['offers']:
-                gear=self.gear.gear.get(identity)
-                if not gear or identity in owned or gear['level']>w.own.values.get(0,0) or w.own.model not in gear['bodies']:continue
-                if gear['jobs']!=[-1] and w.own.values.get(4) not in gear['jobs']:continue
-                current=self.gear.gear.get(w.own.equipment.get(gear['links'][0],0),{}).get('score',0)
-                if gear['score']>current and 0<self.life.prices.get(identity,0)<=cash//4:return identity,1
+                if identity in owned or not self.gear.upgrade(w.own,identity,free):continue
+                if 0<self.life.prices.get(identity,0)<=cash//4:return identity,1
         return None
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     def observe(self,command,payload,now,send):

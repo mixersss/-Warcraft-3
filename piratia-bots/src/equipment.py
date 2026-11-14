@@ -10,6 +10,24 @@ class ItemCatalog:
         self.types={int(k):v for k,v in data['types'].items()}
         self.gear={int(k):v for k,v in data['gear'].items()}
 
+    def upgrade(self,own,identity,free_slots=None):
+        gear=self.gear.get(identity)
+        if (not gear or gear['level']>own.values.get(0,0) or own.model not in gear['bodies']
+                or (gear['jobs']!=[-1] and own.values.get(4) not in gear['jobs'])):return None
+        links=gear['links']
+        if not links or any(link not in (2,3,4,6,9) for link in links):return None
+        affected=set(gear.get('displaces',[links[0]]))|{links[0]}
+        previous=0;occupied=0
+        for link in affected:
+            current=own.equipment.get(link,0)
+            if not current:continue
+            old=self.gear.get(current)
+            if old is None:return None # Preserve unknown equipped valuables.
+            previous+=old['score'];occupied+=1
+        if free_slots is not None and free_slots<occupied:return None
+        gain=gear['score']-previous
+        return (gain,links) if gain>0 else None
+
 
 class Equipment:
     def __init__(self,world,catalog,send,tell=lambda text:None):
@@ -23,12 +41,7 @@ class Equipment:
         own=self.world.own
         result=set()
         for identity,(model,handle,position,kind,source,created) in self.world.items.items():
-            gear=self.catalog.gear.get(model)
-            if not gear or gear['level']>own.values.get(0,0) or own.model not in gear['bodies']:continue
-            if gear['jobs']!=[-1] and own.values.get(4) not in gear['jobs']:continue
-            link=gear['links'][0]
-            previous=self.catalog.gear.get(own.equipment.get(link,0),{}).get('score',0)
-            if gear['score']>previous:result.add(model)
+            if self.catalog.upgrade(own,model):result.add(model)
         return result
 
     def tick(self,now,policy,safe=True):
@@ -47,19 +60,11 @@ class Equipment:
         if level is None or job is None:return False
         options=[]
         for slot,item in self.world.bag.items():
-            gear=self.catalog.gear.get(item.identity)
-            if (not gear or not item.valid or gear['level']>level or own.model not in gear['bodies']
-                    or (gear['jobs']!=[-1] and job not in gear['jobs'])
+            if (not item.valid or (item.max_endurance>0 and item.endurance<=0)
                     or self.blacklist.get(item.identity,0)>now):continue
-            links=gear['links']
-            # No cosmetic face/hair/coral use, no two-handed/off-hand rearrangements.
-            if not links or any(link not in (2,3,4,9) for link in links):continue
-            link=links[0]
-            current=self.catalog.gear.get(own.equipment.get(link,0))
-            if own.equipment.get(link) and current is None:continue
-            previous=current['score'] if current else 0
-            if gear['score']>previous:
-                options.append((gear['score']-previous,slot,item.identity,links))
+            free=max(0,(self.world.bag_capacity or 0)-len(self.world.bag))
+            upgrade=self.catalog.upgrade(own,item.identity,free)
+            if upgrade:options.append((upgrade[0],slot,item.identity,upgrade[1]))
         if not options:return False
         _,slot,identity,links=max(options)
         from hunter import action_header

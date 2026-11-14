@@ -4,6 +4,7 @@ import heapq
 import threading
 import time
 from collections import OrderedDict
+from collections import deque
 from contextlib import contextmanager
 from route_search import Search,RoutePending
 from functools import lru_cache
@@ -26,6 +27,14 @@ class Navigation:
         self.cells = zlib.decompress(base64.b64decode(data['walkable_zlib']))
         if len(self.cells) != self.width * self.height:
             raise ValueError('Incomplete navigation crop')
+        self.recovery_cells=(zlib.decompress(base64.b64decode(data['recovery_walkable_zlib']))
+                             if 'recovery_walkable_zlib' in data else None)
+        if self.recovery_cells is not None and len(self.recovery_cells)!=len(self.cells):
+            raise ValueError('Incomplete physical recovery grid')
+        self.recovery_bits=(zlib.decompress(base64.b64decode(data['recovery50_free_zlib']))
+                            if 'recovery50_free_zlib' in data else None)
+        if self.recovery_bits is not None and len(self.recovery_bits)!=(self.width*self.height*4+7)//8:
+            raise ValueError('Incomplete 50cm recovery grid')
         self.waypoints = [tuple(p) for p in data['waypoints']]
 
     def cell(self, position):
@@ -70,6 +79,52 @@ class Navigation:
             if self.free(cell):
                 return self.position(cell)
         return None
+
+    def recovery_cell(self,position):
+        scale=2 if getattr(self,'recovery_bits',None) is not None else 1
+        step=100//scale
+        return position[0]//step-self.origin[0]*scale,position[1]//step-self.origin[1]*scale
+
+    def recovery_path(self,position,blocked=(),radius=24,limit=4096):
+        """Exit an occupied excluded shore cell; never use this for normal travel.
+
+        Original client/server hard obstacles and native land/bridge permissions
+        still apply. Stop at the first reachable dry cell; do not cross a pond
+        as a shortcut. Server movement remains authoritative.
+        """
+        physical=getattr(self,'recovery_cells',None)
+        bits=getattr(self,'recovery_bits',None)
+        if physical is None and bits is None:return []
+        scale=2 if bits is not None else 1;step=100//scale
+        width,height=self.width*scale,self.height*scale
+        start=self.recovery_cell(position);blocked=set(blocked);radius*=scale
+        def free(c):
+            x,y=c
+            if not (0<=x<width and 0<=y<height) or (c!=start and c in blocked):return False
+            index=y*width+x
+            return bool(bits[index//8]&(1<<(7-index%8))) if bits is not None else physical[index]==1
+        if not free(start) or self.free(self.cell(position)):return []
+        parents={start:None};queue=deque([start]);goal=None
+        while queue and len(parents)<=limit:
+            current=queue.popleft()
+            if current!=start and self.free((current[0]//scale,current[1]//scale)):goal=current;break
+            x,y=current
+            for dx,dy in ((0,-1),(-1,0),(1,0),(0,1),(-1,-1),(1,-1),(-1,1),(1,1)):
+                cell=x+dx,y+dy
+                if (cell in parents or max(abs(cell[0]-start[0]),abs(cell[1]-start[1]))>radius
+                        or not free(cell)):continue
+                if dx and dy and (not free((x+dx,y)) or not free((x,y+dy))):continue
+                parents[cell]=current;queue.append(cell)
+                if len(parents)>=limit:break
+        if goal is None:return []
+        cells=[]
+        while goal is not None:cells.append(goal);goal=parents[goal]
+        points=[tuple(position)]
+        for cell in reversed(cells):
+            point=((cell[0]+self.origin[0]*scale)*step+step//2,
+                   (cell[1]+self.origin[1]*scale)*step+step//2)
+            if point!=points[-1]:points.append(point)
+        return points[:32]
 
     def path(self, start, end, limit=25000):
         key=(self.cell(start),self.cell(end),limit,tuple(sorted(getattr(getattr(self,'local',None),'blocked_cells',()))),getattr(getattr(self,'local',None),'lane','foreground'))

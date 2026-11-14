@@ -89,7 +89,7 @@ class Coordination:
             nearby=sum(m==map_name and math.dist(p,point)<500
                        for (m,p),_,_ in self.visits.values())
             optional=sum(not required for _,required,_ in self.visits.values())
-            if nearby>=2 or (not mandatory and optional>=max(1,self.population//10)):return False
+            if not mandatory and (nearby>=2 or optional>=max(1,self.population//10)):return False
             self.visits[owner]=(site,mandatory,now+15);return True
 
     def leave_visit(self,owner):

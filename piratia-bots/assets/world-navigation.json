@@ -581,5 +581,19 @@
         71
       ]
     }
+  },
+  "alpha39_ground_farms": {
+    "garner": {
+      "species_with_points": 90,
+      "points": 751
+    },
+    "magicsea": {
+      "species_with_points": 32,
+      "points": 383
+    },
+    "darkblue": {
+      "species_with_points": 55,
+      "points": 691
+    }
   }
 }

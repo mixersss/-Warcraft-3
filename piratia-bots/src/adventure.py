@@ -293,7 +293,7 @@ class Adventure:
                 if droppers:
                     wanted.add(min(droppers,key=lambda m:farms[m][0]))
             if wanted:return wanted
-        highest=max((lv for lv,_ in farms.values() if lv<=min(level,45)),default=1)
+        highest=max((lv for lv,_ in farms.values() if lv<=level),default=1)
         return {model for model,(lv,_) in farms.items() if max(1,highest-2)<=lv<=highest}
 
     def farm_goals(self):
@@ -345,7 +345,8 @@ class Adventure:
             if self.tactic=='farm' or self.profession_priority():
                 allowed &= {self.role['promotion']}
             candidates = [(i,title,state) for i,(title,state) in enumerate(offers)
-                          if title in allowed and state & 3]
+                          if title in allowed and (state & 3 or
+                              (active is not None and title==self.role['promotion'] and state & 4))]
             # Complete ready work before accepting another task.
             candidates.sort(key=lambda item: not bool(item[2]&2))
             if candidates:
@@ -380,6 +381,8 @@ class Adventure:
                 return
             self.last_needs = needs
             if button == 8:
+                self.last_problem='NPC подтверждает: условия задания ещё не выполнены'
+                self.reason=self.last_problem
                 active = self.active()
                 if active in self.letter_stops and key == 'senna': self.subvisit = active
                 self.settle(now,5 if active in self.letter_stops else 60)

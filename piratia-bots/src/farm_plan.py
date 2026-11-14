@@ -84,11 +84,11 @@ class HuntLearning:
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
    if not record['points'] or self.blocked(model,now):continue
-   if not max(1,level-9)<=record['level']<=min(45,level+(8 if row.get('wins',0) else max(3,self.profile[1]))):continue
+   if not max(1,level-9)<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
   return result
- def choose(self,region,own,now,fallback=False,hold=False):
+ def choose(self,region,own,now,fallback=False,hold=False,position=None):
   if hold and self.selected:return set(self.selected)
   progress=(own.values.get(0,1),own.values.get(15,0))
   self.last_clock=now
@@ -105,12 +105,15 @@ class HuntLearning:
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
    if not record['points'] or self.blocked(model,now):continue
    if level<=3 and model==75 and not self.rows:continue
-   primary=(ml<=min(45,level+(8 if row.get('wins',0)>0 else self.profile[1]))
+   primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
             and not (level<=3 and model==71))
-   if not primary and ml>min(45,level+max(3,self.profile[1])):continue
+   if not primary and ml>(level+max(3,self.profile[1])):continue
    if ml<max(1,level-9):continue # preserve a chance of useful experience
    if not row.get('wins') and record['hp']>max_hp*self.profile[3]:continue
    base=max(.12,1-abs(ml-level)*.07)/(1+record['hp']/max_hp*.25)
+   if position is not None:
+    travel=min(math.dist(position,p) for p in record['points'])
+    base/=1+travel/12000
    if self.profile[0]=='искатель вызова':base*=1+max(0,ml-level)*.12
    if self.profile[0]=='собиратель':base*=1+min(10,len(record.get('drops',[])))*.035
    if row:

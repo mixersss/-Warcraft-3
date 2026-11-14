@@ -59,5 +59,21 @@
     "ground_route_length_cm": 3214,
     "new_catalog": "assets/world-navigation.json",
     "original_map_binaries_published": false
+  },
+  "alpha39": {
+    "owner_snapshot_connected": 200,
+    "owner_snapshot_with_first_profession": 12,
+    "owner_snapshot_novices": 188,
+    "snapshot_offmesh_positions": 17,
+    "offline_verified_egress_routes": 17,
+    "offmesh93_cause": "occupied cell excluded by strict grid; previous nearest radius3 failed before any request",
+    "native50cm_physical_egress": true,
+    "egress_radius_m": 24,
+    "egress_node_limit": 4096,
+    "native_route_point_limit": 32,
+    "authoritative_positions_fabricated": false,
+    "stale_quest_combat_gate_reset": true,
+    "required_npc_visitors_unlimited": true,
+    "live_alpha39_verified": false
   }
 }

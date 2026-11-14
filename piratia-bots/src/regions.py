@@ -29,6 +29,11 @@ class Regions:
         self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count)
         from activity_slots import ActivitySlots
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
+        from mob_knowledge import MobKnowledge
+        knowledge=self.assets/'world-mobs.json'
+        self.mob_knowledge=MobKnowledge(knowledge) if knowledge.exists() else None
+        portals=self.assets/'portals.json'
+        self.portal_catalog=json.loads(portals.read_text(encoding='utf-8')) if portals.exists() else None
         self.data=json.loads((self.assets/'regions.json').read_text(encoding='utf-8'))
         catalog=self.assets/'world-navigation.json'
         self.map_catalog=json.loads(catalog.read_text(encoding='utf-8')).get('maps',{}) if catalog.exists() else {}

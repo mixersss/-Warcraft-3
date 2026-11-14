@@ -809,3 +809,22 @@ change packets, rewards or server ownership. Revival remains native10/1;
 its episode timer and cancelled approach are reset on death/authoritative
 map entry. The snapshot contains200 live characters, so other reported corpse
 failures remain unconfirmed. New lifecycle counters support future diagnosis.
+
+
+Alpha39 keeps native item-use action11 (bag slot,automatic target-1). Owner table
+ItemInfo column28 allows bow type3 in slot6, whereas former extraction discarded
+all weapons without9. Import legal6bows/shields and column29displacements; reserve
+bag slots for displaced equipped objects, compare their combined score, never
+remove items manually. Shields use defence/HP score, not attack0. Four compatible
+first-job weapon cases and server appearance acknowledgement gates tested locally.
+Required quest NPC visits have no shared visitor quota. Native mission offer flag4
+means pending (ROLE_MIS_PENDING), so its page can be inspected; button8 still cannot
+be committed as completion. Combat gate reset must precede objective review/NPC
+priority, preventing a previous decision from starving the native dialogue.
+Recovery uses original50cm client/server collision and LAND1/BRIDGE8 permissions;
+only occupied excluded starts may use it to reach strict dry ground. Regular
+navigation retains the conservative water mask.17snapshot starts have checked
+native paths, but only server replies update actual positions. Portal shortcuts
+use the same ordinary302/303menu flow and a real Teleport confirmation, then516or
+an authoritative raw position update near the audited arrival; never synthesize a
+map entry, gold deduction or quest completion. Live Alpha39 validation pending.
