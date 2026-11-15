@@ -5,10 +5,11 @@ from pathlib import Path
 class Economy:
  def __init__(self,name,assets):
   seed=int.from_bytes(hashlib.sha256((name+':economy').encode()).digest()[:8],'big')
-  self.seed=seed;self.cycle=None;self.stages=[];self.busy=False;self.current=None
+  self.seed=seed;self.cycle=None;self.stages=[];self.busy=False;self.current=None;self.group_hunting=False
   self.offset=seed%1800;self.cohort=('farmer' if seed%100<15 else 'leveler' if seed%100<60 else 'fairy' if seed%100<75 else 'dungeon')
   self.data=json.loads((Path(assets)/'patchouli-farms.json').read_text());self.last_models=[];self.reason=''
  def phase(self,world,now):
+  if self.group_hunting:return 'progression'
   if world.own.values.get(4,0)==0 or world.own.values.get(0,0)<10:return 'progression'
   position=(now+self.offset)%1800
   cycle=int((now+self.offset)//1800)

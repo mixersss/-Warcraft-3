@@ -55,6 +55,7 @@ class Hunter:
         self.sent_move_points=();self.move_map=None;self.cancelled_move_packet=None
         self.move_stop_seen=-1;self.blocked_move_stops=0;self.last_blocked_step=None
         self.assist_target=None;self.helper=None
+        self.group_hunt=None
         self.target = None
         self.shared_target = False
         self.opportunity_model=None;self.opportunity_targets=0;self.last_target_at=None
@@ -321,7 +322,8 @@ class Hunter:
         own=self.world.own
         if not own or not own.alive:return True
         if kind==1 and self.move_goal:
-            points=self.nav.segment(self.position(now),self.move_goal)
+            points=(self.nav.movement_segment(self.position(now),self.move_goal)
+                    if hasattr(self.nav,'movement_segment') else self.nav.segment(self.position(now),self.move_goal))
             if len(points)<2:return True
             body=movement(own.identity,number,points)
             self.move_sent=now;self.move_revision=self.world.move_revision
@@ -466,7 +468,8 @@ class Hunter:
                     and now<self.acknowledged_move_deadline()+.5):
                 self.move_waits+=1
                 return True
-        path = self.nav.segment(origin,goal)
+        path = (self.nav.movement_segment(origin,goal) if hasattr(self.nav,'movement_segment')
+                else self.nav.segment(origin,goal))
         if len(path)<2:
             return False
         points=path  # Checked collinear cells are represented by native turn points.
@@ -528,6 +531,10 @@ class Hunter:
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
+        group_target=self.group_hunt.target(self.clock) if self.group_hunt else None
+        if group_target and self.region and not self.mandatory_work():
+            if group_target.model in self.learning.admissible(self.region,self.world.own,self.clock):
+                return {group_target.model}
         if self.economy and not self.mandatory_work():
             economic=self.economy.models(self.world,self.region,self.learning,self.clock)
             if economic:return economic
@@ -564,6 +571,12 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        if self.group_hunt and self.group_hunt.active() and not self.mandatory_work():
+            # A confirmed XP session finishes before optional city errands.
+            # Full bags still use unlimited ordinary vendor sales; food can be
+            # replenished, and owned gear/books are used earlier in the loop.
+            if key in ('market','story','career','adventure'):return False
+            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2:return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
         can_sell_full=(key=='market' and (self.world.skills.get(241,{}).get('level',0)>0 or
                        self.world.own.values.get(13,0)>0 and any(i.identity==3296 and i.valid for i in self.world.bag.values())))
@@ -732,8 +745,9 @@ class Hunter:
             self.adventure.review_objective(now,busy=bool(current and current.alive))
         self.update_tactic(now)
         if self.economy:
+            self.economy.group_hunting=bool(self.group_hunt and self.group_hunt.active())
             target=self.world.entities.get(self.target)
-            self.economy.busy=bool(target and target.alive) or self.transaction_busy() or bool(self.pending_action) or any(
+            self.economy.busy=bool(self.group_hunt and self.group_hunt.active()) or bool(target and target.alive) or self.transaction_busy() or bool(self.pending_action) or any(
                 getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.vendor,self.adventure,self.career,self.story,self.petcare,self.professions) if f)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
         protected=self.resting or self.transaction_busy() or bool(self.town and self.town.rest_until)
@@ -936,6 +950,7 @@ class Hunter:
                     and distance(self.position(now),self.world.position(now,e.identity))<=2000
                     for e in self.world.entities.values()))
         business=bool(self.economy and self.economy.business(self.world,now) and not mandatory)
+        if not mandatory and not self.quest_combat_ready and self.group_hunt and self.group_hunt.work(now,self,safe):return
         if business and not self.quest_combat_ready:
             if self.wants_story() and (self.economy.phase(self.world,now)=='history' or (self.market and self.market.needs_life_study()) or (self.professions and self.professions.needs_points())) and self.task('story',self.story,lambda:self.story.tick(now,self,safe,market_dialogue),now):
                 self.drop_target();self.clear_zone();self.change('получает очки жизненных навыков для ларька');return
@@ -970,7 +985,7 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
         if self.economy and self.economy.business(self.world,now) and self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'городская торговля');return
-        if self.bank and not mandatory and (not self.activity.hunting(now) or business) and self.bank.tick(now,self,safe,market_dialogue):
+        if self.bank and not mandatory and not (self.group_hunt and self.group_hunt.active()) and (not self.activity.hunting(now) or business) and self.bank.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.bank.reason);return
         if self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
@@ -1029,6 +1044,8 @@ class Hunter:
             candidates=[e for e in self.world.entities.values() if self.eligible(e,now)]
             self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
             candidates.sort(key=lambda e:self.target_score(e,now))
+            group_target=self.group_hunt.target(now) if self.group_hunt else None
+            if group_target:candidates.sort(key=lambda e:e.identity!=group_target.identity)
             if self.region and now-self.last_target_at>=20 and not self.assist_target:
                 known={e.identity for e in candidates}
                 models=self.learning.admissible(self.region,own,now)
@@ -1041,7 +1058,7 @@ class Hunter:
             # Active quest mobs can be shared on the first pass.
             for join_busy in (False,True):
                 for candidate in candidates:
-                    shared=join_busy or candidate.model in shared_models
+                    shared=join_busy or candidate.model in shared_models or bool(group_target and candidate.identity==group_target.identity)
                     key=(self.world.map,candidate.identity,candidate.handle)
                     if self.coordination and not self.coordination.available(self.owner,key,now,shared=shared):
                         self.busy_targets+=1
@@ -1382,6 +1399,10 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     social.context_provider=context_line
     from public_chat import PublicChat,PublicBudget
     public_chat=PublicChat(world,client.wire.send,getattr(navigation,"public_chat_budget",None) or PublicBudget(),bot_name)
+    if policy.party:
+        from hunt_party import HuntParty
+        policy.group_hunt=HuntParty(world,policy,policy.party,client.wire.send)
+        public_chat.recruitment_provider=policy.group_hunt.advertisement
     def public_context(channel):
         if channel=='trade':
             if policy.commerce:return policy.commerce.advertisement(time.monotonic())
@@ -1403,6 +1424,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save()
         report.result['decision_loop']=dict(think_stats)
         report.result['route_planning']=policy.nav.planning_stats()
+        if policy.group_hunt:report.result['hunt_party']=policy.group_hunt.summary()
         report.result['sitting']=policy.sitting.summary()
         report.result['hunt']=policy.summary()
         if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
@@ -1439,9 +1461,11 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if policy.direct_trade:policy.direct_trade.observe(command,payload,now,policy)
             return
         if command in (5011,5012,5403):
+            if policy.group_hunt:policy.group_hunt.observe(command,payload,now)
             if contacts:contacts.hear(command,payload,now)
             return
         if command in (5401,5402):
+            if policy.group_hunt:policy.group_hunt.observe(command,payload,now)
             try:public_chat.observe(command,payload,now)
             except ProtocolError:report.result['public_chat_decode']='unsupported'
             return
@@ -1461,7 +1485,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                         reader=Reader(payload);reader.string_bytes();identity=reader.long()
                         client.wire.send(6003,struct.pack('>I',identity))
                     else:policy.party.observe(command,payload,now)
-                except ProtocolError:report.result['party_decode']='unsupported';policy.party=None
+                except ProtocolError:
+                    report.result['party_decode']='unsupported';policy.party=None;policy.group_hunt=None
+                    public_chat.recruitment_provider=None
             return
         if policy.vendor and policy.vendor.context and command in (801,802,803,805,806,807,808):
             try:
@@ -1565,6 +1591,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 if hasattr(navigation,'directory'):
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
                 if policy.party:
+                    if policy.group_hunt:policy.group_hunt.tick(now)
                     dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel,policy.shortcut) if f)
                     policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not policy.transaction_busy())
                 if policy.town:

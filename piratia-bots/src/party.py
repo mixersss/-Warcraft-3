@@ -10,6 +10,20 @@ class BotDirectory:
             self.rows[name]=dict(old,index=index,map=map_name,position=position,level=level,until=now+15)
     def active_count(self,now):
         with self.lock:return sum(row["until"]>now for row in self.rows.values())
+    def annotate(self,name,**fields):
+        with self.lock:
+            if name in self.rows:self.rows[name].update(fields)
+    def lookup(self,name,now):
+        with self.lock:
+            row=self.rows.get(name)
+            return dict(row) if row and row['until']>now else None
+    def claim_recruit(self,leader,name,now):
+        with self.lock:
+            row=self.rows.get(leader,{})
+            if row.get('offer_until',0)<=now:return False
+            claims={n:t for n,t in row.get('recruits',{}).items() if t>now}
+            if name not in claims and len(claims)>=4:return False
+            claims[name]=now+90;row['recruits']=claims;return True
     def reserve_invite(self,leader,recipient,now):
         with self.lock:
             self.invites={n:v for n,v in self.invites.items() if v[1]>now}
@@ -47,6 +61,14 @@ class Party:
         self.rng=random.Random(name+':party')
         self.session_until=None;self.leave_pending=None;self.next_leave=0;self.leave_requests=0
         self.personality=None;self.humans=set();self.human_requests=0
+        self.recruitment=None
+    def request_bot(self,name,now):
+        peer=self.directory.lookup(name,now)
+        if (not peer or name in self.members or self.pending or now<self.next_invite or len(self.members)>=5 or
+                (self.members and self.members[0]!=self.name) or
+                not self.directory.reserve_invite(self.name,name,now)):return False
+        self.send(6001,string(name));self.invites+=1;self.pending_name=name;self.pending=now+12;self.next_invite=now+3
+        return True
     def request_name(self,name,now):
         if (not name or len(name.encode('cp1251',errors='replace'))>32 or name.lower().startswith('bot')):return 'Не могу пригласить это имя.'
         if len(self.members)>=5:return 'У нас уже полная группа.'
@@ -73,8 +95,9 @@ class Party:
                 else:self.send(6003,struct.pack('>I',identity))
                 return
             # Both endpoints must be running known bots, on the same map nearby.
-            if (peer and peer['index']%5==1 and peer['map']==self.world.map
-                    and self.index%3 and not self.members
+            recruited=bool(self.recruitment and self.recruitment.accepts(name,now))
+            if (peer and (recruited or (not self.recruitment and peer['index']%5==1 and self.index%3)) and peer['map']==self.world.map
+                    and abs(peer['level']-self.world.own.values.get(0,1))<=5 and not self.members
                     and math.dist(peer['position'],self.world.position(now))<3000):
                 self.send(6002,struct.pack('>I',identity));self.accepts+=1
             else:self.send(6003,struct.pack('>I',identity))
@@ -95,7 +118,7 @@ class Party:
             else:self.members=();self.pending=None
             if len(self.members)<2:
                 self.session_until=None;self.leave_pending=None
-                self.next_invite=max(self.next_invite,now+self.rng.uniform(120,240))
+                self.next_invite=max(self.next_invite,now+(3 if self.recruitment else self.rng.uniform(120,240)))
         elif command==5003:
             if self.pending_name:self.directory.release_invite(self.name,self.pending_name)
             self.pending_name=None
@@ -110,6 +133,7 @@ class Party:
                 self.send(6004,b'');self.leave_requests+=1
                 self.leave_pending=now+15;self.next_leave=now+300
             return
+        if self.recruitment:return # Echo/PM rendezvous owns invitations in the runtime.
         if index%5!=1 or index%3==0 or now<self.next_invite or self.pending or not w.own.alive:return
         peers=self.directory.peers(self.name,now)
         if self.members and self.members[0]!=self.name:return

@@ -57,7 +57,7 @@ class Town:
             if not any(self.gear.types.get(i.identity)==9 and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
                 staves=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i)==9 and self.gear.compatible(w.own,i)]
                 if staves:result.append(min(staves,key=lambda i:(self.life.prices.get(i,10**9),i)))
-        if job in (2,12) and self.gear.types.get(w.own.equipment.get(6)) not in (3,4):
+        if job in (2,12) and not any(self.gear.types.get(w.own.equipment.get(link)) in (3,4) for link in (6,9)):
             if not any(self.gear.types.get(i.identity) in (3,4) and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
                 bows=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i) in (3,4) and self.gear.compatible(w.own,i)]
                 if bows:result.append(min(bows,key=lambda i:(self.life.prices.get(i,10**9),i)))

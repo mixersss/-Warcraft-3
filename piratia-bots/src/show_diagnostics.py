@@ -55,6 +55,8 @@ def render_report(report):
     lines.append(f"  Сумка мешает NPC: {fight.get('inventory_blocker') or 'нет'}; подбор={json.dumps(report.get('loot',{}),ensure_ascii=False)}")
     lines.append(f"  Бой: цель={fight.get('target_id')}; HP={fight.get('target_hp')}; совместная={fight.get('shared_target')}; без урона={fight.get('seconds_since_target_damage')}; смены без урона={fight.get('no_damage_retargets',0)}")
     lines.append(f"  Версия: {report.get('version','не указана')}")
+    lines.append(f"  Пати для кача: {json.dumps(report.get('hunt_party',{}),ensure_ascii=False)}")
+    lines.append(f"  Мировой чат: {json.dumps(report.get('public_chat',{}),ensure_ascii=False)}")
     lines.extend([f"  Продажа: {vendor.get('state','нет данных')}; запросы={vendor.get('sale_requests',0)}; подтверждено={vendor.get('confirmed_sales',0)}; тайм-ауты={vendor.get('confirmation_timeouts',0)}",f"  Предметы: {json.dumps(vendor.get('bag_items',[]),ensure_ascii=False)}"])
     return '\n'.join(lines)
 

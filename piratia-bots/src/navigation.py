@@ -128,10 +128,18 @@ class Navigation:
         scale=2 if bits is not None else 1;step=100//scale
         width,height=self.width*scale,self.height*scale
         start=self.recovery_cell(position);blocked=set(blocked);radius*=scale
+        raw_bits=getattr(self,'recovery_bits',None)
+        start_index=start[1]*width+start[0]
+        occupied_physical=(raw_bits is not None and 0<=start[0]<width and 0<=start[1]<height
+                           and bool(raw_bits[start_index//8]&(1<<(7-start_index%8))))
         def free(c):
             x,y=c
             if not (0<=x<width and 0<=y<height) or (c!=start and c in blocked):return False
             index=y*width+x
+            # The server may already have stopped us on the excluded edge of
+            # a shore. Permit ONLY that occupied, physically clear origin; every
+            # subsequent cell must still be dry. Never centre deeper into it.
+            if c==start and occupied_physical:return True
             return bool(bits[index//8]&(1<<(7-index%8))) if bits is not None else physical[index]==1
         if not free(start) or not self.needs_recovery(position):return []
         parents={start:None};queue=deque([start]);goal=None
@@ -153,6 +161,7 @@ class Navigation:
         while goal is not None:cells.append(goal);goal=parents[goal]
         points=[tuple(position)]
         for cell in reversed(cells):
+            if cell==start and occupied_physical and bits is not None and not bits[start_index//8]&(1<<(7-start_index%8)):continue
             point=((cell[0]+self.origin[0]*scale)*step+step//2,
                    (cell[1]+self.origin[1]*scale)*step+step//2)
             if point!=points[-1]:points.append(point)
@@ -200,6 +209,28 @@ class Navigation:
             else:y+=sy;ty+=step_y
             if not self.free((x,y)):return False
         return True
+
+    def movement_segment(self,start,end,max_distance=2400):
+        """Send a short checked prefix, preserving the rest of a cached route.
+
+        A 32-turn packet can otherwise span most of a map. Short prefixes let
+        the controller react to visible mobs and actual server corrections in
+        seconds; they do not change passability or permit shoreline shortcuts.
+        """
+        route=self.segment(start,end)
+        if len(route)<2:return route
+        result=[route[0]];remaining=max_distance
+        for point in route[1:]:
+            origin=result[-1];length=math.dist(origin,point)
+            if length<=remaining:
+                result.append(point);remaining-=length
+                if remaining<1:break
+            else:
+                fraction=remaining/length
+                cut=tuple(round(a+(b-a)*fraction) for a,b in zip(origin,point))
+                if cut!=origin and self.line_clear(origin,cut):result.append(cut)
+                break
+        return result
 
     def enable_incremental(self):
         self.incremental=True;self.local=threading.local()
