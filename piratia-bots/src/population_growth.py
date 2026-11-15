@@ -1,4 +1,4 @@
-"""One authorised, resumable 200 -> 300 expansion; never replace the saved prefix."""
+"""Authorised resumable expansions 200 -> 300 and 300 -> 400; preserve saved prefixes."""
 import hashlib
 import json
 import os
@@ -43,14 +43,16 @@ class PopulationGrowth:
     BASE=200
     TARGET=300
 
-    def __init__(self,data):
-        self.data=Path(data);self.path=self.data/'population-growth.json';self.lock=threading.Lock()
+    def __init__(self,data,target=300):
+        if type(target) is not int or target not in (300,400):raise ValueError('Разрешено расширение только до300 или400.')
+        self.BASE,self.TARGET=target-100,target
+        self.data=Path(data);self.path=self.data/('population-growth.json' if target==300 else 'population-growth-400.json');self.lock=threading.Lock()
         self.state=json.loads((self.data/'bot-local.json').read_text(encoding='utf-8-sig'))
         if self.state.get('version')!=1 or not isinstance(self.state.get('bots'),list):
             raise RuntimeError('Неверный формат сохранённой популяции; расширение остановлено.')
         count=len(self.state['bots'])
         if not self.BASE<=count<=self.TARGET:
-            raise RuntimeError('Расширение рассчитано на сохранённых 200 ботов до фиксированных 300. Верни полную data.')
+            raise RuntimeError(f'Для расширения до{self.TARGET} нужны сохранённые{self.BASE}ботов. Верни полную data; незавершённое расширение до300 сначала продолжи с --grow-to 300.')
         if self.path.exists():
             self.ledger=json.loads(self.path.read_text(encoding='utf-8'))
             self.validate()
@@ -58,11 +60,15 @@ class PopulationGrowth:
             # A complete legacy population is protected, not treated as unfinished.
             self.ledger=None
         elif count==self.BASE:
+            if self.TARGET==400 and (self.data/'population-growth.json').exists():
+                previous=PopulationGrowth(self.data,target=300)
+                if previous.ledger and set(previous.ledger['confirmed_indices'])!=set(range(201,301)):
+                    raise RuntimeError('Сначала заверши создание прежних300: Start-World.cmd --grow-to 300. Существующие персонажи не заменены.')
             roles=RoleStore(self.data/'bot-roles.json').read_records()
             names=[r['character'] for r in self.state['bots']]
             if len(set(names))!=self.BASE or any(name not in roles for name in names):
-                raise RuntimeError('Для расширения нужен реестр классов всех нынешних 200 ботов. Запусти их прежним Start-Bot.cmd и сохрани полную data.')
-            backup=self.data/'backups'/'before-growth-300'
+                raise RuntimeError(f'Для расширения нужен реестр классов всех нынешних{self.BASE}ботов. Сохрани полную data; старые персонажи не заменяются.')
+            backup=self.data/'backups'/f'before-growth-{self.TARGET}'
             # Never overwrite the pre-expansion snapshot, including after a crash.
             backup.mkdir(parents=True,exist_ok=True)
             for source in self.data.glob('*.json'):
@@ -74,18 +80,18 @@ class PopulationGrowth:
                          'plans':plans,'confirmed_indices':[]}
             atomic_json(self.path,self.ledger)
         else:
-            raise RuntimeError('Неполное расширение без журнала. Верни population-growth.json из той же data; новые боты не созданы.')
+            raise RuntimeError(f'Неполное расширение без журнала. Верни {self.path.name} из той же data; новые боты не созданы.')
 
     def validate(self):
         d=self.ledger
         if (d.get('version')!=1 or d.get('base_count')!=self.BASE or d.get('target_count')!=self.TARGET
                 or d.get('prefix_digest')!=prefix_digest(self.state,self.BASE)):
-            raise RuntimeError('Журнал расширения не совпадает с нынешними 200 ботами; замена запрещена.')
+            raise RuntimeError(f'Журнал расширения не совпадает с нынешними{self.BASE}ботами; замена запрещена.')
         plans=d.get('plans',[]);confirmed=d.get('confirmed_indices',[])
         if (len(plans)!=100 or any(not isinstance(p,dict) or set(p)!={'body','target_job'}
                 or p['target_job'] not in ALLOWED.get(p['body'],()) for p in plans)
                 or not isinstance(confirmed,list) or len(set(confirmed))!=len(confirmed)
-                or any(type(i) is not int or not 201<=i<=len(self.state['bots']) for i in confirmed)):
+                or any(type(i) is not int or not self.BASE<i<=len(self.state['bots']) for i in confirmed)):
             raise RuntimeError('Некорректный журнал расширения; новые боты не созданы.')
 
     @property

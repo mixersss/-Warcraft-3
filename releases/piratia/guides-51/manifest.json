@@ -1,0 +1,17 @@
+{
+  "version": 51,
+  "initial_walkthrough_steps": 19,
+  "history_definition_rows": 426,
+  "bound_history_rows": 425,
+  "build_guides": 8,
+  "skill_book_rows": 74,
+  "external_complete_guides_verified": false,
+  "basis": "owner server facts and owner eight builds; original compiled guide",
+  "source_evidence_sha256": "3e03cc9cd8eca2da1d4110dde56bd0cfd92b3ba602187f14c4346f17429faff3",
+  "files_sha256": {
+    "Piratia-History-and-Skills.html": "b151fc85c990005a489a27c070684077e486722834e9e788a678f090dd2287a9",
+    "Piratia-History-and-Skills.md": "aa964da2906ec61c2ec9a65d06886c9140c89788a74a460daf1a1d0adecb07ca",
+    "Piratia-History-and-Skills.pdf": "e0f45b1982d4347660496699c60d78b478e08bd86637b3bc77a0300d4eb92f0d",
+    "sources.json": "c98349deb2239dc9932fe56d22ac466a0983b2e67500ffe8e45dfe28fbdcb2f6"
+  }
+}

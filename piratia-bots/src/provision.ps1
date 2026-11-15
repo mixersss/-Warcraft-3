@@ -1,4 +1,4 @@
-param([ValidateRange(1,300)][int]$Count = 3, [ValidateRange(0,300)][int]$ExistingCount = 0)
+param([ValidateRange(1,400)][int]$Count = 3, [ValidateRange(0,400)][int]$ExistingCount = 0)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
@@ -126,13 +126,7 @@ FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.account_login', N'U');
         $script:setupStage = 'write_bot_state'
         Save-BotState -State $state -Path $statePath
     }
-    $protectedIndices = @()
-    $growthPath = Join-Path $dataPath 'population-growth.json'
-    if ([IO.File]::Exists($growthPath)) {
-        $growth = [IO.File]::ReadAllText($growthPath) | ConvertFrom-Json
-        if ($growth.version -ne 1 -or $growth.base_count -ne 200 -or $growth.target_count -ne 300) { throw 'Invalid growth journal.' }
-        $protectedIndices = @($growth.confirmed_indices)
-    }
+    $protectedIndices = @(Get-BotGrowthConfirmedIndices -DataPath $dataPath)
     $ordinal = 0
     $outputBots = @()
     foreach ($entry in @($state.bots | Select-Object -First $Count)) {

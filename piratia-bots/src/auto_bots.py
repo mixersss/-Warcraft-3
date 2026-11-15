@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha50'
+    report.result['version'] = 'AutoAccountsAlpha51'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -236,16 +236,16 @@ def main():
     parser.add_argument('--seconds', type=int, default=7200)
     parser.add_argument('--port', type=int, default=1973)
     parser.add_argument('--mode', choices=('idle', 'hunt', 'adventure', 'mixed'), default='mixed')
-    parser.add_argument('--grow-to', type=int, choices=[300], help='resume the authorised saved200 to300 expansion')
+    parser.add_argument('--grow-to', type=int, choices=[300,400], help='resume the authorised saved200 to300 or saved300 to400 expansion')
     parser.add_argument('--allow-new-bots', action='store_true',
                         help='explicitly allow a new population or extending saved accounts')
     args = parser.parse_args()
-    if not 1 <= args.count <= 300 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
-        parser.error('count: 1..300; seconds: 0 (continuous) or 5..86400; port: 1..65535')
+    if not 1 <= args.count <= 400 or not (args.seconds==0 or 5 <= args.seconds <= 86400) or not 1 <= args.port <= 65535:
+        parser.error('count: 1..400; seconds: 0 (continuous) or 5..86400; port: 1..65535')
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 50).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 51).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -254,7 +254,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha50'
+    setup_report.result['version'] = 'AutoAccountsAlpha51'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -287,7 +287,7 @@ def main():
         print('Проверяю SQL Server и подготавливаю отдельные аккаунты ботов…')
         # The run lock and live Gate check precede every state mutation.
         from population_growth import PopulationGrowth
-        growth=PopulationGrowth(data) if args.grow_to else None
+        growth=PopulationGrowth(data,target=args.grow_to) if args.grow_to else None
         saved_count=setup_report.result['local_data']['saved_bots']
         bots = prepare_accounts(args.count,growth.existing_count if growth else saved_count)
         setup_report.stage('accounts_ready')
@@ -301,8 +301,8 @@ def main():
         if growth:
             growth.assign(bots)
             pending=sum(not b['preserve_existing'] for b in bots)
-            setup_report.result['population_growth']={'target_count':300,'protected_count':300-pending,'pending_new_characters':pending}
-            print(f'Расширение до300: защищено{300-pending}, новых персонажей осталось создать{pending}. Повторный запуск не добавляет ещё100.')
+            setup_report.result['population_growth']={'target_count':growth.TARGET,'protected_count':growth.TARGET-pending,'pending_new_characters':pending}
+            print(f'Расширение до{growth.TARGET}: защищено{growth.TARGET-pending}, новых персонажей осталось создать{pending}. Повторный запуск не добавляет ещё100.')
             setup_report.write(report_path)
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
         from regions import Regions
@@ -342,7 +342,7 @@ def main():
         setup_report.result['successful_bots'] = sum(results)
         print(f'Проверку завершили: {sum(results)} из {len(bots)} ботов.')
         return 0 if all(results) else 1
-    except (OSError, RuntimeError, subprocess.TimeoutExpired, KeyboardInterrupt) as exc:
+    except (OSError, RuntimeError, ValueError, subprocess.TimeoutExpired, KeyboardInterrupt) as exc:
         setup_report.result['error_type'] = type(exc).__name__
         if isinstance(exc, KeyboardInterrupt):
             print('\nОстановлено.')

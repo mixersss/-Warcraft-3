@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "checked_date_utc": "2026-11-15",
+  "external_complete_class_guides_verified": false,
+  "notes": "Direct search/guide sites denied by the cloud destination allowlist. Legitimate public GitHub repositories were checked independently; they do not supply a complete player build guide. The delivered guide is an original compilation of the owner's server facts, not copied community articles.",
+  "sources": [
+    {"id":"owner_story","title":"Квесты именно этой сборки","local_source":"resource/script/MisScript/MissionScript02.lua","role":"numeric requirements and NPC binding facts","published_original":false},
+    {"id":"owner_skillinfo","title":"Требования навыков именно этой сборки","local_source":"resource/skillinfo.txt","role":"actual jobs, caps, skill prerequisites and native cost","published_original":false},
+    {"id":"owner_life_items","title":"Книги и поставщики навыков","local_source":"ItemInfo.txt / ItemEffect.lua / NPC tables","role":"book-to-skill facts and known static sellers","published_original":false},
+    {"id":"owner_eight_builds","title":"Восемь билдов из ТЗ владельца","role":"stat and role priorities; existing earned stats unchanged"},
+    {"id":"midgard_context","title":"MidGard Realm documentation: Quest / advancement and story concepts","url":"https://github.com/MidGard-Realm-Project/Documentation/blob/main/README.md","status":"read","role":"general context only; a different custom server, not an authoritative skill build"},
+    {"id":"forums_archive","title":"Tales of Pirates Forums Archive — Dytomic","url":"https://github.com/Dytomic/top-forums-archive","status":"README and title index checked","role":"developer-forum research archive; no verified complete player skill/story walkthrough found"},
+    {"id":"pkodev2","title":"PKODev2 forum materials — V3ct0r1024","url":"https://github.com/V3ct0r1024/pkodev2.forum","status":"README read","role":"server documentation, not a complete player walkthrough"}
+  ],
+  "blocked_destinations": ["www.google.com", "pkodev.net", "piratia.pw"],
+  "block_layer": "enforced cloud restricted network allowlist; no authentication or site-level failure inferred"
+}

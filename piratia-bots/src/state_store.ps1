@@ -1,7 +1,7 @@
 # Shared by the Windows setup helper and the standalone persistence regression test.
 function Initialize-BotSecondaryPasswordState {
     param([Parameter(Mandatory=$true)]$State,
-          [ValidateRange(1,300)][int]$Count,
+          [ValidateRange(1,400)][int]$Count,
           [Parameter(Mandatory=$true)][scriptblock]$CreateProtectedPassword)
     $changed = $false
     foreach ($entry in @($State.bots | Select-Object -First $Count)) {
@@ -35,10 +35,33 @@ function Save-BotState {
 }
 
 function Assert-BotAccountMayBeCreated {
-    param([ValidateRange(1,300)][int]$Ordinal,
-          [ValidateRange(0,300)][int]$ExistingCount,
+    param([ValidateRange(1,400)][int]$Ordinal,
+          [ValidateRange(0,400)][int]$ExistingCount,
           [int[]]$ConfirmedIndices = @())
     if ($Ordinal -le $ExistingCount -or $Ordinal -in $ConfirmedIndices) {
         throw 'A protected saved account is missing. Restore the database; no replacement created.'
     }
+}
+
+# Both expansion journals remain immutable except native enter-world confirmations.
+function Get-BotGrowthConfirmedIndices {
+    param([Parameter(Mandatory=$true)][string]$DataPath)
+    $all = @()
+    foreach ($target in @(300,400)) {
+        $name = if ($target -eq 300) { 'population-growth.json' } else { 'population-growth-400.json' }
+        $path = Join-Path $DataPath $name
+        if (-not [IO.File]::Exists($path)) { continue }
+        $growth = [IO.File]::ReadAllText($path) | ConvertFrom-Json
+        if ($growth.version -ne 1 -or $growth.base_count -ne ($target-100) -or $growth.target_count -ne $target) {
+            throw 'Invalid growth journal; protected accounts cannot be replaced.'
+        }
+        $indices = @($growth.confirmed_indices)
+        if (@($indices | Select-Object -Unique).Count -ne $indices.Count) { throw 'Duplicate growth confirmations.' }
+        foreach ($index in $indices) {
+            if ($index -isnot [int] -and $index -isnot [long]) { throw 'Invalid growth confirmation.' }
+            if ($index -le ($target-100) -or $index -gt $target) { throw 'Growth confirmation outside authorised range.' }
+            $all += [int]$index
+        }
+    }
+    return $all
 }

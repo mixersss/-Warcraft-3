@@ -59,7 +59,7 @@ try {
     Assert-True ($migrated.bots[2].secondary_password_dpapi -eq 'protected-secondary-placeholder') 'Migrated encrypted field was lost.'
     # Alpha41 accepts300; preserve every existing encrypted credential.
     # Mix legacy missing PIN fields with already-provisioned records; never reroll.
-    foreach ($populationCount in @(1, 10, 30, 60, 100, 200, 300)) {
+    foreach ($populationCount in @(1, 10, 30, 60, 100, 200, 300, 400)) {
         $population = [PSCustomObject]@{version=1;windows_sid='test';bots=@()}
         for ($index=1; $index -le $populationCount; $index++) {
             $entry = [PSCustomObject]@{account="test$index";password_dpapi="keep-login-$index"}
@@ -82,7 +82,7 @@ try {
         $changed = Initialize-BotSecondaryPasswordState -State $reloaded -Count $populationCount -CreateProtectedPassword { throw 'Existing population must not generate credentials.' }
         Assert-True (-not $changed) 'Population migration was not idempotent.'
     }
-    foreach ($invalidCount in @(0,301)) {
+    foreach ($invalidCount in @(0,401)) {
         $rejected = $false
         try {
             Initialize-BotSecondaryPasswordState -State $population -Count $invalidCount -CreateProtectedPassword { throw 'Invalid count reached generator.' }
@@ -98,7 +98,24 @@ try {
     foreach ($ordinal in @(201, 202, 300)) {
         Assert-BotAccountMayBeCreated -Ordinal $ordinal -ExistingCount 200 -ConfirmedIndices @(203)
     }
-    [Console]::Out.WriteLine('PASS: saves, backups, restart and PIN migration preserve credentials; populations 1/10/30/60/100/200/300 accepted, 0/301 rejected.')
+    $oldGrowth = [PSCustomObject]@{version=1;base_count=200;target_count=300;confirmed_indices=@(203)}
+    $newGrowth = [PSCustomObject]@{version=1;base_count=300;target_count=400;confirmed_indices=@(301,399)}
+    [IO.File]::WriteAllText((Join-Path $root 'population-growth.json'), ($oldGrowth | ConvertTo-Json))
+    [IO.File]::WriteAllText((Join-Path $root 'population-growth-400.json'), ($newGrowth | ConvertTo-Json))
+    $protected = @(Get-BotGrowthConfirmedIndices -DataPath $root)
+    Assert-True ($protected.Count -eq 3 -and 203 -in $protected -and 301 -in $protected -and 399 -in $protected) 'Both expansion confirmations must be retained.'
+    $rejected = $false
+    try { Assert-BotAccountMayBeCreated -Ordinal 399 -ExistingCount 300 -ConfirmedIndices $protected }
+    catch { $rejected = $true }
+    Assert-True $rejected 'Confirmed new account was allowed to be replaced.'
+    Assert-BotAccountMayBeCreated -Ordinal 400 -ExistingCount 300 -ConfirmedIndices $protected
+    $newGrowth.confirmed_indices = @(201)
+    [IO.File]::WriteAllText((Join-Path $root 'population-growth-400.json'), ($newGrowth | ConvertTo-Json))
+    $rejected = $false
+    try { Get-BotGrowthConfirmedIndices -DataPath $root }
+    catch { $rejected = $true }
+    Assert-True $rejected 'Out of range expansion confirmation was accepted.'
+    [Console]::Out.WriteLine('PASS: saves, backups, restart and PIN migration preserve credentials; populations 1/10/30/60/100/200/300/400 accepted, 0/401 rejected.')
 } finally {
     [IO.Directory]::Delete($root, $true)
 }

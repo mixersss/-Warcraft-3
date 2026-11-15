@@ -9,6 +9,11 @@ class LifeItems:
         self.chests={int(k):v for k,v in data['chests'].items()}
         self.names={int(k):v for k,v in data['names'].items()}
         self.prices={int(k):v for k,v in data['prices'].items()}
+        self.skill_guides=None
+        guide=Path(assets)/'skill-guides.json'
+        if guide.exists():
+            from skill_plan import validate_guides
+            self.skill_guides=validate_guides(json.loads(guide.read_text(encoding='utf8')),self.books)
         from owner_shops import read_overlay
         self.owner_shops=None;self.owner_shop_problem=None
         try:self.owner_shops=read_overlay(assets)

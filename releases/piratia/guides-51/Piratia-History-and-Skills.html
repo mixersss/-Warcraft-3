@@ -1,0 +1,760 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Пиратия — история и навыки</title><style>
+body{font:17px/1.65 system-ui,sans-serif;background:#edf3f6;color:#172f3e;margin:0}main{max-width:1120px;margin:auto;padding:32px}h1{font-size:2.3rem;line-height:1.15}h2{margin-top:60px;border-bottom:2px solid #26758b;padding-bottom:12px}h3{color:#125b72;margin-top:32px}li{margin:8px 0}.tools{position:sticky;top:0;background:#122e3e;padding:12px;display:flex;gap:12px;z-index:2;color:white;align-items:center}.tools input{flex:1;min-width:90px;padding:12px;border:0;border-radius:8px;font:inherit}.tools button{padding:12px;border:0;border-radius:8px;background:#d5b673;color:#142e3d;cursor:pointer}.table{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:12px;border:1px solid #c5d5de;text-align:left;vertical-align:top;min-width:130px}th{background:#dce9ef}tr:nth-child(even){background:#e5eef2}p{overflow-wrap:anywhere}@media(max-width:650px){main{padding:18px}h1{font-size:1.8rem}}@page{size:A4;margin:12mm}@media print{td,th{min-width:0;padding:5px;overflow-wrap:anywhere}table{table-layout:fixed}.tools{display:none}body{background:white;font-size:11pt}main{max-width:none;padding:0}table{font-size:8pt}h2,h3{break-after:avoid}}
+</style><div class="tools"><input id="search" aria-label="Поиск в таблицах" placeholder="Поиск по таблицам: навык, книга, NPC, квест…"><button onclick="window.print()">Сохранить в PDF</button><span id="count"></span></div><main><h1>Пиратия PKO 1.38 — история и навыки</h1>
+<p>Версия справочника: Alpha51, 15.11.2026. Составлен под переданные владельцем файлы сервера. Это наш сводный гайд, а не найденная статья неизвестного сервера. Полные внешние гайды пока не проверены: обычные сайты блокирует сеть облачной среды. Проверенные публичные ссылки перечислены в конце.</p>
+<h2>Как пользоваться</h2>
+<p>Открой HTML-файл в браузере: он работает без интернета, есть поиск и печать в PDF. Числа координат совпадают с миникартой; реальные карты/доступность НПС могут зависеть от условий сервера. Названия в скобках оставлены как в исходной сборке. Перевод внутри самой игры не устанавливается.</p>
+<h2>Исторические квесты: начало в Аргенте</h2>
+<p>Начинай с 10 уровня. У Сенны (Newbie Guide - Senna) возьми Secretary Message и иди к секретарю Salvier. Варианты первого письма в других городах сходятся к общей записи завершения200; не пытайся брать все варианты одновременно.</p>
+<p>История даёт жизненный опыт: через жизненные уровни получаются очки мирных навыков, например для ларька. Это отдельная система от боевых очков навыков. Покупка книги сама по себе очков не создаёт. Размер награды в игре зависит от действующих настроек сервера; здесь рейты не меняются.</p>
+<p>Дальше следуй шагам ниже. Особое место — Food Poisoning207 и Quest for Antidote208: сначала письмо3966 к Дитто, затем ингредиенты противоядия; после получения противоядия3967 вернись к генералу и заверши207. Их нельзя проходить как независимые задания строго по номеру.</p>
+<h3>1. Письмо секретарю — Secretary Message [журнал 200]</h3>
+<p>Взять: Newbie Guide - Senna — Аскарон / Аргент (2223, 2785).</p>
+<p>Задача: поговорить / проверить описание задания у НПС.</p>
+<p>Сдать: Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749).</p>
+<h3>2. Небольшое поручение — A Small Task [журнал 203]</h3>
+<p>Взять: Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749).</p>
+<p>Задача: поговорить / проверить описание задания у НПС.</p>
+<p>Сдать: General - William — Аскарон / Аргент (2277, 2831).</p>
+<h3>3. Провизия для флота — Food for the Navy [журнал 204]</h3>
+<p>Взять: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Задача: собрать Мясо пузырчатого моллюска (ID3963) ×5; собрать Мясо морской улитки (ID3964) ×10; собрать Эльфийский фрукт (ID3116) ×10.</p>
+<p>Сдать: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Источники Мясо пузырчатого моллюска: Bubble Clam (ID213, ур.9) — Аскарон / Аргент (2258, 2510). Это области спавна, а не текущая позиция монстра.</p>
+<p>Источники Мясо морской улитки: Sea Snail (ID39, ур.8) — Аскарон / Аргент (1989, 2838); Hard Crust Snail (ID292, ур.22) — Аскарон / Аргент (1495, 3232); Northern Snail (ID293, ур.27) — Синий океан / Ледынь (792, 718). Это области спавна, а не текущая позиция монстра.</p>
+<p>Источники Эльфийский фрукт: Sharp Beak (ID32, ур.13) — Синий океан / Ледынь (798, 488); Mystic Shrub (ID75, ур.1) — Синий океан / Ледынь (3148, 2423); Forest Spirit (ID103, ур.3) — Аскарон / Аргент (2150, 2600). Это области спавна, а не текущая позиция монстра.</p>
+<h3>4. Пропавший Томми — Missing Tommy [журнал 205]</h3>
+<p>Взять: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Задача: поговорить / проверить описание задания у НПС.</p>
+<p>Сдать: Youth - Tommy — Аскарон / Аргент (1962, 2694).</p>
+<h3>5. Доклад генералу — Report to General [журнал 206]</h3>
+<p>Взять: Youth - Tommy — Аскарон / Аргент (1962, 2694).</p>
+<p>Задача: собрать Письмо для Томми (ID3965) ×1.</p>
+<p>Сдать: General - William — Аскарон / Аргент (2277, 2831).</p>
+<h3>6. Пищевое отравление — Food Poisoning [журнал 207]</h3>
+<p>Взять: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Задача: собрать Доза противоядия (ID3967) ×1.</p>
+<p>Сдать: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Если нет противоядия3967: отнеси полученное письмо3966 Дитто (2250,2770), пройди связанный поиск противоядия208 и затем вернись к этому шагу.</p>
+<h3>7. Поиск противоядия — Quest for Antidote [журнал 208]</h3>
+<p>Взять: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Задача: собрать Кашемир (ID1678) ×3; собрать Хвост свинокрыла (ID3968) ×3; собрать Тяжелый панцирь (ID1614) ×3.</p>
+<p>Сдать: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Источники Кашемир: Cuddly Lamb (ID125, ур.8) — Аскарон / Аргент (2027, 2600); Cuddly Lamb (ID435, ур.8). Это области спавна, а не текущая позиция монстра.</p>
+<p>Источники Хвост свинокрыла: Piglet (ID237, ур.10) — Аскарон / Аргент (1575, 2516). Это области спавна, а не текущая позиция монстра.</p>
+<p>Источники Тяжелый панцирь: Sea Snail (ID39, ур.8) — Аскарон / Аргент (1989, 2838); Sand Crab (ID186, ур.47) — Магический океан / Шайтан (1298, 3056). Это области спавна, а не текущая позиция монстра.</p>
+<h3>8. Просьба Томми — Tommy&#x27;s Request [журнал 209]</h3>
+<p>Взять: General - William — Аскарон / Аргент (2277, 2831).</p>
+<p>Задача: поговорить / проверить описание задания у НПС.</p>
+<p>Сдать: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<h3>9. Странная причина — A Crazy Reason [журнал 210]</h3>
+<p>Взять: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Задача: собрать Слюна чокнутой овцы (ID3969) ×5.</p>
+<p>Сдать: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Источники Слюна чокнутой овцы: Whacky Lamb (ID126, ур.14) — Аскарон / Аргент (1952, 2657). Это области спавна, а не текущая позиция монстра.</p>
+<h3>10. Тщательное расследование — Thorough Investigation [журнал 211]</h3>
+<p>Взять: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Задача: собрать Великая королевская жемчужина (ID3970) ×1.</p>
+<p>Сдать: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Источники Великая королевская жемчужина: Great King Clam (ID229, ур.15) — Аскарон / Аргент (2048, 2514). Это области спавна, а не текущая позиция монстра.</p>
+<h3>11. Доклад Дитто — Ditto&#x27;s Report [журнал 212]</h3>
+<p>Взять: Physican - Ditto — Аскарон / Аргент (2250, 2770).</p>
+<p>Задача: собрать Доклад Дито (ID3971) ×1.</p>
+<p>Сдать: Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749).</p>
+<h3>12. Новое поручение — A New Task [журнал 213]</h3>
+<p>Взять: Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749).</p>
+<p>Задача: собрать Рекомендательное письмо Сальвьера (ID3972) ×1.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<h3>13. Потерянный инструмент — The Lost Tool [журнал 214]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: собрать Украденная лопата (ID3973) ×5; собрать Украденный шлем безопасности (ID3974) ×3; собрать Украденная лампа безопасности (ID3975) ×5.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<h3>14. Уничтожить грибы — Kill the Shrooms [журнал 215]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: убить Killer Shroom (ID252, ур.19) ×10.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<h3>15. Просьба Дитто — Ditto&#x27;s Request [журнал 216]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: собрать Желуд. камень короля бронекрабов (ID3976) ×1.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Источники Желуд. камень короля бронекрабов: Armored King Crab (ID274, ур.20) — Аскарон / Аргент (1767, 2497). Это области спавна, а не текущая позиция монстра.</p>
+<h3>16. Карта логова бандитов — Bandit Hideout Map [журнал 217]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: собрать План разбойничьего укрытия (ID3977) ×1.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<h3>17. Засада на бандита — Ambush Bandit [журнал 218]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: собрать Разбойничье ожерелье (ID1841) ×3.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Источники Разбойничье ожерелье: Bandit (ID93, ур.25) — eastgoaf (13, 10). Это области спавна, а не текущая позиция монстра.</p>
+<h3>18. Награда за голову — Bounty [журнал 219]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: убить Bandit Leader - Adder (ID211, ур.25) ×1.</p>
+<p>Сдать: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<h3>19. Визит в пустыню — Desert Visit [журнал 220]</h3>
+<p>Взять: Security - Kal — Аскарон / Аргент (1909, 2820).</p>
+<p>Задача: собрать Письмо секретаря (ID3978) ×1.</p>
+<p>Сдать: Clan Chief - Albuda — Магический океан / Шайтан (898, 3640).</p>
+<p>После Desert Visit цепь продолжается в Шайтане. Ниже есть справочник426определений истории из MissionScript02.lua, включая записи сдачи и ответвления. Это не426независимых поручений и не утверждение, что все ветки уже автоматизированы ботами: текущий контроллер ведёт19начальных журналов и промежуточное отравление.</p>
+<h2>Навыки всех классов и восьми билдов</h2>
+<p>Первая профессия: мечник→воитель/чемпион; лучник→стрелок; знахарка→целитель/колдунья; исследователь→покоритель морей. Первый класс получает доступную часть соответствующего плана, вторая профессия открывает продолжение. Новичку боевые книги не применяются до получения класса. Существующие статы и изученные навыки не сбрасываются.</p>
+<p>Число после названия — целевой ранг навыка, а не уровень персонажа. Иди по списку; недостающие предпосылки из таблицы внизу учи раньше. Если нужный ранг уже изучен, шаг пропускается. Класс, реальные очки и книги обязательны. Это приоритеты PvE под ТЗ владельца; универсального лучшего PvP-билда здесь не обещается.</p>
+<h3>Воитель: скорость атаки и два меча</h3>
+<p>Сначала открыть владение двумя мечами и усилить его; затем пассивная ловкость и атакующие навыки. Цель210скорости относится к итоговой экипировке/статам; навыки не дают её бесплатно.</p>
+<ol>
+<li>Иллюзорный удар / Illusion Slash — 4 (навык 81, книга 3165).</li>
+<li>Берсерк / Berserk — 5 (навык 84, книга 3170).</li>
+<li>Рубка двумя мечами / Dual Sword Mastery — 10 (навык 109, книга 3174).</li>
+<li>Сноровка / Deftness — 3 (навык 65, книга 3163).</li>
+<li>Кровавое безумие / Blood Frenzy — 5 (навык 70, книга 3176).</li>
+<li>Теневой удар / Shadow Slash — 1 (навык 86, книга 3179).</li>
+<li>Иллюзорный удар / Illusion Slash — 10 (навык 81, книга 3165).</li>
+<li>Кровавое безумие / Blood Frenzy — 10 (навык 70, книга 3176).</li>
+<li>Берсерк / Berserk — 10 (навык 84, книга 3170).</li>
+<li>Отклонение / Evasion — 10 (навык 69, книга 3175).</li>
+<li>Сноровка / Deftness — 10 (навык 65, книга 3163).</li>
+<li>Скрытность / Stealth — 1 (навык 123, книга 3177).</li>
+</ol>
+<h3>Чемпион: танк с двуручным оружием</h3>
+<p>Живучесть важнее максимального удара: защитный Will of Steel и Blood Bull, необходимые пассивы двуручного оружия, затем урон. Провокация относится к поздней групповой части; автоматическое применение всех баффов не заявлено.</p>
+<ol>
+<li>Иллюзорный удар / Illusion Slash — 1 (навык 81, книга 3165).</li>
+<li>Стальная воля / Will of Steel — 5 (навык 63, книга 3161).</li>
+<li>Бронелом / Break Armor — 4 (навык 222, книга 3238).</li>
+<li>Рык тигра / Tiger Roar — 5 (навык 127, книга 3293).</li>
+<li>Мастер большого меча / Greatsword Mastery — 3 (навык 67, книга 3168).</li>
+<li>Кровавый бык / Blood Bull — 5 (навык 68, книга 3172).</li>
+<li>Стальная воля / Will of Steel — 10 (навык 63, книга 3161).</li>
+<li>Кровавый бык / Blood Bull — 10 (навык 68, книга 3172).</li>
+<li>Усиление / Strengthen — 3 (навык 64, книга 3162).</li>
+<li>Могучий удар / Mighty Strike — 1 (навык 82, книга 3166).</li>
+<li>Первобытная ярость / Primal Rage — 1 (навык 83, книга 3173).</li>
+<li>Мастер большого меча / Greatsword Mastery — 10 (навык 67, книга 3168).</li>
+<li>Усиление / Strengthen — 10 (навык 64, книга 3162).</li>
+<li>Могучий удар / Mighty Strike — 10 (навык 82, книга 3166).</li>
+<li>Насмешка / Taunt — 5 (навык 242, книга 3297).</li>
+<li>Рык / Roar — 1 (навык 243, книга 3298).</li>
+</ol>
+<h3>Стрелок: полная точность</h3>
+<p>Сперва базовый выстрел и владение дальним оружием, затем пистолет и усиление урона. Ветка Headshot поздняя и требует цепочки ослаблений; её нельзя считать дешёвым стартовым навыком.</p>
+<ol>
+<li>Двойной выстрел / Dual Shot — 2 (навык 90, книга 3190).</li>
+<li>Мастер стрелкового оружия / Range Mastery — 10 (навык 74, книга 3187).</li>
+<li>Мастер огнестрельного оружия / Firegun Mastery — 5 (навык 78, книга 3192).</li>
+<li>Двойной выстрел / Dual Shot — 10 (навык 90, книга 3190).</li>
+<li>Мастер огнестрельного оружия / Firegun Mastery — 10 (навык 78, книга 3192).</li>
+<li>Ледяная стрела / Frozen Arrow — 2 (навык 93, книга 3197).</li>
+<li>Отравленная стрела / Venom Arrow — 1 (навык 224, книга 3241).</li>
+<li>Путь ветра / Windwalk — 4 (навык 75, книга 3188).</li>
+<li>Воодушевление / Rousing — 1 (навык 223, книга 3239).</li>
+<li>Ледяная стрела / Frozen Arrow — 5 (навык 93, книга 3197).</li>
+<li>Калечащий выстрел / Cripple — 5 (навык 94, книга 3202).</li>
+<li>Ослабление / Enfeeble — 5 (навык 95, книга 3203).</li>
+<li>Выстрел в голову / Headshot — 1 (навык 96, книга 3204).</li>
+<li>Выстрел в голову / Headshot — 10 (навык 96, книга 3204).</li>
+</ol>
+<h3>Стрелок: ловкость и точность</h3>
+<p>Ранний выстрел, движение и усиление скорости; владение пистолетом после Range Mastery10. Сохраняется выбор реального совместимого лука или пистолета, меч не является целевым оружием.</p>
+<ol>
+<li>Двойной выстрел / Dual Shot — 1 (навык 90, книга 3190).</li>
+<li>Мастер стрелкового оружия / Range Mastery — 3 (навык 74, книга 3187).</li>
+<li>Путь ветра / Windwalk — 4 (навык 75, книга 3188).</li>
+<li>Воодушевление / Rousing — 3 (навык 223, книга 3239).</li>
+<li>Двойной выстрел / Dual Shot — 4 (навык 90, книга 3190).</li>
+<li>Отравленная стрела / Venom Arrow — 1 (навык 224, книга 3241).</li>
+<li>Мастер стрелкового оружия / Range Mastery — 10 (навык 74, книга 3187).</li>
+<li>Мастер огнестрельного оружия / Firegun Mastery — 5 (навык 78, книга 3192).</li>
+<li>Воодушевление / Rousing — 10 (навык 223, книга 3239).</li>
+<li>Двойной выстрел / Dual Shot — 10 (навык 90, книга 3190).</li>
+<li>Мастер огнестрельного оружия / Firegun Mastery — 10 (навык 78, книга 3192).</li>
+<li>Ледяная стрела / Frozen Arrow — 2 (навык 93, книга 3197).</li>
+</ol>
+<h3>Целитель: полный дух</h3>
+<p>Spiritual Bolt обеспечивает самостоятельный кач; Heal/Harden — выживание, Recover4 открывает Revival. Затем поддержка и запас маны. Требования книги/класса/очков проверяются сервером; изучение не означает готовый автомат любой групповой ротации.</p>
+<ol>
+<li>Призрачный удар / Spiritual Bolt — 3 (навык 99, книга 3208).</li>
+<li>Исцеление / Heal — 3 (навык 97, книга 3206).</li>
+<li>Закалка / Harden — 3 (навык 225, книга 3242).</li>
+<li>Призрачный удар / Spiritual Bolt — 5 (навык 99, книга 3208).</li>
+<li>Восстановление / Recover — 4 (навык 98, книга 3207).</li>
+<li>Воскрешение / Revival — 1 (навык 124, книга 3215).</li>
+<li>Призрачный удар / Spiritual Bolt — 10 (навык 99, книга 3208).</li>
+<li>Сила / Vigor — 8 (навык 79, книга 3205).</li>
+<li>Благодать господня / Divine Grace — 5 (навык 80, книга 3212).</li>
+<li>Исцеление / Heal — 10 (навык 97, книга 3206).</li>
+<li>Великое исцеление / Greater Heal — 1 (навык 117, книга 3213).</li>
+<li>Истинное зрение / True Sight — 2 (навык 116, книга 3209).</li>
+<li>Воронка торнадо / Tornado Swirl — 3 (навык 102, книга 3216).</li>
+<li>Магический щит / Energy Shield — 1 (навык 106, книга 3223).</li>
+<li>Благодать господня / Divine Grace — 10 (навык 80, книга 3212).</li>
+</ol>
+<h3>Колдунья: дух и телосложение</h3>
+<p>Для кача нужен Spiritual Bolt, а не удары рукой. Печати и контроль открываются после требований; не расходовать все ранние очки на PvP при отсутствии основного урона.</p>
+<ol>
+<li>Призрачный удар / Spiritual Bolt — 5 (навык 99, книга 3208).</li>
+<li>Исцеление / Heal — 3 (навык 97, книга 3206).</li>
+<li>Закалка / Harden — 3 (навык 225, книга 3242).</li>
+<li>Призрачный удар / Spiritual Bolt — 10 (навык 99, книга 3208).</li>
+<li>Сила / Vigor — 8 (навык 79, книга 3205).</li>
+<li>Благодать господня / Divine Grace — 2 (навык 80, книга 3212).</li>
+<li>Истинное зрение / True Sight — 3 (навык 116, книга 3209).</li>
+<li>Проклятый огонь / Cursed Fire — 4 (навык 119, книга 3220).</li>
+<li>Росчерк тени / Shadow Insignia — 3 (навык 105, книга 3219).</li>
+<li>Печать старейшины / Seal of Elder — 1 (навык 104, книга 3218).</li>
+<li>Контргард / Counterguard — 1 (навык 120, книга 3221).</li>
+<li>Печать старейшины / Seal of Elder — 5 (навык 104, книга 3218).</li>
+<li>Росчерк тени / Shadow Insignia — 5 (навык 105, книга 3219).</li>
+<li>Проклятый огонь / Cursed Fire — 10 (навык 119, книга 3220).</li>
+<li>Благодать господня / Divine Grace — 5 (навык 80, книга 3212).</li>
+</ol>
+<h3>Покоритель морей: дух и немного телосложения</h3>
+<p>Lightning Bolt и Conch Ray — приоритет урона. Для Conch Ray нужен Conch Armor5. Навыкам требуются подходящие кораллы, настоящий заряд и SP; отсутствие ресурса не заменяется бесплатным кастом.</p>
+<ol>
+<li>Молния / Lightning Bolt — 1 (навык 214, книга 3231).</li>
+<li>Усердие / Diligence — 2 (навык 210, книга 3227).</li>
+<li>Водоток / Current — 1 (навык 211, книга 3228).</li>
+<li>Броня из раковин / Conch Armor — 5 (навык 212, книга 3229).</li>
+<li>Коралловый луч / Conch Ray — 1 (навык 216, книга 3233).</li>
+<li>Молния / Lightning Bolt — 5 (навык 214, книга 3231).</li>
+<li>Коралловый луч / Conch Ray — 5 (навык 216, книга 3233).</li>
+<li>Молния / Lightning Bolt — 10 (навык 214, книга 3231).</li>
+<li>Коралловый луч / Conch Ray — 10 (навык 216, книга 3233).</li>
+<li>Торнадо / Tornado — 1 (навык 213, книга 3230).</li>
+<li>Броня из раковин / Conch Armor — 10 (навык 212, книга 3229).</li>
+<li>Грозовая завеса / Lightning Curtain — 1 (навык 220, книга 3237).</li>
+</ol>
+<h3>Покоритель морей: телосложение и немного духа</h3>
+<p>После первого урона открыть Conch Ray и раньше духового варианта усилить Conch Armor. Нужны кораллы и SP; большая живучесть не отменяет требований заклинаний.</p>
+<ol>
+<li>Молния / Lightning Bolt — 1 (навык 214, книга 3231).</li>
+<li>Усердие / Diligence — 2 (навык 210, книга 3227).</li>
+<li>Водоток / Current — 1 (навык 211, книга 3228).</li>
+<li>Броня из раковин / Conch Armor — 5 (навык 212, книга 3229).</li>
+<li>Коралловый луч / Conch Ray — 1 (навык 216, книга 3233).</li>
+<li>Броня из раковин / Conch Armor — 10 (навык 212, книга 3229).</li>
+<li>Молния / Lightning Bolt — 5 (навык 214, книга 3231).</li>
+<li>Коралловый луч / Conch Ray — 5 (навык 216, книга 3233).</li>
+<li>Торнадо / Tornado — 1 (навык 213, книга 3230).</li>
+<li>Молния / Lightning Bolt — 10 (навык 214, книга 3231).</li>
+<li>Коралловый луч / Conch Ray — 10 (навык 216, книга 3233).</li>
+<li>Грозовая завеса / Lightning Curtain — 1 (навык 220, книга 3237).</li>
+</ol>
+<h3>Справочник книг и требований</h3>
+<p>В таблице — книги четырёх первых и шести основных вторых профессий. Rebirth-книги и экспертные особые навыки не включены в стартовые планы. Уровни и предпосылки взяты из этой сборки. НПС — статически привязанные продавцы; меню и доступность проверяются в игре, отдельная условная ветка может быть закрыта.</p>
+<div class="table"><table><thead><tr><th>Навык / книга</th><th>Минимальный уровень</th><th>Максимум по классам</th><th>Перед изучением</th><th>Где искать книгу</th></tr></thead><tbody>
+<tr data-search><td>Искусство владеть мечом / Sword Mastery (skill62, book3160)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Concentration 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Стальная воля / Will of Steel (skill63, book3161)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Concentration 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Усиление / Strengthen (skill64, book3162)</td><td>10</td><td>чемпион:10</td><td>Greatsword Mastery 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Сноровка / Deftness (skill65, book3163)</td><td>10</td><td>воитель:10</td><td>Dual Sword Mastery 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Концентрация / Concentration (skill66, book3164)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>нет</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Иллюзорный удар / Illusion Slash (skill81, book3165)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Sword Mastery 3</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Могучий удар / Mighty Strike (skill82, book3166)</td><td>10</td><td>чемпион:10</td><td>Strengthen 3</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Вой / Howl (skill107, book3167)</td><td>10</td><td>чемпион:10</td><td>Mighty Strike 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Мастер большого меча / Greatsword Mastery (skill67, book3168)</td><td>10</td><td>чемпион:10</td><td>Tiger Roar 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Варварское дробление / Barbaric Crush (skill108, book3169)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Берсерк / Berserk (skill84, book3170)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Illusion Slash 4</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Поклонение тотему / Totem&#x27;s Worship (skill125, book3171)</td><td>10</td><td>чемпион:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Кровавый бык / Blood Bull (skill68, book3172)</td><td>10</td><td>чемпион:10</td><td>Greatsword Mastery 3</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Первобытная ярость / Primal Rage (skill83, book3173)</td><td>10</td><td>чемпион:10</td><td>Blood Bull 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Рубка двумя мечами / Dual Sword Mastery (skill109, book3174)</td><td>10</td><td>воитель:10</td><td>Berserk 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Отклонение / Evasion (skill69, book3175)</td><td>10</td><td>воитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Кровавое безумие / Blood Frenzy (skill70, book3176)</td><td>10</td><td>воитель:10</td><td>Dual Sword Mastery 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Скрытность / Stealth (skill123, book3177)</td><td>10</td><td>воитель:10</td><td>Deftness 3</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Теневой удар / Shadow Slash (skill86, book3179)</td><td>10</td><td>воитель:10</td><td>Blood Frenzy 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Ядовитый дротик / Poison Dart (skill87, book3180)</td><td>10</td><td>воитель:10</td><td>Blood Frenzy 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Оцепенение / Numb (skill88, book3181)</td><td>10</td><td>воитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Мастер стрелкового оружия / Range Mastery (skill74, book3187)</td><td>10</td><td>лучник:10, стрелок:10</td><td>нет</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Путь ветра / Windwalk (skill75, book3188)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Range Mastery 2</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Глаз орла / Eagle&#x27;s Eye (skill89, book3189)</td><td>10</td><td>лучник:5, стрелок:5</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Двойной выстрел / Dual Shot (skill90, book3190)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Range Mastery 3</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Мастер огнестрельного оружия / Firegun Mastery (skill78, book3192)</td><td>10</td><td>стрелок:10</td><td>Range Mastery 10</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Метеоритный дождь / Meteor Shower (skill112, book3193)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Frozen Arrow 5</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Ледяная стрела / Frozen Arrow (skill93, book3197)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Dual Shot 2</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Зажигательная пуля / Magma Bullet (skill113, book3198)</td><td>10</td><td>стрелок:10</td><td>Firegun Mastery 5</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Проникающая пуля / Penetrating Bullet (skill115, book3199)</td><td>10</td><td>стрелок:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Дробь / Dispersion Bullet (skill114, book3200)</td><td>10</td><td>стрелок:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Калечащий выстрел / Cripple (skill94, book3202)</td><td>10</td><td>стрелок:10</td><td>Frozen Arrow 5</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Ослабление / Enfeeble (skill95, book3203)</td><td>10</td><td>стрелок:10</td><td>Cripple 5</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Выстрел в голову / Headshot (skill96, book3204)</td><td>10</td><td>стрелок:10</td><td>Enfeeble 5</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Сила / Vigor (skill79, book3205)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>нет</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Исцеление / Heal (skill97, book3206)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>нет</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Восстановление / Recover (skill98, book3207)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>Harden 3</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Призрачный удар / Spiritual Bolt (skill99, book3208)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>нет</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Истинное зрение / True Sight (skill116, book3209)</td><td>10</td><td>целитель:10, колдунья:10</td><td>Divine Grace 2</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Призрачный огонь / Spiritual Fire (skill100, book3210)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>Spiritual Bolt 2</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Мощь бури / Tempest Boost (skill101, book3211)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>Spiritual Fire 4</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Благодать господня / Divine Grace (skill80, book3212)</td><td>10</td><td>целитель:10, колдунья:10</td><td>Vigor 8</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Великое исцеление / Greater Heal (skill117, book3213)</td><td>10</td><td>целитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Мощное Восстановление / Greater Recover (skill118, book3214)</td><td>10</td><td>целитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Воскрешение / Revival (skill124, book3215)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>Recover 4</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Воронка торнадо / Tornado Swirl (skill102, book3216)</td><td>10</td><td>целитель:10</td><td>True Sight 2</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Ангельский щит / Angelic Shield (skill103, book3217)</td><td>10</td><td>целитель:10</td><td>Tornado Swirl 2</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Печать старейшины / Seal of Elder (skill104, book3218)</td><td>10</td><td>колдунья:10</td><td>Shadow Insignia 3</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Росчерк тени / Shadow Insignia (skill105, book3219)</td><td>10</td><td>колдунья:10</td><td>Cursed Fire 4</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Проклятый огонь / Cursed Fire (skill119, book3220)</td><td>10</td><td>колдунья:10</td><td>True Sight 3</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Контргард / Counterguard (skill120, book3221)</td><td>10</td><td>колдунья:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Бездонное болото / Abyss Mire (skill121, book3222)</td><td>10</td><td>колдунья:10</td><td>Cursed Fire 4</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Магический щит / Energy Shield (skill106, book3223)</td><td>10</td><td>целитель:10</td><td>Tornado Swirl 3</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Исцеляющий источник / Healing Spring (skill122, book3224)</td><td>10</td><td>целитель:10</td><td>Angelic Shield 2</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Усердие / Diligence (skill210, book3227)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>нет</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Водоток / Current (skill211, book3228)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>Diligence 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Броня из раковин / Conch Armor (skill212, book3229)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>Current 1</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Торнадо / Tornado (skill213, book3230)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>Current 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Молния / Lightning Bolt (skill214, book3231)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>Diligence 1</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Переплетение водорослей / Algae Entanglement (skill215, book3232)</td><td>10</td><td>исследователь:10, покоритель морей:10</td><td>Tornado 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Коралловый луч / Conch Ray (skill216, book3233)</td><td>10</td><td>покоритель морей:10</td><td>Conch Armor 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Попутный ветер / Tail Wind (skill217, book3234)</td><td>10</td><td>покоритель морей:10</td><td>Tornado 4</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Вихрь / Whirlpool (skill218, book3235)</td><td>10</td><td>покоритель морей:10</td><td>Tail Wind 4</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Туман / Fog (skill219, book3236)</td><td>10</td><td>покоритель морей:10</td><td>Tail Wind 2</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Грозовая завеса / Lightning Curtain (skill220, book3237)</td><td>10</td><td>покоритель морей:10</td><td>Lightning Bolt 8</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Бронелом / Break Armor (skill222, book3238)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Sword Mastery 3</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Воодушевление / Rousing (skill223, book3239)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Windwalk 4</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Отравленная стрела / Venom Arrow (skill224, book3241)</td><td>10</td><td>лучник:10, стрелок:10</td><td>Dual Shot 4</td><td>Grocer - Palpin — Синий океан / Ледынь (1356, 483)</td></tr>
+<tr data-search><td>Закалка / Harden (skill225, book3242)</td><td>10</td><td>знахарка:10, целитель:10, колдунья:10</td><td>Heal 3</td><td>Grocery - Amos — Магический океан / Шайтан (840, 3585)</td></tr>
+<tr data-search><td>Рык тигра / Tiger Roar (skill127, book3293)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>Break Armor 4</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Насмешка / Taunt (skill242, book3297)</td><td>10</td><td>мечник:10, чемпион:10, воитель:10</td><td>нет</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Рык / Roar (skill243, book3298)</td><td>10</td><td>чемпион:10</td><td>Taunt 5</td><td>Grocery - Jimberry — Аскарон / Аргент (2232, 2729)</td></tr>
+<tr data-search><td>Сильная магия / Intense Magic (skill256, book3300)</td><td>10</td><td>колдунья:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+<tr data-search><td>Кристальное благословение / Crystalline Blessing (skill255, book3301)</td><td>10</td><td>целитель:10</td><td>нет</td><td>подтверждённый статический продавец не найден; проверь меню наставника</td></tr>
+</tbody></table></div>
+<p>Боевые маги используют доступные подтверждённые целевые заклинания с настоящим SP, зарядом коралла и серверным откатом. Изучение навыка в плане не означает, что уже автоматизировано применение каждого баффа, массового заклинания или навыка моря. Новые автоматические пакеты применения в этой версии не добавляются.</p>
+<h2>Расширенный справочник истории</h2>
+<p>Каждая строка — отдельное серверное определение: начало, сдача или специальная ветка. Предыдущие записи — требования HasRecord. Их номера не всегда равны ID задания. Условия с именами функций требуют дополнительной проверки; их выполнение здесь не выдумывается. Неизвестное место не заменяется случайной точкой.</p>
+<div class="table"><table><thead><tr><th>ID определения / журнал</th><th>Название / роль</th><th>НПС</th><th>Предыдущие записи / уровень</th><th>Требования и ограничения</th></tr></thead><tbody>
+<tr data-search><td>200 / 200</td><td>Secretary Message — взятие</td><td>Newbie Guide - Senna — Аскарон / Аргент (2223, 2785)</td><td>—; ур.&gt;9</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>201 / 201</td><td>Secretary Message — взятие</td><td>Newbie Guide - Angela — Синий океан / Ледынь (1315, 507)</td><td>—; ур.&gt;9</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>202 / 202</td><td>Secretary Message — взятие</td><td>Newbie Guide - Resline — Магический океан / Шайтан (876, 3572)</td><td>—; ур.&gt;9</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>203 / 200</td><td>Secretary Message — сдача</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>204 / 201</td><td>Secretary Message — сдача</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749); Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>205 / 202</td><td>Secretary Message — сдача</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>206 / 203</td><td>A Small Task — взятие</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>200;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>207 / 203</td><td>A Small Task — сдача</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>208 / 204</td><td>Food for the Navy — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>203;</td><td>собрать Мясо пузырчатого моллюска (ID3963) ×5; собрать Мясо морской улитки (ID3964) ×10; собрать Эльфийский фрукт (ID3116) ×10</td></tr>
+<tr data-search><td>209 / 205</td><td>Missing Tommy — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>204;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>210 / 205</td><td>Missing Tommy — сдача</td><td>Youth - Tommy — Аскарон / Аргент (1962, 2694)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>211 / 206</td><td>Report to General — взятие</td><td>Youth - Tommy — Аскарон / Аргент (1962, 2694)</td><td>205;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>212 / 206</td><td>Report to General — сдача</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>предметы сдачи: Письмо для Томми ID3965 ×1</td></tr>
+<tr data-search><td>213 / 207</td><td>Food Poisoning — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>206;</td><td>собрать Доза противоядия (ID3967) ×1</td></tr>
+<tr data-search><td>214 / 207</td><td>Food Poisoning — сдача</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>—;</td><td>предметы сдачи: Образец обеда ID3966 ×1; специальные условия: NoFlag</td></tr>
+<tr data-search><td>215 / 208</td><td>Quest for Antidote — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>—;</td><td>собрать Кашемир (ID1678) ×3; собрать Хвост свинокрыла (ID3968) ×3; собрать Тяжелый панцирь (ID1614) ×3; специальные условия: HasFlag</td></tr>
+<tr data-search><td>216 / 209</td><td>Tommy&#x27;s Request — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>207;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>217 / 209</td><td>Tommy&#x27;s Request — сдача</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>218 / 210</td><td>A Crazy Reason — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>209;</td><td>собрать Слюна чокнутой овцы (ID3969) ×5</td></tr>
+<tr data-search><td>219 / 211</td><td>Thorough Investigation — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>210;</td><td>собрать Великая королевская жемчужина (ID3970) ×1</td></tr>
+<tr data-search><td>220 / 212</td><td>Ditto&#x27;s Report — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>211;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>221 / 212</td><td>Ditto&#x27;s Report — сдача</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>предметы сдачи: Доклад Дито ID3971 ×1</td></tr>
+<tr data-search><td>222 / 213</td><td>A New Task — взятие</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>212;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>223 / 213</td><td>A New Task — сдача</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>—;</td><td>предметы сдачи: Рекомендательное письмо Сальвьера ID3972 ×1</td></tr>
+<tr data-search><td>224 / 214</td><td>The Lost Tool — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>213;</td><td>собрать Украденная лопата (ID3973) ×5; собрать Украденный шлем безопасности (ID3974) ×3; собрать Украденная лампа безопасности (ID3975) ×5</td></tr>
+<tr data-search><td>225 / 215</td><td>Kill the Shrooms — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>214;</td><td>убить Killer Shroom (ID252, ур.19) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>226 / 216</td><td>Ditto&#x27;s Request — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>215;</td><td>собрать Желуд. камень короля бронекрабов (ID3976) ×1</td></tr>
+<tr data-search><td>227 / 217</td><td>Bandit Hideout Map — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>216;</td><td>собрать План разбойничьего укрытия (ID3977) ×1</td></tr>
+<tr data-search><td>228 / 218</td><td>Ambush Bandit — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>217;</td><td>собрать Разбойничье ожерелье (ID1841) ×3</td></tr>
+<tr data-search><td>229 / 219</td><td>Bounty — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>218;</td><td>убить Bandit Leader - Adder (ID211, ур.25) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>230 / 220</td><td>Desert Visit — взятие</td><td>Security - Kal — Аскарон / Аргент (1909, 2820)</td><td>219;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>231 / 220</td><td>Desert Visit — сдача</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>—;</td><td>предметы сдачи: Письмо секретаря ID3978 ×1</td></tr>
+<tr data-search><td>232 / 221</td><td>Changes — взятие</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>220;</td><td>разговор / родное описание; специальные условия: HasFlag</td></tr>
+<tr data-search><td>233 / 221</td><td>Changes — сдача</td><td>Lamb - Welly — Магический океан / Шайтан (898, 3683)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>234 / 222</td><td>Roland&#x27;s Notebook — взятие</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>221;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>235 / 222</td><td>Roland&#x27;s Notebook — сдача</td><td>Guard - Michael — Магический океан / Шайтан (958, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>236 / 223</td><td>Clues — взятие</td><td>Guard - Michael — Магический океан / Шайтан (958, 3549)</td><td>222;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>237 / 223</td><td>Clues — сдача</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>238 / 224</td><td>The Traitor Within — взятие</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>223;</td><td>убить Sand Bandit (ID45, ур.22) ×10; убить Sand Raider (ID49, ур.25) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>239 / 225</td><td>Desert Battle — взятие</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>224;</td><td>собрать Знак повелителя пустыни (ID3979) ×1</td></tr>
+<tr data-search><td>240 / 226</td><td>The Truth — взятие</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>225;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>241 / 226</td><td>The Truth — сдача</td><td>Guard - Michael — Магический океан / Шайтан (958, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>242 / 227</td><td>Buccaneer&#x27;s News — взятие</td><td>Guard - Michael — Магический океан / Шайтан (958, 3549)</td><td>226;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>243 / 227</td><td>Buccaneer&#x27;s News — сдача</td><td>Coaster Guard - Franco — Магический океан / Шайтан (867, 3660)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>244 / 228</td><td>Jack&#x27;s Pirates — взятие</td><td>Coaster Guard - Franco — Магический океан / Шайтан (867, 3660)</td><td>227;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>245 / 228</td><td>Jack&#x27;s Pirates — сдача</td><td>Merrix — Магический океан / Шайтан (1118, 3611)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>246 / 229</td><td>Captain Fickle — взятие</td><td>Merrix — Магический океан / Шайтан (1118, 3611)</td><td>228;</td><td>собрать Сумка Фикла (ID3980) ×1</td></tr>
+<tr data-search><td>247 / 230</td><td>To Whom It May Concern — взятие</td><td>Merrix — Магический океан / Шайтан (1118, 3611)</td><td>229;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>248 / 230</td><td>To Whom It May Concern — сдача</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>—;</td><td>предметы сдачи: \&quot;Взять\&quot; Письмо ID3981 ×1</td></tr>
+<tr data-search><td>249 / 5</td><td>For Whom It May Concern — сдача</td><td>Merrix — Магический океан / Шайтан (1118, 3611)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>250 / 232</td><td>Journey to the North — взятие</td><td>Merrix — Магический океан / Шайтан (1118, 3611)</td><td>5;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>251 / 232</td><td>Journey to the North — сдача</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>252 / 233</td><td>Danger in Icicle — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>232;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>253 / 233</td><td>Danger in Icicle — сдача</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>254 / 234</td><td>Replenishment — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>233;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>255 / 234</td><td>Replenishment — сдача</td><td>Patrol - Little Mo — Синий океан / Ледынь (1237, 613)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>256 / 235</td><td>Search for Supplies — взятие</td><td>Patrol - Little Mo — Синий океан / Ледынь (1237, 613)</td><td>234;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>257 / 235</td><td>Search for Supplies — сдача</td><td>Gasardis — Синий океан / Ледынь (1028, 649)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>258 / 236</td><td>Recapture the Supplies — взятие</td><td>Gasardis — Синий океан / Ледынь (1028, 649)</td><td>235;</td><td>собрать Похищенные припасы (ID3982) ×15</td></tr>
+<tr data-search><td>259 / 237</td><td>Escort the Supplies — взятие</td><td>Gasardis — Синий океан / Ледынь (1028, 649)</td><td>236;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>260 / 237</td><td>Escort the Supplies — сдача</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>—;</td><td>предметы сдачи: Пополненные припасы ID3983 ×15</td></tr>
+<tr data-search><td>261 / 238</td><td>Further Investigation — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>237;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>262 / 238</td><td>Further Investigation — сдача</td><td>Eluna — Синий океан / Ледынь (1141, 575)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>263 / 239</td><td>Snowfield Organism — взятие</td><td>Eluna — Синий океан / Ледынь (1141, 575)</td><td>238;</td><td>собрать Камень памяти снегурки (ID3984) ×5; собрать Камень памяти снежной королевы (ID4069) ×5; собрать Камень памяти йети (ID4070) ×5</td></tr>
+<tr data-search><td>264 / 240</td><td>Search for Yeti King — взятие</td><td>Eluna — Синий океан / Ледынь (1141, 575)</td><td>239;</td><td>собрать Камень памяти короля йети (ID4071) ×1</td></tr>
+<tr data-search><td>265 / 241</td><td>Wisdom of Argent — взятие</td><td>Eluna — Синий океан / Ледынь (1141, 575)</td><td>240;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>266 / 241</td><td>Wisdom of Argent — сдача</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>267 / 242</td><td>Blurry — взятие</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>241;</td><td>собрать Вино Восьми Драгоценностей (ID4072) ×1</td></tr>
+<tr data-search><td>268 / 242</td><td>Blurry — сдача</td><td>Barmaid - Donna — Аскарон / Аргент (2224, 2887)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>269 / 243</td><td>Eight Treasures Wine — взятие</td><td>Barmaid - Donna — Аскарон / Аргент (2224, 2887)</td><td>—;</td><td>собрать Яйцо Зловещей черепахи (ID4073) ×2; собрать Сухожилие хряка (ID4074) ×2; собрать Усик дурмана. (ID4075) ×2; собрать Порошок рудного кристалла (ID4076) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>270 / 244</td><td>A Long Long Time Ago — взятие</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>242;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>271 / 244</td><td>A Long Long Time Ago — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>272 / 6</td><td>Wrong Question — особая запись</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>273 / 246</td><td>Chairman&#x27;s Dark Secret — взятие</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>6;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>274 / 246</td><td>Chairman&#x27;s Dark Secret — сдача</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>275 / 247</td><td>Mine Investigation — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>246;</td><td>собрать Старые документы (ID4081) ×10</td></tr>
+<tr data-search><td>276 / 248</td><td>Secret of the Slip — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>247;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>277 / 248</td><td>Secret of the Slip — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>предметы сдачи: Древний премиальный знак ID4082 ×1</td></tr>
+<tr data-search><td>278 / 249</td><td>Behemoth&#x27;s Escape — взятие</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>248;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>279 / 249</td><td>Behemoth&#x27;s Escape — сдача</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>280 / 250</td><td>Ancient Bounty Token — взятие</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>248;</td><td>собрать Железные наручники (ID4083) ×1</td></tr>
+<tr data-search><td>281 / 251</td><td>Scary Monsters — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>249;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>282 / 251</td><td>Scary Monsters — сдача</td><td>Granny Beldi — Аскарон / Аргент (2277, 2769)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>283 / 252</td><td>Granny&#x27;s Pastries — взятие</td><td>Granny Beldi — Аскарон / Аргент (2277, 2769)</td><td>251;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>284 / 252</td><td>Granny&#x27;s Pastries — сдача</td><td>Miner Drunky — eastgoaf (296, 57)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>285 / 253</td><td>Stolen Lunchbox — взятие</td><td>Miner Drunky — eastgoaf (296, 57)</td><td>252;</td><td>собрать Обед для пивного брюха (ID4084) ×1</td></tr>
+<tr data-search><td>286 / 254</td><td>Sea Haven — взятие</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>250;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>288 / 255</td><td>Eight Treasures Wine — взятие</td><td>Barmaid - Donna — Аскарон / Аргент (2224, 2887)</td><td>243;</td><td>собрать Бамбуковая роса (ID4077) ×2; собрать Питательная жемчужная пудра (ID4078) ×2; собрать Контрабандные пряности (ID4079) ×2; собрать Варево кенгуру (ID4080) ×3</td></tr>
+<tr data-search><td>289 / 254</td><td>Sea Haven — сдача</td><td>Harbor Operator - Shirley — Аскарон / Аргент (2243, 2826)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>290 / 256</td><td>Navigation Map — взятие</td><td>Harbor Operator - Shirley — Аскарон / Аргент (2243, 2826)</td><td>254;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>291 / 256</td><td>Navigation Map — сдача</td><td>Harbor Operator - Baros — Магический океан / Шайтан (2024, 2752)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>292 / 257</td><td>Challenge Sea Jelly — взятие</td><td>Harbor Operator - Baros — Магический океан / Шайтан (2024, 2752)</td><td>256;</td><td>собрать Кристалл кровожадной медузы (ID4140) ×15</td></tr>
+<tr data-search><td>293 / 258</td><td>Sailing — взятие</td><td>Harbor Operator - Baros — Магический океан / Шайтан (2024, 2752)</td><td>257;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>294 / 258</td><td>Sailing — сдача</td><td>Harbor Operator - Silion — Синий океан / Ледынь (1214, 681)</td><td>—;</td><td>предметы сдачи: Посылка Бароса ID4141 ×1</td></tr>
+<tr data-search><td>295 / 259</td><td>The Li Brothers — взятие</td><td>Harbor Operator - Silion — Синий океан / Ледынь (1214, 681)</td><td>258;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>296 / 259</td><td>The Li Brothers — сдача</td><td>Luke — Синий океан / Ледынь (1320, 585)</td><td>—;</td><td>предметы сдачи: Письмо Баросу ID4142 ×1</td></tr>
+<tr data-search><td>297 / 260</td><td>Activity Preparation — взятие</td><td>Luke — Синий океан / Ледынь (1320, 585)</td><td>259;</td><td>собрать Чешуя рыбы-скелета (ID4143) ×12</td></tr>
+<tr data-search><td>298 / 261</td><td>Blessing Hand — взятие</td><td>Luke — Синий океан / Ледынь (1320, 585)</td><td>260;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>299 / 261</td><td>Blessing Hand — сдача</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>300 / 262</td><td>Spiritual Strength — взятие</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>261;</td><td>собрать Лучистая душа (ID4145) ×1</td></tr>
+<tr data-search><td>302 / 7</td><td>Return to Icicle — сдача</td><td>Luke — Синий океан / Ледынь (1320, 585)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>303 / 264</td><td>Go Forth to Ninth Haven — взятие</td><td>Luke — Синий океан / Ледынь (1320, 585)</td><td>7;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>304 / 264</td><td>Go Forth to Ninth Haven — сдача</td><td>Harbor Operator - Buni — Магический океан / Шайтан (2042, 635)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>305 / 265</td><td>Who is Andrew? — взятие</td><td>Harbor Operator - Buni — Магический океан / Шайтан (2042, 635)</td><td>264;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>306 / 265</td><td>Who is Andrew? — сдача</td><td>Pirate Jeremy — Магический океан / Шайтан (2362, 657)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>307 / 266</td><td>Navy Don&#x27;t Move! — взятие</td><td>Pirate Jeremy — Магический океан / Шайтан (2362, 657)</td><td>265;</td><td>убить Navy Rifleman (ID667, ур.55) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>308 / 267</td><td>Jack Again — взятие</td><td>Pirate Jeremy — Магический океан / Шайтан (2362, 657)</td><td>266;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>309 / 267</td><td>Jack Again — сдача</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>310 / 268</td><td>I&#x27;ll be Back! — взятие</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>267;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>311 / 4</td><td>Lure Behemoth — сдача</td><td>Miner Drunky — eastgoaf (296, 57)</td><td>267;</td><td>собрать Эмблема моряка Джека (ID3790) ×1; собрать Эмблема абордажника Джека (ID3791) ×1; собрать Значок ополченца Джека (ID3792) ×1; специальные условия: HasFlag, NoMisssionFailure</td></tr>
+<tr data-search><td>313 / 270</td><td>Memento of Andrew — взятие</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>269;</td><td>собрать Записка Андрея (ID4219) ×1</td></tr>
+<tr data-search><td>314 / 8</td><td>Blood of Pirate — сдача</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>315 / 9</td><td>Soul of Navy — сдача</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>316 / 10</td><td>Nameless One — сдача</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>317 / 271</td><td>Blood of Pirate — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>—;</td><td>убить Navy Rifleman (ID667, ур.55) ×30; специальные условия: HasFlag</td></tr>
+<tr data-search><td>318 / 272</td><td>Soul of Navy — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>предметы сдачи: Записка Андрея ID4221 ×1; специальные условия: HasMoney</td></tr>
+<tr data-search><td>319 / 273</td><td>Nameless One — взятие</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>предметы сдачи: Записка Андрея ID4221 ×1</td></tr>
+<tr data-search><td>320 / 274</td><td>Thundoria Bank — взятие</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>собрать Подпись Маса (ID4223) ×1; собрать Подпись адмирала флота Вильяма (ID4224) ×1; собрать Подпись Сальвьера (ID4225) ×1; собрать Подпись предводителя клана Альбуды (ID4226) ×1</td></tr>
+<tr data-search><td>321 / 275</td><td>Friend of the Pirates — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>—;</td><td>убить Navy Rifleman (ID667, ур.55) ×30; специальные условия: HasFlag, HasNavyGuild</td></tr>
+<tr data-search><td>322 / 274</td><td>I&#x27;m not a NAVY! — сдача</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoNavyGuild</td></tr>
+<tr data-search><td>323 / 277</td><td>Sever Relationship — взятие</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>убить Jack the Pirate&#x27;s Sailor (ID145, ур.30) ×10; убить Jack the Pirate&#x27;s Fighter (ID146, ур.41) ×10; убить Jack the Pirate&#x27;s Militia (ID291, ур.45) ×10; специальные условия: HasFlag, HasPirateGuild</td></tr>
+<tr data-search><td>324 / 274</td><td>I&#x27;m not a PIRATE! — сдача</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoPirateGuild</td></tr>
+<tr data-search><td>325 / 279</td><td>Lone Warrior — взятие</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>убить Jack the Pirate&#x27;s Sailor (ID145, ур.30) ×5; убить Jack the Pirate&#x27;s Fighter (ID146, ур.41) ×5; убить Jack the Pirate&#x27;s Militia (ID291, ур.45) ×5; убить Navy Rifleman (ID667, ур.55) ×5; специальные условия: HasFlag, NoGuild</td></tr>
+<tr data-search><td>326 / 274</td><td>Powerful Backing — сдача</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>—;</td><td>разговор / родное описание; специальные условия: HasGuild, NoFlag</td></tr>
+<tr data-search><td>327 / 281</td><td>Repentant — взятие</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>—;</td><td>убить Shadow Mermaid (ID620, ур.51) ×30; специальные условия: HasFlag</td></tr>
+<tr data-search><td>328 / 16</td><td>Will of Andrew — сдача</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>предметы сдачи: Завещание Андрея ID4227 ×1</td></tr>
+<tr data-search><td>329 / 282</td><td>Secret of the Will — взятие</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>16;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>330 / 282</td><td>Secret of the Will — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>предметы сдачи: Завещание Андрея ID4227 ×1</td></tr>
+<tr data-search><td>331 / 283</td><td>Jack Introduction — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>282;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>332 / 284</td><td>Rumour of the Bar — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>282;</td><td>собрать Хвост кровососущего выползня (ID1255) ×3; собрать Сердце кровожадной медузы (ID1291) ×5; собрать Опасный акулий хрящ (ID1365) ×7; собрать Спинной плавник топаз. дельфина (ID1292) ×9</td></tr>
+<tr data-search><td>333 / 285</td><td>Love Entanglement — взятие</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>334 / 286</td><td>Love Entanglement — взятие</td><td>Barmaid - Donna — Аскарон / Аргент (2224, 2887)</td><td>283;</td><td>собрать Ужасная тыквенная голова (ID4735) ×1</td></tr>
+<tr data-search><td>335 / 17</td><td>Love Entanglement — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>предметы сдачи: Ругачая тыква ID4229 ×1</td></tr>
+<tr data-search><td>336 / 287</td><td>Language of the Pirates — взятие</td><td>Captain Jack — Магический океан / Шайтан (1672, 3777)</td><td>—;</td><td>собрать Русалочье тело (ID4230) ×1</td></tr>
+<tr data-search><td>337 / 20</td><td>Mystic Diary — сдача</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1</td></tr>
+<tr data-search><td>338 / 288</td><td>Goddess&#x27;s Follower — взятие</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>20;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>339 / 288</td><td>Goddess&#x27;s Follower — сдача</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1</td></tr>
+<tr data-search><td>340 / 289</td><td>Holy Priestess — взятие</td><td>Clan Chief - Albuda — Магический океан / Шайтан (898, 3640)</td><td>288;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>341 / 290</td><td>Testament of the Piety — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>—;</td><td>собрать Патент о благочестии (ID3954) ×1</td></tr>
+<tr data-search><td>342 / 290</td><td>Testament of the Piety — сдача</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1; специальные условия: NoItem, PfEqual</td></tr>
+<tr data-search><td>343 / 290</td><td>Testament of the Piety — сдача</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1; специальные условия: NoItem, PfEqual</td></tr>
+<tr data-search><td>344 / 290</td><td>Testament of the Piety — сдача</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1; специальные условия: NoItem, PfEqual</td></tr>
+<tr data-search><td>345 / 290</td><td>Testament of the Piety — сдача</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Путевой журнал Андрея ID4231 ×1; специальные условия: NoFlag, NoItem, NoPfEqual</td></tr>
+<tr data-search><td>346 / 291</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>убить Steel Mummy (ID42, ур.54) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>347 / 292</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>291;</td><td>убить Undead Warrior (ID267, ур.52) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>348 / 293</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>292;</td><td>убить Deadly Skeletal Archer (ID541, ур.58) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>349 / 294</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>293;</td><td>убить Skeletal Warrior Leader (ID565, ур.59) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>350 / 295</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>294;</td><td>убить Cursed Corpse (ID52, ур.59) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>351 / 296</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>295;</td><td>убить Bloodthirsty Hunter (ID666, ур.60) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>352 / 297</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>296;</td><td>убить Horrific Cursed Corpse (ID508, ур.63) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>353 / 298</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>297;</td><td>убить Vicious Pumpkin Knight (ID518, ур.63) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>354 / 299</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>298;</td><td>убить Treant Terror (ID547, ур.64) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>355 / 300</td><td>Goddess Test — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>299;</td><td>убить Anubis (ID190, ур.79) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>356 / 21</td><td>Mystery Town — сдача</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>357 / 301</td><td>Spring Town — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>21;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>358 / 302</td><td>Exploration Spirit — взятие</td><td>Drunkyard - Anthony — Аскарон / Аргент (2222, 2889)</td><td>—;</td><td>собрать Компас выживания (ID3962) ×1</td></tr>
+<tr data-search><td>359 / 302</td><td>Exploration Spirit — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoItem, PfEqual</td></tr>
+<tr data-search><td>360 / 302</td><td>Exploration Spirit — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoItem, PfEqual</td></tr>
+<tr data-search><td>361 / 302</td><td>Exploration Spirit — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, NoPfEqual</td></tr>
+<tr data-search><td>362 / 303</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>убить Sakura 13 Warship (ID574, ур.55) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>363 / 304</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>303;</td><td>убить Vampiric Polliwog (ID638, ур.55) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>364 / 305</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>304;</td><td>убить Tempest Sea Jelly (ID583, ур.56) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>365 / 306</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>305;</td><td>убить Silk Shark (ID660, ур.56) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>366 / 307</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>306;</td><td>убить Topaz Dolphin (ID584, ур.57) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>367 / 308</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>307;</td><td>убить Tornado Sea Jelly (ID603, ур.57) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>368 / 309</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>308;</td><td>убить Mature Ruby Dolphin (ID622, ур.58) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>369 / 310</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>309;</td><td>убить Sakura 13 Pirate Command Ship (ID650, ур.58) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>370 / 311</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>310;</td><td>убить Spiny Fish Bone (ID585, ур.59) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>371 / 312</td><td>Exploration Test — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>311;</td><td>убить Northern Pirate Support Ship (ID611, ур.59) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>372 / 313</td><td>Beldi — взятие</td><td>Drunkyard - Anthony — Аскарон / Аргент (2222, 2889)</td><td>302;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>373 / 313</td><td>Beldi — сдача</td><td>Granny Beldi — Аскарон / Аргент (2277, 2769)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>374 / 315</td><td>Hometown — взятие</td><td>Granny Beldi — Аскарон / Аргент (2277, 2769)</td><td>313;</td><td>собрать Древняя серьга (ID4235) ×1</td></tr>
+<tr data-search><td>375 / 316</td><td>Earring of Beldi — взятие</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>убить Great Polar Bear (ID504, ур.49) ×100; специальные условия: HasFlag, NoPfEqual</td></tr>
+<tr data-search><td>376 / 315</td><td>Hometown — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, PfEqual</td></tr>
+<tr data-search><td>377 / 315</td><td>Hometown — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, PfEqual</td></tr>
+<tr data-search><td>560 / 315</td><td>Hometown — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, PfEqual</td></tr>
+<tr data-search><td>561 / 315</td><td>Hometown — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, PfEqual</td></tr>
+<tr data-search><td>562 / 315</td><td>Hometown — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem, PfEqual</td></tr>
+<tr data-search><td>378 / 317</td><td>Ancient Brooch — взятие</td><td>Bar Waitress - Mona — Аскарон / Аргент (990, 1263)</td><td>316;</td><td>разговор / родное описание; специальные условия: HasMoney</td></tr>
+<tr data-search><td>379 / 318</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Daruka — Аскарон / Аргент (1497, 1707)</td><td>—;</td><td>собрать Припасы (ID4238) ×1</td></tr>
+<tr data-search><td>380 / 319</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Daruka — Аскарон / Аргент (1497, 1707)</td><td>318;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>381 / 320</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Whitcombe — Аскарон / Аргент (2041, 1355)</td><td>—;</td><td>собрать Сашими (ID1478) ×20</td></tr>
+<tr data-search><td>382 / 321</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Whitcombe — Аскарон / Аргент (2041, 1355)</td><td>320;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>383 / 321</td><td>Wheel of Fate — сдача</td><td>Harbor Operator - Fardell — Аскарон / Аргент (3153, 674)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>384 / 323</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Fardell — Аскарон / Аргент (3153, 674)</td><td>321;</td><td>собрать Полосатая рыбья кость (ID4938) ×30; собрать Толстая рыбья кость (ID4957) ×30; собрать Гнилая рыбья кость (ID4976) ×30</td></tr>
+<tr data-search><td>385 / 324</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Fardell — Аскарон / Аргент (3153, 674)</td><td>323;</td><td>собрать Универсальное противоядие (ID4254) ×1</td></tr>
+<tr data-search><td>386 / 325</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Buni — Магический океан / Шайтан (2042, 635)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>387 / 326</td><td>Wheel of Fate — взятие</td><td>Harbor Operator - Buni — Магический океан / Шайтан (2042, 635)</td><td>325;</td><td>собрать Часть рецепта (ID4255) ×10</td></tr>
+<tr data-search><td>559 / 387</td><td>Language Barrier — взятие</td><td>Teleporter - Chun Li — Синий океан / Ледынь (3326, 2511)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>388 / 327</td><td>Language Barrier — взятие</td><td>Granny Beldi — Аскарон / Аргент (2277, 2769)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>389 / 328</td><td>Language Barrier — взятие</td><td>Waitress - Babara — Синий океан / Ледынь (1310, 530)</td><td>—;</td><td>разговор / родное описание; специальные условия: HasMoney</td></tr>
+<tr data-search><td>391 / 330</td><td>Language Barrier — взятие</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>—;</td><td>предметы сдачи: Полосатая рыбья кость ID4938 ×30, Толстая рыбья кость ID4957 ×30, Гнилая рыбья кость ID4976 ×30, Светящиеся покровы медузы ID4974 ×10; специальные условия: HasMoney</td></tr>
+<tr data-search><td>392 / 331</td><td>Rare Visitor from Afar — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>315;</td><td>собрать Пропуск посетителя (ID4242) ×7</td></tr>
+<tr data-search><td>393 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Blacksmith - Wu Xin — Синий океан / Ледынь (3316, 2516)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>394 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Tavern Keeper - Long Er — Синий океан / Ледынь (3302, 2501)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>395 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>396 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>397 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Teleporter - Chun Li — Синий океан / Ледынь (3326, 2511)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>398 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Harbor Operator - Shuang — Синий океан / Ледынь (3409, 2560)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>399 / 331</td><td>Rare Visitor from Afar — сдача</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>510 / 339</td><td>Make the Finishing Point — взятие</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>338;</td><td>собрать Древняя брошь (ID4236) ×1</td></tr>
+<tr data-search><td>511 / 340</td><td>Make the Finishing Point — взятие</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>339;</td><td>собрать Красная краска (ID1787) ×5; собрать Оранжевая краска (ID1788) ×5; собрать Желтая краска (ID1789) ×5; собрать Зеленая краска (ID1790) ×5; собрать Голубая краска (ID1791) ×5; собрать Синяя краска (ID1792) ×5; собрать Пурпурная краска (ID1793) ×5</td></tr>
+<tr data-search><td>512 / 341</td><td>Make the Finishing Point — взятие</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>340;</td><td>собрать Чистая вода (ID1649) ×30</td></tr>
+<tr data-search><td>513 / 342</td><td>Make the Finishing Point — взятие</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>341;</td><td>собрать Лисий хвост (ID165) ×10</td></tr>
+<tr data-search><td>514 / 343</td><td>Lost — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>331;</td><td>разговор / родное описание; специальные условия: HasFlag</td></tr>
+<tr data-search><td>515 / 343</td><td>Lost — сдача</td><td>Zombie - Hami — eastgoaf (49, 242)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>516 / 345</td><td>Lost — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>343;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>517 / 346</td><td>Talisman — взятие</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>—;</td><td>собрать Талисман приведения (ID4262) ×20</td></tr>
+<tr data-search><td>518 / 347</td><td>Talisman — взятие</td><td>Zombie - Hami — eastgoaf (49, 242)</td><td>346;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>519 / 347</td><td>Talisman — сдача</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>520 / 349</td><td>Love Miracle — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>347;</td><td>собрать Чистый звенящий песок (ID4245) ×1; собрать Корона королевы (ID4246) ×1; собрать Кристальное перо (ID4247) ×1</td></tr>
+<tr data-search><td>521 / 350</td><td>Tear of Goddess — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>—;</td><td>предметы сдачи: Чистый звенящий песок ID4245 ×1</td></tr>
+<tr data-search><td>522 / 351</td><td>Heart of Mermaid — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>предметы сдачи: Корона королевы ID4246 ×1</td></tr>
+<tr data-search><td>523 / 352</td><td>Feather of the Bird — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>—;</td><td>предметы сдачи: Кристальное перо ID4247 ×1</td></tr>
+<tr data-search><td>524 / 353</td><td>Love Miracle — взятие</td><td>Zombie - Hami — eastgoaf (49, 242)</td><td>349;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>525 / 353</td><td>Love Miracle — сдача</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>526 / 355</td><td>Corpse Venom — взятие</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>353;</td><td>собрать Талисман приведения (ID4262) ×20</td></tr>
+<tr data-search><td>527 / 345</td><td>Lost — сдача</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>528 / 345</td><td>Lost — сдача</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>529 / 358</td><td>Miracle Fruit — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>345;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>530 / 359</td><td>Miracle Fruit — взятие</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>531 / 360</td><td>Miracle Fruit — взятие</td><td>Guard - Zhou — Синий океан / Ледынь (3298, 2534)</td><td>—;</td><td>собрать Остатки фруктов (ID4263) ×1</td></tr>
+<tr data-search><td>532 / 361</td><td>Demonic Fruit — взятие</td><td>Guard - Zhou — Синий океан / Ледынь (3298, 2534)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoItem</td></tr>
+<tr data-search><td>533 / 362</td><td>Letter of Zhou — взятие</td><td>Guard - Zhou — Синий океан / Ледынь (3298, 2534); Youth - Cloud — Синий океан / Ледынь (3275, 2467)</td><td>361;</td><td>разговор / родное описание; специальные условия: HasFlag</td></tr>
+<tr data-search><td>534 / 363</td><td>Demonic Fruit — взятие</td><td>Guard - Zhou — Синий океан / Ледынь (3298, 2534)</td><td>362;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>535 / 364</td><td>Preservative — взятие</td><td>нет подтверждённой статической привязки</td><td>—;</td><td>собрать Гнилое дерево (ID4259) ×3; собрать Проклятая кость (ID4260) ×3; собрать Ость (ID4261) ×3</td></tr>
+<tr data-search><td>536 / 24</td><td>Tear of Dragon — сдача</td><td>Tavern Keeper - Long Er — Синий океан / Ледынь (3302, 2501)</td><td>—;</td><td>предметы сдачи: Слеза дракона ID4252 ×1</td></tr>
+<tr data-search><td>537 / 366</td><td>Sale of Dragon&#x27;s Tear — взятие</td><td>Tavern Keeper - Long Er — Синий океан / Ледынь (3302, 2501)</td><td>24;</td><td>предметы сдачи: Слеза дракона ID4252 ×1</td></tr>
+<tr data-search><td>538 / 367</td><td>Legend of Dragon&#x27;s Tear — взятие</td><td>Tavern Keeper - Long Er — Синий океан / Ледынь (3302, 2501)</td><td>24;</td><td>предметы сдачи: Слеза дракона ID4252 ×1</td></tr>
+<tr data-search><td>539 / 25</td><td>Secret of Dragon&#x27;s Tear — сдача</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>—;</td><td>предметы сдачи: Слеза дракона ID4252 ×1</td></tr>
+<tr data-search><td>540 / 369</td><td>Holy Water — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>25;</td><td>предметы сдачи: Стеклянная бутылка ID4257 ×1</td></tr>
+<tr data-search><td>541 / 370</td><td>Redemption — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>369;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>542 / 26</td><td>Hassli&#x27;s Deposit — сдача</td><td>Banker - Macurdo — Аскарон / Аргент (743, 1534)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>543 / 372</td><td>Love Letter of Zhou — взятие</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>—;</td><td>собрать Модная одежда (ID4241) ×1</td></tr>
+<tr data-search><td>544 / 362</td><td>Letter of Zhou — сдача</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>—;</td><td>предметы сдачи: Розовое письмо ID4250 ×1; специальные условия: NoFlag</td></tr>
+<tr data-search><td>545 / 372</td><td>New Goods — сдача</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>546 / 375</td><td>Sea Exploration — взятие</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>предметы сдачи: Бинокль ID4258 ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>547 / 376</td><td>Buy New Clothes — взятие</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>разговор / родное описание; специальные условия: HasMoney</td></tr>
+<tr data-search><td>548 / 363</td><td>Demonic Fruit — сдача</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag</td></tr>
+<tr data-search><td>550 / 363</td><td>Demonic Fruit — сдача</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>предметы сдачи: Древняя серьга ID4235 ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>551 / 380</td><td>Roland — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>363;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>552 / 381</td><td>Tragedy — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>290;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>553 / 382</td><td>Tragedy — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>554 / 382</td><td>Tragedy — сдача</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>—;</td><td>предметы сдачи: Сообщение в бутылке ID4233 ×1</td></tr>
+<tr data-search><td>555 / 383</td><td>Tragedy — взятие</td><td>Oldman - Blurry — Аскарон / Аргент (2272, 2700)</td><td>382;</td><td>убить Jack the Pirate&#x27;s Warship (ID594, ур.50) ×10; убить Jack the Pirate&#x27;s Support Ship (ID593, ур.49) ×5; убить Jack the Pirate&#x27;s Command Ship (ID656, ур.52) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>556 / 384</td><td>Past — взятие</td><td>Holy Priestess - Ada — Магический океан / Шайтан (862, 3303)</td><td>290;</td><td>собрать Древний манускрипт (ID4234) ×1</td></tr>
+<tr data-search><td>557 / 384</td><td>Past — сдача</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoFlag, NoItem</td></tr>
+<tr data-search><td>558 / 386</td><td>Demand for Payment — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>предметы сдачи: Счетная книга Санг Ди ID948 ×1; специальные условия: HasFlag, HasMoney</td></tr>
+<tr data-search><td>567 / 386</td><td>Demand for Payment — сдача</td><td>Blacksmith - Wu Xin — Синий океан / Ледынь (3316, 2516)</td><td>—;</td><td>предметы сдачи: Счетная книга Санг Ди ID948 ×1; специальные условия: NoFlag</td></tr>
+<tr data-search><td>568 / 386</td><td>Demand for Payment — сдача</td><td>Bill — Синий океан / Ледынь (3235, 2550)</td><td>—;</td><td>предметы сдачи: Счетная книга Санг Ди ID948 ×1; специальные условия: NoFlag</td></tr>
+<tr data-search><td>569 / 389</td><td>Long Er&#x27;s Debt — взятие</td><td>Tavern Keeper - Long Er — Синий океан / Ледынь (3302, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>570 / 389</td><td>Long Er&#x27;s Debt — сдача</td><td>Banker - Wang Mo — Синий океан / Ледынь (3290, 2512)</td><td>—;</td><td>разговор / родное описание; специальные условия: HasMoney</td></tr>
+<tr data-search><td>563 / 386</td><td>Demand for Payment — сдача</td><td>Youth - Cloud — Синий океан / Ледынь (3275, 2467)</td><td>—;</td><td>предметы сдачи: Счетная книга Санг Ди ID948 ×1; специальные условия: NoFlag</td></tr>
+<tr data-search><td>564 / 391</td><td>Grocer&#x27;s Debt — взятие</td><td>Grocery - Luna — Синий океан / Ледынь (3279, 2501)</td><td>—;</td><td>собрать Разорванная ткань для оборачивания тела (ID176) ×3; собрать Поврежденная ткань для оборачивания тела (ID177) ×3; собрать Целая ткань для оборачивания тела (ID178) ×3</td></tr>
+<tr data-search><td>565 / 392</td><td>Shuang&#x27;s Debt — взятие</td><td>Harbor Operator - Shuang — Синий океан / Ледынь (3409, 2560)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>566 / 392</td><td>Shuang&#x27;s Debt — сдача</td><td>Navy Commander - Dessaro — Аскарон / Аргент (713, 1416)</td><td>—;</td><td>предметы сдачи: Травяная сумка ID949 ×1</td></tr>
+<tr data-search><td>572 / 393</td><td>Yuri&#x27;s Debt — взятие</td><td>Commerce - Yuri — Синий океан / Ледынь (3195, 2506)</td><td>—;</td><td>собрать Кристальный шар (ID1864) ×5</td></tr>
+<tr data-search><td>571 / 394</td><td>Roland — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>386;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>592 / 395</td><td>Retrospection — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>394;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>593 / 395</td><td>Retrospection — сдача</td><td>Physican - Daisha — Синий океан / Ледынь (1352, 499)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>594 / 396</td><td>Daisha&#x27;s Nightmare — взятие</td><td>Physican - Daisha — Синий океан / Ледынь (1352, 499)</td><td>395;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5065 / 396</td><td>Daisha&#x27;s Nightmare — особая запись</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>595 / 397</td><td>Mischief of Fox Taoist — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>396;</td><td>убить Fox Taoist (ID748, ур.60) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5066 / 992</td><td>Unravel the dream of Daisha — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>397;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5067 / 992</td><td>Unravel the dream of Daisha — особая запись</td><td>Physican - Daisha — Синий океан / Ледынь (1352, 499)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>596 / 398</td><td>Belinda&#x27;s nightmare — взятие</td><td>Physican - Daisha — Синий океан / Ледынь (1352, 499)</td><td>992;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>597 / 398</td><td>Belinda&#x27;s nightmare — особая запись</td><td>Banker - Belinda — Синий океан / Ледынь (1360, 519)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>598 / 399</td><td>Rescue Belinda — взятие</td><td>Banker - Belinda — Синий океан / Ледынь (1360, 519)</td><td>398;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>599 / 996</td><td>Mytho Crystal Ball — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>—;</td><td>собрать Лазурный кристалл (ID3366) ×2; собрать Идеальный кристалл (ID1635) ×3</td></tr>
+<tr data-search><td>5000 / 950</td><td>Mischief of Fox Spirit — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>996;</td><td>убить Fox Spirit (ID761, ур.65) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5001 / 951</td><td>Mischief of Fox Sage — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>399;</td><td>убить Fox Sage (ID776, ур.70) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5002 / 952</td><td>big secret — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>951;</td><td>убить Swift Cyclonic Sea Jelly (ID621, ур.63) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5003 / 953</td><td>Spirit of Roland — взятие</td><td>Diviner - Hocus Pocus — Синий океан / Ледынь (3262, 2502)</td><td>952;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5004 / 953</td><td>Spirit of Roland — сдача</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5005 / 954</td><td>Heal Sang Di — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>953;</td><td>собрать Мантия целительницы (ID376) ×1</td></tr>
+<tr data-search><td>5006 / 955</td><td>Sorcerer&#x27;s bone powder. — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>954;</td><td>собрать Волшебная кость (ID1626) ×3</td></tr>
+<tr data-search><td>5007 / 956</td><td>Highly Nutritious Product — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>955;</td><td>собрать Рог химеры (ID4783) ×1</td></tr>
+<tr data-search><td>5008 / 957</td><td>Forgotten Past — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>956;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5009 / 958</td><td>Memory Soup — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Суп памяти ID1043 ×1; специальные условия: IsChaType</td></tr>
+<tr data-search><td>5010 / 959</td><td>Bloodstone — взятие</td><td>Merman Prince - Hassan — Магический океан / Шайтан (1254, 3491)</td><td>—;</td><td>предметы сдачи: Кровавый камень ID1040 ×1</td></tr>
+<tr data-search><td>5011 / 960</td><td>Invitation Letter — взятие</td><td>Sand Bandit - Supermun — Магический океан / Шайтан (1080, 3086)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5012 / 960</td><td>Invitation Letter — сдача</td><td>Banker - Judis — Магический океан / Шайтан (906, 3539)</td><td>—;</td><td>предметы сдачи: Приглашение ID1041 ×1</td></tr>
+<tr data-search><td>5014 / 961</td><td>Memory Soup Recipe — взятие</td><td>Merman Prince - Hassan — Магический океан / Шайтан (1254, 3491)</td><td>959;</td><td>собрать Часть черной арабской жемчужины (ID1234) ×10; собрать Толстый хвост прозрач. выползня (ID1260) ×1</td></tr>
+<tr data-search><td>5015 / 962</td><td>Cooling Black Pearl — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>961;</td><td>собрать Черная жемчужина (ID3362) ×1</td></tr>
+<tr data-search><td>5017 / 963</td><td>Memory Capsule — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Капсула памяти ID1050 ×1; специальные условия: IsChaType</td></tr>
+<tr data-search><td>5018 / 964</td><td>Amber Tear — взятие</td><td>Mysterious Granny — Аскарон / Аргент (2158, 2792)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5019 / 964</td><td>Amber Tear — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>предметы сдачи: Янтарная слеза ID2303 ×1</td></tr>
+<tr data-search><td>5020 / 965</td><td>Calcium Replenishment — взятие</td><td>Mysterious Granny — Аскарон / Аргент (2158, 2792)</td><td>964;</td><td>собрать Спин. плавник аметист. дельфина (ID1296) ×1</td></tr>
+<tr data-search><td>5021 / 966</td><td>Revival Clover — взятие</td><td>Mysterious Granny — Аскарон / Аргент (2158, 2792)</td><td>965;</td><td>собрать Оживляющий клевер (ID3143) ×1</td></tr>
+<tr data-search><td>5022 / 967</td><td>Side effect — взятие</td><td>Mysterious Granny — Аскарон / Аргент (2158, 2792)</td><td>966;</td><td>собрать Темная кровь выползня (ID1351) ×1</td></tr>
+<tr data-search><td>5024 / 968</td><td>Beautiful Past — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Восстанавливающее зелье ID1042 ×1; специальные условия: IsChaType</td></tr>
+<tr data-search><td>5025 / 969</td><td>Used Candle — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>—;</td><td>собрать Использованная свеча (ID4823) ×1</td></tr>
+<tr data-search><td>5026 / 970</td><td>Restore Past — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>969;</td><td>предметы сдачи: Восстанавливающее зелье ID1042 ×1</td></tr>
+<tr data-search><td>5027 / 971</td><td>Ingredient of Restoration Potion — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>—;</td><td>собрать Темная кровь выползня (ID1351) ×1; собрать Чай \&quot;Бодрячок (ID3134) ×3; собрать Стимулятор (ID3147) ×3</td></tr>
+<tr data-search><td>5028 / 972</td><td>Let go off love — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>971;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5029 / 972</td><td>Let go off love — сдача</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>—;</td><td>предметы сдачи: Лотосный клевер ID1054 ×1</td></tr>
+<tr data-search><td>5031 / 973</td><td>Brimstone — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>предметы сдачи: Лунный камень ID1045 ×1, Солнечный камень ID1048 ×1; специальные условия: IsChaType</td></tr>
+<tr data-search><td>5032 / 974</td><td>Piety Treasure Map — взятие</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5033 / 974</td><td>Piety Treasure Map — сдача</td><td>Merman Prince - Hassan — Магический океан / Шайтан (1254, 3491)</td><td>—;</td><td>предметы сдачи: Карта сокровищ набожности ID1053 ×1</td></tr>
+<tr data-search><td>5034 / 975</td><td>Whereabouts of Sunstone — взятие</td><td>Merman Prince - Hassan — Магический океан / Шайтан (1254, 3491)</td><td>974;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5035 / 975</td><td>Whereabouts of Sunstone — сдача</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>—;</td><td>предметы сдачи: Рекомендательное письмо ID1046 ×1</td></tr>
+<tr data-search><td>5036 / 976</td><td>Eyedrop — взятие</td><td>Physican - Ditto — Аскарон / Аргент (2250, 2770)</td><td>975;</td><td>собрать Сильный спинной плавник (ID1362) ×1; собрать Чай \&quot;Бодрячок (ID3134) ×3; собрать Чистая вода (ID1649) ×10</td></tr>
+<tr data-search><td>5037 / 977</td><td>Dust of the Century — взятие</td><td>Argent Secretary - Salvier — Аскарон / Аргент (2219, 2749)</td><td>976;</td><td>собрать Саван (ID4782) ×1</td></tr>
+<tr data-search><td>5043 / 978</td><td>Magical Curse — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>957;</td><td>предметы сдачи: Амулет святой души ID1052 ×1</td></tr>
+<tr data-search><td>5045 / 979</td><td>Tribal Long Spear — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>—;</td><td>собрать Заточенное длинное туземное копье (ID4739) ×1</td></tr>
+<tr data-search><td>5046 / 980</td><td>Kill Mummy — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>979;</td><td>убить Horrific Cursed Corpse (ID508, ур.63) ×1; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5047 / 981</td><td>Mask of Zorro — взятие</td><td>Icicle Royal - Mas — Синий океан / Ледынь (1346, 451)</td><td>980;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5048 / 981</td><td>Mask of Zorro — сдача</td><td>Kentaro — Аскарон / Аргент (1894, 2798)</td><td>—;</td><td>предметы сдачи: Маска Зорро ID1025 ×1</td></tr>
+<tr data-search><td>5049 / 982</td><td>Final Password — взятие</td><td>Kentaro — Аскарон / Аргент (1894, 2798)</td><td>981;</td><td>собрать Ость (ID4261) ×1</td></tr>
+<tr data-search><td>5050 / 983</td><td>Stone of Destiny — взятие</td><td>Kentaro — Аскарон / Аргент (1894, 2798)</td><td>982;</td><td>собрать Отталкивающий камень зверей (ID2487) ×1</td></tr>
+<tr data-search><td>5051 / 984</td><td>Destroy the mask — взятие</td><td>Kentaro — Аскарон / Аргент (1894, 2798)</td><td>983;</td><td>собрать Сломанный ангельский нимб (ID4738) ×1</td></tr>
+<tr data-search><td>5052 / 985</td><td>Enchanted Pouch — взятие</td><td>Kentaro — Аскарон / Аргент (1894, 2798)</td><td>984;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5053 / 985</td><td>Enchanted Pouch — сдача</td><td>General - William — Аскарон / Аргент (2277, 2831)</td><td>—;</td><td>предметы сдачи: Маска Зорро ID1025 ×1</td></tr>
+<tr data-search><td>5054 / 986</td><td>Gold powder on the Sacred Amulet — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>978;</td><td>собрать золотая монета (ID2438) ×10</td></tr>
+<tr data-search><td>5055 / 987</td><td>Sang Di&#x27;s guidance — взятие</td><td>Hotel Owner - Sang Di — Синий океан / Ледынь (3287, 2501)</td><td>986;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5056 / 987</td><td>Sang Di&#x27;s guidance — сдача</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5057 / 987</td><td>Sang Di&#x27;s guidance — сдача</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5058 / 987</td><td>Sang Di&#x27;s guidance — сдача</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5059 / 987</td><td>Sang Di&#x27;s guidance — сдача</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5060 / 988</td><td>Peter&#x27;s suggestion — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>987;</td><td>убить Frenzied Lizardman (ID524, ур.69) ×1; специальные условия: HasFlag, NoPfEqual</td></tr>
+<tr data-search><td>5061 / 989</td><td>Ray&#x27;s suggestion — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>987;</td><td>собрать Эмблема телохранителя короля (ID4789) ×1; собрать Живое сердце природы (ID4741) ×1; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5062 / 990</td><td>Daniel&#x27;s Suggestion — взятие</td><td>Little Daniel — Аскарон / Аргент (2193, 2730)</td><td>987;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5063 / 990</td><td>Daniel&#x27;s Suggestion — сдача</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5064 / 991</td><td>Gannon&#x27;s Suggestion — взятие</td><td>High Priest - Gannon — Магический океан / Шайтан (862, 3500)</td><td>987;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5072 / 991</td><td>Gannon&#x27;s Suggestion — сдача</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5073 / 998</td><td>Harden Will — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>991;</td><td>разговор / родное описание; специальные условия: HasState</td></tr>
+<tr data-search><td>5068 / 993</td><td>Story of the Enlightened One — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>988;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5069 / 994</td><td>Story of the Enlightened One — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>989;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5070 / 995</td><td>Story of the Enlightened One — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>998;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5071 / 997</td><td>Story of the Enlightened One — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>990;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5167 / 1500</td><td>Who is the Enlightened One — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>993;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5168 / 1501</td><td>Who is the Enlightened One — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>994;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5074 / 1502</td><td>Who is the Enlightened One — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>995;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5075 / 1503</td><td>Who is the Enlightened One — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>997;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5076 / 1500</td><td>Who is the Enlightened One — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5077 / 1501</td><td>Who is the Enlightened One — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5078 / 1502</td><td>Who is the Enlightened One — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5079 / 1503</td><td>Who is the Enlightened One — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5080 / 1500</td><td>Who is the Enlightened One — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5081 / 1501</td><td>Who is the Enlightened One — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5082 / 1502</td><td>Who is the Enlightened One — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5083 / 1503</td><td>Who is the Enlightened One — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5084 / 1500</td><td>Who is the Enlightened One — сдача</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5085 / 1501</td><td>Who is the Enlightened One — сдача</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5086 / 1502</td><td>Who is the Enlightened One — сдача</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5087 / 1503</td><td>Who is the Enlightened One — сдача</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5088 / 1507</td><td>Top Disciple — взятие</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>1504;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5089 / 1507</td><td>Top Disciple — сдача</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5090 / 1507</td><td>Top Disciple — сдача</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5091 / 1507</td><td>Top Disciple — сдача</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5092 / 1507</td><td>Top Disciple — сдача</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>—;</td><td>разговор / родное описание; специальные условия: NoPfEqual</td></tr>
+<tr data-search><td>5093 / 1508</td><td>Initial Disciple — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>1507, 1514;</td><td>убить Terra Captain (ID67, ур.65) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5094 / 1509</td><td>Lv2 Disciple — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>1508;</td><td>убить Evil Undead Warrior (ID549, ур.66) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5095 / 1510</td><td>3rd Grade Disciple — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>1509;</td><td>убить Evil Pumpkin Knight (ID546, ур.67) ×6; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5096 / 1511</td><td>Advance Disciple — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>1510;</td><td>убить Shadow Hunter (ID201, ур.68) ×8; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5097 / 1512</td><td>Initial Disciple — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>1507, 1515;</td><td>убить Baby Icy Dragon (ID187, ур.65) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5098 / 1513</td><td>Lv2 Disciple — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>1512;</td><td>убить Mad Tribal Villager (ID543, ур.66) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5099 / 1518</td><td>3rd Grade Disciple — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>1513;</td><td>убить Werewolf Warrior Leader (ID566, ур.67) ×6; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5100 / 1519</td><td>Advance Disciple — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>1518;</td><td>убить Lumbering Treant (ID511, ур.68) ×8; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5101 / 1520</td><td>Initial Disciple — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>1507, 1517;</td><td>убить Evil Undead Warrior (ID549, ур.66) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5102 / 1521</td><td>Lv2 Disciple — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>1520;</td><td>убить Bewitching Siren (ID587, ур.67) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5103 / 1522</td><td>3rd Grade Disciple — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>1521;</td><td>убить Dark Blue Siren (ID606, ур.68) ×3; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5104 / 1523</td><td>Advance Disciple — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>1522;</td><td>убить Pirate 007 (ID735, ур.68) ×8; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5105 / 1524</td><td>Initial Disciple — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>1516, 1507;</td><td>собрать Светящийся хребет рыбы-кости (ID1350) ×2</td></tr>
+<tr data-search><td>5106 / 1525</td><td>Lv2 Disciple — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>1524;</td><td>собрать Кристалл сирены (ID1295) ×2</td></tr>
+<tr data-search><td>5107 / 1526</td><td>3rd Grade Disciple — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>1525;</td><td>собрать Эльфийский фрукт (ID3116) ×99</td></tr>
+<tr data-search><td>5108 / 1527</td><td>Advance Disciple — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>1526;</td><td>собрать Эмблема рядового бородача (ID4802) ×1</td></tr>
+<tr data-search><td>5109 / 1528</td><td>Qualified Disciple — взятие</td><td>Castle Guard - Peter — Аскарон / Аргент (2192, 2767)</td><td>1511;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5110 / 1528</td><td>Qualified Disciple — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5111 / 1529</td><td>Qualified Disciple — взятие</td><td>Icicle Swordsman - Ray — Синий океан / Ледынь (1365, 570)</td><td>1519;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5112 / 1529</td><td>Qualified Disciple — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5113 / 1530</td><td>Qualified Disciple — взятие</td><td>Minelli — Магический океан / Шайтан (1244, 3186)</td><td>1523;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5114 / 1530</td><td>Qualified Disciple — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5115 / 1531</td><td>Qualified Disciple — взятие</td><td>Harbor Operator - Gregory — Синий океан / Ледынь (194, 1715)</td><td>1527;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5116 / 1531</td><td>Qualified Disciple — сдача</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5117 / 1532</td><td>Grandeur Oracle — взятие</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>1505;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5118 / 1532</td><td>Grandeur Oracle — сдача</td><td>Tailor - Bebe — Аскарон / Аргент (2265, 2704)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5119 / 1533</td><td>First Gate — взятие</td><td>Tailor - Bebe — Аскарон / Аргент (2265, 2704)</td><td>1532;</td><td>убить Feral Fish Bone (ID642, ур.65) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5120 / 1534</td><td>Goodbye to First Gate — взятие</td><td>Tailor - Bebe — Аскарон / Аргент (2265, 2704)</td><td>1533;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5121 / 1534</td><td>Goodbye to First Gate — сдача</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5122 / 1535</td><td>2nd Gate — взятие</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>1534;</td><td>убить Feral Ruby Dolphin (ID652, ур.66) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5123 / 1536</td><td>Goodbye to 2nd Gate — взятие</td><td>Master Kerra — Синий океан / Ледынь (2664, 654)</td><td>1535;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5124 / 1536</td><td>Goodbye to 2nd Gate — сдача</td><td>Marcus — Магический океан / Шайтан (789, 3112)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5125 / 1537</td><td>3rd Gate — взятие</td><td>Marcus — Магический океан / Шайтан (789, 3112)</td><td>1536;</td><td>убить Bewitching Siren (ID587, ур.67) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5126 / 1538</td><td>Goodbye to 3rd Gate — взятие</td><td>Marcus — Магический океан / Шайтан (789, 3112)</td><td>1537;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5127 / 1538</td><td>Goodbye to 3rd Gate — сдача</td><td>Xeus — Синий океан / Ледынь (2138, 545)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5128 / 1539</td><td>4th Gate — взятие</td><td>Xeus — Синий океан / Ледынь (2138, 545)</td><td>1538;</td><td>убить Beardy Pirate Fighter (ID570, ур.68) ×5; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5129 / 1540</td><td>Goodbye to 4th Gate — взятие</td><td>Xeus — Синий океан / Ледынь (2138, 545)</td><td>1539;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5130 / 1540</td><td>Goodbye to 4th Gate — сдача</td><td>Doctor - Masa — Аскарон / Аргент (773, 1549)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5131 / 1541</td><td>5th Gate — взятие</td><td>Doctor - Masa — Аскарон / Аргент (773, 1549)</td><td>1540;</td><td>убить Siren Archer (ID589, ур.69) ×2; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5132 / 1542</td><td>Goodbye to 5th Gate — взятие</td><td>Doctor - Masa — Аскарон / Аргент (773, 1549)</td><td>1541;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5133 / 1542</td><td>Goodbye to 5th Gate — сдача</td><td>Harbor Operator - Dannis — Магический океан / Шайтан (136, 3432)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5134 / 1543</td><td>6th Gate — взятие</td><td>Harbor Operator - Dannis — Магический океан / Шайтан (136, 3432)</td><td>1542;</td><td>убить Feral White Bobcat (ID36, ур.70) ×6; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5135 / 1544</td><td>Goodbye to 6th Gate — взятие</td><td>Harbor Operator - Dannis — Магический океан / Шайтан (136, 3432)</td><td>1543;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5136 / 1544</td><td>Goodbye to 6th Gate — сдача</td><td>Zurbi — Синий океан / Ледынь (1037, 671)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5137 / 1545</td><td>7th Gate — взятие</td><td>Zurbi — Синий океан / Ледынь (1037, 671)</td><td>1544;</td><td>убить Terra Captain (ID263, ур.70) ×7; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5138 / 1546</td><td>Goodbye to 7th Gate — взятие</td><td>Zurbi — Синий океан / Ледынь (1037, 671)</td><td>1545;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5139 / 1546</td><td>Goodbye to 7th Gate — сдача</td><td>Linda — Аскарон / Аргент (515, 2437)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5140 / 1547</td><td>8th Gate — взятие</td><td>Linda — Аскарон / Аргент (515, 2437)</td><td>1546;</td><td>убить Deathsoul Soldier (ID808, ур.70) ×8; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5141 / 1548</td><td>Instructions for last Gate — взятие</td><td>Linda — Аскарон / Аргент (515, 2437)</td><td>1547;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5142 / 1548</td><td>Instructions for last Gate — сдача</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>—;</td><td>предметы сдачи: Оракул ID2917 ×1</td></tr>
+<tr data-search><td>5143 / 1549</td><td>Perfect Pirate Mission — взятие</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>1506;</td><td>убить Evil Pumpkin Knight (ID546, ур.67) ×10; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5144 / 1550</td><td>Perfect Pirate Mission — взятие</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>1549;</td><td>собрать Королевский меч (ID4893) ×2</td></tr>
+<tr data-search><td>5145 / 1551</td><td>Perfect Pirate Mission — взятие</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>1550;</td><td>убить Dark Blue Siren (ID606, ур.68) ×3; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5146 / 1552</td><td>Perfect Pirate Mission — взятие</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>1551;</td><td>убить Siren Archer (ID589, ур.69) ×3; специальные условия: HasFlag</td></tr>
+<tr data-search><td>5147 / 1553</td><td>The mystery has been solved — взятие</td><td>Argent Chairman - Ronnie — Аскарон / Аргент (2241, 2748)</td><td>1577;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5148 / 1553</td><td>The mystery has been solved — сдача</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>—;</td><td>предметы сдачи: Камень Менга ID2918 ×1</td></tr>
+<tr data-search><td>5149 / 1554</td><td>The mystery has been solved — взятие</td><td>Langa — Магический океан / Шайтан (853, 3549)</td><td>1548;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5150 / 1554</td><td>The mystery has been solved — сдача</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>—;</td><td>предметы сдачи: Камень Менга ID2918 ×1</td></tr>
+<tr data-search><td>5151 / 1555</td><td>The mystery has been solved — взятие</td><td>Icicle Chairman - Reyno — Синий океан / Ледынь (1294, 498)</td><td>1552;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5152 / 1555</td><td>The mystery has been solved — сдача</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>—;</td><td>предметы сдачи: Камень Менга ID2918 ×1</td></tr>
+<tr data-search><td>5169 / 1557</td><td>Dispute of the Old — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1556;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5153 / 1557</td><td>Dispute of the Old — сдача</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5154 / 1561</td><td>Granny&#x27;s Intellect — взятие</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>1558, 1559;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5155 / 1566</td><td>Cure infectious disease — взятие</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>1558, 1560;</td><td>собрать Граната 3 ур. (ID2743) ×1</td></tr>
+<tr data-search><td>5156 / 1567</td><td>Manual Healing — взятие</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>1562, 1565, 1561;</td><td>собрать Световая бомба 3 ур. (ID2744) ×1</td></tr>
+<tr data-search><td>5157 / 1568</td><td>Guardian of Truth — взятие</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>1561, 1564;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5158 / 1568</td><td>Guardian of Truth — сдача</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5159 / 1569</td><td>Guardian of Truth — взятие</td><td>Granny Dong — Синий океан / Ледынь (795, 363)</td><td>1567;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5160 / 1569</td><td>Guardian of Truth — сдача</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>—;</td><td>разговор / родное описание</td></tr>
+<tr data-search><td>5161 / 1570</td><td>Mysterious Curse — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1571;</td><td>собрать Пароль AB (ID2408) ×1</td></tr>
+<tr data-search><td>5162 / 1572</td><td>Mysterious Curse — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1570;</td><td>собрать Пароль BC (ID2409) ×1</td></tr>
+<tr data-search><td>5163 / 1573</td><td>Mysterious Curse — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1572;</td><td>собрать Пароль CD (ID2410) ×1</td></tr>
+<tr data-search><td>5164 / 1574</td><td>Mysterious Curse — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1573;</td><td>собрать Пароль DE (ID2411) ×1</td></tr>
+<tr data-search><td>5165 / 1575</td><td>Mysterious Curse — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1574;</td><td>собрать Пароль EF (ID2412) ×1</td></tr>
+<tr data-search><td>5166 / 1576</td><td>Seal Research Outcome — взятие</td><td>Weird Grampa — Синий океан / Ледынь (808, 373)</td><td>1575;</td><td>разговор / родное описание</td></tr>
+</tbody></table></div>
+<h2>Источники и границы проверки</h2>
+<p>Этот файл — оригинальная компиляция фактов присланного сервера и ТЗ. Внешние полные гайды по каждому классу и всей истории не проверены из-за ограничений сети. Прочитанные публичные материалы ниже служат контекстом и не выдаются за готовые билды. Их отличающиеся настройки не перенесены на сервер. Исходные серверные Lua/таблицы и данные персонажей в файл не включены.</p>
+<p>- MissionScript02.lua: SHA256 ff12e16e0507af0fb057c4e471962d4b3719da473f6d9be9897ac378f6ef36a9.</p>
+<p>- skillinfo.txt, ItemInfo и ItemEffect: производная проверенная таблица life-items.json.</p>
+<p>- Реальные НПС и спавны: world-npcs.json / world-mobs.json.</p>
+<p>- Восемь билдов: ТЗ владельца и runtime-файл assets/skill-guides.json.</p>
+<p>- MidGard Realm documentation: Quest / advancement and story concepts: https://github.com/MidGard-Realm-Project/Documentation/blob/main/README.md — general context only; a different custom server, not an authoritative skill build.</p>
+<p>- Tales of Pirates Forums Archive — Dytomic: https://github.com/Dytomic/top-forums-archive — developer-forum research archive; no verified complete player skill/story walkthrough found.</p>
+<p>- PKODev2 forum materials — V3ct0r1024: https://github.com/V3ct0r1024/pkodev2.forum — server documentation, not a complete player walkthrough.</p>
+<p>Для400ботов в Alpha51 нужен сохранённый полный data с300персонажами. Start-World.cmd продолжает одно расширение до400. Повторный запуск не создаёт ещё100. Цель500остаётся отдельным этапом;400соединений на Windows здесь не проверялись.</p></main><script>const rows=[...document.querySelectorAll('tr[data-search]')];const normalize=s=>s.toLowerCase().replaceAll('ё','е');document.querySelector('#search').addEventListener('input',e=>{const q=normalize(e.target.value.trim());let n=0;for(const r of rows){r.hidden=!normalize(r.textContent).includes(q);if(!r.hidden)n++}document.querySelector('#count').textContent=q?n+' строк':''})</script></html>
