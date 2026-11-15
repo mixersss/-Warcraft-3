@@ -11,10 +11,13 @@ HOOK=b'elseif item.func == OwnerMarketBuy then\n\t\t\treturn OwnerMarketBuy(char
 
 
 def locate(selected):
-    p=Path(selected).expanduser()
-    for root in (p/'resource',p,p.parent/'resource'):
-        if (root/'script/MisScript/NpcScript01.lua').is_file():return root
-    raise ValueError('Не найдена серверная resource/script/MisScript/NpcScript01.lua')
+    p=Path(str(selected).strip().strip('"')).expanduser()
+    # Accept a pasted inner script folder or NpcScript01.lua itself as well
+    # as GameServer/resource. Prefer the nearest matching ancestor.
+    for base in (p,*p.parents):
+        for root in (base/'resource',base):
+            if (root/'script/MisScript/NpcScript01.lua').is_file():return root
+    raise ValueError('Не найдена серверная resource/script/MisScript/NpcScript01.lua. Укажи папку сервера, а не клиента.')
 
 
 def binary_rows(raw):

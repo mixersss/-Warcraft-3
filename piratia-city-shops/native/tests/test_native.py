@@ -75,10 +75,42 @@ class InstallationTests(unittest.TestCase):
    self.assertEqual((server/'garner/garnerNPC.bin').read_bytes(),before);self.assertEqual(result['npc_ids'],[19,20,21,22,23])
    sdk=(server/'script/MisSdk/NpcSdk.lua').read_bytes();self.assertEqual(sdk.count(b'item.func == OwnerOpenTrade'),1)
    self.assertNotIn(b'item.func == OwnerMarketBuy',sdk)
+ def test_upgrade_preserves_edits_outside_owned_lua_block(self):
+  with tempfile.TemporaryDirectory() as d:
+   server,client=fixture(Path(d));legacy.install(server,legacy.DEFAULT_CENTER,True)
+   script=server/'script/MisScript/NpcScript01.lua';sdk=server/'script/MisSdk/NpcSdk.lua'
+   prefix=b'-- owner quest edit\nfunction OwnerQuestExtra() return 7 end\n'
+   suffix=b'\n-- owner SDK edit\nfunction OwnerSdkExtra() return 9 end\n'
+   script.write_bytes(prefix+script.read_bytes());sdk.write_bytes(sdk.read_bytes()+suffix)
+   result=isolated_install(server/'script/MisScript',client,True)
+   self.assertEqual(set(result['preserved_changed_files']),{'script/MisScript/NpcScript01.lua','script/MisSdk/NpcSdk.lua'})
+   self.assertTrue(script.read_bytes().startswith(prefix));self.assertTrue(sdk.read_bytes().endswith(suffix))
+   self.assertTrue(isolated_install(server,client,True)['already_installed'])
+ def test_upgrade_refuses_modified_owned_shop_block_without_writes(self):
+  with tempfile.TemporaryDirectory() as d:
+   server,client=fixture(Path(d));legacy.install(server,legacy.DEFAULT_CENTER,True)
+   script=server/'script/MisScript/NpcScript01.lua';script.write_bytes(script.read_bytes().replace(b'price=50000',b'price=1',1))
+   before={p:p.read_bytes() for p in Path(d).rglob('*') if p.is_file()}
+   with self.assertRaisesRegex(ValueError,'сам блок'):isolated_install(server,client,True)
+   for p,raw in before.items():self.assertEqual(p.read_bytes(),raw)
+ def test_upgrade_keeps_recompiled_npc_bytes_when_all_bindings_match(self):
+  with tempfile.TemporaryDirectory() as d:
+   server,client=fixture(Path(d));legacy.install(server,legacy.DEFAULT_CENTER,True)
+   binary=server/'garner/garnerNPC.bin';text=server/'garner/garnernpc.txt'
+   raw=bytearray(binary.read_bytes());raw[4+60]^=1;binary.write_bytes(raw)
+   text.write_bytes(b'// owner table comment\n'+text.read_bytes());before=text.read_bytes()
+   result=isolated_install(server,client,True)
+   self.assertEqual(binary.read_bytes(),bytes(raw));self.assertEqual(text.read_bytes(),before)
+   self.assertEqual(set(result['preserved_changed_files']),{'garner/garnernpc.txt','garner/garnerNPC.bin'})
  def test_wrong_client_is_refused_before_any_server_write(self):
   with tempfile.TemporaryDirectory() as d:
    server,client=fixture(Path(d));before={p:p.read_bytes() for p in server.rglob('*') if p.is_file()};(client/'scripts/table/iteminfo.bin').write_bytes(b'wrong format')
    with self.assertRaises(ValueError):isolated_install(server,client,True)
+   for p,raw in before.items():self.assertEqual(p.read_bytes(),raw)
+ def test_server_resource_cannot_be_used_as_client_folder(self):
+  with tempfile.TemporaryDirectory() as d:
+   server,client=fixture(Path(d));before={p:p.read_bytes() for p in server.rglob('*') if p.is_file()}
+   with self.assertRaisesRegex(ValueError,'папка ИГРЫ'):isolated_install(server,server,True)
    for p,raw in before.items():self.assertEqual(p.read_bytes(),raw)
  def test_interrupted_server_client_update_rolls_back_all(self):
   with tempfile.TemporaryDirectory() as d:

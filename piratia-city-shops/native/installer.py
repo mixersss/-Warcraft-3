@@ -54,12 +54,17 @@ def locate_client(selected):
   for rel in ('scripts/table/iteminfo.bin','scripts/table/ItemInfo.bin'):
    if (root/rel).is_file():return root/rel
  if p.is_file() and p.name.casefold()=='iteminfo.bin':return p
- raise ValueError('Не найден клиентский scripts/table/iteminfo.bin. Укажи папку клиента.')
+ raise ValueError('Не найден клиентский scripts/table/iteminfo.bin. Здесь нужна папка ИГРЫ с Game.exe (например C:\\Games\\Пиратия Online), а не серверная resource.')
 
-def strip_legacy(raw):
+def legacy_block_span(raw):
  begin=b'-- OWNER_CITY_SHOPS_V1_BEGIN';end=b'-- OWNER_CITY_SHOPS_V1_END'
  if raw.count(begin)!=1 or raw.count(end)!=1:raise ValueError('Не найден единственный блок предыдущего патча')
  a=raw.index(begin);b=raw.index(end)+len(end)
+ if b<=a:raise ValueError('Повреждены границы предыдущего блока магазинов')
+ return a,b
+
+def strip_legacy(raw):
+ a,b=legacy_block_span(raw)
  if raw[b:b+2]==b'\r\n':b+=2
  elif raw[b:b+1]==b'\n':b+=1
  return raw[:a]+raw[b:]
@@ -71,13 +76,23 @@ def plan_server(root,cat=None):
   previous=json.loads(v1.read_text())
   required={p.as_posix() for p in SERVER_FILES[:4]}
   if set(previous['installed_sha256'])!=required:raise ValueError('Неполная контрольная запись предыдущей установки')
-  if not all(digest((root/p).read_bytes())==h for p,h in previous['installed_sha256'].items()):
-   raise ValueError('Файлы после предыдущей установки изменились. Сохрани их для проверки; перезапись остановлена.')
+  oldcat=json.loads((ROOT.parent/'catalog.json').read_text())
+  if previous.get('catalog_sha256')!=digest((ROOT.parent/'catalog.json').read_bytes()):
+   raise ValueError('Неизвестный каталог предыдущего патча; нужна проверка обновления')
+  script_raw=originals[SERVER_FILES[0]];a,b=legacy_block_span(script_raw)
+  expected=legacy.render(oldcat).rstrip(b'\n')
+  if script_raw[a:b].replace(b'\r\n',b'\n')!=expected:
+   raise ValueError('Изменён сам блок старых магазинов в NpcScript01.lua. Автоматическое обновление остановлено; сохрани файл для проверки.')
+  changed=[p.as_posix() for p in SERVER_FILES[:4] if digest(originals[p])!=previous['installed_sha256'][p.as_posix()]]
   outputs={p:originals[p] for p in SERVER_FILES[:4]};report={k:previous[k] for k in ('center_m','positions_m','npc_ids','shops')}
+  report['preserved_changed_files']=changed
+  if len(report['npc_ids'])!=5 or len(set(report['npc_ids']))!=5:raise ValueError('Не подтверждены пять прежних НПС')
   rows,records=legacy.validate_npcs(outputs[SERVER_FILES[2]],outputs[SERVER_FILES[3]])
   for shop,identity,point in zip(cat['shops'],report['npc_ids'],legacy.DEFAULT_POINTS):
-   row=rows[identity]
-   if row[11].strip()!=shop['function'].encode() or list(map(int,row[5].split(b',')))!=[v*100+50 for v in point]:
+   row=rows[identity];position=[v*100+50 for v in point]
+   if (row[11].strip()!=shop['function'].encode() or row[1].strip()!=shop['name'].encode()
+       or int(row[3])!=17 or int(row[7])!=180
+       or list(map(int,row[5].split(b',')))!=position or list(map(int,row[6].split(b',')))!=position):
     raise ValueError('Не совпадают пять НПС предыдущего патча')
  else:
   tempcat=dict(cat,version=1)
@@ -86,7 +101,8 @@ def plan_server(root,cat=None):
  nl=b'\r\n' if b'\r\n' in outputs[script] else b'\n'
  outputs[script]=strip_legacy(outputs[script])+nl+render(cat).replace(b'\n',nl)
  sdkraw=outputs[sdk];sdknl=b'\r\n' if b'\r\n' in sdkraw else b'\n';oldhook=legacy.HOOK.replace(b'\n',sdknl)
- if sdkraw.count(oldhook)!=1:raise ValueError('Не найдена ветка предыдущего диалогового магазина')
+ if sdkraw.count(oldhook)!=1 or sdkraw.count(oldhook+OPEN_ANCHOR)!=1:
+  raise ValueError('Изменена ветка старого магазина в NpcSdk.lua; нужна проверка обновления')
  sdkraw=sdkraw.replace(oldhook,b'')
  if sdkraw.count(OPEN_ANCHOR)!=1 or sdkraw.count(BUY_ANCHOR)!=1:raise ValueError('Другая версия NpcSdk.lua; нужна проверка')
  outputs[sdk]=sdkraw.replace(OPEN_ANCHOR,OPEN_HOOK.replace(b'\n',sdknl)+OPEN_ANCHOR).replace(BUY_ANCHOR,BUY_ANCHOR+BUY_HOOK.replace(b'\n',sdknl))
@@ -182,7 +198,9 @@ def main():
    result=install_client(a.client or a.server or input('Папка клиента: ').strip().strip('"'),a.apply)
   else:
    server=a.server or input('Папка GameServer или resource: ').strip().strip('"')
-   client=a.client or input('Папка клиента Пиратии (где scripts): ').strip().strip('"')
+   server=legacy.locate(server)
+   print('Найдена серверная resource: '+str(server))
+   client=a.client or input('Папка ИГРЫ с Game.exe и scripts (НЕ серверная resource): ').strip().strip('"')
    result=install(server,client,a.apply)
   print(json.dumps(result,ensure_ascii=False,indent=2));print('Готово. Запусти сервер и клиент заново.' if a.apply else 'Предпросмотр: файлы не изменены.')
  except (OSError,ValueError,KeyError,struct.error) as error:print('Ошибка: '+str(error));return 1

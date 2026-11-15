@@ -22,6 +22,11 @@ def fixture(root):
  return resource
 
 class PatchTests(unittest.TestCase):
+ def test_server_folder_resolution_accepts_inner_script_path_and_file(self):
+  with tempfile.TemporaryDirectory(prefix='owner server ') as d:
+   root=fixture(Path(d))
+   for selected in (root,root.parent,root/'script',root/'script/MisScript',root/'script/MisScript/NpcScript01.lua','"'+str(root/'script/MisScript')+'"'):
+    self.assertEqual(install.locate(selected),root)
  def test_exact_five_owner_coordinates_written_to_both_npc_formats(self):
   with tempfile.TemporaryDirectory() as d:
    root=fixture(Path(d));_,output,report=install.plan(root,install.DEFAULT_CENTER)
