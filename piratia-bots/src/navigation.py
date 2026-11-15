@@ -171,7 +171,7 @@ class Navigation:
         while goal is not None:cells.append(goal);goal=parents[goal]
         points=[tuple(position)]
         for cell in reversed(cells):
-            if cell==start and occupied_physical and bits is not None and not bits[start_index//8]&(1<<(7-start_index%8)):continue
+            if cell==start and occupied_physical:continue
             point=((cell[0]+self.origin[0]*scale)*step+step//2,
                    (cell[1]+self.origin[1]*scale)*step+step//2)
             if point!=points[-1]:points.append(point)

@@ -56,6 +56,8 @@ class Hunter:
         self.move_stop_seen=-1;self.blocked_move_stops=0;self.last_blocked_step=None
         self.assist_target=None;self.helper=None
         self.group_hunt=None
+        self.repair=None
+        self.escape_plan=None
         self.treasure=None
         from progress_monitor import ProgressMonitor
         self.progress_monitor=ProgressMonitor()
@@ -359,6 +361,14 @@ class Hunter:
 
     def recover_to_ground(self,now):
         own=self.world.own
+        if self.escape_plan and self.escape_plan.tick(now,self):
+            self.offmesh_reason=self.escape_plan.reason;return
+        motion=self.world.motion.get(self.world.own_id)
+        if (self.offmesh_route and motion and self.world.move_state==0 and self.world.move_packet_number==self.last_sent_sequence):
+            points,started,speed=motion
+            duration=sum(distance(a,b) for a,b in zip(points,points[1:]))/max(1,speed)
+            if now<started+min(20,duration+2):
+                self.offmesh_reason='сервер подтвердил выход с кромки; продолжает движение';return
         if now<self.offmesh_next:return
         self.offmesh_blocked={c:t for c,t in self.offmesh_blocked.items() if t>now}
         if self.offmesh_origin is not None and distance(own.position,self.offmesh_origin)<50:
@@ -515,7 +525,7 @@ class Hunter:
         return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
 
     def transaction_busy(self):
-        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade))
+        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade,self.repair))
 
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
@@ -622,6 +632,7 @@ class Hunter:
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
         if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
+        if key=='repair' and feature and feature.candidates():essential_combat=True
         if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
@@ -641,14 +652,14 @@ class Hunter:
                 and not self.raising_travel_funds and not getattr(feature,'context',None)
                 and not getattr(feature,'pending',None)):
             return False  # Finish required farming instead of leaving camp for a small sale.
-        optional=key in ('vendor','market','town','story')
+        optional=key in ('vendor','market','town','story','repair')
         nearby=optional and any(self.eligible(e,now) and distance(self.position(now),self.world.position(now,e.identity))<=2000
                                 for e in self.world.entities.values())
         scope=self.nav.background_work(nearby) if optional and hasattr(self.nav,'background_work') else nullcontext()
         try:
             with scope:used=callback()
         except RoutePending:
-            if key not in ('vendor','market','town','story'):raise
+            if key not in ('vendor','market','town','story','repair'):raise
             self.background_task=key
             return False  # Keep the planning job, but allow a visible fight/direct move.
         if not used and point and self.coordination:self.coordination.leave_visit(self.owner)
@@ -658,6 +669,7 @@ class Hunter:
                 self.task_budget.paused.pop(key,None)
                 feature.finish_sale(now)
             elif key=='town':feature.finish(now,180)
+            elif key=='repair':feature.finish(now,'маршрут ремонта без прогресса; ищет другой вариант',True)
             elif key=='market':feature.next_scan=now+180
             elif hasattr(feature,'next_visit'):feature.next_visit=now+180
             self.move_goal=None
@@ -771,6 +783,8 @@ class Hunter:
             self.flush_action(now)
         if self.stuck_return.poll(now,self):
             self.change(self.stuck_return.reason);return
+        if self.repair and self.repair.busy:
+            if self.repair.tick(now,self,False):self.change(self.repair.reason or 'ожидает ремонт от сервера');return
         self.cancel_protected_fight(now)
         if self.refresh_class_intent:self.refresh_class_intent()
         if self.adventure and hasattr(self.adventure,'review_objective'):
@@ -786,11 +800,16 @@ class Hunter:
         protected=self.resting or self.transaction_busy() or bool(self.town and self.town.rest_until)
         if own:self.activity.update(now,own.values.get(LV),own.values.get(15),self.kills,completed,protected)
         if own:self.refresh_farm_plan()
-        if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))):
+        if own and self.world.map==self.nav.map and not self.nav.free(self.nav.cell(self.position(now))) and not (self.offmesh_route and self.world.move_state==0 and self.world.move_packet_number==self.last_sent_sequence):
             # A server correction can invalidate interpolation; prefer its raw position.
             self.world.motion.pop(self.world.own_id,None)
         needs_recovery=(own and (self.nav.needs_recovery(self.position(now)) if hasattr(self.nav,'needs_recovery')
                                 else not self.nav.free(self.nav.cell(self.position(now)))))
+        if own and own.alive and needs_recovery and not self.pending_action and not self.transaction_busy() and not any(getattr(f,'context',None) for f in (self.town,self.vendor,self.career,self.story,self.travel,self.adventure) if f):
+            if self.petcare and self.petcare.urgent_hunger() and self.petcare.tick(now,self,safe=True):
+                self.change(self.petcare.reason);return
+            if self.equipment and self.equipment.tick(now,self,True):
+                self.change('надевает рабочую экипировку перед выходом с кромки');return
         if not own or self.world.map != self.nav.map or needs_recovery:
             self.change('ожидание достоверных данных карты')
             if self.pending_action and own and own.alive:
@@ -910,6 +929,10 @@ class Hunter:
             self.next_action=now+.2
             self.change('надевает подходящую экипировку')
             return
+        repair_safe=(not self.target and not self.resting and hp/maximum>.55 and not self.transaction_busy()
+                     and not any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.vendor,self.adventure,self.career,self.story,self.travel,self.petcare) if f))
+        if self.repair and repair_safe and self.repair.candidates() and self.task('repair',self.repair,lambda:self.repair.tick(now,self,repair_safe),now):
+            self.change(self.repair.reason);return
         if self.skills and self.skills.tick(now,self,safe=not self.target):
             self.next_action=now+.2
             self.change('изучает навыки своего класса')
@@ -1243,7 +1266,7 @@ class Hunter:
         return adaptive
 
     def summary(self):
-        return {'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'escape_plan':self.escape_plan.summary() if self.escape_plan else {},'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -1323,6 +1346,11 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         from party import Party
         policy.chests=Chests(world,life)
         policy.town=Town(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"rest_directory",None),bot_name)
+        from repairs import Repairs
+        policy.repair=Repairs(world,life.npcs,catalog,client.wire.send)
+        if hasattr(navigation,'rescue_resyncs'):
+            from escape_plan import EscapePlan
+            policy.escape_plan=EscapePlan(bot_name,navigation.rescue_resyncs)
         from pet_care import PetCare
         policy.petcare=PetCare(world,life,policy.mechanics,bot_name,role)
         policy.town.petcare=policy.petcare
@@ -1506,7 +1534,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['public_chat']=public_chat.summary()
         if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions','repair'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
@@ -1561,6 +1589,12 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                     report.result['party_decode']='unsupported';policy.party=None;policy.group_hunt=None
                     public_chat.recruitment_provider=None
             return
+        if policy.repair and policy.repair.context and command in (802,544,546):
+            try:
+                if policy.repair.observe(command,payload,now):return
+            except ProtocolError:
+                policy.repair.finish(now,'неподдерживаемый ответ ремонта; нужен свежий отчёт',True)
+                report.result['repair_decode']='unsupported';return
         if policy.vendor and policy.vendor.context and command in (801,802,803,805,806,807,808):
             try:
                 if policy.vendor.observe(command,payload,now,client.wire.send):return
@@ -1589,6 +1623,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             was_dead=world.own is not None and not world.own.alive
             if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             world.enter(payload)
+            if policy.repair:policy.repair.finish(now,'карта изменилась; перепроверяет необходимость ремонта')
             policy.stuck_return.on_map(world.map)
             if policy.bank:policy.bank.end(now)
             if policy.direct_trade:policy.direct_trade.reset()
@@ -1680,7 +1715,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
                 if policy.party:
                     if policy.group_hunt:policy.group_hunt.tick(now)
-                    dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel,policy.shortcut) if f)
+                    dialogue_busy=any(getattr(f,'context',None) for f in (policy.adventure,policy.town,policy.career,policy.story,policy.travel,policy.shortcut,policy.repair) if f)
                     policy.party.tick(time.monotonic(),bot_index,safe=not policy.target and not dialogue_busy and not policy.resting and not policy.transaction_busy())
                 if policy.town:
                     completed=sum(getattr(f,'delivered',0) for f in (policy.adventure,policy.career,policy.story) if f)
@@ -1709,7 +1744,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 seen_chests=policy.chests.confirmed if policy.chests else 0
                 seen_shopping=policy.town.confirmed if policy.town else 0
                 social.busy_state=bool(policy.target or (policy.market and policy.market.busy)
-                    or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel,policy.shortcut) if f))
+                    or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel,policy.shortcut,policy.repair) if f))
                 social.tick(now, policy.resting, alive and now-policy.started >= 3)
                 if chat_adapter:chat_adapter.tick(now)
                 public_chat.tick(now,alive and now-policy.started>=3,policy.market)
@@ -1743,7 +1778,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             report.result['dialogue']=chat_adapter.summary();navigation.chat_coordinator.remove(bot_name)
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions','repair'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()

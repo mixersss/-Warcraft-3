@@ -58,6 +58,9 @@ class ItemCatalog:
             if not identity or identity==9999:continue
             gear=self.gear.get(identity)
             if gear is None:return None
+            supplied=(item_overrides or {}).get(link)
+            worn=getattr(own,'equipment_details',{}).get(link,{})
+            if supplied is None and worn.get('identity')==identity and worn.get('valid') is False:continue
             job=own.values.get(4)
             weights=({'constitution':3,'strength':1} if job==8 else
                      {'agility':3,'strength':2} if job==9 else
@@ -86,6 +89,9 @@ class ItemCatalog:
         change=self.transition(own,identity,free_slots)
         if change is None:return None
         equipment,chosen,_=change
+        worn=getattr(own,'equipment_details',{}).get(chosen,{})
+        if self.gear[identity].get('kind')!=29 and item and item.valid and own.equipment.get(chosen)==identity and worn.get('identity')==identity and worn.get('valid') is False:
+            if item.endurance>worn.get('endurance',0):return 1,[chosen]
         # A depleted coral may be replaced by a fresh copy of the same item ID.
         if self.gear[identity].get('kind')==29:
             old_id=own.equipment.get(chosen,0);old=own.equipment_details.get(chosen,{})
@@ -144,7 +150,7 @@ class ItemCatalog:
 class Equipment:
     def __init__(self,world,catalog,send,tell=lambda text:None):
         self.world,self.catalog,self.send,self.tell=world,catalog,send,tell
-        self.pending=None;self.pending_refill=None;self.blockers=[];self.settling=False
+        self.pending=None;self.pending_refill=None;self.pending_restore=None;self.blockers=[];self.settling=False
         self.next_action=0
         self.blacklist={}
         self.requests=self.confirmed=self.failed=0
@@ -161,7 +167,8 @@ class Equipment:
         if self.pending:
             identity,links,deadline=self.pending
             refill_ok=not self.pending_refill or own.equipment_details.get(self.pending_refill[0],{}).get('energy',0)>self.pending_refill[1]
-            if any(own.equipment.get(link)==identity for link in links) and refill_ok:
+            restore_ok=not self.pending_restore or (own.equipment_details.get(self.pending_restore[0],{}).get('valid') is True and own.equipment_details.get(self.pending_restore[0],{}).get('endurance',0)>self.pending_restore[1])
+            if any(own.equipment.get(link)==identity for link in links) and refill_ok and restore_ok:
                 self.confirmed+=1;self.pending=None;self.next_action=now+1;self.settling=True
                 self.tell('Экипировка подтверждена сервером.')
             elif now>deadline:
@@ -172,7 +179,7 @@ class Equipment:
         self.settling=False
         signature=(own.model,own.values.get(0),own.values.get(4),getattr(own,'build_id',None),
                    self.world.bag_capacity,tuple(sorted(self.world.bag.items())),tuple(sorted(own.equipment.items())),
-                   tuple((link,d.get('identity'),d.get('energy'),d.get('valid')) for link,d in sorted(own.equipment_details.items())),
+                   tuple((link,d.get('identity'),d.get('energy'),d.get('endurance'),d.get('valid')) for link,d in sorted(own.equipment_details.items())),
                    tuple((i,s.get('level'),s.get('energy')) for i,s in sorted(self.world.skills.items())))
         if signature==getattr(self,'scan_signature',None) and now<getattr(self,'scan_until',0):
             self.cached_scans=getattr(self,'cached_scans',0)+1;return False
@@ -181,6 +188,8 @@ class Equipment:
         if level is None or job is None:return False
         options=[];self.blockers=[]
         for slot,item in self.world.bag.items():
+            if item.identity in self.catalog.gear and (not item.valid or item.max_endurance>0 and item.endurance<=0):
+                self.blockers.append({'slot':slot,'id':item.identity,'reason':'вещь непригодна или изношена; нужен ремонт'});continue
             if (not item.valid or (self.catalog.gear.get(item.identity,{}).get('kind')==29 and item.energy<=0) or (item.max_endurance>0 and item.endurance<=0)
                     or self.blacklist.get(item.identity,0)>now):continue
             free=max(0,(self.world.bag_capacity or 0)-len(self.world.bag))
@@ -205,6 +214,9 @@ class Equipment:
         policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,-1))
         self.requests+=1
         self.pending_refill=None
+        self.pending_restore=None
+        worn=own.equipment_details.get(links[0],{})
+        if self.catalog.gear[identity].get('kind')!=29 and own.equipment.get(links[0])==identity and worn.get('valid') is False:self.pending_restore=(links[0],worn.get('endurance',0))
         if self.catalog.gear[identity].get('kind')==29 and own.equipment.get(links[0])==identity:
             self.pending_refill=(links[0],own.equipment_details.get(links[0],{}).get('energy',0))
         self.pending=identity,links,now+12

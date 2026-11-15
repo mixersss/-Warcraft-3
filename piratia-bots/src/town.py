@@ -55,11 +55,11 @@ class Town:
         return None
     def critical_items(self,map_name=None):
         w=self.world;job=w.own.values.get(4);result=[];shop_map=map_name or w.map
-        if job in (5,13,14) and self.gear.types.get(w.own.equipment.get(9))!=9:
+        if job in (5,13,14) and not (self.gear.types.get(w.own.equipment.get(9))==9 and w.own.equipment_details.get(9,{}).get('valid',True)):
             if not any(self.gear.types.get(i.identity)==9 and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
                 staves=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i)==9 and self.gear.compatible(w.own,i)]
                 if staves:result.append(min(staves,key=lambda i:(self.life.prices.get(i,10**9),i)))
-        if job in (2,12) and not any(self.gear.types.get(w.own.equipment.get(link)) in (3,4) for link in (6,9)):
+        if job in (2,12) and not any(self.gear.types.get(w.own.equipment.get(link)) in (3,4) and w.own.equipment_details.get(link,{}).get('valid',True) for link in (6,9)):
             if not any(self.gear.types.get(i.identity) in (3,4) and self.gear.compatible(w.own,i.identity) and i.valid for i in w.bag.values()):
                 bows=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers'] if self.gear.types.get(i) in (3,4) and self.gear.compatible(w.own,i)]
                 if bows:result.append(min(bows,key=lambda i:(self.life.prices.get(i,10**9),i)))
@@ -76,6 +76,9 @@ class Town:
                          if self.gear.gear.get(i,{}).get('kind')==29 and link in self.gear.gear[i]['links'] and self.gear.compatible(w.own,i)]
                 if options:result.append(min(options,key=lambda i:(self.life.prices.get(i,10**9),i)))
         self.combat_items=set(result)
+        ticket={'garner':4602,'magicsea':4603,'darkblue':4604}.get(w.map)
+        self.emergency_ticket=ticket if ticket and job and w.own.values.get(0,0)>=10 and not any(i.identity in (4602,4603,4604) and i.valid for i in w.bag.values()) else None
+        if self.emergency_ticket:result.append(self.emergency_ticket)
         if (job and not w.skills.get(241,{}).get('level',0) and w.own.values.get(13,0)>0
                 and not any(i.identity==3296 for i in w.bag.values())):
             result.append(3296)
@@ -104,6 +107,8 @@ class Town:
         critical=self.critical_items()
         for identity in critical:
             if identity in self.combat_items and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
+        ticket=getattr(self,'emergency_ticket',None)
+        if ticket and 0<self.life.prices.get(ticket,0)<=self.spend_limit(ticket):return ticket,1
         if self.petcare:
             for identity,count,_ in self.petcare.purchase_goals():
                 price=self.life.prices.get(identity,0)

@@ -53,6 +53,7 @@ class StallBookBudgetTests(unittest.TestCase):
         from inventory import BagItem
         w.own.values.update({0:20,4:1,13:1,8:5100})
         w.bag={0:BagItem(1847,10,0,0,0,0,0,True)}
+        w.bag[47]=BagItem(4602,1,0,0,0,0,0,True) # Test book budget after the emergency ticket is stocked.
         # Isolate the life-skill request from separate class skill requirements.
         t.role=None
         self.assertIn(3296,t.critical_items())

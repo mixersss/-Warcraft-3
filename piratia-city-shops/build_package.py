@@ -1,12 +1,12 @@
-"""Combine cumulative Alpha52 bots and the owner-priced native NPC patch."""
+"""Combine cumulative Alpha53 bots and the owner-priced native NPC patch."""
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-52';NAME='Piratia-Alpha52-Complete'
+OUT=REPO/'releases/piratia/complete-53';NAME='Piratia-Alpha53-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-52/Piratia-Auto-Bots-Alpha52.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-53/Piratia-Auto-Bots-Alpha53.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -18,16 +18,16 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA52-INSTALL.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA53-INSTALL.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
  manifest={'artifact':target.name,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size,
-  'cumulative_bots':'Alpha52 includes Alpha51 and prior fixes','bot_checks':829,'native_patch_checks':25,'legacy_installer_regressions':12,
+  'cumulative_bots':'Alpha53 includes Alpha52 and prior fixes','bot_checks':848,'native_patch_checks':25,'legacy_installer_regressions':12,
   'runtime_limit':400,'fixed_authorised_expansion':{'from':300,'to':400,'new':100,'preserve_old_prefix':True,'native_creation_verified':False},
   'player_guide':{'builds':8,'skill_books':74,'history_definitions':426,'initial_walkthrough_steps':19,'external_complete_guides_verified':False,'formats':['html','md','pdf']},
   'dialogue':{'intent_count':136,'authored_examples':680,'authored_conversation_lines':836,'scene_lines':144,'item_fact_lines':5424,'total_unique_lines':6402,'personalities':12,'external_llm':False},
-  'current_fix':{'independent_native_ping_service':True,'fairy_food_goal_every_bot':True,'fairy_food_stock_target':6,'verified_shop_knowledge_restore':True,'useful_trade_items':1629,'drop_backed_items':515,'argent_stall_capacity':120,'all_stalls_or_disconnects_fixed_live':False},
+  'current_fix':{'paid_native_repair':True,'broken_gear_replacement':True,'escape_fallback_seconds':60,'same_area_resync_cooldown_seconds':600,'one_owned_emergency_ticket_after_class_level10':True,'independent_native_ping_service':True,'fairy_food_goal_every_bot':True,'fairy_food_stock_target':6,'verified_shop_knowledge_restore':True,'useful_trade_items':1629,'drop_backed_items':515,'argent_stall_capacity':120,'all_stalls_or_disconnects_fixed_live':False},
   'server_shops':5,'catalog_items':645,'price_records':646,'shop_counts':{'apparel':506,'fairies':39,'forge':43,'tickets':44,'boosts':13},
   'native_trade_windows':12,'standard_city_ticket_price':500,'expert_fairy_possession_item':609,'expert_fairy_possession_price':300000,
   'patchouli_player_price':None,'patchouli_npc_price_changed':True,'patchouli_npc_buyback':500,'patchouli_base_price':1000,'new_paid_fairies_start_zero_stats':True,'old_fairy_stats_reset':False,

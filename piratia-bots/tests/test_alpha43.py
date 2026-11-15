@@ -87,6 +87,7 @@ class ShoppingTests(unittest.TestCase):
         self.assertEqual(t.choose_want()[0],1847)
     def test_rings_become_explicit_goal_for_empty_appropriate_slots(self):
         w,t,p=self.make(1,1);w.own.values.update({0:30,8:200000});w.own.equipment={9:1}
+        w.bag[47]=BagItem(4602,1,0,0,0,0,0,True) # Emergency ticket already stocked.
         plan=t.plan_supplies(100,p)
         self.assertIn(GEAR.types[plan['item']],(25,26));self.assertEqual(plan['reason'],'заполняет слот украшения')
     def test_decorations_cannot_replace_required_coral_even_if_more_expensive(self):

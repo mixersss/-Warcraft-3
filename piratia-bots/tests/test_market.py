@@ -137,6 +137,7 @@ class IntegrationTests(unittest.TestCase):
   w=scene();w.own.values.update({0:10,4:1,13:1,8:20000});w.bag_ready=True;w.bag_disabled=False;w.bag_capacity=48
   w.bag={0:BagItem(1847,10,0,0,0,0,0,True)}
   life=LifeItems(ROOT/'assets');gear=ItemCatalog(ROOT/'assets/items.json')
+  w.bag[47]=BagItem(4602,1,0,0,0,0,0,True) # Preserve the independent book/point assertion after ticket stocking.
   t=Town(w,life,gear,{'first_job':1,'target_job':9},random.Random(1),w.own.position)
   self.assertEqual(t.choose_want(),(3296,1))
   w.own.values[13]=0;self.assertNotEqual(t.choose_want(),(3296,1))

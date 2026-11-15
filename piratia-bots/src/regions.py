@@ -12,6 +12,8 @@ class Regions:
         self.coordination=Coordination(population_count)
         from party import BotDirectory
         self.directory=BotDirectory()
+        from escape_plan import RescueDirectory
+        self.rescue_resyncs=RescueDirectory()
         from cooperation import HelpDirectory
         self.help_directory=HelpDirectory()
         from conversations import Conversations

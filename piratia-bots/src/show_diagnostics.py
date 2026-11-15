@@ -63,6 +63,7 @@ def render_report(report):
     lines.append(f"  Связь: {json.dumps(report.get('connection_health',{}),ensure_ascii=False)}; переподключений={report.get('reconnect_attempts',0)}; причина={report.get('exit_reason')}; ошибки={report.get('error_locations',[])}")
     lines.append(f"  Приём сети: {json.dumps(report.get('network_pump',{}),ensure_ascii=False)}; ошибки записи диагностики={report.get('diagnostic_write_failures',0)}")
     lines.append(f"  Уход за феей: {json.dumps(report.get('petcare',{}),ensure_ascii=False)}")
+    lines.append(f"  Ремонт: {json.dumps(report.get('repair',{}),ensure_ascii=False)}")
     lines.extend([f"  Продажа: {vendor.get('state','нет данных')}; запросы={vendor.get('sale_requests',0)}; подтверждено={vendor.get('confirmed_sales',0)}; тайм-ауты={vendor.get('confirmation_timeouts',0)}",f"  Предметы: {json.dumps(vendor.get('bag_items',[]),ensure_ascii=False)}"])
     return '\n'.join(lines)
 
