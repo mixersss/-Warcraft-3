@@ -57,6 +57,10 @@ def render_report(report):
     lines.append(f"  Версия: {report.get('version','не указана')}")
     lines.append(f"  Пати для кача: {json.dumps(report.get('hunt_party',{}),ensure_ascii=False)}")
     lines.append(f"  Мировой чат: {json.dumps(report.get('public_chat',{}),ensure_ascii=False)}")
+    lines.append(f"  Контроль прогресса: {json.dumps(report.get('progress_monitor',{}),ensure_ascii=False)}")
+    lines.append(f"  Диалоги: {json.dumps(report.get('dialogue',{}),ensure_ascii=False)}")
+    lines.append(f"  Сокровища: {json.dumps(report.get('treasure_hunt',{}),ensure_ascii=False)}")
+    lines.append(f"  Связь: {json.dumps(report.get('connection_health',{}),ensure_ascii=False)}; переподключений={report.get('reconnect_attempts',0)}; причина={report.get('exit_reason')}; ошибки={report.get('error_locations',[])}")
     lines.extend([f"  Продажа: {vendor.get('state','нет данных')}; запросы={vendor.get('sale_requests',0)}; подтверждено={vendor.get('confirmed_sales',0)}; тайм-ауты={vendor.get('confirmation_timeouts',0)}",f"  Предметы: {json.dumps(vendor.get('bag_items',[]),ensure_ascii=False)}"])
     return '\n'.join(lines)
 

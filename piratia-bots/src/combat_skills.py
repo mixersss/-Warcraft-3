@@ -31,7 +31,7 @@ class CombatSkills:
             if details.get('identity')!=item or not details.get('valid') or details.get('energy',0)<skill.get('energy',1):
                 self.reason='коралл разряжен или заряд не подтверждён';return False
         if not ignore_mana and own.values.get(2,0)<skill.get('sp',0):self.reason='недостаточно SP';return False
-        if not ignore_cooldown and now<self.ready_at.get(identity,0):return False
+        if not ignore_cooldown and now<self.ready_at.get(identity,0):self.reason='навык перезаряжается';return False
         return True
 
     def select(self,now,healing=False,ignore_cooldown=False):
@@ -42,6 +42,7 @@ class CombatSkills:
             if self.usable(identity,now,ignore_cooldown):
                 priority=PRIORITY.index(identity) if identity in PRIORITY else len(PRIORITY)
                 choices.append((priority,identity))
+        if choices:self.reason=''
         return min(choices)[1] if choices else None
 
     def control(self,now):
@@ -84,4 +85,6 @@ class CombatSkills:
     def summary(self):
         return {'cast_requests':self.requests,'healing_requests':self.heals,'last_skill':self.last_skill,
                 'blocker':self.reason,'sp':self.world.own.values.get(2),'max_sp':self.world.own.values.get(32),
-                'known_supported_skills':sorted(set(self.rules)&set(self.world.skills))}
+                'known_supported_skills':sorted(set(self.rules)&set(self.world.skills)),
+                'coral_charge':{str(link):dict(self.world.own.equipment_details.get(link,{})) for link in (5,6,7)
+                                if self.catalog.types.get(self.world.own.equipment.get(link))==29}}

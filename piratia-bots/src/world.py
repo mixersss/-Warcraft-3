@@ -59,12 +59,12 @@ def skip_look(reader, equipment=None, details=None):
         if detail not in (0, 1):
             raise ProtocolError('Invalid appearance detail flag')
         if detail:
-            reader.take(8)  # forge and instance parameters
+            parameters=(reader.long(),reader.long())
             instance = reader.byte()
             if instance not in (0, 1):
                 raise ProtocolError('Invalid instance flag')
-            if instance:
-                reader.take(20)  # FIVE attribute pairs in this classic build
+            attributes=tuple((reader.short(),reader.short()) for _ in range(5)) if instance else ()
+            if details is not None:details[slot].update(parameters=parameters,instance_attributes=attributes)
     return model
 
 
@@ -396,6 +396,19 @@ class World:
             elif action == 5 and current:
                 skip_look(reader,current.equipment,current.equipment_details)
                 if identity==self.own_id:self.look_revision+=1
+            elif action == 23 and current:
+                # Native SynLookEnergy / stLookEnergy: TEN uint16 energies in
+                # this classic build, independent from appearance/kitbag sync.
+                if len(reader.data)-reader.position==20:
+                    energies=[reader.short() for _ in range(10)];reader.end()
+                    for link,energy in enumerate(energies):
+                        item=current.equipment.get(link,0)
+                        if not item or item==9999:continue
+                        previous=current.equipment_details.get(link,{})
+                        info=dict(previous) if previous.get('identity')==item else {'identity':item}
+                        info['energy']=energy;current.equipment_details[link]=info
+                    if identity==self.own_id:self.look_revision+=1
+                else:self.decode_info['look_energy']='unsupported_slot_count'
             elif action == 7 and identity==self.own_id:
                 self.read_skills(reader)
             elif action == 6 and identity==self.own_id:

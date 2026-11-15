@@ -18,6 +18,13 @@ class Regions:
         self.conversations=Conversations(self.assets)
         from public_chat import PublicBudget
         self.public_chat_budget=PublicBudget()
+        self.dialogue_data=None;self.chat_coordinator=None;self.dialogue_error=None
+        try:
+            from dialogue_data import DialogueData
+            from chat_coordinator import BotCoordinator
+            self.dialogue_data=DialogueData(self.assets);self.chat_coordinator=BotCoordinator(self.dialogue_data.settings)
+            self.public_chat_budget.scale=2 if self.dialogue_data.settings['intensity']=='quiet' else 1
+        except Exception as exc:self.dialogue_error=type(exc).__name__
         from equipment import ItemCatalog
         self.items=ItemCatalog(self.assets/'items.json')
         from life import LifeItems

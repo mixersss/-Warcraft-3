@@ -27,8 +27,10 @@ def catalog():
        or item['price'] not in (500,1000,2000,5000,10000,20000,50000,300000)):
     raise ValueError('Неверный предмет или цена магазина')
    seen.add(item['id'])
+ for item in data.get('price_overrides',[]):
+  if item!={'id':1000,'kind':31,'price':1000,'npc_buyback':500,'name_ru':'Чертеж Пачкули','name_en':'Blurry Blueprint','name':'Blurry Blueprint','stack':99}:raise ValueError('Неизвестная дополнительная цена выкупа')
  return data
-def offers(cat):return {i['id']:i for s in cat['shops'] for i in s['items']}
+def offers(cat):return {i['id']:i for i in [*(i for s in cat['shops'] for i in s['items']),*cat.get('price_overrides',[])]}
 def digest(raw):return hashlib.sha256(raw).hexdigest()
 
 def implementation_digest(cat,compat=False):
@@ -45,7 +47,7 @@ def make_overlay(cat,report):
    'mission_source_ids':[],'menu_handlers':handlers,'offers':[i['id'] for i in shop['items']],
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
    'menu_pages':mapping,'live_server_seen':False})
- return {'version':2,'catalog_revision':48,'fresh_fairies':True,'npcs':rows,'prices':{str(i['id']):i['price'] for s in cat['shops'] for i in s['items']},
+ return {'version':2,'catalog_revision':50 if cat.get('price_overrides') else 48,'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
          'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes())}
 
 def locate_client(selected):
@@ -82,12 +84,16 @@ def plan_server(root,cat=None):
  if b'OWNER_CITY_SHOPS_V2_BEGIN' in originals[SERVER_FILES[0]]:
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
-  previous=json.loads(marker.read_text());oldpath=ROOT/'catalog-alpha47.json';oldcat=json.loads(oldpath.read_text())
-  if previous.get('catalog_sha256')!=digest(oldpath.read_bytes()) or previous.get('implementation_sha256')!=implementation_digest(oldcat,compat=True):
+  previous=json.loads(marker.read_text());match=None
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False)]:
+   oldcat=json.loads(path.read_text())
+   if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
+  if match is None:
    raise ValueError('Неизвестная версия установленных магазинов02; нужна проверка обновления')
+  oldlabel,oldcat,oldcompat=match
   if set(previous['installed_sha256'])!={p.as_posix() for p in SERVER_FILES}:raise ValueError('Неполная контрольная запись02')
   a,b=block_span(originals[SERVER_FILES[0]],2)
-  if originals[SERVER_FILES[0]][a:b].replace(b'\r\n',b'\n')!=render(oldcat,compat=True).rstrip(b'\n'):
+  if originals[SERVER_FILES[0]][a:b].replace(b'\r\n',b'\n')!=render(oldcat,compat=oldcompat).rstrip(b'\n'):
    raise ValueError('Изменён сам блок магазинов02 в NpcScript01.lua; обновление остановлено')
   sdk=originals[SERVER_FILES[1]].replace(b'\r\n',b'\n')
   if sdk.count(OPEN_HOOK+OPEN_ANCHOR)!=1 or sdk.count(BUY_ANCHOR+BUY_HOOK)!=1:
@@ -102,7 +108,7 @@ def plan_server(root,cat=None):
   outputs[SERVER_FILES[0]]=strip_block(originals[SERVER_FILES[0]],2)+nl+render(cat).replace(b'\n',nl)
   for path,patcher in ((Path('ItemInfo.txt'),patch_text),(Path('ItemInfo.bin'),patch_binary)):outputs[path]=patcher(originals[path],offers(cat))
   report=dict(previous,version=2,catalog_sha256=digest(CATALOG.read_bytes()),implementation_sha256=implementation_digest(cat),
-              item_count=sum(len(s['items']) for s in cat['shops']),upgraded_from='Alpha47',
+              item_count=sum(len(s['items']) for s in cat['shops']),upgraded_from=oldlabel,
               preserved_changed_files=[p.as_posix() for p in SERVER_FILES if digest(originals[p])!=previous['installed_sha256'][p.as_posix()]])
   return originals,outputs,report
  if v1.exists():

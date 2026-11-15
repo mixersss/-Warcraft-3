@@ -141,14 +141,15 @@ class DirectTrade:
             if self.sent_lock:self.cancel('товар изменился после проверки');return
             if item is None:self.offers[actor].pop(grid,None)
             else:
+                ordinary=bool(getattr(getattr(policy,'market',None),'focused_goods',False) is True and policy.market.ordinary_gear(item))
                 if self.quote['mode']=='buy' and actor==self.peer and (item.identity!=self.quote['item'].identity
                     or item.count!=self.quote['count'] or not item.valid or item.forge or any(item.parameters)
-                    or any(a or b for a,b in item.instance_attributes)
+                    or (any(a or b for a,b in item.instance_attributes) and not ordinary)
                     or item.max_endurance and not item.endurance):
                     self.cancel('Эта вещь отличается от согласованной; такую покупку не подтверждаю.');return
                 if (self.quote['mode']=='buy' and actor==self.peer and item.identity==self.quote['item'].identity
                     and item.count==self.quote['count'] and item.valid and not item.forge
-                    and not any(item.parameters) and not any(a or b for a,b in item.instance_attributes)):
+                    and not any(item.parameters) and (not any(a or b for a,b in item.instance_attributes) or ordinary)):
                     self.quote['item']=item
                     self.baseline=(quantity(w.bag,fingerprint(item)),self.baseline[1],fingerprint(item))
                 self.offers[actor][grid]=item

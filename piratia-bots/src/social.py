@@ -39,6 +39,7 @@ class Social:
         self.urgent=deque(maxlen=4);self.personality=None
         self.busy_state=False
         self.scripted_dialogues=True
+        self.chat_adapter=None
     def queue_line(self,text,now):
         text=text.encode('cp1251',errors='replace')[:120].decode('cp1251')
         if text and text not in [row[0] for row in self.urgent]:self.urgent.append((text,now+30))
@@ -94,6 +95,9 @@ class Social:
         if len(text)>240 or any(ord(c)<32 for c in text):return
         if self.bot_handler and self.bot_handler(source,text,now):return
         if self.conversations and self.conversations.receive(self.name,source,text,now):return
+        if self.chat_adapter:
+            from classic_wire import string
+            self.chat_adapter.observe(501,source.to_bytes(4,'big')+string(text),now);return
         if source not in {e.identity for e in self.visible_humans()} or self.pending:return
         words=re.findall(r'[\w]+',text.casefold())
         addressed=self.name.casefold() in words
@@ -125,6 +129,15 @@ class Social:
         while self.urgent and self.urgent[0][1]<now:self.urgent.popleft()
         if self.urgent and safe and now>=self.next_reply and self.budget.claim(now):
             text,_=self.urgent.popleft();self.send(1,say_request(text));self.sent+=1;self.next_reply=now+5
+            return
+        if self.chat_adapter:
+            provider=getattr(self,'trade_ad_provider',None)
+            if provider and safe and now>=self.next_reply:
+                text=provider(now)
+                if text and self.budget.claim(now):
+                    self.send(1,say_request(text));self.sent+=1;self.next_reply=now+5
+                    callback=getattr(self,'trade_ad_sent',None)
+                    if callback:callback(now)
             return
         if self.conversations:
             self.conversations.register(self.name,self.world.map,self.world.own_id,self.world.position(now),now,

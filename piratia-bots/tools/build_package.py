@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-49'
-NAME = 'Piratia-Auto-Bots-Alpha49'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-50'
+NAME = 'Piratia-Auto-Bots-Alpha50'
 
 
 def main():
@@ -14,6 +14,7 @@ def main():
     sources += [ROOT / 'tools' / 'build_junk.py', ROOT / 'tools' / 'build_merchants.py', ROOT / 'tools' / 'build_world_navigation.py', ROOT / 'tools' / 'recheck_farm_points.py', ROOT / 'tools' / 'build_world_mobs.py', ROOT / 'tools' / 'build_portals.py', ROOT / 'tools' / 'build_items.py', ROOT / 'tools' / 'build_combat_zones.py', ROOT / 'tools' / 'build_combat_skills.py', ROOT / 'tools' / 'build_life_items.py', ROOT / 'tools' / 'build_npc_knowledge.py', ROOT / 'tools' / 'build_market.py', ROOT / 'tools' / 'build_story.py', ROOT / 'tools' / 'build_quest_rewards_package.py']
     sources += [ROOT / 'tools/lua_inventory.py', ROOT / 'tools/build_mechanics.py', ROOT / 'knowledge/mechanics-evidence-lock.json', ROOT / 'knowledge/MECHANICS-COVERAGE.md']
     sources += [ROOT / 'tools/build_ground_components.py', ROOT / 'knowledge/fleet-alpha44-audit.json', ROOT / 'knowledge/fleet-alpha47-audit.json', ROOT / 'knowledge/ALPHA49.md', ROOT / 'knowledge/SERVER-SHOPS-REQUEST.md']
+    sources += [ROOT/'tools/build_dialogue_data.py',ROOT/'tools/build_land_components.py',ROOT/'knowledge/ALPHA50.md',ROOT/'knowledge/ALPHA50-INSTALL.md',ROOT/'knowledge/DIALOGUE50.md',ROOT/'knowledge/dialogue-data-audit.json',ROOT/'knowledge/dialogue-benchmark.json',ROOT/'knowledge/fleet-alpha49-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -39,9 +40,10 @@ def main():
         'fleet_alpha44_reaudit': {'connected':300,'first_profession':172,'novices':128,'no_xp_over_30min':246,'full_bags':3,'needs_geometric_recovery':40,'dry_checked_exits':24,'no_exit_but_owned_ticket':6,'no_exit_or_ticket':10,'live46_fix_verified':False},
         'stuck_city_ticket': {'owned_only':[4602,4603,4604],'full_hp_sp_required':True,'native_arrival_and_consumption_required':True},
         'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':645,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':526,'live_windows_verified':False},
-        'owner_economy_alpha48': {'random_independent_activity_order_each_cycle':True,'cycle_seconds':1800,'phase_duration_variation':.15,'finish_fights_and_transactions_before_switch':True,'blueprint1000_player_price':500,'blueprint1000_npc_price_changed':False,'source_drop_species':22,'second_generation_or_junior_only':True,'fairy_stats':['STR','STA','CON','DEX'],'one_fruit_stat_per_fairy':True,'normal_ticket_price':500,'expert_possession_item609_price':300000,'fresh_paid_fairies_start_zero_stats':True,'old_fairy_stats_reset':False,'stalls_from_level':15,'stall_skill_and_life_points_required':True,'keep_six_stall_offers_before_banking':True,'life_profession_learning_enabled':True,'automatic_craft_production_enabled':False,'weapon_forging_automation_enabled':False,'quest_translation':'postponed by owner'},
+        'owner_economy_alpha48': {'random_independent_activity_order_each_cycle':True,'cycle_seconds':1800,'phase_duration_variation':.15,'finish_fights_and_transactions_before_switch':True,'blueprint1000_player_price':None,'blueprint1000_npc_price_changed':True,'blueprint1000_npc_buyback':500,'source_drop_species':22,'second_generation_or_junior_only':True,'fairy_stats':['STR','STA','CON','DEX'],'one_fruit_stat_per_fairy':True,'normal_ticket_price':500,'expert_possession_item609_price':300000,'fresh_paid_fairies_start_zero_stats':True,'old_fairy_stats_reset':False,'stalls_from_level':15,'stall_skill_and_life_points_required':True,'keep_six_stall_offers_before_banking':True,'life_profession_learning_enabled':True,'automatic_craft_production_enabled':False,'weapon_forging_automation_enabled':False,'quest_translation':'postponed by owner'},
+        'current_alpha50': {'dialogue_intents':132,'dialogue_examples':660,'authored_conversation_lines':264,'distinct_item_fact_lines':5424,'unique_reply_lines':5688,'personalities':12,'context_channels':['local','world','trade','private'],'memory_turns':16,'context_limit_per_client':32,'npc_patchouli_buyback':500,'patchouli_base_price':1000,'class_funding_plain_patchouli_allowed':True,'treasure_items':[684,682,2445],'new_map_min_level':15,'new_map_max_level':40,'native_coral_energy_action':23,'shore_probe_max_cm':250,'land_component_grids':30,'progress_watchdog_seconds':45,'protocol_reconnect_limit':3,'new_native_live_validation':False},
         'hunt_party_alpha49': {'world_echo_then_private_reply_then_native_team':True,'maximum_level_gap':3,'maximum_meeting_seconds':90,'unproductive_team_seconds':120,'maximum_movement_prefix_cm':2400,'recruitment_cash_gate':2000,'ordinary_chat_cash_gate':20000,'live_verified':False},
-        'status': 'Alpha49 adds real world/PM recruitment, confirmed-party following/shared targets, bounded checked movement prefixes, occupied-shore egress and gun-slot correction; Alpha48 adds randomized productive activity cycles, second-generation fairy care and real supplier purchases, blueprint500G player trade, life profession study and early stall preparation. Alpha47 adds installed native shop knowledge/prices/stock-set selection, nearest adjacent NPC binding, ru aliases and safe price floors; Alpha46 adds connected dry egress, owned native ticket recovery and XP watchdog precedence; all fleet issues not proven fixed live. Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha49 validation pending',
+        'status': 'Alpha50: global NPC Patchouli500G buyback/novice fare funding, ordinary dropped-gear and NP markets, real parchment/Caribbean map/ticket digging, essential role weapons, caster cooldown and native coral-energy updates, native-progress watchdog, bounded shoreline attempts, disconnected-land rejection, bounded protocol recovery diagnostics, isolated four-channel dialogue with132 intents/12 profiles/5688distinct reply lines including5424item facts. Prior source mechanics knowledge/roles/builds/fairies/stalls/bank/LFG preserved. Old data/accounts/rates/rewards untouched. Live Windows behavior and all fleet recovery not proven; quest translation, ship/PvP/weapon-forging/production automation remain deferred',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -234,11 +236,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 735,
-        'full_python_suite_total': 743,
-        'full_python_suite_passed': 743,
+        'pure_python_tests_passed': 781,
+        'full_python_suite_total': 789,
+        'full_python_suite_passed': 789,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '743 passed in Alpha49 including 8 local socket integration tests',
+        'last_full_network_regression': '789 passed in Alpha50 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',

@@ -32,6 +32,7 @@ class Town:
         self.npcs=getattr(life,'npcs',None);self.supply_plan=None;self.failed_suppliers={};self.next_supply_check=0;self.knowledge_plans=0
         self.petcare=None
         self.professions=None
+        self.treasure=None
     def note_progress(self,kills,quests):
         if self.work_baseline is None:self.work_baseline=(kills,quests)
         self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
@@ -73,11 +74,13 @@ class Town:
                 options=[i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers']
                          if self.gear.gear.get(i,{}).get('kind')==29 and link in self.gear.gear[i]['links'] and self.gear.compatible(w.own,i)]
                 if options:result.append(min(options,key=lambda i:(self.life.prices.get(i,10**9),i)))
+        self.combat_items=set(result)
         if (job and not w.skills.get(241,{}).get('level',0) and w.own.values.get(13,0)>0
                 and not any(i.identity==3296 for i in w.bag.values())):
             result.append(3296)
         if self.petcare:result.extend(identity for identity,_,_ in self.petcare.purchase_goals())
         if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
+        if self.treasure:result.extend(identity for identity,_,_ in self.treasure.purchase_goals())
         return result
     def spend_limit(self,identity):
         cash=self.world.own.values.get(8,0)
@@ -90,6 +93,9 @@ class Town:
         if free<2:return None
         food=sum(item.count for item in w.bag.values() if item.identity==1847)
         if food<5:return 1847,min(10,15-food)
+        critical=self.critical_items()
+        for identity in critical:
+            if identity in self.combat_items and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         if self.petcare:
             for identity,count,_ in self.petcare.purchase_goals():
                 price=self.life.prices.get(identity,0)
@@ -210,7 +216,8 @@ class Town:
         if self.pending:
             identity,before,cash,deadline=self.pending
             if self.count(identity)>before and w.own.values.get(8,cash)<cash:
-                self.confirmed+=1;self.finish(now,60)
+                essential=identity in getattr(self,'combat_items',())
+                self.confirmed+=1;self.finish(now,2 if essential else 60)
             elif now>deadline:self.timeouts+=1;self.finish(now,300)
             return True
         if self.context:

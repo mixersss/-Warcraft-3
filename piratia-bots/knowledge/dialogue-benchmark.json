@@ -1,0 +1,10 @@
+{
+  "shared_catalog_load_ms": 68.443,
+  "messages": 6640,
+  "recognizer_cpu_mean_ms": 0.0035,
+  "recognizer_cpu_p95_ms": 0.0036,
+  "recognizer_cpu_max_ms": 1.6885,
+  "includes_exact_examples_and_unseen_regex_cases": true,
+  "network_and_windows_server_not_benchmarked": true,
+  "blocking_api_calls_in_runtime": false
+}

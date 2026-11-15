@@ -67,6 +67,7 @@ class Wire:
         self.in_cipher = self.out_cipher = None
         self.report = report or (lambda *args: None)
         self.last_send = time.monotonic()
+        self.last_receive_at=self.last_send
 
     def frame(self, deadline):
         while True:
@@ -88,6 +89,7 @@ class Wire:
                 raise TimeoutError('Timed out waiting for server') from exc
             if not data:
                 raise ConnectionError('Server closed connection')
+            self.last_receive_at=time.monotonic()
             self.buffer.extend(data)
 
     def receive(self, deadline):

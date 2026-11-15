@@ -37,9 +37,9 @@ def build(resource,client_bin):
  catalog={'version':2,'shops':shops,'apparel_rule':'exact server can_fusion_item_main permits appearance IDs5000..5999; all existing records in range plus wings type44',
   'native_shop':True,'prices_scope':'global selected item prices on server and client; all other fields preserved',
   'source_hashes':{'server_iteminfo':hashlib.sha256((resource/'ItemInfo.txt').read_bytes()).hexdigest(),'client_iteminfo':hashlib.sha256(client_bin.read_bytes()).hexdigest()},
-  'native_windows_verified':False}
+  'native_windows_verified':False,'price_overrides':[{'id':1000,'kind':31,'price':1000,'npc_buyback':500,'name_ru':'Чертеж Пачкули','name_en':'Blurry Blueprint','name':'Blurry Blueprint','stack':99}]}
  (ROOT/'catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
- assignments={i['id']:(s['key'],i['price']) for s in shops for i in s['items']};allfacts=[]
+ assignments={i['id']:(s['key'],i['price']) for s in shops for i in s['items']};assignments[1000]=('',1000);allfacts=[]
  for i in sorted(set(rows)|set(client)):
   r=rows.get(i);c=client.get(i);assignment=assignments.get(i)
   allfacts.append({'id':i,'name_ru':c['name'] if c else '', 'name_en':r[1].strip() if r else '',

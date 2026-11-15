@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "intensity": "normal",
+  "memory_turns": 16,
+  "memory_contexts": 32,
+  "memory_ttl_seconds": 900,
+  "local_llm_enabled": false,
+  "private_text_logging": false
+}

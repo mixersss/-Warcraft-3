@@ -35,17 +35,20 @@ class Report:
     """Allowlist diagnostics: no credentials, character names or packet contents."""
     def __init__(self):
         self.result = {'version': 'ConnectionAlpha01', 'stage': 'start', 'events': []}
+        self.recent=deque(maxlen=40)
 
     def stage(self, value):
         self.result['stage'] = value
 
     def event(self, direction, command, length):
+        self.recent.append({'direction':direction,'command':command,'bytes':length})
         self.result['last_'+direction]={'command':command,'bytes':length}
         events = self.result['events']
         if len(events) < 1000:
             events.append({'direction': direction, 'command': command, 'bytes': length})
 
     def write(self, path):
+        self.result['recent_events']=list(self.recent)
         self.result['time_utc'] = datetime.now(timezone.utc).isoformat()
         Path(path).write_text(json.dumps(self.result, ensure_ascii=False, indent=2), encoding='utf-8')
 
@@ -70,11 +73,13 @@ class Client:
     def service(self, command, payload):
         if command == 537:  # Gate ping challenge, no arguments in the response.
             self.wire.send(17)
+            self.report.result['gate_ping_answers']=self.report.result.get('gate_ping_answers',0)+1
         elif command == 515:  # GameServer ping: echo five uint32 values.
             if len(payload) < 20:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
-        elif command in (501, 504, 505, 506, 507, 508, 509, 510, 531, 516, 520, 5001, 5002, 5003, 5011, 5012, 5401, 5402, 5403, 854, 856, 857, 858, 859, 805, 806, 807, 808, 801, 802, 803, 822, 827, 828, 830, 831, 832):
+            self.report.result['game_ping_answers']=self.report.result.get('game_ping_answers',0)+1
+        elif command in (501, 504, 505, 506, 507, 508, 509, 510, 531, 516, 517, 520, 5001, 5002, 5003, 5011, 5012, 5401, 5402, 5403, 854, 856, 857, 858, 859, 805, 806, 807, 808, 801, 802, 803, 822, 827, 828, 830, 831, 832):
             if self.world_handler:
                 self.world_handler(command, payload)
             else:

@@ -39,6 +39,22 @@ class Commerce:
         if any(w in words for w in ('руна','руны')):
             return [i for i in identities if self.policy.market.catalog.items.get(i,{}).get('category')=='rune']
         return []
+    def public_answer(self,text,now):
+        """Fresh public stock/needs only; never consult private quotes."""
+        text=text.casefold();market=self.policy.market;w=self.policy.world
+        if re.search(r'\bнп\b',text):text+=' ID684'
+        if 'пачкули' in text:return 'Пачкули продаём НПС: после нового патча выкуп500G за штуку.'
+        offered={w.bag[slot].identity:(price,count,slot) for _,price,count,slot in market.offers(self.policy)}
+        if re.search(r'\bпродам\b|\bпродаю\b',text):
+            matched=self.match(text,market.catalog.items)
+            if not matched:return 'Какой предмет предлагаешь? Нужны название или ID и цена.'
+            identity=matched[0];needed=identity in market.needed() or market.useful_gear(identity)
+            cap=min(market.fair_cap(identity),max(0,w.own.values.get(8,0)//5),max(0,w.own.values.get(8,0)-1000))
+            return f'ID{identity} мне нужен; могу рассмотреть до {cap}G за штуку.' if needed and cap else 'Сейчас не готов покупать этот предмет.'
+        matched=self.match(text,offered)
+        if not matched:return 'Назови точный предмет или ID: проверю настоящий товар в сумке.'
+        identity=matched[0];price,count,_=offered[identity]
+        return f'ID{identity}: есть {count} шт., цена {price}G за штуку. Я: {self.location(now)}.'
 
     def location(self,now):
         w=self.policy.world;x,y=w.position(now)

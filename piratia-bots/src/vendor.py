@@ -13,6 +13,7 @@ class Vendor(Town):
  def __init__(self,world,life,gear,role,rng,home,assets):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
+  self.sell_patchouli=False
   self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
  def choices(self,policy):
   w=self.world
@@ -35,9 +36,9 @@ class Vendor(Town):
   mechanics=getattr(policy,'mechanics',None)
   reserved=dict(mechanics.craft_reservations(w)) if mechanics else {}
   for slot,item in sorted(w.bag.items()):
-   if item.identity not in self.junk or item.identity in protected or not item.valid:continue
+   if (item.identity not in self.junk and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
    if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
-   keep=min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
+   keep=0 if self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
    count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))
   return choices

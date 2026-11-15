@@ -52,9 +52,9 @@ class ItemCatalog:
             if link in gear.get('requires_links',[]):equipment[link]=9999
         return equipment,chosen,removed
 
-    def loadout_score(self,own,equipment):
+    def loadout_score(self,own,equipment,item_overrides=None):
         total=0
-        for identity in equipment.values():
+        for link,identity in equipment.items():
             if not identity or identity==9999:continue
             gear=self.gear.get(identity)
             if gear is None:return None
@@ -71,6 +71,15 @@ class ItemCatalog:
                 peak=max(spec['weights'].values())
                 weights={names[k]:3*v/peak for k,v in spec['weights'].items()}
             total+=gear['score']+sum(gear.get(k,0)*v for k,v in weights.items())
+            supplied=(item_overrides or {}).get(link)
+            observed=getattr(own,'equipment_details',{}).get(link,{})
+            attributes=(supplied.instance_attributes if supplied else observed.get('instance_attributes',()) if observed.get('identity')==identity else ())
+            names={26:'strength',27:'agility',28:'accuracy',29:'constitution',30:'spirit'}
+            for key,value in attributes:
+                if key in names:total+=(value-gear.get(names[key],0))*weights.get(names[key],0)
+                elif key in (34,35,36,37,38):
+                    field,factor={34:('min_attack',1),35:('max_attack',1),36:('defence',4),37:('max_hp',.05),38:('max_sp',.05)}[key]
+                    total+=(value-gear.get(field,0))*factor
         return total
 
     def upgrade(self,own,identity,free_slots=None,item=None,energy_need=1):
@@ -86,9 +95,13 @@ class ItemCatalog:
         # Compare only affected links: unrelated unknown armour is not a blocker.
         affected={k for k in own.equipment.keys()|equipment.keys() if own.equipment.get(k)!=equipment.get(k)}
         before=self.loadout_score(own,{k:own.equipment.get(k,0) for k in affected})
-        after=self.loadout_score(own,{k:equipment.get(k,0) for k in affected})
+        after=self.loadout_score(own,{k:equipment.get(k,0) for k in affected},{chosen:item} if item else None)
         if before is None or after is None:return None
         gain=after-before
+        job=own.values.get(4)
+        essential=({3,4} if job in (2,12) else {9} if job in (5,13,14) else set())
+        if self.gear[identity].get('kind') in essential and not any(self.types.get(own.equipment.get(link)) in essential for link in (6,9)):
+            gain=max(1,gain) # A class weapon enables ranged attacks/spells even if a novice sword scores higher.
         return (gain,[chosen]) if gain>0 else None
 
     def pair_upgrade(self,world,blacklist,now):
@@ -195,4 +208,4 @@ class Equipment:
         return {'candidate_blockers':self.blockers[:24],'pending_item':self.pending[0] if self.pending else None,'requests':self.requests,'confirmed_equips':self.confirmed,
                 'confirmation_timeouts':self.failed,'bag_received':self.world.bag_ready,
                 'inventory_paused':self.world.bag_disabled,
-                'equipped_items':dict(self.world.own.equipment)}
+                'equipped_items':dict(self.world.own.equipment),'equipped_item_details':dict(self.world.own.equipment_details)}

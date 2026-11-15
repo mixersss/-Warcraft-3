@@ -17307,7 +17307,7 @@
     "jobs": "-1",
     "server_price": 10,
     "client_price": 10,
-    "owner_price": null,
+    "owner_price": 1000,
     "shop": "",
     "in_server": true,
     "in_client": true,

@@ -56,6 +56,9 @@ class Hunter:
         self.move_stop_seen=-1;self.blocked_move_stops=0;self.last_blocked_step=None
         self.assist_target=None;self.helper=None
         self.group_hunt=None
+        self.treasure=None
+        from progress_monitor import ProgressMonitor
+        self.progress_monitor=ProgressMonitor()
         self.target = None
         self.shared_target = False
         self.opportunity_model=None;self.opportunity_targets=0;self.last_target_at=None
@@ -368,6 +371,9 @@ class Hunter:
             for x,y in getattr(getattr(self.nav,'local',None),'blocked_cells',())
             for dx in range(scale) for dy in range(scale)}
         route=self.nav.recovery_path(own.position,blocked) if hasattr(self.nav,'recovery_path') else []
+        shore_probe=False
+        if not route and self.offmesh_batch<4 and hasattr(self.nav,'shore_exit'):
+            route=self.nav.shore_exit(own.position,blocked);shore_probe=bool(route)
         if not route and getattr(self.nav,'recovery_cells',None) is None and getattr(self.nav,'recovery_bits',None) is None:
             # Compatibility with older small grids; new maps use checked egress.
             goal=self.nav.nearest(own.position,3)
@@ -387,7 +393,7 @@ class Hunter:
         self.offmesh_origin=own.position;self.offmesh_route=tuple(route)
         seconds=sum(distance(a,b) for a,b in zip(route,route[1:]))/max(100,own.values.get(44,480))
         self.offmesh_next=now+max(2,min(10,seconds+1))
-        self.offmesh_reason='выходит из исключённой клетки по проверенным физическим ячейкам'
+        self.offmesh_reason=('короткая попытка выхода с кромки; ждёт реальное движение сервера' if shore_probe else 'выходит из исключённой клетки по проверенным физическим ячейкам')
 
     def action_stopped(self):
         if self.last_sent_sequence is None or self.world.stop_packet_number!=self.last_sent_sequence:return False
@@ -500,6 +506,8 @@ class Hunter:
         # Let the server complete wind-up and subsequent swings. No-progress
         # recovery below still bounds the wait; never cancel a productive fight.
         if self.combat_skills and self.last_attack_skill in self.combat_skills.rules:
+            if (self.world.skill_packet_number==self.last_sent_sequence and self.world.skill_action_state is not None
+                    and self.world.skill_action_state & (1|16|32|64|128|256|512|1024|2048)):return False
             return now-self.combat_skills.last_sent_at<2
         return now-self.last_damage_at<6
 
@@ -512,12 +520,25 @@ class Hunter:
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return self.farm_models()
-        return self.learning.choose(self.region,self.world.own,self.clock,fallback=True,hold=bool(self.target),position=self.position(self.clock))
+        return self.learning.choose(self.local_hunting_region(),self.world.own,self.clock,fallback=True,hold=bool(self.target),position=self.position(self.clock))
 
     def farm_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return (71,75)
-        return self.learning.choose(self.region,self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
+        return self.learning.choose(self.local_hunting_region(),self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
+
+    def local_hunting_region(self):
+        if not self.region or not self.activity.hunting(self.clock) or not hasattr(self.nav,'land_component'):return self.region
+        component=self.nav.land_component(self.position(self.clock))
+        if not component:return self.region
+        key=(id(self.region),self.world.map,component)
+        if getattr(self,'local_region_key',None)!=key:
+            farms={}
+            for model,record in self.region['farms'].items():
+                points=[p for p in record['points'] if self.nav.land_component(p)==component]
+                if points:farms[model]=dict(record,points=points)
+            self.local_region_key=key;self.local_region=dict(self.region,farms=farms) if farms else self.region
+        return self.local_region
 
     def starter_models(self):
         # Owner's CharacterInfo: Forest Spirit 103 is level 3, Argent only.
@@ -531,6 +552,9 @@ class Hunter:
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
+        if self.raising_travel_funds and self.economy:
+            funding=self.economy.funding_models(self.world,self.region,self.learning,self.clock)
+            if funding:return funding
         group_target=self.group_hunt.target(self.clock) if self.group_hunt else None
         if group_target and self.region and not self.mandatory_work():
             if group_target.model in self.learning.admissible(self.region,self.world.own,self.clock):
@@ -590,10 +614,15 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
-        if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
+        essential_combat=False
+        if key=='town' and feature and hasattr(feature,'critical_items'):
+            critical=feature.critical_items()
+            if isinstance(critical,(list,tuple,set)):
+                essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-100 for i in critical)
+        if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
-                and not self.raising_travel_funds and feature
+                and not self.raising_travel_funds and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
                 and not getattr(feature,'context',None) and not getattr(feature,'pending',None)):
             return False # A stalled optional selling trip must yield to the earned-XP watchdog.
         if not feature or (key!='vendor' and not self.task_budget.allow(key,now)):return False
@@ -708,6 +737,7 @@ class Hunter:
         # NPC visit after objective review switches from farming to verification.
         self.quest_combat_ready=False
         own = self.world.own
+        self.progress_monitor.tick(now,self)
         if own and (own.values.get(HP,1)<=0 or own.state>=5):
             if self.shortcut and self.shortcut.busy:self.shortcut.abort(now,'персонаж погиб')
             self.learning.observe(self.world,now)
@@ -983,6 +1013,8 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
+        if self.treasure and not mandatory and not self.raising_travel_funds and self.treasure.tick(now,self,safe,market_dialogue):
+            self.drop_target();self.clear_zone();self.change(self.treasure.reason);return
         if self.economy and self.economy.business(self.world,now) and self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'городская торговля');return
         if self.bank and not mandatory and not (self.group_hunt and self.group_hunt.active()) and (not self.activity.hunting(now) or business) and self.bank.tick(now,self,safe,market_dialogue):
@@ -1003,6 +1035,9 @@ class Hunter:
             self.change(self.adventure.reason)
             return
         shared_models=self.quest_models()
+        if own.values.get(4) in (4,5,13,14,16) and self.combat_skills and not self.combat_skills.select(now,ignore_cooldown=True):
+            self.drop_target();self.change('готовит магию: '+(self.combat_skills.reason or 'нужен изученный боевой навык и подходящее снаряжение'))
+            self.next_action=now+.5;return
         target = self.world.entities.get(self.target)
         if self.target and (not target or not target.alive):
             if target and target.values.get(HP,1)<=0:self.kills+=1
@@ -1048,7 +1083,7 @@ class Hunter:
             if group_target:candidates.sort(key=lambda e:e.identity!=group_target.identity)
             if self.region and now-self.last_target_at>=20 and not self.assist_target:
                 known={e.identity for e in candidates}
-                models=self.learning.admissible(self.region,own,now)
+                models=self.learning.admissible(self.local_hunting_region(),own,now)
                 extras=[e for e in self.world.entities.values()
                         if e.identity not in known and self.eligible(e,now,models)]
                 extras.sort(key=lambda e:self.target_score(e,now))
@@ -1136,7 +1171,7 @@ class Hunter:
             self.move_goal=None
             if self.loot:
                 self.loot.note_attack(target.identity,now)
-            self.next_action = now+self.attack_interval
+            self.next_action = now+(.15 if spell else self.attack_interval)
             return
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:
             self.change('ожидание перехода в Аргент: старт на Forest Spirit');self.next_action=now+1;return
@@ -1179,8 +1214,9 @@ class Hunter:
 
     def farm_reason(self):
         models=set(self.planned_models())
+        if self.raising_travel_funds and self.economy:return {'source':'class_travel_funding','models':sorted(models),'goal_gold':500,'patchouli_sale_to_npc':True}
         if self.economy and self.economy.phase(self.world,self.clock)=='income' and models==set(self.economy.last_models) and models:
-            return {'source':'economic_patchouli_hunt','models':sorted(models),'player_unit_price':500,'bounded_phase':True}
+            return {'source':'economic_patchouli_hunt','models':sorted(models),'player_unit_price':None,'npc_buyback':500,'bounded_phase':True}
         adaptive={'source':'adaptive_xp_hunt','models':sorted(models),
                   'character_level':self.world.own.values.get(LV,1),
                   'selected_levels':{str(m):self.region['farms'][str(m)]['level'] for m in models
@@ -1281,11 +1317,15 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.town.petcare=policy.petcare
         from economy import Economy
         policy.economy=Economy(bot_name,getattr(navigation,'assets',Path(__file__).resolve().parents[1]/'assets'))
+        policy.economy.patchouli_to_npc=True
+        from treasure_hunt import TreasureHunt
+        policy.treasure=TreasureHunt(world,policy.economy);policy.town.treasure=policy.treasure
         from life_professions import LifeProfessions
         policy.professions=LifeProfessions(world,life,bot_name,policy.economy)
         policy.town.professions=policy.professions
         from vendor import Vendor
         policy.vendor=Vendor(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"assets",Path(__file__).resolve().parents[1]/"assets"))
+        policy.vendor.sell_patchouli=True;policy.vendor.junk[1000]={'name':'Чертёж Пачкули','npc_buyback':500}
         policy.career=Career(world,client.wire.send,role,life,navigation)
         policy.story=Story(world,client.wire.send,role,life,navigation)
         policy.story.owner=bot_name
@@ -1300,6 +1340,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
+            policy.market.focused_goods=True
             policy.market.keep_stall_stock=True
             if life.npcs:
                 from bank import Bank
@@ -1418,15 +1459,29 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if target and target.alive:return f'Охочусь. У меня сейчас {world.own.values.get(0,1)} уровень.'
         return None
     public_chat.context_provider=public_context
+    chat_adapter=None
+    if getattr(navigation,'dialogue_data',None) and getattr(navigation,'chat_coordinator',None):
+        from chat_adapter import ChatAdapter
+        chat_adapter=ChatAdapter(world,policy,social,public_chat,contacts,navigation.dialogue_data,navigation.chat_coordinator,client.wire.send,bot_name)
+        social.chat_adapter=chat_adapter;social.scripted_dialogues=False
+        if policy.direct_trade:
+            policy.direct_trade.notify=lambda name,text,now:chat_adapter.enqueue(chat_adapter.quote_scopes.get(name.casefold(),'private'),name,text,now)
 
     def snapshot(now):
         policy.learning.save(now)
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save()
         report.result['decision_loop']=dict(think_stats)
+        receive_at=getattr(client.wire,'last_receive_at',None)
+        report.result['connection_health']={'seconds_since_received_bytes':round(max(0,now-receive_at),2) if type(receive_at) in (int,float) else None,
+                                          'seconds_since_sent_frame':round(max(0,now-client.wire.last_send),2),
+                                          'gate_ping_answers':report.result.get('gate_ping_answers',0),
+                                          'game_ping_answers':report.result.get('game_ping_answers',0)}
         report.result['route_planning']=policy.nav.planning_stats()
         if policy.group_hunt:report.result['hunt_party']=policy.group_hunt.summary()
         report.result['sitting']=policy.sitting.summary()
         report.result['hunt']=policy.summary()
+        report.result['progress_monitor']=policy.progress_monitor.summary()
+        if policy.treasure:report.result['treasure_hunt']=policy.treasure.summary()
         if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
         if policy.loot:report.result['loot']=policy.loot.summary()
         if contacts:report.result['contacts']=contacts.summary()
@@ -1434,6 +1489,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['progression']=progression.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['chat']=social.summary()
+        if chat_adapter:report.result['dialogue']=chat_adapter.summary()
+        if getattr(navigation,'dialogue_error',None):report.result['dialogue_start_error']=navigation.dialogue_error
         report.result['public_chat']=public_chat.summary()
         if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
@@ -1457,15 +1514,18 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
 
     def observe(command, payload):
         now=time.monotonic()
+        if policy.treasure:policy.treasure.observe(command,payload)
         if command==811 or command in range(812,820):
             if policy.direct_trade:policy.direct_trade.observe(command,payload,now,policy)
             return
         if command in (5011,5012,5403):
             if policy.group_hunt:policy.group_hunt.observe(command,payload,now)
+            if chat_adapter and command==5403 and chat_adapter.observe(command,payload,now):return
             if contacts:contacts.hear(command,payload,now)
             return
         if command in (5401,5402):
             if policy.group_hunt:policy.group_hunt.observe(command,payload,now)
+            if chat_adapter:chat_adapter.observe(command,payload,now)
             try:public_chat.observe(command,payload,now)
             except ProtocolError:report.result['public_chat_decode']='unsupported'
             return
@@ -1623,6 +1683,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 social.busy_state=bool(policy.target or (policy.market and policy.market.busy)
                     or any(getattr(f,'context',None) for f in (policy.adventure,policy.career,policy.story,policy.town,policy.vendor,policy.travel,policy.shortcut) if f))
                 social.tick(now, policy.resting, alive and now-policy.started >= 3)
+                if chat_adapter:chat_adapter.tick(now)
                 public_chat.tick(now,alive and now-policy.started>=3,policy.market)
                 think_stats['count']+=1
                 elapsed=time.monotonic()-think_started
@@ -1647,6 +1708,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             navigation.help_directory.remove(bot_name)
         report.result['progression'] = progression.summary()
         report.result['chat'] = social.summary()
+        if chat_adapter:
+            report.result['dialogue']=chat_adapter.summary();navigation.chat_coordinator.remove(bot_name)
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
         for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions'):

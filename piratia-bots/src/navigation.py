@@ -11,6 +11,8 @@ from functools import lru_cache
 import json
 import math
 import zlib
+import hashlib
+import struct
 from pathlib import Path
 
 
@@ -47,6 +49,14 @@ class Navigation:
             raise ValueError('Incomplete no-fight grid')
         self.combat_zone_revision=data.get('combat_zone_revision','unknown')
         self.waypoints = [tuple(p) for p in data['waypoints']]
+        self.land_labels=None;self.land_label_width=0;self.land_source_cells=self.cells
+        if data.get('land_component_labels_zlib'):
+            labels=zlib.decompress(base64.b64decode(data['land_component_labels_zlib']))
+            width=data.get('land_component_label_width',0)
+            if (width in (1,2) and len(labels)==self.width*self.height*width
+                and data.get('land_component_source_sha256')==hashlib.sha256(self.cells).hexdigest()
+                and data.get('land_component_labels_sha256')==hashlib.sha256(labels).hexdigest()):
+                self.land_labels=labels;self.land_label_width=width
         if self.connected_bits is not None and len(self.connected_bits)!=(self.width*self.height+7)//8:
             raise ValueError('Incomplete connected ground grid')
 
@@ -168,12 +178,57 @@ class Navigation:
         return points[:32]
 
     def path(self, start, end, limit=25000):
+        a,b=self.land_component(start),self.land_component(end)
+        if a and b and a!=b:
+            local=getattr(self,'local',None)
+            if local is not None:local.component_rejections=getattr(local,'component_rejections',0)+1
+            return []
         key=(self.cell(start),self.cell(end),limit,tuple(sorted(getattr(getattr(self,'local',None),'blocked_cells',()))),getattr(getattr(self,'local',None),'lane','foreground'))
         cached = self._runtime_path(key) if getattr(self,'incremental',False) and getattr(self.local,'active',False) else self._path(*key)
         result = list(cached)
         if result:
             result[0] = tuple(start)
         return result
+
+    def land_component(self,position):
+        labels=getattr(self,'land_labels',None)
+        if labels is None or self.cells is not getattr(self,'land_source_cells',self.cells):return None
+        x,y=self.cell(position)
+        if not (0<=x<self.width and 0<=y<self.height):return 0
+        index=y*self.width+x
+        return labels[index] if self.land_label_width==1 else struct.unpack_from('<H',labels,index*2)[0]
+
+    def shore_exit(self,position,blocked=(),maximum_cm=250):
+        """Bounded native escape attempt from an already occupied shore edge.
+
+        No global passability change. Hard obstacles and diagonal corners are
+        checked on the original 50cm grid; the endpoint must be connected dry
+        ground. Only the server can accept the short move through the margin.
+        """
+        raw=getattr(self,'recovery_bits',None);dry=getattr(self,'safe_recovery_bits',None)
+        if raw is None or dry is None or not self.needs_recovery(position):return []
+        width,height=self.width*2,self.height*2;start=self.recovery_cell(position);blocked=set(blocked)
+        def free(cell):
+            x,y=cell
+            if not (0<=x<width and 0<=y<height) or (cell!=start and cell in blocked):return False
+            i=y*width+x;return bool(raw[i//8]&(1<<(7-i%8)))
+        if not free(start):return []
+        parents={start:None};queue=deque([start]);goal=None
+        while queue and len(parents)<256:
+            cell=queue.popleft();point=((cell[0]+self.origin[0]*2)*50+25,(cell[1]+self.origin[1]*2)*50+25)
+            if math.dist(position,point)>maximum_cm:continue
+            if cell!=start and not self.needs_recovery(point):goal=cell;break
+            for dx,dy in ((1,0),(-1,0),(0,1),(0,-1),(1,1),(-1,1),(1,-1),(-1,-1)):
+                other=cell[0]+dx,cell[1]+dy
+                if other in parents or not free(other):continue
+                if dx and dy and (not free((cell[0]+dx,cell[1])) or not free((cell[0],cell[1]+dy))):continue
+                parents[other]=cell;queue.append(other)
+        if goal is None:return []
+        points=[]
+        while goal!=start:
+            points.append(((goal[0]+self.origin[0]*2)*50+25,(goal[1]+self.origin[1]*2)*50+25));goal=parents[goal]
+        route=[tuple(position),*reversed(points)]
+        return route if sum(math.dist(a,b) for a,b in zip(route,route[1:]))<=maximum_cm else []
 
     def segment(self,start,end):
         """Native routes contain turns, not every A* grid cell (maximum 32)."""
@@ -268,6 +323,7 @@ class Navigation:
         if not getattr(self,'incremental',False):return {}
         l=self.local
         return {'geometry_revision':getattr(self,'geometry_revision','legacy-blk'),
+                'impossible_land_routes_rejected_without_search':getattr(l,'component_rejections',0),
                 'yields':getattr(l,'yields',0),'expanded_nodes':getattr(l,'expansions',0),
                 'completed_searches':getattr(l,'finished',0),'pending_searches':len(getattr(l,'searches',{})),
                 'shared_route_hits':getattr(l,'shared_route_hits',0),

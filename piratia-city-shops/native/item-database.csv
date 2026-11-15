@@ -960,7 +960,7 @@
 994,Реактивный,Torrent Bow,52,0,-1,-1,0,0,,,True,True,,False,False
 995,Лук богини,Goddess Bow,52,0,-1,-1,0,0,,,True,True,,False,False
 999,Лук рыбы-меч,Swordfish Bow,52,0,-1,-1,0,0,,,True,True,,False,False
-1000,Чертеж Пачкули,Blurry Blueprint,31,0,-1,-1,10,10,,,True,True,ItemUse_MHDTZ,False,False
+1000,Чертеж Пачкули,Blurry Blueprint,31,0,-1,-1,10,10,1000,,True,True,ItemUse_MHDTZ,False,False
 1001,Зашифрованный чертеж,Encrypted Blueprint,31,0,-1,-1,50,50,,,True,True,ItemUse_MHDTZ,False,False
 1002,Запечатанный чертеж,Sealed Blueprint,31,0,-1,-1,100,100,,,True,True,ItemUse_MHDTZ,False,False
 1003,Чертеж призыва,Invocation Blueprint,31,0,-1,-1,500,500,,,True,True,ItemUse_MHDTZ,False,False

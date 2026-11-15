@@ -5999,5 +5999,17 @@
     "server_iteminfo": "c02440ebc251e3d74dc11c6c15dc05b8f07cd5ac782404f4ae21105a4106a15e",
     "client_iteminfo": "544c61a9f83382f0e4da93a9e287aa8d88ac84c5077006449459a90afea32443"
   },
-  "native_windows_verified": false
+  "native_windows_verified": false,
+  "price_overrides": [
+    {
+      "id": 1000,
+      "kind": 31,
+      "price": 1000,
+      "npc_buyback": 500,
+      "name_ru": "Чертеж Пачкули",
+      "name_en": "Blurry Blueprint",
+      "name": "Blurry Blueprint",
+      "stack": 99
+    }
+  ]
 }

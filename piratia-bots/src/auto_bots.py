@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha49'
+    report.result['version'] = 'AutoAccountsAlpha50'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -187,7 +187,7 @@ def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navi
 
 def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None):
     deadline=float('inf') if seconds==0 else time.monotonic()+seconds
-    history=[];had_entered=False;attempt=0;recoveries=0
+    history=[];had_entered=False;attempt=0;recoveries=0;protocol_recoveries=0
     while True:
         if stop.is_set():return False
         remaining=0 if deadline==float('inf') else max(0,deadline-time.monotonic())
@@ -196,11 +196,13 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         if success:return True
         had_entered=had_entered or result.get('entered_world',False)
         reason=result.get('exit_reason')
-        retryable=reason=='network_error' or (had_entered and result.get('server_error_code')==1104)
+        protocol_retry=had_entered and reason=='protocol_or_state_error' and result.get('error_type')=='ProtocolError' and protocol_recoveries<3
+        if protocol_retry:protocol_recoveries+=1
+        retryable=reason=='network_error' or protocol_retry or (had_entered and result.get('server_error_code')==1104)
         if stop.is_set() or not retryable:return False
         if result.get('entered_world') and result.get('session_elapsed_seconds',0)>=120:attempt=0
         if attempt>=3 and seconds!=0:return False
-        history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds','error_locations','network_errno','last_receive','last_send') if k in result})
+        history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds','error_locations','network_errno','last_receive','last_send','connection_health','recent_events','gate_ping_answers','game_ping_answers') if k in result})
         history[-1]['recovery_number']=recoveries+1
         history=history[-20:]
         delay=(5,15,30)[attempt]+index%5 if attempt<3 else 120+index%15
@@ -243,7 +245,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — первая профессия с 9 уровня, сохранение текущих ботов (Alpha 43).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 50).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -252,7 +254,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha49'
+    setup_report.result['version'] = 'AutoAccountsAlpha50'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -306,7 +308,7 @@ def main():
         from regions import Regions
         from social import ChatBudget
         navigation = Regions(ROOT/'assets',population_count=args.count)
-        chat_budget = ChatBudget(interval=2)
+        chat_budget = ChatBudget(interval=4 if navigation.dialogue_data and navigation.dialogue_data.settings['intensity']=='quiet' else 2)
         from fleet import Fleet
         fleet=Fleet(args.count,ROOT/'population-status.json')
         fleet.write()

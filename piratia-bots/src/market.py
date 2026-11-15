@@ -102,6 +102,7 @@ class Market:
         self.timeouts=self.sold_units=self.confirmed_learns=0;self.disabled=False;self.active_confirmed=False
         self.minimum_level=15
         self.keep_stall_stock=False
+        self.focused_goods=False
         self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
@@ -126,12 +127,24 @@ class Market:
         result.update(PROTECTED)
         from life_professions import PROTECTED as LIFE_PROTECTED
         result.update(LIFE_PROTECTED)
+        from treasure_hunt import PROTECTED as TREASURE_PROTECTED
+        result.update(TREASURE_PROTECTED)
         return result
     def useful_gear(self,identity):
         w=self.world;g=self.gear.gear.get(identity)
         if not g or w.own.model not in g['bodies'] or g['level']>w.own.values.get(0,0)+5:return False
         if g['jobs']!=[-1] and w.own.values.get(4) not in g['jobs']:return False
         return any(g['score']>self.gear.gear.get(w.own.equipment.get(link),{}).get('score',0) for link in g['links'])
+    def ordinary_gear(self,item):
+        return bool(item.valid and (item.max_endurance<=0 or item.endurance>0) and self.catalog.items.get(item.identity,{}).get('category')=='gear' and not item.forge
+                    and not any(item.parameters) and all((key==value==0) or (1<=key<=47 and 0<=value<=2000)
+                                                         for key,value in item.instance_attributes))
+    def item_ask_price(self,item):
+        base=self.ask_price(item.identity)
+        if self.focused_goods and self.ordinary_gear(item):
+            bonus=sum(v for k,v in item.instance_attributes if 26<=k<=30)
+            return min(2000000000,round(base*(1+min(2,bonus/20))))
+        return base
     def gem_goals(self):
         # A conservative build policy using actual owner-table gem IDs, not forging automation.
         if self.world.own.values.get(0,0)<30:return {}
@@ -140,6 +153,8 @@ class Market:
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
         lv=self.world.own.values.get(0,0)
+        if identity==1000 and self.focused_goods:return 0
+        if identity==684 and self.focused_goods and 15<=lv<=40:return 1
         if identity==1000 and (self.is_crafter or any(self.world.skills.get(i,{}).get('level',0) for i in (338,339,340))):return 2
         for goal in self.catalog.data['goals'].values():
             if identity==goal['identity'] and lv>=goal['min_level']:return goal['keep']
@@ -158,16 +173,17 @@ class Market:
         priority={'kal':0,'refining':0,'gem':0,'rune':0,'scroll':0,'blueprint':0,'sealed':1,'gear':2}
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
             meta=self.catalog.items.get(item.identity)
+            if self.focused_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
             if not meta or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
             # Never sell enhanced, instanced, equipped or potentially valuable personalized items cheaply.
-            if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
+            if item.forge or any(item.parameters) or (any(a or b for a,b in item.instance_attributes) and not (self.focused_goods and self.ordinary_gear(item))):continue
             if meta['category'] in ('gem','refining') and item.max_energy>1:continue
             if item.identity in w.own.equipment.values():continue
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
             count=min(99,item.count-keep)
             if count<=0:continue
-            result.append((len(result),self.ask_price(item.identity),count,slot))
+            result.append((len(result),self.item_ask_price(item),count,slot))
             if len(result)==6:break
         return result
     def ask_price(self,identity):
@@ -196,6 +212,9 @@ class Market:
             if (self.life.can_learn(w,book) and w.own.values.get(7,0)>=book['cost']
                     and not w.skills.get(book['skill'],{}).get('level',0) and not self.count(identity)):
                 wanted[identity]=1
+        if self.focused_goods:
+            wanted.pop(1000,None)
+            if 15<=w.own.values.get(0,0)<=40 and not self.count(684) and not self.count(682):wanted[684]=1
         return wanted
     def fair_cap(self,identity):
         if identity==1000:return 500
@@ -237,9 +256,13 @@ class Market:
             for grid,price,item in offers:
                 if not item.valid or price<=0:continue
                 identity=item.identity
-                desirable=identity in want or self.useful_gear(identity)
+                if identity in self.gear.gear and item.max_endurance>0 and item.endurance<=0:continue
+                upgrade=self.gear.upgrade(w.own,identity,free,item) if self.focused_goods and identity in self.gear.gear else None
+                desirable=identity in want or (bool(upgrade) if self.focused_goods else self.useful_gear(identity))
                 if not desirable or (identity not in want and self.count(identity)>=1):continue
-                if not self.fair_cap(identity) or price>self.fair_cap(identity):continue
+                cap=self.fair_cap(identity)
+                if self.focused_goods and self.ordinary_gear(item):cap=round(cap*(1+min(2,sum(v for k,v in item.instance_attributes if 26<=k<=30)/20)))
+                if not cap or price>cap:continue
                 # One item at a time. Only bag AND gold changes confirm a purchase.
                 if price>budget:continue
                 self.send(BUY,buy_request(owner,grid));self.buy_requests+=1
@@ -308,7 +331,8 @@ class Market:
                 self.finish(now);return False
             self.stock=self.offers(policy)
             if not self.stock or not w.skills.get(241,{}).get('level',0):self.finish(now);return False
-            self.send(START,start_request('Оружие и находки',self.stock));self.open_requests+=1
+            titles=('Находки с охоты','Одежда и НП','Обнови свой шмот','Пергаменты и вещи','Снаряжение рядом','Трофеи в продаже','Лавка странника','С миру по нитке','Загляни за вещами','Добыча искателя','Шмот по карману','Трофеи без пыли')
+            self.send(START,start_request(self.rng.choice(titles),self.stock));self.open_requests+=1
             self.state='opening';self.deadline=now+15;return True
         # Scan visible real player/bot stalls only. Never use shared stock as a fake server view.
         can_shop=w.own.values.get(8,0)>1000 and (w.bag_capacity or 0)-len(w.bag)>=2
