@@ -4,18 +4,21 @@ function BubaGiveSwords(role)
     local required = {"GetChaDefaultName", "GetChaFreeBagGridNum",
         "GetChaItem", "GetItemID", "MakeItem", "FusionItem", "SetItemAttr",
         "GetItemAttr", "SetItemForgeParam", "GetItemForgeParam", "GetResPath",
-        "RemoveChaItem", "SetChaKitbagChange", "SynChaKitbag", "SystemNotice",
-        "check_item_final_data", "GetItem_JinglianLv", "TansferNum"}
+        "RemoveChaItem", "SetChaKitbagChange", "SynChaKitbag", "SystemNotice"}
     for _, name in ipairs(required) do
         if type(_G[name]) ~= "function" then
             error("BubaSwords: unavailable server function: " .. name .. "; nothing created")
         end
     end
+    if type(check_item_final_data)~="function" and
+        (type(ResetItemFinalAttr)~="function" or type(AddItemFinalAttr)~="function") then
+        error("BubaSwords: final item attribute API unavailable; nothing created")
+    end
     if not io or not io.open then error("BubaSwords: file ledger unavailable; nothing created") end
     if not ITEMATTR_VAL_FUSIONID or not ITEMATTR_VAL_LEVEL or not ITEMATTR_URE or not ITEMATTR_MAXURE then
         error("BubaSwords: item constants unavailable; nothing created")
     end
-    if not role or GetChaDefaultName(role) ~= "buba" then
+    if not role or string.lower(GetChaDefaultName(role)) ~= "buba" then
         error("BubaSwords: buba must be online in this GameServer; nothing created")
     end
     local function fail(message)
@@ -71,11 +74,20 @@ function BubaGiveSwords(role)
         SetItemAttr(outfit, ITEMATTR_URE, 20000)
         -- 3 sockets; type12/rank9, type13/rank9, type1/rank9 = +27 total.
         SetItemForgeParam(outfit, 1, 3129139019)
-        check_item_final_data(outfit)
+        if type(check_item_final_data)=="function" then check_item_final_data(outfit)
+        else
+            -- Same fixed gem contributions as source check_item_final_data.
+            if ResetItemFinalAttr(outfit)==0 or AddItemFinalAttr(outfit,26,45)==0
+                or AddItemFinalAttr(outfit,34,486)==0 or AddItemFinalAttr(outfit,35,486)==0 then
+                fail("native final gem attributes failed")
+            end
+        end
+        local verified_forge=GetItemForgeParam(outfit,1)
+        if type(verified_forge)~="number" then fail("forge parameter unavailable") end
+        if verified_forge<0 then verified_forge=verified_forge+4294967296 end
         if GetItemID(outfit) ~= 5002 or GetItemAttr(outfit, ITEMATTR_VAL_FUSIONID) ~= 1397
             or GetItemAttr(outfit, ITEMATTR_VAL_LEVEL) ~= 15
-            or TansferNum(GetItemForgeParam(outfit, 1)) ~= 3129139019
-            or GetItem_JinglianLv(outfit) ~= 27 then fail("final item verification failed") end
+            or verified_forge ~= 3129139019 then fail("final item verification failed") end
         outfits[index] = outfit_slot
         bases[index] = base_slot
     end

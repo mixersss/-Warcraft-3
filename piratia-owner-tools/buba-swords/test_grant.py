@@ -79,6 +79,13 @@ local ok=pcall(grant);assert(not ok and made==4 and removed==2)
  return r.bag[slot] or 0
 end
 ''','grant();assert(made==4 and removed==2 and string.find(ledger,"done"))')
+ def test_npc_vm_without_calculation_lua_uses_fixed_native_gem_effects(self):
+  self.run_lua('''check_item_final_data=nil;TansferNum=nil;GetItem_JinglianLv=nil
+function ResetItemFinalAttr(i) i.final={};return 1 end
+function AddItemFinalAttr(i,k,v) i.final[k]=v;return 1 end
+''','''grant();assert(made==4 and removed==2)
+for _,i in pairs(role.bag) do if i.id==5002 then assert(i.final[26]==45 and i.final[34]==486 and i.final[35]==486) end end
+''')
  def test_partial_failure_blocks_repetition_and_preserves_old_items(self):
   self.run_lua('function FusionItem(a,b) return 0 end','''assert(not pcall(grant));assert(made==2 and removed==0)
 assert(string.find(ledger,'pending'));assert(not pcall(grant));assert(made==2)
