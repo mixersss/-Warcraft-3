@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-47'
-NAME = 'Piratia-Auto-Bots-Alpha47'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-48'
+NAME = 'Piratia-Auto-Bots-Alpha48'
 
 
 def main():
@@ -38,8 +38,9 @@ def main():
         'mechanics_knowledge': {'lua_files':242,'named_functions':4135,'reviewed_source_cards':22,'indexed_only_cards':6,'all_mechanics_understood':False,'new_native_operations_enabled':False,'local_learner':'Learn-Mechanics.cmd','finder':'Find-Mechanic.cmd','audit':'Audit-Mechanics.cmd'},
         'fleet_alpha44_reaudit': {'connected':300,'first_profession':172,'novices':128,'no_xp_over_30min':246,'full_bags':3,'needs_geometric_recovery':40,'dry_checked_exits':24,'no_exit_but_owned_ticket':6,'no_exit_or_ticket':10,'live46_fix_verified':False},
         'stuck_city_ticket': {'owned_only':[4602,4603,4604],'full_hp_sp_required':True,'native_arrival_and_consumption_required':True},
-        'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':644,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':526,'live_windows_verified':False},
-        'status': 'Alpha47 adds installed native shop knowledge/prices/stock-set selection, nearest adjacent NPC binding, ru aliases and safe price floors; Alpha46 adds connected dry egress, owned native ticket recovery and XP watchdog precedence; all fleet issues not proven fixed live. Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha47 validation pending',
+        'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':645,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':526,'live_windows_verified':False},
+        'owner_economy_alpha48': {'random_independent_activity_order_each_cycle':True,'cycle_seconds':1800,'phase_duration_variation':.15,'finish_fights_and_transactions_before_switch':True,'blueprint1000_player_price':500,'blueprint1000_npc_price_changed':False,'source_drop_species':22,'second_generation_or_junior_only':True,'fairy_stats':['STR','STA','CON','DEX'],'one_fruit_stat_per_fairy':True,'normal_ticket_price':500,'expert_possession_item609_price':300000,'fresh_paid_fairies_start_zero_stats':True,'old_fairy_stats_reset':False,'stalls_from_level':15,'stall_skill_and_life_points_required':True,'keep_six_stall_offers_before_banking':True,'life_profession_learning_enabled':True,'automatic_craft_production_enabled':False,'weapon_forging_automation_enabled':False,'quest_translation':'postponed by owner'},
+        'status': 'Alpha48 adds randomized productive activity cycles, second-generation fairy care and real supplier purchases, blueprint500G player trade, life profession study and early stall preparation. Alpha47 adds installed native shop knowledge/prices/stock-set selection, nearest adjacent NPC binding, ru aliases and safe price floors; Alpha46 adds connected dry egress, owned native ticket recovery and XP watchdog precedence; all fleet issues not proven fixed live. Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha48 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -232,11 +233,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 695,
-        'full_python_suite_total': 703,
-        'full_python_suite_passed': 703,
+        'pure_python_tests_passed': 714,
+        'full_python_suite_total': 722,
+        'full_python_suite_passed': 722,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '703 passed in Alpha47 including 8 local socket integration tests',
+        'last_full_network_regression': '722 passed in Alpha48 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',
@@ -279,7 +280,7 @@ def main():
         'stall_session_seconds': 3600,
         'stall_live_population_fraction': None,
         'argent_target_stalls': 80,
-        'stall_minimum_level': 30,
+        'stall_minimum_level': 15,
         'voluntary_rest_live_population_fraction': .10,
         'stall_city_caps_at_200': {'garner':80,'magicsea':3,'darkblue':2},
         'preferred_home_cities_at_200': {'garner':150,'magicsea':25,'darkblue':25},

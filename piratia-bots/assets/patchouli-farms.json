@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "item": 1000,
+  "player_price": 500,
+  "npc_price_changed": false,
+  "source_sha256": "af553b61a949dad9129ce86d11c063dd2d20f24d201d21ef6148331e0d84f632",
+  "probability_rule": "Check_Baoliao: min(1,100/denominator*bsmf)*MF_RAID*MF_RAID_STATE; actual native level/luck/rates still apply",
+  "sources": {
+    "69": {
+      "name": "Little Squirt",
+      "denominator": 2000,
+      "base_factor": 0.05
+    },
+    "71": {
+      "name": "Sleepy Snail",
+      "denominator": 3333,
+      "base_factor": 0.030003000300030003
+    },
+    "95": {
+      "name": "Cactus",
+      "denominator": 2000,
+      "base_factor": 0.05
+    },
+    "100": {
+      "name": "Wolf Cub",
+      "denominator": 1000,
+      "base_factor": 0.1
+    },
+    "103": {
+      "name": "Forest Spirit",
+      "denominator": 2000,
+      "base_factor": 0.05
+    },
+    "125": {
+      "name": "Cuddly Lamb",
+      "denominator": 1666,
+      "base_factor": 0.060024009603841535
+    },
+    "184": {
+      "name": "Greedy Shroom",
+      "denominator": 1666,
+      "base_factor": 0.060024009603841535
+    },
+    "206": {
+      "name": "Mini Bee",
+      "denominator": 2000,
+      "base_factor": 0.05
+    },
+    "214": {
+      "name": "Oyster",
+      "denominator": 1000,
+      "base_factor": 0.1
+    },
+    "237": {
+      "name": "Piglet",
+      "denominator": 1000,
+      "base_factor": 0.1
+    },
+    "238": {
+      "name": "Little Deer",
+      "denominator": 1666,
+      "base_factor": 0.060024009603841535
+    },
+    "239": {
+      "name": "Snowy Piglet",
+      "denominator": 1666,
+      "base_factor": 0.060024009603841535
+    },
+    "240": {
+      "name": "Little White Deer",
+      "denominator": 1666,
+      "base_factor": 0.060024009603841535
+    },
+    "258": {
+      "name": "Bear Cub",
+      "denominator": 1000,
+      "base_factor": 0.1
+    },
+    "266": {
+      "name": "Elk",
+      "denominator": 1000,
+      "base_factor": 0.1
+    },
+    "989": {
+      "name": "Bloodwing Angel",
+      "denominator": 142,
+      "base_factor": 0.704225352112676
+    },
+    "990": {
+      "name": "Black Devious Angel",
+      "denominator": 142,
+      "base_factor": 0.704225352112676
+    },
+    "991": {
+      "name": "Death Squirty",
+      "denominator": 142,
+      "base_factor": 0.704225352112676
+    },
+    "992": {
+      "name": "Death Squirdy",
+      "denominator": 142,
+      "base_factor": 0.704225352112676
+    },
+    "1001": {
+      "name": "Victory Goddess",
+      "denominator": 200,
+      "base_factor": 0.5
+    },
+    "1009": {
+      "name": "Aries Guardian",
+      "denominator": 142,
+      "base_factor": 0.704225352112676
+    },
+    "1027": {
+      "name": "Victory Goddess",
+      "denominator": 200,
+      "base_factor": 0.5
+    }
+  }
+}

@@ -44,6 +44,7 @@ class MarketCatalog:
     def __init__(self,assets):
         self.data=json.loads((Path(assets)/'market-items.json').read_text())
         self.items={int(k):v for k,v in self.data['items'].items()}
+        if 1000 in self.items:self.items[1000]=dict(self.items[1000],reference_price=500)
         self.owner_price_floor={}
         from owner_shops import read_overlay
         try:owner=read_overlay(assets)
@@ -51,6 +52,7 @@ class MarketCatalog:
         if owner:self.owner_price_floor={int(k):price*3//4 for k,price in owner['prices'].items()}
         self.prices=None
     def price(self,identity):
+        if identity==1000:return 500
         base=self.items.get(identity,{}).get('reference_price',0)
         return max(self.owner_price_floor.get(identity,0),self.prices.guide(identity,base) if self.prices else base)
     def confirmed_price(self,identity,price):
@@ -98,6 +100,9 @@ class Market:
         self.scanned={};self.reason='';self.learn_pending=None;self.next_learn=0
         self.open_requests=self.confirmed_opens=self.close_requests=self.buy_requests=self.confirmed_buys=0
         self.timeouts=self.sold_units=self.confirmed_learns=0;self.disabled=False;self.active_confirmed=False
+        self.minimum_level=15
+        self.keep_stall_stock=False
+        self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
     def busy(self):return self.state!='idle' or self.pending is not None or self.context is not None or self.learn_pending is not None
@@ -117,6 +122,10 @@ class Market:
                 objective=policy.adventure.grind.get(identity)
                 if objective and objective[1]:result.add(objective[1])
         result.update(self.life.books)
+        from pet_care import PROTECTED
+        result.update(PROTECTED)
+        from life_professions import PROTECTED as LIFE_PROTECTED
+        result.update(LIFE_PROTECTED)
         return result
     def useful_gear(self,identity):
         w=self.world;g=self.gear.gear.get(identity)
@@ -131,6 +140,7 @@ class Market:
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
         lv=self.world.own.values.get(0,0)
+        if identity==1000 and (self.is_crafter or any(self.world.skills.get(i,{}).get('level',0) for i in (338,339,340))):return 2
         for goal in self.catalog.data['goals'].values():
             if identity==goal['identity'] and lv>=goal['min_level']:return goal['keep']
         rune=self.rune_goal()
@@ -161,6 +171,7 @@ class Market:
             if len(result)==6:break
         return result
     def ask_price(self,identity):
+        if identity==1000:return 500
         price=self.catalog.price(identity)
         if not self.catalog.prices:return price
         # Stable per-seller negotiation margins plus current surplus; no personality reset.
@@ -170,6 +181,9 @@ class Market:
         return max(1,min(2000000000,round(price*(margin-surplus))))
     def needed(self):
         w=self.world;wanted={}
+        # The life-profession cohort prepares a small owned supply, not speculative hoarding.
+        if (self.is_crafter or any(w.skills.get(i,{}).get('level',0) for i in (338,339,340))) and w.own.values.get(0,0)>=15 and self.count(1000)<2:
+            wanted[1000]=2-self.count(1000)
         if not w.skills.get(241,{}).get('level',0) and not self.count(3296) and w.own.values.get(13,0)>0:wanted[3296]=1
         if self.count(1847)<5:wanted[1847]=5-self.count(1847)
         for goal in self.catalog.data['goals'].values():
@@ -184,6 +198,7 @@ class Market:
                 wanted[identity]=1
         return wanted
     def fair_cap(self,identity):
+        if identity==1000:return 500
         # Explicit ceilings prevent players setting a huge price from draining bots.
         price=self.catalog.price(identity) or self.life.prices.get(identity,0)
         return round(price*1.1) if self.catalog.prices else price
@@ -309,7 +324,7 @@ class Market:
                     self.send(VIEW,struct.pack('>I',seller.identity));self.context=seller.identity,now+10
                     self.scanned[seller.identity]=now+300;self.next_scan=now+30;return True
             self.next_scan=now+30
-        if now<self.next_shift or w.own.values.get(0,0)<30 or not w.skills.get(241,{}).get('level',0) or not self.offers(policy):return False
+        if now<self.next_shift or w.own.values.get(0,0)<self.minimum_level or not w.skills.get(241,{}).get('level',0) or not self.offers(policy):return False
         slot=self.directory.reserve(self.name,w.map,now)
         if slot is None:self.next_shift=now+60;return False
         if self.directory.argent_target is not None and self.life.npcs:
@@ -325,7 +340,7 @@ class Market:
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True
     def loot_needs(self):return set(self.catalog.items)
     def summary(self):
-        return {'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
+        return {'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
                 'close_requests':self.close_requests,'purchase_requests':self.buy_requests,'confirmed_purchases':self.confirmed_buys,
                 'sold_units_server_notices':self.sold_units,'timeouts':self.timeouts,'stall_skill_learned':bool(self.world.skills.get(241,{}).get('level',0)),
                 'confirmed_book_learns':self.confirmed_learns,'goals':self.needed(),'rune_exchange_goal':self.rune_goal(),'black_market_barter_implemented':False}

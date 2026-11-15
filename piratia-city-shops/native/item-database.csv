@@ -572,7 +572,7 @@
 606,Кубик льда,Ice Cube,31,0,-1,-1,200,200,,,True,True,,False,False
 607,Праздничная свеча,Birthday Candle,31,0,-1,-1,20,20,,,True,True,,False,False
 608,Обычная фея,Standard Fairy Possession,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_ZJJLFT,False,False
-609,Опытная фея,Expert Fairy Possession,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_GJJLFT,False,False
+609,Опытная фея,Expert Fairy Possession,34,0,-1,-1,5000,5000,300000,fairies,True,True,Sk_Script_GJJLFT,False,False
 610,Самоуничтожение нач. ур.,Novice Self Destruct,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_CJJLZB,False,False
 611,Обычное Самоуничтожение,Standard Self Destruct,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_ZJJLZB,False,False
 612,Самоуничтожение выс. ур.,Expert Self Destruct,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_GJJLZB,False,False
@@ -4353,9 +4353,9 @@
 4599,Высококачественная деталь боевого корабля,High Grade Battleship Component,41,0,-1,-1,0,0,,,True,True,,False,False
 4600,Поддельная королевская посуда,Imitation Royal Tableware,41,0,-1,-1,0,0,,,True,True,,False,False
 4601,Гамбургер,Hamburger,41,0,-1,-1,0,0,,,True,True,,False,False
-4602,Билет до Серебряного,Ticket to Argent,36,0,-1,-1,500,500,5000,tickets,True,True,Jz_Script_bycs,False,False
-4603,Билет до Шайтана,Ticket to Shaitan,36,0,-1,-1,500,500,5000,tickets,True,True,Jz_Script_slcs,False,False
-4604,Билет до Ледыни,Ticket to Icicle,36,0,-1,-1,500,500,5000,tickets,True,True,Jz_Script_blbcs,False,False
+4602,Билет до Серебряного,Ticket to Argent,36,0,-1,-1,500,500,500,tickets,True,True,Jz_Script_bycs,False,False
+4603,Билет до Шайтана,Ticket to Shaitan,36,0,-1,-1,500,500,500,tickets,True,True,Jz_Script_slcs,False,False
+4604,Билет до Ледыни,Ticket to Icicle,36,0,-1,-1,500,500,500,tickets,True,True,Jz_Script_blbcs,False,False
 4605,Торговая лицензия,Commerce Permit,45,0,-1,-1,0,0,,,True,True,,False,False
 4606,Черная краска,Black Dye,41,0,-1,-1,200,200,,,True,True,,False,False
 4607,Черный краситель,Black Colorant,41,0,-1,-1,200,200,,,True,True,,False,False

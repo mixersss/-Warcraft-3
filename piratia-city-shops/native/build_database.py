@@ -26,6 +26,9 @@ def build(resource,client_bin):
  shops[0]['items']=[{'id':i,'name':rows[i][1].strip(),'price':50000,'kind':int(rows[i][10]),'hooks':meta[str(i)]['hooks']} for i in sorted(apparel)]
  forge=sorted(set([i for i,r in rows.items() if int(r[10]) in (47,49,50)]+[448,453,454,455,456,890,891,1018,1020,1022,1023,1024,2403,2404,2562,2563,2564,2565,2566,2567,3074,3075,3883,3884,3907]))
  shops[2]['items']=[{'id':i,'name':rows[i][1].strip(),'price':5000,'kind':int(rows[i][10]),'hooks':meta[str(i)]['hooks']} for i in forge]
+ shops[1]['items'].append({'id':609,'name':rows[609][1].strip(),'price':300000,'kind':int(rows[609][10]),'hooks':meta['609']['hooks']})
+ for item in shops[3]['items']:
+  if item['id'] in (4602,4603,4604):item['price']=int(rows[item['id']][22])
  for shop in shops:
   for item in shop['items']:
    i=item['id']

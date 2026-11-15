@@ -2,7 +2,7 @@
 import re,random
 from inventory import BagItem
 
-ALIASES={684:('новый пергамент','нового пергамента'),1092:('старый пергамент','старого пергамента'),
+ALIASES={1000:('пачкули','чертеж пачкули','чертёж пачкули'),684:('новый пергамент','нового пергамента'),1092:('старый пергамент','старого пергамента'),
          885:('камень улучшения','камень заточки'),3457:('кал','каль')}
 KINDS={'меч':(1,2),'мечи':(1,2),'посох':(9,),'лук':(3,),'ружье':(4,),'ружьё':(4,),
        'кольцо':(26,),'ожерелье':(25,),'руки':(23,),'перчатки':(23,),'ботинки':(24,),
@@ -18,7 +18,7 @@ class Commerce:
     def due_advertisement(self,now):
         market=self.policy.market
         if not market or market.state!='selling':self.next_ad=None;return None
-        if self.next_ad is None:self.next_ad=now+self.rng.uniform(20,140)
+        if self.next_ad is None:self.next_ad=now+self.rng.uniform(5,25)
         return self.advertisement(now) if now>=self.next_ad else None
 
     def advertised(self,now):self.last_ad=now;self.next_ad=now+900
@@ -46,7 +46,7 @@ class Commerce:
         return f'{city}, {int(x//100)},{int(y//100)}'
 
     def label(self,identity):
-        known={684:'Новый пергамент',1092:'Старый пергамент',885:'Камень улучшения'}
+        known={684:'Новый пергамент',1092:'Старый пергамент',885:'Камень улучшения',1000:'Чертёж Пачкули'}
         if identity in known:return known[identity]
         kind=self.policy.market.gear.types.get(identity)
         labels={1:'Меч',2:'Двуручный меч',3:'Лук',4:'Ружьё',9:'Посох',20:'Головной убор',21:'Головной убор',

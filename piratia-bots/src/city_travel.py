@@ -80,6 +80,9 @@ class CityTravel:
             return True
         if not safe or dialogue_busy or now<self.next_trip:return False
         w=self.world
+        returner=getattr(policy,'stuck_return',None)
+        if returner and returner.tick(now,policy,destination=wanted) is True:
+            self.reason=returner.reason;return True
         if self.needs_funds():
             self.reason='для перехода требуется 500G';return False
         if w.map not in TELEPORTERS:

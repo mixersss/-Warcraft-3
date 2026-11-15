@@ -129,6 +129,9 @@ class Hunter:
         self.background_task=None
         self.mob_knowledge=None;self.npc_knowledge=None
         self.mechanics=None
+        self.petcare=None
+        self.economy=None
+        self.professions=None
         self.shortcut=None
         self.quest_combat_ready=False
         self.protected_fights_stopped=0;self.immune_fights_released=0
@@ -525,7 +528,11 @@ class Hunter:
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
-        if self.activity.hunting(self.clock) and not self.mandatory_work():return set(self.opportunity_models())
+        if self.economy and not self.mandatory_work():
+            economic=self.economy.models(self.world,self.region,self.learning,self.clock)
+            if economic:return economic
+        history=bool(self.economy and self.economy.phase(self.world,self.clock)=='history')
+        if self.activity.hunting(self.clock) and not self.mandatory_work() and not history:return set(self.opportunity_models())
         for feature in (self.career,self.story if self.wants_story() else None):
             if feature:
                 models=feature.desired_models()
@@ -558,7 +565,9 @@ class Hunter:
 
     def task(self,key,feature,callback,now):
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
-        if self.inventory_blocked and key in ('adventure','career','story','market','town'):return False
+        can_sell_full=(key=='market' and (self.world.skills.get(241,{}).get('level',0)>0 or
+                       self.world.own.values.get(13,0)>0 and any(i.identity==3296 and i.valid for i in self.world.bag.values())))
+        if self.inventory_blocked and key in ('adventure','career','story','market','town') and not can_sell_full:return False
         if self.raising_travel_funds and key in ('adventure','career','story','market','town'):return False
         if self.helper and self.helper.source is not None and not self.mandatory_work():return False
         target=self.world.entities.get(self.target)
@@ -567,7 +576,8 @@ class Hunter:
             destination=feature.choose_destination()
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
-        if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()):return False
+        business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
+        if self.activity.hunting(self.clock) and key!='vendor' and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
                 and not self.raising_travel_funds and feature
@@ -610,10 +620,11 @@ class Hunter:
 
     def wants_story(self):
         if not self.story:return False
-        needed=bool(self.market and self.market.needs_life_study())
-        wanted=needed or self.optional_quests
+        needed=bool(self.market and self.market.needs_life_study()) or bool(self.professions and self.professions.needs_points())
+        historical=bool(self.economy and self.economy.phase(self.world,self.clock)=='history')
+        wanted=needed or self.optional_quests or historical
         turn=getattr(self.story,'study_turn',None)
-        return (wanted and (needed or not self.activity.hunting(self.clock))
+        return (wanted and (needed or historical or not self.activity.hunting(self.clock))
                 and (turn(self.clock) if turn else True))
 
     def target_score(self,entity,now):
@@ -720,6 +731,10 @@ class Hunter:
             current=self.world.entities.get(self.target)
             self.adventure.review_objective(now,busy=bool(current and current.alive))
         self.update_tactic(now)
+        if self.economy:
+            target=self.world.entities.get(self.target)
+            self.economy.busy=bool(target and target.alive) or self.transaction_busy() or bool(self.pending_action) or any(
+                getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.vendor,self.adventure,self.career,self.story,self.petcare,self.professions) if f)
         completed=sum(getattr(f,'delivered',0) for f in (self.adventure,self.career,self.story) if f and isinstance(getattr(f,'delivered',0),int))
         protected=self.resting or self.transaction_busy() or bool(self.town and self.town.rest_until)
         if own:self.activity.update(now,own.values.get(LV),own.values.get(15),self.kills,completed,protected)
@@ -832,6 +847,12 @@ class Hunter:
             self.chests.tick(now,self,False)
             if self.chests.pending:
                 self.change('ожидает содержимое сундука от сервера');self.next_action=now+.2;return
+        if (self.professions and not self.transaction_busy() and
+                self.professions.tick(now,self,safe=not self.target,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.adventure,self.career,self.story) if f))):
+            self.change(self.professions.reason);self.next_action=now+.2;return
+        if (self.petcare and not self.transaction_busy() and
+                self.petcare.tick(now,self,safe=not self.target,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.adventure,self.career,self.story) if f))):
+            self.change(self.petcare.reason);self.next_action=now+.2;return
         if self.equipment and self.equipment.tick(now,self,safe=not self.target):
             self.next_action=now+.2
             self.change('надевает подходящую экипировку')
@@ -914,6 +935,12 @@ class Hunter:
             and any(e.model==kill_task[0] and self.eligible(e,now)
                     and distance(self.position(now),self.world.position(now,e.identity))<=2000
                     for e in self.world.entities.values()))
+        business=bool(self.economy and self.economy.business(self.world,now) and not mandatory)
+        if business and not self.quest_combat_ready:
+            if self.wants_story() and (self.economy.phase(self.world,now)=='history' or (self.market and self.market.needs_life_study()) or (self.professions and self.professions.needs_points())) and self.task('story',self.story,lambda:self.story.tick(now,self,safe,market_dialogue),now):
+                self.drop_target();self.clear_zone();self.change('получает очки жизненных навыков для ларька');return
+            if self.task('town',self.town,lambda:self.town.tick(now,self,safe,market_dialogue),now):
+                self.drop_target();self.clear_zone();self.change(self.town.reason);return
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
         if not loot_dialogue and not self.quest_combat_ready:
@@ -941,7 +968,9 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
-        if self.bank and not mandatory and not self.activity.hunting(now) and self.bank.tick(now,self,safe,market_dialogue):
+        if self.economy and self.economy.business(self.world,now) and self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
+            self.drop_target();self.clear_zone();self.change(self.market.reason or 'городская торговля');return
+        if self.bank and not mandatory and (not self.activity.hunting(now) or business) and self.bank.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.bank.reason);return
         if self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'торговые дела');return
@@ -1133,6 +1162,8 @@ class Hunter:
 
     def farm_reason(self):
         models=set(self.planned_models())
+        if self.economy and self.economy.phase(self.world,self.clock)=='income' and models==set(self.economy.last_models) and models:
+            return {'source':'economic_patchouli_hunt','models':sorted(models),'player_unit_price':500,'bounded_phase':True}
         adaptive={'source':'adaptive_xp_hunt','models':sorted(models),
                   'character_level':self.world.own.values.get(LV,1),
                   'selected_levels':{str(m):self.region['farms'][str(m)]['level'] for m in models
@@ -1148,7 +1179,7 @@ class Hunter:
         return adaptive
 
     def summary(self):
-        return {'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
+        return {'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
@@ -1228,6 +1259,14 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         from party import Party
         policy.chests=Chests(world,life)
         policy.town=Town(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"rest_directory",None),bot_name)
+        from pet_care import PetCare
+        policy.petcare=PetCare(world,life,policy.mechanics,bot_name,role)
+        policy.town.petcare=policy.petcare
+        from economy import Economy
+        policy.economy=Economy(bot_name,getattr(navigation,'assets',Path(__file__).resolve().parents[1]/'assets'))
+        from life_professions import LifeProfessions
+        policy.professions=LifeProfessions(world,life,bot_name,policy.economy)
+        policy.town.professions=policy.professions
         from vendor import Vendor
         policy.vendor=Vendor(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"assets",Path(__file__).resolve().parents[1]/"assets"))
         policy.career=Career(world,client.wire.send,role,life,navigation)
@@ -1237,12 +1276,14 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.party=Party(world,client.wire.send,bot_name,bot_index,navigation.directory)
         from city_travel import CityTravel
         policy.travel=CityTravel(world,client.wire.send,bot_index,role,getattr(navigation,'portal_catalog',None))
+        policy.petcare.home_city=policy.travel.home_city
         if getattr(navigation,'portal_catalog',None):
             from portal_shortcut import PortalShortcut
             policy.shortcut=PortalShortcut(world,client.wire.send,navigation.portal_catalog)
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
+            policy.market.keep_stall_stock=True
             if life.npcs:
                 from bank import Bank
                 policy.bank=Bank(world,client.wire.send,life.npcs)
@@ -1374,7 +1415,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['public_chat']=public_chat.summary()
         if social.conversations:report.result['chat']['shared_conversations']=social.conversations.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()
@@ -1581,7 +1622,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['chat'] = social.summary()
         report.result['equipment']=policy.equipment.summary()
         report.result['recovery']=policy.recovery.summary()
-        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade'):
+        for key in ('chests','town','career','story','party','market','travel','helper','vendor','bank','direct_trade','petcare','professions'):
             feature=getattr(policy,key)
             if feature:report.result[key]=feature.summary()
         if policy.skills:report.result['skills']=policy.skills.summary()

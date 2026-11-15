@@ -14,9 +14,11 @@ def pages(shop,limit=60):
  count=max(1,max((len(b)+limit-1)//limit for b in buckets))
  return [[bucket[p*limit:(p+1)*limit] for bucket in buckets] for p in range(count)]
 
-def render(catalog):
+def render(catalog,compat=False):
  lines=['-- OWNER_CITY_SHOPS_V2_BEGIN','OwnerNativeShops = {}','OwnerNativeSelection = {}',
         'OwnerBasicGems={'+','.join('[%d]=true'%i['id'] for s in catalog['shops'] for i in s['items'] if i['kind'] in (49,50))+'}']
+ if not compat:
+  lines.append('OwnerFreshFairies={'+','.join('[%d]=%d'%(i['id'],1 if i['id'] in (*range(231,238),681) else 0) for s in catalog['shops'] for i in s['items'] if i['kind']==59)+'}')
  for shop in catalog['shops']:
   batches=pages(shop)
   lines.append('OwnerNativeShops[%s] = {pages={'%json.dumps(shop['key']))
@@ -26,7 +28,7 @@ def render(catalog):
     lines.append('[%d]={itemtype=%d,count=%d,item={%s},price={}},'%(index,index-1,len(panel),','.join(map(str,panel))))
    lines.append('[4]={itemtype=3,count=0,item={},price={}}},')
   lines.append('}}')
- lines.append((ROOT/'native_trade.lua').read_text())
+ lines.append((ROOT/('native_trade-alpha47.lua' if compat else 'native_trade.lua')).read_text())
  for shop in catalog['shops']:
   key=json.dumps(shop['key']);lines.extend(['function '+shop['function']+'()',
    ' Talk(1,%s)'%json.dumps(shop['name']+' - gold shop. Choose Trade to open items.'),

@@ -18,6 +18,7 @@ def main():
   price=max(1,int(a[22]));premium=category in ('kal','rune','gem','refining')
   reference=({'kal':250000,'rune':50000,'refining':25000,'gem':50000}.get(category,
              max(5000,price*10) if category in ('scroll','blueprint') else max(50,price*3)))
+  if identity==1000:reference=500
   rows[identity]={'name':name,'kind':kind,'category':category,'level':int(a[24]),'reference_price':reference,'stack':int(a[20])}
  script=(r/'script/MisScript/NpcScript01.lua').read_text(encoding='gb18030')
  body=script.split('function r_talk47',1)[1].split('\nfunction ',1)[0]

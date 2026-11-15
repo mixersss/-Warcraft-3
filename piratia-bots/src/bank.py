@@ -47,10 +47,11 @@ class Bank:
         if not market:return []
         source=self.world.bag if items is None else items
         protected=market.protected(policy);reserved={};result=[]
+        stall_stock={slot:count for _,_,count,slot in market.offers(policy)} if items is None and getattr(market,'keep_stall_stock',False) is True and self.world.own.values.get(0,0)>=getattr(market,'minimum_level',30) else {}
         for slot,item in sorted(source.items()):
             if (not item.valid or item.identity not in market.catalog.items or item.identity in protected
                 or item.identity in self.world.own.equipment.values() or market.useful_gear(item.identity)):continue
-            keep=max(0,market.reserve_count(item.identity)-reserved.get(item.identity,0)) if items is None else 0
+            keep=max(stall_stock.get(slot,0),max(0,market.reserve_count(item.identity)-reserved.get(item.identity,0))) if items is None else 0
             reserved[item.identity]=reserved.get(item.identity,0)+min(keep,item.count)
             if item.count>keep:result.append((slot,item,item.count-keep))
         return result
@@ -116,7 +117,7 @@ class Bank:
         free=(w.bag_capacity or 0)-len(w.bag)
         valuables=self.candidates(policy)
         deposit=bool(valuables) and (free<=8 or len(valuables)>=4)
-        withdraw=(w.own.values.get(0,0)>=30 and w.skills.get(241,{}).get('level',0)
+        withdraw=(w.own.values.get(0,0)>=getattr(policy.market,'minimum_level',30) and w.skills.get(241,{}).get('level',0)
                   and policy.market.next_shift is not None and now>=policy.market.next_shift
                   and not policy.market.offers(policy) and free>6)
         if not deposit and not withdraw:

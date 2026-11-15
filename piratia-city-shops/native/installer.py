@@ -24,15 +24,15 @@ def catalog():
   for item in shop['items']:
    if (type(item['id']) is not int or not 1<=item['id']<=65535 or item['id'] in seen
        or type(item['kind']) is not int or type(item['price']) is not int
-       or item['price'] not in (1000,2000,5000,10000,20000,50000)):
+       or item['price'] not in (500,1000,2000,5000,10000,20000,50000,300000)):
     raise ValueError('Неверный предмет или цена магазина')
    seen.add(item['id'])
  return data
 def offers(cat):return {i['id']:i for s in cat['shops'] for i in s['items']}
 def digest(raw):return hashlib.sha256(raw).hexdigest()
 
-def implementation_digest(cat):
- return digest(render(cat)+OPEN_HOOK+BUY_HOOK+(ROOT/'price_tables.py').read_bytes())
+def implementation_digest(cat,compat=False):
+ return digest(render(cat,compat=compat)+OPEN_HOOK+BUY_HOOK+(ROOT/'price_tables.py').read_bytes())
 
 def make_overlay(cat,report):
  rows=[]
@@ -45,7 +45,7 @@ def make_overlay(cat,report):
    'mission_source_ids':[],'menu_handlers':handlers,'offers':[i['id'] for i in shop['items']],
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
    'menu_pages':mapping,'live_server_seen':False})
- return {'version':2,'npcs':rows,'prices':{str(i['id']):i['price'] for s in cat['shops'] for i in s['items']},
+ return {'version':2,'catalog_revision':48,'fresh_fairies':True,'npcs':rows,'prices':{str(i['id']):i['price'] for s in cat['shops'] for i in s['items']},
          'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes())}
 
 def locate_client(selected):
@@ -56,12 +56,20 @@ def locate_client(selected):
  if p.is_file() and p.name.casefold()=='iteminfo.bin':return p
  raise ValueError('Не найден клиентский scripts/table/iteminfo.bin. Здесь нужна папка ИГРЫ с Game.exe (например C:\\Games\\Пиратия Online), а не серверная resource.')
 
-def legacy_block_span(raw):
- begin=b'-- OWNER_CITY_SHOPS_V1_BEGIN';end=b'-- OWNER_CITY_SHOPS_V1_END'
+def block_span(raw,version=1):
+ begin=('-- OWNER_CITY_SHOPS_V%d_BEGIN'%version).encode();end=('-- OWNER_CITY_SHOPS_V%d_END'%version).encode()
  if raw.count(begin)!=1 or raw.count(end)!=1:raise ValueError('Не найден единственный блок предыдущего патча')
  a=raw.index(begin);b=raw.index(end)+len(end)
  if b<=a:raise ValueError('Повреждены границы предыдущего блока магазинов')
  return a,b
+
+def legacy_block_span(raw):return block_span(raw,1)
+
+def strip_block(raw,version):
+ a,b=block_span(raw,version)
+ if raw[b:b+2]==b'\r\n':b+=2
+ elif raw[b:b+1]==b'\n':b+=1
+ return raw[:a]+raw[b:]
 
 def strip_legacy(raw):
  a,b=legacy_block_span(raw)
@@ -71,7 +79,32 @@ def strip_legacy(raw):
 
 def plan_server(root,cat=None):
  cat=cat or catalog();originals={p:(root/p).read_bytes() for p in SERVER_FILES};v1=root/'owner-city-shops-v1.json'
- if b'OWNER_CITY_SHOPS_V2_BEGIN' in originals[SERVER_FILES[0]]:raise ValueError('Есть новый блок без подходящей контрольной записи; нужна проверка')
+ if b'OWNER_CITY_SHOPS_V2_BEGIN' in originals[SERVER_FILES[0]]:
+  marker=root/MARKER
+  if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
+  previous=json.loads(marker.read_text());oldpath=ROOT/'catalog-alpha47.json';oldcat=json.loads(oldpath.read_text())
+  if previous.get('catalog_sha256')!=digest(oldpath.read_bytes()) or previous.get('implementation_sha256')!=implementation_digest(oldcat,compat=True):
+   raise ValueError('Неизвестная версия установленных магазинов02; нужна проверка обновления')
+  if set(previous['installed_sha256'])!={p.as_posix() for p in SERVER_FILES}:raise ValueError('Неполная контрольная запись02')
+  a,b=block_span(originals[SERVER_FILES[0]],2)
+  if originals[SERVER_FILES[0]][a:b].replace(b'\r\n',b'\n')!=render(oldcat,compat=True).rstrip(b'\n'):
+   raise ValueError('Изменён сам блок магазинов02 в NpcScript01.lua; обновление остановлено')
+  sdk=originals[SERVER_FILES[1]].replace(b'\r\n',b'\n')
+  if sdk.count(OPEN_HOOK+OPEN_ANCHOR)!=1 or sdk.count(BUY_ANCHOR+BUY_HOOK)!=1:
+   raise ValueError('Изменены обработчики магазинов02 в NpcSdk.lua; нужна проверка')
+  rows,_=legacy.validate_npcs(originals[SERVER_FILES[2]],originals[SERVER_FILES[3]])
+  if len(previous['npc_ids'])!=5 or len(set(previous['npc_ids']))!=5:raise ValueError('Не подтверждены пять НПС02')
+  for shop,identity,point in zip(cat['shops'],previous['npc_ids'],legacy.DEFAULT_POINTS):
+   row=rows[identity];pos=[v*100+50 for v in point]
+   if (row[11].strip()!=shop['function'].encode() or row[1].strip()!=shop['name'].encode() or int(row[3])!=17
+       or list(map(int,row[5].split(b',')))!=pos or list(map(int,row[6].split(b',')))!=pos):raise ValueError('Изменена привязка НПС02')
+  outputs=dict(originals);nl=b'\r\n' if b'\r\n' in originals[SERVER_FILES[0]] else b'\n'
+  outputs[SERVER_FILES[0]]=strip_block(originals[SERVER_FILES[0]],2)+nl+render(cat).replace(b'\n',nl)
+  for path,patcher in ((Path('ItemInfo.txt'),patch_text),(Path('ItemInfo.bin'),patch_binary)):outputs[path]=patcher(originals[path],offers(cat))
+  report=dict(previous,version=2,catalog_sha256=digest(CATALOG.read_bytes()),implementation_sha256=implementation_digest(cat),
+              item_count=sum(len(s['items']) for s in cat['shops']),upgraded_from='Alpha47',
+              preserved_changed_files=[p.as_posix() for p in SERVER_FILES if digest(originals[p])!=previous['installed_sha256'][p.as_posix()]])
+  return originals,outputs,report
  if v1.exists():
   previous=json.loads(v1.read_text())
   required={p.as_posix() for p in SERVER_FILES[:4]}
@@ -95,8 +128,7 @@ def plan_server(root,cat=None):
        or list(map(int,row[5].split(b',')))!=position or list(map(int,row[6].split(b',')))!=position):
     raise ValueError('Не совпадают пять НПС предыдущего патча')
  else:
-  tempcat=dict(cat,version=1)
-  _,outputs,report=legacy.plan(root,legacy.DEFAULT_CENTER,tempcat)
+  _,outputs,report=legacy.plan(root,legacy.DEFAULT_CENTER)
  script,sdk=SERVER_FILES[:2]
  nl=b'\r\n' if b'\r\n' in outputs[script] else b'\n'
  outputs[script]=strip_legacy(outputs[script])+nl+render(cat).replace(b'\n',nl)
@@ -140,9 +172,8 @@ def apply_files(changes,backup):
 def install(server,client,apply=False,bot_assets=None):
  root=legacy.locate(server);clientfile=locate_client(client);cat=catalog();items=offers(cat);marker=root/MARKER
  clientraw=clientfile.read_bytes();clientoutput=patch_binary(clientraw,items)
- if marker.exists():
+ if marker.exists() and json.loads(marker.read_text()).get('catalog_sha256')==digest(CATALOG.read_bytes()):
   previous=json.loads(marker.read_text())
-  if previous['catalog_sha256']!=digest(CATALOG.read_bytes()):raise ValueError('Изменился каталог новой установки')
   if previous.get('implementation_sha256')!=implementation_digest(cat):raise ValueError('Изменилась версия обработчиков магазинов; нужна проверка обновления')
   if not all(digest((root/p).read_bytes())==h for p,h in previous['installed_sha256'].items()):raise ValueError('После нового патча изменились серверные файлы; нужна проверка')
   if clientoutput==clientraw:

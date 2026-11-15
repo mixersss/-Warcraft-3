@@ -15,6 +15,23 @@ function OwnerGemSlots(character)
     return ids,pointers
 end
 
+function OwnerInitializeFreshFairy(character,item,generation)
+    -- NPC_SALE normally adds10to all five stats. Only a newly paid stock
+    -- fairy starts at zero here; previously owned fairies are never reset.
+    AddItemEffect(character,item,0)
+    for _,attribute in ipairs({ITEMATTR_VAL_STR,ITEMATTR_VAL_AGI,ITEMATTR_VAL_DEX,ITEMATTR_VAL_CON,ITEMATTR_VAL_STA}) do
+        SetItemAttr(item,attribute,0)
+    end
+    SetItemAttr(item,ITEMATTR_MAXENERGY,240)
+    SetItemAttr(item,ITEMATTR_ENERGY,0)
+    SetItemAttr(item,ITEMATTR_MAXURE,5000)
+    SetItemAttr(item,ITEMATTR_URE,5000)
+    local parameters=GetItemForgeParam(item,1)
+    SetItemForgeParam(item,1,SetNum_Part1(parameters,generation))
+    ResetItemFinalAttr(item)
+    AddItemEffect(character,item,1)
+end
+
 function OwnerOpenTrade(character,npc,shopid,page)
     local shop=OwnerNativeShops[shopid]
     local selected=shop and shop.pages[page]
@@ -47,8 +64,18 @@ function OwnerNativeBuy(character,npc,trade,itemtype,index1,index2,count)
     local identity=panel and panel.item[index1+1]
     if identity==nil then return LUA_FALSE end
     local before=nil
+    local fairy=OwnerFreshFairies[identity]
     if OwnerBasicGems[identity] then
         if count~=1 or type(Set_StoneLv)~="function" or type(SynChaKitbag)~="function" then return LUA_FALSE end
+        before=OwnerGemSlots(character)
+    elseif fairy~=nil then
+        if count~=1 or type(SetItemAttr)~="function" or type(GetItemForgeParam)~="function"
+            or type(SetItemForgeParam)~="function" or type(SetNum_Part1)~="function"
+            or type(ResetItemFinalAttr)~="function" or type(SynChaKitbag)~="function"
+            or type(AddItemEffect)~="function" then return LUA_FALSE end
+        local attributes={ITEMATTR_VAL_STR,ITEMATTR_VAL_AGI,ITEMATTR_VAL_DEX,ITEMATTR_VAL_CON,ITEMATTR_VAL_STA,
+                          ITEMATTR_MAXENERGY,ITEMATTR_ENERGY,ITEMATTR_MAXURE,ITEMATTR_URE}
+        for index=1,9 do if type(attributes[index])~="number" then return LUA_FALSE end end
         before=OwnerGemSlots(character)
     end
     local result=SafeBuy(character,identity,index2,count)
@@ -61,9 +88,11 @@ function OwnerNativeBuy(character,npc,trade,itemtype,index1,index2,count)
         -- Only the newly purchased unstackable gem is configured. Existing
         -- high-level gems and the table's global energy limits remain intact.
         if found==1 then
-            local ok=pcall(Set_StoneLv,candidate,1)
+            local ok
+            if fairy~=nil then ok=pcall(OwnerInitializeFreshFairy,character,candidate,fairy)
+            else ok=pcall(Set_StoneLv,candidate,1) end
             if ok then SynChaKitbag(character,13)
-            else SystemNotice(character,"Gem bought; initial level setup failed. Please contact the administrator.") end
+            else SystemNotice(character,"Item bought; initial setup failed. Please contact the administrator.") end
         end
     end
     return result

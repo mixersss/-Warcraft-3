@@ -30,6 +30,8 @@ class Town:
         self.work_kills=self.work_quests=0;self.work_baseline=None;self.last_rest=0;self.rest_due=False
         self.rest_goal=None;self.rest_pause_until=0;self.walk_stops=0
         self.npcs=getattr(life,'npcs',None);self.supply_plan=None;self.failed_suppliers={};self.next_supply_check=0;self.knowledge_plans=0
+        self.petcare=None
+        self.professions=None
     def note_progress(self,kills,quests):
         if self.work_baseline is None:self.work_baseline=(kills,quests)
         self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
@@ -74,6 +76,8 @@ class Town:
         if (job and not w.skills.get(241,{}).get('level',0) and w.own.values.get(13,0)>0
                 and not any(i.identity==3296 for i in w.bag.values())):
             result.append(3296)
+        if self.petcare:result.extend(identity for identity,_,_ in self.petcare.purchase_goals())
+        if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
         return result
     def spend_limit(self,identity):
         cash=self.world.own.values.get(8,0)
@@ -86,6 +90,13 @@ class Town:
         if free<2:return None
         food=sum(item.count for item in w.bag.values() if item.identity==1847)
         if food<5:return 1847,min(10,15-food)
+        if self.petcare:
+            for identity,count,_ in self.petcare.purchase_goals():
+                price=self.life.prices.get(identity,0)
+                if 0<price<=self.spend_limit(identity):return identity,min(count,max(1,self.spend_limit(identity)//price))
+        if self.professions:
+            for identity,count,_ in self.professions.purchase_goals():
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,count
         for identity in self.critical_items():
             if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         for identity,book in self.life.books.items():
@@ -206,7 +217,9 @@ class Town:
             if now>self.context[2]:self.timeouts+=1;self.finish(now,300)
             return True
         if not safe or dialogue_busy:return False
-        if self.rest_until and not medical:
+        business=bool(getattr(policy,'economy',None) and policy.economy.business(w,now) is True)
+        if business and self.rest_until:self.end_rest(now)
+        if self.rest_until and not medical and not business:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):self.end_rest(now);return False
             if now>=self.rest_until:self.end_rest(now);return False
             self.reason='идёт на короткую прогулку по городу'
@@ -222,7 +235,7 @@ class Town:
             if not self.rest_goal:self.rest_goal=self.choose_walk_stop(now,policy)
             if self.rest_goal and policy.move_to(self.rest_goal,now):return True
             self.end_rest(now);return False
-        if self.rest_due and not medical and now>=self.next_break:
+        if self.rest_due and not medical and not business and now>=self.next_break:
             if self.rest_directory and not self.rest_directory.acquire(self.owner,now):return False
             self.rest_until=now+180;return True
         if now<self.next_shop:return False
@@ -249,6 +262,11 @@ class Town:
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
         point=self.target_shop['position']
         self.reason='покупки у городского торговца'
+        returner=getattr(policy,'stuck_return',None)
+        city_center=self.life.services.get('city_centres',{}).get(w.map,self.home)
+        if (returner and math.dist(policy.position(now),point)>8000 and math.dist(point,city_center)<5000
+                and returner.tick(now,policy,destination=w.map) is True):
+            self.reason=returner.reason;return True
         npc=npc_near(w,point)
         if npc and math.dist(policy.position(now),npc.position)<=220:
             policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True

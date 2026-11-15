@@ -4928,6 +4928,17 @@
           "kind": 41,
           "name_ru": "Адский фрукт тайны",
           "stack": 1
+        },
+        {
+          "id": 609,
+          "name": "Expert Fairy Possession",
+          "price": 300000,
+          "kind": 34,
+          "hooks": [
+            "Sk_Script_GJJLFT"
+          ],
+          "name_ru": "Опытная фея",
+          "stack": 1
         }
       ]
     },
@@ -5798,7 +5809,7 @@
         {
           "id": 4602,
           "name": "Ticket to Argent",
-          "price": 5000,
+          "price": 500,
           "hooks": [
             "Jz_Script_bycs"
           ],
@@ -5809,7 +5820,7 @@
         {
           "id": 4603,
           "name": "Ticket to Shaitan",
-          "price": 5000,
+          "price": 500,
           "hooks": [
             "Jz_Script_slcs"
           ],
@@ -5820,7 +5831,7 @@
         {
           "id": 4604,
           "name": "Ticket to Icicle",
-          "price": 5000,
+          "price": 500,
           "hooks": [
             "Jz_Script_blbcs"
           ],

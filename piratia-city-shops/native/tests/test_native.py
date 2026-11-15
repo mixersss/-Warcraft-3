@@ -49,6 +49,21 @@ class PriceCodecTests(unittest.TestCase):
    with self.assertRaises(ValueError):patch_binary(bytes(raw),{identity:{'kind':1,'price':5000}})
 
 class InstallationTests(unittest.TestCase):
+ def test_alpha47_upgrade_restores_city_ticket_prices_and_adds_expert_book(self):
+  with tempfile.TemporaryDirectory() as d:
+   server,client=fixture(Path(d));oldpath=ROOT/'catalog-alpha47.json'
+   with patch.object(native,'CATALOG',oldpath),patch.object(native,'render',lambda c,compat=False:render(c,compat=True)):
+    isolated_install(server,client,True)
+   before=(server/'garner/garnerNPC.bin').read_bytes();sdk=server/'script/MisSdk/NpcSdk.lua'
+   sdk.write_bytes(sdk.read_bytes()+b'\n-- owner SDK addition retained\n')
+   result=isolated_install(server,client,True)
+   self.assertEqual(result['upgraded_from'],'Alpha47');self.assertEqual((server/'garner/garnerNPC.bin').read_bytes(),before)
+   self.assertTrue(sdk.read_bytes().endswith(b'-- owner SDK addition retained\n'))
+   for table in (server/'ItemInfo.bin',client/'scripts/table/iteminfo.bin'):
+    raw=table.read_bytes();prices={struct.unpack_from('<I',raw,p+4)[0]:struct.unpack_from('<i',raw,p+320)[0] for p in range(4,len(raw),868)}
+    for identity in (4602,4603,4604):self.assertEqual(prices[identity],500)
+    self.assertEqual(prices[609],300000)
+   self.assertTrue(isolated_install(server,client,True)['already_installed'])
  def test_bot_overlay_written_only_after_native_patch_and_can_be_repaired(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d);server,client=fixture(p);assets=p/'bot-assets';assets.mkdir();(assets/'world-npcs.json').write_text('{}')
@@ -130,14 +145,16 @@ class InstallationTests(unittest.TestCase):
 
 MOCKS='''
 LUA_TRUE=1;LUA_FALSE=0;TRADE_NOMAL=1;TRADE_BUY=1
+ITEMATTR_VAL_STR=26;ITEMATTR_VAL_AGI=27;ITEMATTR_VAL_DEX=28;ITEMATTR_VAL_CON=29;ITEMATTR_VAL_STA=30
+ITEMATTR_MAXENERGY=41;ITEMATTR_ENERGY=40;ITEMATTR_MAXURE=39;ITEMATTR_URE=38
 function GetCharID(n) return n.id end
 function SystemNotice(c,text) c.notice=text end
 function SafeBuy(c,id,slot,count)
  local cost=Prices[id]*count
  if count>Stacks[id] or c.gold<cost or c.free<1 then return 0 end
  c.gold=c.gold-cost;c.bag[id]=(c.bag[id] or 0)+count;c.last=id
- if OwnerBasicGems and OwnerBasicGems[id] then
-  for slot=0,239 do if not c.slots[slot] then c.slots[slot]={id=id,level=10};break end end
+ if (OwnerBasicGems and OwnerBasicGems[id]) or (OwnerFreshFairies and OwnerFreshFairies[id]~=nil) then
+  for slot=0,239 do if not c.slots[slot] then c.slots[slot]={id=id,level=10,attrs={[26]=10,[27]=10,[28]=10,[29]=10,[30]=10},forge=0};break end end
  end
  return 1
 end
@@ -155,6 +172,12 @@ function InitPage() Page={};for p=1,32 do Page[p]={count=0};for k=1,12 do Page[p
 function GetChaItem(c,bag,slot) return c.slots[slot] end
 function GetItemID(item) return item.id end
 function Set_StoneLv(item,level) item.level=level end
+function SetItemAttr(item,attribute,value) item.attrs[attribute]=value end
+function GetItemForgeParam(item,index) assert(index==1);return item.forge end
+function SetItemForgeParam(item,index,value) assert(index==1);item.forge=value end
+function SetNum_Part1(value,part) return value%1000000000+part*1000000000 end
+function ResetItemFinalAttr(item) item.rechecked=true end
+function AddItemEffect(c,item,mode) c.effects=c.effects or {};table.insert(c.effects,mode) end
 function SynChaKitbag(c,reason) assert(reason==13);c.synced=(c.synced or 0)+1 end
 function Fresh() return {gold=1000000,free=24,bag={},slots={}} end
 '''
@@ -188,7 +211,7 @@ for key,shop in pairs(OwnerNativeShops) do
   end
  end
 end
-assert(total==644)
+assert(total==645)
 ''')
  def test_npc_initialization_exposes_trade_buttons_and_nonempty_catalog(self):
   self.runlua('''
@@ -234,6 +257,28 @@ for n,id in ipairs(stock[3].item) do if id==885 then index=n-1 end end
 assert(index~=nil);OwnerOpenTrade(c,npc,'forge',1)
 assert(OwnerNativeBuy(c,npc,stock,2,index,1,1)==1)
 assert(c.slots[0].level==9 and c.slots[1].level==1 and c.gold==995000 and c.synced==1)
+''')
+ def test_only_new_paid_fairy_starts_at_zero_and_existing_fairy_is_preserved(self):
+  self.runlua('''
+local c=Fresh();c.slots[0]={id=236,attrs={[26]=0,[27]=42,[28]=0,[29]=0,[30]=0},forge=1000000000};c.bag[236]=1
+local npc={id=7};local stock=OwnerNativeShops.fairies.pages[1];local index=nil
+for n,id in ipairs(stock[3].item) do if id==236 then index=n-1 end end
+assert(index~=nil);OwnerOpenTrade(c,npc,'fairies',1)
+assert(OwnerNativeBuy(c,npc,stock,2,index,1,1)==1)
+assert(c.slots[0].attrs[27]==42 and c.slots[0].forge==1000000000)
+for a=26,30 do assert(c.slots[1].attrs[a]==0) end
+assert(c.slots[1].attrs[40]==0 and c.slots[1].attrs[41]==240)
+assert(c.slots[1].attrs[38]==5000 and c.slots[1].attrs[39]==5000)
+assert(c.slots[1].forge==1000000000 and c.slots[1].rechecked)
+assert(c.effects[1]==0 and c.effects[2]==1 and c.gold==998000 and c.synced==1)
+''')
+ def test_missing_fairy_attribute_api_refuses_before_payment(self):
+  self.runlua('''
+local c=Fresh();local npc={id=7};local stock=OwnerNativeShops.fairies.pages[1];local index=nil
+for n,id in ipairs(stock[3].item) do if id==236 then index=n-1 end end
+OwnerOpenTrade(c,npc,'fairies',1);ITEMATTR_VAL_AGI=nil
+assert(OwnerNativeBuy(c,npc,stock,2,index,0,1)==0)
+assert(c.gold==1000000 and c.last==nil and c.bag[236]==nil)
 ''')
 
 if __name__=='__main__':unittest.main()

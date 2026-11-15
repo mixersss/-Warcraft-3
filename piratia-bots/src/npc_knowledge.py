@@ -50,7 +50,7 @@ class NpcKnowledge:
     def answer(self,words,map_name,position):
         if not any(w in words for w in ('где','найти','купить','продает','продаёт','продают')):return None
         query=next((w for w in words if w in SERVICES or w in KINDS),None)
-        aliases={'ня':3844,'зя':3845,'мордо':680,'фея':232,'феи':232}
+        aliases={'ня':3844,'зя':3845,'мордо':680,'фея':232,'феи':232,'джун':681,'джуниор':681,'пасеха':609,'пасеху':609}
         identity=next((aliases[w] for w in words if w in aliases),None)
         if identity is not None:query=str(identity)
         if query is None:
