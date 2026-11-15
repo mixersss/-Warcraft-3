@@ -3,14 +3,15 @@ setlocal
 cd /d "%~dp0"
 chcp 65001 >nul
 set PYTHONUTF8=1
-echo Сначала останови сервер. Боты и data этим установщиком не изменяются.
-echo Пять мест в центре Аргента уже выбраны; координаты вводить не нужно.
+echo Останови ботов и GameServer, закрой клиент Game.exe.
+echo Пять координат уже настроены. Нужны папки сервера и клиента.
+echo Будут синхронизированы цены выбранных предметов на сервере и в клиенте.
 where py >nul 2>&1
 if errorlevel 1 goto use_python
-py -3 install.py --apply
+py -3 native\installer.py --apply
 goto done
 :use_python
-python install.py --apply
+python native\installer.py --apply
 :done
 echo.
 pause

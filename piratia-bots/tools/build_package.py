@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-46'
-NAME = 'Piratia-Auto-Bots-Alpha46'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-47'
+NAME = 'Piratia-Auto-Bots-Alpha47'
 
 
 def main():
@@ -38,7 +38,8 @@ def main():
         'mechanics_knowledge': {'lua_files':242,'named_functions':4135,'reviewed_source_cards':22,'indexed_only_cards':6,'all_mechanics_understood':False,'new_native_operations_enabled':False,'local_learner':'Learn-Mechanics.cmd','finder':'Find-Mechanic.cmd','audit':'Audit-Mechanics.cmd'},
         'fleet_alpha44_reaudit': {'connected':300,'first_profession':172,'novices':128,'no_xp_over_30min':246,'full_bags':3,'needs_geometric_recovery':40,'dry_checked_exits':24,'no_exit_but_owned_ticket':6,'no_exit_or_ticket':10,'live46_fix_verified':False},
         'stuck_city_ticket': {'owned_only':[4602,4603,4604],'full_hp_sp_required':True,'native_arrival_and_consumption_required':True},
-        'status': 'Alpha46 adds connected dry egress, owned native ticket recovery and XP watchdog precedence; all fleet issues not proven fixed live. Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha46 validation pending',
+        'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':644,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':526,'live_windows_verified':False},
+        'status': 'Alpha47 adds installed native shop knowledge/prices/stock-set selection, nearest adjacent NPC binding, ru aliases and safe price floors; Alpha46 adds connected dry egress, owned native ticket recovery and XP watchdog precedence; all fleet issues not proven fixed live. Alpha45 adds source-backed mechanic knowledge/read-only plans/private learner and finite real recipe reservations; complete knowledge and new automatic operations unfinished. Preserves current-level farm efficiency, class skill prerequisites/13 casts/group heal,19 history journals/fair study turns, affordable stall learning, bank storage/retrieval,80 Argent pitches/hour shifts, grounded commerce/native personal trade and confirmed price learning; existing identities/data preserved; owner Windows Alpha47 validation pending',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -231,11 +232,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 688,
-        'full_python_suite_total': 696,
-        'full_python_suite_passed': 696,
+        'pure_python_tests_passed': 695,
+        'full_python_suite_total': 703,
+        'full_python_suite_passed': 703,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '696 passed in Alpha46 including 8 local socket integration tests',
+        'last_full_network_regression': '703 passed in Alpha47 including 8 local socket integration tests',
         'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
         'default_bot_count': 300,
         'default_mode': 'mixed',

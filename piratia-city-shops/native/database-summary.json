@@ -1,0 +1,14 @@
+{
+  "all_items": 5424,
+  "server_items": 5193,
+  "client_items": 5421,
+  "client_only": 231,
+  "shops": {
+    "apparel": 506,
+    "fairies": 38,
+    "forge": 43,
+    "tickets": 44,
+    "boosts": 13
+  },
+  "banana_name_matches": []
+}

@@ -47,6 +47,11 @@ class MarketTests(unittest.TestCase):
   w,s,m,p=self.make()
   i=next(i for i in m.gear.gear if m.useful_gear(i) and i in m.catalog.items)
   w.bag={0:self.item(i)};self.assertEqual(m.offers(p),[])
+ def test_higher_level_refining_gem_is_not_priced_as_a_basic_gem(self):
+  w,s,m,p=self.make();w.bag={0:replace(self.item(885,5),max_energy=2)}
+  self.assertEqual(m.offers(p),[])
+  w.bag={0:replace(self.item(885,5),max_energy=1)}
+  self.assertEqual(m.offers(p),[(0,25000,3,0)])
  def test_class_incompatible_gear_is_not_bought(self):
   w,s,m,p=self.make();i=next(i for i,g in m.gear.gear.items() if g['jobs']!=[-1] and 1 not in g['jobs'])
   self.assertFalse(m.useful_gear(i))

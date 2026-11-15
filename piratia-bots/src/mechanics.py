@@ -32,6 +32,13 @@ class MechanicsKnowledge:
         self.load_origin='bundled_uploaded_snapshot';self.load_problem=None
         self.cards={c['id']:c for c in data['cards']};self.npcs=npcs;self.mobs=mobs
         self.items={int(k):v for k,v in data['item_bases'].items()}
+        if npcs:
+            for identity,price in npcs.prices.items():
+                if identity in self.items and self.items[identity]['price']!=price:
+                    self.items[identity]=dict(self.items[identity],price=price,price_source='loaded_npc_catalog')
+            for identity,name in npcs.item_names.items():
+                if identity in self.items and self.items[identity]['name']!=name:
+                    self.items[identity]=dict(self.items[identity],localized_name=name)
         self.stones={int(k):v for k,v in data['stones'].items()}
         self.stone_items={s['item_id']:dict(s,stone_type=identity) for identity,s in self.stones.items()}
         self.ships={int(k):v for k,v in data['ships'].items()}
@@ -62,6 +69,11 @@ class MechanicsKnowledge:
     def explain(self,identity,map_name=None,position=None):
         card=self.cards[identity]
         rows=[self.npcs.by_key[k] for k in card['npc_keys'] if self.npcs and k in self.npcs.by_key]
+        if self.npcs:
+            seen={n['key'] for n in rows}
+            rows.extend(n for n in self.npcs.rows if n['key'] not in seen and
+                        n.get('source_kind')=='owner-native-shops-v2' and
+                        set(card['npc_hooks']).intersection(n.get('menu_handlers',())))
         rows.sort(key=lambda n:(n['map']!=map_name,math.dist(position,n['position']) if position and n['map']==map_name else 0,n['key']))
         return {**card,'source_evidence':[self.functions[k] for k in card['evidence']],
                 'candidate_npcs':[{'key':n['key'],'name':n['name'],'map':n['map'],'position_cm':n['position'],
@@ -138,8 +150,9 @@ class MechanicsKnowledge:
         query=' '.join(words).casefold();numbers=re.findall(r'(?<!\w)(?:id)?(\d+)\b',query)
         identities=[int(i) for i in numbers if int(i) in self.items]
         if not identities:
-            identities=[i for i,r in self.items.items() if r['name'].casefold() in query and len(r['name'])>=4]
-        if not identities and any('сияющ' in w for w in words):identities=[883]
+            identities=[i for i,r in self.items.items() if any(name.casefold() in query and len(name)>=4
+                        for name in (r['name'],r.get('localized_name','')))]
+        if not identities and any('сияющ' in w for w in words):identities=[882]
         if not identities and any(w in words for w in ('каль','кал','кель')):identities=[3457]
         if not identities:return None
         identity=identities[0];sources=self.sources_for_item(identity,world.map,world.own.position,world.own.values.get(0))

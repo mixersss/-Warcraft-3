@@ -2,6 +2,7 @@
 import math,struct
 from classic_wire import Reader,ProtocolError
 from adventure import talk_request
+from owner_shops import npc_near
 
 def function_request(npc,page,index):return struct.pack('>IHBB',npc,303,page,index)
 def buy_request(npc,page,index,count):
@@ -166,7 +167,9 @@ class Town:
             if count>64:raise ProtocolError('Too many shop functions')
             labels=[r.string() for _ in range(count)]
             if source!=npc:return True
-            index=next((i for i,label in enumerate(labels) if label.casefold() in ('trade','торговля','купить')),None)
+            desired=(self.target_shop or {}).get('menu_pages',{}).get(str(self.wanted[0]),1) if self.wanted else 1
+            accepted={'trade','торговля','купить'} if desired==1 else {'trade - part '+str(desired)}
+            index=next((i for i,label in enumerate(labels) if label.casefold() in accepted),None)
             if index is None:self.finish(now,180);return True
             send(301,function_request(npc,page,index));self.context=npc,'shop',now+8
             return True
@@ -246,7 +249,7 @@ class Town:
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
         point=self.target_shop['position']
         self.reason='покупки у городского торговца'
-        npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
+        npc=npc_near(w,point)
         if npc and math.dist(policy.position(now),npc.position)<=220:
             policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True
         goal=policy.nav.nearest(point,6)

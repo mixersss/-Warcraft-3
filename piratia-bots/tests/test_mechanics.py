@@ -195,7 +195,7 @@ class WorldTests(unittest.TestCase):
         s.npc_provider=lambda words:LIFE.npcs.answer(words,w.map,w.own.position)
         self.assertEqual(s.reply(['как','работает','форж'])[0],'mechanics');self.assertEqual(s.reply(['где','купить','лук'])[0],'npc')
         self.assertEqual(s.reply(['где','купить','кораллы'])[0],'npc')
-        answer=K.answer(['где','добыть','сияющий','камень'],w);self.assertIn('ID883',answer);self.assertLessEqual(len(answer.encode('cp1251')),120)
+        answer=K.answer(['где','добыть','сияющий','камень'],w);self.assertIn('ID882',answer);self.assertLessEqual(len(answer.encode('cp1251')),120)
 
     def test_operator_view_and_ability_answers_do_not_claim_automatic_execution(self):
         from show_mechanics import render

@@ -12,9 +12,9 @@ KINDS={'посох':9,'посохи':9,'лук':3,'луки':3,'пистолет
 CITIES={'garner':'Аргент','magicsea':'Шайтан','darkblue':'Ледынь'}
 
 class NpcKnowledge:
-    def __init__(self,path,item_types=None,item_names=None,prices=None):
+    def __init__(self,path,item_types=None,item_names=None,prices=None,extra_rows=()):
         data=json.loads(Path(path).read_text(encoding='utf-8'))
-        self.rows=tuple(data['npcs']);self.by_key={n['key']:n for n in self.rows};self.by_map={};self.by_item={};self.by_service={}
+        self.rows=tuple(data['npcs'])+tuple(extra_rows);self.by_key={n['key']:n for n in self.rows};self.by_map={};self.by_item={};self.by_service={}
         if len(self.by_key)!=len(self.rows):raise ValueError('Duplicate NPC identity')
         self.item_names=item_names or {};self.prices=prices or {}
         self.item_types=item_types or {};self.model_count=len(data['model_definitions'])
@@ -50,6 +50,9 @@ class NpcKnowledge:
     def answer(self,words,map_name,position):
         if not any(w in words for w in ('где','найти','купить','продает','продаёт','продают')):return None
         query=next((w for w in words if w in SERVICES or w in KINDS),None)
+        aliases={'ня':3844,'зя':3845,'мордо':680,'фея':232,'феи':232}
+        identity=next((aliases[w] for w in words if w in aliases),None)
+        if identity is not None:query=str(identity)
         if query is None:
             candidates=[n for n in self.rows if any(len(w)>=3 and w in n['name'].casefold().split() for w in words)]
             if not candidates:return None

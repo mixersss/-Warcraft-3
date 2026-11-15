@@ -9,16 +9,25 @@ class LifeItems:
         self.chests={int(k):v for k,v in data['chests'].items()}
         self.names={int(k):v for k,v in data['names'].items()}
         self.prices={int(k):v for k,v in data['prices'].items()}
+        from owner_shops import read_overlay
+        self.owner_shops=None;self.owner_shop_problem=None
+        try:self.owner_shops=read_overlay(assets)
+        except (OSError,ValueError,TypeError,KeyError,AttributeError) as error:self.owner_shop_problem=type(error).__name__
+        if self.owner_shops:
+            self.prices.update({int(k):v for k,v in self.owner_shops['prices'].items()})
+            self.names.update({int(k):v for k,v in self.owner_shops['names'].items()})
         self.services=json.loads((Path(assets)/'town-services.json').read_text(encoding='utf-8'))
         self.npcs=None
         if (Path(assets)/'world-npcs.json').exists():
             from npc_knowledge import NpcKnowledge
             item_types={int(k):v for k,v in json.loads((Path(assets)/'items.json').read_text())['types'].items()}
-            self.npcs=NpcKnowledge(Path(assets)/'world-npcs.json',item_types,self.names,self.prices)
+            self.npcs=NpcKnowledge(Path(assets)/'world-npcs.json',item_types,self.names,self.prices,
+                                   self.owner_shops['npcs'] if self.owner_shops else ())
             for npc in self.npcs.shops():
                 shops=self.services['shops'].setdefault(npc['map'],[])
                 if not any(s['position']==npc['position'] and s['name']==npc['name'] for s in shops):
                     shops.append({'name':npc['name'],'position':npc['position'],'offers':npc['offers'],'region':npc['region']})
+                    if npc.get('menu_pages'):shops[-1]['menu_pages']=npc['menu_pages']
 
     def can_learn(self,world,book):
         own=world.own

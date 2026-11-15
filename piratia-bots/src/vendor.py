@@ -3,6 +3,7 @@ import json,math,struct
 from pathlib import Path
 from town import Town,trade_page
 from adventure import talk_request
+from owner_shops import npc_near
 
 def sell_request(npc,slot,count):
  if not 0<=slot<256 or not 1<=count<=99:raise ValueError('Invalid NPC sale')
@@ -102,7 +103,7 @@ class Vendor(Town):
    self.sale_goals=goals
   point=self.sale_target['position']
   self.reason='продаёт лишние обычные трофеи торговцу'
-  npc=next((e for e in w.entities.values() if e.control in (2,3) and math.dist(e.position,point)<350),None)
+  npc=npc_near(w,point)
   if npc and math.dist(policy.position(now),npc.position)<=220:
    policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True
   while self.sale_goals:

@@ -1,0 +1,42 @@
+"""Render native Trade stock and per-player selection for the classic3-tab shop UI."""
+import json
+from pathlib import Path
+ROOT=Path(__file__).resolve().parent
+SERVICES=[('Insert gems', 'OpenForge'),('Combine gems','OpenUnite'),('Create sockets','OpenMilling'),
+ ('Extract gems','OpenGetStone'),('Fuse apparel','OpenFusion'),('Strengthen fusion','OpenUpgrade'),
+ ('Upgrade equipment','OpenItemTiChun'),('Recharge coral','OpenItemEnergy'),('Repair','OpenRepair')]
+
+def pages(shop,limit=60):
+ buckets=[[],[],[]]
+ for item in shop['items']:
+  kind=item['kind'];bucket=0 if 1<=kind<=11 else 1 if kind in (19,20,21,22,23,24,27) else 2
+  buckets[bucket].append(item['id'])
+ count=max(1,max((len(b)+limit-1)//limit for b in buckets))
+ return [[bucket[p*limit:(p+1)*limit] for bucket in buckets] for p in range(count)]
+
+def render(catalog):
+ lines=['-- OWNER_CITY_SHOPS_V2_BEGIN','OwnerNativeShops = {}','OwnerNativeSelection = {}',
+        'OwnerBasicGems={'+','.join('[%d]=true'%i['id'] for s in catalog['shops'] for i in s['items'] if i['kind'] in (49,50))+'}']
+ for shop in catalog['shops']:
+  batches=pages(shop)
+  lines.append('OwnerNativeShops[%s] = {pages={'%json.dumps(shop['key']))
+  for page,panels in enumerate(batches,1):
+   lines.append('[%d] = {tp=TRADE_NOMAL,berth=-1,owner_native_shop=%s,'%(page,json.dumps(shop['key'])))
+   for index,panel in enumerate(panels,1):
+    lines.append('[%d]={itemtype=%d,count=%d,item={%s},price={}},'%(index,index-1,len(panel),','.join(map(str,panel))))
+   lines.append('[4]={itemtype=3,count=0,item={},price={}}},')
+  lines.append('}}')
+ lines.append((ROOT/'native_trade.lua').read_text())
+ for shop in catalog['shops']:
+  key=json.dumps(shop['key']);lines.extend(['function '+shop['function']+'()',
+   ' Talk(1,%s)'%json.dumps(shop['name']+' - gold shop. Choose Trade to open items.'),
+   ' for _,stock in pairs(OwnerNativeShops[%s].pages) do stock.tp=TRADE_NOMAL end'%key,
+   ' Trade=OwnerNativeShops[%s].pages[1]'%key])
+  for page in range(1,len(pages(shop))+1):
+   label='Trade' if page==1 else 'Trade - part '+str(page)
+   lines.append(' Text(1,%s,OwnerOpenTrade,%s,%d)'%(json.dumps(label),key,page))
+  if shop['key']=='forge':
+   for label,function in SERVICES:lines.append(' Text(1,%s,%s)'%(json.dumps(label),function))
+  lines.extend([' Text(1,"Close",CloseTalk)','end'])
+ lines.append('-- OWNER_CITY_SHOPS_V2_END')
+ return ('\n'.join(lines)+'\n').encode('ascii')

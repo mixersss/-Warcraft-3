@@ -44,10 +44,15 @@ class MarketCatalog:
     def __init__(self,assets):
         self.data=json.loads((Path(assets)/'market-items.json').read_text())
         self.items={int(k):v for k,v in self.data['items'].items()}
+        self.owner_price_floor={}
+        from owner_shops import read_overlay
+        try:owner=read_overlay(assets)
+        except (OSError,ValueError,TypeError,KeyError,AttributeError):owner=None
+        if owner:self.owner_price_floor={int(k):price*3//4 for k,price in owner['prices'].items()}
         self.prices=None
     def price(self,identity):
         base=self.items.get(identity,{}).get('reference_price',0)
-        return self.prices.guide(identity,base) if self.prices else base
+        return max(self.owner_price_floor.get(identity,0),self.prices.guide(identity,base) if self.prices else base)
     def confirmed_price(self,identity,price):
         if self.prices:self.prices.confirmed(identity,price,self.items.get(identity,{}).get('reference_price',0))
 
@@ -146,6 +151,7 @@ class Market:
             if not meta or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
             # Never sell enhanced, instanced, equipped or potentially valuable personalized items cheaply.
             if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
+            if meta['category'] in ('gem','refining') and item.max_energy>1:continue
             if item.identity in w.own.equipment.values():continue
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
