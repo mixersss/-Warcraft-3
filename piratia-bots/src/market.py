@@ -50,11 +50,28 @@ class MarketCatalog:
         try:owner=read_overlay(assets)
         except (OSError,ValueError,TypeError,KeyError,AttributeError):owner=None
         if owner:self.owner_price_floor={int(k):price*3//4 for k,price in owner['prices'].items()}
-        self.prices=None
+        self.prices=None;self.broad_catalog=False;self.npc_purchase_prices={}
+        audit=Path(assets)/'useful-loot.json'
+        self.useful_audit=json.loads(audit.read_text()) if audit.exists() else {'items':{}}
+        facts=json.loads((Path(assets)/'life-items.json').read_text())
+        npc_source=Path(assets)/'world-npcs.json'
+        if npc_source.exists():
+            for npc in json.loads(npc_source.read_text())['npcs']:
+                if npc.get('verified_shop_binding'):
+                    for identity in npc['offers']:
+                        value=int(facts['prices'].get(str(identity),0))
+                        if value>0:self.npc_purchase_prices[identity]=value
+        if owner:self.npc_purchase_prices.update({int(i):v for i,v in owner['prices'].items()})
+    def enable_broad_catalog(self):
+        self.broad_catalog=True;self.items.update({int(i):r for i,r in self.useful_audit['items'].items()})
     def price(self,identity):
         if identity==1000:return 500
         base=self.items.get(identity,{}).get('reference_price',0)
-        return max(self.owner_price_floor.get(identity,0),self.prices.guide(identity,base) if self.prices else base)
+        native=self.npc_purchase_prices.get(identity,0) if self.broad_catalog else 0
+        if native:base=min(base,max(1,round(native*.85)))
+        value=max(self.owner_price_floor.get(identity,0),self.prices.guide(identity,base) if self.prices else base)
+        if native:value=max(round(native*.65),min(round(native*.95),value))
+        return value
     def confirmed_price(self,identity,price):
         if self.prices:self.prices.confirmed(identity,price,self.items.get(identity,{}).get('reference_price',0))
 
@@ -102,7 +119,7 @@ class Market:
         self.timeouts=self.sold_units=self.confirmed_learns=0;self.disabled=False;self.active_confirmed=False
         self.minimum_level=15
         self.keep_stall_stock=False
-        self.focused_goods=False
+        self.focused_goods=False;self.broad_goods=False;self.policy_reference=None
         self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
@@ -122,9 +139,9 @@ class Market:
             for identity in policy.adventure.journal:
                 objective=policy.adventure.grind.get(identity)
                 if objective and objective[1]:result.add(objective[1])
-        result.update(self.life.books)
+        if not self.broad_goods:result.update(self.life.books)
         from pet_care import PROTECTED
-        result.update(PROTECTED)
+        result.update(PROTECTED-({227,2312,276,277,278,279,280} if self.broad_goods else set()))
         from life_professions import PROTECTED as LIFE_PROTECTED
         result.update(LIFE_PROTECTED)
         from treasure_hunt import PROTECTED as TREASURE_PROTECTED
@@ -152,6 +169,18 @@ class Market:
         ids=(863,862) if job in (1,8,9) else (861,860) if job in (2,12) else (1012,862) if job in (4,5,13,14,16) else ()
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
+        if self.broad_goods:
+            if identity==2312:return 6
+            if identity==227:return 2
+            if identity in (276,277,278,279,280):return 1
+            book=self.life.books.get(identity)
+            if book:
+                from roles import FIRST_JOB
+                target=getattr(self.world.own,'build_id',None)
+                from builds import PROFILES
+                job=PROFILES.get(target,{}).get('job',self.world.own.values.get(4))
+                compatible=str(job) in book['jobs'] or str(FIRST_JOB.get(job,job)) in book['jobs']
+                return 1 if compatible and self.world.skills.get(book['skill'],{}).get('level',0)==0 else 0
         lv=self.world.own.values.get(0,0)
         if identity==1000 and self.focused_goods:return 0
         if identity==684 and self.focused_goods and 15<=lv<=40:return 1
@@ -173,12 +202,12 @@ class Market:
         priority={'kal':0,'refining':0,'gem':0,'rune':0,'scroll':0,'blueprint':0,'sealed':1,'gear':2}
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
             meta=self.catalog.items.get(item.identity)
-            if self.focused_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
-            if not meta or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
+            if self.focused_goods and not self.broad_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
+            if not meta or item.identity==1000 and self.focused_goods or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
             # Never sell enhanced, instanced, equipped or potentially valuable personalized items cheaply.
             if item.forge or any(item.parameters) or (any(a or b for a,b in item.instance_attributes) and not (self.focused_goods and self.ordinary_gear(item))):continue
             if meta['category'] in ('gem','refining') and item.max_energy>1:continue
-            if item.identity in w.own.equipment.values():continue
+            if item.identity in w.own.equipment.values() and not self.broad_goods:continue
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
             count=min(99,item.count-keep)
@@ -215,6 +244,14 @@ class Market:
         if self.focused_goods:
             wanted.pop(1000,None)
             if 15<=w.own.values.get(0,0)<=40 and not self.count(684) and not self.count(682):wanted[684]=1
+        if self.broad_goods and self.policy_reference:
+            for feature in (self.policy_reference.career,self.policy_reference.story):
+                if feature and feature.active():
+                    for requirement in feature.quest.get('needs',[]):
+                        identity=requirement['id']
+                        if requirement['kind']==1 and identity in self.catalog.items:
+                            missing=requirement['count']-self.count(identity)
+                            if missing>0:wanted[identity]=max(wanted.get(identity,0),missing)
         return wanted
     def fair_cap(self,identity):
         if identity==1000:return 500
@@ -273,7 +310,7 @@ class Market:
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None
-        self.next_shift=now+self.rng.uniform(1200,2400);self.reason='';self.active_confirmed=False
+        self.next_shift=now+self.rng.uniform(600,1200) if self.broad_goods else now+self.rng.uniform(1200,2400);self.reason='';self.active_confirmed=False
     def request_close(self,now):
         if self.state!='closing' or now>=self.deadline:
             self.send(CLOSE,b'');self.close_requests+=1;self.state='closing';self.deadline=now+15
@@ -295,7 +332,7 @@ class Market:
         self.reason='изучает навык торговли';return True
     def tick(self,now,policy,safe,dialogue_busy=False):
         w=self.world
-        if self.next_shift is None:self.next_shift=now+self.rng.uniform(60,600)
+        if self.next_shift is None:self.next_shift=now+self.rng.uniform(20,120) if self.broad_goods else now+self.rng.uniform(60,600)
         if self.state in ('opening','selling','closing'):
             if self.directory.reserve(self.name,w.map,now) is None and self.state!='closing':
                 self.request_close(now);return True
@@ -364,7 +401,7 @@ class Market:
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True
     def loot_needs(self):return set(self.catalog.items)
     def summary(self):
-        return {'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
+        return {'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
                 'close_requests':self.close_requests,'purchase_requests':self.buy_requests,'confirmed_purchases':self.confirmed_buys,
                 'sold_units_server_notices':self.sold_units,'timeouts':self.timeouts,'stall_skill_learned':bool(self.world.skills.get(241,{}).get('level',0)),
                 'confirmed_book_learns':self.confirmed_learns,'goals':self.needed(),'rune_exchange_goal':self.rune_goal(),'black_market_barter_implemented':False}

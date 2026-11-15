@@ -1,7 +1,7 @@
 """Spaced dry city pitches around known centres, guards and banks, not one ring."""
 import math
 
-def city_pitches(map_name,home,nav,npcs,spawns=(),limit=100):
+def city_pitches(map_name,home,nav,npcs,spawns=(),limit=160):
     rows=list(npcs.by_map.get(map_name,()))
     city=[n for n in rows if math.dist(home,n['position'])<=15000]
     anchors=[tuple(home)]+[tuple(p) for p in spawns]

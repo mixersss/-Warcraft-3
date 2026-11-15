@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-51'
-NAME = 'Piratia-Auto-Bots-Alpha51'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-52'
+NAME = 'Piratia-Auto-Bots-Alpha52'
 
 
 def main():
@@ -16,6 +16,7 @@ def main():
     sources += [ROOT / 'tools/build_ground_components.py', ROOT / 'knowledge/fleet-alpha44-audit.json', ROOT / 'knowledge/fleet-alpha47-audit.json', ROOT / 'knowledge/ALPHA49.md', ROOT / 'knowledge/SERVER-SHOPS-REQUEST.md']
     sources += [ROOT/'tools/build_dialogue_data.py',ROOT/'tools/build_land_components.py',ROOT/'knowledge/ALPHA50.md',ROOT/'knowledge/ALPHA50-INSTALL.md',ROOT/'knowledge/DIALOGUE50.md',ROOT/'knowledge/dialogue-data-audit.json',ROOT/'knowledge/dialogue-benchmark.json',ROOT/'knowledge/fleet-alpha49-audit.json']
     sources += [ROOT/'tools/build_player_guide.py',ROOT/'tools/build_story_reference.py',ROOT/'knowledge/ALPHA51.md',ROOT/'knowledge/ALPHA51-INSTALL.md',ROOT/'knowledge/guide-sources.json']
+    sources += [ROOT/'tools/dialogue52_lines.py',ROOT/'tools/dialogue52_scenes.py',ROOT/'tools/build_useful_loot.py',ROOT/'knowledge/ALPHA52.md',ROOT/'knowledge/ALPHA52-INSTALL.md',ROOT/'knowledge/fleet-alpha51-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -49,7 +50,9 @@ def main():
         'current_alpha50': {'dialogue_intents':132,'dialogue_examples':660,'authored_conversation_lines':264,'distinct_item_fact_lines':5424,'unique_reply_lines':5688,'personalities':12,'context_channels':['local','world','trade','private'],'memory_turns':16,'context_limit_per_client':32,'npc_patchouli_buyback':500,'patchouli_base_price':1000,'class_funding_plain_patchouli_allowed':True,'treasure_items':[684,682,2445],'new_map_min_level':15,'new_map_max_level':40,'native_coral_energy_action':23,'shore_probe_max_cm':250,'land_component_grids':30,'progress_watchdog_seconds':45,'protocol_reconnect_limit':3,'new_native_live_validation':False},
         'current_alpha51': {'runtime_limit':400,'fixed_growth':[300,400],'preserved_old_bots':300,'build_skill_guides':8,'near_term_book_purchase_limit':2,'guide_history_definition_rows':426,'guide_initial_walkthrough_steps':19,'guide_skill_book_rows':74,'external_complete_guides_verified':False,'live400_creation_verified':False},
         'hunt_party_alpha49': {'world_echo_then_private_reply_then_native_team':True,'maximum_level_gap':3,'maximum_meeting_seconds':90,'unproductive_team_seconds':120,'maximum_movement_prefix_cm':2400,'recruitment_cash_gate':2000,'ordinary_chat_cash_gate':20000,'live_verified':False},
-        'status': 'Alpha51 adds eight owner/server-derived skill plans, a standalone original Russian history/skills guide, and resumable300to400 expansion preserving the old300; complete external community guides not verified. Includes Alpha50: global NPC Patchouli500G buyback/novice fare funding, ordinary dropped-gear and NP markets, real parchment/Caribbean map/ticket digging, essential role weapons, caster cooldown and native coral-energy updates, native-progress watchdog, bounded shoreline attempts, disconnected-land rejection, bounded protocol recovery diagnostics, isolated four-channel dialogue with132 intents/12 profiles/5688distinct reply lines including5424item facts. Prior source mechanics knowledge/roles/builds/fairies/stalls/bank/LFG preserved. Old data/accounts/rates/rewards untouched. Live Windows behavior and all fleet recovery not proven; quest translation, ship/PvP/weapon-forging/production automation remain deferred',
+        'current_alpha52': {'network_background_ping_pump':True,'max_queued_packets':4096,'max_queued_payload_bytes':2097152,'diagnostic_write_failure_nonfatal':True,'fairy_goal_all_bots':True,'fairy_food_stock_target':6,'restore_verified_shop_knowledge_cmd':'RESTORE-BOT-SHOPS.cmd','dialogue_intents':136,'authored_examples':680,'authored_conversation_lines':836,'scene_lines':144,'distinct_item_fact_lines':5424,'unique_reply_lines':6402,'useful_trade_items':1629,'drop_backed_items':515,'argent_stall_capacity':120,'live_windows_validation':False},
+        'status':'Alpha52 decouples native ping servicing, bounds queued events, caches unchanged equipment decisions, preserves state during diagnostic file locks, restores verified supplier knowledge, prioritizes fairy food, contextualizes LFG replies and adds finite nearby scenes and useful real loot markets. No claim every idle/disconnect case resolved on owner server.',
+        'previous_status_alpha51': 'Alpha51 adds eight owner/server-derived skill plans, a standalone original Russian history/skills guide, and resumable300to400 expansion preserving the old300; complete external community guides not verified. Includes Alpha50: global NPC Patchouli500G buyback/novice fare funding, ordinary dropped-gear and NP markets, real parchment/Caribbean map/ticket digging, essential role weapons, caster cooldown and native coral-energy updates, native-progress watchdog, bounded shoreline attempts, disconnected-land rejection, bounded protocol recovery diagnostics, isolated four-channel dialogue with132 intents/12 profiles/5688distinct reply lines including5424item facts. Prior source mechanics knowledge/roles/builds/fairies/stalls/bank/LFG preserved. Old data/accounts/rates/rewards untouched. Live Windows behavior and all fleet recovery not proven; quest translation, ship/PvP/weapon-forging/production automation remain deferred',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
         'first_profession_objective_npc_review': 'reconnect, audited item quantity/observed target deaths, or180s fallback; NPC remains authoritative',
         'garner_verified_merchants': 19,
@@ -204,7 +207,7 @@ def main():
         'ordinary_merchant_admission_limit_removed': True,
         'fleet_reports_include_coordinates': True,
         'owner_target_bots': 500,
-        'runtime_capacity_bots': 300,
+        'runtime_capacity_bots': 400,
         'quest_ingredients_and_modified_items_preserved': True,
         'commit_full_journal_resync_after_seconds': 2,
         'unchanged_journal_is_not_success': True,
@@ -244,13 +247,13 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 795,
-        'full_python_suite_total': 803,
-        'full_python_suite_passed': 803,
+        'pure_python_tests_passed': 817,
+        'full_python_suite_total': 829,
+        'full_python_suite_passed': 829,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '803 passed in Alpha51 including 8 local socket integration tests',
-        'current_network_regression': '8 local simulated-server socket integrations passed; owner Windows server not tested',
-        'default_bot_count': 300,
+        'last_full_network_regression': '829 passed in Alpha52 including 8 legacy socket integrations and 4 dedicated background-network socket tests',
+        'current_network_regression': '8 legacy simulated-server socket tests and 4 dedicated background-pump socket tests; owner Windows server not tested',
+        'default_bot_count': 400,
         'default_mode': 'mixed',
         'cohort_tactics_at_200': {'farm':80,'hybrid':120},
         'hybrid_phase_seconds': [240,480],
@@ -290,7 +293,7 @@ def main():
         'four_hundred_live_connections_tested': False,
         'stall_session_seconds': 3600,
         'stall_live_population_fraction': None,
-        'argent_target_stalls': 80,
+        'argent_target_stalls': 120,
         'stall_minimum_level': 15,
         'voluntary_rest_live_population_fraction': .10,
         'stall_city_caps_at_200': {'garner':80,'magicsea':3,'darkblue':2},

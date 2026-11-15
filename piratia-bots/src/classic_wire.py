@@ -1,5 +1,7 @@
 """Bounded classic PKO packets. Header and payload byte order are big endian."""
 import socket
+import select
+import threading
 import struct
 import time
 
@@ -68,6 +70,7 @@ class Wire:
         self.report = report or (lambda *args: None)
         self.last_send = time.monotonic()
         self.last_receive_at=self.last_send
+        self.send_lock=threading.RLock();self.background_reader_active=False
 
     def frame(self, deadline):
         while True:
@@ -82,7 +85,9 @@ class Wire:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise TimeoutError('Timed out waiting for a complete packet')
-            self.sock.settimeout(remaining)
+            if self.background_reader_active:
+                if not select.select([self.sock],[],[],remaining)[0]:raise TimeoutError('Timed out waiting for server')
+            else:self.sock.settimeout(remaining)
             try:
                 data = self.sock.recv(65536)
             except socket.timeout as exc:
@@ -115,6 +120,9 @@ class Wire:
             return command, body[2:]
 
     def send(self, command, payload=b''):
+        with self.send_lock:return self._send(command,payload)
+
+    def _send(self, command, payload=b''):
         if self.header_size is None:
             raise ProtocolError('No server handshake yet')
         body = struct.pack('>H', command) + payload
@@ -131,8 +139,9 @@ class Wire:
         self.report('send', command, len(payload))
 
     def heartbeat(self):
-        self.write_frame(b'\0\x02')
-        self.last_send = time.monotonic()
+        with self.send_lock:
+            self.write_frame(b'\0\x02')
+            self.last_send = time.monotonic()
 
     def write_frame(self,packet):
         self.sock.settimeout(10)

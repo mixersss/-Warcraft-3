@@ -144,6 +144,18 @@ def build():
         parts=line.split('|');identity=parts[0];responses=parts[-1].split('~');examples=parts[-2].split(';');pattern='|'.join(parts[1:-2])
         assert len(examples)==5,(identity,examples)
         rows.append({'id':identity,'pattern':pattern,'examples':examples,'responses':responses})
+    from dialogue52_lines import EXTRA,JOKES,LAUGHS,DRY
+    from dialogue52_scenes import topics
+    by_id={r['id']:r for r in rows}
+    for line in EXTRA.strip().splitlines():
+        key,variants=line.split('|',1);by_id[key]['responses'].extend(variants.split('~'))
+    by_id['joke']['responses'].extend(JOKES);by_id['laugh']['responses'].extend(LAUGHS)
+    rows.extend([
+      {'id':'joke_negative','pattern':r'не смешно|шутк.*не зашла|плохая шутка','examples':['не смешно','вообще не смешно','шутка не зашла','плохая шутка','это не смешно'],'responses':['Хорошо, эта шутка не зашла. Давай лучше о другом.','Понял, без этой шутки. О чём поговорим?','Ладно, попробую в другой раз. Как у тебя дела в игре?','Принято. Не буду выжимать смех из неудачного анекдота.']},
+      {'id':'party_response','pattern':r'я рядом|я тут|я здесь|я с тобой|есть место|можно с вами','examples':['я рядом','я здесь','я с тобой','есть место','можно с вами'],'responses':['Ты про пати на кач? Какой у тебя уровень и на какой ты карте?','Можем обсудить группу. Напиши уровень и место.','Если отвечаешь на поиск пати, назови уровень и карту.','Ты хочешь присоединиться к группе или договориться о встрече?']},
+      {'id':'joke_offer','pattern':r'хочешь шутку|слушай анекдот|рассказать прикол|у меня.*анекдот|у меня.*шутка','examples':['хочешь шутку','слушай анекдот','рассказать прикол','у меня есть анекдот','у меня шутка'],'responses':['Давай, послушаю.','Рассказывай, только без слишком длинного вступления :)','Ну давай, чем удивишь?','Можно. Слушаю твою шутку.']},
+      {'id':'reciprocal','pattern':r'^а ты$|^а у тебя$|^а твой$|^а твоя$','examples':['а ты','а у тебя','а твой','а твоя','а у тебя как'],'responses':['Ты про ту же тему? Могу рассказать, как у меня.','Про моё занятие или про развитие спрашиваешь?','Уточни, что именно хочешь сравнить.','Можем сравнить. О каком параметре речь?']}
+    ])
     assert len({r['id'] for r in rows})==len(rows)
     raw=json.loads((ROOT.parent/'piratia-city-shops/native/item-database.json').read_text())
     facts=[]
@@ -154,11 +166,13 @@ def build():
         text=f"{name} ID{item['id']}: {tail}"
         assert len(text.encode('cp1251'))<=120,text
         facts.append({'id':item['id'],'aliases':[v for v in (item['name_ru'],item['name_en']) if v], 'text':text,'in_server':item['in_server']})
-    profiles=[('newbie','новичок',.7,75),('veteran','ветеран',.6,110),('quiet','молчун',.2,65),('joker','шутник',.75,100),('merchant','торговец',.65,115),('pvp','любитель ПВП',.5,90),('helper','помощник',.9,115),('loner','одиночка',.25,80),('farmer','фармер',.55,95),('healer','хил',.7,110),('explorer','исследователь',.65,115),('guild','гильдейский активист',.8,105)]
+    profiles=[('newbie','новичок',.85,180),('veteran','ветеран',.8,220),('quiet','молчун',.35,100),('joker','шутник',.9,200),('merchant','торговец',.8,220),('pvp','любитель ПВП',.7,180),('helper','помощник',.95,230),('loner','одиночка',.4,130),('farmer','фармер',.75,190),('healer','хил',.85,220),('explorer','исследователь',.8,220),('guild','гильдейский активист',.9,210)]
     target=ROOT/'assets'
+    (target/'dialogue-scenes.json').write_text(json.dumps({'version':1,'topics':topics(),'jokes':list(JOKES),'laughs':list(LAUGHS),'dry_reactions':list(DRY)},ensure_ascii=False,indent=2)+'\n')
     for filename,data in [('dialogue-intents.json',{'version':1,'intents':rows}),('dialogue-facts.json',{'version':1,'source':'derived server/client item database; no owned stock claims','items':facts}),('dialogue-personalities.json',{'version':1,'profiles':[dict(id=i,label=l,response_chance=c,max_bytes=n,spelling='casual' if i in ('newbie','joker') else 'regular',humour=i=='joker') for i,l,c,n in profiles]}),('dialogue-settings.json',{'version':1,'intensity':'normal','memory_turns':16,'memory_contexts':32,'memory_ttl_seconds':900,'local_llm_enabled':False,'private_text_logging':False})]:
         (target/filename).write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n')
-    unique={s for r in rows for s in r['responses']}|{r['text'] for r in facts}
-    report={'intent_count':len(rows),'authored_examples':sum(len(r['examples']) for r in rows),'authored_conversation_lines':len({s for r in rows for s in r['responses']}),'distinct_factual_item_lines':len(facts),'unique_reply_lines':len(unique),'counted_by_distinct_facts_not_word_permutations':True}
+    scene_lines={s for t in topics().values() for values in t.values() for s in values}|set(DRY)
+    unique={s for r in rows for s in r['responses']}|{r['text'] for r in facts}|scene_lines
+    report={'intent_count':len(rows),'authored_examples':sum(len(r['examples']) for r in rows),'authored_conversation_lines':len({s for r in rows for s in r['responses']}),'authored_scene_lines':len(scene_lines),'distinct_factual_item_lines':len(facts),'unique_reply_lines':len(unique),'counted_by_distinct_facts_not_word_permutations':True}
     (ROOT/'knowledge/dialogue-data-audit.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n');print(report)
 if __name__=='__main__':build()

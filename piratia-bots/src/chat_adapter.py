@@ -20,9 +20,12 @@ class ResponseSelector:
     def __init__(self,data,profile):self.data,self.profile=data,profile;self.recent=deque(maxlen=12)
     def select(self,intent,state):
         rows=self.data.by_intent.get(intent,self.data.by_intent['unknown'])['responses']
-        choices=[s for s in rows if s not in self.recent] or rows
+        choices=[s for s in rows if s not in self.recent]
+        if not choices:choices=[s for s in rows if s not in list(self.recent)[-2:]] or rows
         kind=self.profile.values['id']
-        template=min(choices,key=len) if kind=='quiet' else max(choices,key=len) if kind in ('veteran','helper','explorer') else self.profile.rng.choice(choices)
+        ranked=sorted(choices,key=len)
+        preferred=ranked[:3] if kind=='quiet' else ranked[-3:] if kind in ('veteran','helper','explorer') else choices
+        template=self.profile.rng.choice(preferred)
         self.recent.append(template);reply=template.format_map(state)
         if self.profile.values['spelling']=='casual' and intent in ('greeting','status','farewell'):reply=reply[:1].lower()+reply[1:]
         if self.profile.values['humour'] and intent=='greeting' and self.profile.rng.random()<.3:reply+=' :)'
@@ -33,6 +36,18 @@ def fit(text,maximum=120):
     if len(text)<=maximum:return text
     return text[:maximum-3].rsplit(' ',1)[0]+'...'
 
+def message_parts(text,maximum=230):
+    cleaned=fit(text,min(240,maximum))
+    result=[]
+    while len(cleaned)>120:
+        cut=max(cleaned.rfind('. ',0,120),cleaned.rfind('? ',0,120),cleaned.rfind('! ',0,120))
+        if cut>=40:cut+=1
+        else:cut=cleaned.rfind(' ',0,120)
+        if cut<1:cut=120
+        result.append(cleaned[:cut].strip());cleaned=cleaned[cut:].strip()
+    if cleaned:result.append(cleaned)
+    return result[:2]
+
 class ChatAdapter:
     def __init__(self,world,policy,social,public,contacts,data,coordinator,send,name):
         self.world,self.policy,self.social,self.public,self.contacts=world,policy,social,public,contacts
@@ -42,7 +57,7 @@ class ChatAdapter:
         self.queue=deque(maxlen=8);self.next_send=0;self.muted_until=0
         self.intents=Counter();self.decisions=deque(maxlen=16);self.errors=Counter();self.sent=Counter();self.queued=0
         self.next_registration=0;self.last_tick=0
-        self.quote_scopes={}
+        self.quote_scopes={};self.batch_serial=0
         self.next_market_sample=0;self.sale=None;self.wanted=()
     def state(self):
         w=self.world;p=self.policy;own=w.own
@@ -104,7 +119,11 @@ class ChatAdapter:
         if command!=501:
             if len(r.data)-r.position==4:r.long()
             r.end()
-        if source==self.name or not source or len(source.encode('cp1251',errors='replace'))>32 or len(text)>240 or any(ord(c)<32 for c in source+text):return True
+        if source==self.name:
+            self.coordinator.note_offer(self.name,channel,self.world.map,text,now)
+            self.coordinator.note_question(self.name,channel,self.world.map,text,now)
+            return False
+        if not source or len(source.encode('cp1251',errors='replace'))>32 or len(text)>240 or any(ord(c)<32 for c in source+text):return True
         # Existing Alpha49 LFG owns its world/PM handshake, without a second answer.
         if text.startswith(('Ищу пати на кач,','Хочу в пати на кач,','Пати на кач:')):return False
         known_bot=source in self.coordinator.rows or source.casefold().startswith('bot')
@@ -113,19 +132,37 @@ class ChatAdapter:
             if not scene:return True
             if scene['finish']:return True
             state=self.state();topic=scene['topic']
-            if topic=='trade':
+            if scene.get('closing'):
+                choices=self.data.scenes.get('topics',{}).get(topic,{}).get('closings',['Ладно, удачной игры!'])
+                body=self.profile.rng.choice(choices)
+            elif topic=='joke':body=self.humour_reaction()
+            elif topic in self.data.scenes.get('topics',{}):
+                body=self.profile.rng.choice(self.data.scenes['topics'][topic]['answers']).format_map(state)
+            elif topic=='trade':
                 body=self.policy.commerce.public_answer('цена ID'+str(scene['item']),now) if self.policy.commerce else 'Сейчас не готов обсуждать сделку.'
             elif topic=='level':body=f"У меня {state['level']} уровень. А у тебя какой?"
             elif topic=='fairy':body=state['fairy']+' А у тебя?'
             else:body=state['activity']+' А у тебя как дела?'
-            reply=scene['receiver']+', '+body
+            reply=fit(scene['receiver']+', '+body,120)
             self.coordinator.prepare_scene_reply(scene['id'],reply)
             self.enqueue(channel,source,reply,now,scene=scene['id']);return True
         visible={e.identity for e in self.world.entities.values() if e.control==1 and
                  math.dist(self.world.position(now),self.world.position(now,e.identity))<=2000}
-        if channel!='private' and not self.coordinator.elect(self.name,channel,self.world.map,identity or source,text,now,visible):return True
+        from party_dialogue import response_to_offer
+        contextual=response_to_offer(text)
+        offer=self.coordinator.recent_offer(self.name,channel,self.world.map,text,now,visible) if contextual or channel=='private' else None
+        numeric=bool(re.fullmatch(r'(?:я |мне |у меня )?\d{1,3}(?: (?:ур|уровень|лвл))?',normalize(text)))
+        question=self.coordinator.recent_question(self.name,channel,self.world.map,now,visible) if numeric or normalize(text) in ('а ты','а у тебя') else None
+        preferred=offer['owner'] if offer and contextual else question['owner'] if question else None
+        if channel!='private' and not self.coordinator.elect(self.name,channel,self.world.map,identity or source,text,now,visible,preferred=preferred):return True
         intent=self.data.recognizer.recognize(text);self.intents[intent.name]+=1
-        context=self.memory.context(channel,self.world.map,source,now)
+        reply_channel='private' if channel=='world' and (contextual and offer or question) else channel
+        context=self.memory.context(reply_channel,self.world.map,source,now)
+        if offer and offer['owner']==self.name:context['recent_party_offer']=offer
+        if question and question['owner']==self.name and numeric and question['topic']=='level':
+            context['awaiting']='level';context['topic']='level'
+            from intent_recognizer import Intent
+            number=re.search(r'\d+',text)[0];intent=Intent('level_answer',.95,number);text=number
         if context['muted_until']>now and intent.name!='resume':return True
         self.memory.remember(context,'peer',text)
         if intent.name=='silence' or intent.name=='spam':
@@ -134,16 +171,29 @@ class ChatAdapter:
         if intent.name=='resume':context['muted_until']=0;self.muted_until=0
         if channel=='trade' and intent.name not in TRADE_INTENTS:
             self.decision(channel,intent.name,'off-topic trade message ignored');return True
-        reply=self.answer(intent,text,source,identity,context,channel,now)
+        reply=self.answer(intent,text,source,identity,context,reply_channel,now)
         if not reply:return True
-        if channel in ('local','world','trade') and self.name.casefold() not in text.casefold() and self.profile.rng.random()>self.profile.values['response_chance']:
+        if not contextual and not context.get('party_dialogue') and channel in ('local','world','trade') and self.name.casefold() not in text.casefold() and self.profile.rng.random()>self.profile.values['response_chance']:
             if intent.name not in ('combat_help','party_invite','silence','resume','buy','sell','price'):
                 self.decision(channel,intent.name,'personality declined unaddressed conversation');return True
         if channel=='local':reply=source+', '+reply
-        self.enqueue(channel,source,reply,now,context=context)
+        self.enqueue(reply_channel,source,reply,now,context=context)
         self.decision(channel,intent.name,'reply queued; gameplay unchanged');return True
+    def humour_reaction(self):
+        positive=self.profile.values.get('humour') or self.profile.rng.random()<.65
+        field='laughs' if positive else 'dry_reactions'
+        return self.profile.rng.choice(self.data.scenes.get(field,('Хах, улыбнуло.' if positive else 'Эта шутка не зашла.',)))
     def answer(self,intent,text,source,identity,ctx,channel,now):
         name=intent.name;p=self.policy;clean=normalize(text)
+        from party_dialogue import reply as party_reply
+        offer=ctx.get('recent_party_offer')
+        if offer and offer['until']<=now:ctx.pop('recent_party_offer',None);offer=None
+        party_answer=party_reply(self,text,source,identity,ctx,now,offer)
+        if party_answer is not None:return party_answer
+        if name=='joke_offer':ctx['awaiting']='joke';ctx['joke_until']=now+60
+        elif ctx.get('awaiting')=='joke' and now<ctx.get('joke_until',0) and name not in ('silence','resume','complaint','combat_help','buy','sell','price','party_invite'):
+            ctx['awaiting']=None;return self.humour_reaction()
+        if name=='reciprocal' and ctx.get('topic') in self.data.by_intent:name=ctx['topic']
         fact=self.data.item(text)
         if re.search(r'\bнп\b|нов\w* пергам',clean):fact=self.data.item_by_id.get(684)
         if 'пачкули' in clean:fact=self.data.item_by_id.get(1000)
@@ -158,6 +208,7 @@ class ChatAdapter:
             if ctx['awaiting']=='level':
                 ctx['level']=int(clean);ctx['awaiting']=None
                 gap=abs(ctx['level']-self.world.own.values.get(0,1))
+                if ctx['topic']=='level':return f"У тебя {ctx['level']}, у меня {self.world.own.values.get(0,1)} уровень. А где обычно качаешься?"
                 if ctx['topic']=='hunt_advice' and p.mob_knowledge:
                     nearby=p.mob_knowledge.summary(self.world.map,self.world.position(now),ctx['level'])['nearby_spawn_regions']
                     good=[r for r in nearby if ctx['level']-3<=r['level']<=ctx['level']+2 and r['territory']==0]
@@ -201,12 +252,17 @@ class ChatAdapter:
             if answer:return answer
         return self.selector.select(name,self.state())
     def enqueue(self,channel,peer,text,now,context=None,scene=None):
-        text=fit(text,120 if scene is not None or re.search(r'\bID\d+\b',text) else self.profile.values['max_bytes'])
-        if not text or any(row['text']==text and row['channel']==channel for row in self.queue):return
-        due=now+self.profile.rng.uniform(1.5,4.5);expiry=now+(300 if channel in ('world','trade') else 30)
-        if len(self.queue)==self.queue.maxlen:self.queue.popleft()
-        self.queue.append({'channel':channel,'peer':peer,'text':text,'due':due,'expires':expiry,'context':context,'scene':scene})
-        self.queued+=1
+        maximum=120 if scene is not None or channel in ('world','trade') else self.profile.values['max_bytes']
+        parts=message_parts(text,maximum)
+        if not parts:return
+        if any(row['text']==parts[0] and row['channel']==channel and row['peer']==peer for row in self.queue):return
+        while len(self.queue)+len(parts)>8:
+            old=self.queue.popleft();self.queue=deque((r for r in self.queue if r.get('batch')!=old.get('batch')),maxlen=8)
+        self.batch_serial+=1;due=now+self.profile.rng.uniform(1.2,3);expiry=now+(300 if channel in ('world','trade') else 45)
+        for index,part in enumerate(parts):
+            self.queue.append({'channel':channel,'peer':peer,'text':part,'due':due,'expires':expiry,'context':context,
+                               'scene':scene,'batch':self.batch_serial,'last_part':index==len(parts)-1,'full_reply':' '.join(parts)})
+        self.queued+=len(parts)
     def tick(self,now):
         try:self._tick(now)
         except OSError:raise
@@ -223,7 +279,9 @@ class ChatAdapter:
         if not self.world.own.alive:return
         if not self.queue and now>=self.muted_until:
             scene=self.scheduler.prepare(self.name,now)
-            if scene:self.enqueue(scene['channel'],scene['receiver'],scene['text'],now,scene=scene['id'])
+            if scene:
+                text=fit(scene['text'],120);self.coordinator.prepare_scene_reply(scene['id'],text)
+                self.enqueue(scene['channel'],scene['receiver'],text,now,scene=scene['id'])
         if not self.queue or now<self.next_send:return
         row=self.queue[0]
         if now<row['due']:return
@@ -239,11 +297,11 @@ class ChatAdapter:
             if not self.social.budget.claim(now):return
             if channel=='private':self.send(6403,private_request(peer,text))
             else:self.send(1,say_request(text))
-        self.queue.popleft();self.sent[channel]+=1;self.next_send=now+(20 if self.data.settings['intensity']=='quiet' else 8 if self.data.settings['intensity']=='normal' else 5)
-        if row['context']:
-            row['context']['last_reply']=text;self.memory.remember(row['context'],'self',text)
+        self.queue.popleft();self.sent[channel]+=1;self.next_send=now+(3 if not row.get('last_part',True) else 15 if self.data.settings['intensity']=='quiet' else 6 if self.data.settings['intensity']=='normal' else 4)
+        if row['context'] and row.get('last_part',True):
+            row['context']['last_reply']=row.get('full_reply',text);self.memory.remember(row['context'],'self',row.get('full_reply',text))
         if row['scene'] is not None:self.coordinator.sent(row['scene'],self.name,text)
     def summary(self):return {'enabled':True,**self.data.summary(),'personality':self.profile.kind,'intensity':self.data.settings['intensity'],
                               'sent_by_channel':dict(self.sent),'recognized_intents':dict(self.intents),'isolated_errors':dict(self.errors),
                               'pending_replies':len(self.queue),'memory_contexts':len(self.memory.contexts),'decisions':list(self.decisions),
-                              'transcripts_saved':False,'external_llm':False,'dialogue_never_pauses_actions':True}
+                              'scene_coordination':self.coordinator.summary(),'maximum_reply_parts':2,'transcripts_saved':False,'external_llm':False,'dialogue_never_pauses_actions':True}

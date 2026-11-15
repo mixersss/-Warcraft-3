@@ -12,7 +12,7 @@ class Fleet:
         self.requested,self.path=requested,Path(path)
         self.rows={}
         self.lock=threading.Lock()
-        self.peak=0
+        self.peak=0;self.write_errors=0
 
     def update(self,index,**values):
         allowed={'xp_per_minute','seconds_without_xp','session_xp_net','position','phase','tactic','connected','map','level','job','body','state','hp','max_hp','moves','attacks','equips','quests','target_job','experience','start_experience','start_level','hunt_style','farm_models'}
@@ -41,7 +41,7 @@ class Fleet:
 
     def write(self):
         data=self.snapshot()
-        temporary=self.path.with_suffix('.tmp')
-        temporary.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-        os.replace(temporary,self.path)
+        from diagnostic_io import write_snapshot
+        data['diagnostic_write_failures']=self.write_errors
+        if not write_snapshot(self.path,data):self.write_errors+=1
         return data

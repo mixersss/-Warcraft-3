@@ -81,7 +81,7 @@ class FairyTests(unittest.TestCase):
    path=Path(d);assets(path);data=overlay();fairies=data['npcs'][1]
    data['catalog_revision']=48;data['fresh_fairies']=True;fairies['menu_pages']['232']=1;data['prices']['232']=2000;data['names']['232']='Фея Силы'
    (path/'owner-city-shops.json').write_text(json.dumps(data))
-   life=LifeItems(path);w,c,p=self.make();c.life=life;c.preferred=232;w.own.values[8]=2500;w.bag={0:item(1847,10)}
+   life=LifeItems(path);w,c,p=self.make();c.life=life;c.preferred=232;w.own.values[8]=2500;w.bag={0:item(1847,10),2:item(2312,2)}
    town=Town(w,life,ItemCatalog(ROOT/'assets/items.json'),{},random.Random(1),w.own.position);town.petcare=c
    self.assertEqual(town.choose_want(),(232,1))
    town.wanted=(232,1);town.target_shop={'menu_pages':{'232':1}};town.context=(700,'talk',20)

@@ -39,6 +39,21 @@ class PetCare:
     candidates.append((slot!=1,-state['level'],slot,item,state))
   if not candidates:return None
   _,_,slot,item,state=min(candidates,key=lambda r:r[:3]);return slot,item,state
+ def any_fairy(self):
+  fairy=self.fairy()
+  if fairy:return fairy
+  if not self.mechanics:return None
+  for slot,item in sorted(self.world.bag.items(),key=lambda pair:pair[0]!=1):
+   if item.identity in PET_IDS:
+    state=self.mechanics.inspect_fairy(item,self.stat)
+    if state:return slot,item,state
+  return None
+ def urgent_hunger(self):
+  fairy=self.any_fairy()
+  return bool(fairy and fairy[1].endurance<=500)
+ def needs_food_visit(self):
+  fairy=self.any_fairy()
+  return bool(fairy and fairy[1].endurance<2000 and (self.count(2312)+self.count(227)==0 or self.slot_count(2,2312)==0))
  def purchase_goals(self,now=None):
   if now is None:now=self.clock
   self.align_build()
@@ -47,9 +62,10 @@ class PetCare:
   if not owner or owner.get('catalog_revision',0)<48 or not owner.get('fresh_fairies') or w.own.values.get(4,0)==0:return []
   goals=[];fairy=self.fairy()
   if not fairy:goals.append((self.preferred,1,'покупает фею второго поколения/Джун'))
-  else:
+  owned=self.any_fairy()
+  if owned and self.count(2312)<6:goals.insert(0,(2312,6-self.count(2312),'пополняет запас автокорма феи'))
+  if fairy:
    slot,item,state=fairy
-   if self.count(2312)<2:goals.append((2312,2-self.count(2312),'покупает автокорм феи'))
    fruit=FRUITS[self.stat]
    if item.max_energy>0 and item.energy>=item.max_energy and not self.count(fruit):goals.append((fruit,1,'покупает плод одной выбранной статы'))
   if w.own.values.get(0,0)>=15:
@@ -64,7 +80,7 @@ class PetCare:
   i=self.world.bag.get(slot);return i.count if i and i.identity==identity else 0
  def use(self,slot,target,now,policy,kind):
   from hunter import action_header
-  item=self.world.bag[slot];fairy=self.fairy()
+  item=self.world.bag[slot];fairy=self.any_fairy()
   self.pending={'kind':kind,'source':slot,'id':item.identity,'count':item.count,'target':target,
    'source_total':self.count(item.identity),'before':fairy[1] if fairy else None,'deadline':now+12}
   policy.emit(action_header(self.world.own_id,policy.sequence,11)+struct.pack('>hh',slot,target))
@@ -100,7 +116,7 @@ class PetCare:
    return self.pending is not None
   if now<self.next_action or not safe or dialogue_busy or not w.bag_ready or w.bag_disabled or not w.own.alive:return False
   self.align_build()
-  fairy=self.fairy()
+  fairy=self.any_fairy()
   if not fairy:self.reason='нужна фея второго поколения/Джун с одной статой';return False
   slot,item,state=fairy
   if slot!=1:
@@ -111,6 +127,8 @@ class PetCare:
   if item.endurance<min(item.max_endurance,2550):
    source=next((s for s,i in w.bag.items() if i.identity in (227,2312) and i.valid),None)
    if source is not None:self.reason='кормит свою фею';self.use(source,slot,now,policy,'feed');return True
+  if not state['monostat_matches_owner_policy']:
+   self.reason='сохраняет и кормит прежнюю фею; рост смешанных статов не продолжает';return False
   if item.max_energy>0 and item.energy>=item.max_energy:
    source=next((s for s,i in w.bag.items() if i.identity==FRUITS[self.stat] and i.valid),None)
    if source is not None:self.reason='развивает у феи только '+self.stat;self.use(source,slot,now,policy,'fruit');return True
@@ -132,7 +150,7 @@ class PetCare:
   self.moves+=1;self.next_action=now+2;self.reason=reason;return True
  def summary(self):
   fairy=self.fairy()
-  return {'state':self.reason,'chosen_stat':self.stat,'preferred_fairy':self.preferred,
+  return {'goal_applies_to_every_bot':True,'food_owned':self.count(2312)+self.count(227),'autofeed_ready':bool(self.slot_count(2,2312)),'food_stock_target':6,'urgently_hungry':self.urgent_hunger(),'state':self.reason,'chosen_stat':self.stat,'preferred_fairy':self.preferred,
    'owner_shops_ready':bool(getattr(self.life,'owner_shops',None) and self.life.owner_shops.get('catalog_revision',0)>=48 and self.life.owner_shops.get('fresh_fairies')),
    'observed_fairy':dict(fairy[2],slot=fairy[0],id=fairy[1].identity) if fairy else None,
    'pending':self.pending['kind'] if self.pending else None,'moves':self.moves,'feeding_requests':self.feed_requests,

@@ -22,7 +22,11 @@ class Regions:
         try:
             from dialogue_data import DialogueData
             from chat_coordinator import BotCoordinator
-            self.dialogue_data=DialogueData(self.assets);self.chat_coordinator=BotCoordinator(self.dialogue_data.settings)
+            self.dialogue_data=DialogueData(self.assets)
+            if self.dialogue_data.scenes:
+                from social_scenes import SocialBotCoordinator
+                self.chat_coordinator=SocialBotCoordinator(self.dialogue_data.settings,self.dialogue_data.scenes)
+            else:self.chat_coordinator=BotCoordinator(self.dialogue_data.settings)
             self.public_chat_budget.scale=2 if self.dialogue_data.settings['intensity']=='quiet' else 1
         except Exception as exc:self.dialogue_error=type(exc).__name__
         from equipment import ItemCatalog
@@ -33,12 +37,12 @@ class Regions:
         from study_queue import StudyQueue
         self.study_queue=StudyQueue(limit=max(1,min(20,population_count//10)))
         from market import MarketCatalog,MarketDirectory
-        self.market_catalog=MarketCatalog(self.assets)
+        self.market_catalog=MarketCatalog(self.assets);self.market_catalog.enable_broad_catalog()
         from market_prices import MarketPrices
         self.market_catalog.prices=MarketPrices(self.assets.parent/'data'/'market-prices.json')
         total=population_count//10
         argent=round(total*.75);remaining=total-argent
-        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=80)
+        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=120)
         from activity_slots import ActivitySlots
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         from mob_knowledge import MobKnowledge

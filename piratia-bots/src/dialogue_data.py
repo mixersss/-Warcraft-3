@@ -24,6 +24,11 @@ class DialogueData:
                 if not fields<=allowed:raise ValueError('Unknown fact placeholder')
                 if any(ord(c)<32 for c in text):raise ValueError('Unsafe response')
                 unique.add(text)
+        scene_path=assets/'dialogue-scenes.json'
+        self.scenes=json.loads(scene_path.read_text(encoding='utf8')) if scene_path.exists() else {}
+        for topic in self.scenes.get('topics',{}).values():
+            for values in topic.values():unique.update(values)
+        unique.update(self.scenes.get('dry_reactions',()))
         self.recognizer=IntentRecognizer(self.rows)
         self.aliases={}
         for fact in self.facts:
@@ -55,4 +60,4 @@ class DialogueData:
                 key=normalize(alias)
                 if len(key)>=4 and re.search(r'(?<!\w)'+re.escape(key)+r'(?!\w)',cleaned):matches.append((len(key),identity))
         return self.item_by_id[max(matches)[1]] if matches else None
-    def summary(self):return {'intent_count':len(self.rows),'unique_reply_lines':self.unique_lines,'authored_conversation_lines':sum(len(r['responses']) for r in self.rows),'distinct_item_facts':len(self.facts),'profiles':len(self.profiles)}
+    def summary(self):return {'intent_count':len(self.rows),'unique_reply_lines':self.unique_lines,'authored_conversation_lines':sum(len(r['responses']) for r in self.rows),'distinct_item_facts':len(self.facts),'profiles':len(self.profiles),'scene_topics':len(self.scenes.get('topics',{}))}

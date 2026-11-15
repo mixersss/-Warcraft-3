@@ -31,6 +31,7 @@ class Town:
         self.rest_goal=None;self.rest_pause_until=0;self.walk_stops=0
         self.npcs=getattr(life,'npcs',None);self.supply_plan=None;self.failed_suppliers={};self.next_supply_check=0;self.knowledge_plans=0
         self.petcare=None
+        self.food_visit_requested=False
         self.professions=None
         self.treasure=None
     def note_progress(self,kills,quests):
@@ -81,16 +82,23 @@ class Town:
         if self.petcare:result.extend(identity for identity,_,_ in self.petcare.purchase_goals())
         if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
         if self.treasure:result.extend(identity for identity,_,_ in self.treasure.purchase_goals())
+        if self.petcare and self.petcare.needs_food_visit() and 2312 in result:
+            result=[2312]+[i for i in result if i!=2312]
         return result
     def spend_limit(self,identity):
         cash=self.world.own.values.get(8,0)
         reserve=100+(self.supply_plan.get('reserved_travel_gold',0)//2 if self.supply_plan else 0)
+        if self.petcare and identity==self.petcare.preferred:reserve+=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0)
         return max(0,cash-reserve) if identity in self.critical_items() else min(cash//4,max(0,cash-reserve))
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
         free=(w.bag_capacity or 0)-len(w.bag)
         if free<2:return None
+        if self.petcare and self.petcare.needs_food_visit() and w.own.values.get(1,0)>w.own.values.get(31,1)*.55:
+            goal=next(((i,n) for i,n,_ in self.petcare.purchase_goals() if i==2312),None)
+            price=self.life.prices.get(2312,0)
+            if goal and price>0 and price<=self.spend_limit(2312):return 2312,min(goal[1],self.spend_limit(2312)//price)
         food=sum(item.count for item in w.bag.values() if item.identity==1847)
         if food<5:return 1847,min(10,15-food)
         critical=self.critical_items()
@@ -144,7 +152,8 @@ class Town:
                 for identity in shop['offers']:
                     if identity in owned:continue
                     price=self.life.prices.get(identity,0)
-                    if price<=0 or price+reserve>cash:continue
+                    food_reserve=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0) if self.petcare and identity==self.petcare.preferred else 0
+                    if price<=0 or price+reserve+food_reserve>cash:continue
                     critical=identity in essentials
                     if not critical and price>cash//4:continue
                     upgrade=self.gear.upgrade(own,identity,free)
@@ -160,7 +169,7 @@ class Town:
                     if kind in (25,26):
                         empty_accessory=any(not own.equipment.get(link) for link in self.gear.gear[identity]['links'])
                     gain=upgrade[0] if upgrade else 1
-                    priority=0 if critical else 1 if empty_accessory else 2
+                    priority=-1 if identity==2312 and self.petcare and self.petcare.needs_food_visit() else 0 if critical else 1 if empty_accessory else 2
                     travel=approach+math.dist(arrival,shop['position'])
                     score=gain/max(1,price)/(1+travel/12000)
                     options.append(((priority,-score,travel,price,shop['key'],identity),
@@ -216,7 +225,7 @@ class Town:
         if self.pending:
             identity,before,cash,deadline=self.pending
             if self.count(identity)>before and w.own.values.get(8,cash)<cash:
-                essential=identity in getattr(self,'combat_items',())
+                essential=identity in getattr(self,'combat_items',()) or (self.petcare and identity==2312)
                 self.confirmed+=1;self.finish(now,2 if essential else 60)
             elif now>deadline:self.timeouts+=1;self.finish(now,300)
             return True
@@ -224,6 +233,13 @@ class Town:
             if now>self.context[2]:self.timeouts+=1;self.finish(now,300)
             return True
         if not safe or dialogue_busy:return False
+        food_needed=bool(self.petcare and self.petcare.needs_food_visit())
+        if food_needed and not self.food_visit_requested:
+            self.next_shop=min(self.next_shop,now);self.next_supply_check=min(self.next_supply_check,now)
+            if self.rest_until:self.end_rest(now)
+            if self.wanted and self.wanted[0]!=2312:
+                self.wanted=self.target_shop=self.supply_plan=None
+        self.food_visit_requested=food_needed
         business=bool(getattr(policy,'economy',None) and policy.economy.business(w,now) is True)
         if business and self.rest_until:self.end_rest(now)
         if self.rest_until and not medical and not business:
@@ -256,7 +272,8 @@ class Town:
                 self.reason='ищет покупку в другом городе: '+plan['shop']['name']
                 if travel and travel.tick(now,policy,safe,dialogue_busy):return True
                 return False # No fare/route: keep productive hunting.
-            self.wanted=(plan['item'],1);self.target_shop=plan['shop']
+            quantity=next((n for i,n,_ in self.petcare.purchase_goals() if i==plan['item']),1) if self.petcare else 1
+            self.wanted=(plan['item'],quantity);self.target_shop=plan['shop']
         if not self.wanted:
             # Healthy beginners must first earn something, not all shop on login.
             hp=w.own.values.get(1,0);maximum=max(1,w.own.values.get(31,1))

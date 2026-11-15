@@ -4,96 +4,96 @@
     {
       "id": "newbie",
       "label": "новичок",
-      "response_chance": 0.7,
-      "max_bytes": 75,
+      "response_chance": 0.85,
+      "max_bytes": 180,
       "spelling": "casual",
       "humour": false
     },
     {
       "id": "veteran",
       "label": "ветеран",
-      "response_chance": 0.6,
-      "max_bytes": 110,
+      "response_chance": 0.8,
+      "max_bytes": 220,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "quiet",
       "label": "молчун",
-      "response_chance": 0.2,
-      "max_bytes": 65,
+      "response_chance": 0.35,
+      "max_bytes": 100,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "joker",
       "label": "шутник",
-      "response_chance": 0.75,
-      "max_bytes": 100,
+      "response_chance": 0.9,
+      "max_bytes": 200,
       "spelling": "casual",
       "humour": true
     },
     {
       "id": "merchant",
       "label": "торговец",
-      "response_chance": 0.65,
-      "max_bytes": 115,
+      "response_chance": 0.8,
+      "max_bytes": 220,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "pvp",
       "label": "любитель ПВП",
-      "response_chance": 0.5,
-      "max_bytes": 90,
+      "response_chance": 0.7,
+      "max_bytes": 180,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "helper",
       "label": "помощник",
-      "response_chance": 0.9,
-      "max_bytes": 115,
+      "response_chance": 0.95,
+      "max_bytes": 230,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "loner",
       "label": "одиночка",
-      "response_chance": 0.25,
-      "max_bytes": 80,
+      "response_chance": 0.4,
+      "max_bytes": 130,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "farmer",
       "label": "фармер",
-      "response_chance": 0.55,
-      "max_bytes": 95,
+      "response_chance": 0.75,
+      "max_bytes": 190,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "healer",
       "label": "хил",
-      "response_chance": 0.7,
-      "max_bytes": 110,
+      "response_chance": 0.85,
+      "max_bytes": 220,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "explorer",
       "label": "исследователь",
-      "response_chance": 0.65,
-      "max_bytes": 115,
+      "response_chance": 0.8,
+      "max_bytes": 220,
       "spelling": "regular",
       "humour": false
     },
     {
       "id": "guild",
       "label": "гильдейский активист",
-      "response_chance": 0.8,
-      "max_bytes": 105,
+      "response_chance": 0.9,
+      "max_bytes": 210,
       "spelling": "regular",
       "humour": false
     }

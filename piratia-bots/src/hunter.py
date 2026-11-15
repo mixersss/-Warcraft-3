@@ -619,7 +619,10 @@ class Hunter:
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
                 essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-100 for i in critical)
-        if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
+        ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
+                         and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
+        if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
+        if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
                 and not self.raising_travel_funds and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
@@ -824,11 +827,17 @@ class Hunter:
                 self.change('маршрут отправлен' if self.last_sent_kind==1 else 'атака отправлена; ожидает результат' if self.last_sent_kind==2 else 'действие с предметом отправлено')
             else:self.change('повторная проверка цели после остановки')
             return
+        if (self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
+                and self.petcare.tick(now,self,safe=True,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.career,self.story) if f))):
+            self.change(self.petcare.reason);self.next_action=now+.2;return
+
         if self.direct_trade and self.direct_trade.busy:
             self.drop_target();self.clear_zone()
             if self.direct_trade.tick(now,self):
                 self.change(self.direct_trade.reason or 'личная торговля');return
         if self.market and self.market.busy:
+            if self.petcare and self.petcare.needs_food_visit() and self.market.state in ('opening','selling'):
+                self.market.request_close(now)
             self.drop_target();self.clear_zone()
             self.market.tick(now,self,hp/maximum>.55)
             self.change(self.market.reason or 'ожидание торговли');return
@@ -1000,7 +1009,9 @@ class Hunter:
                 if self.career:needed.update(self.career.needed_items())
                 if self.story:needed.update(self.story.needed_items())
                 if self.chests:needed.update(self.chests.catalog.chests)
-                if self.market:needed.update(self.market.loot_needs())
+                if self.market:
+                    needed.update(self.market.loot_needs())
+                    self.loot.value_priority={i:(0 if i==684 else 1 if m['category'] in ('gear','sealed') else 2) for i,m in self.market.catalog.items.items()}
                 if self.vendor:needed.update(self.vendor.junk)
                 if self.skills and self.skills.catalog:needed.update(self.skills.catalog.books)
                 if self.chests and self.world.bag_ready and not self.world.bag_disabled:
@@ -1340,7 +1351,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
-            policy.market.focused_goods=True
+            policy.market.focused_goods=True;policy.market.broad_goods=True;policy.market.policy_reference=policy
             policy.market.keep_stall_stock=True
             if life.npcs:
                 from bank import Bank
@@ -1471,6 +1482,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.learning.save(now)
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save()
         report.result['decision_loop']=dict(think_stats)
+        if network_pump:report.result['network_pump']=network_pump.summary()
         receive_at=getattr(client.wire,'last_receive_at',None)
         report.result['connection_health']={'seconds_since_received_bytes':round(max(0,now-receive_at),2) if type(receive_at) in (int,float) else None,
                                           'seconds_since_sent_frame':round(max(0,now-client.wire.last_send),2),
@@ -1626,28 +1638,44 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             world.observe(command, payload)
 
     client.world_handler = observe
+    network_pump=None
     try:
         while client.pending_world:
             observe(*client.pending_world.popleft())
+        from network_pump import start_pump
+        network_pump=start_pump(client)
         report.stage('hunting')
         tell(f'Данные мира: {world.map}, координаты {world.own.x//100},{world.own.y//100}, '
              f'здоровье {world.own.values[HP]}/{world.own.values[MAX_HP]}.')
         next_snapshot=0
         next_think=0
         think_stats={"count":0,"max_seconds":0,"total_seconds":0}
+        from connection_watchdog import ConnectionWatchdog
+        connection_watchdog=ConnectionWatchdog()
         seen_equips=seen_skills=seen_quests=0
         seen_party=seen_chests=seen_shopping=0
         deadline = float('inf') if seconds==0 else time.monotonic()+seconds
         while time.monotonic() < deadline and not stop.is_set():
             try:
-                command, payload = client.wire.receive(min(deadline, time.monotonic()+.25))
+                source=network_pump or client.wire
+                command, payload = source.receive(min(deadline, time.monotonic()+.15))
                 client.service(command, payload)
+                # Drain a bounded burst before expensive decisions; preserve ordering.
+                drain_started=time.thread_time()
+                for _ in range(63):
+                    if time.thread_time()-drain_started>=.004:break
+                    if network_pump is None or network_pump.queue.empty():break
+                    command,payload=network_pump.receive(time.monotonic()+.001);client.service(command,payload)
             except TimeoutError:
                 pass
             now=time.monotonic()
+            if (not network_pump or network_pump.queue.empty()) and connection_watchdog.expired(now,client.wire,sum(policy.sent_action_counts.values())):
+                report.result['connection_watchdog']=connection_watchdog.summary()
+                raise ConnectionError(connection_watchdog.reason)
             if now>=next_think:
                 think_started=now
-                next_think=now+.25
+                next_think=now+(.25 if network_pump is None or policy.pending_action or policy.target else 1.0 if policy.transaction_busy() else .65+(bot_index%5)*.03)
+                think_cpu_started=time.thread_time()
                 if hasattr(navigation,'directory'):
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
                 if policy.party:
@@ -1685,6 +1713,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 social.tick(now, policy.resting, alive and now-policy.started >= 3)
                 if chat_adapter:chat_adapter.tick(now)
                 public_chat.tick(now,alive and now-policy.started>=3,policy.market)
+                think_stats['cpu_seconds']=think_stats.get('cpu_seconds',0)+time.thread_time()-think_cpu_started
                 think_stats['count']+=1
                 elapsed=time.monotonic()-think_started
                 think_stats['max_seconds']=max(think_stats['max_seconds'],elapsed)
@@ -1695,6 +1724,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if time.monotonic()-client.wire.last_send > 2:
                 client.wire.heartbeat()
     finally:
+        if network_pump:
+            network_pump.close();report.result['network_pump']=network_pump.summary()
         policy.learning.save(time.monotonic(),force=True)
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save(force=True)
         report.result['hunt'] = policy.summary()

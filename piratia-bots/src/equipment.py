@@ -170,6 +170,13 @@ class Equipment:
         if not safe or not self.world.bag_ready or self.world.bag_disabled:return False
         if now<self.next_action:return self.settling
         self.settling=False
+        signature=(own.model,own.values.get(0),own.values.get(4),getattr(own,'build_id',None),
+                   self.world.bag_capacity,tuple(sorted(self.world.bag.items())),tuple(sorted(own.equipment.items())),
+                   tuple((link,d.get('identity'),d.get('energy'),d.get('valid')) for link,d in sorted(own.equipment_details.items())),
+                   tuple((i,s.get('level'),s.get('energy')) for i,s in sorted(self.world.skills.items())))
+        if signature==getattr(self,'scan_signature',None) and now<getattr(self,'scan_until',0):
+            self.cached_scans=getattr(self,'cached_scans',0)+1;return False
+        self.scan_signature=signature;self.scan_until=now+5;self.plan_scans=getattr(self,'plan_scans',0)+1
         level,job=own.values.get(0),own.values.get(4)
         if level is None or job is None:return False
         options=[];self.blockers=[]
@@ -205,7 +212,7 @@ class Equipment:
         return True
 
     def summary(self):
-        return {'candidate_blockers':self.blockers[:24],'pending_item':self.pending[0] if self.pending else None,'requests':self.requests,'confirmed_equips':self.confirmed,
+        return {'plan_scans':getattr(self,'plan_scans',0),'cached_plan_reuses':getattr(self,'cached_scans',0),'candidate_blockers':self.blockers[:24],'pending_item':self.pending[0] if self.pending else None,'requests':self.requests,'confirmed_equips':self.confirmed,
                 'confirmation_timeouts':self.failed,'bag_received':self.world.bag_ready,
                 'inventory_paused':self.world.bag_disabled,
                 'equipped_items':dict(self.world.own.equipment),'equipped_item_details':dict(self.world.own.equipment_details)}

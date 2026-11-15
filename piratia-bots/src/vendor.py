@@ -14,6 +14,7 @@ class Vendor(Town):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
   self.sell_patchouli=False
+  self.last_confirmed_sale=None;self.price_warning=''
   self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
  def choices(self,policy):
   w=self.world
@@ -67,6 +68,9 @@ class Vendor(Town):
    slot,identity,before,cash,deadline=self.pending
    item=w.bag.get(slot);after=item.count if item and item.identity==identity else 0
    if after<before and w.own.values.get(8,cash)>cash:
+    units=before-after;received=w.own.values.get(8,cash)-cash
+    self.last_confirmed_sale={'item_id':identity,'units':units,'gold_received':received,'unit_price':received//units if received%units==0 else None}
+    if identity==1000 and self.sell_patchouli and received!=units*500:self.price_warning='Выкуп Пачкули не совпадает с500G: проверь установленный серверный патч'
     self.confirmed_sales+=1;self.pending=None;self.batch+=1
     self.context=self.context[0],'ready',now+60
    elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now)
@@ -112,4 +116,4 @@ class Vendor(Town):
    self.sale_goals.pop(0)
   self.failed_shops.add(tuple(point));self.sale_target=None
   self.reason='ищет доступный путь к другому торговцу';return False
- def summary(self):return {'merchant':self.sale_target.get('name') if self.sale_target else None,'merchant_region':self.sale_target.get('region') if self.sale_target else None,'destination':self.sale_target['position'] if self.sale_target else None,'route_goal':list(self.sale_goals[0]) if self.sale_goals else None,'sale_requests':self.sales,'confirmed_sales':self.confirmed_sales,'confirmation_timeouts':self.sale_timeouts,'state':self.reason or 'ожидание лишних трофеев','pending_sale':bool(self.pending),'free_bag_slots':max(0,(self.world.bag_capacity or 0)-len(self.world.bag)), 'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),'bag_items':[{'slot':slot,'id':item.identity,'count':item.count,'plain':not(item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes)),'junk_whitelisted':item.identity in self.junk} for slot,item in sorted(self.world.bag.items())]}
+ def summary(self):return {'last_confirmed_sale':self.last_confirmed_sale,'price_warning':self.price_warning,'merchant':self.sale_target.get('name') if self.sale_target else None,'merchant_region':self.sale_target.get('region') if self.sale_target else None,'destination':self.sale_target['position'] if self.sale_target else None,'route_goal':list(self.sale_goals[0]) if self.sale_goals else None,'sale_requests':self.sales,'confirmed_sales':self.confirmed_sales,'confirmation_timeouts':self.sale_timeouts,'state':self.reason or 'ожидание лишних трофеев','pending_sale':bool(self.pending),'free_bag_slots':max(0,(self.world.bag_capacity or 0)-len(self.world.bag)), 'bag_capacity':self.world.bag_capacity,'bag_used':len(self.world.bag),'bag_items':[{'slot':slot,'id':item.identity,'count':item.count,'energy':item.energy,'max_energy':item.max_energy,'valid':item.valid,'plain':not(item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes)),'junk_whitelisted':item.identity in self.junk} for slot,item in sorted(self.world.bag.items())]}

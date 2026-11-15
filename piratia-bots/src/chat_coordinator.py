@@ -6,7 +6,7 @@ class BotCoordinator:
     def __init__(self,settings):
         self.lock=threading.RLock();self.rows={};self.claims=OrderedDict();self.settings=settings
         self.scene=None;self.serial=0;self.next_scene=0;self.global_local=0;self.pairs={}
-        self.owners=OrderedDict()
+        self.owners=OrderedDict();self.offers=OrderedDict();self.questions=OrderedDict()
         self.rng=random.Random('piratia-social-scheduler50');self.started=self.finished=self.interrupted=0
     def register(self,name,row):
         with self.lock:self.rows[name]=dict(row)
@@ -21,15 +21,44 @@ class BotCoordinator:
             if row[1]<=now:self.owners.pop(key,None)
         if self.scene and now>=self.scene['expires']:self.scene=None;self.finished+=1;self.next_scene=now+90
         while self.claims and (next(iter(self.claims.values()))[1]<=now or len(self.claims)>512):self.claims.popitem(last=False)
-    def elect(self,name,channel,map_name,source,text,now,visible=()):
+    def note_question(self,name,channel,map_name,text,now):
+        if channel not in ('local','world') or '?' not in text:return
+        clean=text.casefold()
+        topic=('level' if 'уров' in clean or 'лвл' in clean else 'fairy' if 'фе' in clean else 'activity' if 'занят' in clean or 'планы' in clean else None)
+        if topic:
+            with self.lock:
+                self.questions[name]={'owner':name,'channel':channel,'map':map_name,'topic':topic,'time':now,'until':now+90}
+                self.questions.move_to_end(name)
+                while len(self.questions)>256:self.questions.popitem(last=False)
+    def recent_question(self,name,channel,map_name,now,visible=()):
+        with self.lock:
+            options=[q for n,q in self.questions.items() if q['until']>now and n in self.rows and self.rows[n]['ready']
+                     and (channel=='private' and n==name or channel=='world' or channel=='local' and q['map']==map_name and self.rows[n]['identity'] in visible)]
+            return dict(max(options,key=lambda q:q['time'])) if options else None
+    def note_offer(self,name,channel,map_name,text,now):
+        from party_dialogue import recruitment_text
+        if channel not in ('world','local') or not recruitment_text(text):return
+        with self.lock:
+            self.offers[name]={'owner':name,'channel':channel,'map':map_name,'time':now,'until':now+180}
+            self.offers.move_to_end(name)
+            while len(self.offers)>256:self.offers.popitem(last=False)
+    def recent_offer(self,name,channel,map_name,text,now,visible=()):
+        with self.lock:
+            self._clean(now)
+            choices=[o for n,o in self.offers.items() if o['until']>now and n in self.rows and self.rows[n]['ready']
+                     and (channel=='private' and n==name or channel=='world' or channel=='local' and o['map']==map_name and self.rows[n]['identity'] in visible)]
+            named=[o for o in choices if o['owner'].casefold() in text.casefold()]
+            return dict(max(named or choices,key=lambda o:o['time'])) if (named or choices) else None
+    def elect(self,name,channel,map_name,source,text,now,visible=(),preferred=None):
         with self.lock:
             self._clean(now)
             words=set(re.findall(r'\w+',text.casefold()));named=[n for n in self.rows if n.casefold() in words]
             if named and name!=named[0]:return False
             candidates=[n for n,r in self.rows.items() if r['ready'] and
                         (channel!='local' or r['map']==map_name and r['identity'] in visible) and
-                        (channel not in ('world','trade') or r['cash']>=(20000 if channel=='trade' else 2000))]
+                        (n==preferred or channel not in ('world','trade') or r['cash']>=(20000 if channel=='trade' else 2000))]
             if named:candidates=[n for n in candidates if n==named[0]]
+            elif preferred:candidates=[n for n in candidates if n==preferred]
             if not candidates:return False
             key=(channel,map_name if channel=='local' else '*',str(source),hashlib.sha256(text.encode('utf8')).hexdigest()[:16])
             previous=self.claims.get(key)

@@ -9,6 +9,7 @@ class QuestLoot:
         self.requests=self.confirmed=self.timeouts=self.unreachable=0
         self.competitive=set()
         self.approach=None
+        self.value_priority={}
 
     def note_attack(self,target,now):
         if target not in self.attacked:
@@ -49,7 +50,7 @@ class QuestLoot:
                     or self.attempted.get(key,0)>now or self.retries.get(key,0)>=2):continue
             if model not in needed and (not self.collect_all or not w.bag_ready or free<=4):continue
             dist=math.dist(policy.position(now),position)
-            if dist<=2000:candidates.append((model not in needed,dist,identity,item))
+            if dist<=2000:candidates.append(((-1 if model in self.competitive else self.value_priority.get(model,5) if model in needed else 9),dist,identity,item))
         for _,dist,identity,item in sorted(candidates):
             model,handle,position,kind,source,created=item;key=(identity,handle)
             if dist>180:

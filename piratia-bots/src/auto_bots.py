@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha51'
+    report.result['version'] = 'AutoAccountsAlpha52'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -196,10 +196,13 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         if success:return True
         had_entered=had_entered or result.get('entered_world',False)
         reason=result.get('exit_reason')
+        if result.get('entered_world') and result.get('session_elapsed_seconds',0)>=600:protocol_recoveries=0
         protocol_retry=had_entered and reason=='protocol_or_state_error' and result.get('error_type')=='ProtocolError' and protocol_recoveries<3
         if protocol_retry:protocol_recoveries+=1
         retryable=reason=='network_error' or protocol_retry or (had_entered and result.get('server_error_code')==1104)
-        if stop.is_set() or not retryable:return False
+        if stop.is_set() or not retryable:
+            if fleet and not stop.is_set():fleet.update(index,connected=False,state='требуется проверка: '+str(result.get('error_type',reason)))
+            return False
         if result.get('entered_world') and result.get('session_elapsed_seconds',0)>=120:attempt=0
         if attempt>=3 and seconds!=0:return False
         history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds','error_locations','network_errno','last_receive','last_send','connection_health','recent_events','gate_ping_answers','game_ping_answers') if k in result})
@@ -210,12 +213,13 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         result['reconnect_attempts']=recoveries;result['reconnect_wait_seconds']=delay
         result['stage']='reconnecting';result['session_history']=list(history)
         retry_report_path=report_dir / f'bot-report-{index:02d}.json'
-        retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+        from diagnostic_io import write_snapshot
+        write_snapshot(retry_report_path,result)
         if fleet:fleet.update(index,connected=False,state='reconnecting')
         print(f'Бот {index}: сетевое восстановление {recoveries} через {delay} сек.')
         if stop.wait(delay):
             result['stage']='interrupted';result['exit_reason']='stop_requested'
-            retry_report_path.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+            write_snapshot(retry_report_path,result)
             return False
     return False
 
@@ -254,7 +258,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha51'
+    setup_report.result['version'] = 'AutoAccountsAlpha52'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -308,6 +312,9 @@ def main():
         from regions import Regions
         from social import ChatBudget
         navigation = Regions(ROOT/'assets',population_count=args.count)
+        setup_report.result['owner_shop_knowledge_ready']=bool(navigation.life.owner_shops)
+        if not navigation.life.owner_shops:
+            print('Новые магазины не подключены к ботам: останови ботов и запусти RESTORE-BOT-SHOPS.cmd. Если патч не установлен — INSTALL-SERVER-SHOPS.cmd.')
         chat_budget = ChatBudget(interval=4 if navigation.dialogue_data and navigation.dialogue_data.settings['intensity']=='quiet' else 2)
         from fleet import Fleet
         fleet=Fleet(args.count,ROOT/'population-status.json')

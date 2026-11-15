@@ -1,8 +1,9 @@
 {
-  "intent_count": 132,
-  "authored_examples": 660,
-  "authored_conversation_lines": 264,
+  "intent_count": 136,
+  "authored_examples": 680,
+  "authored_conversation_lines": 836,
+  "authored_scene_lines": 144,
   "distinct_factual_item_lines": 5424,
-  "unique_reply_lines": 5688,
+  "unique_reply_lines": 6402,
   "counted_by_distinct_facts_not_word_permutations": true
 }

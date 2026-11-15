@@ -30,6 +30,8 @@ class IntentRecognizer:
         if cleaned in self.exact:
             name=self.exact[cleaned];return Intent(name,1,cleaned,name.endswith('decline'))
         if cleaned.isdecimal() and 1<=int(cleaned)<=200:return Intent('level_answer',.9,cleaned)
+        for name in ('joke_negative','joke_offer','party_response','reciprocal'):
+            if name in self.rows and re.search(self.rows[name]['pattern'],cleaned):return Intent(name,.94,cleaned)
         # More specific domain intents precede broad social/question patterns.
         priority=('silence','resume','returned','friend_request','party_decline','trade_decline','fairy_food','fairy_growth','fairy_breed','party_invite','party_leave','hunt_help','hunt_advice','quest_help','quest_reward','quest_marker','combat_help','stop_attack','under_attack','guild_join','guild_recruit','trade_safety','sockets','dark_swamp','demonic_world','abandoned_city','patchouli','buy','sell','exchange','price','discount','parchment','treasure','hunt_offer','healer_search','tank_search','party_search','party_status','mob_location','boss_location','bank_location','merchant_location','port_location')
         patterns=dict(self.patterns)

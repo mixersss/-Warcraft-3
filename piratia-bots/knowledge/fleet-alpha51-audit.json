@@ -1,0 +1,54 @@
+{
+  "source": "owner uploaded Alpha51 complete archive; reports inspected read-only without executing uploaded files",
+  "privacy": "aggregates only; no owner raw reports, nicknames, character tags, accounts, credentials, packet payloads or binaries",
+  "snapshot_utc_range": [
+    "2026-11-15T16:43:02.266974+00:00",
+    "2026-11-15T16:43:23.017021+00:00"
+  ],
+  "report_count": 400,
+  "version_counts": {
+    "AutoAccountsAlpha51": 400
+  },
+  "population": {
+    "requested": 400,
+    "connected": 400,
+    "actual_professions": {
+      "1": 99,
+      "2": 48,
+      "5": 32,
+      "4": 50,
+      "0": 171
+    },
+    "with_profession": 229,
+    "with_progress_this_session": 66
+  },
+  "novices_below_class_level": 100,
+  "novices_class_level_or_above": 71,
+  "all_new_shop_overlays_missing": true,
+  "monostat_fairies_observed": 18,
+  "market_states": {
+    "idle": 398,
+    "selling": 2
+  },
+  "decision_wall_time": {
+    "median_session_max_seconds": 7.559,
+    "fleet_max_seconds": 57.578,
+    "not_equal_to_thread_cpu": true
+  },
+  "network_snapshot": {
+    "median_seconds_since_received_bytes": 51.99,
+    "max_seconds_since_received_bytes": 410.96,
+    "over_60_seconds": 177,
+    "over_120_seconds": 94
+  },
+  "previous_session_failure_types": {
+    "ConnectionResetError": 1
+  },
+  "hypotheses_and_limits": [
+    "Long decision wall times and stale received-byte timestamps support decoupling network servicing; exact per-bot CPU and all server disconnect causes unproven.",
+    "Missing supplier overlays block verified pet procurement; server shop installation itself not proved missing.",
+    "100 novices below9 are the recent expansion cohort; not all class waiters.",
+    "Snapshot shows400connected, not a continuous load test.",
+    "Raw owner server log absent; one previous10054reset is not a diagnosis of every disconnect."
+  ]
+}

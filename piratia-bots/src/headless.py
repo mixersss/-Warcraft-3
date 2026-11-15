@@ -6,6 +6,7 @@ import socket
 import struct
 import sys
 import time
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from collections import deque
@@ -34,13 +35,17 @@ class ServerError(ProtocolError):
 class Report:
     """Allowlist diagnostics: no credentials, character names or packet contents."""
     def __init__(self):
-        self.result = {'version': 'ConnectionAlpha01', 'stage': 'start', 'events': []}
+        self.result = {'version': 'ConnectionAlpha01', 'stage': 'start', 'events': [],'gate_ping_answers':0,'game_ping_answers':0}
+        self.lock=threading.RLock()
         self.recent=deque(maxlen=40)
 
     def stage(self, value):
         self.result['stage'] = value
 
     def event(self, direction, command, length):
+        with self.lock:return self._event(direction,command,length)
+
+    def _event(self, direction, command, length):
         self.recent.append({'direction':direction,'command':command,'bytes':length})
         self.result['last_'+direction]={'command':command,'bytes':length}
         events = self.result['events']
@@ -48,9 +53,15 @@ class Report:
             events.append({'direction': direction, 'command': command, 'bytes': length})
 
     def write(self, path):
-        self.result['recent_events']=list(self.recent)
-        self.result['time_utc'] = datetime.now(timezone.utc).isoformat()
-        Path(path).write_text(json.dumps(self.result, ensure_ascii=False, indent=2), encoding='utf-8')
+        from diagnostic_io import write_snapshot
+        with self.lock:
+            self.result['recent_events']=list(self.recent)
+            self.result['time_utc'] = datetime.now(timezone.utc).isoformat()
+            data=dict(self.result,events=list(self.result['events']),recent_events=list(self.recent))
+        if not write_snapshot(path,data):
+            self.result['diagnostic_write_failures']=self.result.get('diagnostic_write_failures',0)+1
+            return False
+        return True
 
 
 class Client:
