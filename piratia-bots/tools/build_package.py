@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-53'
-NAME = 'Piratia-Auto-Bots-Alpha53'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-54'
+NAME = 'Piratia-Auto-Bots-Alpha54'
 
 
 def main():
@@ -18,6 +18,7 @@ def main():
     sources += [ROOT/'tools/build_player_guide.py',ROOT/'tools/build_story_reference.py',ROOT/'knowledge/ALPHA51.md',ROOT/'knowledge/ALPHA51-INSTALL.md',ROOT/'knowledge/guide-sources.json']
     sources += [ROOT/'tools/dialogue52_lines.py',ROOT/'tools/dialogue52_scenes.py',ROOT/'tools/build_useful_loot.py',ROOT/'knowledge/ALPHA52.md',ROOT/'knowledge/ALPHA52-INSTALL.md',ROOT/'knowledge/fleet-alpha51-audit.json']
     sources += [ROOT/'knowledge/ALPHA53.md',ROOT/'knowledge/ALPHA53-INSTALL.md']
+    sources += [ROOT/'tools/build_stall_policy.py',ROOT/'knowledge/ALPHA54.md',ROOT/'knowledge/ALPHA54-INSTALL.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -53,7 +54,9 @@ def main():
         'hunt_party_alpha49': {'world_echo_then_private_reply_then_native_team':True,'maximum_level_gap':3,'maximum_meeting_seconds':90,'unproductive_team_seconds':120,'maximum_movement_prefix_cm':2400,'recruitment_cash_gate':2000,'ordinary_chat_cash_gate':20000,'live_verified':False},
         'current_alpha52': {'network_background_ping_pump':True,'max_queued_packets':4096,'max_queued_payload_bytes':2097152,'diagnostic_write_failure_nonfatal':True,'fairy_goal_all_bots':True,'fairy_food_stock_target':6,'restore_verified_shop_knowledge_cmd':'RESTORE-BOT-SHOPS.cmd','dialogue_intents':136,'authored_examples':680,'authored_conversation_lines':836,'scene_lines':144,'distinct_item_fact_lines':5424,'unique_reply_lines':6402,'useful_trade_items':1629,'drop_backed_items':515,'argent_stall_capacity':120,'live_windows_validation':False},
         'current_alpha53':{'paid_native_repair_source_audited':True,'live_repair_verified':False,'escape_fallback_seconds':60,'same_area_resync_cooldown_seconds':600,'proactive_owned_ticket_min_level':10,'population_unchanged':400},
-        'status':'Alpha53 adds paid native repair, broken-gear replacement, confirmed-escape movement waiting, one-minute owned-ticket/native-position-resync fallback and proactive earned ticket procurement. All52 changes included; live Windows fleet recovery unverified.',
+        'current_alpha54':{'stable_junior_preference_no_downgrade':True,'fairy_savings_protected':True,'affordable_pet_bypasses_xp_watchdog':True,'verified_missing_overlay_bootstrap':True,'curated_stall_goods':482,'drop_gear_level20plus':400,'source_monster_definitions':468,'live_windows_purchase_verified':False},
+        'status':'Alpha54 prioritizes the chosen fairy, preserves Junior savings, restores only verified supplier knowledge, curates real20plus dropped gear and requested useful resources, distinguishes empty sockets from actual gems and chooses comfortable income sources. Includes53. Live Windows purchase/trade verification pending.',
+        'previous_status_alpha53':'Alpha53 adds paid native repair, broken-gear replacement, confirmed-escape movement waiting, one-minute owned-ticket/native-position-resync fallback and proactive earned ticket procurement. All52 changes included; live Windows fleet recovery unverified.',
         'previous_status_alpha52':'Alpha52 decouples native ping servicing, bounds queued events, caches unchanged equipment decisions, preserves state during diagnostic file locks, restores verified supplier knowledge, prioritizes fairy food, contextualizes LFG replies and adds finite nearby scenes and useful real loot markets. No claim every idle/disconnect case resolved on owner server.',
         'previous_status_alpha51': 'Alpha51 adds eight owner/server-derived skill plans, a standalone original Russian history/skills guide, and resumable300to400 expansion preserving the old300; complete external community guides not verified. Includes Alpha50: global NPC Patchouli500G buyback/novice fare funding, ordinary dropped-gear and NP markets, real parchment/Caribbean map/ticket digging, essential role weapons, caster cooldown and native coral-energy updates, native-progress watchdog, bounded shoreline attempts, disconnected-land rejection, bounded protocol recovery diagnostics, isolated four-channel dialogue with132 intents/12 profiles/5688distinct reply lines including5424item facts. Prior source mechanics knowledge/roles/builds/fairies/stalls/bank/LFG preserved. Old data/accounts/rates/rewards untouched. Live Windows behavior and all fleet recovery not proven; quest translation, ship/PvP/weapon-forging/production automation remain deferred',
         'junk_classification_policy': 'broad audited common trophy drops and plant ingredients; no general price cap; valuable/quest/modified item protections retained',
@@ -250,11 +253,11 @@ def main():
         'native_route_preserves_astar_turns': True,
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
-        'pure_python_tests_passed': 836,
-        'full_python_suite_total': 848,
-        'full_python_suite_passed': 848,
+        'pure_python_tests_passed': 852,
+        'full_python_suite_total': 864,
+        'full_python_suite_passed': 864,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '848 passed in Alpha53 including 8 legacy socket integrations and 4 dedicated background-network socket tests',
+        'last_full_network_regression': '864 passed in Alpha54 including 8 legacy socket integrations and 4 dedicated background-network socket tests',
         'current_network_regression': '8 legacy simulated-server socket tests and 4 dedicated background-pump socket tests; owner Windows server not tested',
         'default_bot_count': 400,
         'default_mode': 'mixed',

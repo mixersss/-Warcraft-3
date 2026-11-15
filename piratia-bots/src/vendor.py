@@ -37,8 +37,13 @@ class Vendor(Town):
   mechanics=getattr(policy,'mechanics',None)
   reserved=dict(mechanics.craft_reservations(w)) if mechanics else {}
   for slot,item in sorted(w.bag.items()):
-   if (item.identity not in self.junk and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
-   if item.forge or any(item.parameters) or any(a or b for a,b in item.instance_attributes):continue
+   curated=bool(policy.market and getattr(policy.market.catalog,'curated_mode',False))
+   if curated and item.identity in policy.market.catalog.items:continue
+   gear=self.gear.gear.get(item.identity,{})
+   novice=curated and bool(gear and 0<gear['level']<20 and not 5000<=item.identity<=5999 and item.identity not in w.own.equipment.values() and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item))
+   if (item.identity not in self.junk and not novice and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
+   safe_novice=novice and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((a==b==0) or (1<=a<=47 and 0<=b<=2000) for a,b in item.instance_attributes)
+   if item.forge or (any(item.parameters) or any(a or b for a,b in item.instance_attributes)) and not safe_novice:continue
    keep=0 if self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
    count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))

@@ -91,8 +91,14 @@ class Town:
     def spend_limit(self,identity):
         cash=self.world.own.values.get(8,0)
         reserve=100+(self.supply_plan.get('reserved_travel_gold',0)//2 if self.supply_plan else 0)
-        if self.petcare and identity==self.petcare.preferred:reserve+=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0)
-        return max(0,cash-reserve) if identity in self.critical_items() else min(cash//4,max(0,cash-reserve))
+        from pet_care import PET_IDS
+        if self.petcare and identity in PET_IDS:reserve+=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0)
+        critical=self.critical_items()
+        if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity:critical.append(identity)
+        essential=identity in self.combat_items or identity in PET_IDS|{1847,2312,227,4602,4603,4604}
+        if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity and self.gear.types.get(identity) in (3,4,9,29):essential=True
+        if self.petcare and not essential:reserve+=min(max(0,cash-reserve),self.petcare.savings())
+        return max(0,cash-reserve) if identity in critical else min(cash//4,max(0,cash-reserve))
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<120:return None
@@ -122,12 +128,12 @@ class Town:
             if (self.life.can_learn(w,book) and w.own.values.get(7,0)>=book['cost']
                     and not w.skills.get(book['skill'],{}).get('level',0)
                     and not any(i.identity==identity for i in w.bag.values())
-                    and 0<self.life.prices.get(identity,0)<=cash//4):return identity,1
+                    and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity)):return identity,1
         owned={i.identity for i in w.bag.values()}
         for shop in self.life.services['shops'].get(w.map,[]):
             for identity in shop['offers']:
                 if identity in owned or not self.gear.upgrade(w.own,identity,free):continue
-                if 0<self.life.prices.get(identity,0)<=cash//4:return identity,1
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         return None
     def plan_supplies(self,now,policy):
         """Use all known city sellers; a source record never bypasses live menus."""
@@ -157,8 +163,10 @@ class Town:
                 for identity in shop['offers']:
                     if identity in owned:continue
                     price=self.life.prices.get(identity,0)
-                    food_reserve=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0) if self.petcare and identity==self.petcare.preferred else 0
+                    from pet_care import PET_IDS
+                    food_reserve=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0) if self.petcare and identity in PET_IDS else 0
                     if price<=0 or price+reserve+food_reserve>cash:continue
+                    if self.petcare and identity not in PET_IDS|{1847,227,2312,4602,4603,4604} and identity not in self.combat_items and price>max(0,cash-reserve-self.petcare.savings()):continue
                     critical=identity in essentials
                     if not critical and price>cash//4:continue
                     upgrade=self.gear.upgrade(own,identity,free)
@@ -175,6 +183,11 @@ class Town:
                         empty_accessory=any(not own.equipment.get(link) for link in self.gear.gear[identity]['links'])
                     gain=upgrade[0] if upgrade else 1
                     priority=-1 if identity==2312 and self.petcare and self.petcare.needs_food_visit() else 0 if critical else 1 if empty_accessory else 2
+                    if self.petcare and identity in PET_IDS and not self.petcare.fairy():priority=-1
+                    job=own.values.get(4)
+                    caster_blocked=(job in (5,13,14) and (not w.skills.get(99,{}).get('level') or self.gear.types.get(own.equipment.get(9))!=9)
+                                    or job in (4,16) and not any(w.skills.get(skill,{}).get('level') and own.equipment_details.get(link,{}).get('valid') and own.equipment_details.get(link,{}).get('energy',0)>0 for skill,link in ((214,7),(216,6))))
+                    if caster_blocked and identity in self.combat_items:priority=-2
                     travel=approach+math.dist(arrival,shop['position'])
                     score=gain/max(1,price)/(1+travel/12000)
                     options.append(((priority,-score,travel,price,shop['key'],identity),

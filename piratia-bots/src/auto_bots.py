@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha53'
+    report.result['version'] = 'AutoAccountsAlpha54'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -249,7 +249,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 51).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 54).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -258,7 +258,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha53'
+    setup_report.result['version'] = 'AutoAccountsAlpha54'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -311,9 +311,12 @@ def main():
         print('Аккаунты готовы. Создаю недостающих персонажей и подключаю ботов…')
         from regions import Regions
         from social import ChatBudget
+        from restore_shop_knowledge import ensure_shop_knowledge
+        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets')
+        if setup_report.result['shop_bootstrap'].get('restored'):print('Знания торговцев восстановлены по проверенной серверной установке.')
         navigation = Regions(ROOT/'assets',population_count=args.count)
-        setup_report.result['owner_shop_knowledge_ready']=bool(navigation.life.owner_shops)
-        if not navigation.life.owner_shops:
+        setup_report.result['owner_shop_knowledge_ready']=bool(navigation.life.owner_shops and navigation.life.owner_shops.get('fresh_fairies') and navigation.life.owner_shops.get('catalog_revision',0)>=48)
+        if not setup_report.result['owner_shop_knowledge_ready']:
             print('Новые магазины не подключены к ботам: останови ботов и запусти RESTORE-BOT-SHOPS.cmd. Если патч не установлен — INSTALL-SERVER-SHOPS.cmd.')
         chat_budget = ChatBudget(interval=4 if navigation.dialogue_data and navigation.dialogue_data.settings['intensity']=='quiet' else 2)
         from fleet import Fleet

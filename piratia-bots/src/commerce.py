@@ -50,6 +50,8 @@ class Commerce:
             if not matched:return 'Какой предмет предлагаешь? Нужны название или ID и цена.'
             identity=matched[0];needed=identity in market.needed() or market.useful_gear(identity)
             cap=min(market.fair_cap(identity),max(0,w.own.values.get(8,0)//5),max(0,w.own.values.get(8,0)-1000))
+            pet=getattr(self.policy,'petcare',None)
+            if pet:cap=min(cap,max(0,w.own.values.get(8,0)-1000-pet.savings()))
             return f'ID{identity} мне нужен; могу рассмотреть до {cap}G за штуку.' if needed and cap else 'Сейчас не готов покупать этот предмет.'
         matched=self.match(text,offered)
         if not matched:return 'Назови точный предмет или ID: проверю настоящий товар в сумке.'

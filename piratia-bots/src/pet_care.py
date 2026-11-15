@@ -54,6 +54,26 @@ class PetCare:
  def needs_food_visit(self):
   fairy=self.any_fairy()
   return bool(fairy and fairy[1].endurance<2000 and (self.count(2312)+self.count(227)==0 or self.slot_count(2,2312)==0))
+ def purchase_identity(self):
+  return self.preferred
+ def savings(self):
+  owner=getattr(self.life,'owner_shops',None)
+  if self.fairy() or not self.world.own.values.get(4,0) or not owner or not owner.get('fresh_fairies'):return 0
+  return self.life.prices.get(self.preferred,0)+max(0,2-self.count(2312))*self.life.prices.get(2312,0)
+ def affordable_care(self):
+  for identity,count,_ in self.purchase_goals():
+   if identity not in PET_IDS|{2312,227}:continue
+   reserve=100+(max(0,2-self.count(2312))*self.life.prices.get(2312,0) if identity in PET_IDS else 0)
+   if 0<self.life.prices.get(identity,0)<=self.world.own.values.get(8,0)-reserve:return True
+  return False
+ def purchase_blocker(self):
+  owner=getattr(self.life,'owner_shops',None)
+  if not owner or owner.get('catalog_revision',0)<48 or not owner.get('fresh_fairies'):return 'нет проверенного справочника новых магазинов; нужен RESTORE-BOT-SHOPS.cmd'
+  if not self.world.own.values.get(4,0):return 'сначала обязательная первая профессия'
+  if not self.world.bag_ready or self.world.bag_disabled:return 'ожидает подтверждение сумки'
+  if (self.world.bag_capacity or 0)-len(self.world.bag)<2:return 'нужно два свободных места для безопасной закупки'
+  if self.fairy():return ''
+  return '' if self.affordable_care() else 'копит заработанное золото на фею и запас корма'
  def purchase_goals(self,now=None):
   if now is None:now=self.clock
   self.align_build()
@@ -61,7 +81,7 @@ class PetCare:
   owner=getattr(self.life,'owner_shops',None)
   if not owner or owner.get('catalog_revision',0)<48 or not owner.get('fresh_fairies') or w.own.values.get(4,0)==0:return []
   goals=[];fairy=self.fairy()
-  if not fairy:goals.append((self.preferred,1,'покупает фею второго поколения/Джун'))
+  if not fairy:goals.append((self.purchase_identity(),1,'копит и покупает выбранную фею второго поколения/Джун'))
   owned=self.any_fairy()
   if owned and self.count(2312)<6:goals.insert(0,(2312,6-self.count(2312),'пополняет запас автокорма феи'))
   if fairy:
@@ -150,7 +170,7 @@ class PetCare:
   self.moves+=1;self.next_action=now+2;self.reason=reason;return True
  def summary(self):
   fairy=self.fairy()
-  return {'goal_applies_to_every_bot':True,'food_owned':self.count(2312)+self.count(227),'autofeed_ready':bool(self.slot_count(2,2312)),'food_stock_target':6,'urgently_hungry':self.urgent_hunger(),'state':self.reason,'chosen_stat':self.stat,'preferred_fairy':self.preferred,
+  return {'savings_goal':self.savings(),'purchase_blocker':self.purchase_blocker(),'purchase_choice':self.purchase_identity(),'cash':self.world.own.values.get(8,0),'goal_applies_to_every_bot':True,'food_owned':self.count(2312)+self.count(227),'autofeed_ready':bool(self.slot_count(2,2312)),'food_stock_target':6,'urgently_hungry':self.urgent_hunger(),'state':self.reason,'chosen_stat':self.stat,'preferred_fairy':self.preferred,
    'owner_shops_ready':bool(getattr(self.life,'owner_shops',None) and self.life.owner_shops.get('catalog_revision',0)>=48 and self.life.owner_shops.get('fresh_fairies')),
    'observed_fairy':dict(fairy[2],slot=fairy[0],id=fairy[1].identity) if fairy else None,
    'pending':self.pending['kind'] if self.pending else None,'moves':self.moves,'feeding_requests':self.feed_requests,

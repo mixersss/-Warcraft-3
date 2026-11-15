@@ -40,6 +40,7 @@ class Regions:
         self.study_queue=StudyQueue(limit=max(1,min(20,population_count//10)))
         from market import MarketCatalog,MarketDirectory
         self.market_catalog=MarketCatalog(self.assets);self.market_catalog.enable_broad_catalog()
+        self.market_catalog.enable_curated_catalog()
         from market_prices import MarketPrices
         self.market_catalog.prices=MarketPrices(self.assets.parent/'data'/'market-prices.json')
         total=population_count//10

@@ -53,6 +53,8 @@ class MarketCatalog:
         self.prices=None;self.broad_catalog=False;self.npc_purchase_prices={}
         audit=Path(assets)/'useful-loot.json'
         self.useful_audit=json.loads(audit.read_text()) if audit.exists() else {'items':{}}
+        curated=Path(assets)/'stall-goods.json'
+        self.curated=json.loads(curated.read_text()) if curated.exists() else None;self.curated_mode=False
         facts=json.loads((Path(assets)/'life-items.json').read_text())
         npc_source=Path(assets)/'world-npcs.json'
         if npc_source.exists():
@@ -64,6 +66,9 @@ class MarketCatalog:
         if owner:self.npc_purchase_prices.update({int(i):v for i,v in owner['prices'].items()})
     def enable_broad_catalog(self):
         self.broad_catalog=True;self.items.update({int(i):r for i,r in self.useful_audit['items'].items()})
+    def enable_curated_catalog(self):
+        if not self.curated:return
+        self.broad_catalog=True;self.curated_mode=True;self.items={int(i):r for i,r in self.curated['items'].items()}
     def price(self,identity):
         if identity==1000:return 500
         base=self.items.get(identity,{}).get('reference_price',0)
@@ -154,7 +159,7 @@ class Market:
         return any(g['score']>self.gear.gear.get(w.own.equipment.get(link),{}).get('score',0) for link in g['links'])
     def ordinary_gear(self,item):
         return bool(item.valid and (item.max_endurance<=0 or item.endurance>0) and self.catalog.items.get(item.identity,{}).get('category')=='gear' and not item.forge
-                    and not any(item.parameters) and all((key==value==0) or (1<=key<=47 and 0<=value<=2000)
+                    and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((key==value==0) or (1<=key<=47 and 0<=value<=2000)
                                                          for key,value in item.instance_attributes))
     def item_ask_price(self,item):
         base=self.ask_price(item.identity)
@@ -205,7 +210,8 @@ class Market:
             if self.focused_goods and not self.broad_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
             if not meta or item.identity==1000 and self.focused_goods or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
             # Never sell enhanced, instanced, equipped or potentially valuable personalized items cheaply.
-            if item.forge or any(item.parameters) or (any(a or b for a,b in item.instance_attributes) and not (self.focused_goods and self.ordinary_gear(item))):continue
+            ordinary=self.focused_goods and self.ordinary_gear(item)
+            if item.forge or (any(item.parameters) and not ordinary) or (any(a or b for a,b in item.instance_attributes) and not ordinary):continue
             if meta['category'] in ('gem','refining') and item.max_energy>1:continue
             if item.identity in w.own.equipment.values() and not self.broad_goods:continue
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
@@ -252,6 +258,10 @@ class Market:
                         if requirement['kind']==1 and identity in self.catalog.items:
                             missing=requirement['count']-self.count(identity)
                             if missing>0:wanted[identity]=max(wanted.get(identity,0),missing)
+            pet=getattr(self.policy_reference,'petcare',None)
+            if pet and pet.any_fairy():
+                for identity in (227,2312):
+                    if self.count(identity)<2:wanted[identity]=2-self.count(identity)
         return wanted
     def fair_cap(self,identity):
         if identity==1000:return 500
@@ -290,6 +300,8 @@ class Market:
             w=self.world;cash=w.own.values.get(8,0);want=self.needed();free=(w.bag_capacity or 0)-len(w.bag)
             if w.bag_disabled or free<2:return
             budget=max(0,min(cash//5,cash-1000))
+            pet=getattr(self.policy_reference,'petcare',None) if self.policy_reference else None
+            if pet:budget=min(budget,max(0,cash-1000-pet.savings()))
             for grid,price,item in offers:
                 if not item.valid or price<=0:continue
                 identity=item.identity

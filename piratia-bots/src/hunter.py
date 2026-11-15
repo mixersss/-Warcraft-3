@@ -610,7 +610,7 @@ class Hunter:
             # Full bags still use unlimited ordinary vendor sales; food can be
             # replenished, and owned gear/books are used earlier in the loop.
             if key in ('market','story','career','adventure'):return False
-            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2:return False
+            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
         can_sell_full=(key=='market' and (self.world.skills.get(241,{}).get('level',0)>0 or
                        self.world.own.values.get(13,0)>0 and any(i.identity==3296 and i.valid for i in self.world.bag.values())))
@@ -632,6 +632,7 @@ class Hunter:
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
         if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
+        if key=='town' and self.petcare and self.petcare.affordable_care():essential_combat=True
         if key=='repair' and feature and feature.candidates():essential_combat=True
         if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
@@ -1356,6 +1357,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.town.petcare=policy.petcare
         from economy import Economy
         policy.economy=Economy(bot_name,getattr(navigation,'assets',Path(__file__).resolve().parents[1]/'assets'))
+        if getattr(getattr(navigation,'market_catalog',None),'curated_mode',False):policy.economy.trade_data=navigation.market_catalog.curated
         policy.economy.patchouli_to_npc=True
         from treasure_hunt import TreasureHunt
         policy.treasure=TreasureHunt(world,policy.economy);policy.town.treasure=policy.treasure

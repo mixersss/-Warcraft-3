@@ -9,6 +9,7 @@ class Economy:
   self.offset=seed%1800;self.cohort=('farmer' if seed%100<15 else 'leveler' if seed%100<60 else 'fairy' if seed%100<75 else 'dungeon')
   self.data=json.loads((Path(assets)/'patchouli-farms.json').read_text());self.last_models=[];self.reason=''
   self.patchouli_to_npc=False
+  self.trade_data=None;self.last_goods=[]
  def funding_models(self,world,region,learning,now):
   if not region:return set()
   rows=[];own=world.own;position=world.position(now)
@@ -42,6 +43,7 @@ class Economy:
  def business(self,world,now):return self.phase(world,now) in ('business','history','professions','trade')
  def models(self,world,region,learning,now):
   self.last_models=[]
+  if self.trade_data:return self.trade_models(world,region,learning,now)
   if self.phase(world,now)!='income' or not region or sum(i.count for i in world.bag.values() if i.identity==1000)>=30:return set()
   rows=[];own=world.own;hp=max(1,own.values.get(31,1));level=own.values.get(0,1)
   for model,source in self.data['sources'].items():
@@ -55,8 +57,28 @@ class Economy:
   self.last_models=[r[2] for r in sorted(rows)[:2]]
   self.reason=('экономика: добывает Пачкули для продажи НПС по500G' if self.patchouli_to_npc else 'экономика: фармит чертежи Пачкули для ларька по500G') if rows else 'нет подходящих источников Пачкули на текущей карте; продолжает кач'
   return set(self.last_models)
+ def trade_models(self,world,region,learning,now):
+  self.last_goods=[]
+  if self.phase(world,now)!='income' or not region:return set()
+  own=world.own;level=own.values.get(0,1);hp=max(1,own.values.get(31,1));position=world.position(now);rows=[]
+  minimum=max(1,level-(8 if self.cohort=='farmer' else 5))
+  held={}
+  for item in world.bag.values():held[item.identity]=held.get(item.identity,0)+item.count
+  for model,source in self.trade_data['sources'].items():
+   farm=region['farms'].get(model);identity=int(model)
+   if (not farm or not farm['points'] or not minimum<=farm['level']<=level or farm['hp']>hp*3
+       or learning.blocked(identity,now) or learning.dangerous(identity,now)):continue
+   goods=[g for g in source['items'] if held.get(g['id'],0)<(15 if self.trade_data['items'][str(g['id'])]['category']=='scroll' else 20)]
+   value=sum(g['base_factor']*self.trade_data['items'][str(g['id'])]['reference_price'] for g in goods)
+   if not value:continue
+   distance=min(math.dist(position,p) for p in farm['points'])
+   score=value/(1+farm['hp']/hp)/(1+distance/15000)
+   rows.append((-score,identity,[g['id'] for g in goods]))
+  chosen=sorted(rows)[:2];self.last_models=[r[1] for r in chosen];self.last_goods=sorted({i for r in chosen for i in r[2]})
+  self.reason='экономика: добывает свитки, экипировку20+ и проверенные материалы для ларька' if chosen else 'нет комфортного источника полезного товара; продолжает обычный кач'
+  return set(self.last_models)
  def summary(self,world,now):
-  return {'cohort':self.cohort,'phase':self.phase(world,now),'state':self.reason,'patchouli_models':self.last_models,
+  return {'curated_income':bool(self.trade_data),'wanted_income_goods':self.last_goods,'cohort':self.cohort,'phase':self.phase(world,now),'state':self.reason,'patchouli_models':[] if self.trade_data else self.last_models,'income_models':self.last_models,
           'randomized_cycle':self.cycle,'activity_order':[name for name,_ in self.stages],'activity_seconds':dict(self.stages),'waiting_for_current_action':self.busy,
           'patchouli_player_price':None if self.patchouli_to_npc else 500,'patchouli_npc_buyback':500 if self.patchouli_to_npc else None,'npc_price_changed':self.patchouli_to_npc,'nominal_business_seconds_per_30min':180,'nominal_history_seconds_per_30min':240,
           'nominal_profession_development_seconds_per_30min':120,'nominal_trade_preparation_seconds_per_30min':120,
