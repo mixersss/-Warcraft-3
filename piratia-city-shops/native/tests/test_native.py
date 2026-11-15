@@ -48,6 +48,16 @@ class PriceCodecTests(unittest.TestCase):
    identity=struct.unpack_from('<I',raw,8)[0]
    with self.assertRaises(ValueError):patch_binary(bytes(raw),{identity:{'kind':1,'price':5000}})
 
+def assert_actor_migration(test,before,after):
+ old=legacy.binary_rows(before);new=legacy.binary_rows(after)
+ test.assertEqual(len(new),len(old)+1)
+ for a,b in zip(old,new):
+  identity=struct.unpack_from('<I',a,4)[0]
+  if a[394:410].split(b'\0')[0]==b'OwnerForge':
+   test.assertEqual(a[:244],b[:244]);test.assertEqual(a[260:],b[260:])
+   test.assertEqual(struct.unpack_from('<iiii',b,244),(219750,270350,219750,270350))
+  else:test.assertEqual(a,b)
+
 class InstallationTests(unittest.TestCase):
  def test_alpha47_upgrade_restores_city_ticket_prices_and_adds_expert_book(self):
   with tempfile.TemporaryDirectory() as d:
@@ -57,7 +67,7 @@ class InstallationTests(unittest.TestCase):
    before=(server/'garner/garnerNPC.bin').read_bytes();sdk=server/'script/MisSdk/NpcSdk.lua'
    sdk.write_bytes(sdk.read_bytes()+b'\n-- owner SDK addition retained\n')
    result=isolated_install(server,client,True)
-   self.assertEqual(result['upgraded_from'],'Alpha47');self.assertEqual((server/'garner/garnerNPC.bin').read_bytes(),before)
+   self.assertEqual(result['upgraded_from'],'Alpha47');assert_actor_migration(self,before,(server/'garner/garnerNPC.bin').read_bytes())
    self.assertTrue(sdk.read_bytes().endswith(b'-- owner SDK addition retained\n'))
    for table in (server/'ItemInfo.bin',client/'scripts/table/iteminfo.bin'):
     raw=table.read_bytes();prices={struct.unpack_from('<I',raw,p+4)[0]:struct.unpack_from('<i',raw,p+320)[0] for p in range(4,len(raw),868)}
@@ -69,7 +79,7 @@ class InstallationTests(unittest.TestCase):
    p=Path(d);server,client=fixture(p);assets=p/'bot-assets';assets.mkdir();(assets/'world-npcs.json').write_text('{}')
    isolated_install(server,client,False,assets);self.assertFalse((assets/'owner-city-shops.json').exists())
    isolated_install(server,client,True,assets);data=json.loads((assets/'owner-city-shops.json').read_text())
-   self.assertEqual(len(data['npcs']),5);self.assertEqual(data['prices']['3844'],10000)
+   self.assertEqual(len(data['npcs']),6);self.assertEqual(data['prices']['3844'],10000)
    self.assertTrue(isolated_install(server,client,True,assets)['already_installed'])
    (assets/'owner-city-shops.json').write_text('bad')
    isolated_install(server,client,True,assets);self.assertEqual(json.loads((assets/'owner-city-shops.json').read_text()),data)
@@ -77,8 +87,8 @@ class InstallationTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    server,client=fixture(Path(d));original=(server/'garner/garnerNPC.bin').read_bytes();preview=isolated_install(server,client)
    self.assertFalse(preview['applied']);report=isolated_install(server,client,True)
-   self.assertTrue(report['native_trade_windows']);self.assertEqual(report['positions_m'],[list(p) for p in legacy.DEFAULT_POINTS])
-   self.assertTrue((server/'garner/garnerNPC.bin').read_bytes().startswith(original));self.assertEqual(len(legacy.binary_rows((server/'garner/garnerNPC.bin').read_bytes())),7)
+   self.assertTrue(report['native_trade_windows']);self.assertEqual(report['positions_m'],[s['position_m'] for s in CAT['shops']])
+   self.assertTrue((server/'garner/garnerNPC.bin').read_bytes().startswith(original));self.assertEqual(len(legacy.binary_rows((server/'garner/garnerNPC.bin').read_bytes())),8)
    self.assertEqual((server/'ItemInfo.bin').read_bytes(),(client/'scripts/table/iteminfo.bin').read_bytes())
    script=(server/'script/MisScript/NpcScript01.lua').read_bytes();sdk=(server/'script/MisSdk/NpcSdk.lua').read_bytes()
    self.assertIn(b'OwnerNativeShops',script);self.assertNotIn(b'OwnerMarketBuy',script);self.assertIn(b'OwnerNativeBuy',sdk)
@@ -87,7 +97,7 @@ class InstallationTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    server,client=fixture(Path(d));legacy.install(server,legacy.DEFAULT_CENTER,True);before=(server/'garner/garnerNPC.bin').read_bytes()
    result=isolated_install(server,client,True)
-   self.assertEqual((server/'garner/garnerNPC.bin').read_bytes(),before);self.assertEqual(result['npc_ids'],[19,20,21,22,23])
+   assert_actor_migration(self,before,(server/'garner/garnerNPC.bin').read_bytes());self.assertEqual(result['npc_ids'],[19,20,21,22,23,24])
    sdk=(server/'script/MisSdk/NpcSdk.lua').read_bytes();self.assertEqual(sdk.count(b'item.func == OwnerOpenTrade'),1)
    self.assertNotIn(b'item.func == OwnerMarketBuy',sdk)
  def test_upgrade_preserves_edits_outside_owned_lua_block(self):
@@ -115,7 +125,10 @@ class InstallationTests(unittest.TestCase):
    raw=bytearray(binary.read_bytes());raw[4+60]^=1;binary.write_bytes(raw)
    text.write_bytes(b'// owner table comment\n'+text.read_bytes());before=text.read_bytes()
    result=isolated_install(server,client,True)
-   self.assertEqual(binary.read_bytes(),bytes(raw));self.assertEqual(text.read_bytes(),before)
+   assert_actor_migration(self,bytes(raw),binary.read_bytes())
+   oldrows=legacy.npc_rows(before);newrows=legacy.npc_rows(text.read_bytes())
+   for identity,row in oldrows.items():
+    if row[11].strip()!=b'OwnerForge':self.assertEqual(row,newrows[identity])
    self.assertEqual(set(result['preserved_changed_files']),{'garner/garnernpc.txt','garner/garnerNPC.bin'})
  def test_wrong_client_is_refused_before_any_server_write(self):
   with tempfile.TemporaryDirectory() as d:
@@ -205,17 +218,17 @@ for key,shop in pairs(OwnerNativeShops) do
   local c=Fresh();local npc={id=7};assert(OwnerOpenTrade(c,npc,key,page)==1);assert(c.opened==stock)
   for panel=1,3 do
    for index,id in ipairs(stock[panel].item) do
-    c.gold=1000000;assert(OwnerNativeBuy(c,npc,shop.pages[1],panel-1,index-1,0,1)==1)
-    assert(c.last==id and c.gold==1000000-Prices[id]);total=total+1
+    c.gold=10000000;assert(OwnerNativeBuy(c,npc,shop.pages[1],panel-1,index-1,0,1)==1)
+    assert(c.last==id and c.gold==10000000-Prices[id]);total=total+1
    end
   end
  end
 end
-assert(total==645)
+assert(total==716)
 ''')
  def test_npc_initialization_exposes_trade_buttons_and_nonempty_catalog(self):
   self.runlua('''
-for _,f in ipairs({OwnerClothes,OwnerFairies,OwnerForge,OwnerTickets,OwnerBoosts}) do
+for _,f in ipairs({OwnerClothes,OwnerFairies,OwnerForge,OwnerTickets,OwnerBoosts,OwnerEquipment}) do
  InitPage();f();assert(Trade.owner_native_shop and Page[1].count<=12)
  assert(Trade[1].count+Trade[2].count+Trade[3].count>0);assert(Page[1][1].func==OwnerOpenTrade)
 end

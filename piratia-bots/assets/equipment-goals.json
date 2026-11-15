@@ -1,0 +1,526 @@
+{
+  "version": 1,
+  "shop_key": "equipment",
+  "tiers": [
+    {
+      "label": "Unsealed Lv35 - 50000 gold",
+      "ids": [
+        763,
+        770,
+        777,
+        781,
+        785,
+        789,
+        799,
+        803
+      ]
+    },
+    {
+      "label": "Unsealed Lv45 - 200000 gold",
+      "ids": [
+        764,
+        767,
+        771,
+        774,
+        778,
+        782,
+        786,
+        790,
+        793,
+        796,
+        800,
+        804
+      ]
+    },
+    {
+      "label": "Unsealed Lv55 - 450000 gold",
+      "ids": [
+        765,
+        768,
+        772,
+        775,
+        779,
+        783,
+        787,
+        791,
+        794,
+        797,
+        801,
+        805,
+        807,
+        808,
+        809,
+        810,
+        811,
+        812,
+        813,
+        814,
+        815
+      ]
+    },
+    {
+      "label": "Unsealed Lv65 - 900000 gold",
+      "ids": [
+        766,
+        769,
+        773,
+        776,
+        780,
+        784,
+        788,
+        792,
+        795,
+        798,
+        802,
+        806
+      ]
+    },
+    {
+      "label": "Black Dragon Lv75 - 1800000 gold",
+      "ids": [
+        845,
+        846,
+        847,
+        848
+      ]
+    },
+    {
+      "label": "Advanced Black Dragon - 2500000 gold",
+      "ids": [
+        2367,
+        2368,
+        2369,
+        2370
+      ]
+    }
+  ],
+  "items": {
+    "763": {
+      "level": 35,
+      "price": 50000,
+      "name": "Armor of Revenant",
+      "jobs": "1,8,9",
+      "bodies": "2"
+    },
+    "770": {
+      "level": 35,
+      "price": 50000,
+      "name": "Sword of Grief",
+      "jobs": "1,8,9",
+      "bodies": "2"
+    },
+    "777": {
+      "level": 35,
+      "price": 50000,
+      "name": "Robe of Death",
+      "jobs": "2,12",
+      "bodies": "1,3"
+    },
+    "781": {
+      "level": 35,
+      "price": 50000,
+      "name": "Touch of Death",
+      "jobs": "2,12",
+      "bodies": "1,3"
+    },
+    "785": {
+      "level": 35,
+      "price": 50000,
+      "name": "Staff of the Avenger",
+      "jobs": "5,13,14",
+      "bodies": "3,4"
+    },
+    "789": {
+      "level": 35,
+      "price": 50000,
+      "name": "Robe of the Venom Witch",
+      "jobs": "5,13,14",
+      "bodies": "3,4"
+    },
+    "799": {
+      "level": 35,
+      "price": 50000,
+      "name": "Tooth of Specter",
+      "jobs": "4,16",
+      "bodies": "1,3,4"
+    },
+    "803": {
+      "level": 35,
+      "price": 50000,
+      "name": "Mantle of the Naga",
+      "jobs": "4,16",
+      "bodies": "1,3,4"
+    },
+    "764": {
+      "level": 45,
+      "price": 200000,
+      "name": "Tattoo of the Cursed Warrior",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "767": {
+      "level": 45,
+      "price": 200000,
+      "name": "Platemail of the Cursed Soul",
+      "jobs": "9",
+      "bodies": "1"
+    },
+    "771": {
+      "level": 45,
+      "price": 200000,
+      "name": "Greatsword of Incantation",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "774": {
+      "level": 45,
+      "price": 200000,
+      "name": "Blade of Incantation",
+      "jobs": "9,10",
+      "bodies": "1"
+    },
+    "778": {
+      "level": 45,
+      "price": 200000,
+      "name": "Corset of Incantation",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "782": {
+      "level": 45,
+      "price": 200000,
+      "name": "Kiss of the Cursed",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "786": {
+      "level": 45,
+      "price": 200000,
+      "name": "Staff of Incantation",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "790": {
+      "level": 45,
+      "price": 200000,
+      "name": "Coat of Invocation",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "793": {
+      "level": 45,
+      "price": 200000,
+      "name": "Staff of Abraxas",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "796": {
+      "level": 45,
+      "price": 200000,
+      "name": "Robe of Abraxas",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "800": {
+      "level": 45,
+      "price": 200000,
+      "name": "Tooth of the Cursed",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "804": {
+      "level": 45,
+      "price": 200000,
+      "name": "Mantle of the Cursed Flame",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "765": {
+      "level": 55,
+      "price": 450000,
+      "name": "Tattoo of Evanescence",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "768": {
+      "level": 55,
+      "price": 450000,
+      "name": "Armor of Evanescence",
+      "jobs": "9",
+      "bodies": "1"
+    },
+    "772": {
+      "level": 55,
+      "price": 450000,
+      "name": "Roar of Evanescence",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "775": {
+      "level": 55,
+      "price": 450000,
+      "name": "Dance of Evanescence",
+      "jobs": "9,10",
+      "bodies": "1"
+    },
+    "779": {
+      "level": 55,
+      "price": 450000,
+      "name": "Coat of Evanescence",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "783": {
+      "level": 55,
+      "price": 450000,
+      "name": "Bellow of Evanescence",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "787": {
+      "level": 55,
+      "price": 450000,
+      "name": "Staff of Evanescence",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "791": {
+      "level": 55,
+      "price": 450000,
+      "name": "Robe of the Arcane",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "794": {
+      "level": 55,
+      "price": 450000,
+      "name": "Staff of Mirage",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "797": {
+      "level": 55,
+      "price": 450000,
+      "name": "Robe of Malediction",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "801": {
+      "level": 55,
+      "price": 450000,
+      "name": "Tooth of Evanescence",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "805": {
+      "level": 55,
+      "price": 450000,
+      "name": "Cloak of Evanescence",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "807": {
+      "level": 55,
+      "price": 450000,
+      "name": "Gauntlets of Evanescence",
+      "jobs": "9",
+      "bodies": "1"
+    },
+    "808": {
+      "level": 55,
+      "price": 450000,
+      "name": "Greaves of Evanescence",
+      "jobs": "9",
+      "bodies": "1"
+    },
+    "809": {
+      "level": 55,
+      "price": 450000,
+      "name": "Gloves of Evanescence",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "810": {
+      "level": 55,
+      "price": 450000,
+      "name": "Shoes of Evanescence",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "811": {
+      "level": 55,
+      "price": 450000,
+      "name": "Gloves of Malediction",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "812": {
+      "level": 55,
+      "price": 450000,
+      "name": "Gloves of the Arcane",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "813": {
+      "level": 55,
+      "price": 450000,
+      "name": "Boots of Malediction",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "814": {
+      "level": 55,
+      "price": 450000,
+      "name": "Boots of the of the Arcane",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "815": {
+      "level": 55,
+      "price": 450000,
+      "name": "Heavy Gloves of Evanescence",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "766": {
+      "level": 65,
+      "price": 900000,
+      "name": "Tattoo of Enigma",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "769": {
+      "level": 65,
+      "price": 900000,
+      "name": "Armor of Enigma",
+      "jobs": "9",
+      "bodies": "1"
+    },
+    "773": {
+      "level": 65,
+      "price": 900000,
+      "name": "Judgment of Enigma",
+      "jobs": "8",
+      "bodies": "2"
+    },
+    "776": {
+      "level": 65,
+      "price": 900000,
+      "name": "Blade of Enigma",
+      "jobs": "9,10",
+      "bodies": "1"
+    },
+    "780": {
+      "level": 65,
+      "price": 900000,
+      "name": "Mantle of Enigma",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "784": {
+      "level": 65,
+      "price": 900000,
+      "name": "Rifle of Enigma",
+      "jobs": "12",
+      "bodies": "1,3"
+    },
+    "788": {
+      "level": 65,
+      "price": 900000,
+      "name": "Staff of Enigma",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "792": {
+      "level": 65,
+      "price": 900000,
+      "name": "Robe of Enigma",
+      "jobs": "13",
+      "bodies": "3,4"
+    },
+    "795": {
+      "level": 65,
+      "price": 900000,
+      "name": "Staff of the Sphinx",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "798": {
+      "level": 65,
+      "price": 900000,
+      "name": "Robe of the Sphinx",
+      "jobs": "14",
+      "bodies": "3,4"
+    },
+    "802": {
+      "level": 65,
+      "price": 900000,
+      "name": "Kris of the Sphinx",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "806": {
+      "level": 65,
+      "price": 900000,
+      "name": "Mantle of the Sphinx",
+      "jobs": "16",
+      "bodies": "1,3,4"
+    },
+    "845": {
+      "level": 75,
+      "price": 1800000,
+      "name": "Black Dragon Torso",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "846": {
+      "level": 75,
+      "price": 1800000,
+      "name": "Black Dragon Claw",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "847": {
+      "level": 75,
+      "price": 1800000,
+      "name": "Black Dragon Wing",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "848": {
+      "level": 75,
+      "price": 1800000,
+      "name": "Black Dragon Helm",
+      "jobs": "-1",
+      "bodies": "4"
+    },
+    "2367": {
+      "level": 75,
+      "price": 2500000,
+      "name": "Corporeal Black Dragon Torso",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "2368": {
+      "level": 75,
+      "price": 2500000,
+      "name": "Rightful Black Dragon Claw",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "2369": {
+      "level": 75,
+      "price": 2500000,
+      "name": "Rightful Black Dragon Wings",
+      "jobs": "-1",
+      "bodies": "-1"
+    },
+    "2370": {
+      "level": 75,
+      "price": 2500000,
+      "name": "Rightful Head of Black Dragon",
+      "jobs": "-1",
+      "bodies": "4"
+    }
+  }
+}

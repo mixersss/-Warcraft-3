@@ -53,6 +53,20 @@ class Town:
             if any(e.identity!=self.world.own_id and e.control in (1,2,3) and math.dist(e.position,goal)<250 for e in self.world.entities.values()):continue
             if policy.nav.path(policy.position(now),goal):return goal
         return None
+    def equipment_goal(self):
+        data=getattr(self.life,'equipment_goals',None);owner=getattr(self.life,'owner_shops',None);w=self.world
+        if not data or not owner or owner.get('catalog_revision',0)<55:return None
+        free=max(0,(w.bag_capacity or 0)-len(w.bag));owned={i.identity for i in w.bag.values()};choices=[]
+        for key,row in data['items'].items():
+            identity=int(key)
+            if identity in owned or not self.gear.compatible(w.own,identity):continue
+            upgrade=self.gear.upgrade(w.own,identity,free)
+            price=self.life.prices.get(identity,0)
+            if upgrade and price>0:choices.append((row['level'],price,-upgrade[0],identity))
+        return min(choices)[3] if choices else None
+    def equipment_savings(self):
+        goal=self.equipment_goal()
+        return self.life.prices.get(goal,0) if goal else 0
     def critical_items(self,map_name=None):
         w=self.world;job=w.own.values.get(4);result=[];shop_map=map_name or w.map
         if job in (5,13,14) and not (self.gear.types.get(w.own.equipment.get(9))==9 and w.own.equipment_details.get(9,{}).get('valid',True)):
@@ -85,6 +99,8 @@ class Town:
         if self.petcare:result.extend(identity for identity,_,_ in self.petcare.purchase_goals())
         if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
         if self.treasure:result.extend(identity for identity,_,_ in self.treasure.purchase_goals())
+        goal=self.equipment_goal()
+        if goal:result.append(goal)
         if self.petcare and self.petcare.needs_food_visit() and 2312 in result:
             result=[2312]+[i for i in result if i!=2312]
         return result
@@ -98,6 +114,8 @@ class Town:
         essential=identity in self.combat_items or identity in PET_IDS|{1847,2312,227,4602,4603,4604}
         if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity and self.gear.types.get(identity) in (3,4,9,29):essential=True
         if self.petcare and not essential:reserve+=min(max(0,cash-reserve),self.petcare.savings())
+        goal=self.equipment_goal()
+        if goal and identity not in critical:reserve+=min(max(0,cash-reserve),self.equipment_savings())
         return max(0,cash-reserve) if identity in critical else min(cash//4,max(0,cash-reserve))
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
@@ -161,7 +179,7 @@ class Town:
             for shop in self.npcs.shops(map_name):
                 if self.failed_suppliers.get(shop['key'],0)>now:continue
                 for identity in shop['offers']:
-                    if identity in owned:continue
+                    if identity in owned and identity not in self.combat_items:continue
                     price=self.life.prices.get(identity,0)
                     from pet_care import PET_IDS
                     food_reserve=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0) if self.petcare and identity in PET_IDS else 0
@@ -212,7 +230,8 @@ class Town:
             labels=[r.string() for _ in range(count)]
             if source!=npc:return True
             desired=(self.target_shop or {}).get('menu_pages',{}).get(str(self.wanted[0]),1) if self.wanted else 1
-            accepted={'trade','торговля','купить'} if desired==1 else {'trade - part '+str(desired)}
+            label=(self.target_shop or {}).get('menu_labels',{}).get(str(desired))
+            accepted={label.casefold()} if label else ({'trade','торговля','купить'} if desired==1 else {'trade - part '+str(desired)})
             index=next((i for i,label in enumerate(labels) if label.casefold() in accepted),None)
             if index is None:self.finish(now,180);return True
             send(301,function_request(npc,page,index));self.context=npc,'shop',now+8

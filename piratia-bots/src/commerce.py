@@ -43,7 +43,7 @@ class Commerce:
         """Fresh public stock/needs only; never consult private quotes."""
         text=text.casefold();market=self.policy.market;w=self.policy.world
         if re.search(r'\bнп\b',text):text+=' ID684'
-        if 'пачкули' in text:return 'Пачкули продаём НПС: после нового патча выкуп500G за штуку.'
+        if 'пачкули' in text:return 'Пачкули продаём НПС: после нового патча выкуп1500G за штуку.'
         offered={w.bag[slot].identity:(price,count,slot) for _,price,count,slot in market.offers(self.policy)}
         if re.search(r'\bпродам\b|\bпродаю\b',text):
             matched=self.match(text,market.catalog.items)
@@ -52,6 +52,8 @@ class Commerce:
             cap=min(market.fair_cap(identity),max(0,w.own.values.get(8,0)//5),max(0,w.own.values.get(8,0)-1000))
             pet=getattr(self.policy,'petcare',None)
             if pet:cap=min(cap,max(0,w.own.values.get(8,0)-1000-pet.savings()))
+            town=getattr(self.policy,'town',None)
+            if town:cap=min(cap,max(0,w.own.values.get(8,0)-1000-town.equipment_savings()))
             return f'ID{identity} мне нужен; могу рассмотреть до {cap}G за штуку.' if needed and cap else 'Сейчас не готов покупать этот предмет.'
         matched=self.match(text,offered)
         if not matched:return 'Назови точный предмет или ID: проверю настоящий товар в сумке.'
@@ -95,6 +97,8 @@ class Commerce:
             if not ids:return 'Что предлагаешь? Напиши название или ID предмета и цену, например: продам 684 за 5000.'
             identity=ids[0];wanted=identity in market.needed() or market.useful_gear(identity)
             cap=min(market.fair_cap(identity),max(0,w.own.values.get(8,0)//5),max(0,w.own.values.get(8,0)-1000))
+            town=getattr(self.policy,'town',None)
+            if town:cap=min(cap,max(0,w.own.values.get(8,0)-1000-town.equipment_savings()))
             requested=re.search(r'(?:за|цена)\s*(\d+)',text)
             if not wanted:return f'Предмет ID{identity} сейчас мне не нужен. Ищу то, что улучшит мой комплект или нужно для развития.'
             if cap<=0:return 'Сейчас не хватает свободных денег на покупку.'

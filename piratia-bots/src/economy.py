@@ -9,7 +9,9 @@ class Economy:
   self.offset=seed%1800;self.cohort=('farmer' if seed%100<15 else 'leveler' if seed%100<60 else 'fairy' if seed%100<75 else 'dungeon')
   self.data=json.loads((Path(assets)/'patchouli-farms.json').read_text());self.last_models=[];self.reason=''
   self.patchouli_to_npc=False
-  self.trade_data=None;self.last_goods=[]
+  self.trade_data=None;self.last_goods=[];self.npc_income_enabled=False
+  income_path=Path(assets)/'npc-income.json'
+  self.npc_income=json.loads(income_path.read_text()) if income_path.exists() else None
  def funding_models(self,world,region,learning,now):
   if not region:return set()
   rows=[];own=world.own;position=world.position(now)
@@ -30,7 +32,7 @@ class Economy:
   cycle=int((now+self.offset)//1800)
   if cycle!=self.cycle:
    self.cycle=cycle;rng=random.Random(str(self.seed)+':'+str(cycle))
-   values=[('business',180),('history',240),('income',420 if self.cohort=='farmer' else 240),('professions',120),('trade',120)]
+   values=[('business',60),('history',90),('income',180 if self.cohort=='farmer' else 90),('professions',45),('trade',45)]
    self.stages=[(name,round(seconds*rng.uniform(.85,1.15))) for name,seconds in values]
    self.stages.append(('progression',1800-sum(t for _,t in self.stages)));rng.shuffle(self.stages)
   for name,seconds in self.stages:
@@ -55,7 +57,7 @@ class Economy:
    score=source['base_factor']/(1+farm['hp']/hp)/(1+distance/15000)
    rows.append((-score,distance,identity))
   self.last_models=[r[2] for r in sorted(rows)[:2]]
-  self.reason=('экономика: добывает Пачкули для продажи НПС по500G' if self.patchouli_to_npc else 'экономика: фармит чертежи Пачкули для ларька по500G') if rows else 'нет подходящих источников Пачкули на текущей карте; продолжает кач'
+  self.reason=('экономика: добывает Пачкули для продажи НПС по1500G' if self.patchouli_to_npc else 'экономика: фармит чертежи Пачкули для ларька по1500G') if rows else 'нет подходящих источников Пачкули на текущей карте; продолжает кач'
   return set(self.last_models)
  def trade_models(self,world,region,learning,now):
   self.last_goods=[]
@@ -74,12 +76,20 @@ class Economy:
    distance=min(math.dist(position,p) for p in farm['points'])
    score=value/(1+farm['hp']/hp)/(1+distance/15000)
    rows.append((-score,identity,[g['id'] for g in goods]))
+  if self.npc_income_enabled and self.npc_income and held.get(self.npc_income['item_id'],0)<60:
+   for model,source in self.npc_income['sources'].items():
+    farm=region['farms'].get(model);identity=int(model)
+    if (not farm or not farm['points'] or not minimum<=farm['level']<=level or farm['hp']>hp*3
+        or learning.blocked(identity,now) or learning.dangerous(identity,now)):continue
+    distance=min(math.dist(position,p) for p in farm['points'])
+    score=source['base_factor']*self.npc_income['npc_buyback']/(1+farm['hp']/hp)/(1+distance/15000)
+    rows.append((-score,identity,[self.npc_income['item_id']]))
   chosen=sorted(rows)[:2];self.last_models=[r[1] for r in chosen];self.last_goods=sorted({i for r in chosen for i in r[2]})
   self.reason='экономика: добывает свитки, экипировку20+ и проверенные материалы для ларька' if chosen else 'нет комфортного источника полезного товара; продолжает обычный кач'
   return set(self.last_models)
  def summary(self,world,now):
   return {'curated_income':bool(self.trade_data),'wanted_income_goods':self.last_goods,'cohort':self.cohort,'phase':self.phase(world,now),'state':self.reason,'patchouli_models':[] if self.trade_data else self.last_models,'income_models':self.last_models,
           'randomized_cycle':self.cycle,'activity_order':[name for name,_ in self.stages],'activity_seconds':dict(self.stages),'waiting_for_current_action':self.busy,
-          'patchouli_player_price':None if self.patchouli_to_npc else 500,'patchouli_npc_buyback':500 if self.patchouli_to_npc else None,'npc_price_changed':self.patchouli_to_npc,'nominal_business_seconds_per_30min':180,'nominal_history_seconds_per_30min':240,
-          'nominal_profession_development_seconds_per_30min':120,'nominal_trade_preparation_seconds_per_30min':120,
-          'nominal_income_seconds_per_30min':420 if self.cohort=='farmer' else 240}
+          'patchouli_player_price':None if self.patchouli_to_npc else 500,'patchouli_npc_buyback':1500 if self.patchouli_to_npc else None,'npc_price_changed':self.patchouli_to_npc,'nominal_business_seconds_per_30min':60,'nominal_history_seconds_per_30min':90,
+          'nominal_profession_development_seconds_per_30min':45,'nominal_trade_preparation_seconds_per_30min':45,
+          'nominal_income_seconds_per_30min':180 if self.cohort=='farmer' else 90}

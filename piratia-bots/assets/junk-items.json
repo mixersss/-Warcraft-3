@@ -1414,6 +1414,10 @@
     "4909": {
       "name": "Broken Strange Bone",
       "table_price": 103
+    },
+    "4915": {
+      "name": "Withered Root",
+      "table_price": 5000
     }
   }
 }

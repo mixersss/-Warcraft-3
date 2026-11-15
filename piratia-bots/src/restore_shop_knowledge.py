@@ -13,7 +13,7 @@ def restore(resource,assets):
     server=installer.legacy.locate(resource);marker=server/installer.MARKER
     if not marker.exists():raise ValueError('Не найдена установленная серверная часть. Запусти INSTALL-SERVER-SHOPS.cmd; аккаунты и data не меняются.')
     previous=json.loads(marker.read_text());cat=None;catalog_sha=None
-    for path in (installer.CATALOG,native/'catalog-alpha48.json'):
+    for path in (installer.CATALOG,native/'catalog-alpha50.json',native/'catalog-alpha48.json'):
         if not path.exists():continue
         candidate=json.loads(path.read_text());sha=installer.digest(path.read_bytes())
         if previous.get('catalog_sha256')==sha and previous.get('implementation_sha256')==installer.implementation_digest(candidate):cat=candidate;catalog_sha=sha;break
@@ -42,24 +42,31 @@ def restore(resource,assets):
         backup=assets/'owner-city-shops.before-restore.json'
         if not backup.exists():backup.write_bytes(target.read_bytes())
     installer.atomic(target,raw)
-    return {'restored':True,'shop_count':5,'catalog_revision':overlay['catalog_revision'],'outside_lua_edits_preserved':changed,'server_unchanged':True,'restart_bots_required':True}
+    return {'restored':True,'shop_count':len(overlay['npcs']),'catalog_revision':overlay['catalog_revision'],'outside_lua_edits_preserved':changed,'server_unchanged':True,'restart_bots_required':True}
 
-def ensure_shop_knowledge(assets,candidates=None):
+def ensure_shop_knowledge(assets,candidates=None,minimum_revision=48):
     """Before starting workers, recover a missing overlay from a few known roots only."""
     from owner_shops import read_overlay
     assets=Path(assets)
     try:
         current=read_overlay(assets)
-        if current and current.get('fresh_fairies') and current.get('catalog_revision',0)>=48:return {'ready':True,'restored':False}
+        if current and current.get('fresh_fairies') and current.get('catalog_revision',0)>=minimum_revision:return {'ready':True,'restored':False}
     except (OSError,ValueError,TypeError,KeyError,AttributeError):pass
     if candidates is None:
         parent=assets.parent.parent
         candidates=[parent/'[1] GameServer/resource',parent/'GameServer/resource',
                     Path(r'C:\PKO138 + Tools\[1] GameServer\resource'),Path(r'C:\PKO138+Tools\[1] GameServer\resource')]
     problems=[]
+    saved=assets.parent/'data/server-source.json'
+    try:
+        location=json.loads(saved.read_text()).get('resource')
+        if isinstance(location,str):candidates=[Path(location),*candidates]
+    except (OSError,ValueError,TypeError,AttributeError):pass
     for path in dict.fromkeys(map(Path,candidates)):
         if not (path/'owner-city-shops-v2.json').is_file():continue
-        try:return {'ready':True,**restore(path,assets)}
+        try:
+            result=restore(path,assets)
+            return dict(result,ready=result['catalog_revision']>=minimum_revision,problem='' if result['catalog_revision']>=minimum_revision else 'Нужно обновить серверные магазины через INSTALL-SERVER-SHOPS.cmd')
         except (OSError,ValueError,KeyError) as error:problems.append(str(error))
     return {'ready':False,'restored':False,'problem':problems[-1] if problems else 'Справочник магазинов отсутствует; RESTORE-BOT-SHOPS.cmd с серверной resource'}
 

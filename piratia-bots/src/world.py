@@ -135,6 +135,7 @@ def entity(reader):
 class World:
     def __init__(self, item_types=None):
         self.entities = {}
+        self.own_states = {}
         self.items = {}
         self.own_id = None
         self.map = None
@@ -259,7 +260,7 @@ class World:
         self.decode_info.update(phase='skill_states',offset=reader.position)
         state_count = reader.byte()
         self.decode_info['skill_state_count'] = state_count
-        reader.take(state_count * 2)  # classic state count + (ID,level); no timestamps
+        self.own_states = {reader.byte():reader.byte() for _ in range(state_count)}
         self.decode_info.update(phase='attributes',offset=reader.position)
         own.values = attrs(reader)
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
@@ -322,6 +323,10 @@ class World:
             identity=reader.long()
             if identity==self.own_id:
                 self.read_skills(reader);reader.end();self.default_skill_updates+=1
+        elif command == 511:
+            identity=reader.long();count=reader.byte()
+            states={reader.byte():reader.byte() for _ in range(count)};reader.end()
+            if identity==self.own_id:self.own_states=states
         elif command == 531:
             identity,skill=reader.long(),reader.short();reader.end()
             if identity==self.own_id:self.default_skill=skill;self.default_skill_updates+=1
@@ -426,7 +431,7 @@ class World:
 
     def summary(self):
         own = self.own
-        return {'map': self.map, 'profession':own.values.get(4) if own else None, 'entities': len(self.entities),
+        return {'gold': own.values.get(8) if own else None, 'map': self.map, 'profession':own.values.get(4) if own else None, 'entities': len(self.entities),
                 'monsters': sum(e.control == 5 for e in self.entities.values()),
                 'position': list(own.position) if own else None,
                 'hp': own.values.get(HP) if own else None,

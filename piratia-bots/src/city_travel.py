@@ -33,7 +33,7 @@ class CityTravel:
         story=getattr(policy,'story',None)
         wanted=getattr(policy,'wants_story',None)
         if story and wanted and wanted():return story.quest['map']
-        return self.home_city
+        return w.map if getattr(policy,"solo_progression",False) else self.home_city
     def starter_trip(self):return 1<=self.world.own.values.get(0,0)<=3 and self.world.map!='garner'
     def needs_funds(self):
         return self.world.own.values.get(0,0)>10 and self.world.own.values.get(8,0)<500

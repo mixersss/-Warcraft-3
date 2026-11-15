@@ -178,7 +178,7 @@ class TradeAndPet52Tests(unittest.TestCase):
     def market(self):
         w,send,m,p=markets.MarketTests().make();m.broad_goods=m.focused_goods=True;m.catalog.enable_broad_catalog();return w,send,m,p
     def test_audited_development_material_and_rune_are_saleable_but_patchouli_is_not(self):
-        w,send,m,p=self.market();w.bag={0:pets.item(1640),1:pets.item(3388),2:pets.item(3425,20),3:pets.item(1000,28)}
+        w,send,m,p=self.market();w.bag={0:pets.item(1640,10),1:pets.item(3388,10),2:pets.item(3425,20),3:pets.item(1000,28)}
         offered={w.bag[slot].identity for _,_,_,slot in m.offers(p)}
         self.assertIn(1640,offered);self.assertIn(3388,offered);self.assertIn(3425,offered);self.assertNotIn(1000,offered)
     def test_same_id_spare_gear_can_sell_without_selling_equipped_instance(self):

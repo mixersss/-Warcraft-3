@@ -27,7 +27,7 @@ class Bank:
         self.world,self.send,self.npcs=world,send,npcs
         self.context=None;self.pending=None;self.deadline=0;self.next_visit=0
         self.state='idle';self.reason='';self.npc=None;self.snapshot_revision=0
-        self.mode='deposit';self.deposits=self.withdrawals=self.requests=self.timeouts=0
+        self.mode='deposit';self.patchouli_audit=False;self.patchouli_audited=False;self.deposits=self.withdrawals=self.requests=self.timeouts=0
         self.last_world_map=world.map
         self.trip_started=None;self.progress_at=0;self.last_position=None
 
@@ -49,6 +49,9 @@ class Bank:
         protected=market.protected(policy);reserved={};result=[]
         stall_stock={slot:count for _,_,count,slot in market.offers(policy)} if items is None and getattr(market,'keep_stall_stock',False) is True and self.world.own.values.get(0,0)>=getattr(market,'minimum_level',30) else {}
         for slot,item in sorted(source.items()):
+            if item.identity==1000:
+                if items is not None and item.valid and item.identity not in protected and not item.forge and not any(item.parameters) and not any(a or b for a,b in item.instance_attributes):result.insert(0,(slot,item,item.count))
+                continue # Patchouli is NPC cash, never a bank deposit or stall reserve.
             if (not item.valid or item.identity not in market.catalog.items or item.identity in protected
                 or item.identity in self.world.own.equipment.values() or market.useful_gear(item.identity)):continue
             keep=max(stall_stock.get(slot,0),max(0,market.reserve_count(item.identity)-reserved.get(item.identity,0))) if items is None else 0
@@ -84,7 +87,9 @@ class Bank:
             if now>=self.deadline:self.timeouts+=1;self.end(now)
             return self.busy
         if self.state=='opening':
-            if w.bank_ready and w.bank_revision>self.snapshot_revision:self.state='open'
+            if w.bank_ready and w.bank_revision>self.snapshot_revision:
+                self.state='open';self.patchouli_audited=True
+                if any(i.identity==1000 for _,i,_ in self.candidates(policy,w.bank)):self.mode='withdraw_patchouli'
             elif now>=self.deadline:self.timeouts+=1;self.end(now,policy)
             return self.busy
         if self.pending:
@@ -102,6 +107,7 @@ class Bank:
             destination=w.bank if self.mode=='deposit' else w.bag
             capacity=w.bank_capacity if self.mode=='deposit' else w.bag_capacity
             options=self.candidates(policy,None if self.mode=='deposit' else w.bank)
+            if self.mode=='withdraw_patchouli':options=[r for r in options if r[1].identity==1000]
             empty=next((s for s in range(capacity or 0) if s not in destination),None)
             if (not options or empty is None or
                 (self.mode=='withdraw' and (w.bag_capacity or 0)-len(w.bag)<=6)):
@@ -120,6 +126,9 @@ class Bank:
         withdraw=(w.own.values.get(0,0)>=getattr(policy.market,'minimum_level',30) and w.skills.get(241,{}).get('level',0)
                   and policy.market.next_shift is not None and now>=policy.market.next_shift
                   and not policy.market.offers(policy) and free>6)
+        recover_patchouli=bool(free>2 and (any(i.identity==1000 for _,i,_ in self.candidates(policy,w.bank))
+                              or self.patchouli_audit and not self.patchouli_audited and now-policy.started>=900))
+        if recover_patchouli:deposit=False;withdraw=True
         if not deposit and not withdraw:
             self.trip_started=None;self.last_position=None;return False
         banks=[n for n in self.npcs.by_service.get('bank',()) if n['map']==w.map]
@@ -131,7 +140,7 @@ class Bank:
         if now-self.trip_started>=180 or now-self.progress_at>=35:
             self.trip_started=None;self.last_position=None;self.next_visit=now+120
             self.reason='путь к банку не продвигается; продолжает другие дела';return False
-        self.mode='deposit' if deposit else 'withdraw'
+        self.mode='deposit' if deposit else ('withdraw_patchouli' if recover_patchouli else 'withdraw')
         npc=min(banks,key=lambda n:math.dist(policy.position(now),n['position']))
         entity=next((e for e in w.entities.values() if e.control in (2,3) and e.model==npc['model'] and
                      math.dist(e.position,npc['position'])<350),None)
@@ -147,4 +156,4 @@ class Bank:
         return {'state':self.state,'reason':self.reason,'mode':self.mode,'requests':self.requests,
                 'confirmed_deposits':self.deposits,'confirmed_withdrawals':self.withdrawals,
                 'timeouts':self.timeouts,'known_slots':len(self.world.bank),
-                'snapshot_ready':self.world.bank_ready,'unsupported':self.world.bank_disabled}
+                'patchouli_never_deposited':True,'patchouli_bank_audited':self.patchouli_audited,'snapshot_ready':self.world.bank_ready,'unsupported':self.world.bank_disabled}

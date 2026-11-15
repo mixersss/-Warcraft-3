@@ -4560,6 +4560,10 @@
           "name_ru": "Ковбойские ботинки (Ами)",
           "stack": 1
         }
+      ],
+      "position_m": [
+        2247,
+        2777
       ]
     },
     {
@@ -4939,7 +4943,121 @@
           ],
           "name_ru": "Опытная фея",
           "stack": 1
+        },
+        {
+          "id": 243,
+          "name": "Novice Protection",
+          "price": 1000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_HuDun_CJ"
+          ],
+          "name_ru": "Защита нач. ур.",
+          "stack": 99
+        },
+        {
+          "id": 244,
+          "name": "Standard Protection",
+          "price": 2000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_HuDun_ZJ"
+          ],
+          "name_ru": "Обычная защита",
+          "stack": 99
+        },
+        {
+          "id": 246,
+          "name": "Novice Berserk",
+          "price": 1000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_BaoJi_CJ"
+          ],
+          "name_ru": "Берсерк нач. ур.",
+          "stack": 99
+        },
+        {
+          "id": 247,
+          "name": "Standard Berserk",
+          "price": 2000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_BaoJi_ZJ"
+          ],
+          "name_ru": "Обычный берсерк",
+          "stack": 99
+        },
+        {
+          "id": 249,
+          "name": "Novice Magic",
+          "price": 1000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_MoLi_CJ"
+          ],
+          "name_ru": "Магия нач. ур.",
+          "stack": 99
+        },
+        {
+          "id": 250,
+          "name": "Standard Magic",
+          "price": 2000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_MoLi_ZJ"
+          ],
+          "name_ru": "Обычная магия",
+          "stack": 99
+        },
+        {
+          "id": 252,
+          "name": "Novice Recover",
+          "price": 1000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_HuiFu_CJ"
+          ],
+          "name_ru": "Восстановление нач. ур.",
+          "stack": 99
+        },
+        {
+          "id": 253,
+          "name": "Standard Recover",
+          "price": 2000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_HuiFu_ZJ"
+          ],
+          "name_ru": "Обычное восстановление",
+          "stack": 99
+        },
+        {
+          "id": 259,
+          "name": "Novice Meditation",
+          "price": 1000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_ChenSi_CJ"
+          ],
+          "name_ru": "Медитация нач. ур.",
+          "stack": 99
+        },
+        {
+          "id": 260,
+          "name": "Standard Meditation",
+          "price": 2000,
+          "kind": 58,
+          "hooks": [
+            "ItemUse_ChenSi_ZJ"
+          ],
+          "name_ru": "Обычная медитация",
+          "stack": 99
         }
+      ],
+      "position_m": [
+        2247,
+        2779
       ]
     },
     {
@@ -5031,7 +5149,7 @@
         {
           "id": 864,
           "name": "Eye of Black Dragon",
-          "price": 5000,
+          "price": 100000,
           "kind": 49,
           "hooks": [
             "ItemUse_hexin"
@@ -5042,7 +5160,7 @@
         {
           "id": 865,
           "name": "Soul of Black Dragon",
-          "price": 5000,
+          "price": 100000,
           "kind": 49,
           "hooks": [
             "ItemUse_hexin"
@@ -5053,7 +5171,7 @@
         {
           "id": 866,
           "name": "Heart of Black Dragon",
-          "price": 5000,
+          "price": 100000,
           "kind": 49,
           "hooks": [
             "ItemUse_hexin"
@@ -5064,7 +5182,7 @@
         {
           "id": 878,
           "name": "Fiery Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Огненный самоцвет",
@@ -5073,7 +5191,7 @@
         {
           "id": 879,
           "name": "Furious Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Самоцвет Ярости",
@@ -5082,7 +5200,7 @@
         {
           "id": 880,
           "name": "Explosive Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Взрывной самоцвет",
@@ -5091,7 +5209,7 @@
         {
           "id": 881,
           "name": "Lustrious Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Люстриновый самоцвет",
@@ -5100,7 +5218,7 @@
         {
           "id": 882,
           "name": "Glowing Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Сияющий самоцвет",
@@ -5109,7 +5227,7 @@
         {
           "id": 883,
           "name": "Shining Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Блестящий самоцвет",
@@ -5118,7 +5236,7 @@
         {
           "id": 884,
           "name": "Shadow Gem",
-          "price": 5000,
+          "price": 25000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Теневой самоцвет",
@@ -5145,7 +5263,7 @@
         {
           "id": 887,
           "name": "Spirit Gem",
-          "price": 5000,
+          "price": 100000,
           "kind": 49,
           "hooks": [],
           "name_ru": "Самоцвет Духа",
@@ -5348,6 +5466,10 @@
           "name_ru": "Катализатор ковки",
           "stack": 99
         }
+      ],
+      "position_m": [
+        2197,
+        2703
       ]
     },
     {
@@ -5839,6 +5961,10 @@
           "name_ru": "Билет до Ледыни",
           "stack": 99
         }
+      ],
+      "position_m": [
+        2247,
+        2783
       ]
     },
     {
@@ -5989,6 +6115,663 @@
           "name_ru": "Супер счастье-фрукт",
           "stack": 99
         }
+      ],
+      "position_m": [
+        2247,
+        2784
+      ]
+    },
+    {
+      "key": "equipment",
+      "name": "Unsealed and Black Dragon",
+      "function": "OwnerEquipment",
+      "position_m": [
+        2192,
+        2710
+      ],
+      "items": [
+        {
+          "id": 763,
+          "name": "Armor of Revenant",
+          "price": 50000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Доспех возвращенного",
+          "stack": 1
+        },
+        {
+          "id": 770,
+          "name": "Sword of Grief",
+          "price": 50000,
+          "kind": 2,
+          "hooks": [],
+          "name_ru": "Меч печали",
+          "stack": 1
+        },
+        {
+          "id": 777,
+          "name": "Robe of Death",
+          "price": 50000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия смерти",
+          "stack": 1
+        },
+        {
+          "id": 781,
+          "name": "Touch of Death",
+          "price": 50000,
+          "kind": 4,
+          "hooks": [],
+          "name_ru": "Касание смерти",
+          "stack": 1
+        },
+        {
+          "id": 785,
+          "name": "Staff of the Avenger",
+          "price": 50000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох мстителя",
+          "stack": 1
+        },
+        {
+          "id": 789,
+          "name": "Robe of the Venom Witch",
+          "price": 50000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия ядовитой ведьмы",
+          "stack": 1
+        },
+        {
+          "id": 799,
+          "name": "Tooth of Specter",
+          "price": 50000,
+          "kind": 7,
+          "hooks": [],
+          "name_ru": "Зуб призрака",
+          "stack": 1
+        },
+        {
+          "id": 803,
+          "name": "Mantle of the Naga",
+          "price": 50000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Накидка нага",
+          "stack": 1
+        },
+        {
+          "id": 764,
+          "name": "Tattoo of the Cursed Warrior",
+          "price": 200000,
+          "kind": 27,
+          "hooks": [],
+          "name_ru": "Тату Проклятого воина",
+          "stack": 1
+        },
+        {
+          "id": 767,
+          "name": "Platemail of the Cursed Soul",
+          "price": 200000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Пластинчатый доспех проклятого",
+          "stack": 1
+        },
+        {
+          "id": 771,
+          "name": "Greatsword of Incantation",
+          "price": 200000,
+          "kind": 2,
+          "hooks": [],
+          "name_ru": "Большой меч заклинаний",
+          "stack": 1
+        },
+        {
+          "id": 774,
+          "name": "Blade of Incantation",
+          "price": 200000,
+          "kind": 1,
+          "hooks": [],
+          "name_ru": "Клинок заклинаний",
+          "stack": 1
+        },
+        {
+          "id": 778,
+          "name": "Corset of Incantation",
+          "price": 200000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Пояс заклинаний",
+          "stack": 1
+        },
+        {
+          "id": 782,
+          "name": "Kiss of the Cursed",
+          "price": 200000,
+          "kind": 4,
+          "hooks": [],
+          "name_ru": "Поцелуй проклятого",
+          "stack": 1
+        },
+        {
+          "id": 786,
+          "name": "Staff of Incantation",
+          "price": 200000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох заклинаний",
+          "stack": 1
+        },
+        {
+          "id": 790,
+          "name": "Coat of Invocation",
+          "price": 200000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Плащ Призыва",
+          "stack": 1
+        },
+        {
+          "id": 793,
+          "name": "Staff of Abraxas",
+          "price": 200000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох Кабалы",
+          "stack": 1
+        },
+        {
+          "id": 796,
+          "name": "Robe of Abraxas",
+          "price": 200000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия каббалы",
+          "stack": 1
+        },
+        {
+          "id": 800,
+          "name": "Tooth of the Cursed",
+          "price": 200000,
+          "kind": 7,
+          "hooks": [],
+          "name_ru": "Зуб проклятого",
+          "stack": 1
+        },
+        {
+          "id": 804,
+          "name": "Mantle of the Cursed Flame",
+          "price": 200000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Накидка проклятого пламени",
+          "stack": 1
+        },
+        {
+          "id": 765,
+          "name": "Tattoo of Evanescence",
+          "price": 450000,
+          "kind": 27,
+          "hooks": [],
+          "name_ru": "Тату исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 768,
+          "name": "Armor of Evanescence",
+          "price": 450000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Доспех исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 772,
+          "name": "Roar of Evanescence",
+          "price": 450000,
+          "kind": 2,
+          "hooks": [],
+          "name_ru": "Рык исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 775,
+          "name": "Dance of Evanescence",
+          "price": 450000,
+          "kind": 1,
+          "hooks": [],
+          "name_ru": "Танец исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 779,
+          "name": "Coat of Evanescence",
+          "price": 450000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Плащ исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 783,
+          "name": "Bellow of Evanescence",
+          "price": 450000,
+          "kind": 4,
+          "hooks": [],
+          "name_ru": "Вопль исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 787,
+          "name": "Staff of Evanescence",
+          "price": 450000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 791,
+          "name": "Robe of the Arcane",
+          "price": 450000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия тайного знания",
+          "stack": 1
+        },
+        {
+          "id": 794,
+          "name": "Staff of Mirage",
+          "price": 450000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох миражей",
+          "stack": 1
+        },
+        {
+          "id": 797,
+          "name": "Robe of Malediction",
+          "price": 450000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия оскорбления",
+          "stack": 1
+        },
+        {
+          "id": 801,
+          "name": "Tooth of Evanescence",
+          "price": 450000,
+          "kind": 7,
+          "hooks": [],
+          "name_ru": "Зуб исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 805,
+          "name": "Cloak of Evanescence",
+          "price": 450000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Покров исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 807,
+          "name": "Gauntlets of Evanescence",
+          "price": 450000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Рукавицы исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 808,
+          "name": "Greaves of Evanescence",
+          "price": 450000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Поножи исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 809,
+          "name": "Gloves of Evanescence",
+          "price": 450000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Перчатки исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 810,
+          "name": "Shoes of Evanescence",
+          "price": 450000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Башмаки исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 811,
+          "name": "Gloves of Malediction",
+          "price": 450000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Перчатки проклятия",
+          "stack": 1
+        },
+        {
+          "id": 812,
+          "name": "Gloves of the Arcane",
+          "price": 450000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Перчатки тайного знания",
+          "stack": 1
+        },
+        {
+          "id": 813,
+          "name": "Boots of Malediction",
+          "price": 450000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Сапоги оскорбления",
+          "stack": 1
+        },
+        {
+          "id": 814,
+          "name": "Boots of the of the Arcane",
+          "price": 450000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Сапоги тайного знания с печатью огня",
+          "stack": 1
+        },
+        {
+          "id": 815,
+          "name": "Heavy Gloves of Evanescence",
+          "price": 450000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Тяжелые перчатки исчезновения",
+          "stack": 1
+        },
+        {
+          "id": 766,
+          "name": "Tattoo of Enigma",
+          "price": 900000,
+          "kind": 27,
+          "hooks": [],
+          "name_ru": "Тату потаенного",
+          "stack": 1
+        },
+        {
+          "id": 769,
+          "name": "Armor of Enigma",
+          "price": 900000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Доспех потаенного",
+          "stack": 1
+        },
+        {
+          "id": 773,
+          "name": "Judgment of Enigma",
+          "price": 900000,
+          "kind": 2,
+          "hooks": [],
+          "name_ru": "Правосудие потаенного",
+          "stack": 1
+        },
+        {
+          "id": 776,
+          "name": "Blade of Enigma",
+          "price": 900000,
+          "kind": 1,
+          "hooks": [],
+          "name_ru": "Клинок потаенного",
+          "stack": 1
+        },
+        {
+          "id": 780,
+          "name": "Mantle of Enigma",
+          "price": 900000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Накидка потаенного",
+          "stack": 1
+        },
+        {
+          "id": 784,
+          "name": "Rifle of Enigma",
+          "price": 900000,
+          "kind": 4,
+          "hooks": [],
+          "name_ru": "Аркебуз потаенного",
+          "stack": 1
+        },
+        {
+          "id": 788,
+          "name": "Staff of Enigma",
+          "price": 900000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох потаенного",
+          "stack": 1
+        },
+        {
+          "id": 792,
+          "name": "Robe of Enigma",
+          "price": 900000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Плащ потаенного",
+          "stack": 1
+        },
+        {
+          "id": 795,
+          "name": "Staff of the Sphinx",
+          "price": 900000,
+          "kind": 9,
+          "hooks": [],
+          "name_ru": "Посох сфинкса",
+          "stack": 1
+        },
+        {
+          "id": 798,
+          "name": "Robe of the Sphinx",
+          "price": 900000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Мантия сфинкса",
+          "stack": 1
+        },
+        {
+          "id": 802,
+          "name": "Kris of the Sphinx",
+          "price": 900000,
+          "kind": 7,
+          "hooks": [],
+          "name_ru": "Крис сфинкса",
+          "stack": 1
+        },
+        {
+          "id": 806,
+          "name": "Mantle of the Sphinx",
+          "price": 900000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Накидка сфинкса",
+          "stack": 1
+        },
+        {
+          "id": 845,
+          "name": "Black Dragon Torso",
+          "price": 1800000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Торс Черного Дракона",
+          "stack": 1
+        },
+        {
+          "id": 846,
+          "name": "Black Dragon Claw",
+          "price": 1800000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Коготь Черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 847,
+          "name": "Black Dragon Wing",
+          "price": 1800000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Крыло Черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 848,
+          "name": "Black Dragon Helm",
+          "price": 1800000,
+          "kind": 20,
+          "hooks": [],
+          "name_ru": "Шлем черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 2367,
+          "name": "Corporeal Black Dragon Torso",
+          "price": 2500000,
+          "kind": 22,
+          "hooks": [],
+          "name_ru": "Законный торс Черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 2368,
+          "name": "Rightful Black Dragon Claw",
+          "price": 2500000,
+          "kind": 23,
+          "hooks": [],
+          "name_ru": "Законный коготь Черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 2369,
+          "name": "Rightful Black Dragon Wings",
+          "price": 2500000,
+          "kind": 24,
+          "hooks": [],
+          "name_ru": "Законные крылья Черного дракона",
+          "stack": 1
+        },
+        {
+          "id": 2370,
+          "name": "Rightful Head of Black Dragon",
+          "price": 2500000,
+          "kind": 20,
+          "hooks": [],
+          "name_ru": "Законный шлем Черного дракона",
+          "stack": 1
+        }
+      ],
+      "sections": [
+        {
+          "label": "Unsealed Lv35 - 50000 gold",
+          "ids": [
+            763,
+            770,
+            777,
+            781,
+            785,
+            789,
+            799,
+            803
+          ]
+        },
+        {
+          "label": "Unsealed Lv45 - 200000 gold",
+          "ids": [
+            764,
+            767,
+            771,
+            774,
+            778,
+            782,
+            786,
+            790,
+            793,
+            796,
+            800,
+            804
+          ]
+        },
+        {
+          "label": "Unsealed Lv55 - 450000 gold",
+          "ids": [
+            765,
+            768,
+            772,
+            775,
+            779,
+            783,
+            787,
+            791,
+            794,
+            797,
+            801,
+            805,
+            807,
+            808,
+            809,
+            810,
+            811,
+            812,
+            813,
+            814,
+            815
+          ]
+        },
+        {
+          "label": "Unsealed Lv65 - 900000 gold",
+          "ids": [
+            766,
+            769,
+            773,
+            776,
+            780,
+            784,
+            788,
+            792,
+            795,
+            798,
+            802,
+            806
+          ]
+        },
+        {
+          "label": "Black Dragon Lv75 - 1800000 gold",
+          "ids": [
+            845,
+            846,
+            847,
+            848
+          ]
+        },
+        {
+          "label": "Advanced Black Dragon - 2500000 gold",
+          "ids": [
+            2367,
+            2368,
+            2369,
+            2370
+          ]
+        }
       ]
     }
   ],
@@ -6003,13 +6786,28 @@
   "price_overrides": [
     {
       "id": 1000,
-      "kind": 31,
-      "price": 1000,
-      "npc_buyback": 500,
-      "name_ru": "Чертеж Пачкули",
-      "name_en": "Blurry Blueprint",
       "name": "Blurry Blueprint",
-      "stack": 99
+      "price": 3000,
+      "kind": 31,
+      "hooks": [
+        "ItemUse_MHDTZ"
+      ],
+      "name_ru": "Чертеж Пачкули",
+      "stack": 99,
+      "npc_buyback": 1500,
+      "name_en": "Blurry Blueprint"
+    },
+    {
+      "id": 4915,
+      "name": "Withered Root",
+      "price": 5000,
+      "kind": 41,
+      "hooks": [],
+      "name_ru": "Высохший корень",
+      "stack": 99,
+      "npc_buyback": 2500,
+      "name_en": "Withered Root"
     }
-  ]
+  ],
+  "catalog_revision": 55
 }

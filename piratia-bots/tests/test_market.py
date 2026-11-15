@@ -87,10 +87,10 @@ class MarketTests(unittest.TestCase):
  def test_only_asked_visible_nearby_stall_can_sell_to_bot(self):
   w,s,m,p=self.make();w.entities[2].stall='Shop';m.context=(2,10)
   m.observe(854,self.packet(owner=99),1);s.assert_not_called()
-  m.observe(854,self.packet(),2);s.assert_called_once_with(332,buy_request(2,0))
-  self.assertEqual(m.confirmed_buys,0);w.bag={0:self.item(885,1)}
+  m.observe(854,self.packet(),2);s.assert_called_once_with(332,buy_request(2,0,2))
+  self.assertEqual(m.confirmed_buys,0);w.bag={0:self.item(885,2)}
   m.tick(3,p,True);self.assertEqual(m.confirmed_buys,0)
-  w.own.values[8]-=25000;m.tick(4,p,True);self.assertEqual(m.confirmed_buys,1)
+  w.own.values[8]-=50000;m.tick(4,p,True);self.assertEqual(m.confirmed_buys,1)
  def test_overpriced_and_unneeded_and_distant_stalls_do_not_spend(self):
   for case in ('price','cash','distance','not_requested','not_stall'):
    w,s,m,p=self.make();w.entities[2].stall='Shop';m.context=(2,10)

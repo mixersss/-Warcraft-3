@@ -38,7 +38,7 @@ class Vendor(Town):
   reserved=dict(mechanics.craft_reservations(w)) if mechanics else {}
   for slot,item in sorted(w.bag.items()):
    curated=bool(policy.market and getattr(policy.market.catalog,'curated_mode',False))
-   if curated and item.identity in policy.market.catalog.items:continue
+   if curated and item.identity in policy.market.catalog.items and item.identity!=4915:continue
    gear=self.gear.gear.get(item.identity,{})
    novice=curated and bool(gear and 0<gear['level']<20 and not 5000<=item.identity<=5999 and item.identity not in w.own.equipment.values() and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item))
    if (item.identity not in self.junk and not novice and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
@@ -75,7 +75,7 @@ class Vendor(Town):
    if after<before and w.own.values.get(8,cash)>cash:
     units=before-after;received=w.own.values.get(8,cash)-cash
     self.last_confirmed_sale={'item_id':identity,'units':units,'gold_received':received,'unit_price':received//units if received%units==0 else None}
-    if identity==1000 and self.sell_patchouli and received!=units*500:self.price_warning='Выкуп Пачкули не совпадает с500G: проверь установленный серверный патч'
+    if identity==1000 and self.sell_patchouli and received!=units*1500:self.price_warning='Выкуп Пачкули не совпадает с1500G: проверь установленный серверный патч'
     self.confirmed_sales+=1;self.pending=None;self.batch+=1
     self.context=self.context[0],'ready',now+60
    elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now)

@@ -15,3 +15,6 @@ xhero-siege/dist/
 
 # Private comparison of a user's live Piratia resource files.
 piratia-bots/server-mechanics-audit.json
+
+# Local, private fleet money report
+bot-levels-and-gold.csv

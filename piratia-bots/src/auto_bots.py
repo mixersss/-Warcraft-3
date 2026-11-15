@@ -89,7 +89,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha54'
+    report.result['version'] = 'AutoAccountsAlpha55'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -199,7 +199,7 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         if result.get('entered_world') and result.get('session_elapsed_seconds',0)>=600:protocol_recoveries=0
         protocol_retry=had_entered and reason=='protocol_or_state_error' and result.get('error_type')=='ProtocolError' and protocol_recoveries<3
         if protocol_retry:protocol_recoveries+=1
-        retryable=reason=='network_error' or protocol_retry or (had_entered and result.get('server_error_code')==1104)
+        retryable=reason=='network_error' or protocol_retry or ((had_entered or bool(re.fullmatch(r'PB[0-9a-f]{12}',bot.get('account','')))) and result.get('server_error_code')==1104)
         if stop.is_set() or not retryable:
             if fleet and not stop.is_set():fleet.update(index,connected=False,state='требуется проверка: '+str(result.get('error_type',reason)))
             return False
@@ -208,7 +208,7 @@ def run_bot(index, bot, port, seconds, stop, report_dir, mode='idle', navigation
         history.append({k:result[k] for k in ('stage','exit_reason','error_type','server_error_code','session_elapsed_seconds','error_locations','network_errno','last_receive','last_send','connection_health','recent_events','gate_ping_answers','game_ping_answers') if k in result})
         history[-1]['recovery_number']=recoveries+1
         history=history[-20:]
-        delay=(5,15,30)[attempt]+index%5 if attempt<3 else 120+index%15
+        delay=(120+index%30) if result.get('server_error_code')==1104 else ((5,15,30)[attempt]+index%5 if attempt<3 else 120+index%15)
         attempt+=1;recoveries+=1
         result['reconnect_attempts']=recoveries;result['reconnect_wait_seconds']=delay
         result['stage']='reconnecting';result['session_history']=list(history)
@@ -258,7 +258,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha54'
+    setup_report.result['version'] = 'AutoAccountsAlpha55'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -312,8 +312,17 @@ def main():
         from regions import Regions
         from social import ChatBudget
         from restore_shop_knowledge import ensure_shop_knowledge
-        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets')
+        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets',minimum_revision=55)
         if setup_report.result['shop_bootstrap'].get('restored'):print('Знания торговцев восстановлены по проверенной серверной установке.')
+        if not setup_report.result['shop_bootstrap'].get('ready'):
+            print('Нет проверенных знаний новых торговцев. Это блокирует покупку фей.')
+            selected=input('Укажи папку серверной resource; Enter — остановить запуск и установить INSTALL-SERVER-SHOPS.cmd: ').strip().strip('"')
+            if not selected:raise RuntimeError('Нужен проверенный серверный патч и справочник магазинов. Существующие боты сохранены.')
+            from restore_shop_knowledge import restore
+            setup_report.result['shop_bootstrap']=dict(restore(selected,ROOT/'assets'),ready=True)
+            if setup_report.result['shop_bootstrap']['catalog_revision']<55:raise RuntimeError('Сначала установи серверные магазины Alpha55 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
+            from diagnostic_io import write_snapshot
+            write_snapshot(ROOT/'data/server-source.json',{'resource':selected})
         navigation = Regions(ROOT/'assets',population_count=args.count)
         setup_report.result['owner_shop_knowledge_ready']=bool(navigation.life.owner_shops and navigation.life.owner_shops.get('fresh_fairies') and navigation.life.owner_shops.get('catalog_revision',0)>=48)
         if not setup_report.result['owner_shop_knowledge_ready']:

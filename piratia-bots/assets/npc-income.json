@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "catalog_revision_required": 55,
+  "item_id": 4915,
+  "item_name": "Withered Root",
+  "base_price": 5000,
+  "npc_buyback": 2500,
+  "character_source_sha256": "af553b61a949dad9129ce86d11c063dd2d20f24d201d21ef6148331e0d84f632",
+  "sources": {
+    "107": {
+      "name": "Treant",
+      "level": 48,
+      "base_factor": 0.3508771929824561,
+      "denominator": 285
+    }
+  }
+}

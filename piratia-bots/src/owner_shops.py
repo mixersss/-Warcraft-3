@@ -7,7 +7,7 @@ def read_overlay(assets):
  if not p.exists():return None
  data=json.loads(p.read_text(encoding='utf8'))
  if (not isinstance(data,dict) or data.get('version')!=2 or not isinstance(data.get('npcs'),list)
-     or len(data['npcs'])!=5 or not isinstance(data.get('prices'),dict) or not isinstance(data.get('names'),dict)):
+     or len(data['npcs']) not in (5,6) or not isinstance(data.get('prices'),dict) or not isinstance(data.get('names'),dict)):
   raise ValueError('Invalid owner shop overlay')
  identities=set()
  for npc in data['npcs']:
@@ -24,7 +24,7 @@ def read_overlay(assets):
   for identity in npc['offers']:
    if type(identity) is not int or str(identity) not in data['prices']:raise ValueError('Missing owner price')
    price=data['prices'][str(identity)]
-   if type(price) is not int or price not in (500,1000,2000,5000,10000,20000,50000,300000):raise ValueError('Invalid owner price')
+   if type(price) is not int or price not in (500,1000,2000,5000,10000,20000,25000,50000,100000,200000,300000,450000,900000,1800000,2500000):raise ValueError('Invalid owner price')
    if not isinstance(data['names'].get(str(identity)),str):raise ValueError('Missing owner item name')
    if str(identity) not in npc['menu_pages'] or not 1<=npc['menu_pages'][str(identity)]<=11:raise ValueError('Invalid native stock page')
  return data

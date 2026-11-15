@@ -7,6 +7,12 @@ SERVICES=[('Insert gems', 'OpenForge'),('Combine gems','OpenUnite'),('Create soc
  ('Upgrade equipment','OpenItemTiChun'),('Recharge coral','OpenItemEnergy'),('Repair','OpenRepair')]
 
 def pages(shop,limit=60):
+ if shop.get('sections'):
+  result=[]
+  for section in shop['sections']:
+   ids=set(section['ids']);part=dict(shop,items=[i for i in shop['items'] if i['id'] in ids]);part.pop('sections',None)
+   result.extend(pages(part,limit))
+  return result
  buckets=[[],[],[]]
  for item in shop['items']:
   kind=item['kind'];bucket=0 if 1<=kind<=11 else 1 if kind in (19,20,21,22,23,24,27) else 2
@@ -35,7 +41,7 @@ def render(catalog,compat=False):
    ' for _,stock in pairs(OwnerNativeShops[%s].pages) do stock.tp=TRADE_NOMAL end'%key,
    ' Trade=OwnerNativeShops[%s].pages[1]'%key])
   for page in range(1,len(pages(shop))+1):
-   label='Trade' if page==1 else 'Trade - part '+str(page)
+   label=shop['sections'][page-1]['label'] if shop.get('sections') else ('Trade' if page==1 else 'Trade - part '+str(page))
    lines.append(' Text(1,%s,OwnerOpenTrade,%s,%d)'%(json.dumps(label),key,page))
   if shop['key']=='forge':
    for label,function in SERVICES:lines.append(' Text(1,%s,%s)'%(json.dumps(label),function))

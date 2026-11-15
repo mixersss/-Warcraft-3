@@ -38,8 +38,16 @@ def build(resource,client_bin):
   'native_shop':True,'prices_scope':'global selected item prices on server and client; all other fields preserved',
   'source_hashes':{'server_iteminfo':hashlib.sha256((resource/'ItemInfo.txt').read_bytes()).hexdigest(),'client_iteminfo':hashlib.sha256(client_bin.read_bytes()).hexdigest()},
   'native_windows_verified':False,'price_overrides':[{'id':1000,'kind':31,'price':1000,'npc_buyback':500,'name_ru':'Чертеж Пачкули','name_en':'Blurry Blueprint','name':'Blurry Blueprint','stack':99}]}
+ existing_path=ROOT/'catalog.json'
+ if existing_path.exists():
+  existing=json.loads(existing_path.read_text())
+  if existing.get('catalog_revision',0)>=55:
+   for item in [i for s in existing['shops'] for i in s['items']]+existing.get('price_overrides',[]):
+    row=rows.get(item['id'])
+    if not row or row[1].strip()!=item['name'] or int(row[10])!=item['kind']:raise ValueError('Не совпадает предмет текущего каталога: '+str(item['id']))
+   catalog=existing;shops=catalog['shops']
  (ROOT/'catalog.json').write_text(json.dumps(catalog,ensure_ascii=False,indent=2)+'\n')
- assignments={i['id']:(s['key'],i['price']) for s in shops for i in s['items']};assignments[1000]=('',1000);allfacts=[]
+ assignments={i['id']:(s['key'],i['price']) for s in shops for i in s['items']};assignments.update({i['id']:('',i['price']) for i in catalog.get('price_overrides',[])});allfacts=[]
  for i in sorted(set(rows)|set(client)):
   r=rows.get(i);c=client.get(i);assignment=assignments.get(i)
   allfacts.append({'id':i,'name_ru':c['name'] if c else '', 'name_en':r[1].strip() if r else '',

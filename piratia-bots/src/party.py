@@ -61,7 +61,7 @@ class Party:
         self.rng=random.Random(name+':party')
         self.session_until=None;self.leave_pending=None;self.next_leave=0;self.leave_requests=0
         self.personality=None;self.humans=set();self.human_requests=0
-        self.recruitment=None
+        self.recruitment=None;self.auto_groups_enabled=True
     def request_bot(self,name,now):
         peer=self.directory.lookup(name,now)
         if (not peer or name in self.members or self.pending or now<self.next_invite or len(self.members)>=5 or
@@ -96,7 +96,7 @@ class Party:
                 return
             # Both endpoints must be running known bots, on the same map nearby.
             recruited=bool(self.recruitment and self.recruitment.accepts(name,now))
-            if (peer and (recruited or (not self.recruitment and peer['index']%5==1 and self.index%3)) and peer['map']==self.world.map
+            if (peer and (recruited or (self.auto_groups_enabled and not self.recruitment and peer['index']%5==1 and self.index%3)) and peer['map']==self.world.map
                     and abs(peer['level']-self.world.own.values.get(0,1))<=5 and not self.members
                     and math.dist(peer['position'],self.world.position(now))<3000):
                 self.send(6002,struct.pack('>I',identity));self.accepts+=1
@@ -133,7 +133,7 @@ class Party:
                 self.send(6004,b'');self.leave_requests+=1
                 self.leave_pending=now+15;self.next_leave=now+300
             return
-        if self.recruitment:return # Echo/PM rendezvous owns invitations in the runtime.
+        if not self.auto_groups_enabled or self.recruitment:return # Echo/PM rendezvous owns invitations in the runtime.
         if index%5!=1 or index%3==0 or now<self.next_invite or self.pending or not w.own.alive:return
         peers=self.directory.peers(self.name,now)
         if self.members and self.members[0]!=self.name:return

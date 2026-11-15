@@ -55,7 +55,7 @@ def build(resource):
     identity,denom=int(identity),int(denom)
     if str(identity) in rows and denom>0:goods.append({'id':identity,'denominator':denom,'base_factor':min(1,100/denom)})
   if goods:sources[a[0]]={'name':mobs[a[0]]['name'],'level':mobs[a[0]]['level'],'items':goods}
- out={'version':1,'minimum_gear_level':20,'gear_requires_source_drop':True,'patchouli_destination':'NPC500','no_implied_runtime_craft_automation':True,'requested_resolution':requested,'items':rows,'sources':sources,'category_counts':dict(collections.Counter(r['category'] for r in rows.values())),'drop_rule':'Check_Baoliao base_factor=min(1,100/denominator); live luck, level and server rates still apply; not a guaranteed income'}
+ out={'version':1,'minimum_gear_level':20,'gear_requires_source_drop':True,'patchouli_destination':'NPC1500','no_implied_runtime_craft_automation':True,'requested_resolution':requested,'items':rows,'sources':sources,'category_counts':dict(collections.Counter(r['category'] for r in rows.values())),'drop_rule':'Check_Baoliao base_factor=min(1,100/denominator); live luck, level and server rates still apply; not a guaranteed income'}
  (ROOT/'assets/stall-goods.json').write_text(json.dumps(out,ensure_ascii=False,separators=(',',':'))+'\n')
  print('Curated',len(rows),'goods;',len(sources),'drop models;',out['category_counts'])
  for name,r in requested.items():

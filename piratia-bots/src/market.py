@@ -44,7 +44,7 @@ class MarketCatalog:
     def __init__(self,assets):
         self.data=json.loads((Path(assets)/'market-items.json').read_text())
         self.items={int(k):v for k,v in self.data['items'].items()}
-        if 1000 in self.items:self.items[1000]=dict(self.items[1000],reference_price=500)
+        if 1000 in self.items:self.items[1000]=dict(self.items[1000],reference_price=1500)
         self.owner_price_floor={}
         from owner_shops import read_overlay
         try:owner=read_overlay(assets)
@@ -70,7 +70,7 @@ class MarketCatalog:
         if not self.curated:return
         self.broad_catalog=True;self.curated_mode=True;self.items={int(i):r for i,r in self.curated['items'].items()}
     def price(self,identity):
-        if identity==1000:return 500
+        if identity==1000:return 1500
         base=self.items.get(identity,{}).get('reference_price',0)
         native=self.npc_purchase_prices.get(identity,0) if self.broad_catalog else 0
         if native:base=min(base,max(1,round(native*.85)))
@@ -124,7 +124,7 @@ class Market:
         self.timeouts=self.sold_units=self.confirmed_learns=0;self.disabled=False;self.active_confirmed=False
         self.minimum_level=15
         self.keep_stall_stock=False
-        self.focused_goods=False;self.broad_goods=False;self.policy_reference=None
+        self.focused_goods=False;self.broad_goods=False;self.policy_reference=None;self.progression_first=False
         self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
@@ -217,12 +217,12 @@ class Market:
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
             count=min(99,item.count-keep)
-            if count<=0:continue
+            if count<=0 or (self.broad_goods and meta["category"] in ("quest_material","requested_material","care_supply","craft_material","material") and count<10):continue
             result.append((len(result),self.item_ask_price(item),count,slot))
             if len(result)==6:break
         return result
     def ask_price(self,identity):
-        if identity==1000:return 500
+        if identity==1000:return 1500
         price=self.catalog.price(identity)
         if not self.catalog.prices:return price
         # Stable per-seller negotiation margins plus current surplus; no personality reset.
@@ -264,7 +264,7 @@ class Market:
                     if self.count(identity)<2:wanted[identity]=2-self.count(identity)
         return wanted
     def fair_cap(self,identity):
-        if identity==1000:return 500
+        if identity==1000:return 1500
         # Explicit ceilings prevent players setting a huge price from draining bots.
         price=self.catalog.price(identity) or self.life.prices.get(identity,0)
         return round(price*1.1) if self.catalog.prices else price
@@ -302,6 +302,8 @@ class Market:
             budget=max(0,min(cash//5,cash-1000))
             pet=getattr(self.policy_reference,'petcare',None) if self.policy_reference else None
             if pet:budget=min(budget,max(0,cash-1000-pet.savings()))
+            town=getattr(self.policy_reference,'town',None) if self.policy_reference else None
+            if town:budget=min(budget,max(0,cash-1000-town.equipment_savings()))
             for grid,price,item in offers:
                 if not item.valid or price<=0:continue
                 identity=item.identity
@@ -312,10 +314,12 @@ class Market:
                 cap=self.fair_cap(identity)
                 if self.focused_goods and self.ordinary_gear(item):cap=round(cap*(1+min(2,sum(v for k,v in item.instance_attributes if 26<=k<=30)/20)))
                 if not cap or price>cap:continue
-                # One item at a time. Only bag AND gold changes confirm a purchase.
+                # Bound quantity by actual need, native stock and earned budget.
                 if price>budget:continue
-                self.send(BUY,buy_request(owner,grid));self.buy_requests+=1
-                self.pending=(identity,self.count(identity),cash,now+15,price)
+                quantity=min(item.count,max(1,want.get(identity,1)),budget//price,99)
+                if quantity<1:continue
+                self.send(BUY,buy_request(owner,grid,quantity));self.buy_requests+=1
+                self.pending=(identity,self.count(identity),cash,now+15,price,quantity)
                 self.next_scan=now+120;break
     def opened(self,now):
         self.state='selling';self.trade_until=now+3600;self.confirmed_opens+=1;self.active_confirmed=True
@@ -358,8 +362,9 @@ class Market:
             if self.state=='selling' and (not safe or now>=self.trade_until or not self.stock):self.request_close(now)
             return True
         if self.pending:
-            identity,count,cash,deadline,price=self.pending
-            if self.count(identity)==count+1 and w.own.values.get(8,cash)==cash-price:
+            identity,count,cash,deadline,price=self.pending[:5]
+            quantity=self.pending[5] if len(self.pending)>5 else 1
+            if self.count(identity)==count+quantity and w.own.values.get(8,cash)==cash-price*quantity:
                 self.confirmed_buys+=1;self.pending=None;self.catalog.confirmed_price(identity,price)
             elif now>=deadline:self.pending=None;self.timeouts+=1;self.next_scan=now+300
             return True
@@ -397,6 +402,7 @@ class Market:
                     self.send(VIEW,struct.pack('>I',seller.identity));self.context=seller.identity,now+10
                     self.scanned[seller.identity]=now+300;self.next_scan=now+30;return True
             self.next_scan=now+30
+        if self.progression_first and not self.shift_allowed(policy,now):return False
         if now<self.next_shift or w.own.values.get(0,0)<self.minimum_level or not w.skills.get(241,{}).get('level',0) or not self.offers(policy):return False
         slot=self.directory.reserve(self.name,w.map,now)
         if slot is None:self.next_shift=now+60;return False
@@ -411,6 +417,9 @@ class Market:
         if not goal or any(e.control in (2,3) and math.dist(e.position,goal)<350 for e in w.entities.values()):
             self.directory.release(self.name);self.next_shift=now+120;return False
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True
+    def shift_allowed(self,policy,now):
+        # Hour-long shifts start after productive play, never immediately at login.
+        return now-policy.started>=900 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
     def loot_needs(self):return set(self.catalog.items)
     def summary(self):
         return {'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,

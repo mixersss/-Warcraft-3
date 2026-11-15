@@ -120,11 +120,11 @@ class EconomyTests(unittest.TestCase):
  def test_patchouli_stall_and_chat_price_ignore_old_learned_5000_price(self):
   from test_market import MarketTests
   w,s,m,p=MarketTests().make();m.catalog.prices=Mock();m.catalog.prices.guide.return_value=5000
-  self.assertEqual(m.catalog.price(1000),500);self.assertEqual(m.ask_price(1000),500)
+  self.assertEqual(m.catalog.price(1000),1500);self.assertEqual(m.ask_price(1000),1500)
  def test_banking_keeps_stall_stock_but_can_store_excess(self):
   from test_alpha44 import BankTests
   w,s,m,p,b=BankTests().make();m.keep_stall_stock=True
-  w.bag={n:item(1000,1) for n in range(8)}
+  w.bag={n:item(684,1) for n in range(8)}
   self.assertEqual([slot for slot,_,_ in b.candidates(p)],[6,7])
 
 class ProfessionTests(unittest.TestCase):

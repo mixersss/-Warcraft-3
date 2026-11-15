@@ -9,6 +9,8 @@ class LifeItems:
         self.chests={int(k):v for k,v in data['chests'].items()}
         self.names={int(k):v for k,v in data['names'].items()}
         self.prices={int(k):v for k,v in data['prices'].items()}
+        goal_path=Path(assets)/'equipment-goals.json'
+        self.equipment_goals=json.loads(goal_path.read_text()) if goal_path.exists() else None
         self.skill_guides=None
         guide=Path(assets)/'skill-guides.json'
         if guide.exists():
@@ -33,6 +35,7 @@ class LifeItems:
                 if not any(s['position']==npc['position'] and s['name']==npc['name'] for s in shops):
                     shops.append({'name':npc['name'],'position':npc['position'],'offers':npc['offers'],'region':npc['region']})
                     if npc.get('menu_pages'):shops[-1]['menu_pages']=npc['menu_pages']
+                    if npc.get('menu_labels'):shops[-1]['menu_labels']=npc['menu_labels']
 
     def can_learn(self,world,book):
         own=world.own

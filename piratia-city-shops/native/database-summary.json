@@ -5,10 +5,11 @@
   "client_only": 231,
   "shops": {
     "apparel": 506,
-    "fairies": 39,
+    "fairies": 49,
     "forge": 43,
     "tickets": 44,
-    "boosts": 13
+    "boosts": 13,
+    "equipment": 61
   },
   "banana_name_matches": []
 }

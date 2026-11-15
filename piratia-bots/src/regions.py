@@ -45,7 +45,7 @@ class Regions:
         self.market_catalog.prices=MarketPrices(self.assets.parent/'data'/'market-prices.json')
         total=population_count//10
         argent=round(total*.75);remaining=total-argent
-        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=120)
+        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=60)
         from activity_slots import ActivitySlots
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         from mob_knowledge import MobKnowledge

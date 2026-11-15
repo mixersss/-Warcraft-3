@@ -295,6 +295,7 @@ class Hunter:
             self.last_attack_skill,*victim=struct.unpack('>III',body[-12:])
             self.last_attack_target=tuple(victim)
             if self.combat_skills:self.combat_skills.sent(self.last_attack_skill,self.clock)
+            if self.petcare and self.last_attack_skill==280:self.petcare.possession_sent(self.clock)
             target=self.world.entities.get(self.last_attack_target[0])
             if target and target.control==5:self.learning.begin(self.world,target,self.clock)
         elif body[8]==1:
@@ -339,6 +340,9 @@ class Hunter:
             if not skill:return True
             target=self.world.entities.get(identity)
             if not target or not target.alive or target.handle!=handle:return True
+            if skill==280 and identity==own.identity and self.petcare and self.petcare.possession_usable(now):
+                self.send_action(normal_attack(own.identity,number,body[10],skill,identity,handle,self.position(now)))
+                self.flushed_actions+=1;self.next_action=max(self.next_action,now+.2);return True
             healing=bool(self.combat_skills and self.combat_skills.rules.get(skill,{}).get('role')=='heal')
             if healing:
                 if not self.combat_skills.healing_target_valid(target,self.party,now):return True
@@ -630,6 +634,7 @@ class Hunter:
             if isinstance(critical,(list,tuple,set)):
                 essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-100 for i in critical)
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
+                         and (not getattr(feature,"progression_first",False) or feature.shift_allowed(self,now))
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
         if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
         if key=='town' and self.petcare and self.petcare.affordable_care():essential_combat=True
@@ -1358,6 +1363,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         from economy import Economy
         policy.economy=Economy(bot_name,getattr(navigation,'assets',Path(__file__).resolve().parents[1]/'assets'))
         if getattr(getattr(navigation,'market_catalog',None),'curated_mode',False):policy.economy.trade_data=navigation.market_catalog.curated
+        policy.economy.npc_income_enabled=bool(life.owner_shops and life.owner_shops.get('catalog_revision',0)>=55)
         policy.economy.patchouli_to_npc=True
         from treasure_hunt import TreasureHunt
         policy.treasure=TreasureHunt(world,policy.economy);policy.town.treasure=policy.treasure
@@ -1478,13 +1484,15 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if policy.mandatory_work():return 'Хочу получить свою профессию. Проверяю задание наставника.'
         if policy.learning.probing:return 'Проверю другой вид мобов и сравню, сколько получаю опыта.'
         return None
+    policy.solo_progression=True
+    if policy.bank:policy.bank.patchouli_audit=True
+    if policy.market:policy.market.progression_first=True
     social.context_provider=context_line
     from public_chat import PublicChat,PublicBudget
     public_chat=PublicChat(world,client.wire.send,getattr(navigation,"public_chat_budget",None) or PublicBudget(),bot_name)
     if policy.party:
-        from hunt_party import HuntParty
-        policy.group_hunt=HuntParty(world,policy,policy.party,client.wire.send)
-        public_chat.recruitment_provider=policy.group_hunt.advertisement
+        # Earned XP takes priority; direct human invites and existing teams still work.
+        policy.party.auto_groups_enabled=False
     def public_context(channel):
         if channel=='trade':
             if policy.commerce:return policy.commerce.advertisement(time.monotonic())
@@ -1545,7 +1553,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if fleet:
             values=world.own.values
             xp=policy.learning.summary()
-            fleet.update(bot_index,connected=True,map=world.map,position=list(world.position(now)),level=values.get(0),job=values.get(4),
+            fleet.update(bot_index,connected=True,map=world.map,position=list(world.position(now)),level=values.get(0),job=values.get(4),gold=values.get(8),
                          body=world.own.model,state=policy.mode,tactic=policy.tactic,phase=policy.tactic_schedule.effective_phase,hp=values.get(HP),max_hp=values.get(MAX_HP),
                          moves=policy.moves,attacks=policy.attacks,equips=policy.equipment.confirmed,
                          experience=values.get(15),start_experience=progression.start_xp,

@@ -90,7 +90,7 @@ class Client:
                 raise ProtocolError('Truncated ping')
             self.wire.send(15, payload[:20])
             self.report.result['game_ping_answers']=self.report.result.get('game_ping_answers',0)+1
-        elif command in (544, 546, 501, 504, 505, 506, 507, 508, 509, 510, 531, 516, 517, 520, 5001, 5002, 5003, 5011, 5012, 5401, 5402, 5403, 854, 856, 857, 858, 859, 805, 806, 807, 808, 801, 802, 803, 822, 827, 828, 830, 831, 832):
+        elif command in (544, 546, 501, 504, 505, 506, 507, 508, 509, 510, 511, 531, 516, 517, 520, 5001, 5002, 5003, 5011, 5012, 5401, 5402, 5403, 854, 856, 857, 858, 859, 805, 806, 807, 808, 801, 802, 803, 822, 827, 828, 830, 831, 832):
             if self.world_handler:
                 self.world_handler(command, payload)
             else:

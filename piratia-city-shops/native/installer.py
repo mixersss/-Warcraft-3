@@ -1,5 +1,5 @@
 """Native stock windows and synchronized server/client prices, upgrading City Shops01."""
-import argparse,hashlib,json,os,struct,sys,tempfile
+import argparse,hashlib,json,os,struct,sys,tempfile,re
 from datetime import datetime
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
@@ -16,7 +16,9 @@ BUY_ANCHOR=b'function Buy( character, npc, trade, itemtype, index1, index2, coun
 BUY_HOOK=b'\n\tif trade.owner_native_shop ~= nil then\n\t\treturn OwnerNativeBuy(character,npc,trade,itemtype,index1,index2,count)\n\tend'
 
 def catalog():
- data=json.loads(CATALOG.read_text());expected={'apparel':'OwnerClothes','fairies':'OwnerFairies','forge':'OwnerForge','tickets':'OwnerTickets','boosts':'OwnerBoosts'}
+ data=json.loads(CATALOG.read_text())
+ if any(data==json.loads((ROOT/name).read_text()) for name in ('catalog-alpha47.json','catalog-alpha48.json','catalog-alpha50.json')):return data
+ expected={'apparel':'OwnerClothes','fairies':'OwnerFairies','forge':'OwnerForge','tickets':'OwnerTickets','boosts':'OwnerBoosts','equipment':'OwnerEquipment'}
  if data.get('version')!=2 or {s['key'] for s in data.get('shops',[])}!=set(expected):raise ValueError('Неизвестный каталог магазинов')
  seen=set()
  for shop in data['shops']:
@@ -24,11 +26,13 @@ def catalog():
   for item in shop['items']:
    if (type(item['id']) is not int or not 1<=item['id']<=65535 or item['id'] in seen
        or type(item['kind']) is not int or type(item['price']) is not int
-       or item['price'] not in (500,1000,2000,5000,10000,20000,50000,300000)):
+       or item['price'] not in (500,1000,2000,5000,10000,20000,25000,50000,100000,200000,300000,450000,900000,1800000,2500000)):
     raise ValueError('Неверный предмет или цена магазина')
    seen.add(item['id'])
- for item in data.get('price_overrides',[]):
-  if item!={'id':1000,'kind':31,'price':1000,'npc_buyback':500,'name_ru':'Чертеж Пачкули','name_en':'Blurry Blueprint','name':'Blurry Blueprint','stack':99}:raise ValueError('Неизвестная дополнительная цена выкупа')
+ expected_overrides={1000:(31,3000,1500,'Blurry Blueprint'),4915:(41,5000,2500,'Withered Root')}
+ if len(data.get('price_overrides',[]))!=2:raise ValueError('Неполные цены выкупа')
+ for item in data['price_overrides']:
+  if (item.get('kind'),item.get('price'),item.get('npc_buyback'),item.get('name'))!=expected_overrides.get(item.get('id')):raise ValueError('Неизвестная дополнительная цена выкупа')
  return data
 def offers(cat):return {i['id']:i for i in [*(i for s in cat['shops'] for i in s['items']),*cat.get('price_overrides',[])]}
 def digest(raw):return hashlib.sha256(raw).hexdigest()
@@ -38,7 +42,7 @@ def implementation_digest(cat,compat=False):
 
 def make_overlay(cat,report):
  rows=[]
- for shop,identity,point in zip(cat['shops'],report['npc_ids'],legacy.DEFAULT_POINTS):
+ for shop,identity,point in zip(cat['shops'],report['npc_ids'],report.get('positions_m',legacy.DEFAULT_POINTS)):
   mapping={str(item):number for number,panels in enumerate(pages(shop),1) for panel in panels for item in panel}
   handlers=['OwnerOpenTrade']+([name for _,name in SERVICES] if shop['key']=='forge' else [])
   rows.append({'key':'garner:owner-v2:'+str(identity),'source_id':identity,'map':'garner','name':shop['name'],
@@ -46,8 +50,8 @@ def make_overlay(cat,report):
    'script_found':True,'services':['trade']+(['forge','repair'] if shop['key']=='forge' else []),
    'mission_source_ids':[],'menu_handlers':handlers,'offers':[i['id'] for i in shop['items']],
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
-   'menu_pages':mapping,'live_server_seen':False})
- return {'version':2,'catalog_revision':50 if cat.get('price_overrides') else 48,'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
+   'menu_pages':mapping,**({'menu_labels':{str(n):section['label'] for n,section in enumerate(shop['sections'],1)}} if shop.get('sections') else {}),'live_server_seen':False})
+ return {'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
          'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes())}
 
 def locate_client(selected):
@@ -79,13 +83,57 @@ def strip_legacy(raw):
  elif raw[b:b+1]==b'\n':b+=1
  return raw[:a]+raw[b:]
 
+def configure_actors(outputs,report,cat):
+ """Move only our forge actor and append one merchant; preserve all other rows."""
+ if cat.get('catalog_revision',0)<55:return outputs,report
+ import base64,zlib
+ text,binary=SERVER_FILES[2:4];rows,records=legacy.validate_npcs(outputs[text],outputs[binary])
+ safety=json.loads((ROOT.parent/'city-safety.json').read_text());mask=zlib.decompress(base64.b64decode(safety['safe_zlib']))
+ ox,oy=safety['origin'];width,height=safety['width'],safety['height']
+ ids=list(report['npc_ids']);own=set(ids);newlines=[];updated={};positions=[]
+ for index,shop in enumerate(cat['shops']):
+  x,y=shop['position_m'];cx,cy=x-ox,y-oy
+  if not any(0<=cx+dx<width and 0<=cy+dy<height and mask[(cy+dy)*width+cx+dx] for dx in range(-2,3) for dy in range(-2,3) if dx*dx+dy*dy<=4):raise ValueError('Нет безопасного подхода к новой точке магазина')
+  position=(x*100+50,y*100+50);positions.append([x,y])
+  for identity,row in rows.items():
+   if identity not in own and sum((a-b)**2 for a,b in zip(map(int,row[5].split(b',')),position))<10000:
+    raise ValueError('Новая точка магазина занята другим НПС')
+  if index<len(ids):
+   identity=ids[index];row=list(rows[identity]);record=bytearray(next(r for r in records if struct.unpack_from('<I',r,4)[0]==identity))
+  else:
+   identity=max(rows)+1
+   while identity in ids:identity+=1
+   ids.append(identity);row=list(rows[18]);record=bytearray(next(r for r in records if struct.unpack_from('<I',r,4)[0]==18))
+   name=shop['name'].encode('ascii');function=shop['function'].encode('ascii')
+   if len(name)>=40 or len(function)>=16:raise ValueError('Слишком длинное имя торговца')
+   struct.pack_into('<I',record,4,identity);struct.pack_into('<I',record,100,identity)
+   record[8:48]=name.ljust(40,b'\0');record[108:236]=name.ljust(128,b'\0')
+   record[394:410]=function.ljust(16,b'\0');record[410:426]=b'0'.ljust(16,b'\0')
+   row[0]=str(identity).encode();row[1]=name;row[11]=function;row[12]=b'0'
+  struct.pack_into('<iiiiI',record,244,*position,*position,180)
+  row[5]=row[6]=f'{position[0]},{position[1]}'.encode();row[7]=b'180'
+  updated[identity]=bytes(record)
+  encoded=b'\t'.join(row)
+  if identity in rows:
+   # Preserve every byte of unrelated table rows, including line endings.
+   pattern=rb'(?m)^'+str(identity).encode()+rb'\t[^\r\n]*'
+   if len(re.findall(pattern,outputs[text]))!=1:raise ValueError('Неоднозначная строка НПС')
+   outputs[text]=re.sub(pattern,lambda _:encoded,outputs[text])
+  else:newlines.append(encoded)
+ nl=b'\r\n' if b'\r\n' in outputs[text] else b'\n'
+ if newlines:outputs[text]+=nl+nl.join(newlines)+nl
+ outputs[binary]=outputs[binary][:4]+b''.join(updated.get(struct.unpack_from('<I',r,4)[0],r) for r in records)+b''.join(updated[i] for i in ids if i not in rows)
+ legacy.validate_npcs(outputs[text],outputs[binary])
+ report.update(npc_ids=ids,positions_m=positions,shops=[{k:s[k] for k in ('key','name','function')} for s in cat['shops']])
+ return outputs,report
+
 def plan_server(root,cat=None):
  cat=cat or catalog();originals={p:(root/p).read_bytes() for p in SERVER_FILES};v1=root/'owner-city-shops-v1.json'
  if b'OWNER_CITY_SHOPS_V2_BEGIN' in originals[SERVER_FILES[0]]:
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
   previous=json.loads(marker.read_text());match=None
-  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False)]:
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False)]:
    oldcat=json.loads(path.read_text())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:
@@ -100,7 +148,7 @@ def plan_server(root,cat=None):
    raise ValueError('Изменены обработчики магазинов02 в NpcSdk.lua; нужна проверка')
   rows,_=legacy.validate_npcs(originals[SERVER_FILES[2]],originals[SERVER_FILES[3]])
   if len(previous['npc_ids'])!=5 or len(set(previous['npc_ids']))!=5:raise ValueError('Не подтверждены пять НПС02')
-  for shop,identity,point in zip(cat['shops'],previous['npc_ids'],legacy.DEFAULT_POINTS):
+  for shop,identity,point in zip(oldcat['shops'],previous['npc_ids'],legacy.DEFAULT_POINTS):
    row=rows[identity];pos=[v*100+50 for v in point]
    if (row[11].strip()!=shop['function'].encode() or row[1].strip()!=shop['name'].encode() or int(row[3])!=17
        or list(map(int,row[5].split(b',')))!=pos or list(map(int,row[6].split(b',')))!=pos):raise ValueError('Изменена привязка НПС02')
@@ -110,6 +158,7 @@ def plan_server(root,cat=None):
   report=dict(previous,version=2,catalog_sha256=digest(CATALOG.read_bytes()),implementation_sha256=implementation_digest(cat),
               item_count=sum(len(s['items']) for s in cat['shops']),upgraded_from=oldlabel,
               preserved_changed_files=[p.as_posix() for p in SERVER_FILES if digest(originals[p])!=previous['installed_sha256'][p.as_posix()]])
+  outputs,report=configure_actors(outputs,report,cat)
   return originals,outputs,report
  if v1.exists():
   previous=json.loads(v1.read_text())
@@ -127,7 +176,7 @@ def plan_server(root,cat=None):
   report['preserved_changed_files']=changed
   if len(report['npc_ids'])!=5 or len(set(report['npc_ids']))!=5:raise ValueError('Не подтверждены пять прежних НПС')
   rows,records=legacy.validate_npcs(outputs[SERVER_FILES[2]],outputs[SERVER_FILES[3]])
-  for shop,identity,point in zip(cat['shops'],report['npc_ids'],legacy.DEFAULT_POINTS):
+  for shop,identity,point in zip(cat['shops'],report['npc_ids'],report.get('positions_m',legacy.DEFAULT_POINTS)):
    row=rows[identity];position=[v*100+50 for v in point]
    if (row[11].strip()!=shop['function'].encode() or row[1].strip()!=shop['name'].encode()
        or int(row[3])!=17 or int(row[7])!=180
@@ -149,6 +198,7 @@ def plan_server(root,cat=None):
  outputs[Path('ItemInfo.bin')]=patch_binary(originals[Path('ItemInfo.bin')],items)
  report.update(version=2,catalog_sha256=digest(CATALOG.read_bytes()),implementation_sha256=implementation_digest(cat),native_trade_windows=True,prices_scope='global selected item prices; client synchronized; other item fields unchanged',
                item_count=sum(len(s['items']) for s in cat['shops']),positions_m=[list(p) for p in legacy.DEFAULT_POINTS])
+ outputs,report=configure_actors(outputs,report,cat)
  return originals,outputs,report
 
 def atomic(path,raw):

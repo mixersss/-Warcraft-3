@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-54'
-NAME = 'Piratia-Auto-Bots-Alpha54'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-55'
+NAME = 'Piratia-Auto-Bots-Alpha55'
 
 
 def main():
@@ -19,6 +19,7 @@ def main():
     sources += [ROOT/'tools/dialogue52_lines.py',ROOT/'tools/dialogue52_scenes.py',ROOT/'tools/build_useful_loot.py',ROOT/'knowledge/ALPHA52.md',ROOT/'knowledge/ALPHA52-INSTALL.md',ROOT/'knowledge/fleet-alpha51-audit.json']
     sources += [ROOT/'knowledge/ALPHA53.md',ROOT/'knowledge/ALPHA53-INSTALL.md']
     sources += [ROOT/'tools/build_stall_policy.py',ROOT/'knowledge/ALPHA54.md',ROOT/'knowledge/ALPHA54-INSTALL.md']
+    sources += [ROOT/'knowledge/ALPHA55.md',ROOT/'knowledge/ALPHA55-INSTALL.md',ROOT/'knowledge/FAIRY-POSSESSION55.md',ROOT/'knowledge/fleet-alpha54-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -43,11 +44,12 @@ def main():
     artifact = OUT / f'{NAME}.zip'
     manifest = {
         'artifact': artifact.name,
+        'alpha55': {'bot_tests':876,'native_tests':29,'legacy_tests':12,'gold_csv_report':True,'auto_party_waiting':False,'progression_cycle_share':[.77,.82],'patchouli_npc_buyback':1500,'treant_root_npc_buyback':2500,'private_junior_case_resolved':False,'live_fleet_verified':False},
         'sha256': hashlib.sha256(artifact.read_bytes()).hexdigest(),
         'mechanics_knowledge': {'lua_files':242,'named_functions':4135,'reviewed_source_cards':22,'indexed_only_cards':6,'all_mechanics_understood':False,'new_native_operations_enabled':False,'local_learner':'Learn-Mechanics.cmd','finder':'Find-Mechanic.cmd','audit':'Audit-Mechanics.cmd'},
         'fleet_alpha44_reaudit': {'connected':300,'first_profession':172,'novices':128,'no_xp_over_30min':246,'full_bags':3,'needs_geometric_recovery':40,'dry_checked_exits':24,'no_exit_but_owned_ticket':6,'no_exit_or_ticket':10,'live46_fix_verified':False},
         'stuck_city_ticket': {'owned_only':[4602,4603,4604],'full_hp_sp_required':True,'native_arrival_and_consumption_required':True},
-        'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':645,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':526,'live_windows_verified':False},
+        'native_owner_shops_v2': {'optional_installed_overlay':True,'ordinary_trade_stock':True,'catalog_items':716,'berry_aliases':{'nya':3844,'zya':3845},'baseline_static_npcs':521,'with_installed_native_shops':527,'live_windows_verified':False},
         'owner_economy_alpha48': {'random_independent_activity_order_each_cycle':True,'cycle_seconds':1800,'phase_duration_variation':.15,'finish_fights_and_transactions_before_switch':True,'blueprint1000_player_price':None,'blueprint1000_npc_price_changed':True,'blueprint1000_npc_buyback':500,'source_drop_species':22,'second_generation_or_junior_only':True,'fairy_stats':['STR','STA','CON','DEX'],'one_fruit_stat_per_fairy':True,'normal_ticket_price':500,'expert_possession_item609_price':300000,'fresh_paid_fairies_start_zero_stats':True,'old_fairy_stats_reset':False,'stalls_from_level':15,'stall_skill_and_life_points_required':True,'keep_six_stall_offers_before_banking':True,'life_profession_learning_enabled':True,'automatic_craft_production_enabled':False,'weapon_forging_automation_enabled':False,'quest_translation':'postponed by owner'},
         'current_alpha50': {'dialogue_intents':132,'dialogue_examples':660,'authored_conversation_lines':264,'distinct_item_fact_lines':5424,'unique_reply_lines':5688,'personalities':12,'context_channels':['local','world','trade','private'],'memory_turns':16,'context_limit_per_client':32,'npc_patchouli_buyback':500,'patchouli_base_price':1000,'class_funding_plain_patchouli_allowed':True,'treasure_items':[684,682,2445],'new_map_min_level':15,'new_map_max_level':40,'native_coral_energy_action':23,'shore_probe_max_cm':250,'land_component_grids':30,'progress_watchdog_seconds':45,'protocol_reconnect_limit':3,'new_native_live_validation':False},
         'current_alpha51': {'runtime_limit':400,'fixed_growth':[300,400],'preserved_old_bots':300,'build_skill_guides':8,'near_term_book_purchase_limit':2,'guide_history_definition_rows':426,'guide_initial_walkthrough_steps':19,'guide_skill_book_rows':74,'external_complete_guides_verified':False,'live400_creation_verified':False},
@@ -55,7 +57,7 @@ def main():
         'current_alpha52': {'network_background_ping_pump':True,'max_queued_packets':4096,'max_queued_payload_bytes':2097152,'diagnostic_write_failure_nonfatal':True,'fairy_goal_all_bots':True,'fairy_food_stock_target':6,'restore_verified_shop_knowledge_cmd':'RESTORE-BOT-SHOPS.cmd','dialogue_intents':136,'authored_examples':680,'authored_conversation_lines':836,'scene_lines':144,'distinct_item_fact_lines':5424,'unique_reply_lines':6402,'useful_trade_items':1629,'drop_backed_items':515,'argent_stall_capacity':120,'live_windows_validation':False},
         'current_alpha53':{'paid_native_repair_source_audited':True,'live_repair_verified':False,'escape_fallback_seconds':60,'same_area_resync_cooldown_seconds':600,'proactive_owned_ticket_min_level':10,'population_unchanged':400},
         'current_alpha54':{'stable_junior_preference_no_downgrade':True,'fairy_savings_protected':True,'affordable_pet_bypasses_xp_watchdog':True,'verified_missing_overlay_bootstrap':True,'curated_stall_goods':482,'drop_gear_level20plus':400,'source_monster_definitions':468,'live_windows_purchase_verified':False},
-        'status':'Alpha54 prioritizes the chosen fairy, preserves Junior savings, restores only verified supplier knowledge, curates real20plus dropped gear and requested useful resources, distinguishes empty sockets from actual gems and chooses comfortable income sources. Includes53. Live Windows purchase/trade verification pending.',
+        'status':'Alpha55 prioritizes earned solo XP, verified55 supplier knowledge, fairy casts/training, real bank Patchouli recovery, stacks and equipment savings. Includes54. Personal Junior case and full live fleet validation remain pending.',
         'previous_status_alpha53':'Alpha53 adds paid native repair, broken-gear replacement, confirmed-escape movement waiting, one-minute owned-ticket/native-position-resync fallback and proactive earned ticket procurement. All52 changes included; live Windows fleet recovery unverified.',
         'previous_status_alpha52':'Alpha52 decouples native ping servicing, bounds queued events, caches unchanged equipment decisions, preserves state during diagnostic file locks, restores verified supplier knowledge, prioritizes fairy food, contextualizes LFG replies and adds finite nearby scenes and useful real loot markets. No claim every idle/disconnect case resolved on owner server.',
         'previous_status_alpha51': 'Alpha51 adds eight owner/server-derived skill plans, a standalone original Russian history/skills guide, and resumable300to400 expansion preserving the old300; complete external community guides not verified. Includes Alpha50: global NPC Patchouli500G buyback/novice fare funding, ordinary dropped-gear and NP markets, real parchment/Caribbean map/ticket digging, essential role weapons, caster cooldown and native coral-energy updates, native-progress watchdog, bounded shoreline attempts, disconnected-land rejection, bounded protocol recovery diagnostics, isolated four-channel dialogue with132 intents/12 profiles/5688distinct reply lines including5424item facts. Prior source mechanics knowledge/roles/builds/fairies/stalls/bank/LFG preserved. Old data/accounts/rates/rewards untouched. Live Windows behavior and all fleet recovery not proven; quest translation, ship/PvP/weapon-forging/production automation remain deferred',
@@ -254,10 +256,10 @@ def main():
         'nested_partial_data_copy_rejected': True,
         'windows_session_guard_live_tested': False,
         'pure_python_tests_passed': 852,
-        'full_python_suite_total': 864,
-        'full_python_suite_passed': 864,
+        'full_python_suite_total': 876,
+        'full_python_suite_passed': 876,
         'socket_tests_not_rerun_this_release': 0,
-        'last_full_network_regression': '864 passed in Alpha54 including 8 legacy socket integrations and 4 dedicated background-network socket tests',
+        'last_full_network_regression': '876 passed in Alpha55 including 8 legacy socket integrations and 4 dedicated background-network socket tests',
         'current_network_regression': '8 legacy simulated-server socket tests and 4 dedicated background-pump socket tests; owner Windows server not tested',
         'default_bot_count': 400,
         'default_mode': 'mixed',
@@ -299,7 +301,7 @@ def main():
         'four_hundred_live_connections_tested': False,
         'stall_session_seconds': 3600,
         'stall_live_population_fraction': None,
-        'argent_target_stalls': 120,
+        'argent_target_stalls': 60,
         'stall_minimum_level': 15,
         'voluntary_rest_live_population_fraction': .10,
         'stall_city_caps_at_200': {'garner':80,'magicsea':3,'darkblue':2},
@@ -349,7 +351,7 @@ def main():
         'private_replies': True,
         'native_friend_private_serializers_verified': True,
         'contacts_live_windows_tested': False,
-        'level_viewer': 'Show-Bot-Levels.cmd',
+        'level_viewer': 'Show-Bot-Levels-And-Gold.cmd',
         'starter_monster_native_level': 3,
         'starter_character_levels': [1,2,3],
         'starter_map': 'garner',
