@@ -1,0 +1,29 @@
+{
+  "artifact": "Buba-Swords-35-Crimson-Thunder.zip",
+  "sha256": "e204771f9812686eedfcc43dc741be2e6deb8b223b745ba17aa7f4c619ab53f3",
+  "bytes": 8707,
+  "target_character": "buba",
+  "count": 2,
+  "base_item_id": 1397,
+  "apparel_id": 5002,
+  "base_level": 35,
+  "apparel_level": 15,
+  "forge_total": 27,
+  "gem_types": [
+    12,
+    13,
+    1
+  ],
+  "gem_ranks": [
+    9,
+    9,
+    9
+  ],
+  "source_verified_native_encoding": 3129139019,
+  "local_tests": 6,
+  "live_server_tested": false,
+  "auto_grants_gm": false,
+  "manual_gm_enable_restore_sql": true,
+  "touches_existing_equipment": false,
+  "one_time_local_ledger": true
+}
