@@ -42,14 +42,14 @@ end}
 
 
 class GrantTests(unittest.TestCase):
- def run_lua(self,before='',after=''):
+ def run_lua(self,before='',after='',filename='BubaSwords.lua'):
   library=ctypes.util.find_library('lua5.4')
   if not library:self.skipTest('Lua5.4 not installed; actual server Lua still required')
   lua=ctypes.CDLL(library);pointer=ctypes.c_void_p
   lua.luaL_newstate.restype=pointer;lua.luaL_openlibs.argtypes=[pointer]
   lua.luaL_loadstring.argtypes=[pointer,ctypes.c_char_p];lua.lua_pcallk.argtypes=[pointer,ctypes.c_int,ctypes.c_int,ctypes.c_int,ctypes.c_longlong,pointer]
   lua.lua_tolstring.argtypes=[pointer,ctypes.c_int,pointer];lua.lua_tolstring.restype=ctypes.c_char_p;lua.lua_close.argtypes=[pointer]
-  script=ROOT.joinpath('BubaSwords.lua').read_text()
+  script=ROOT.joinpath(filename).read_text()
   code=MOCK+'\n'+before+'\nfunction grant()\n'+script+'\nend\n'+after
   state=lua.luaL_newstate()
   try:
@@ -80,6 +80,19 @@ assert(role.bag[10].old and role.bag[20].old)''')
  def test_never_edits_unexpected_occupied_slot(self):
   self.run_lua('function MakeItem(r,id,n,k) made=made+1;return 1,10 end',
    'assert(not pcall(grant));assert(role.bag[10].old and made==1 and removed==0)')
+ def test_level35_uses_native_exp_delta_and_repeated_call_never_adds_again(self):
+  self.run_lua('''
+ATTR_LV=0;ATTR_CEXP=15;ATTR_JOB=4;GetExp={[35]=1435074};role.lv=12;role.xp=4000
+function GetChaAttr(r,k) if k==0 then return r.lv elseif k==4 then return 1 else return r.xp end end
+function AddExp(r,npc,a,b) assert(npc==nil and a==1431074 and a==b);r.xp=r.xp+a;r.lv=35;exp_calls=(exp_calls or 0)+1 end
+''','grant();assert(role.lv==35 and exp_calls==1);grant();assert(exp_calls==1)',filename='BubaLevel35.lua')
+ def test_level35_keeps_higher_level_and_rejects_unpromoted_character(self):
+  for lv,job,success in [(40,1,True),(1,0,False)]:
+   self.run_lua(f'''
+ATTR_LV=0;ATTR_CEXP=15;ATTR_JOB=4;GetExp={{[35]=1435074}}
+function GetChaAttr(r,k) if k==0 then return {lv} elseif k==4 then return {job} else return 0 end end
+function AddExp(...) error('must not add experience') end
+''',f"assert(pcall(grant)=={str(success).lower()})",filename='BubaLevel35.lua')
 
 
 class InstallTests(unittest.TestCase):

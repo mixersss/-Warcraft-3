@@ -1,0 +1,32 @@
+{
+  "artifact": "Buba-Swords-35-and-Level35.zip",
+  "sha256": "6374bdcc8264350a40da0b7fb7292dd307c9a024b8fc28a313306520cade3372",
+  "bytes": 10180,
+  "target_character": "buba",
+  "count": 2,
+  "base_item_id": 1397,
+  "apparel_id": 5002,
+  "base_level": 35,
+  "apparel_level": 15,
+  "forge_total": 27,
+  "gem_types": [
+    12,
+    13,
+    1
+  ],
+  "gem_ranks": [
+    9,
+    9,
+    9
+  ],
+  "source_verified_native_encoding": 3129139019,
+  "local_tests": 8,
+  "live_server_tested": false,
+  "auto_grants_gm": false,
+  "manual_gm_enable_restore_sql": true,
+  "touches_existing_equipment": false,
+  "one_time_local_ledger": true,
+  "level35_helper": true,
+  "profession_command": "&attr 4,1",
+  "level_method": "native AddExp delta from live GetExp[35]; never lowers level"
+}

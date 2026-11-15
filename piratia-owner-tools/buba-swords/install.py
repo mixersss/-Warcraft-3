@@ -9,24 +9,33 @@ def install(selected):
     resource = next((r for r in roots if (r/'script/MisScript/NpcScript01.lua').is_file()), None)
     if resource is None:
         raise ValueError('Не найдена серверная resource. Укажи папку GameServer или resource.')
-    source = Path(__file__).with_name('BubaSwords.lua')
-    target = resource/'script/BubaSwords.lua'
-    raw = source.read_bytes()
-    if target.exists():
-        if target.read_bytes() != raw:
-            raise ValueError('BubaSwords.lua уже существует и отличается. Файл не перезаписан.')
-        return target
-    # Exclusive creation: no accidental overwrite of an existing server script.
-    with target.open('xb') as stream:
-        stream.write(raw)
-    if hashlib.sha256(target.read_bytes()).digest() != hashlib.sha256(raw).digest():
-        raise OSError('Не подтверждено копирование файла.')
-    return target
+    changes = {}
+    for name in ('BubaSwords.lua', 'BubaLevel35.lua'):
+        raw = Path(__file__).with_name(name).read_bytes()
+        target = resource/'script'/name
+        if target.exists():
+            if target.read_bytes() != raw:
+                raise ValueError(name+' уже существует и отличается. Файл не перезаписан.')
+        else:
+            changes[target] = raw
+    written = []
+    try:
+        for target, raw in changes.items():
+            with target.open('xb') as stream:
+                stream.write(raw)
+            written.append(target)
+            if hashlib.sha256(target.read_bytes()).digest() != hashlib.sha256(raw).digest():
+                raise OSError('Не подтверждено копирование файла.')
+    except BaseException:
+        for target in written:
+            target.unlink()
+        raise
+    return resource/'script/BubaSwords.lua'
 
 
 if __name__ == '__main__':
     try:
-        print('Установлен:', install(input('Папка GameServer или resource: ')))
+        print('Установлены BubaSwords.lua и BubaLevel35.lua:', install(input('Папка GameServer или resource: ')).parent)
         print('Предметы ещё не выданы. Выполни GM-команду из README.md, когда buba в игре.')
     except (OSError, ValueError) as error:
         print('Ошибка:', str(error))
