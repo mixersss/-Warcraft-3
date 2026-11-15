@@ -1,0 +1,39 @@
+{
+  "artifact": "Buba-Swords-Fix03-Classic.zip",
+  "sha256": "7bdb6e5ed5ae8bc6170e2c1ae9c1f630f03a7913ed02f12585171397116f0795",
+  "bytes": 11830,
+  "target_character": "buba",
+  "count": 2,
+  "base_item_id": 1397,
+  "apparel_id": 5002,
+  "base_level": 35,
+  "apparel_level": 15,
+  "forge_total": 27,
+  "gem_types": [
+    12,
+    13,
+    1
+  ],
+  "gem_ranks": [
+    9,
+    9,
+    9
+  ],
+  "source_verified_native_encoding": 3129139019,
+  "local_tests": 11,
+  "live_server_tested": false,
+  "auto_grants_gm": false,
+  "manual_gm_enable_restore_sql": true,
+  "touches_existing_equipment": false,
+  "one_time_local_ledger": true,
+  "level35_helper": true,
+  "profession_command": "&attr 4,1",
+  "level_method": "native AddExp delta from live GetExp[35]; never lowers level",
+  "classic_npc_context": true,
+  "requires_GetPlayerByName": false,
+  "owner_confirmed_level35": true,
+  "level35_changed_by_npc": false,
+  "original_npcsdk_model_dispatch_verified": true,
+  "updates_known_previous_scripts_with_backup": true,
+  "one_time_ledger_preserved": true
+}

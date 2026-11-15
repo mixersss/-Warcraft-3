@@ -73,6 +73,12 @@ local ok=pcall(grant);assert(not ok and made==4 and removed==2)
    self.run_lua(before, 'assert(not pcall(grant));assert(made==0 and ledger==nil)')
  def test_missing_api_refuses_before_any_change(self):
   self.run_lua('GetPlayerByName=nil','assert(not pcall(grant));assert(made==0 and ledger==nil)')
+ def test_classic_empty_slots_may_be_zero_and_bag_capacity24(self):
+  self.run_lua('''function GetChaItem(r,kind,slot)
+ if slot>=24 then error('outside bag') end
+ return r.bag[slot] or 0
+end
+''','grant();assert(made==4 and removed==2 and string.find(ledger,"done"))')
  def test_partial_failure_blocks_repetition_and_preserves_old_items(self):
   self.run_lua('function FusionItem(a,b) return 0 end','''assert(not pcall(grant));assert(made==2 and removed==0)
 assert(string.find(ledger,'pending'));assert(not pcall(grant));assert(made==2)
@@ -93,6 +99,34 @@ ATTR_LV=0;ATTR_CEXP=15;ATTR_JOB=4;GetExp={{[35]=1435074}}
 function GetChaAttr(r,k) if k==0 then return {lv} elseif k==4 then return {job} else return 0 end end
 function AddExp(...) error('must not add experience') end
 ''',f"assert(pcall(grant)=={str(success).lower()})",filename='BubaLevel35.lua')
+ def test_classic_npc_context_works_without_getplayerbyname_and_preserves_dispatch(self):
+  sword=ROOT.joinpath('BubaSwords.lua').read_text()
+  self.run_lua('''GetPlayerByName=nil
+old_calls=0
+function MsgProc(...) old_calls=old_calls+1;return 123 end
+function Notice(s) ready=s end
+function dofile(path)
+assert(path=='script/BubaSwords.lua')
+'''+sword+'''\nend
+''','''grant();assert(string.find(ready,'READY'));assert(made==0)
+assert(MsgProc({name='other'},{},'packet','page','trade','missions','exchange')==123)
+assert(made==0 and old_calls==1)
+assert(MsgProc(role,{},'packet','page','trade','missions','exchange')==123)
+assert(made==4 and removed==2 and old_calls==2)
+MsgProc(role,{},'packet','page','trade','missions','exchange');assert(made==4)
+''',filename='BubaNPC.lua')
+ def test_npc_error_is_visible_and_does_not_disable_other_players_dialogues(self):
+  sword=ROOT.joinpath('BubaSwords.lua').read_text()
+  self.run_lua('''GetPlayerByName=nil;MakeItem=nil
+old_calls=0
+function MsgProc(...) old_calls=old_calls+1 end
+function Notice(s) ready=s end
+function dofile(path)
+'''+sword+'''\nend
+''','''grant();MsgProc(role,{},'packet');assert(string.find(last_notice,'ERROR'))
+assert(made==0 and ledger==nil)
+MsgProc({name='other'},{},'packet');assert(old_calls==2)
+''',filename='BubaNPC.lua')
 
 
 class InstallTests(unittest.TestCase):

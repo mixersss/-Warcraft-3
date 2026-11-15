@@ -1,7 +1,7 @@
 -- Owner-authorized, one-time grant for buba. Loaded explicitly by a GM only.
 -- Creates new items; never selects, edits or equips existing player equipment.
-local function give()
-    local required = {"GetPlayerByName", "GetChaDefaultName", "GetChaFreeBagGridNum",
+function BubaGiveSwords(role)
+    local required = {"GetChaDefaultName", "GetChaFreeBagGridNum",
         "GetChaItem", "GetItemID", "MakeItem", "FusionItem", "SetItemAttr",
         "GetItemAttr", "SetItemForgeParam", "GetItemForgeParam", "GetResPath",
         "RemoveChaItem", "SetChaKitbagChange", "SynChaKitbag", "SystemNotice",
@@ -15,7 +15,6 @@ local function give()
     if not ITEMATTR_VAL_FUSIONID or not ITEMATTR_VAL_LEVEL or not ITEMATTR_URE or not ITEMATTR_MAXURE then
         error("BubaSwords: item constants unavailable; nothing created")
     end
-    local role = GetPlayerByName("buba")
     if not role or GetChaDefaultName(role) ~= "buba" then
         error("BubaSwords: buba must be online in this GameServer; nothing created")
     end
@@ -32,8 +31,13 @@ local function give()
     if GetChaFreeBagGridNum(role) < 4 then fail("need four free ordinary bag slots; nothing created") end
     local occupied = {}
     for slot = 0, 47 do
-        local item = GetChaItem(role, 2, slot)
-        if item and GetItemID(item) ~= 0 then occupied[slot] = true end
+        local ok,item = pcall(GetChaItem, role, 2, slot)
+        if not ok then break end -- Some classic bags expose only24 cells.
+        if item ~= nil and item ~= 0 then
+            local valid,identity = pcall(GetItemID,item)
+            if not valid or type(identity)~="number" then fail("bag inspection unavailable") end
+            if identity ~= 0 then occupied[slot] = true end
+        end
     end
     local function save(state)
         local file = io.open(ledger, "w")
@@ -50,7 +54,7 @@ local function give()
             fail("unexpected creation slot; no existing item will be edited")
         end
         local item = GetChaItem(role, 2, slot)
-        if not item or GetItemID(item) ~= identity then fail("created item not confirmed") end
+        if not item or item == 0 or GetItemID(item) ~= identity then fail("created item not confirmed") end
         occupied[slot] = true
         return item, slot
     end
@@ -79,7 +83,7 @@ local function give()
     for index = 1, 2 do
         local slot = bases[index]
         local item = GetChaItem(role, 2, slot)
-        if not item or GetItemID(item) ~= 1397 then fail("temporary base identity changed") end
+        if not item or item == 0 or GetItemID(item) ~= 1397 then fail("temporary base identity changed") end
         local removed = RemoveChaItem(role, 1397, 1, 2, slot, 2, 1, 0)
         if removed ~= 1 and removed ~= true then fail("temporary base removal failed") end
     end
@@ -89,4 +93,7 @@ local function give()
     SystemNotice(role, "BubaSwords: received 2 Crimson Thunder/Assassin swords, gems9/9/9 (+27), apparel15")
 end
 
-give()
+if not BubaLoadOnly then
+    if type(GetPlayerByName)=="function" then BubaGiveSwords(GetPlayerByName("buba"))
+    else error("BubaSwords: this classic server needs BubaNPC.lua; then talk to an NPC") end
+end

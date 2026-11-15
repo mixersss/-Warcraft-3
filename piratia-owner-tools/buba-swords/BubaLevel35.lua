@@ -1,6 +1,6 @@
 -- Explicit owner-requested level target. Native AddExp awards the level-up points.
-local function level35()
-    if type(GetPlayerByName) ~= "function" or type(GetChaAttr) ~= "function"
+function BubaRaise35(role)
+    if type(GetChaAttr) ~= "function"
         or type(AddExp) ~= "function" or type(GetChaDefaultName) ~= "function"
         or type(GetExp) ~= "table" or type(GetExp[35]) ~= "number" then
         error("BubaLevel35: required native API/experience table unavailable; nothing changed")
@@ -8,7 +8,6 @@ local function level35()
     if not ATTR_LV or not ATTR_CEXP or not ATTR_JOB then
         error("BubaLevel35: character constants unavailable; nothing changed")
     end
-    local role = GetPlayerByName("buba")
     if not role or GetChaDefaultName(role) ~= "buba" then
         error("BubaLevel35: buba must be online in this GameServer")
     end
@@ -33,4 +32,7 @@ local function level35()
     SystemNotice(role, "BubaLevel35: native experience awarded; level35 confirmed")
 end
 
-level35()
+if not BubaLoadOnly then
+    if type(GetPlayerByName)=="function" then BubaRaise35(GetPlayerByName("buba"))
+    else error("BubaLevel35: this classic server needs BubaNPC.lua; then talk to an NPC") end
+end
