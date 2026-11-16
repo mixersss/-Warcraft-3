@@ -29,6 +29,7 @@ def main():
                   'displaces':displaces or [links[0]],'requires_links':displaces,
                   'kind':kind,'strength':value(a[52]),'agility':value(a[53]),'spirit':value(a[56]),'constitution':value(a[55]),'accuracy':value(a[54]),'attack_speed':value(a[58]),
                   'min_attack':value(a[60]),'max_attack':value(a[61]),'defence':value(a[62]),'max_hp':value(a[63]),'max_sp':value(a[64]),
+                  'movement_speed':value(a[71]),'movement_coefficient':value(a[50]),
                   'score':score}
  (ROOT/'assets/items.json').write_text(json.dumps({'types':types,'gear':gear},separators=(',',':'))+'\n')
  print('Extracted numeric item types:',len(types),'gear:',len(gear))

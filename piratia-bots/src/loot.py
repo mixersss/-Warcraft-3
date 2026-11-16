@@ -10,6 +10,7 @@ class QuestLoot:
         self.competitive=set()
         self.approach=None
         self.value_priority={}
+        self.allowed_items=None;self.ground_gems=set()
 
     def note_attack(self,target,now):
         if target not in self.attacked:
@@ -46,8 +47,10 @@ class QuestLoot:
         candidates=[]
         for identity,item in w.items.items():
             model,handle,position,kind,source,created=item;key=(identity,handle)
-            if (kind!=0 or not handle or now-created>90 or (not self.credited(source,now) and model not in self.competitive)
-                    or self.attempted.get(key,0)>now or self.retries.get(key,0)>=2):continue
+            if self.allowed_items is not None and model not in self.allowed_items:continue
+            earned_ground_gem=kind==1 and model in self.ground_gems and self.credited(source,now)
+            if ((kind!=0 and not earned_ground_gem) or not handle or now-created>90 or (not self.credited(source,now) and model not in self.competitive)
+                    or self.attempted.get(key,0)>now or self.retries.get(key,0)>=(6 if earned_ground_gem else 2)):continue
             if model not in needed and (not self.collect_all or not w.bag_ready or free<=4):continue
             dist=math.dist(policy.position(now),position)
             if dist<=2000:candidates.append(((-1 if model in self.competitive else self.value_priority.get(model,5) if model in needed else 9),dist,identity,item))

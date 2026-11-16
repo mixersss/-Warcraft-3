@@ -48,6 +48,15 @@ class CombatSkills:
     def control(self,now):
         return 213 if self.world.own.values.get(1,0)<self.world.own.values.get(31,1)*.65 and self.usable(213,now) else None
 
+    def training_weapon_bridge(self):
+        """Earn level10 after the owner's level9 promotion; never attack barehanded."""
+        own=self.world.own
+        if own.values.get(0)!=9 or own.values.get(4) not in (4,5):return False
+        if self.reason not in ('не выполнено требование оружия','нет нужного коралла'):return False
+        identity=own.equipment.get(9,0);details=own.equipment_details.get(9,{})
+        return (self.catalog.types.get(identity)==1 and details.get('identity')==identity
+                and details.get('valid') is True and details.get('endurance',0)>0)
+
     def reach(self,identity,target):
         return max(40,self.rules[identity]['range_cm']+self.world.own.radius+target.radius-20)
 
@@ -86,5 +95,6 @@ class CombatSkills:
         return {'cast_requests':self.requests,'healing_requests':self.heals,'last_skill':self.last_skill,
                 'blocker':self.reason,'sp':self.world.own.values.get(2),'max_sp':self.world.own.values.get(32),
                 'known_supported_skills':sorted(set(self.rules)&set(self.world.skills)),
+                'native_skill_costs':{str(i):{k:self.world.skills[i].get(k) for k in ('level','state','sp','energy','interval_ms')} for i in sorted(set(self.rules)&set(self.world.skills))},
                 'coral_charge':{str(link):dict(self.world.own.equipment_details.get(link,{})) for link in (5,6,7)
                                 if self.catalog.types.get(self.world.own.equipment.get(link))==29}}

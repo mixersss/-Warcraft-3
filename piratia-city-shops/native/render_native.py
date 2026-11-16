@@ -34,7 +34,10 @@ def render(catalog,compat=False):
     lines.append('[%d]={itemtype=%d,count=%d,item={%s},price={}},'%(index,index-1,len(panel),','.join(map(str,panel))))
    lines.append('[4]={itemtype=3,count=0,item={},price={}}},')
   lines.append('}}')
- lines.append((ROOT/('native_trade-alpha47.lua' if compat else 'native_trade.lua')).read_text())
+ lines.append((ROOT/('native_trade-alpha47.lua' if compat else 'native_trade-alpha55.lua' if catalog.get('catalog_revision',0)<=55 else 'native_trade.lua')).read_text())
+ if catalog.get('catalog_revision',0)>=56:
+  lines.append((ROOT/'owner_progression.lua').read_text())
+  lines.append((ROOT/'ground_gems.lua').read_text())
  for shop in catalog['shops']:
   key=json.dumps(shop['key']);lines.extend(['function '+shop['function']+'()',
    ' Talk(1,%s)'%json.dumps(shop['name']+' - gold shop. Choose Trade to open items.'),
@@ -45,6 +48,16 @@ def render(catalog,compat=False):
    lines.append(' Text(1,%s,OwnerOpenTrade,%s,%d)'%(json.dumps(label),key,page))
   if shop['key']=='forge':
    for label,function in SERVICES:lines.append(' Text(1,%s,%s)'%(json.dumps(label),function))
+  if shop['key']=='jewellery':
+   lines.append(' Text(1,"Get missing bag expansions",OwnerOpenTrade,"owner-bags",0)')
+  if shop['key']=='progress':
+   for job,label in ((1,'Swordsman'),(2,'Hunter'),(4,'Explorer'),(5,'Herbalist')):
+    lines.append(' Text(1,"First profession: %s",OwnerOpenTrade,"owner-profession",%d)'%(label,job))
+   lines.extend([' Text(1,"Second profession",JumpPage,2)',' Text(1,"Get level 3 stall",OwnerOpenTrade,"owner-stall",0)',' Text(1,"Restore basic combat spell",OwnerOpenTrade,"owner-combat",0)',' Text(1,"Gem loot counters",OwnerOpenTrade,"owner-gem-stats",0)',
+    ' Talk(2,"Choose second profession at level 40.")'])
+   for job,label in ((8,'Champion'),(9,'Crusader'),(12,'Sharpshooter'),(13,'Cleric'),(14,'Seal Master'),(16,'Sea Voyager')):
+    lines.append(' Text(2,"Second profession: %s",OwnerOpenTrade,"owner-profession",%d)'%(label,job))
+   lines.extend([' Text(2,"Back",JumpPage,1)',' Text(2,"Close",CloseTalk)'])
   lines.extend([' Text(1,"Close",CloseTalk)','end'])
  lines.append('-- OWNER_CITY_SHOPS_V2_END')
  return ('\n'.join(lines)+'\n').encode('ascii')

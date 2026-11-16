@@ -1,0 +1,533 @@
+{
+  "version": 55,
+  "report_count": 398,
+  "voyagers": 49,
+  "voyager_states": {
+    "готовит магию: коралл разряжен или заряд не подтверждён": 37,
+    "готовит магию: нужен изученный боевой навык и подходящее снаряжение": 6,
+    "готовит магию: нет нужного коралла": 1,
+    "боевой навык перезаряжается": 1,
+    "идёт на городское место торговли": 1,
+    "маршрут отправлен": 1,
+    "поиск свободного места фарма": 2
+  },
+  "voyager_free_bag_slots": {
+    "6": 2,
+    "1": 20,
+    "0": 9,
+    "5": 4,
+    "2": 1,
+    "4": 5,
+    "3": 5,
+    "8": 1,
+    "11": 1,
+    "7": 1
+  },
+  "report_time_range_utc": [
+    "2026-11-15T23:10:09.544512+00:00",
+    "2026-11-16T17:22:00.558716+00:00"
+  ],
+  "unchanged_reports_from_previous_archive": 396,
+  "updated_report_indices": [
+    249,
+    348
+  ],
+  "live_validation": false,
+  "notes": [
+    "Most reports are from previous run; these are observed blockers, not proof of current fleet state.",
+    "Native per-skill energy costs were not recorded by Alpha55; added by Coral Fix01.",
+    "NPC purchase timeouts do not establish their remote cause; added stage and actual inventory/gold diagnostics."
+  ],
+  "voyager_audit": [
+    {
+      "index": 5,
+      "level": 24,
+      "gold": 248,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 6,
+      "thunder_charge": 1,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 13,
+      "level": 28,
+      "gold": 2232,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 4,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 20,
+      "level": 29,
+      "gold": 208,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 25,
+      "level": 30,
+      "gold": 852,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 33,
+      "level": 29,
+      "gold": 1407,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 1,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 40,
+      "level": 24,
+      "gold": 102,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 5,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 45,
+      "level": 28,
+      "gold": 1532,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 53,
+      "level": 28,
+      "gold": 2139,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 1,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 60,
+      "level": 23,
+      "gold": 377,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 4,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 65,
+      "level": 29,
+      "gold": 3519,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 73,
+      "level": 27,
+      "gold": 1622,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 80,
+      "level": 28,
+      "gold": 48,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 5,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 85,
+      "level": 24,
+      "gold": 626,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 5,
+      "thunder_charge": 1,
+      "purchase_requests": 6,
+      "purchase_timeouts": 6
+    },
+    {
+      "index": 93,
+      "level": 28,
+      "gold": 848,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 2,
+      "thunder_charge": 2,
+      "purchase_requests": 5,
+      "purchase_timeouts": 5
+    },
+    {
+      "index": 100,
+      "level": 28,
+      "gold": 1126,
+      "state": "готовит магию: нет нужного коралла",
+      "free_slots": 0,
+      "thunder_charge": null,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 105,
+      "level": 28,
+      "gold": 598,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 4,
+      "thunder_charge": 2,
+      "purchase_requests": 6,
+      "purchase_timeouts": 6
+    },
+    {
+      "index": 113,
+      "level": 29,
+      "gold": 2070,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 120,
+      "level": 24,
+      "gold": 222,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 6,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 125,
+      "level": 28,
+      "gold": 910,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 3,
+      "thunder_charge": 3,
+      "purchase_requests": 5,
+      "purchase_timeouts": 5
+    },
+    {
+      "index": 133,
+      "level": 28,
+      "gold": 1946,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 3,
+      "thunder_charge": 4,
+      "purchase_requests": 5,
+      "purchase_timeouts": 5
+    },
+    {
+      "index": 140,
+      "level": 29,
+      "gold": 1273,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 145,
+      "level": 26,
+      "gold": 70,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 153,
+      "level": 28,
+      "gold": 251,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 4,
+      "thunder_charge": 1,
+      "purchase_requests": 5,
+      "purchase_timeouts": 5
+    },
+    {
+      "index": 160,
+      "level": 25,
+      "gold": 41,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 4,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 165,
+      "level": 25,
+      "gold": 3805,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 173,
+      "level": 27,
+      "gold": 723,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 180,
+      "level": 28,
+      "gold": 1962,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 185,
+      "level": 27,
+      "gold": 240,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 3,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 193,
+      "level": 27,
+      "gold": 234,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 200,
+      "level": 26,
+      "gold": 176,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 4,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 205,
+      "level": 23,
+      "gold": 3741,
+      "state": "боевой навык перезаряжается",
+      "free_slots": 3,
+      "thunder_charge": 44,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 210,
+      "level": 25,
+      "gold": 3673,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 215,
+      "level": 25,
+      "gold": 20261,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 2,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 220,
+      "level": 24,
+      "gold": 700,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 225,
+      "level": 25,
+      "gold": 655,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 230,
+      "level": 24,
+      "gold": 3177,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 4,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 235,
+      "level": 24,
+      "gold": 12466,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 240,
+      "level": 22,
+      "gold": 414,
+      "state": "готовит магию: нужен изученный боевой навык и подходящее снаряжение",
+      "free_slots": 8,
+      "thunder_charge": 100,
+      "purchase_requests": 2,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 245,
+      "level": 24,
+      "gold": 35837,
+      "state": "идёт на городское место торговли",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 250,
+      "level": 23,
+      "gold": 37052,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 1,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 255,
+      "level": 17,
+      "gold": 22119,
+      "state": "маршрут отправлен",
+      "free_slots": 11,
+      "thunder_charge": 100,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 260,
+      "level": 23,
+      "gold": 662,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 5,
+      "thunder_charge": 4,
+      "purchase_requests": 5,
+      "purchase_timeouts": 5
+    },
+    {
+      "index": 265,
+      "level": 27,
+      "gold": 1576,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 270,
+      "level": 23,
+      "gold": 539,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 7,
+      "thunder_charge": 3,
+      "purchase_requests": 3,
+      "purchase_timeouts": 4
+    },
+    {
+      "index": 275,
+      "level": 23,
+      "gold": 14689,
+      "state": "поиск свободного места фарма",
+      "free_slots": 1,
+      "thunder_charge": 60,
+      "purchase_requests": 1,
+      "purchase_timeouts": 1
+    },
+    {
+      "index": 280,
+      "level": 24,
+      "gold": 24517,
+      "state": "поиск свободного места фарма",
+      "free_slots": 4,
+      "thunder_charge": 100,
+      "purchase_requests": 2,
+      "purchase_timeouts": 1
+    },
+    {
+      "index": 285,
+      "level": 24,
+      "gold": 5660,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 0,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 290,
+      "level": 24,
+      "gold": 3622,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 1,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    },
+    {
+      "index": 295,
+      "level": 23,
+      "gold": 27,
+      "state": "готовит магию: коралл разряжен или заряд не подтверждён",
+      "free_slots": 3,
+      "thunder_charge": 2,
+      "purchase_requests": 0,
+      "purchase_timeouts": 0
+    }
+  ]
+}

@@ -5,6 +5,7 @@ from pathlib import Path
 class MarketPrices:
     def __init__(self,path):
         self.path=Path(path);self.lock=threading.Lock();self.rows={};self.dirty=False;self.last_save=0;self.save_errors=0
+        self.write_lock=threading.Lock();self.saving=False;self.revision=0;self.saved_revision=-1
         try:
             data=json.loads(self.path.read_text())
             if data.get('version')==1:
@@ -25,16 +26,32 @@ class MarketPrices:
             observed=max(base//2,min(base*2,unit_price))
             row={'guide':max(1,round(row['guide']*.8+observed*.2)),
                  'observations':row['observations']+1}
-            self.rows[str(identity)]=row;self.dirty=True
+            self.rows[str(identity)]=row;self.dirty=True;self.revision+=1
         self.save()
 
     def save(self,force=False):
         now=time.monotonic()
         with self.lock:
-            if not self.dirty or (not force and now-self.last_save<60):return
+            if not self.dirty or (not force and (self.saving or now-self.last_save<60)):return
+            rows={key:dict(value) for key,value in self.rows.items()};revision=self.revision
+            self.last_save=now;self.saving=True
+        def write():
             try:
-                self.path.parent.mkdir(parents=True,exist_ok=True);temp=self.path.with_suffix('.tmp')
-                temp.write_text(json.dumps({'version':1,'items':self.rows},separators=(',',':')))
-                temp.replace(self.path);self.dirty=False
-            except OSError:self.save_errors+=1
-            self.last_save=now
+                # Neither disk writes nor filesystem/antivirus delays hold the
+                # shared guide lock or block another bot's decision thread.
+                with self.write_lock:
+                    if revision>=self.saved_revision:
+                        self.path.parent.mkdir(parents=True,exist_ok=True);temp=self.path.with_suffix('.tmp')
+                        temp.write_text(json.dumps({'version':1,'items':rows},separators=(',',':')))
+                        temp.replace(self.path);self.saved_revision=revision
+                with self.lock:
+                    if self.revision==revision:self.dirty=False
+            except OSError:
+                with self.lock:self.save_errors+=1
+            finally:
+                with self.lock:self.saving=False
+        if force:write()
+        else:
+            try:threading.Thread(target=write,name='piratia-price-save',daemon=True).start()
+            except RuntimeError:
+                with self.lock:self.saving=False;self.save_errors+=1

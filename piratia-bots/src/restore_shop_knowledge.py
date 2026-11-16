@@ -13,7 +13,7 @@ def restore(resource,assets):
     server=installer.legacy.locate(resource);marker=server/installer.MARKER
     if not marker.exists():raise ValueError('Не найдена установленная серверная часть. Запусти INSTALL-SERVER-SHOPS.cmd; аккаунты и data не меняются.')
     previous=json.loads(marker.read_text());cat=None;catalog_sha=None
-    for path in (installer.CATALOG,native/'catalog-alpha50.json',native/'catalog-alpha48.json'):
+    for path in (installer.CATALOG,native/'catalog-alpha55.json',native/'catalog-alpha50.json',native/'catalog-alpha48.json'):
         if not path.exists():continue
         candidate=json.loads(path.read_text());sha=installer.digest(path.read_bytes())
         if previous.get('catalog_sha256')==sha and previous.get('implementation_sha256')==installer.implementation_digest(candidate):cat=candidate;catalog_sha=sha;break

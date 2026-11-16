@@ -18,13 +18,17 @@ def isolated_install(server,client,apply=False,bot_assets=None):
 def fixture(directory):
  server=fixtures.fixture(directory)
  sdk=server/'script/MisSdk/NpcSdk.lua';sdk.write_bytes(sdk.read_bytes()+b'\nfunction Buy( character, npc, trade, itemtype, index1, index2, count )\nreturn SafeBuy(character,trade[itemtype+1].item[index1+1],index2,count) end\n')
- allitems={i['id']:i for s in fixtures.CAT['shops'] for i in s['items']};allitems.update(ITEMS)
+ allitems={i['id']:i for s in fixtures.CAT['shops'] for i in s['items']}
+ for shop in json.loads((ROOT/'catalog-alpha55.json').read_text())['shops']:
+  allitems.update({i['id']:i for i in shop['items']})
+ allitems.update(ITEMS)
  texts=[];records=[]
  for identity,item in sorted(allitems.items()):
-  row=[str(identity),item['name']]+['0']*93;row[10]=str(item['kind']);row[22]='1234';texts.append('\t'.join(row))
+  row=[str(identity),item['name']]+['0']*93;row[10]=str(item['kind']);row[20]=str(item.get('stack',1));row[22]='1234';texts.append('\t'.join(row))
   r=bytearray(b'\xa5'*868);struct.pack_into('<I',r,4,identity);struct.pack_into('<I',r,108,identity)
-  r[112:192]=item['name'].encode('ascii')[:79].ljust(80,b'\0');struct.pack_into('<h',r,308,item['kind']);struct.pack_into('<i',r,320,1234);records.append(r)
+  r[112:192]=item['name'].encode('ascii')[:79].ljust(80,b'\0');struct.pack_into('<h',r,308,item['kind']);struct.pack_into('<i',r,320,1234);struct.pack_into('<i',r,352,item.get('stack',1));records.append(r)
  (server/'ItemInfo.txt').write_text('\r\n'.join(texts)+'\r\n');raw=struct.pack('<I',868)+b''.join(records);(server/'ItemInfo.bin').write_bytes(raw)
+ (server/'CharacterInfo.txt').write_text('// fixture mob table; original tables are not packaged\n')
  client=directory/'client/scripts/table';client.mkdir(parents=True);(client/'iteminfo.bin').write_bytes(raw)
  return server,directory/'client'
 
@@ -50,7 +54,8 @@ class PriceCodecTests(unittest.TestCase):
 
 def assert_actor_migration(test,before,after):
  old=legacy.binary_rows(before);new=legacy.binary_rows(after)
- test.assertEqual(len(new),len(old)+1)
+ old_owned=sum(r[394:410].split(b"\0")[0] in {s["function"].encode() for s in CAT["shops"]} for r in old)
+ test.assertEqual(len(new),len(old)+len(CAT["shops"])-old_owned)
  for a,b in zip(old,new):
   identity=struct.unpack_from('<I',a,4)[0]
   if a[394:410].split(b'\0')[0]==b'OwnerForge':
@@ -79,7 +84,7 @@ class InstallationTests(unittest.TestCase):
    p=Path(d);server,client=fixture(p);assets=p/'bot-assets';assets.mkdir();(assets/'world-npcs.json').write_text('{}')
    isolated_install(server,client,False,assets);self.assertFalse((assets/'owner-city-shops.json').exists())
    isolated_install(server,client,True,assets);data=json.loads((assets/'owner-city-shops.json').read_text())
-   self.assertEqual(len(data['npcs']),6);self.assertEqual(data['prices']['3844'],10000)
+   self.assertEqual(len(data['npcs']),8);self.assertEqual(data['prices']['3844'],10000)
    self.assertTrue(isolated_install(server,client,True,assets)['already_installed'])
    (assets/'owner-city-shops.json').write_text('bad')
    isolated_install(server,client,True,assets);self.assertEqual(json.loads((assets/'owner-city-shops.json').read_text()),data)
@@ -88,7 +93,7 @@ class InstallationTests(unittest.TestCase):
    server,client=fixture(Path(d));original=(server/'garner/garnerNPC.bin').read_bytes();preview=isolated_install(server,client)
    self.assertFalse(preview['applied']);report=isolated_install(server,client,True)
    self.assertTrue(report['native_trade_windows']);self.assertEqual(report['positions_m'],[s['position_m'] for s in CAT['shops']])
-   self.assertTrue((server/'garner/garnerNPC.bin').read_bytes().startswith(original));self.assertEqual(len(legacy.binary_rows((server/'garner/garnerNPC.bin').read_bytes())),8)
+   self.assertTrue((server/'garner/garnerNPC.bin').read_bytes().startswith(original));self.assertEqual(len(legacy.binary_rows((server/'garner/garnerNPC.bin').read_bytes())),10)
    self.assertEqual((server/'ItemInfo.bin').read_bytes(),(client/'scripts/table/iteminfo.bin').read_bytes())
    script=(server/'script/MisScript/NpcScript01.lua').read_bytes();sdk=(server/'script/MisSdk/NpcSdk.lua').read_bytes()
    self.assertIn(b'OwnerNativeShops',script);self.assertNotIn(b'OwnerMarketBuy',script);self.assertIn(b'OwnerNativeBuy',sdk)
@@ -97,7 +102,7 @@ class InstallationTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    server,client=fixture(Path(d));legacy.install(server,legacy.DEFAULT_CENTER,True);before=(server/'garner/garnerNPC.bin').read_bytes()
    result=isolated_install(server,client,True)
-   assert_actor_migration(self,before,(server/'garner/garnerNPC.bin').read_bytes());self.assertEqual(result['npc_ids'],[19,20,21,22,23,24])
+   assert_actor_migration(self,before,(server/'garner/garnerNPC.bin').read_bytes());self.assertEqual(result['npc_ids'],[19,20,21,22,23,24,25,26])
    sdk=(server/'script/MisSdk/NpcSdk.lua').read_bytes();self.assertEqual(sdk.count(b'item.func == OwnerOpenTrade'),1)
    self.assertNotIn(b'item.func == OwnerMarketBuy',sdk)
  def test_upgrade_preserves_edits_outside_owned_lua_block(self):
@@ -224,7 +229,7 @@ for key,shop in pairs(OwnerNativeShops) do
   end
  end
 end
-assert(total==716)
+assert(total==844)
 ''')
  def test_npc_initialization_exposes_trade_buttons_and_nonempty_catalog(self):
   self.runlua('''

@@ -420,6 +420,12 @@ class World:
                 self.read_bag(reader)
             elif action == 26 and identity==self.own_id:
                 self.read_bank(reader)
+        elif command == 551:
+            identity,capacity=reader.long(),reader.short();reader.end()
+            if not 1<=capacity<=256:raise ProtocolError('Invalid native bag capacity')
+            if identity==self.own_id:
+                if any(slot>=capacity for slot in self.bag):raise ProtocolError('Capacity would hide owned items')
+                self.bag_capacity=capacity
         elif command == 520:
             self.failed_actions += 1
             if len(payload)==6:

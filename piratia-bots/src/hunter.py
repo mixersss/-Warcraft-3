@@ -13,6 +13,7 @@ from contextlib import nullcontext
 from progression import Progression
 from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
+from coral_supplies import spent_basic
 
 
 def distance(a, b):
@@ -121,6 +122,7 @@ class Hunter:
         self.quest_phase='quests'
         self.tactic_schedule=None
         self.optional_quests=True
+        self.owner_services=None
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
         from stuck_return import StuckReturn
@@ -526,10 +528,11 @@ class Hunter:
         return now-self.last_damage_at<6
 
     def mandatory_work(self):
+        if self.owner_services:return bool(self.owner_services.profession())
         return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
 
     def transaction_busy(self):
-        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade,self.repair))
+        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade,self.repair,self.owner_services))
 
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
@@ -632,7 +635,7 @@ class Hunter:
         if key=='town' and feature and hasattr(feature,'critical_items'):
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
-                essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-100 for i in critical)
+                essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-(0 if i in (817,867,635) and feature.life.prices.get(i)==1 else 100) for i in critical)
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and (not getattr(feature,"progression_first",False) or feature.shift_allowed(self,now))
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
@@ -643,6 +646,7 @@ class Hunter:
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
                 and not self.raising_travel_funds and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
+                and not any(spent_basic(self.world,i) for i in self.world.bag.values())
                 and not getattr(feature,'context',None) and not getattr(feature,'pending',None)):
             return False # A stalled optional selling trip must yield to the earned-XP watchdog.
         if not feature or (key!='vendor' and not self.task_budget.allow(key,now)):return False
@@ -656,7 +660,8 @@ class Hunter:
                 and isinstance(self.adventure.farm(),(tuple,list)) and self.world.bag_ready
                 and self.world.bag_capacity is not None and self.world.bag_capacity-len(self.world.bag)>2
                 and not self.raising_travel_funds and not getattr(feature,'context',None)
-                and not getattr(feature,'pending',None)):
+                and not getattr(feature,'pending',None)
+                and not any(spent_basic(self.world,i) for i in self.world.bag.values())):
             return False  # Finish required farming instead of leaving camp for a small sale.
         optional=key in ('vendor','market','town','story','repair')
         nearby=optional and any(self.eligible(e,now) and distance(self.position(now),self.world.position(now,e.identity))<=2000
@@ -920,6 +925,9 @@ class Hunter:
                 self.change(self.shortcut.reason);return
         if now < self.next_action or now-self.started < 2:
             return
+        if self.owner_services and self.owner_services.busy:
+            if self.owner_services.tick(now,self,False):
+                self.change(self.owner_services.reason);return
         if self.skills and self.skills.pending:self.skills.tick(now,self,False)
         if self.chests and self.chests.pending:
             self.chests.tick(now,self,False)
@@ -1026,6 +1034,9 @@ class Hunter:
                 self.drop_target();self.clear_zone();self.change(self.town.reason);return
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
+        if self.owner_services and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
+            if self.owner_services.tick(now,self,safe,loot_dialogue or bool(self.town and self.town.context)):
+                self.drop_target();self.clear_zone();self.change(self.owner_services.reason);return
         if not loot_dialogue and not self.quest_combat_ready:
             if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
                 task = self.adventure.farm() if self.adventure else None
@@ -1046,6 +1057,9 @@ class Hunter:
                 if self.chests and self.world.bag_ready and not self.world.bag_disabled:
                     free=(self.world.bag_capacity or 0)-len(self.world.bag)
                     if free>4:needed.update(item[0] for item in self.world.items.values() if item[0] in self.chests.catalog.names)
+                if self.owner_services:
+                    from owner_services import LOOT
+                    needed=set(LOOT)
                 if self.loot.tick(now,self,needed):
                     self.change('подбор нужного лута; результат подтверждает сервер')
                     return
@@ -1075,7 +1089,9 @@ class Hunter:
             self.change(self.adventure.reason)
             return
         shared_models=self.quest_models()
-        if own.values.get(4) in (4,5,13,14,16) and self.combat_skills and not self.combat_skills.select(now,ignore_cooldown=True):
+        if (own.values.get(4) in (4,5,13,14,16) and self.combat_skills
+                and not self.combat_skills.select(now,ignore_cooldown=True)
+                and not (self.owner_services and self.combat_skills.training_weapon_bridge())):
             self.drop_target();self.change('готовит магию: '+(self.combat_skills.reason or 'нужен изученный боевой навык и подходящее снаряжение'))
             self.next_action=now+.5;return
         target = self.world.entities.get(self.target)
@@ -1485,6 +1501,19 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if policy.learning.probing:return 'Проверю другой вид мобов и сравню, сколько получаю опыта.'
         return None
     policy.solo_progression=True
+    if life and life.owner_shops and life.owner_shops.get('catalog_revision',0)>=56:
+        from owner_services import OwnerServices,LOOT
+        policy.owner_services=OwnerServices(world,role,life.owner_shops,client.wire.send)
+        policy.adventure=policy.career=policy.story=None
+        policy.optional_quests=False;policy.town.professions=policy.town.treasure=None
+        policy.professions=policy.treasure=None
+        policy.petcare.maintenance_only=True
+        policy.town.next_break=float('inf')
+        if policy.loot:
+            policy.loot.collect_all=False;policy.loot.allowed_items=set(LOOT)
+            policy.loot.ground_gems=set(life.owner_shops['owner_progression']['gem_ids'])
+        if policy.economy:policy.economy.focused=True
+        if policy.market:policy.market.focused=True
     if policy.bank:policy.bank.patchouli_audit=True
     if policy.market:policy.market.progression_first=True
     social.context_provider=context_line
@@ -1531,6 +1560,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['sitting']=policy.sitting.summary()
         report.result['hunt']=policy.summary()
         report.result['progress_monitor']=policy.progress_monitor.summary()
+        if policy.owner_services:report.result['owner_services']=policy.owner_services.summary()
         if policy.treasure:report.result['treasure_hunt']=policy.treasure.summary()
         if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
         if policy.loot:report.result['loot']=policy.loot.summary()
@@ -1605,6 +1635,12 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             except ProtocolError:
                 policy.repair.finish(now,'неподдерживаемый ответ ремонта; нужен свежий отчёт',True)
                 report.result['repair_decode']='unsupported';return
+        if policy.owner_services:
+            try:
+                if policy.owner_services.observe(command,payload,now):return
+            except ProtocolError:
+                policy.owner_services.finish(now)
+                report.result['owner_services_decode']='unsupported'
         if policy.vendor and policy.vendor.context and command in (801,802,803,805,806,807,808):
             try:
                 if policy.vendor.observe(command,payload,now,client.wire.send):return
@@ -1670,7 +1706,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.equipment.pending=None
             policy.recovery.pending=None
             if policy.skills:policy.skills.pending=None
-            if adventure_mode:
+            if adventure_mode and not policy.owner_services:
                 policy.adventure=Adventure(world,client.wire.send,tell,role,policy.region,tactic=tactic)
         elif command in (801,802,803,822,827,828,830,831,832):
             if policy.adventure:
@@ -1707,7 +1743,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.service(command, payload)
                 # Drain a bounded burst before expensive decisions; preserve ordering.
                 drain_started=time.thread_time()
-                for _ in range(63):
+                for _ in range(511 if network_pump and network_pump.backlogged() else 63):
                     if time.thread_time()-drain_started>=.004:break
                     if network_pump is None or network_pump.queue.empty():break
                     command,payload=network_pump.receive(time.monotonic()+.001);client.service(command,payload)
@@ -1717,6 +1753,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if (not network_pump or network_pump.queue.empty()) and connection_watchdog.expired(now,client.wire,sum(policy.sent_action_counts.values())):
                 report.result['connection_watchdog']=connection_watchdog.summary()
                 raise ConnectionError(connection_watchdog.reason)
+            if network_pump and network_pump.backlogged(now):
+                network_pump.catchup_skips+=1
+                continue # Apply authoritative packets before deciding from stale state.
             if now>=next_think:
                 think_started=now
                 next_think=now+(.25 if network_pump is None or policy.pending_action or policy.target else 1.0 if policy.transaction_busy() else .65+(bot_index%5)*.03)

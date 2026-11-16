@@ -10,6 +10,7 @@ class Economy:
   self.data=json.loads((Path(assets)/'patchouli-farms.json').read_text());self.last_models=[];self.reason=''
   self.patchouli_to_npc=False
   self.trade_data=None;self.last_goods=[];self.npc_income_enabled=False
+  self.focused=False
   income_path=Path(assets)/'npc-income.json'
   self.npc_income=json.loads(income_path.read_text()) if income_path.exists() else None
  def funding_models(self,world,region,learning,now):
@@ -32,7 +33,7 @@ class Economy:
   cycle=int((now+self.offset)//1800)
   if cycle!=self.cycle:
    self.cycle=cycle;rng=random.Random(str(self.seed)+':'+str(cycle))
-   values=[('business',60),('history',90),('income',180 if self.cohort=='farmer' else 90),('professions',45),('trade',45)]
+   values=([('income',180),('trade',120)] if self.focused else [('business',60),('history',90),('income',180 if self.cohort=='farmer' else 90),('professions',45),('trade',45)])
    self.stages=[(name,round(seconds*rng.uniform(.85,1.15))) for name,seconds in values]
    self.stages.append(('progression',1800-sum(t for _,t in self.stages)));rng.shuffle(self.stages)
   for name,seconds in self.stages:
@@ -45,7 +46,7 @@ class Economy:
  def business(self,world,now):return self.phase(world,now) in ('business','history','professions','trade')
  def models(self,world,region,learning,now):
   self.last_models=[]
-  if self.trade_data:return self.trade_models(world,region,learning,now)
+  if self.trade_data and not self.focused:return self.trade_models(world,region,learning,now)
   if self.phase(world,now)!='income' or not region or sum(i.count for i in world.bag.values() if i.identity==1000)>=30:return set()
   rows=[];own=world.own;hp=max(1,own.values.get(31,1));level=own.values.get(0,1)
   for model,source in self.data['sources'].items():
@@ -56,6 +57,14 @@ class Economy:
    # Rate dominance is tempered by kill cost and the real map travel distance.
    score=source['base_factor']/(1+farm['hp']/hp)/(1+distance/15000)
    rows.append((-score,distance,identity))
+  if self.focused and self.npc_income_enabled and self.npc_income:
+   for model,source in self.npc_income['sources'].items():
+    farm=region['farms'].get(model);identity=int(model)
+    if (not farm or not farm['points'] or farm['level']>level or farm['hp']>hp*3
+        or learning.blocked(identity,now) or learning.dangerous(identity,now)):continue
+    distance=min(math.dist(own.position,p) for p in farm['points'])
+    score=source['base_factor']*2/(1+farm['hp']/hp)/(1+distance/15000)
+    rows.append((-score,distance,identity))
   self.last_models=[r[2] for r in sorted(rows)[:2]]
   self.reason=('экономика: добывает Пачкули для продажи НПС по1500G' if self.patchouli_to_npc else 'экономика: фармит чертежи Пачкули для ларька по1500G') if rows else 'нет подходящих источников Пачкули на текущей карте; продолжает кач'
   return set(self.last_models)

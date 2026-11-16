@@ -4,6 +4,7 @@ from pathlib import Path
 from town import Town,trade_page
 from adventure import talk_request
 from owner_shops import npc_near
+from coral_supplies import spent_basic
 
 def sell_request(npc,slot,count):
  if not 0<=slot<256 or not 1<=count<=99:raise ValueError('Invalid NPC sale')
@@ -14,6 +15,7 @@ class Vendor(Town):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
   self.sell_patchouli=False
+  self.patchouli_buyback=2000 if getattr(life,'owner_shops',None) and life.owner_shops.get('catalog_revision',0)>=56 else 1500
   self.last_confirmed_sale=None;self.price_warning=''
   self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
  def choices(self,policy):
@@ -38,10 +40,11 @@ class Vendor(Town):
   reserved=dict(mechanics.craft_reservations(w)) if mechanics else {}
   for slot,item in sorted(w.bag.items()):
    curated=bool(policy.market and getattr(policy.market.catalog,'curated_mode',False))
-   if curated and item.identity in policy.market.catalog.items and item.identity!=4915:continue
+   spent=spent_basic(w,item)
+   if curated and item.identity in policy.market.catalog.items and item.identity!=4915 and not spent:continue
    gear=self.gear.gear.get(item.identity,{})
    novice=curated and bool(gear and 0<gear['level']<20 and not 5000<=item.identity<=5999 and item.identity not in w.own.equipment.values() and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item))
-   if (item.identity not in self.junk and not novice and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
+   if (item.identity not in self.junk and not novice and not spent and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
    safe_novice=novice and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((a==b==0) or (1<=a<=47 and 0<=b<=2000) for a,b in item.instance_attributes)
    if item.forge or (any(item.parameters) or any(a or b for a,b in item.instance_attributes)) and not safe_novice:continue
    keep=0 if self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
@@ -75,7 +78,7 @@ class Vendor(Town):
    if after<before and w.own.values.get(8,cash)>cash:
     units=before-after;received=w.own.values.get(8,cash)-cash
     self.last_confirmed_sale={'item_id':identity,'units':units,'gold_received':received,'unit_price':received//units if received%units==0 else None}
-    if identity==1000 and self.sell_patchouli and received!=units*1500:self.price_warning='Выкуп Пачкули не совпадает с1500G: проверь установленный серверный патч'
+    if identity==1000 and self.sell_patchouli and received!=units*self.patchouli_buyback:self.price_warning='Выкуп Пачкули не совпадает с'+str(self.patchouli_buyback)+'G: проверь установленный серверный патч'
     self.confirmed_sales+=1;self.pending=None;self.batch+=1
     self.context=self.context[0],'ready',now+60
    elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now)

@@ -27,11 +27,15 @@ def plan(selected):
             loaded[name] = path
     if 'garner' not in loaded:
         raise ValueError('Не найдена существующая конфигурация Аргента.')
-    missing = [name for name in REQUIRED if name not in loaded]
     resource = game / 'resource'
+    available=[p.name for p in sorted(resource.iterdir()) if p.is_dir() and (p/(p.name+'.blk')).is_file() and (p/(p.name+'.atr')).is_file()]
+    wanted=list(dict.fromkeys((*REQUIRED,*available)))
+    missing = [name for name in wanted if name.lower() not in loaded]
     for name in missing:
         folder = resource / name
-        for relative in (name+'.blk', name+'.atr', 'ctrl.lua', 'entry.lua'):
+        # Static maps such as eastgoaf/lonetower legitimately have no ctrl/entry.
+        # MapRes.cpp checks controller existence; never reject their real geometry.
+        for relative in (name+'.blk', name+'.atr'):
             if not (folder / relative).is_file():
                 raise ValueError('Нет ресурса карты: ' + name + '/' + relative)
     target = loaded['garner']
@@ -45,7 +49,8 @@ def plan(selected):
         newline = b'\r\n' if b'\r\n' in raw else b'\n'
         addition = newline + newline.join(b'map = '+name.encode('ascii') for name in missing)
         changes[target] = raw[:last.end()]+addition+raw[last.end():]
-    return contents, changes, {'added_maps': missing, 'already_configured': [name for name in REQUIRED if name in loaded],
+    return contents, changes, {'added_maps': missing, 'already_configured': [name for name in wanted if name.lower() in loaded],
+                               'static_maps_without_entry_supported':True,
                                'game_processes_added': 0, 'live_map_loading_verified': False}
 
 

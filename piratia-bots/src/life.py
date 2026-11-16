@@ -23,6 +23,13 @@ class LifeItems:
         if self.owner_shops:
             self.prices.update({int(k):v for k,v in self.owner_shops['prices'].items()})
             self.names.update({int(k):v for k,v in self.owner_shops['names'].items()})
+            if self.owner_shops.get('catalog_revision',0)>=56:
+                gear=json.loads((Path(assets)/'items.json').read_text())['gear']
+                self.equipment_goals=self.equipment_goals or {'items':{}}
+                for npc in self.owner_shops['npcs']:
+                    if npc['script_function'] in ('OwnerJewellery','OwnerEquipment'):
+                        for identity in npc['offers']:
+                            if str(identity) in gear:self.equipment_goals['items'][str(identity)]={'level':gear[str(identity)]['level']}
         self.services=json.loads((Path(assets)/'town-services.json').read_text(encoding='utf-8'))
         self.npcs=None
         if (Path(assets)/'world-npcs.json').exists():

@@ -1,5 +1,10 @@
 """Create dedicated local accounts and characters, then run headless connection tests."""
 import argparse
+from async_console import CONSOLE
+
+# Every worker, including policy.tell, uses nonblocking diagnostic output.
+# Critical state and account writes keep their existing synchronous error handling.
+print=CONSOLE.emit
 import hashlib
 import concurrent.futures
 import json
@@ -89,7 +94,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha55'
+    report.result['version'] = 'AutoAccountsAlpha56'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -249,7 +254,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 54).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 56).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -258,7 +263,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha55'
+    setup_report.result['version'] = 'AutoAccountsAlpha56'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -312,7 +317,7 @@ def main():
         from regions import Regions
         from social import ChatBudget
         from restore_shop_knowledge import ensure_shop_knowledge
-        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets',minimum_revision=55)
+        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets',minimum_revision=56)
         if setup_report.result['shop_bootstrap'].get('restored'):print('Знания торговцев восстановлены по проверенной серверной установке.')
         if not setup_report.result['shop_bootstrap'].get('ready'):
             print('Нет проверенных знаний новых торговцев. Это блокирует покупку фей.')
@@ -320,7 +325,7 @@ def main():
             if not selected:raise RuntimeError('Нужен проверенный серверный патч и справочник магазинов. Существующие боты сохранены.')
             from restore_shop_knowledge import restore
             setup_report.result['shop_bootstrap']=dict(restore(selected,ROOT/'assets'),ready=True)
-            if setup_report.result['shop_bootstrap']['catalog_revision']<55:raise RuntimeError('Сначала установи серверные магазины Alpha55 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
+            if setup_report.result['shop_bootstrap']['catalog_revision']<56:raise RuntimeError('Сначала установи серверные магазины Alpha56 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
             from diagnostic_io import write_snapshot
             write_snapshot(ROOT/'data/server-source.json',{'resource':selected})
         navigation = Regions(ROOT/'assets',population_count=args.count)

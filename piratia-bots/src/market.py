@@ -8,10 +8,10 @@ START,VIEW,BUY,CLOSE=330,331,332,333
 INFO,DELGOODS,CLOSED,STARTED,NAME=854,856,857,858,859
 
 def start_request(title,goods):
-    if not 1<=len(goods)<=6 or len(title.encode('cp1251'))>20:raise ValueError('Invalid stall title or size')
+    if not 1<=len(goods)<=18 or len(title.encode('cp1251'))>20:raise ValueError('Invalid stall title or size')
     rows=[];slots=set()
     for grid,price,count,slot in goods:
-        if not 0<=grid<6 or grid in slots or not 0<=slot<256 or not 1<=count<=99 or not 1<=price<=2000000000:raise ValueError('Invalid stall offer')
+        if not 0<=grid<18 or grid in slots or not 0<=slot<256 or not 1<=count<=99 or not 1<=price<=2000000000:raise ValueError('Invalid stall offer')
         slots.add(grid);rows.append(struct.pack('>BIBB',grid,price,count,slot))
     return string(title)+bytes([len(goods)])+b''.join(rows)
 
@@ -64,12 +64,21 @@ class MarketCatalog:
                         value=int(facts['prices'].get(str(identity),0))
                         if value>0:self.npc_purchase_prices[identity]=value
         if owner:self.npc_purchase_prices.update({int(i):v for i,v in owner['prices'].items()})
+        self.focused=bool(owner and owner.get('catalog_revision',0)>=56)
+        self.focused_prices={860:60000,861:60000,862:70000,863:80000,864:150000,865:150000,866:120000,1012:100000}
     def enable_broad_catalog(self):
         self.broad_catalog=True;self.items.update({int(i):r for i,r in self.useful_audit['items'].items()})
     def enable_curated_catalog(self):
         if not self.curated:return
         self.broad_catalog=True;self.curated_mode=True;self.items={int(i):r for i,r in self.curated['items'].items()}
+        if self.focused:
+            for identity,price in self.focused_prices.items():
+                self.items[identity]={'name':str(identity),'category':'gem','reference_price':price,'npc_buyback':0,'keep':0}
+            self.items={i:r for i,r in self.items.items() if i in self.focused_prices or i==684}
     def price(self,identity):
+        if self.focused and identity in self.focused_prices:
+            reference=self.focused_prices[identity]
+            return max(60000,min(150000,self.prices.guide(identity,reference) if self.prices else reference))
         if identity==1000:return 1500
         base=self.items.get(identity,{}).get('reference_price',0)
         native=self.npc_purchase_prices.get(identity,0) if self.broad_catalog else 0
@@ -174,6 +183,7 @@ class Market:
         ids=(863,862) if job in (1,8,9) else (861,860) if job in (2,12) else (1012,862) if job in (4,5,13,14,16) else ()
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
+        if self.catalog.focused and identity in self.catalog.focused_prices:return 0
         if self.broad_goods:
             if identity==2312:return 6
             if identity==227:return 2
@@ -203,6 +213,7 @@ class Market:
         return not w.skills.get(241,{}).get('level',0) and w.own.values.get(13,0)<1
     def offers(self,policy):
         w=self.world;protected=self.protected(policy);result=[];reserved={}
+        capacity=min(18,max(6,w.skills.get(241,{}).get('level',0)*6))
         if not w.bag_ready or w.bag_disabled:return []
         priority={'kal':0,'refining':0,'gem':0,'rune':0,'scroll':0,'blueprint':0,'sealed':1,'gear':2}
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
@@ -219,7 +230,7 @@ class Market:
             count=min(99,item.count-keep)
             if count<=0 or (self.broad_goods and meta["category"] in ("quest_material","requested_material","care_supply","craft_material","material") and count<10):continue
             result.append((len(result),self.item_ask_price(item),count,slot))
-            if len(result)==6:break
+            if len(result)==capacity:break
         return result
     def ask_price(self,identity):
         if identity==1000:return 1500
@@ -229,7 +240,8 @@ class Market:
         digest=hashlib.sha256(f'{self.name}:{identity}'.encode()).digest()
         margin=.95+digest[0]/255*.10
         surplus=min(.10,self.count(identity)/1000)
-        return max(1,min(2000000000,round(price*(margin-surplus))))
+        value=max(1,min(2000000000,round(price*(margin-surplus))))
+        return max(60000,min(150000,value)) if self.catalog.focused and identity in self.catalog.focused_prices else value
     def needed(self):
         w=self.world;wanted={}
         # The life-profession cohort prepares a small owned supply, not speculative hoarding.
@@ -322,7 +334,7 @@ class Market:
                 self.pending=(identity,self.count(identity),cash,now+15,price,quantity)
                 self.next_scan=now+120;break
     def opened(self,now):
-        self.state='selling';self.trade_until=now+3600;self.confirmed_opens+=1;self.active_confirmed=True
+        self.state='selling';self.trade_until=now+(120 if getattr(self,'focused',False) else 3600);self.confirmed_opens+=1;self.active_confirmed=True
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None

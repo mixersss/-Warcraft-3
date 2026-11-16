@@ -25,6 +25,7 @@ class ItemCatalog:
         gear=self.gear[identity];links=gear['links']
         if not links or any(link not in (0,2,3,4,5,6,7,8,9) for link in links):return None
         chosen=next((link for link in links if not own.equipment.get(link)),links[0])
+        if gear.get('kind')==26 and self.types.get(own.equipment.get(7))==29 and 8 in links:chosen=8
         affected=set(gear.get('requires_links',gear.get('displaces',[chosen]))) or {chosen}
         affected.add(chosen)
         # Unfixing either occupied hand also unfixes its known two-hand partner.
@@ -38,7 +39,7 @@ class ItemCatalog:
                 affected.add(other)
             elif old and {6,9}<=set(old.get('requires_links',old.get('displaces',[]))):affected.add(other)
         if own.values.get(4) in (4,16) and gear.get('kind')!=29:
-            if any(self.types.get(own.equipment.get(link,0))==29 for link in affected):return None
+            if any(link in getattr(own,'required_coral_links',(5,6,7)) and self.types.get(own.equipment.get(link,0))==29 for link in affected):return None
         equipment=dict(own.equipment);removed=[]
         for link in affected:
             current=equipment.get(link,0)
@@ -58,6 +59,7 @@ class ItemCatalog:
             if not identity or identity==9999:continue
             gear=self.gear.get(identity)
             if gear is None:return None
+            if gear.get('kind')==29 and hasattr(own,'required_coral_links') and link not in own.required_coral_links:continue
             supplied=(item_overrides or {}).get(link)
             worn=getattr(own,'equipment_details',{}).get(link,{})
             if supplied is None and worn.get('identity')==identity and worn.get('valid') is False:continue
@@ -73,7 +75,7 @@ class ItemCatalog:
                 names={25:'strength',26:'accuracy',27:'agility',28:'constitution',29:'spirit'}
                 peak=max(spec['weights'].values())
                 weights={names[k]:3*v/peak for k,v in spec['weights'].items()}
-            total+=gear['score']+sum(gear.get(k,0)*v for k,v in weights.items())
+            total+=gear['score']+sum(gear.get(k,0)*v for k,v in weights.items())+gear.get('movement_speed',0)*.15+gear.get('movement_coefficient',0)*.072
             supplied=(item_overrides or {}).get(link)
             observed=getattr(own,'equipment_details',{}).get(link,{})
             attributes=(supplied.instance_attributes if supplied else observed.get('instance_attributes',()) if observed.get('identity')==identity else ())
@@ -164,6 +166,8 @@ class Equipment:
 
     def tick(self,now,policy,safe=True):
         own=self.world.own
+        from coral_supplies import required_links
+        own.required_coral_links=required_links(self.world)
         if self.pending:
             identity,links,deadline=self.pending
             refill_ok=not self.pending_refill or own.equipment_details.get(self.pending_refill[0],{}).get('energy',0)>self.pending_refill[1]
@@ -211,7 +215,8 @@ class Equipment:
         _,slot,identity,links=max(options)
         from hunter import action_header
         # Native stNetUseItem: bag slot, automatic target=-1, exactly like double click.
-        policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,-1))
+        destination=-2 if self.catalog.types.get(identity)==26 and links==[8] else -1
+        policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,destination))
         self.requests+=1
         self.pending_refill=None
         self.pending_restore=None

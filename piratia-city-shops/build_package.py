@@ -1,12 +1,12 @@
-"""Combine cumulative Alpha55 bots and the owner-priced native NPC patch."""
+"""Combine cumulative Alpha56 bots and the owner-priced native NPC patch."""
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-55';NAME='Piratia-Alpha55-Complete'
+OUT=REPO/'releases/piratia/complete-56';NAME='Piratia-Alpha56-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-55/Piratia-Auto-Bots-Alpha55.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-56/Piratia-Auto-Bots-Alpha56.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -18,12 +18,12 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA55-INSTALL.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA56-INSTALL.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
  manifest={'artifact':target.name,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'bytes':target.stat().st_size,
-  'cumulative_bots':'Alpha55 includes Alpha54 and prior fixes','bot_checks':876,'native_patch_checks':29,'legacy_installer_regressions':12,
+  'cumulative_bots':'Alpha56 includes Alpha54 and prior fixes','bot_checks':902,'native_patch_checks':39,'legacy_installer_regressions':12,
   'runtime_limit':400,'fixed_authorised_expansion':{'from':300,'to':400,'new':100,'preserve_old_prefix':True,'native_creation_verified':False},
   'player_guide':{'builds':8,'skill_books':74,'history_definitions':426,'initial_walkthrough_steps':19,'external_complete_guides_verified':False,'formats':['html','md','pdf']},
   'dialogue':{'intent_count':136,'authored_examples':680,'authored_conversation_lines':836,'scene_lines':144,'item_fact_lines':5424,'total_unique_lines':6402,'personalities':12,'external_llm':False},
@@ -38,6 +38,12 @@ def main():
   'v1_and_alpha47_upgrade_reuse_existing_npcs':True,'raw_server_resources_bundled':False,'private_bot_data_bundled':False,'windows_server_validation':False,
   'quest_translation':'postponed by owner','weapon_forging_automation':False,'automatic_craft_production':False,
   'contents_sha256':{name.split('/',1)[1]:hashlib.sha256(raw).hexdigest() for name,raw in sorted(files.items())}}
+ cat=json.loads((ROOT/'native/catalog.json').read_text())
+ manifest.update(cumulative_bots='Alpha56 includes Alpha55 and previous releases',server_shops=len(cat['shops']),catalog_items=sum(len(s['items']) for s in cat['shops']),price_records=sum(len(s['items']) for s in cat['shops'])+len(cat['price_overrides']),shop_counts={s['key']:len(s['items']) for s in cat['shops']},native_trade_windows=0,owner_positions_m=[s['position_m'] for s in cat['shops']],patchouli_npc_buyback=2000,patchouli_base_price=4000,treant_root_npc_buyback=4000,price_scope='852 selected global price records; eight drop gems removed from NPC stock; six free extenders have zero NPC resale value; other fields preserved',current_fix={'native_profession_levels':[9,40],'bags_to':48,'stall_level':3,'native_stall_goods':18,'gem_ids':cat['owner_progression']['gem_ids'],'gem_chance_total':.03,'gem_rate_multiplier_independent':True,'gem_npc_stock_removed':True,'console_decoupled':True,'backlog_before_decisions':True,'maps_configured_when_cfg_found':True,'live_windows_verified':False},known_issues=['Native Windows validation and full400fleet load remain pending; no guarantee every physically closed cell is recovered.'])
+ import sys
+ sys.path.insert(0,str(ROOT/'native'))
+ from render_native import pages
+ manifest['native_trade_windows']=sum(len(pages(s)) for s in cat['shops'])
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((ROOT/'native/README.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()

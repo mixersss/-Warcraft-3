@@ -19,6 +19,7 @@ def catalog():
  data=json.loads(CATALOG.read_text())
  if any(data==json.loads((ROOT/name).read_text()) for name in ('catalog-alpha47.json','catalog-alpha48.json','catalog-alpha50.json')):return data
  expected={'apparel':'OwnerClothes','fairies':'OwnerFairies','forge':'OwnerForge','tickets':'OwnerTickets','boosts':'OwnerBoosts','equipment':'OwnerEquipment'}
+ if data.get('catalog_revision',0)>=56:expected.update(jewellery='OwnerJewellery',progress='OwnerProgress')
  if data.get('version')!=2 or {s['key'] for s in data.get('shops',[])}!=set(expected):raise ValueError('Неизвестный каталог магазинов')
  seen=set()
  for shop in data['shops']:
@@ -26,16 +27,48 @@ def catalog():
   for item in shop['items']:
    if (type(item['id']) is not int or not 1<=item['id']<=65535 or item['id'] in seen
        or type(item['kind']) is not int or type(item['price']) is not int
-       or item['price'] not in (500,1000,2000,5000,10000,20000,25000,50000,100000,200000,300000,450000,900000,1800000,2500000)):
+       or item['price'] not in (1,500,1000,2000,5000,10000,20000,25000,50000,100000,200000,300000,450000,900000,1800000,2500000)):
     raise ValueError('Неверный предмет или цена магазина')
    seen.add(item['id'])
- expected_overrides={1000:(31,3000,1500,'Blurry Blueprint'),4915:(41,5000,2500,'Withered Root')}
- if len(data.get('price_overrides',[]))!=2:raise ValueError('Неполные цены выкупа')
+ expected_overrides=({1000:(31,4000,2000,'Blurry Blueprint'),4915:(41,8000,4000,'Withered Root')} if data.get('catalog_revision',0)>=56 else {1000:(31,3000,1500,'Blurry Blueprint'),4915:(41,5000,2500,'Withered Root')})
+ if data.get('catalog_revision',0)>=56:
+  expected_overrides.update({i:(31,0,0,str(28+4*(i-3088))+' Slot Inventory') for i in range(3088,3094)})
+ if len(data.get('price_overrides',[]))!=len(expected_overrides):raise ValueError('Неполные цены выкупа')
  for item in data['price_overrides']:
   if (item.get('kind'),item.get('price'),item.get('npc_buyback'),item.get('name'))!=expected_overrides.get(item.get('id')):raise ValueError('Неизвестная дополнительная цена выкупа')
  return data
 def offers(cat):return {i['id']:i for i in [*(i for s in cat['shops'] for i in s['items']),*cat.get('price_overrides',[])]}
 def digest(raw):return hashlib.sha256(raw).hexdigest()
+
+def verify_progression_sources(root,cat):
+ if cat.get('catalog_revision',0)<56:return
+ if not (root/'CharacterInfo.txt').is_file():raise ValueError('Для точного выпадения камней нужен серверный CharacterInfo.txt')
+ wanted=set(cat['owner_progression']['gem_ids']);seen=set()
+ for line in (root/'ItemInfo.txt').read_bytes().splitlines():
+  fields=line.split(b'\t')
+  if len(fields)>22 and fields[0].strip().isdigit() and int(fields[0]) in wanted:
+   identity=int(fields[0])
+   if int(fields[10])!=49 or int(fields[20])!=1:raise ValueError('Для выпадения по одному камню нужен неизменённый тип49 и стак1: '+str(identity))
+   seen.add(identity)
+ if seen!=wanted:raise ValueError('В серверной таблице отсутствуют выбранные камни')
+ raw=(root/'ItemInfo.bin').read_bytes()
+ if len(raw)<4 or struct.unpack_from('<I',raw)[0]!=868 or (len(raw)-4)%868:raise ValueError('Неизвестный бинарный формат предметов')
+ for pos in range(4,len(raw),868):
+  identity=struct.unpack_from('<I',raw,pos+4)[0]
+  if identity in wanted and struct.unpack_from('<i',raw,pos+352)[0]!=1:raise ValueError('В ItemInfo.bin изменён стак камня '+str(identity))
+ binary=root/'CharacterInfo.bin'
+ if binary.exists():
+  raw=binary.read_bytes()
+  if len(raw)<4 or struct.unpack_from('<I',raw)[0]!=968 or (len(raw)-4)%968:raise ValueError('Неизвестный формат CharacterInfo.bin; нужна сверка выпадения камней')
+  definitions={}
+  for line in (root/'CharacterInfo.txt').read_bytes().splitlines():
+   fields=line.split(b'\t')
+   if len(fields)>47 and fields[0].strip().isdigit():
+    definitions[int(fields[0])]=[(int(i),int(rate)) for i,rate in zip(fields[46].split(b','),fields[47].split(b',')) if int(i)>0 and int(rate)>0]
+  for pos in range(4,len(raw),968):
+   identity=struct.unpack_from('<I',raw,pos+4)[0];expected=definitions.get(identity)
+   if expected is None or [struct.unpack_from('<ii',raw,pos+428+8*i) for i in range(len(expected))]!=expected:
+    raise ValueError('CharacterInfo.txt и .bin расходятся: '+str(identity)+'. Сначала синхронизируй таблицы мобов.')
 
 def implementation_digest(cat,compat=False):
  return digest(render(cat,compat=compat)+OPEN_HOOK+BUY_HOOK+(ROOT/'price_tables.py').read_bytes())
@@ -51,7 +84,7 @@ def make_overlay(cat,report):
    'mission_source_ids':[],'menu_handlers':handlers,'offers':[i['id'] for i in shop['items']],
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
    'menu_pages':mapping,**({'menu_labels':{str(n):section['label'] for n,section in enumerate(shop['sections'],1)}} if shop.get('sections') else {}),'live_server_seen':False})
- return {'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
+ return {'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'owner_progression':cat.get('owner_progression'),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
          'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes())}
 
 def locate_client(selected):
@@ -133,7 +166,7 @@ def plan_server(root,cat=None):
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
   previous=json.loads(marker.read_text());match=None
-  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False)]:
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False)]:
    oldcat=json.loads(path.read_text())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:
@@ -147,8 +180,9 @@ def plan_server(root,cat=None):
   if sdk.count(OPEN_HOOK+OPEN_ANCHOR)!=1 or sdk.count(BUY_ANCHOR+BUY_HOOK)!=1:
    raise ValueError('Изменены обработчики магазинов02 в NpcSdk.lua; нужна проверка')
   rows,_=legacy.validate_npcs(originals[SERVER_FILES[2]],originals[SERVER_FILES[3]])
-  if len(previous['npc_ids'])!=5 or len(set(previous['npc_ids']))!=5:raise ValueError('Не подтверждены пять НПС02')
-  for shop,identity,point in zip(oldcat['shops'],previous['npc_ids'],legacy.DEFAULT_POINTS):
+  if len(previous['npc_ids'])!=len(oldcat['shops']) or len(set(previous['npc_ids']))!=len(oldcat['shops']):raise ValueError('Не подтверждены прежние НПС02')
+  oldpoints=previous.get('positions_m',legacy.DEFAULT_POINTS)
+  for shop,identity,point in zip(oldcat['shops'],previous['npc_ids'],oldpoints):
    row=rows[identity];pos=[v*100+50 for v in point]
    if (row[11].strip()!=shop['function'].encode() or row[1].strip()!=shop['name'].encode() or int(row[3])!=17
        or list(map(int,row[5].split(b',')))!=pos or list(map(int,row[6].split(b',')))!=pos):raise ValueError('Изменена привязка НПС02')
@@ -227,6 +261,7 @@ def apply_files(changes,backup):
 
 def install(server,client,apply=False,bot_assets=None):
  root=legacy.locate(server);clientfile=locate_client(client);cat=catalog();items=offers(cat);marker=root/MARKER
+ verify_progression_sources(root,cat)
  clientraw=clientfile.read_bytes();clientoutput=patch_binary(clientraw,items)
  if marker.exists() and json.loads(marker.read_text()).get('catalog_sha256')==digest(CATALOG.read_bytes()):
   previous=json.loads(marker.read_text())
@@ -245,6 +280,13 @@ def install(server,client,apply=False,bot_assets=None):
   _,serveroutputs,report=plan_server(root,cat)
  changes={root/p:raw for p,raw in serveroutputs.items()};changes[clientfile]=clientoutput
  assets=Path(bot_assets) if bot_assets else ROOT.parents[1]/'assets'
+ if cat.get('catalog_revision',0)>=56 and (root.parent/'GameServer.cfg').exists():
+  import importlib.util
+  module_path=assets.parent/'src/configure_dungeon_maps.py'
+  if not module_path.exists():raise ValueError('Нужен полный комплект Alpha56 с утилитой настройки карт')
+  spec=importlib.util.spec_from_file_location('owner56_maps',module_path);maps=importlib.util.module_from_spec(spec);spec.loader.exec_module(maps)
+  _,map_changes,map_report=maps.plan(root.parent)
+  changes.update(map_changes);report['dungeon_maps']=map_report
  if (assets/'world-npcs.json').exists():
   changes[assets/'owner-city-shops.json']=(json.dumps(make_overlay(cat,report),ensure_ascii=False,indent=2)+'\n').encode()
   report['bot_knowledge_updated']=True

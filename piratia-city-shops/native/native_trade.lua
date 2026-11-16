@@ -33,6 +33,9 @@ function OwnerInitializeFreshFairy(character,item,generation)
 end
 
 function OwnerOpenTrade(character,npc,shopid,page)
+    if shopid=="owner-bags" or shopid=="owner-profession" or shopid=="owner-stall" or shopid=="owner-combat" or shopid=="owner-gem-stats" then
+        return OwnerProgressAction(character,npc,shopid,page)
+    end
     local shop=OwnerNativeShops[shopid]
     local selected=shop and shop.pages[page]
     if selected==nil then return LUA_FALSE end

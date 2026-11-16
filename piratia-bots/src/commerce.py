@@ -43,7 +43,7 @@ class Commerce:
         """Fresh public stock/needs only; never consult private quotes."""
         text=text.casefold();market=self.policy.market;w=self.policy.world
         if re.search(r'\bнп\b',text):text+=' ID684'
-        if 'пачкули' in text:return 'Пачкули продаём НПС: после нового патча выкуп1500G за штуку.'
+        if 'пачкули' in text:return 'Пачкули продаём НПС: выкуп '+str(2000 if self.life.owner_shops and self.life.owner_shops.get('catalog_revision',0)>=56 else 1500)+'G за штуку.'
         offered={w.bag[slot].identity:(price,count,slot) for _,price,count,slot in market.offers(self.policy)}
         if re.search(r'\bпродам\b|\bпродаю\b',text):
             matched=self.match(text,market.catalog.items)

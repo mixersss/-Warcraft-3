@@ -246,14 +246,14 @@
 278,Огромный Фишфлос с Зефира,Great Zephyr Fish Floss,58,0,-1,-1,360,360,5000,fairies,True,True,ItemUse_CJ_yusi,False,False
 279,Огромное Серебряное манго,Great Argent Mango,58,0,-1,-1,360,360,5000,fairies,True,True,ItemUse_CJ_guopu,False,False
 280,Большой шайтанский бисквит,Great Shaitan Biscuit,58,0,-1,-1,360,360,5000,fairies,True,True,ItemUse_CJ_mibing,False,False
-281,Настойчивость,Final Perseverance,26,20,-1,-1,15216,15216,,,True,True,,False,False
-282,Бандит Скуп,Bandit Scoop,26,20,-1,-1,15216,15216,,,True,True,,False,False
-283,Сила Охотника,Hunter's Strength,26,20,-1,-1,15216,15216,,,True,True,,False,False
-284,Петля адепта,Followers Loop,26,20,-1,-1,15216,15216,,,True,True,,False,False
-285,Духовная петля,Spirit Loop,26,20,-1,-1,15216,15216,,,True,True,,False,False
-286,Нарост на Древнем дереве,Ancient Tree Tuber,26,30,-1,-1,52494,52494,,,True,True,,False,False
-287,Майский бриз,May Breeze,26,30,-1,-1,52494,52494,,,True,True,,False,False
-288,Лесть феи,Fairy's Adulation,26,30,-1,-1,52494,52494,,,True,True,,False,False
+281,Настойчивость,Final Perseverance,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+282,Бандит Скуп,Bandit Scoop,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+283,Сила Охотника,Hunter's Strength,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+284,Петля адепта,Followers Loop,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+285,Духовная петля,Spirit Loop,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+286,Нарост на Древнем дереве,Ancient Tree Tuber,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+287,Майский бриз,May Breeze,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+288,Лесть феи,Fairy's Adulation,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
 289,Камзол новичка,Newbie Vest,22,1,-1,-1,65,65,,,True,True,,False,False
 290,Панцирный доспех,Husk Armor,22,10,"2,1","1,8,9,10",2050,2050,,,True,True,,False,False
 291,Толстый доспех,Thick Armor,22,20,"2,1","1,8,9,10",7050,7050,,,True,True,,False,False
@@ -286,20 +286,20 @@
 318,Камзол кошмара,Nightmare Vest,31,70,"1,3","2,11,12",77050,77050,,,True,True,,False,False
 319,Свиток призыва чудовищ,Monster Summoning Scoll,31,0,-1,-1,1000,1000,,,True,True,ItemUse_MonsterSummon,False,False
 320,Камзол матроса,Seaman Vest,31,0,"2,3",3,0,0,,,True,True,,False,False
-321,Священная петля,Saint Loop,26,30,-1,-1,52494,52494,,,True,True,,False,False
+321,Священная петля,Saint Loop,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
 322,Пурпурный сундук Ведьмы 70 ур.,Lv 70 Seal Master Chest of Magenta,31,0,-1,-1,50000,50000,,,True,True,ItemUse_70FYZWBOX,False,False
 323,Доспех из кожи акулы,Shark Hide Armor,31,0,"2,3",3,0,0,,,True,True,,False,False
-324,Печать Силы,Seal of Strength,26,40,-1,-1,105192,105192,,,True,True,,False,False
+324,Печать Силы,Seal of Strength,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
 325,Камзол моряка,Sailor Vest,31,0,"2,3",3,0,0,,,True,True,,False,False
 326,Флотский камзол,Navy Vest,31,0,"2,3",3,0,0,,,True,True,,False,False
-327,Кнопка призрачного волка,Spectral Wolf Button,26,40,-1,-1,105192,105192,,,True,True,,False,False
-328,Кольцо крыла дракона,Ring of Dragon Wing,26,40,-1,-1,105192,105192,,,True,True,,False,False
-329,Благословение Единорога,Unicorn's Blessing,26,40,-1,-1,105192,105192,,,True,True,,False,False
-330,Горе Ангела,Angel's Grief,26,40,-1,-1,105192,105192,,,True,True,,False,False
+327,Кнопка призрачного волка,Spectral Wolf Button,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+328,Кольцо крыла дракона,Ring of Dragon Wing,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+329,Благословение Единорога,Unicorn's Blessing,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+330,Горе Ангела,Angel's Grief,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
 331,Куртка капитана,Captain's Jacket,31,0,"2,3",3,0,0,,,True,True,,False,False
 332,Билет на о. Весны,Ticket to Spring,36,0,-1,-1,500,500,5000,tickets,True,True,Jz_Script_cfzs,False,False
 333,Расписка на уникальный самоцвет,Unique Gem Voucher,41,0,-1,-1,100,100,,,True,True,,False,False
-334,Громовой молот,Hammer of Thunder,26,50,-1,-1,226970,226970,,,True,True,,False,False
+334,Громовой молот,Hammer of Thunder,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
 335,Тряпичная рубаха,Cloth Shirt,22,10,"1,3","4,16",2050,2050,,,True,True,,False,False
 336,Крепкий камзол,Tough Vest,22,15,"1,3","4,16",3925,3925,,,True,True,,False,False
 337,Камзол мореплавателя,Explorer Vest,22,25,"1,3","4,16",10425,10425,,,True,True,,False,False
@@ -311,10 +311,10 @@
 343,Камзол урагана,Hurricane Vest,22,55,"1,3",16,47925,47925,,,True,True,,False,False
 344,Камзол водоворота,Whirlpool Vest,22,60,"1,3",16,57050,57050,,,True,True,,False,False
 345,Камзол ветра,Wind Vest,22,50,"1,3",16,40050,40050,,,True,True,,False,False
-346,Глаз молнии,Eye of Lightning,26,50,-1,-1,226970,226970,,,True,True,,False,False
-347,Крылья света,Wings of Light,26,50,-1,-1,226970,226970,,,True,True,,False,False
-348,Утренний колокольчик,Morning Bell,26,50,-1,-1,226970,226970,,,True,True,,False,False
-349,Шепот природы,Nature's Whisper,26,50,-1,-1,226970,226970,,,True,True,,False,False
+346,Глаз молнии,Eye of Lightning,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+347,Крылья света,Wings of Light,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+348,Утренний колокольчик,Morning Bell,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+349,Шепот природы,Nature's Whisper,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
 350,Костюм краба,Crabby Costume,22,30,4,"4,16",15050,15050,,,True,True,,False,False
 351,Костюм руру,Rooroo Costume,22,15,4,"4,16",3925,3925,,,True,True,,False,False
 352,Костюм игривого енота,Playful Racoon Costume,22,25,4,"4,16",10425,10425,,,True,True,,False,False
@@ -352,7 +352,7 @@
 384,Костюм оленя,Deer Costume,22,26,4,"5,13,14",11190,11190,,,True,True,,False,False
 385,Костюм выдры,Otter Costume,22,50,4,14,40050,40050,,,True,True,,False,False
 386,Енотовый костюм,Racoon Costume,22,20,4,"4,16",7050,7050,,,True,True,,False,False
-387,Призыв Питера,Peter's Call,26,60,-1,-1,355567,355567,,,True,True,,False,False
+387,Призыв Питера,Peter's Call,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
 388,Костюм весёлого кролика,Happy Bunny Costume,22,45,4,13,32425,32425,,,True,True,,False,False
 389,Костюм ночной совы,Night Owl Costume,22,30,4,"5,13,14",15050,15050,,,True,True,,False,False
 390,Костюм кенгуру,Kangaroo Costume,22,40,4,14,26050,26050,,,True,True,,False,False
@@ -379,14 +379,14 @@
 411,Мантия цунами,Tsunami Robe,22,75,"1,3",16,87925,87925,,,True,True,,False,False
 412,Драконий костюм,Dragon Costume,22,70,4,16,77050,77050,,,True,True,,False,False
 413,Костюм повелителя драконов,Dragon Lord Costume,22,75,4,16,87925,87925,,,True,True,,False,False
-414,Поцелуй Ника,Kiss of Nic,26,60,-1,-1,355567,355567,,,True,True,,False,False
-415,Гнев Рэя,Ray's Fury,26,60,-1,-1,355567,355567,,,True,True,,False,False
-416,Сожаления Даниэля,Daniel's Regret,26,60,-1,-1,355567,355567,,,True,True,,False,False
-417,Посвящение жрицы,Consecration of Priestess,26,60,-1,-1,355567,355567,,,True,True,,False,False
-418,Кулон солнечного камня,Pendant of Sunstone,25,20,-1,-1,30432,30432,,,True,True,,False,False
-419,Платиновое ожерелье,Platinum Necklace,25,20,-1,-1,30432,30432,,,True,True,,False,False
-420,Загадочный Рэй,Nebulous Ray,25,30,-1,-1,104988,104988,,,True,True,,False,False
-421,Посланник ветра,Messenger of the Wind,25,30,-1,-1,104988,104988,,,True,True,,False,False
+414,Поцелуй Ника,Kiss of Nic,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+415,Гнев Рэя,Ray's Fury,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+416,Сожаления Даниэля,Daniel's Regret,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+417,Посвящение жрицы,Consecration of Priestess,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+418,Кулон солнечного камня,Pendant of Sunstone,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+419,Платиновое ожерелье,Platinum Necklace,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+420,Загадочный Рэй,Nebulous Ray,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+421,Посланник ветра,Messenger of the Wind,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
 422,Яйцо жизни,Egg of Life,31,0,-1,-1,360,360,,,True,True,ItemUse_MINGZJLD,False,False
 423,Яйцо тьмы,Egg of Darkness,31,0,-1,-1,360,360,,,True,True,ItemUse_FAZJLD,False,False
 424,Яйцо добродетели,Egg of Virtue,31,0,-1,-1,360,360,,,True,True,ItemUse_QIANZJLD,False,False
@@ -426,9 +426,9 @@
 458,Малиновый попугай,Crimson Parrot,59,0,-1,-1,360,360,2000,fairies,True,True,,False,False
 459,Кровожадный сундук,Tempest Chest,31,0,-1,-1,50000,50000,,,True,True,ItemUse_FLeiBOX,False,False
 460,Сундук Чемпиона,Champion's Chest,31,0,-1,-1,50000,50000,,,True,True,ItemUse_YZheBOX,False,False
-461,Кристалл Наяда,Crystal Naiad,25,40,-1,-1,210384,210384,,,True,True,,False,False
-462,Ловкий торговец,Nimble Venturer,25,50,-1,-1,453940,453940,,,True,True,,False,False
-463,Блуждающий по лабиринту,Labyrinth Wanderer,25,50,-1,-1,453940,453940,,,True,True,,False,False
+461,Кристалл Наяда,Crystal Naiad,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+462,Ловкий торговец,Nimble Venturer,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+463,Блуждающий по лабиринту,Labyrinth Wanderer,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
 464,Прозрачные одежды,Transparent Clothes,22,0,-1,-1,0,0,,,True,True,,False,False
 465,Перчатки новичка,Newbie Gloves,23,1,-1,-1,60,60,,,True,True,,False,False
 466,Панцирные перчатки,Husk Gloves,23,10,"2,1","1,8,9,10",1250,1250,,,True,True,,False,False
@@ -460,9 +460,9 @@
 492,Перчатки вяхиря,Ringdove Gloves,23,55,"1,3",12,31300,31300,,,True,True,,False,False
 493,Перчатки хищника,Raptor Gloves,23,60,"1,3",12,37250,37250,,,True,True,,False,False
 494,Перчатки кошмара,Nightmare Gloves,31,70,"1,3","2,11,12",50450,50450,,,True,True,,False,False
-495,Духовный генератор,Soul Generator,25,60,-1,-1,711135,711135,,,True,True,,False,False
+495,Духовный генератор,Soul Generator,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
 496,Матросские перчатки,Seaman Gloves,31,0,"2,3",3,0,0,,,True,True,,False,False
-497,Благословенный Давао,Blessed Davao,25,60,-1,-1,711135,711135,,,True,True,,False,False
+497,Благословенный Давао,Blessed Davao,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
 498,Коралл грозы нач. ур.,Novice Thunder Coral,29,20,-1,"4,16",1014,1014,,,True,True,,False,False
 499,Перчатки из кожи акулы,Shark Hide Gloves,31,0,"2,3",3,0,0,,,True,True,,False,False
 501,Перчатки моряка,Sailor Gloves,31,0,"2,3",3,0,0,,,True,True,,False,False
@@ -488,7 +488,7 @@
 521,Перчатки ветра,Wind Gloves,23,50,"1,3",16,26050,26050,,,True,True,,False,False
 522,Коралл ветра выс. ур.,Expert Wind Coral,29,50,-1,"4,16",9078,9078,,,True,True,,False,False
 523,Коралл ветра Фудзина,Wind Coral of Fujin,29,60,-1,"4,16",14222,14222,,,True,True,,False,False
-524,Медитирующий монах,Meditating Monk,26,30,-1,-1,52494,52494,,,True,True,,False,False
+524,Медитирующий монах,Meditating Monk,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
 525,Пурпурный сундук Чемпиона 70 ур.,Lv 70 Champion Chest of Magenta,31,0,-1,-1,50000,50000,,,True,True,ItemUse_70JJZWBOX,False,False
 526,Перчатки краба,Crabby Gloves,23,30,4,"4,16",9650,9650,,,True,True,,False,False
 527,Перчатки руру,Rooroo Muffs,23,15,4,"4,16",2500,2500,,,True,True,,False,False
@@ -598,7 +598,7 @@
 632,Сундук Покорителя морей Ами 50 ур.,Lv 50 Ami Voyager Chest,31,0,-1,-1,50000,50000,,,True,True,ItemUse_50AMHHBOX,False,False
 633,Сундук покорителя морей Ами 60 ур.,Lv 60 Ami Voyager Chest,31,0,-1,-1,50000,50000,,,True,True,ItemUse_60AMHHBOX,False,False
 634,Сундук покорителя Ами 70 ур.,Lv 70 Ami Voyager Chest,31,0,-1,-1,50000,50000,,,True,True,ItemUse_70AMHHBOX,False,False
-635,Коралл удара 1 ур.,Lv 1 Strike Coral,29,10,-1,"4,16",150,150,,,True,True,,False,False
+635,Коралл удара 1 ур.,Lv 1 Strike Coral,29,10,-1,"4,16",150,150,1,progress,True,True,,False,False
 636,Коралл удара 2 ур.,Lv 2 Strike Coral,29,20,-1,"4,16",5000,5000,,,True,True,,False,False
 637,Коралл удара 3 ур.,Lv 3 Strike Coral,29,30,-1,"4,16",2624,2624,,,True,True,,False,False
 638,Коралл удара 4 ур.,Lv 4 Strike Coral,29,40,-1,"4,16",5259,5259,,,True,True,,False,False
@@ -702,7 +702,7 @@
 736,Башмачки оленя,Deer Shoes,24,29,4,"5,13,14",8860,8860,,,True,True,,False,False
 737,Сапожки из выдры,Otter Shoes,24,50,4,14,26050,26050,,,True,True,,False,False
 738,Енотовые сапожки,Racoon Shoes,24,20,4,"4,16",4450,4450,,,True,True,,False,False
-739,Бешеная атака,Onslaught,25,40,-1,-1,210384,210384,,,True,True,,False,False
+739,Бешеная атака,Onslaught,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
 740,Ботинки весёлого кролика,Happy Bunny Shoes,24,45,4,13,21100,21100,,,True,True,,False,False
 741,Башмаки ночной совы,Night Owl Shoes,24,30,4,"5,13,14",9650,9650,,,True,True,,False,False
 742,Башмачки кенгуру,Kangaroo Shoes,24,40,4,14,16850,16850,,,True,True,,False,False
@@ -780,7 +780,7 @@
 814,Сапоги тайного знания с печатью огня,Boots of the of the Arcane,24,55,"3,4",13,71887,71887,450000,equipment,True,True,,False,False
 815,Тяжелые перчатки исчезновения,Heavy Gloves of Evanescence,23,55,"1,3,4",16,71887,71887,450000,equipment,True,True,,False,False
 816,Прозрачные башмаки,Transparent Shoes,24,0,-1,-1,0,0,,,True,True,,False,False
-817,Коралл ветра 1-го ур.,Lv 1 Wind Coral,29,10,-1,"4,16",150,150,,,True,True,,False,False
+817,Коралл ветра 1-го ур.,Lv 1 Wind Coral,29,10,-1,"4,16",150,150,1,progress,True,True,,False,False
 818,Коралл ветра 2-го ур.,Lv 2 Wind Coral,29,20,-1,"4,16",5000,5000,,,True,True,,False,False
 819,Коралл ветра 3-го ур.,Lv 3 Wind Coral,29,30,-1,"4,16",2624,2624,,,True,True,,False,False
 820,Коралл ветра 4-го ур.,Lv 4 Wind Coral,29,40,-1,"4,16",5259,5259,,,True,True,,False,False
@@ -823,14 +823,14 @@
 857,Расписка на Самоцвет Ярости,Furious Gem Voucher,31,0,-1,-1,10,10,,,True,True,ItemUse_zhiyanBook,False,False
 858,Расписка на Разрыв-самоцвет,Explosive Gem Voucher,31,0,-1,-1,10,10,,,True,True,ItemUse_huoyaoBook,False,False
 859,Расписка на Люстриновый самоцвет,Lustrious Gem Voucher,31,0,-1,-1,10,10,,,True,True,ItemUse_manaoBook,False,False
-860,Самоцвет Ветра,Gem of the Wind,49,0,-1,-1,5000,5000,5000,forge,True,True,,False,False
-861,Самоцвет удара,Gem of Striking,49,0,-1,-1,5000,5000,5000,forge,True,True,,False,False
-862,Самоцвет колосса,Gem of Colossus,49,0,-1,-1,5000,5000,5000,forge,True,True,,False,False
-863,Самоцвет Ярости,Gem of Rage,49,0,-1,-1,5000,5000,5000,forge,True,True,,False,False
-864,Глаз черного дракона,Eye of Black Dragon,49,0,-1,-1,5000,5000,100000,forge,True,True,ItemUse_hexin,False,False
-865,Душа Черного дракона,Soul of Black Dragon,49,0,-1,-1,5000,5000,100000,forge,True,True,ItemUse_hexin,False,False
-866,Сердце черного дракона,Heart of Black Dragon,49,0,-1,-1,5000,5000,100000,forge,True,True,ItemUse_hexin,False,False
-867,Коралл грозы 1-го ур.,Lv 1 Thunder Coral,29,10,-1,"4,16",150,150,,,True,True,,False,False
+860,Самоцвет Ветра,Gem of the Wind,49,0,-1,-1,5000,5000,,,True,True,,False,False
+861,Самоцвет удара,Gem of Striking,49,0,-1,-1,5000,5000,,,True,True,,False,False
+862,Самоцвет колосса,Gem of Colossus,49,0,-1,-1,5000,5000,,,True,True,,False,False
+863,Самоцвет Ярости,Gem of Rage,49,0,-1,-1,5000,5000,,,True,True,,False,False
+864,Глаз черного дракона,Eye of Black Dragon,49,0,-1,-1,5000,5000,,,True,True,ItemUse_hexin,False,False
+865,Душа Черного дракона,Soul of Black Dragon,49,0,-1,-1,5000,5000,,,True,True,ItemUse_hexin,False,False
+866,Сердце черного дракона,Heart of Black Dragon,49,0,-1,-1,5000,5000,,,True,True,ItemUse_hexin,False,False
+867,Коралл грозы 1-го ур.,Lv 1 Thunder Coral,29,10,-1,"4,16",150,150,1,progress,True,True,,False,False
 868,Коралл грозы 2-го ур.,Lv 2 Thunder Coral,29,20,-1,"4,16",5000,5000,,,True,True,,False,False
 869,Коралл грозы 3-го ур.,Lv 3 Thunder Coral,29,30,-1,"4,16",2624,2624,,,True,True,,False,False
 870,Коралл грозы 4-го ур.,Lv 4 Thunder Coral,29,40,-1,"4,16",5259,5259,,,True,True,,False,False
@@ -960,7 +960,7 @@
 994,Реактивный,Torrent Bow,52,0,-1,-1,0,0,,,True,True,,False,False
 995,Лук богини,Goddess Bow,52,0,-1,-1,0,0,,,True,True,,False,False
 999,Лук рыбы-меч,Swordfish Bow,52,0,-1,-1,0,0,,,True,True,,False,False
-1000,Чертеж Пачкули,Blurry Blueprint,31,0,-1,-1,10,10,3000,,True,True,ItemUse_MHDTZ,False,False
+1000,Чертеж Пачкули,Blurry Blueprint,31,0,-1,-1,10,10,4000,,True,True,ItemUse_MHDTZ,False,False
 1001,Зашифрованный чертеж,Encrypted Blueprint,31,0,-1,-1,50,50,,,True,True,ItemUse_MHDTZ,False,False
 1002,Запечатанный чертеж,Sealed Blueprint,31,0,-1,-1,100,100,,,True,True,ItemUse_MHDTZ,False,False
 1003,Чертеж призыва,Invocation Blueprint,31,0,-1,-1,500,500,,,True,True,ItemUse_MHDTZ,False,False
@@ -972,7 +972,7 @@
 1009,Сердце Невинности,Heart of Innocence,31,0,-1,-1,6000,6000,,,True,True,ItemUse_CZZX,False,False
 1010,Высушенное сердце,Withered Heart,41,0,-1,-1,200,200,,,True,True,,False,False
 1011,Грандиозный салют,Grandiose Salute,31,0,-1,-1,2000,2000,,,True,True,ItemUse_HHLP,False,False
-1012,Самоцвет души,Gem of Soul,49,0,-1,-1,20000,20000,5000,forge,True,True,,False,False
+1012,Самоцвет души,Gem of Soul,49,0,-1,-1,20000,20000,,,True,True,,False,False
 1013,Сердце Возрожденного,Heart of Reborn,31,0,-1,-1,5000,5000,,,True,True,ItemUse_CZZX,False,False
 1014,Свиток призыва Богини,Goddess Summon Scroll,31,0,-1,-1,360,360,,,True,True,ItemUse_NSSN,False,False
 1015,Загадочное яйцо феи,Mysterious Pet Egg,31,0,-1,-1,360,360,,,True,True,ItemUse_JNJLD,False,False
@@ -1067,8 +1067,8 @@
 1122,Маска Мертвой души,Deathsoul Mask,20,0,-1,-1,2000,2000,,,True,True,,False,False
 1123,Тайны Хаоса,Chaos Manual,68,0,-1,-1,0,0,,,True,True,,False,False
 1124,Каменный торс Хаоса,Chaos Framestone,22,55,-1,-1,10000,10000,,,True,True,,False,False
-1125,Каменная рука Хаоса,Chaos Clawstone,23,55,-1,-1,10000,10000,,,True,True,,False,False
-1126,Каменная нога Хаоса,Chaos Pawstone,24,55,-1,-1,10000,10000,,,True,True,,False,False
+1125,Каменная рука Хаоса,Chaos Clawstone,23,55,-1,-1,10000,10000,450000,equipment,True,True,,False,False
+1126,Каменная нога Хаоса,Chaos Pawstone,24,55,-1,-1,10000,10000,450000,equipment,True,True,,False,False
 1127,Коронационный камень Хаоса,Chaos Crownstone,20,30,4,-1,10000,10000,,,True,True,,False,False
 1128,Мини-усилитель натиска,Mini Amplifier of Strive,31,0,-1,-1,180,180,10000,boosts,True,True,ItemUse_WeiXing,False,False
 1129,Навык - Денежный дождь,Skill - Coin Shower,34,0,-1,-1,5000,5000,,,True,True,Sk_Script_JQs,False,False
@@ -2875,12 +2875,12 @@
 3085,Маска короля мумий,Mask of Mummy King,31,0,-1,-1,90,90,,,True,True,,False,False
 3086,Счастливый жребий,Career Lot,31,0,-1,-1,90,90,,,True,True,ItemUse_SuanmingWork,False,False
 3087,Жребий фортуны,Fortune Lot,31,0,-1,-1,90,90,,,True,True,ItemUse_SuanmingMoney,False,False
-3088,Рюкзак с 28 ячейками,28 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_28BeiBao,False,False
-3089,Рюкзак с 32 ячейками,32 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_32BeiBao,False,False
-3090,Рюкзак с 36 ячейками,36 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_36BeiBao,False,False
-3091,Рюкзак с 40 ячейками,40 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_40BeiBao,False,False
-3092,Рюкзак с 44 ячейками,44 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_44BeiBao,False,False
-3093,Рюкзак с 48 ячейками,48 Slot Inventory,31,0,-1,-1,100,100,,,True,True,ItemUse_48BeiBao,False,False
+3088,Рюкзак с 28 ячейками,28 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_28BeiBao,False,False
+3089,Рюкзак с 32 ячейками,32 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_32BeiBao,False,False
+3090,Рюкзак с 36 ячейками,36 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_36BeiBao,False,False
+3091,Рюкзак с 40 ячейками,40 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_40BeiBao,False,False
+3092,Рюкзак с 44 ячейками,44 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_44BeiBao,False,False
+3093,Рюкзак с 48 ячейками,48 Slot Inventory,31,0,-1,-1,100,100,0,,True,True,ItemUse_48BeiBao,False,False
 3094,Усилитель стремлений,Amplifier of Strive,31,0,-1,-1,200,200,10000,boosts,True,True,ItemUse_MoreExpGzA,False,False
 3095,Супер Усилитель стремлений,Hi-Amplifier of Strive,31,0,-1,-1,200,200,10000,boosts,True,True,ItemUse_MoreExpGzLv3A,False,False
 3096,Усилитель удачи,Amplifier of Luck,31,0,-1,-1,200,200,10000,boosts,True,True,ItemUse_MoreItemGzA,False,False
@@ -3915,7 +3915,7 @@
 4143,Чешуя рыбы-скелета,Skeleton Fish Scale,42,0,-1,-1,0,0,,,True,True,,False,False
 4144,Кольцо рыбьей чешуи,Ring of Fish Scale,42,0,-1,-1,0,0,,,True,True,,False,False
 4145,Лучистая душа,Radiant Soul,42,0,-1,-1,0,0,,,True,True,,False,False
-4146,Блестящее кольцо рыбьей чешуи,Sparkling Ring of Fish Scale,26,35,-1,-1,8000,8000,,,True,True,,False,False
+4146,Блестящее кольцо рыбьей чешуи,Sparkling Ring of Fish Scale,26,35,-1,-1,8000,8000,50000,jewellery,True,True,,False,False
 4147,Тату призрачного зверя,Spirit Beast Tattoo,27,65,2,8,43650,43650,,,True,True,,False,False
 4148,Тату тайного зверя,Arcane Beast Tattoo,27,70,2,8,50600,50600,,,True,True,,False,False
 4149,Изменчивый боевой доспех,Capricious Battle Armor,22,65,1,9,66425,66425,,,True,True,,False,False
@@ -4362,102 +4362,102 @@
 4608,Коричневая краска,Brown Dye,41,0,-1,-1,200,200,,,True,True,,False,False
 4609,Коричневый краситель,Brown Colorant,41,0,-1,-1,200,200,,,True,True,,False,False
 4610,Обесцвечивающее средство,Decolorant,41,0,-1,-1,200,200,,,True,True,,False,False
-4611,Золотое кольцо,Gold Ring,26,15,-1,-1,7735,7735,,,True,True,,False,False
-4612,Латунное кольцо,Brass Ring,26,15,-1,-1,7735,7735,,,True,True,,False,False
-4613,Светящееся серебряное кольцо,Bright Silver Ring,26,15,-1,-1,7735,7735,,,True,True,,False,False
-4614,Кольцо из превосходной стали,Fine Steel Ring,26,15,-1,-1,7735,7735,,,True,True,,False,False
-4615,Кольцо с рубинами,Ruby Encrusted Ring,26,15,-1,-1,7735,7735,,,True,True,,False,False
-4616,Кольцо из звериного клыка,Animal Tusk Ring,26,20,-1,-1,15216,15216,,,True,True,,False,False
-4617,Кольцо из рога,Antler Ring,26,20,-1,-1,15216,15216,,,True,True,,False,False
-4618,Кольцо кальмара,Squid Ring,26,20,-1,-1,15216,15216,,,True,True,,False,False
-4619,Кольцо охотника,Hunter Ring,26,20,-1,-1,15216,15216,,,True,True,,False,False
-4620,Кольцо таинственного цветка,Mystic Flower Ring,26,20,-1,-1,15216,15216,,,True,True,,False,False
-4621,Кольцо штурма,Assault Ring,26,25,-1,-1,33650,33650,,,True,True,,False,False
-4622,Усиленное кольцо,Reinforced Ring,26,25,-1,-1,33650,33650,,,True,True,,False,False
-4623,Кольцо силы,Ring of Force,26,25,-1,-1,33650,33650,,,True,True,,False,False
-4624,Кольцо цели,Ring of Aim,26,25,-1,-1,33650,33650,,,True,True,,False,False
-4625,Кольцо наслаждения,Ring of Ecstasy,26,25,-1,-1,33650,33650,,,True,True,,False,False
-4626,Зуб свирепости,Tooth of Ferocity,26,30,-1,-1,52494,52494,,,True,True,,False,False
-4627,След большого медведя,Huge Bear Footprint,26,30,-1,-1,52494,52494,,,True,True,,False,False
-4628,Перья Райской Птицы,Feathers of Paradise Bird,26,30,-1,-1,52494,52494,,,True,True,,False,False
-4629,Копыто быстрогого оленя,Hoof of Nimble Deer,26,30,-1,-1,52494,52494,,,True,True,,False,False
-4630,Таинственный камень,Mystic Stone,26,30,-1,-1,52494,52494,,,True,True,,False,False
-4631,Варварское кольцо,Barbaric Ring,26,35,-1,-1,75670,75670,,,True,True,,False,False
-4632,Кольцо всадника,Cavalier Ring,26,35,-1,-1,75670,75670,,,True,True,,False,False
-4633,Кольцо кавалерии,Cavalry Ring,26,35,-1,-1,75670,75670,,,True,True,,False,False
-4634,Кольцо стрелка,Shooter's Ring,26,35,-1,-1,75670,75670,,,True,True,,False,False
-4635,Жертвенное кольцо,Sacrificial Ring,26,35,-1,-1,75670,75670,,,True,True,,False,False
-4636,Кольцо воителя,Crusader Ring,26,40,-1,-1,105192,105192,,,True,True,,False,False
-4637,Кольцо контратаки,Counterattack Ring,26,40,-1,-1,105192,105192,,,True,True,,False,False
-4638,Кольцо партизанской войны,Guerrilla Warfare Ring,26,40,-1,-1,105192,105192,,,True,True,,False,False
-4639,Кольцо стрелка,Sniper Ring,26,40,-1,-1,105192,105192,,,True,True,,False,False
-4640,Кольцо развития,Ring of Advancement,26,40,-1,-1,105192,105192,,,True,True,,False,False
-4641,Глаз тигра,Eye of the Tiger,26,45,-1,-1,174800,174800,,,True,True,,False,False
-4642,Кольцо йети,Ring of the Yeti,26,45,-1,-1,174800,174800,,,True,True,,False,False
-4643,Кольцо сокола,Ring of the Hawk,26,45,-1,-1,174800,174800,,,True,True,,False,False
-4644,Лапа гепарда,Paw of Cheetah,26,45,-1,-1,174800,174800,,,True,True,,False,False
-4645,Дикий бриз,Wild Breeze,26,45,-1,-1,174800,174800,,,True,True,,False,False
-4646,Кольцо фараона,Ring of Pharaoh,26,50,-1,-1,226970,226970,,,True,True,,False,False
-4647,Кольцо сопротивления,Ring of Resistance,26,50,-1,-1,226970,226970,,,True,True,,False,False
-4648,Кольцо бандита,Bandit Ring,26,50,-1,-1,226970,226970,,,True,True,,False,False
-4649,Чарующее кольцо,Bewitching Ring,26,50,-1,-1,226970,226970,,,True,True,,False,False
-4650,Кольцо верующего,Believer's Ring,26,50,-1,-1,226970,226970,,,True,True,,False,False
-4651,Кольцо подавления,Ring of Suppression,26,55,-1,-1,286425,286425,,,True,True,,False,False
-4652,Кольцо доверия,Ring of Trust,26,55,-1,-1,286425,286425,,,True,True,,False,False
-4653,Исчезающее кольцо,Vanishing Ring,26,55,-1,-1,286425,286425,,,True,True,,False,False
-4654,Кольцо связывания,Ring of Binding,26,55,-1,-1,286425,286425,,,True,True,,False,False
-4655,Слезы русалки,Mermaid Tears,26,55,-1,-1,286425,286425,,,True,True,,False,False
-4656,Пламя ярости,Flame of Fury,26,60,-1,-1,355567,355567,,,True,True,,False,False
-4657,Булыжник,Stable Cliff,26,60,-1,-1,355567,355567,,,True,True,,False,False
-4658,Ветер благородной души,Wind of the Gentle Soul,26,60,-1,-1,355567,355567,,,True,True,,False,False
-4659,Сплетенный хлыст из ротанга,Entwined Rattan,26,60,-1,-1,355567,355567,,,True,True,,False,False
-4660,Чудесная вода,Water of Miracle,26,60,-1,-1,355567,355567,,,True,True,,False,False
+4611,Золотое кольцо,Gold Ring,26,15,-1,-1,7735,7735,50000,jewellery,True,True,,False,False
+4612,Латунное кольцо,Brass Ring,26,15,-1,-1,7735,7735,50000,jewellery,True,True,,False,False
+4613,Светящееся серебряное кольцо,Bright Silver Ring,26,15,-1,-1,7735,7735,50000,jewellery,True,True,,False,False
+4614,Кольцо из превосходной стали,Fine Steel Ring,26,15,-1,-1,7735,7735,50000,jewellery,True,True,,False,False
+4615,Кольцо с рубинами,Ruby Encrusted Ring,26,15,-1,-1,7735,7735,50000,jewellery,True,True,,False,False
+4616,Кольцо из звериного клыка,Animal Tusk Ring,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+4617,Кольцо из рога,Antler Ring,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+4618,Кольцо кальмара,Squid Ring,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+4619,Кольцо охотника,Hunter Ring,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+4620,Кольцо таинственного цветка,Mystic Flower Ring,26,20,-1,-1,15216,15216,50000,jewellery,True,True,,False,False
+4621,Кольцо штурма,Assault Ring,26,25,-1,-1,33650,33650,50000,jewellery,True,True,,False,False
+4622,Усиленное кольцо,Reinforced Ring,26,25,-1,-1,33650,33650,50000,jewellery,True,True,,False,False
+4623,Кольцо силы,Ring of Force,26,25,-1,-1,33650,33650,50000,jewellery,True,True,,False,False
+4624,Кольцо цели,Ring of Aim,26,25,-1,-1,33650,33650,50000,jewellery,True,True,,False,False
+4625,Кольцо наслаждения,Ring of Ecstasy,26,25,-1,-1,33650,33650,50000,jewellery,True,True,,False,False
+4626,Зуб свирепости,Tooth of Ferocity,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+4627,След большого медведя,Huge Bear Footprint,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+4628,Перья Райской Птицы,Feathers of Paradise Bird,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+4629,Копыто быстрогого оленя,Hoof of Nimble Deer,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+4630,Таинственный камень,Mystic Stone,26,30,-1,-1,52494,52494,50000,jewellery,True,True,,False,False
+4631,Варварское кольцо,Barbaric Ring,26,35,-1,-1,75670,75670,50000,jewellery,True,True,,False,False
+4632,Кольцо всадника,Cavalier Ring,26,35,-1,-1,75670,75670,50000,jewellery,True,True,,False,False
+4633,Кольцо кавалерии,Cavalry Ring,26,35,-1,-1,75670,75670,50000,jewellery,True,True,,False,False
+4634,Кольцо стрелка,Shooter's Ring,26,35,-1,-1,75670,75670,50000,jewellery,True,True,,False,False
+4635,Жертвенное кольцо,Sacrificial Ring,26,35,-1,-1,75670,75670,50000,jewellery,True,True,,False,False
+4636,Кольцо воителя,Crusader Ring,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+4637,Кольцо контратаки,Counterattack Ring,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+4638,Кольцо партизанской войны,Guerrilla Warfare Ring,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+4639,Кольцо стрелка,Sniper Ring,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+4640,Кольцо развития,Ring of Advancement,26,40,-1,-1,105192,105192,200000,jewellery,True,True,,False,False
+4641,Глаз тигра,Eye of the Tiger,26,45,-1,-1,174800,174800,200000,jewellery,True,True,,False,False
+4642,Кольцо йети,Ring of the Yeti,26,45,-1,-1,174800,174800,200000,jewellery,True,True,,False,False
+4643,Кольцо сокола,Ring of the Hawk,26,45,-1,-1,174800,174800,200000,jewellery,True,True,,False,False
+4644,Лапа гепарда,Paw of Cheetah,26,45,-1,-1,174800,174800,200000,jewellery,True,True,,False,False
+4645,Дикий бриз,Wild Breeze,26,45,-1,-1,174800,174800,200000,jewellery,True,True,,False,False
+4646,Кольцо фараона,Ring of Pharaoh,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+4647,Кольцо сопротивления,Ring of Resistance,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+4648,Кольцо бандита,Bandit Ring,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+4649,Чарующее кольцо,Bewitching Ring,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+4650,Кольцо верующего,Believer's Ring,26,50,-1,-1,226970,226970,450000,jewellery,True,True,,False,False
+4651,Кольцо подавления,Ring of Suppression,26,55,-1,-1,286425,286425,450000,jewellery,True,True,,False,False
+4652,Кольцо доверия,Ring of Trust,26,55,-1,-1,286425,286425,450000,jewellery,True,True,,False,False
+4653,Исчезающее кольцо,Vanishing Ring,26,55,-1,-1,286425,286425,450000,jewellery,True,True,,False,False
+4654,Кольцо связывания,Ring of Binding,26,55,-1,-1,286425,286425,450000,jewellery,True,True,,False,False
+4655,Слезы русалки,Mermaid Tears,26,55,-1,-1,286425,286425,450000,jewellery,True,True,,False,False
+4656,Пламя ярости,Flame of Fury,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+4657,Булыжник,Stable Cliff,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+4658,Ветер благородной души,Wind of the Gentle Soul,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+4659,Сплетенный хлыст из ротанга,Entwined Rattan,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
+4660,Чудесная вода,Water of Miracle,26,60,-1,-1,355567,355567,900000,jewellery,True,True,,False,False
 4661,Дерево для ремонта,Repair Wood,41,0,-1,-1,10,10,,,True,True,,False,False
-4666,Ожерелье живучести,Necklace of Vitality,25,15,-1,-1,15471,15471,,,True,True,,False,False
-4667,Ожерелье лунного света,Moonlight Necklace,25,15,-1,-1,15471,15471,,,True,True,,False,False
-4668,Изумрудный амулет,Emerald Amulet,25,15,-1,-1,15471,15471,,,True,True,,False,False
-4669,Эбеновое кольцо,Ebony Wreath,25,15,-1,-1,15471,15471,,,True,True,,False,False
-4671,Водевильское ожерелье,Vaudeville Necklace,25,20,-1,-1,30432,30432,,,True,True,,False,False
-4672,Освященное ожерелье,Baptismal Necklace,25,20,-1,-1,30432,30432,,,True,True,,False,False
-4673,Офицерское ожерелье,Officer Necklace,25,20,-1,-1,30432,30432,,,True,True,,False,False
-4674,Охотничий талисман,Hunter Charm,25,20,-1,-1,30432,30432,,,True,True,,False,False
-4675,Ожерелье торговца,Mercenary Necklace,25,20,-1,-1,30432,30432,,,True,True,,False,False
-4676,Ожерелье рычащего ветра,Necklace of the Roaring Wind,25,25,-1,-1,67300,67300,,,True,True,,False,False
-4677,Ожерелье сумерек,Necklace of Dusk,25,25,-1,-1,67300,67300,,,True,True,,False,False
-4678,Кольцо с нефритом,Jade Ring,25,25,-1,-1,67300,67300,,,True,True,,False,False
-4679,Ожерелье экзорцизма,Necklace of Exorcism,25,25,-1,-1,67300,67300,,,True,True,,False,False
-4681,Ожерелье души,Soul Necklace,25,30,-1,-1,104988,104988,,,True,True,,False,False
-4682,Свет святого жреца,Light of the Holy Priest,25,30,-1,-1,104988,104988,,,True,True,,False,False
-4683,Императорское ожерелье,Emperor Necklace,25,30,-1,-1,104988,104988,,,True,True,,False,False
-4684,Небесное кольцо,Heavenly Ring,25,30,-1,-1,104988,104988,,,True,True,,False,False
-4685,Ожерелье героя,Hero Necklace,25,30,-1,-1,104988,104988,,,True,True,,False,False
-4686,Элегантное ожерелье,Elegant Necklace,25,35,-1,-1,151340,151340,,,True,True,,False,False
-4687,Деревянное ожерелье,Wood Necklace,25,35,-1,-1,151340,151340,,,True,True,,False,False
-4688,Ожерелье чужеземца,Outlander Necklace,25,35,-1,-1,151340,151340,,,True,True,,False,False
-4689,Талисман учёного,Academic Charm,25,35,-1,-1,151340,151340,,,True,True,,False,False
-4691,Пепельный самоцвет,Ashen Gem,25,40,-1,-1,210384,210384,,,True,True,,False,False
-4692,Знак Дракона,Mark of the Dragon,25,40,-1,-1,210384,210384,,,True,True,,False,False
-4693,Надежда жизни,Hope of Life,25,40,-1,-1,210384,210384,,,True,True,,False,False
-4694,Символическое ожерелье,Symbolic Necklace,25,40,-1,-1,210384,210384,,,True,True,,False,False
-4695,Красный самоцвет гниды,Red Nit Gem,25,40,-1,-1,210384,210384,,,True,True,,False,False
-4696,Ожерелье стреляющей звезды,Necklace of Shooting Star,25,45,-1,-1,349600,349600,,,True,True,,False,False
-4697,Ожерелье скорости,Necklace of Speed,25,45,-1,-1,349600,349600,,,True,True,,False,False
-4698,Ожерелье бури,Storm Necklace,25,45,-1,-1,349600,349600,,,True,True,,False,False
-4699,Талисман встречи,Charm of Encounter,25,45,-1,-1,349600,349600,,,True,True,,False,False
-4701,Жгучая живучесть,Burning Vitality,25,50,-1,-1,453940,453940,,,True,True,,False,False
-4702,Теплый весенний ветер,Warm Wind of Spring,25,50,-1,-1,453940,453940,,,True,True,,False,False
-4703,Осеннее ночное сияние,Autumn Night Glimmer,25,50,-1,-1,453940,453940,,,True,True,,False,False
-4704,Зимняя вьюга,Wintery Blizzard,25,50,-1,-1,453940,453940,,,True,True,,False,False
-4705,Сила четырех сезонов,Force of Four Seasons,25,50,-1,-1,453940,453940,,,True,True,,False,False
-4706,Искорка души,Spirit Spark,25,55,-1,-1,572850,572850,,,True,True,,False,False
-4707,Млечный путь,Milky Way,25,55,-1,-1,572850,572850,,,True,True,,False,False
-4708,Падающая звезда,Shooting Star,25,55,-1,-1,572850,572850,,,True,True,,False,False
-4709,Благословленная радуга,Blessed Rainbow,25,55,-1,-1,572850,572850,,,True,True,,False,False
-4711,Манна небесная,Grace of Heaven,25,60,-1,-1,711135,711135,,,True,True,,False,False
-4712,Дыхание дракона,Dragon's Breath,25,60,-1,-1,711135,711135,,,True,True,,False,False
-4713,Небесная печать,Heaven's Seal,25,60,-1,-1,711135,711135,,,True,True,,False,False
-4714,Ангельское покровительство,Angelic Protection,25,60,-1,-1,711135,711135,,,True,True,,False,False
-4715,Свет Терры,Light of Terra,25,60,-1,-1,711135,711135,,,True,True,,False,False
+4666,Ожерелье живучести,Necklace of Vitality,25,15,-1,-1,15471,15471,50000,jewellery,True,True,,False,False
+4667,Ожерелье лунного света,Moonlight Necklace,25,15,-1,-1,15471,15471,50000,jewellery,True,True,,False,False
+4668,Изумрудный амулет,Emerald Amulet,25,15,-1,-1,15471,15471,50000,jewellery,True,True,,False,False
+4669,Эбеновое кольцо,Ebony Wreath,25,15,-1,-1,15471,15471,50000,jewellery,True,True,,False,False
+4671,Водевильское ожерелье,Vaudeville Necklace,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+4672,Освященное ожерелье,Baptismal Necklace,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+4673,Офицерское ожерелье,Officer Necklace,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+4674,Охотничий талисман,Hunter Charm,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+4675,Ожерелье торговца,Mercenary Necklace,25,20,-1,-1,30432,30432,50000,jewellery,True,True,,False,False
+4676,Ожерелье рычащего ветра,Necklace of the Roaring Wind,25,25,-1,-1,67300,67300,50000,jewellery,True,True,,False,False
+4677,Ожерелье сумерек,Necklace of Dusk,25,25,-1,-1,67300,67300,50000,jewellery,True,True,,False,False
+4678,Кольцо с нефритом,Jade Ring,25,25,-1,-1,67300,67300,50000,jewellery,True,True,,False,False
+4679,Ожерелье экзорцизма,Necklace of Exorcism,25,25,-1,-1,67300,67300,50000,jewellery,True,True,,False,False
+4681,Ожерелье души,Soul Necklace,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+4682,Свет святого жреца,Light of the Holy Priest,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+4683,Императорское ожерелье,Emperor Necklace,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+4684,Небесное кольцо,Heavenly Ring,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+4685,Ожерелье героя,Hero Necklace,25,30,-1,-1,104988,104988,50000,jewellery,True,True,,False,False
+4686,Элегантное ожерелье,Elegant Necklace,25,35,-1,-1,151340,151340,50000,jewellery,True,True,,False,False
+4687,Деревянное ожерелье,Wood Necklace,25,35,-1,-1,151340,151340,50000,jewellery,True,True,,False,False
+4688,Ожерелье чужеземца,Outlander Necklace,25,35,-1,-1,151340,151340,50000,jewellery,True,True,,False,False
+4689,Талисман учёного,Academic Charm,25,35,-1,-1,151340,151340,50000,jewellery,True,True,,False,False
+4691,Пепельный самоцвет,Ashen Gem,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+4692,Знак Дракона,Mark of the Dragon,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+4693,Надежда жизни,Hope of Life,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+4694,Символическое ожерелье,Symbolic Necklace,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+4695,Красный самоцвет гниды,Red Nit Gem,25,40,-1,-1,210384,210384,200000,jewellery,True,True,,False,False
+4696,Ожерелье стреляющей звезды,Necklace of Shooting Star,25,45,-1,-1,349600,349600,200000,jewellery,True,True,,False,False
+4697,Ожерелье скорости,Necklace of Speed,25,45,-1,-1,349600,349600,200000,jewellery,True,True,,False,False
+4698,Ожерелье бури,Storm Necklace,25,45,-1,-1,349600,349600,200000,jewellery,True,True,,False,False
+4699,Талисман встречи,Charm of Encounter,25,45,-1,-1,349600,349600,200000,jewellery,True,True,,False,False
+4701,Жгучая живучесть,Burning Vitality,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+4702,Теплый весенний ветер,Warm Wind of Spring,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+4703,Осеннее ночное сияние,Autumn Night Glimmer,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+4704,Зимняя вьюга,Wintery Blizzard,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+4705,Сила четырех сезонов,Force of Four Seasons,25,50,-1,-1,453940,453940,450000,jewellery,True,True,,False,False
+4706,Искорка души,Spirit Spark,25,55,-1,-1,572850,572850,450000,jewellery,True,True,,False,False
+4707,Млечный путь,Milky Way,25,55,-1,-1,572850,572850,450000,jewellery,True,True,,False,False
+4708,Падающая звезда,Shooting Star,25,55,-1,-1,572850,572850,450000,jewellery,True,True,,False,False
+4709,Благословленная радуга,Blessed Rainbow,25,55,-1,-1,572850,572850,450000,jewellery,True,True,,False,False
+4711,Манна небесная,Grace of Heaven,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
+4712,Дыхание дракона,Dragon's Breath,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
+4713,Небесная печать,Heaven's Seal,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
+4714,Ангельское покровительство,Angelic Protection,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
+4715,Свет Терры,Light of Terra,25,60,-1,-1,711135,711135,900000,jewellery,True,True,,False,False
 4716,Клык гигантского волка,Gigantic Wolf Fang,31,0,-1,-1,100000,100000,,,True,True,,False,False
 4717,Раковина стальной улитки,Steel Snail Shell,31,0,-1,-1,71,71,,,True,True,,False,False
 4718,Колчан улучшенных стрел,Refined Arrow Quiver,31,0,-1,-1,76,76,,,True,True,,False,False
@@ -4657,7 +4657,7 @@
 4912,Ужасающий посох гиганта,Fearsome Staff of Giant,41,0,-1,-1,122,122,,,True,True,,False,False
 4913,Светильник,Lantern,41,0,-1,-1,110,110,,,True,True,,False,False
 4914,Туземный щит,Tribal Shield,41,0,-1,-1,110,110,,,True,True,,False,False
-4915,Высохший корень,Withered Root,41,0,-1,-1,115,115,5000,,True,True,,False,False
+4915,Высохший корень,Withered Root,41,0,-1,-1,115,115,8000,,True,True,,False,False
 4916,Сломанный лук Вервольфа,Broken Werewolf Bow,41,0,-1,-1,120,120,,,True,True,,False,False
 4917,Непробиваемый шлем,Unyielding Helmet,41,0,-1,-1,124,124,,,True,True,,False,False
 4918,Сломанная ангельская палочка,Broken Angel Wand,41,0,-1,-1,134,134,,,True,True,,False,False

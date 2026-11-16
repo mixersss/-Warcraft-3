@@ -60,6 +60,7 @@ class PetCare:
  def purchase_identity(self):
   return self.preferred
  def savings(self):
+  if getattr(self,'maintenance_only',False):return 0
   owner=getattr(self.life,'owner_shops',None)
   if self.fairy() or not self.world.own.values.get(4,0) or not owner or not owner.get('fresh_fairies'):return 0
   return self.life.prices.get(self.preferred,0)+max(0,2-self.count(2312))*self.life.prices.get(2312,0)
@@ -87,6 +88,7 @@ class PetCare:
   if not fairy:goals.append((self.purchase_identity(),1,'копит и покупает выбранную фею второго поколения/Джун'))
   owned=self.any_fairy()
   if owned and self.count(2312)<6:goals.insert(0,(2312,6-self.count(2312),'пополняет запас автокорма феи'))
+  if getattr(self,'maintenance_only',False):return [g for g in goals if g[0]==2312]
   if fairy:
    slot,item,state=fairy
    fruit=FRUITS[self.stat]

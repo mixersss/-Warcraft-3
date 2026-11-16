@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-55'
-NAME = 'Piratia-Auto-Bots-Alpha55'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-56'
+NAME = 'Piratia-Auto-Bots-Alpha56'
 
 
 def main():
@@ -20,6 +20,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA53.md',ROOT/'knowledge/ALPHA53-INSTALL.md']
     sources += [ROOT/'tools/build_stall_policy.py',ROOT/'knowledge/ALPHA54.md',ROOT/'knowledge/ALPHA54-INSTALL.md']
     sources += [ROOT/'knowledge/ALPHA55.md',ROOT/'knowledge/ALPHA55-INSTALL.md',ROOT/'knowledge/FAIRY-POSSESSION55.md',ROOT/'knowledge/fleet-alpha54-audit.json']
+    sources += [ROOT/'knowledge/ALPHA56.md',ROOT/'knowledge/ALPHA56-INSTALL.md',ROOT/'knowledge/fleet-alpha55-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -385,6 +386,7 @@ def main():
         'chat_ai': 'local rules only',
         'runtime': 'Python >=3.9; standard library only',
     }
+    manifest.update(alpha56={'bot_tests':902,'native_tests':39,'legacy_tests':12,'native_profession_levels':[9,40],'bag_capacity':48,'stall_skill_level':3,'native_stall_goods':18,'gem_total_chance':.03,'gem_rate_independent':True,'gem_npc_stock_removed':True,'patchouli_npc_buyback':2000,'treant_root_npc_buyback':4000,'focused_loot':[1000,4915,684,860,861,862,863,864,865,866,1012],'live_windows_verified':False},status='Alpha56: owner NPC professions/bags/perpetual corals/jewellery, earned ground gem economy, static dungeon loading, focused XP and bounded network catchup; includes prior releases.',native_owner_shops_v2={'ordinary_trade_stock':True,'catalog_items':844,'with_installed_native_shops':529,'live_windows_verified':False},free_inventory_or_gold_grants='Only owner-authorized public bag expansions and profession/stall packages; no free gold, existing items/stats untouched',junk_classification_policy='New pickups limited to Patchouli/root/NP/eight selected gems; old safe junk can be sold; owned useful items protected')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

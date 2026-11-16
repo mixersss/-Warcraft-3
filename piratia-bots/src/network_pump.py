@@ -10,6 +10,7 @@ class NetworkPump:
         self.client=client;self.queue=queue.Queue(max_packets);self.max_bytes=max_bytes
         self.lock=threading.Lock();self.bytes=0;self.peak_bytes=0;self.frames=0;self.pings=0
         self.error=None;self.stopping=threading.Event();self.thread=None;self.max_age=0
+        self.catchup_skips=0
     def start(self):
         self.client.wire.background_reader_active=True
         self.thread=threading.Thread(target=self.run,name='piratia-network',daemon=True);self.thread.start();return self
@@ -48,8 +49,14 @@ class NetworkPump:
             except OSError:pass
             self.thread.join(.3)
         self.client.wire.background_reader_active=False
+    def backlogged(self,now=None):
+        now=time.monotonic() if now is None else now
+        with self.queue.mutex:
+            oldest=self.queue.queue[0][2] if self.queue.queue else now
+            count=len(self.queue.queue)
+        return count>=256 or now-oldest>=2
     def summary(self):
-        return {'enabled':True,'received_frames':self.frames,'ping_answers':self.pings,'queued_events':self.queue.qsize(),
+        return {'enabled':True,'catchup_decisions_skipped':self.catchup_skips,'received_frames':self.frames,'ping_answers':self.pings,'queued_events':self.queue.qsize(),
                 'queued_bytes':self.bytes,'peak_queued_bytes':self.peak_bytes,'maximum_event_age_seconds':round(self.max_age,3),
                 'error_type':type(self.error).__name__ if self.error else None,'world_modified_only_by_ai_thread':True}
 

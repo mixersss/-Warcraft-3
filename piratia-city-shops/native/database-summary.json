@@ -6,10 +6,13 @@
   "shops": {
     "apparel": 506,
     "fairies": 49,
-    "forge": 43,
+    "forge": 35,
     "tickets": 44,
     "boosts": 13,
-    "equipment": 61
+    "equipment": 63,
+    "jewellery": 131,
+    "progress": 3
   },
-  "banana_name_matches": []
+  "banana_name_matches": [],
+  "catalog_revision": 56
 }
