@@ -51,11 +51,15 @@ def verify_progression_sources(root,cat):
    if int(fields[10])!=49 or int(fields[20])!=1:raise ValueError('Для выпадения по одному камню нужен неизменённый тип49 и стак1: '+str(identity))
    seen.add(identity)
  if seen!=wanted:raise ValueError('В серверной таблице отсутствуют выбранные камни')
+ if cat.get('catalog_revision',0)>=57:
+  blueprint=[l.split(b'\t') for l in (root/'ItemInfo.txt').read_bytes().splitlines() if l.split(b'\t',1)[0].strip()==b'1000']
+  if len(blueprint)!=1 or int(blueprint[0][10])!=31 or int(blueprint[0][20])!=99:raise ValueError('Для наземных Пачкулей нужен исходный тип31/стак99 у1000')
  raw=(root/'ItemInfo.bin').read_bytes()
  if len(raw)<4 or struct.unpack_from('<I',raw)[0]!=868 or (len(raw)-4)%868:raise ValueError('Неизвестный бинарный формат предметов')
  for pos in range(4,len(raw),868):
   identity=struct.unpack_from('<I',raw,pos+4)[0]
   if identity in wanted and struct.unpack_from('<i',raw,pos+352)[0]!=1:raise ValueError('В ItemInfo.bin изменён стак камня '+str(identity))
+  if cat.get('catalog_revision',0)>=57 and identity==1000 and struct.unpack_from('<i',raw,pos+352)[0]!=99:raise ValueError('В ItemInfo.bin изменён стак Пачкули1000')
  binary=root/'CharacterInfo.bin'
  if binary.exists():
   raw=binary.read_bytes()
@@ -166,7 +170,7 @@ def plan_server(root,cat=None):
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
   previous=json.loads(marker.read_text());match=None
-  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False)]:
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False)]:
    oldcat=json.loads(path.read_text())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:
@@ -287,6 +291,13 @@ def install(server,client,apply=False,bot_assets=None):
   spec=importlib.util.spec_from_file_location('owner56_maps',module_path);maps=importlib.util.module_from_spec(spec);spec.loader.exec_module(maps)
   _,map_changes,map_report=maps.plan(root.parent)
   changes.update(map_changes);report['dungeon_maps']=map_report
+ if cat.get('catalog_revision',0)>=57:
+  if (root.parent/'GameServer.cfg').exists():
+   from loot_protection import plan as protection_plan
+   protection_changes,protection_report=protection_plan(root.parent,changes)
+   changes.update(protection_changes);report['loot_protection']=protection_report
+  else:
+   report['loot_protection']={'requires_manual_configuration':True,'setting':'item_prot_time = 1','warning':'Zero means permanent protection; configure all active GameServer processes.'}
  if (assets/'world-npcs.json').exists():
   changes[assets/'owner-city-shops.json']=(json.dumps(make_overlay(cat,report),ensure_ascii=False,indent=2)+'\n').encode()
   report['bot_knowledge_updated']=True

@@ -2,11 +2,11 @@
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-56';NAME='Piratia-Alpha56-Complete'
+OUT=REPO/'releases/piratia/complete-57';NAME='Piratia-Alpha57-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-56/Piratia-Auto-Bots-Alpha56.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-57/Piratia-Auto-Bots-Alpha57.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -18,7 +18,7 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA56-INSTALL.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA57-INSTALL.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
@@ -44,6 +44,7 @@ def main():
  sys.path.insert(0,str(ROOT/'native'))
  from render_native import pages
  manifest['native_trade_windows']=sum(len(pages(s)) for s in cat['shops'])
+ manifest.update(cumulative_bots='Alpha57 includes Alpha56 and all previous releases',bot_checks=909,native_patch_checks=45,alpha57={'possession_real_cost':True,'blueprint1000_every_mob':True,'ground_protection_seconds':1,'protection_scope':'all ground loot in configured GameServer processes','idle_recovery_seconds':60,'unproductive_travel_recovery_seconds':180,'native_cooldowns_unchanged':True,'live_windows_verified':False},next_update='Alpha58: 30% gem sellers, actual gem purchases/forging/apparel, boosters and wider reachable XP destinations')
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((ROOT/'native/README.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()

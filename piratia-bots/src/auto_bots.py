@@ -94,7 +94,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha56'
+    report.result['version'] = 'AutoAccountsAlpha57'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -263,7 +263,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha56'
+    setup_report.result['version'] = 'AutoAccountsAlpha57'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -325,7 +325,7 @@ def main():
             if not selected:raise RuntimeError('Нужен проверенный серверный патч и справочник магазинов. Существующие боты сохранены.')
             from restore_shop_knowledge import restore
             setup_report.result['shop_bootstrap']=dict(restore(selected,ROOT/'assets'),ready=True)
-            if setup_report.result['shop_bootstrap']['catalog_revision']<56:raise RuntimeError('Сначала установи серверные магазины Alpha56 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
+            if setup_report.result['shop_bootstrap']['catalog_revision']<57:raise RuntimeError('Сначала установи серверные магазины Alpha57 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
             from diagnostic_io import write_snapshot
             write_snapshot(ROOT/'data/server-source.json',{'resource':selected})
         navigation = Regions(ROOT/'assets',population_count=args.count)

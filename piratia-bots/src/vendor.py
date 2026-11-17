@@ -15,6 +15,7 @@ class Vendor(Town):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
   self.sell_patchouli=False
+  self.batch_farming=False;self.stock_since=None
   self.patchouli_buyback=2000 if getattr(life,'owner_shops',None) and life.owner_shops.get('catalog_revision',0)>=56 else 1500
   self.last_confirmed_sale=None;self.price_warning=''
   self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
@@ -99,9 +100,16 @@ class Vendor(Town):
    self.reason='ожидает безопасного завершения боя или другого диалога';return False
   choices=self.choices(policy)
   if not choices:
-   self.reason='нет разрешённых простых трофеев для продажи';return False
+   self.stock_since=None;self.reason='нет разрешённых простых трофеев для продажи';return False
   shops=self.life.services['shops'].get(w.map,[])
   if not shops:self.reason='нет известного торговца на текущей карте';return False
+  if self.batch_farming and not self.sale_target:
+   if self.stock_since is None:self.stock_since=now
+   count=sum(n for _,identity,n in choices if identity in (1000,4915))
+   nearby=any(math.dist(policy.position(now),s['position'])<=350 for s in shops)
+   urgent=(w.bag_capacity or 0)-len(w.bag)<=4 or w.own.values.get(8,0)<500
+   if not nearby and not urgent and count<30 and now-self.stock_since<300:
+    self.reason='копит партию добычи; продолжает охоту';return False
   if not self.sale_target:
    available=[s for s in shops if tuple(s['position']) not in self.failed_shops]
    if not available:

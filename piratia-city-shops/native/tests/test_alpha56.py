@@ -38,16 +38,17 @@ function Creat_Item(item,kind,level,event) return 1,30,10,0,0,0,0,0,0,0,0,0,0,0,
 ITEMATTR_MAXENERGY=30
 function Set_StoneLv(item,level) item.level=level end
 function TakeItem(c,npc,id,count)
- for slot=0,c.capacity-1 do if count>0 and c.slots[slot] and c.slots[slot].id==id then c.slots[slot]=nil;count=count-1 end end
+ for slot=0,c.capacity-1 do if count>0 and c.slots[slot] and c.slots[slot].id==id then count=count-c.slots[slot].count;c.slots[slot]=nil end end
  return count==0 and 1 or 0
 end
 -- Faithful to native GiveItem/KbPushItem: split unstackable copies into free
 -- slots; overflow becomes ItemSpawn at the receiver, not at the player.
 function GiveItem(c,npc,id,count,event)
  assert(not c.player and c.attrs[ATTR_HP]==0 and event==1)
- local item={id=id,count=1};Creat_Item(item,49,0,event)
+ local stack=id==1000 and 99 or 1
+ local item={id=id,count=1};Creat_Item(item,id==1000 and 31 or 49,0,event)
  for slot=0,c.capacity-1 do
-  if count>0 and c.slots[slot]==nil then c.slots[slot]={id=id,count=1,level=item.level};count=count-1 end
+  if count>0 and c.slots[slot]==nil then local n=math.min(count,stack);c.slots[slot]={id=id,count=n,level=item.level};count=count-n end
  end
  if count>0 then table.insert(Ground,{id=id,count=count,source=c,level=item.level}) end
  return 1
@@ -122,14 +123,14 @@ MF_RAID=10
 local attacker=NewRole(1,1,35);local dead={player=false,attrs={[1]=0},slots={},skills={},capacity=24}
 local old={id=123,count=1};dead.slots[4]=old
 for i=1,800 do GetExp_New(dead,attacker) end
-assert(#Ground==24 and ExpCalls==800 and Owner56GemStats.rolls==24)
+assert(#Ground==824 and ExpCalls==800 and Owner56GemStats.rolls==24 and Owner56GemStats.blueprints==800)
 assert(dead.slots[4]==old and attacker.gold==12345 and next(attacker.slots)==nil)
 local counts={}
-for _,item in ipairs(Ground) do assert(item.count==1 and item.source==dead and item.level==1);counts[item.id]=(counts[item.id] or 0)+1 end
+for _,item in ipairs(Ground) do assert(item.count==1 and item.source==dead);if item.id~=1000 then assert(item.level==1) end;counts[item.id]=(counts[item.id] or 0)+1 end
 for _,id in ipairs(Owner56GemIDs) do assert(counts[id]==3 and CheckBagItem(dead,id)==0) end
 MF_RAID=100
 for i=1,800 do GetExp_New(dead,attacker) end
-assert(#Ground==48 and ExpCalls==1600)
+assert(#Ground==1648 and ExpCalls==1600 and CheckBagItem(dead,1000)==0)
 ''')
 
     def test_zero_capacity_monster_still_gets_ground_drop_not_player_inventory(self):
@@ -137,7 +138,7 @@ assert(#Ground==48 and ExpCalls==1600)
 math.random=function(a,b) return 1 end
 local a=NewRole(1,1,35);local d={player=false,attrs={[1]=0},slots={},capacity=0}
 GetExp_New(d,a)
-assert(#Ground==1 and Ground[1].source==d and Ground[1].count==1)
+assert(#Ground==2 and Ground[1].id==1000 and Ground[1].source==d and Ground[1].count==1 and Ground[2].id==860)
 assert(next(a.slots)==nil and next(d.slots)==nil)
 ''')
 
@@ -159,7 +160,7 @@ Check_Baoliao(a,d,100,200,300)
 assert(Falls.count==2 and Falls.values[1]==1 and Falls.values[2]==3)
 Check_Baoliao(a,d,100,200,300)
 assert(Falls.count==3 and Falls.values[2]==2)
-assert(#Ground==0)
+assert(#Ground==1 and Ground[1].id==1000)
 ''')
 
 

@@ -43,6 +43,7 @@ function OwnerProgressAction(role,npc,kind,value)
         local stats=Owner56GemStats
         if stats then
             SystemNotice(role,"Gem loot: kills="..stats.kills..", successful 3% rolls="..stats.rolls..", ground requests="..stats.ground..", failures="..stats.failures)
+            if stats.blueprints then SystemNotice(role,"Owner57 ground blueprint requests="..stats.blueprints..". Protection should expire after1second.") end
         end
         return LUA_TRUE
     elseif kind=="owner-stall" then

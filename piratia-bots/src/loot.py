@@ -11,6 +11,7 @@ class QuestLoot:
         self.approach=None
         self.value_priority={}
         self.allowed_items=None;self.ground_gems=set()
+        self.fast_mode=False
 
     def note_attack(self,target,now):
         if target not in self.attacked:
@@ -37,7 +38,7 @@ class QuestLoot:
                 self.confirmed+=1;self.pending=None
             elif now>=deadline:
                 self.timeouts+=1;self.pending=None
-                self.attempted[(identity,handle)]=now+8
+                self.attempted[(identity,handle)]=now+(1 if self.fast_mode else 8)
             else:return False
         free=(w.bag_capacity or 0)-len(w.bag)
         if w.bag_disabled or (w.bag_ready and w.bag_capacity is not None and free<=0):return False
@@ -49,6 +50,7 @@ class QuestLoot:
             model,handle,position,kind,source,created=item;key=(identity,handle)
             if self.allowed_items is not None and model not in self.allowed_items:continue
             earned_ground_gem=kind==1 and model in self.ground_gems and self.credited(source,now)
+            if self.fast_mode and earned_ground_gem and now-created<1.25:continue
             if ((kind!=0 and not earned_ground_gem) or not handle or now-created>90 or (not self.credited(source,now) and model not in self.competitive)
                     or self.attempted.get(key,0)>now or self.retries.get(key,0)>=(6 if earned_ground_gem else 2)):continue
             if model not in needed and (not self.collect_all or not w.bag_ready or free<=4):continue
@@ -70,9 +72,9 @@ class QuestLoot:
             self.approach=None
             from hunter import action_header
             policy.emit(action_header(w.own.identity,policy.sequence,8)+struct.pack('>II',identity,handle))
-            policy.next_action=now+1
+            policy.next_action=now+(.15 if self.fast_mode else 1)
             self.attempted[key]=now+60;self.retries[key]=self.retries.get(key,0)+1
-            self.pending=identity,handle,model,self.count(model),now+10
+            self.pending=identity,handle,model,self.count(model),now+(2.5 if self.fast_mode else 10)
             for rows in (self.attempted,self.retries):
                 while len(rows)>256:rows.pop(next(iter(rows)))
             self.requests+=1;return True

@@ -1,5 +1,5 @@
 """Source-backed second-generation fairy care using real bag actions and confirmations."""
-import hashlib,struct
+import hashlib,struct,math
 from builds import PROFILES
 
 FAIRIES={'STR':232,'CON':233,'STA':234,'DEX':235,'AGI':236}
@@ -162,7 +162,11 @@ class PetCare:
   food=next((s for s,i in w.bag.items() if i.identity==2312 and i.valid and s!=2),None)
   if food is not None and self.slot_count(2,2312)==0:
    return self.move(food,2,now,policy,'размещает автокорм в третьей ячейке сумки')
-  if item.endurance<min(item.max_endurance,5500 if w.skills.get(280,{}).get('level') else 2550):
+  feed_target=5500 if w.skills.get(280,{}).get('level') else 2550
+  if getattr(self,'cost_based_possession',False):
+   rank=w.skills.get(280,{}).get('level',0)
+   feed_target=max(2550,math.ceil(300*state['level']/rank)+50) if rank else 2550
+  if item.endurance<min(item.max_endurance,feed_target):
    source=next((s for s,i in w.bag.items() if i.identity in (227,2312) and i.valid),None)
    if source is not None:self.reason='кормит свою фею';self.use(source,slot,now,policy,'feed');return True
   if not state['monostat_matches_owner_policy']:
@@ -211,8 +215,8 @@ class PetCare:
   if not fairy or fairy[0]!=1 or not skill.get('level') or skill.get('state')!=1 or now<self.possession_retry:return False
   item=fairy[1];state=self.possession_state(item.identity)
   return bool(state and not getattr(w,'own_states',{}).get(state) and item.valid and item.parameters[0]//1000000000==1
-              and fairy[2]['level']>0 and item.endurance>=5000
-              and item.endurance>6*fairy[2]['level']/skill['level']*50 and w.own.values.get(2,0)>=skill.get('sp',20))
+              and fairy[2]['level']>0 and item.endurance>=(max(50,math.ceil(300*fairy[2]['level']/skill['level'])) if getattr(self,'cost_based_possession',False) else max(5000,math.floor(300*fairy[2]['level']/skill['level'])+1))
+              and w.own.values.get(2,0)>=skill.get('sp',20))
  def possession_sent(self,now):
   self.possession_requests+=1;skill=self.world.skills.get(280,{})
   self.possession_retry=now+max(180,skill.get('interval_ms',180000)/1000)

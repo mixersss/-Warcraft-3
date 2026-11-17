@@ -22,6 +22,7 @@ class HuntLearning:
   self.rows={};self.avoid={};self.danger_until={};self.active=None;self.path=None;self.dirty=False;self.save_errors=0
   self.signature=None;self.selected=set();self.until=0;self.scores={};self.last_save=0
   self.events=[]
+  self.async_rewards=False;self.pending_rewards=[];self.reward_xp_floor=None
   self.inefficient_models=set();self.candidate_details={}
   self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
   self.session_start=None;self.session_xp=None;self.session_last_xp=None;self.session_gain=0;self.session_loss=0
@@ -47,6 +48,9 @@ class HuntLearning:
  def dangerous(self,model,now):return self.danger_until.get(model,0)>now
  def begin(self,world,target,now):
   if self.active and self.active['id']==target.identity and self.active['handle']==target.handle:return
+  if self.async_rewards and self.active and 'death_seen' in self.active:
+   if len(self.pending_rewards)>=32:return # Never lose a pending native reward record.
+   self.pending_rewards.append(self.active);self.active=None
   own=world.own
   self.active={'id':target.identity,'handle':target.handle,'model':target.model,'start':now,
                'hp':own.values.get(1,0),'low':own.values.get(1,0),'max_hp':max(1,own.values.get(31,1)),
@@ -65,7 +69,10 @@ class HuntLearning:
    row['wins']+=1
    level_ups=max(0,own.values.get(0,a['level'])-a['level']);row['level_ups']+=level_ups
    # Native ATTR_CEXP is cumulative, including a level transition.
-   earned=max(0,own.values.get(15,a['xp'])-a['xp'])
+   baseline=a['xp']
+   if self.async_rewards and self.reward_xp_floor is not None:baseline=max(baseline,self.reward_xp_floor)
+   earned=max(0,own.values.get(15,a['xp'])-baseline)
+   if self.async_rewards:self.reward_xp_floor=own.values.get(15,a['xp'])
    row['xp']+=earned;row['level_xp']+=earned;row['level_wins']+=1
    row['dry_wins']=0 if earned or level_ups else row.get('dry_wins',0)+1
    if row['dry_wins']>=4:self.avoid[a['model']]=now+120
@@ -76,6 +83,15 @@ class HuntLearning:
    if outcome=='danger':self.danger_until[a['model']]=now+240
   self.until=0;self.dirty=True;self.events.append(outcome);self.events=self.events[-8:]
  def observe(self,world,now):
+  if self.async_rewards and world.own:
+   xp=world.own.values.get(15)
+   if xp is not None and self.reward_xp_floor is not None and xp<self.reward_xp_floor:self.reward_xp_floor=xp
+   while self.pending_rewards:
+    record=self.pending_rewards[0]
+    progressed=world.own.values.get(0,0)>record['level'] or world.own.values.get(15,0)>record['xp']
+    if not progressed and now-record['death_seen']<2:break
+    current=self.active;self.active=self.pending_rewards.pop(0)
+    self.finish(world,now,'win');self.active=current
   a=self.active
   if not a or not world.own:return
   own=world.own;a['low']=min(a['low'],own.values.get(1,0))
@@ -90,6 +106,7 @@ class HuntLearning:
    # fabricated zero-XP result simply because those messages arrived separately.
    if progressed or now-a['death_seen']>=2:self.finish(world,now,'win')
  def waiting_reward(self,now):
+  if self.async_rewards:return len(self.pending_rewards)>=32
   return bool(self.active and 'death_seen' in self.active and now-self.active['death_seen']<2)
  def minimum_farm_level(self,region,own,now):
   level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
@@ -228,7 +245,7 @@ class HuntLearning:
  def summary(self):
   return {'level_penalty_model':'owner-ShareTeamExp','profile':self.profile[0],'selected_models':sorted(self.selected),'learned_species':len(self.rows),
           'inefficient_models':sorted(self.inefficient_models),'candidate_details':self.candidate_details,
-          'wins':sum(r.get('wins',0) for r in self.rows.values()),'dangerous_fights':sum(r.get('losses',0) for r in self.rows.values()),
+          'wins':sum(r.get('wins',0) for r in self.rows.values()),'pending_native_rewards':len(self.pending_rewards),'asynchronous_reward_settlement':self.async_rewards,'dangerous_fights':sum(r.get('losses',0) for r in self.rows.values()),
           'stalled_fights':sum(r.get('stalls',0) for r in self.rows.values()),'save_errors':self.save_errors,
           'session_seconds':max(0,self.last_clock-self.session_start) if self.session_start is not None else 0,
           'session_xp_gained':self.session_gain,'session_xp_lost':self.session_loss,

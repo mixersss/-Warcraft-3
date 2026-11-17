@@ -12,6 +12,7 @@ function Owner56ReadGemSlots()
     Owner56MonsterModels={}
     local allowed={}
     for _,id in ipairs(Owner56GemIDs) do allowed[id]=true end
+    allowed[1000]=true -- Owner57 supplies one real blueprint per normal mob death.
     for line in stream:lines() do
         local fields={}
         for field in iterate(line.."\t","(.-)\t") do table.insert(fields,field) end
@@ -61,13 +62,7 @@ if type(Owner56OriginalDropCheck)=="function" then
     end
 end
 
-function Owner56GroundGem(dead,attacker)
-    if IsPlayer(dead)~=0 or IsPlayer(attacker)~=1 or GetChaAttr(dead,ATTR_HP)>0 then return end
-    if Owner56MonsterModels and not Owner56MonsterModels[GetChaTypeID(dead)] then return end
-    Owner56GemStats.kills=Owner56GemStats.kills+1
-    if math.random(1,100)>3 then return end
-    Owner56GemStats.rolls=Owner56GemStats.rolls+1
-    local identity=Owner56GemIDs[math.random(1,8)]
+function Owner57GroundDrop(dead,identity,stack)
     local capacity=GetKbCap(dead)
     if type(capacity)~="number" or capacity<0 or capacity>48 or CheckBagItem(dead,identity)~=0 then
         Owner56GemStats.failures=Owner56GemStats.failures+1
@@ -85,16 +80,28 @@ function Owner56GroundGem(dead,attacker)
     -- exactly one real ground item, then remove all temporary bag copies.
     -- Existing corpse inventory and every player's inventory remain untouched.
     Owner56CreatingGroundGem=identity
-    local ok,result=pcall(GiveItem,dead,0,identity,free+1,MONSTER_BAOLIAO)
+    local temporary=free*stack
+    local ok,result=pcall(GiveItem,dead,0,identity,temporary+1,MONSTER_BAOLIAO)
     Owner56CreatingGroundGem=nil
     local inserted=CheckBagItem(dead,identity)
     if inserted>0 then TakeItem(dead,0,identity,inserted) end
-    if ok and result==LUA_TRUE and inserted==free and CheckBagItem(dead,identity)==0 then
-        Owner56GemStats.ground=Owner56GemStats.ground+1
+    if ok and result==LUA_TRUE and inserted==temporary and CheckBagItem(dead,identity)==0 then
+        if identity==1000 then Owner56GemStats.blueprints=(Owner56GemStats.blueprints or 0)+1
+        else Owner56GemStats.ground=Owner56GemStats.ground+1 end
     else
         Owner56GemStats.failures=Owner56GemStats.failures+1
         LG("owner56_gems","Native ground-loot operation was not confirmed; inspect GameServer.")
     end
+end
+
+function Owner56GroundGem(dead,attacker)
+    if IsPlayer(dead)~=0 or IsPlayer(attacker)~=1 or GetChaAttr(dead,ATTR_HP)>0 then return end
+    if Owner56MonsterModels and not Owner56MonsterModels[GetChaTypeID(dead)] then return end
+    Owner56GemStats.kills=Owner56GemStats.kills+1
+    Owner57GroundDrop(dead,1000,99)
+    if math.random(1,100)>3 then return end
+    Owner56GemStats.rolls=Owner56GemStats.rolls+1
+    Owner57GroundDrop(dead,Owner56GemIDs[math.random(1,8)],1)
 end
 
 if Owner56OriginalCreateItem==nil then Owner56OriginalCreateItem=Creat_Item end

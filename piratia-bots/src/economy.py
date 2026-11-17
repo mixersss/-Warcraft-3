@@ -11,6 +11,7 @@ class Economy:
   self.patchouli_to_npc=False
   self.trade_data=None;self.last_goods=[];self.npc_income_enabled=False
   self.focused=False
+  self.emergency_until=0;self.all_mobs_patchouli=False
   income_path=Path(assets)/'npc-income.json'
   self.npc_income=json.loads(income_path.read_text()) if income_path.exists() else None
  def funding_models(self,world,region,learning,now):
@@ -27,6 +28,7 @@ class Economy:
    rows.append((-score,identity))
   return {m for _,m in sorted(rows)[:2]}
  def phase(self,world,now):
+  if now<self.emergency_until:return 'progression'
   if self.group_hunting:return 'progression'
   if world.own.values.get(4,0)==0 or world.own.values.get(0,0)<10:return 'progression'
   position=(now+self.offset)%1800
@@ -46,6 +48,7 @@ class Economy:
  def business(self,world,now):return self.phase(world,now) in ('business','history','professions','trade')
  def models(self,world,region,learning,now):
   self.last_models=[]
+  if self.all_mobs_patchouli:return set() # Every ordinary kill earns it; no low-level detour.
   if self.trade_data and not self.focused:return self.trade_models(world,region,learning,now)
   if self.phase(world,now)!='income' or not region or sum(i.count for i in world.bag.values() if i.identity==1000)>=30:return set()
   rows=[];own=world.own;hp=max(1,own.values.get(31,1));level=own.values.get(0,1)

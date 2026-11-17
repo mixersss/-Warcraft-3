@@ -1514,6 +1514,14 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.loot.ground_gems=set(life.owner_shops['owner_progression']['gem_ids'])
         if policy.economy:policy.economy.focused=True
         if policy.market:policy.market.focused=True
+        if life.owner_shops.get('catalog_revision',0)>=57:
+            policy.fast_progression=True
+            policy.learning.async_rewards=True
+            policy.petcare.cost_based_possession=True
+            if policy.vendor:policy.vendor.batch_farming=True
+            if policy.loot:
+                policy.loot.fast_mode=True;policy.loot.ground_gems.add(1000)
+            if policy.economy:policy.economy.all_mobs_patchouli=True
     if policy.bank:policy.bank.patchouli_audit=True
     if policy.market:policy.market.progression_first=True
     social.context_provider=context_line
@@ -1758,7 +1766,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 continue # Apply authoritative packets before deciding from stale state.
             if now>=next_think:
                 think_started=now
-                next_think=now+(.25 if network_pump is None or policy.pending_action or policy.target else 1.0 if policy.transaction_busy() else .65+(bot_index%5)*.03)
+                next_think=now+(.15+(bot_index%5)*.015 if getattr(policy,'fast_progression',False) and not policy.transaction_busy() else .25 if network_pump is None or policy.pending_action or policy.target else 1.0 if policy.transaction_busy() else .65+(bot_index%5)*.03)
                 think_cpu_started=time.thread_time()
                 if hasattr(navigation,'directory'):
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())

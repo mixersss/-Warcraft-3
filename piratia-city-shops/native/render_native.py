@@ -21,6 +21,7 @@ def pages(shop,limit=60):
  return [[bucket[p*limit:(p+1)*limit] for bucket in buckets] for p in range(count)]
 
 def render(catalog,compat=False):
+ if catalog.get('catalog_revision')==56:return (ROOT/'render-alpha56.lua').read_bytes()
  lines=['-- OWNER_CITY_SHOPS_V2_BEGIN','OwnerNativeShops = {}','OwnerNativeSelection = {}',
         'OwnerBasicGems={'+','.join('[%d]=true'%i['id'] for s in catalog['shops'] for i in s['items'] if i['kind'] in (49,50))+'}']
  if not compat:
@@ -59,5 +60,6 @@ def render(catalog,compat=False):
     lines.append(' Text(2,"Second profession: %s",OwnerOpenTrade,"owner-profession",%d)'%(label,job))
    lines.extend([' Text(2,"Back",JumpPage,1)',' Text(2,"Close",CloseTalk)'])
   lines.extend([' Text(1,"Close",CloseTalk)','end'])
+ if catalog.get('catalog_revision',0)>=57:lines.append((ROOT/'possession.lua').read_text())
  lines.append('-- OWNER_CITY_SHOPS_V2_END')
  return ('\n'.join(lines)+'\n').encode('ascii')
