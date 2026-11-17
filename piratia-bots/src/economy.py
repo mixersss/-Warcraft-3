@@ -2,6 +2,8 @@
 import hashlib,json,math,random
 from pathlib import Path
 
+def role_for(index):return 'gem_seller' if index%10 in (1,4,7) else 'developer'
+
 class Economy:
  def __init__(self,name,assets):
   seed=int.from_bytes(hashlib.sha256((name+':economy').encode()).digest()[:8],'big')
@@ -12,6 +14,7 @@ class Economy:
   self.trade_data=None;self.last_goods=[];self.npc_income_enabled=False
   self.focused=False
   self.emergency_until=0;self.all_mobs_patchouli=False
+  self.economic_role=None
   income_path=Path(assets)/'npc-income.json'
   self.npc_income=json.loads(income_path.read_text()) if income_path.exists() else None
  def funding_models(self,world,region,learning,now):
@@ -35,12 +38,13 @@ class Economy:
   cycle=int((now+self.offset)//1800)
   if cycle!=self.cycle:
    self.cycle=cycle;rng=random.Random(str(self.seed)+':'+str(cycle))
-   values=([('income',180),('trade',120)] if self.focused else [('business',60),('history',90),('income',180 if self.cohort=='farmer' else 90),('professions',45),('trade',45)])
+   values=([('trade',480),('craft',180)] if self.economic_role=='gem_seller' else [('trade',180),('craft',360)] if self.economic_role=='crafter' else [('trade',90),('craft',240)] if self.economic_role=='developer' else [('income',180),('trade',120)] if self.focused else [('business',60),('history',90),('income',180 if self.cohort=='farmer' else 90),('professions',45),('trade',45)])
    self.stages=[(name,round(seconds*rng.uniform(.85,1.15))) for name,seconds in values]
    self.stages.append(('progression',1800-sum(t for _,t in self.stages)));rng.shuffle(self.stages)
   for name,seconds in self.stages:
    if position<seconds:
     desired=name if name!='income' or world.own.values.get(0,0)>=15 else 'progression'
+    if desired=='craft' and world.own.values.get(0,0)<35:desired='progression'
     if not self.busy or self.current is None:self.current=desired
     return self.current
    position-=seconds
@@ -100,8 +104,8 @@ class Economy:
   self.reason='экономика: добывает свитки, экипировку20+ и проверенные материалы для ларька' if chosen else 'нет комфортного источника полезного товара; продолжает обычный кач'
   return set(self.last_models)
  def summary(self,world,now):
-  return {'curated_income':bool(self.trade_data),'wanted_income_goods':self.last_goods,'cohort':self.cohort,'phase':self.phase(world,now),'state':self.reason,'patchouli_models':[] if self.trade_data else self.last_models,'income_models':self.last_models,
+  return {'economic_role':self.economic_role,'curated_income':bool(self.trade_data),'wanted_income_goods':self.last_goods,'cohort':self.cohort,'phase':self.phase(world,now),'state':self.reason,'patchouli_models':[] if self.trade_data else self.last_models,'income_models':self.last_models,
           'randomized_cycle':self.cycle,'activity_order':[name for name,_ in self.stages],'activity_seconds':dict(self.stages),'waiting_for_current_action':self.busy,
-          'patchouli_player_price':None if self.patchouli_to_npc else 500,'patchouli_npc_buyback':1500 if self.patchouli_to_npc else None,'npc_price_changed':self.patchouli_to_npc,'nominal_business_seconds_per_30min':60,'nominal_history_seconds_per_30min':90,
+          'patchouli_player_price':None if self.patchouli_to_npc else 500,'patchouli_npc_buyback':(2000 if self.all_mobs_patchouli else 1500) if self.patchouli_to_npc else None,'npc_price_changed':self.patchouli_to_npc,'nominal_business_seconds_per_30min':60,'nominal_history_seconds_per_30min':90,
           'nominal_profession_development_seconds_per_30min':45,'nominal_trade_preparation_seconds_per_30min':45,
           'nominal_income_seconds_per_30min':180 if self.cohort=='farmer' else 90}

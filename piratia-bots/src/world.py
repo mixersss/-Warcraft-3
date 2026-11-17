@@ -84,6 +84,9 @@ class Entity:
     equipment: dict = field(default_factory=dict)
     stall: str = ''
     equipment_details: dict = field(default_factory=dict)
+    event_identity: int = 0
+    event_type: int = 0
+    event_id: int = 0
 
     @property
     def position(self):
@@ -112,9 +115,9 @@ def entity(reader):
     reader.short()  # angle
     reader.long()  # team leader; NO modern is-player byte
     reader.byte()  # side
-    reader.long()  # event world ID
-    reader.byte()  # event object type
-    reader.short()  # event ID
+    event_identity=reader.long()
+    event_type=reader.byte()
+    event_id=reader.short()
     reader.string_bytes()
     equipment = {}
     details={}
@@ -129,7 +132,7 @@ def entity(reader):
         raise ProtocolError('Unrecognized classic entity fields')
     if not 0 <= x < 409600 or not 0 <= y < 409600 or radius > 2000 or state > 16:
         raise ProtocolError('Unrecognized classic position/state')
-    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment, stall=stall,equipment_details=details)
+    return Entity(model, identity, handle, control, state, x, y, radius, name=name, equipment=equipment, stall=stall,equipment_details=details,event_identity=event_identity,event_type=event_type,event_id=event_id)
 
 
 class World:

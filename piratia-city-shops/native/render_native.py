@@ -22,6 +22,7 @@ def pages(shop,limit=60):
 
 def render(catalog,compat=False):
  if catalog.get('catalog_revision')==56:return (ROOT/'render-alpha56.lua').read_bytes()
+ if catalog.get('catalog_revision')==57:return (ROOT/'render-alpha57.lua').read_bytes()
  lines=['-- OWNER_CITY_SHOPS_V2_BEGIN','OwnerNativeShops = {}','OwnerNativeSelection = {}',
         'OwnerBasicGems={'+','.join('[%d]=true'%i['id'] for s in catalog['shops'] for i in s['items'] if i['kind'] in (49,50))+'}']
  if not compat:

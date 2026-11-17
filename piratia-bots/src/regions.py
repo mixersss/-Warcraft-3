@@ -45,7 +45,9 @@ class Regions:
         self.market_catalog.prices=MarketPrices(self.assets.parent/'data'/'market-prices.json')
         total=population_count//10
         argent=round(total*.75);remaining=total-argent
-        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=60)
+        forging_economy=bool(self.life.owner_shops and self.life.owner_shops.get('catalog_revision',0)>=58)
+        if forging_economy:self.market_catalog.enable_forging_catalog(self.items,self.life)
+        self.market_directory=MarketDirectory(city_limits={'garner':argent,'magicsea':(remaining+1)//2,'darkblue':remaining//2},live_count=self.directory.active_count,argent_target=120 if forging_economy else 60)
         from activity_slots import ActivitySlots
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         from mob_knowledge import MobKnowledge
@@ -60,10 +62,26 @@ class Regions:
         catalog=self.assets/'world-navigation.json'
         self.map_catalog=json.loads(catalog.read_text(encoding='utf-8')).get('maps',{}) if catalog.exists() else {}
         self.navigation_lock=threading.Lock()
+        travel=self.assets/'hunting-travel58.json'
+        self.hunting_travel_data=json.loads(travel.read_text()) if travel.exists() else None
+        self.full_regions=forging_economy
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
         for nav in self.navigation.values():nav.enable_incremental()
 
     def get(self,name):
+        if name not in self.data and getattr(self,'full_regions',False) and name in self.map_catalog and self.mob_knowledge:
+            farms={}
+            for identity,locations in self.mob_knowledge.by_map.get(name,{}).items():
+                mob=self.mob_knowledge.get(identity)
+                if mob.get('territory')!=0:continue # Ships remain a separate native control mode.
+                points=[]
+                for location in locations:
+                    lo,hi=location['rectangle_cm']
+                    points.extend([(int((lo[0]+hi[0])/2),int((lo[1]+hi[1])/2)),tuple(lo),tuple(hi),(lo[0],hi[1]),(hi[0],lo[1])])
+                farms[str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},'points':list(dict.fromkeys(points)),'source_regions_not_live_positions':True}
+            births=(self.hunting_travel_data or {}).get('birthplaces',{})
+            spawns=list(dict.fromkeys(tuple(p) for b in births.values() if b['map']==name for p in b['points']))
+            self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})
         return self.data.get(name)
 
     def nav(self,name):

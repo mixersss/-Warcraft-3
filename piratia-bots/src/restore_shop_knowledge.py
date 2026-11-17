@@ -19,6 +19,11 @@ def restore(resource,assets):
         if previous.get('catalog_sha256')==sha and previous.get('implementation_sha256')==installer.implementation_digest(candidate):cat=candidate;catalog_sha=sha;break
     if cat is None:
         raise ValueError('Серверный патч другой версии. Сначала обнови его через INSTALL-SERVER-SHOPS.cmd.')
+    if cat.get('catalog_revision',0)>=58:
+        craft=previous.get('forge_success',{})
+        path=server/'script/calculate/forge.lua'
+        if not craft.get('installed_sha256') or not path.is_file() or installer.digest(path.read_bytes())!=craft['installed_sha256']:
+            raise ValueError('Изменена серверная ковка или отсутствует её контрольная запись; запусти INSTALL-SERVER-SHOPS.cmd.')
     expected={p.as_posix() for p in installer.SERVER_FILES}
     if set(previous.get('installed_sha256',{}))!=expected:raise ValueError('Неполный журнал серверной установки')
     changed=[name for name,digest in previous['installed_sha256'].items() if installer.digest((server/name).read_bytes())!=digest]

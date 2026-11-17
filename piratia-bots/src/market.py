@@ -75,6 +75,13 @@ class MarketCatalog:
             for identity,price in self.focused_prices.items():
                 self.items[identity]={'name':str(identity),'category':'gem','reference_price':price,'npc_buyback':0,'keep':0}
             self.items={i:r for i,r in self.items.items() if i in self.focused_prices or i==684}
+    def enable_forging_catalog(self,gear,life):
+        for identity,g in gear.gear.items():
+            if g['level']>=35 and g['kind'] in (1,2,3,4,7,9,11,20,22,23,24,27):
+                self.items[identity]={'name':life.names.get(identity,str(identity)),'category':'gear','reference_price':max(1,life.prices.get(identity,0)),'keep':0}
+        for identity,g in gear.gear.items():
+            if 5000<identity<6000 and g['kind'] in (1,2,3,4,7,9,11,22,23,24,27):
+                self.items[identity]={'name':life.names.get(identity,str(identity)),'category':'gear','reference_price':max(1,life.prices.get(identity,0)),'keep':0}
     def price(self,identity):
         if self.focused and identity in self.focused_prices:
             reference=self.focused_prices[identity]
@@ -135,6 +142,8 @@ class Market:
         self.keep_stall_stock=False
         self.focused_goods=False;self.broad_goods=False;self.policy_reference=None;self.progression_first=False
         self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
+        self.forging_economy=False;self.gem_seller=False;self.crafting=None
+        self.pending_shape=None
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
     def busy(self):return self.state!='idle' or self.pending is not None or self.context is not None or self.learn_pending is not None
@@ -171,11 +180,35 @@ class Market:
                     and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((key==value==0) or (1<=key<=47 and 0<=value<=2000)
                                                          for key,value in item.instance_attributes))
     def item_ask_price(self,item):
+        if self.forging_economy and item.identity in self.catalog.focused_prices:
+            units=2**max(0,min(8,item.max_energy-1))
+            return min(2000000000,self.ask_price(item.identity)*units+50000*(units-1))
+        if self.forging_economy and self.safe_forged(item):
+            from mechanics import forge_parts
+            state=forge_parts(item.parameters[0]);base=self.gear.effective(item.identity,item)
+            value=max(1,self.life.prices.get((item.parameters[1]>>16)&65535 or item.identity,0))
+            n=state['total_level'];value+=100000*n*(n+1)//2+50000*state['sockets']*(state['sockets']+1)//2
+            for stone in state['slots']:
+                rule=self.gear.gems.get(str(stone['stone_type']))
+                if rule and stone['level']:
+                    units=2**(stone['level']-1);value+=self.catalog.focused_prices.get(rule['item_id'],0)*units+50000*(units-1)
+            if item.parameters[1]>>16:value+=50000+base['level']*1000
+            value+=sum(10000*k*k for k in range(1,min(15,item.parameters[1]&65535)+1))
+            return min(2000000000,max(1,round(value*self.rng.uniform(.9,1.05))))
         base=self.ask_price(item.identity)
         if self.focused_goods and self.ordinary_gear(item):
             bonus=sum(v for k,v in item.instance_attributes if 26<=k<=30)
             return min(2000000000,round(base*(1+min(2,bonus/20))))
         return base
+    def safe_forged(self,item):
+        from mechanics import forge_parts
+        g=self.gear.effective(item.identity,item)
+        if not g or g['level']<35 or not item.valid or item.max_endurance>0 and item.endurance<=0:return False
+        state=forge_parts(item.parameters[0]);base=(item.parameters[1]>>16)&65535
+        if item.forge>27 or state['sockets']>3 or any((s['stone_type'] and (str(s['stone_type']) not in self.gear.gems or not 1<=s['level']<=9)) or (not s['stone_type'] and s['level']) for s in state['slots']):return False
+        if sum(s['stone_type']!=0 for s in state['slots'])>state['sockets']:return False
+        if item.parameters[1] and (not 5000<item.identity<6000 or base not in self.gear.gear or item.parameters[1]&65535>15):return False
+        return bool(state['total_level'] or base)
     def gem_goals(self):
         # A conservative build policy using actual owner-table gem IDs, not forging automation.
         if self.world.own.values.get(0,0)<30:return {}
@@ -183,6 +216,8 @@ class Market:
         ids=(863,862) if job in (1,8,9) else (861,860) if job in (2,12) else (1012,862) if job in (4,5,13,14,16) else ()
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
+        if self.forging_economy and identity in self.catalog.focused_prices:
+            return self.count(identity) if self.crafting and identity in self.crafting.stone_needs() else (1 if identity in self.gem_goals() else 0)
         if self.catalog.focused and identity in self.catalog.focused_prices:return 0
         if self.broad_goods:
             if identity==2312:return 6
@@ -219,11 +254,14 @@ class Market:
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
             meta=self.catalog.items.get(item.identity)
             if self.focused_goods and not self.broad_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
-            if not meta or item.identity==1000 and self.focused_goods or not item.valid or item.identity in protected or self.useful_gear(item.identity):continue
+            useful=bool(self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item)) if self.forging_economy and item.identity in self.gear.gear else self.useful_gear(item.identity)
+            if not meta or item.identity==1000 and self.focused_goods or not item.valid or item.identity in protected or useful:continue
             # Never sell enhanced, instanced, equipped or potentially valuable personalized items cheaply.
             ordinary=self.focused_goods and self.ordinary_gear(item)
-            if item.forge or (any(item.parameters) and not ordinary) or (any(a or b for a,b in item.instance_attributes) and not ordinary):continue
-            if meta['category'] in ('gem','refining') and item.max_energy>1:continue
+            forged=self.forging_economy and self.safe_forged(item)
+            gem=self.forging_economy and item.identity in self.catalog.focused_prices and not any(item.parameters) and 1<=item.max_energy<=9
+            if (item.forge or (any(item.parameters) and not ordinary) or (any(a or b for a,b in item.instance_attributes) and not ordinary)) and not (forged or gem):continue
+            if meta['category'] in ('gem','refining') and item.max_energy>1 and not gem:continue
             if item.identity in w.own.equipment.values() and not self.broad_goods:continue
             keep=max(0,self.reserve_count(item.identity)-reserved.get(item.identity,0))
             reserved[item.identity]=reserved.get(item.identity,0)+min(item.count,keep)
@@ -244,6 +282,8 @@ class Market:
         return max(60000,min(150000,value)) if self.catalog.focused and identity in self.catalog.focused_prices else value
     def needed(self):
         w=self.world;wanted={}
+        if self.forging_economy and self.crafting:
+            wanted.update(self.crafting.stone_needs())
         # The life-profession cohort prepares a small owned supply, not speculative hoarding.
         if (self.is_crafter or any(w.skills.get(i,{}).get('level',0) for i in (338,339,340))) and w.own.values.get(0,0)>=15 and self.count(1000)<2:
             wanted[1000]=2-self.count(1000)
@@ -254,7 +294,7 @@ class Market:
             if w.own.values.get(0,0)>=goal['min_level'] and missing>0:wanted[goal['identity']]=missing
         for identity,count in {**self.rune_goal(),**self.gem_goals()}.items():
             identity=int(identity)
-            if self.count(identity)<count:wanted[identity]=count-self.count(identity)
+            if self.count(identity)<count:wanted[identity]=max(wanted.get(identity,0),count-self.count(identity))
         for identity,book in self.life.books.items():
             if (self.life.can_learn(w,book) and w.own.values.get(7,0)>=book['cost']
                     and not w.skills.get(book['skill'],{}).get('level',0) and not self.count(identity)):
@@ -319,26 +359,34 @@ class Market:
             for grid,price,item in offers:
                 if not item.valid or price<=0:continue
                 identity=item.identity
+                if self.forging_economy and identity in self.catalog.focused_prices and not 1<=item.max_energy<=9:continue
                 if identity in self.gear.gear and item.max_endurance>0 and item.endurance<=0:continue
                 upgrade=self.gear.upgrade(w.own,identity,free,item) if self.focused_goods and identity in self.gear.gear else None
                 desirable=identity in want or (bool(upgrade) if self.focused_goods else self.useful_gear(identity))
                 if not desirable or (identity not in want and self.count(identity)>=1):continue
                 cap=self.fair_cap(identity)
+                if self.forging_economy and identity in self.catalog.focused_prices:
+                    units=2**max(0,min(8,item.max_energy-1));cap=cap*units+50000*(units-1)
+                    if self.crafting and identity in self.crafting.required_levels and item.max_energy>self.crafting.required_levels[identity]:continue
+                if self.forging_economy and self.safe_forged(item):cap=self.item_ask_price(item)*1.1
                 if self.focused_goods and self.ordinary_gear(item):cap=round(cap*(1+min(2,sum(v for k,v in item.instance_attributes if 26<=k<=30)/20)))
                 if not cap or price>cap:continue
                 # Bound quantity by actual need, native stock and earned budget.
                 if price>budget:continue
                 quantity=min(item.count,max(1,want.get(identity,1)),budget//price,99)
+                if self.forging_economy and self.crafting and identity in self.crafting.gem_units_needed:
+                    units=2**max(0,item.max_energy-1);quantity=min(quantity,math.ceil(self.crafting.gem_units_needed[identity]/units))
                 if quantity<1:continue
                 self.send(BUY,buy_request(owner,grid,quantity));self.buy_requests+=1
                 self.pending=(identity,self.count(identity),cash,now+15,price,quantity)
+                if self.forging_economy:self.pending_shape=(item.parameters,item.max_energy,sum(i.count for i in w.bag.values() if i.identity==identity and i.parameters==item.parameters and i.max_energy==item.max_energy))
                 self.next_scan=now+120;break
     def opened(self,now):
         self.state='selling';self.trade_until=now+(120 if getattr(self,'focused',False) else 3600);self.confirmed_opens+=1;self.active_confirmed=True
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None
-        self.next_shift=now+self.rng.uniform(600,1200) if self.broad_goods else now+self.rng.uniform(1200,2400);self.reason='';self.active_confirmed=False
+        self.next_shift=now+self.rng.uniform(120,240) if self.forging_economy and self.gem_seller else now+self.rng.uniform(600,1200) if self.broad_goods else now+self.rng.uniform(1200,2400);self.reason='';self.active_confirmed=False
     def request_close(self,now):
         if self.state!='closing' or now>=self.deadline:
             self.send(CLOSE,b'');self.close_requests+=1;self.state='closing';self.deadline=now+15
@@ -377,8 +425,16 @@ class Market:
             identity,count,cash,deadline,price=self.pending[:5]
             quantity=self.pending[5] if len(self.pending)>5 else 1
             if self.count(identity)==count+quantity and w.own.values.get(8,cash)==cash-price*quantity:
-                self.confirmed_buys+=1;self.pending=None;self.catalog.confirmed_price(identity,price)
-            elif now>=deadline:self.pending=None;self.timeouts+=1;self.next_scan=now+300
+                shape_ok=True
+                if self.pending_shape:
+                    params,level,old=self.pending_shape
+                    shape_ok=sum(i.count for i in w.bag.values() if i.identity==identity and i.parameters==params and i.max_energy==level)>=old+quantity
+                if shape_ok:
+                    self.confirmed_buys+=1;self.pending=None
+                    if not self.pending_shape or self.pending_shape[1]<=1 and not any(self.pending_shape[0]):self.catalog.confirmed_price(identity,price)
+                    self.pending_shape=None
+                elif now>=deadline:self.pending=None;self.pending_shape=None;self.timeouts+=1
+            elif now>=deadline:self.pending=None;self.pending_shape=None;self.timeouts+=1;self.next_scan=now+300
             return True
         if self.context:
             if now>=self.context[1]:self.context=None;self.timeouts+=1;self.next_scan=now+120
@@ -398,6 +454,7 @@ class Market:
             self.stock=self.offers(policy)
             if not self.stock or not w.skills.get(241,{}).get('level',0):self.finish(now);return False
             titles=('Находки с охоты','Одежда и НП','Обнови свой шмот','Пергаменты и вещи','Снаряжение рядом','Трофеи в продаже','Лавка странника','С миру по нитке','Загляни за вещами','Добыча искателя','Шмот по карману','Трофеи без пыли')
+            if self.forging_economy:titles=tuple(t[:15]+' '+self.name[-3:] for t in ('Камни кузнеца','Самоцветы на выбор','Гемы для твоего сета','Добыча с охоты','Камни и снаряжение','Свежие самоцветы','Для новой заточки','Мастерская у дороги','Есть что вставить','Полезные улучшения','Улучшайся со мной','Кузнечная лавка'))
             self.send(START,start_request(self.rng.choice(titles),self.stock));self.open_requests+=1
             self.state='opening';self.deadline=now+15;return True
         # Scan visible real player/bot stalls only. Never use shared stock as a fake server view.
@@ -430,11 +487,13 @@ class Market:
             self.directory.release(self.name);self.next_shift=now+120;return False
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True
     def shift_allowed(self,policy,now):
+        if self.forging_economy:
+            return now-policy.started>=120 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
         # Hour-long shifts start after productive play, never immediately at login.
         return now-policy.started>=900 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
     def loot_needs(self):return set(self.catalog.items)
     def summary(self):
-        return {'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
+        return {'economic_role':'gem_seller' if self.forging_economy and self.gem_seller else 'developer' if self.forging_economy else None,'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
                 'close_requests':self.close_requests,'purchase_requests':self.buy_requests,'confirmed_purchases':self.confirmed_buys,
                 'sold_units_server_notices':self.sold_units,'timeouts':self.timeouts,'stall_skill_learned':bool(self.world.skills.get(241,{}).get('level',0)),
                 'confirmed_book_learns':self.confirmed_learns,'goals':self.needed(),'rune_exchange_goal':self.rune_goal(),'black_market_barter_implemented':False}

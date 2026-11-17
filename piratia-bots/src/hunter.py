@@ -123,6 +123,9 @@ class Hunter:
         self.tactic_schedule=None
         self.optional_quests=True
         self.owner_services=None
+        self.crafting=None
+        self.xp_boosters=None
+        self.hunt_travel=None
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
         from stuck_return import StuckReturn
@@ -532,7 +535,7 @@ class Hunter:
         return (self.world.own.values.get(4)==0 and self.world.own.values.get(LV,0)>=9) or bool(self.career and self.career.eligible())
 
     def transaction_busy(self):
-        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade,self.repair,self.owner_services))
+        return any(feature and feature.busy for feature in (self.market,self.bank,self.direct_trade,self.repair,self.owner_services,self.crafting,self.xp_boosters,self.hunt_travel))
 
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
@@ -569,6 +572,9 @@ class Hunter:
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
+        travel=self.hunt_travel
+        if travel and travel.preferred_model and not travel.plan and self.clock<travel.site_until and self.region:
+            if travel.preferred_model in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):return {travel.preferred_model}
         if self.raising_travel_funds and self.economy:
             funding=self.economy.funding_models(self.world,self.region,self.learning,self.clock)
             if funding:return funding
@@ -857,6 +863,12 @@ class Hunter:
                 self.change('маршрут отправлен' if self.last_sent_kind==1 else 'атака отправлена; ожидает результат' if self.last_sent_kind==2 else 'действие с предметом отправлено')
             else:self.change('повторная проверка цели после остановки')
             return
+        if self.crafting and self.crafting.busy:
+            if self.crafting.tick(now,self):self.change(self.crafting.reason);self.next_action=now+.15;return
+        if self.xp_boosters and self.xp_boosters.busy:
+            if self.xp_boosters.tick(now,self,False):self.change(self.xp_boosters.reason);self.next_action=now+.2;return
+        if self.hunt_travel and self.hunt_travel.busy:
+            if self.hunt_travel.tick(now,self,False):self.change(self.hunt_travel.reason);self.next_action=now+.2;return
         if (self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
                 and self.petcare.tick(now,self,safe=True,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.career,self.story) if f))):
             self.change(self.petcare.reason);self.next_action=now+.2;return
@@ -1034,6 +1046,8 @@ class Hunter:
                 self.drop_target();self.clear_zone();self.change(self.town.reason);return
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
+        if self.hunt_travel and not self.transaction_busy() and self.hunt_travel.tick(now,self,safe,loot_dialogue):
+            self.drop_target();self.clear_zone();self.change(self.hunt_travel.reason);return
         if self.owner_services and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
             if self.owner_services.tick(now,self,safe,loot_dialogue or bool(self.town and self.town.context)):
                 self.drop_target();self.clear_zone();self.change(self.owner_services.reason);return
@@ -1083,6 +1097,10 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change('сюжетное задание: жизненные навыки');return
         if self.task('town',self.town,lambda:self.town.tick(now,self,safe,dialogue_busy or bool(self.career and self.career.context) or bool(self.story and self.story.context)),now):
             self.drop_target();self.clear_zone();self.change(self.town.reason);return
+        if self.crafting and self.crafting.tick(now,self,safe,market_dialogue):
+            self.drop_target();self.clear_zone();self.change(self.crafting.reason);return
+        if self.xp_boosters and self.xp_boosters.tick(now,self,safe,market_dialogue):
+            self.change(self.xp_boosters.reason);self.next_action=now+.2;return
         if self.task('adventure',self.adventure,lambda:self.adventure.tick(now,self),now):
             self.drop_target()
             self.clear_zone()
@@ -1322,7 +1340,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
     policy.mechanics=getattr(navigation,'mechanics',None)
     policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
-    if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
+    if policy.region and policy.region['spawns']:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.npc_knowledge=getattr(navigation,'npc_knowledge',None)
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
     from combat_skills import CombatSkills
@@ -1482,6 +1500,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         social.sale_offer=lambda:policy.commerce.advertisement(time.monotonic())
         if contacts:contacts.commerce_provider=policy.commerce.answer
     def context_line():
+        if policy.crafting and policy.crafting.busy:return 'Я у кузнеца: проверяю цену, материалы и результат улучшения.'
+        if policy.hunt_travel and policy.hunt_travel.busy:return 'Перехожу к другой точке прокачки; жду подтверждения прибытия.'
         if policy.resting:return 'Сначала восстановлю здоровье, потом снова за дело.'
         if policy.market and policy.market.state=='selling':return 'Ларёк открыт. Продаю то, что действительно есть в сумке.'
         if policy.vendor and policy.vendor.sale_target:return 'Отнесу лишние трофеи торговцу, место в сумке заканчивается.'
@@ -1522,6 +1542,23 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if policy.loot:
                 policy.loot.fast_mode=True;policy.loot.ground_gems.add(1000)
             if policy.economy:policy.economy.all_mobs_patchouli=True
+        if life.owner_shops.get('catalog_revision',0)>=58:
+            from crafting import Crafting
+            from economy import role_for
+            policy.economy.economic_role=role_for(bot_index)
+            policy.economy.cycle=None
+            policy.crafting=Crafting(world,catalog,policy.mechanics,life,policy.economy,client.wire.send,bot_name)
+            if policy.economy.economic_role!='gem_seller' and policy.crafting.is_specialist:policy.economy.economic_role='crafter'
+            policy.town.crafting=policy.crafting
+            from xp_boosters import XPBoosters
+            policy.xp_boosters=XPBoosters(world,life,policy.economy);policy.town.xp_boosters=policy.xp_boosters
+            if getattr(navigation,'hunting_travel_data',None) and policy.mob_knowledge:
+                from hunt_travel import HuntTravel
+                policy.hunt_travel=HuntTravel(world,navigation,life,policy.economy,client.wire.send,bot_name)
+                policy.town.hunt_travel=policy.hunt_travel
+            if policy.market:
+                policy.market.forging_economy=True;policy.market.gem_seller=policy.economy.economic_role=='gem_seller'
+                policy.market.crafting=policy.crafting
     if policy.bank:policy.bank.patchouli_audit=True
     if policy.market:policy.market.progression_first=True
     social.context_provider=context_line
@@ -1569,6 +1606,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         report.result['hunt']=policy.summary()
         report.result['progress_monitor']=policy.progress_monitor.summary()
         if policy.owner_services:report.result['owner_services']=policy.owner_services.summary()
+        if policy.crafting:report.result['crafting']=policy.crafting.summary()
+        if policy.xp_boosters:report.result['xp_boosters']=policy.xp_boosters.summary()
+        if policy.hunt_travel:report.result['hunting_travel']=policy.hunt_travel.summary()
         if policy.treasure:report.result['treasure_hunt']=policy.treasure.summary()
         if policy.mechanics:report.result['mechanics']={**policy.mechanics.summary(),**policy.mechanics.owned_summary(world)}
         if policy.loot:report.result['loot']=policy.loot.summary()
@@ -1649,6 +1689,18 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             except ProtocolError:
                 policy.owner_services.finish(now)
                 report.result['owner_services_decode']='unsupported'
+        if policy.crafting:
+            try:
+                if policy.crafting.observe(command,payload,now):return
+            except ProtocolError:
+                policy.crafting.finish(now,'Неизвестный формат ответа ковки',True)
+                report.result['crafting_decode']='unsupported'
+        if policy.hunt_travel:
+            try:
+                if policy.hunt_travel.observe(command,payload,now):return
+            except ProtocolError:
+                policy.hunt_travel.abort(now,'Неизвестный ответ портальщицы')
+                report.result['hunting_travel_decode']='unsupported'
         if policy.vendor and policy.vendor.context and command in (801,802,803,805,806,807,808):
             try:
                 if policy.vendor.observe(command,payload,now,client.wire.send):return
@@ -1697,7 +1749,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
             policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
             policy.home=world.own.position
-            if policy.region:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
+            if policy.region and policy.region['spawns']:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
             if was_dead:
                 policy.confirmed_revivals+=1;policy.last_return_at=now
                 policy.learning.events.append('revived');policy.learning.events=policy.learning.events[-8:]

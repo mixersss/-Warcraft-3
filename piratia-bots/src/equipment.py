@@ -9,20 +9,32 @@ class ItemCatalog:
         data=json.loads(Path(path).read_text(encoding='utf-8'))
         self.types={int(k):v for k,v in data['types'].items()}
         self.gear={int(k):v for k,v in data['gear'].items()}
+        mechanics=Path(path).with_name('mechanics.json')
+        self.gems=json.loads(mechanics.read_text())['stones'] if mechanics.exists() else {}
 
-    def compatible(self,own,identity):
+    def effective(self,identity,item=None):
         gear=self.gear.get(identity)
+        parameters=(item.get('parameters',(0,0)) if isinstance(item,dict) else getattr(item,'parameters',(0,0)))
+        base=(parameters[1]>>16)&65535
+        if gear and 5000<=identity<6000 and base in self.gear:
+            source=self.gear[base]
+            if source['kind']==gear['kind'] or {source['kind'],gear['kind']}<={22,27}:
+                gear=dict(source,bodies=[b for b in source['bodies'] if b in gear['bodies']],links=gear['links'])
+        return gear
+
+    def compatible(self,own,identity,item=None):
+        gear=self.effective(identity,item)
         return bool(gear and gear['level']<=own.values.get(0,0) and own.model in gear['bodies']
                     and (gear['jobs']==[-1] or own.values.get(4) in gear['jobs']))
 
-    def transition(self,own,identity,free_slots=None):
+    def transition(self,own,identity,free_slots=None,item=None):
         """Predict native auto-equip: first empty allowed link, otherwise first link.
 
         9999 is the native BOTH_HAND occupancy marker, never an actual item. It is
         accepted only when the other hand contains a known two-handed item.
         """
-        if not self.compatible(own,identity):return None
-        gear=self.gear[identity];links=gear['links']
+        if not self.compatible(own,identity,item):return None
+        gear=self.effective(identity,item);links=gear['links']
         if not links or any(link not in (0,2,3,4,5,6,7,8,9) for link in links):return None
         chosen=next((link for link in links if not own.equipment.get(link)),links[0])
         if gear.get('kind')==26 and self.types.get(own.equipment.get(7))==29 and 8 in links:chosen=8
@@ -57,7 +69,10 @@ class ItemCatalog:
         total=0
         for link,identity in equipment.items():
             if not identity or identity==9999:continue
-            gear=self.gear.get(identity)
+            supplied=(item_overrides or {}).get(link)
+            observed=getattr(own,'equipment_details',{}).get(link,{})
+            instance=supplied or (observed if observed.get('identity')==identity else None)
+            gear=self.effective(identity,instance)
             if gear is None:return None
             if gear.get('kind')==29 and hasattr(own,'required_coral_links') and link not in own.required_coral_links:continue
             supplied=(item_overrides or {}).get(link)
@@ -85,10 +100,18 @@ class ItemCatalog:
                 elif key in (34,35,36,37,38):
                     field,factor={34:('min_attack',1),35:('max_attack',1),36:('defence',4),37:('max_hp',.05),38:('max_sp',.05)}[key]
                     total+=(value-gear.get(field,0))*factor
+            parameters=instance.get('parameters',(0,0)) if isinstance(instance,dict) else getattr(instance,'parameters',(0,0))
+            from mechanics import forge_parts
+            for stone in forge_parts(parameters[0])['slots']:
+                rule=self.gems.get(str(stone['stone_type']))
+                if not rule:continue
+                key=rule['attribute_id'];value=rule['bonus_per_level']*stone['level']
+                if key in names:total+=value*weights.get(names[key],0)
+                else:total+=value*({34:2 if rule.get('attack_adds_min_and_max') else 1,35:1,36:4,37:.05,38:.05,47:4}.get(key,0))
         return total
 
     def upgrade(self,own,identity,free_slots=None,item=None,energy_need=1):
-        change=self.transition(own,identity,free_slots)
+        change=self.transition(own,identity,free_slots,item)
         if change is None:return None
         equipment,chosen,_=change
         worn=getattr(own,'equipment_details',{}).get(chosen,{})
@@ -101,7 +124,7 @@ class ItemCatalog:
                 if item is None or item.energy>=energy_need:return 1,[chosen]
                 return None
         # Compare only affected links: unrelated unknown armour is not a blocker.
-        affected={k for k in own.equipment.keys()|equipment.keys() if own.equipment.get(k)!=equipment.get(k)}
+        affected={chosen}|{k for k in own.equipment.keys()|equipment.keys() if own.equipment.get(k)!=equipment.get(k)}
         before=self.loadout_score(own,{k:own.equipment.get(k,0) for k in affected})
         after=self.loadout_score(own,{k:equipment.get(k,0) for k in affected},{chosen:item} if item else None)
         if before is None or after is None:return None

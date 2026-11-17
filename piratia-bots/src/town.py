@@ -35,6 +35,9 @@ class Town:
         self.food_visit_requested=False
         self.professions=None
         self.treasure=None
+        self.crafting=None
+        self.xp_boosters=None
+        self.hunt_travel=None
         self.last_purchase_failure=None
     def urgent_coral(self):
         return self.world.own.values.get(4) in (4,16) and not damage_ready(self.world,self.gear)
@@ -104,6 +107,9 @@ class Town:
         if self.petcare:result.extend(identity for identity,_,_ in self.petcare.purchase_goals())
         if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
         if self.treasure:result.extend(identity for identity,_,_ in self.treasure.purchase_goals())
+        if self.crafting:result.extend(identity for identity,_,_ in self.crafting.purchase_goals())
+        if self.xp_boosters:result.extend(identity for identity,_,_ in self.xp_boosters.purchase_goals())
+        if self.hunt_travel:result.extend(identity for identity,_,_ in self.hunt_travel.purchase_goals())
         goal=self.equipment_goal()
         if goal:result.append(goal)
         if self.petcare and self.petcare.needs_food_visit() and 2312 in result:
@@ -151,6 +157,9 @@ class Town:
         if self.professions:
             for identity,count,_ in self.professions.purchase_goals():
                 if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,count
+        if self.crafting:
+            for identity,count,_ in self.crafting.purchase_goals():
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,min(20,count)
         for identity in self.critical_items():
             if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         for identity,book in self.life.books.items():
@@ -158,6 +167,12 @@ class Town:
                     and not w.skills.get(book['skill'],{}).get('level',0)
                     and not any(i.identity==identity for i in w.bag.values())
                     and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity)):return identity,1
+        if self.xp_boosters:
+            for identity,count,_ in self.xp_boosters.purchase_goals():
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,count
+        if self.hunt_travel:
+            for identity,count,_ in self.hunt_travel.purchase_goals():
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,count
         owned={i.identity for i in w.bag.values()}
         for shop in self.life.services['shops'].get(w.map,[]):
             for identity in shop['offers']:
@@ -176,6 +191,11 @@ class Town:
         portals=getattr(getattr(policy,'travel',None),'portals',None)
         if not isinstance(portals,dict):portals=None
         owned={i.identity for i in w.bag.values()};options=[]
+        repeated={}
+        for feature in (self.crafting,self.xp_boosters,self.hunt_travel):
+            if feature:
+                for identity,count,_ in feature.purchase_goals():
+                    if count>0:repeated[identity]=min(20,count)
         for map_name in ('garner','magicsea','darkblue'):
             fee=0;approach=0
             if map_name!=w.map:
@@ -193,7 +213,7 @@ class Town:
             for shop in self.npcs.shops(map_name):
                 if self.failed_suppliers.get(shop['key'],0)>now:continue
                 for identity in shop['offers']:
-                    if identity in owned and identity not in combat_items:continue
+                    if identity in owned and identity not in combat_items and identity not in repeated:continue
                     if coral_only and not (identity in combat_items and self.gear.types.get(identity)==29):continue
                     price=self.life.prices.get(identity,0)
                     from pet_care import PET_IDS
@@ -226,7 +246,7 @@ class Town:
                     score=gain/max(1,price)/(1+travel/12000)
                     options.append(((priority,-score,travel,price,shop['key'],identity),
                         {'map':map_name,'shop':shop,'item':identity,'critical':critical,'reserved_travel_gold':2*fee,
-                         'started':now,'price':price,'reason':'основное снабжение' if critical else 'заполняет слот украшения' if empty_accessory else 'улучшает экипировку'}))
+                         'started':now,'price':price,'quantity':repeated.get(identity),'reason':'основное снабжение' if critical else 'заполняет слот украшения' if empty_accessory else 'улучшает экипировку'}))
         self.critical_items() # Remote shop scans must not overwrite current-map essentials.
         if not options:return None
         self.knowledge_plans+=1;return min(options,key=lambda row:row[0])[1]
@@ -332,6 +352,7 @@ class Town:
                 if travel and travel.tick(now,policy,safe,dialogue_busy):return True
                 return False # No fare/route: keep productive hunting.
             quantity=next((n for i,n,_ in self.petcare.purchase_goals() if i==plan['item']),1) if self.petcare else 1
+            quantity=plan.get('quantity') or quantity
             self.wanted=(plan['item'],quantity);self.target_shop=plan['shop']
         if not self.wanted:
             # Healthy beginners must first earn something, not all shop on login.

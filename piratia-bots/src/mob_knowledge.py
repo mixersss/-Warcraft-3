@@ -16,6 +16,20 @@ class MobKnowledge:
 
     def get(self,model):return self.monsters.get(model)
 
+    @lru_cache(maxsize=512)
+    def nearby_ground(self,map_name,point):
+        rows=[]
+        for model,locations in self.by_map.get(map_name,{}).items():
+            if self.monsters[model].get('territory')!=0:continue
+            distances=[]
+            for area in locations:
+                if area.get('conditions_not_evaluated'):continue
+                lo,hi=area['rectangle_cm'];near=(max(lo[0],min(hi[0],point[0])),max(lo[1],min(hi[1],point[1])))
+                distance=math.dist(point,near)
+                if distance<=25000:distances.append(distance)
+            if distances:rows.append((model,min(distances)))
+        return tuple(rows)
+
     def nearest(self,model,map_name,position):
         best=None
         for location in self.by_map.get(map_name,{}).get(model,[]):

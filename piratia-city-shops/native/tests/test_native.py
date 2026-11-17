@@ -29,6 +29,8 @@ def fixture(directory):
   r[112:192]=item['name'].encode('ascii')[:79].ljust(80,b'\0');struct.pack_into('<h',r,308,item['kind']);struct.pack_into('<i',r,320,1234);struct.pack_into('<i',r,352,item.get('stack',1));records.append(r)
  (server/'ItemInfo.txt').write_text('\r\n'.join(texts)+'\r\n');raw=struct.pack('<I',868)+b''.join(records);(server/'ItemInfo.bin').write_bytes(raw)
  (server/'CharacterInfo.txt').write_text('// fixture mob table; original tables are not packaged\n')
+ from test_alpha58 import FORGE
+ folder=server/'script/calculate';folder.mkdir(exist_ok=True);(folder/'forge.lua').write_bytes(FORGE)
  client=directory/'client/scripts/table';client.mkdir(parents=True);(client/'iteminfo.bin').write_bytes(raw)
  return server,directory/'client'
 

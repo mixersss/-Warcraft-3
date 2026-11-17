@@ -170,7 +170,7 @@ def plan_server(root,cat=None):
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
   previous=json.loads(marker.read_text());match=None
-  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False)]:
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False),('Alpha57',ROOT/'catalog-alpha57.json',False)]:
    oldcat=json.loads(path.read_text())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:
@@ -266,6 +266,10 @@ def apply_files(changes,backup):
 def install(server,client,apply=False,bot_assets=None):
  root=legacy.locate(server);clientfile=locate_client(client);cat=catalog();items=offers(cat);marker=root/MARKER
  verify_progression_sources(root,cat)
+ craft_changes={};craft_report=None
+ if cat.get('catalog_revision',0)>=58:
+  from forge_success import plan as forge_plan
+  craft_changes,craft_report=forge_plan(root)
  clientraw=clientfile.read_bytes();clientoutput=patch_binary(clientraw,items)
  if marker.exists() and json.loads(marker.read_text()).get('catalog_sha256')==digest(CATALOG.read_bytes()):
   previous=json.loads(marker.read_text())
@@ -277,12 +281,15 @@ def install(server,client,apply=False,bot_assets=None):
    matches=False
    try:matches=overlay.exists() and json.loads(overlay.read_text())==make_overlay(cat,previous)
    except (OSError,ValueError):pass
-   if not (assets/'world-npcs.json').exists() or matches:
+   craft_matches=not craft_report or previous.get('forge_success',{}).get('installed_sha256')==craft_report['installed_sha256']
+   if (not (assets/'world-npcs.json').exists() or matches) and not craft_changes and craft_matches:
     return dict(previous,already_installed=True)
   serveroutputs={};report=dict(previous)
  else:
   _,serveroutputs,report=plan_server(root,cat)
  changes={root/p:raw for p,raw in serveroutputs.items()};changes[clientfile]=clientoutput
+ changes.update(craft_changes)
+ if craft_report:report['forge_success']=craft_report
  assets=Path(bot_assets) if bot_assets else ROOT.parents[1]/'assets'
  if cat.get('catalog_revision',0)>=56 and (root.parent/'GameServer.cfg').exists():
   import importlib.util

@@ -24,6 +24,8 @@ class CityTravel:
         w=self.world;level=w.own.values.get(0,0);job=w.own.values.get(4,0)
         services=getattr(policy,'owner_services',None)
         if services and services.need():return 'garner'
+        craft=getattr(policy,'crafting',None)
+        if craft and craft.due(craft.clock) and (craft.goals or craft.op):return 'garner'
         if 1<=level<=3:return 'garner'
         if job==0 and level>=9:return TRAINER_MAP[self.role['first_job']]
         career=getattr(policy,'career',None)

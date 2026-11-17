@@ -1,12 +1,12 @@
-"""Combine cumulative Alpha56 bots and the owner-priced native NPC patch."""
+"""Combine cumulative Alpha58 bots and the owner-priced native NPC patch."""
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-57';NAME='Piratia-Alpha57-Complete'
+OUT=REPO/'releases/piratia/complete-58';NAME='Piratia-Alpha58-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-57/Piratia-Auto-Bots-Alpha57.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-58/Piratia-Auto-Bots-Alpha58.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -18,7 +18,7 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA57-INSTALL.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA58-INSTALL.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
@@ -45,6 +45,7 @@ def main():
  from render_native import pages
  manifest['native_trade_windows']=sum(len(pages(s)) for s in cat['shops'])
  manifest.update(cumulative_bots='Alpha57 includes Alpha56 and all previous releases',bot_checks=909,native_patch_checks=45,alpha57={'possession_real_cost':True,'blueprint1000_every_mob':True,'ground_protection_seconds':1,'protection_scope':'all ground loot in configured GameServer processes','idle_recovery_seconds':60,'unproductive_travel_recovery_seconds':180,'native_cooldowns_unchanged':True,'live_windows_verified':False},next_update='Alpha58: 30% gem sellers, actual gem purchases/forging/apparel, boosters and wider reachable XP destinations')
+ manifest.update(cumulative_bots='Alpha58 includes Alpha57 and all previous releases',bot_checks=929,native_patch_checks=49,weapon_forging_automation=True,automatic_craft_production='Native operations on owned equipment; retired upgraded items may be sold, no bulk production guarantee',alpha58={'gem_seller_roles':120,'population':400,'argent_stall_capacity':120,'native_forge_modes':[1,2,3,4,5],'normal_and_refining_combinations':True,'valid_operation_success':1.0,'native_created_socket_cap':2,'gem_cap':9,'fusion_upgrade_cap':15,'native_materials_and_gold':True,'island_routes':56,'native_tickets':43,'native_entrances':119,'live_windows_verified':False},next_update=None)
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((ROOT/'native/README.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()
