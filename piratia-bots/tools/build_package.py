@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-58'
-NAME = 'Piratia-Auto-Bots-Alpha58'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-59'
+NAME = 'Piratia-Auto-Bots-Alpha59'
 
 
 def main():
@@ -23,6 +23,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA56.md',ROOT/'knowledge/ALPHA56-INSTALL.md',ROOT/'knowledge/fleet-alpha55-audit.json']
     sources += [ROOT/'knowledge/ALPHA57.md',ROOT/'knowledge/ALPHA57-INSTALL.md',ROOT/'knowledge/ALPHA57-58-PLAN.md']
     sources += [ROOT/'knowledge/ALPHA58.md',ROOT/'knowledge/ALPHA58-INSTALL.md',ROOT/'tools/build_travel58.py']
+    sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -391,6 +392,7 @@ def main():
     manifest.update(alpha56={'bot_tests':902,'native_tests':39,'legacy_tests':12,'native_profession_levels':[9,40],'bag_capacity':48,'stall_skill_level':3,'native_stall_goods':18,'gem_total_chance':.03,'gem_rate_independent':True,'gem_npc_stock_removed':True,'patchouli_npc_buyback':2000,'treant_root_npc_buyback':4000,'focused_loot':[1000,4915,684,860,861,862,863,864,865,866,1012],'live_windows_verified':False},status='Alpha56: owner NPC professions/bags/perpetual corals/jewellery, earned ground gem economy, static dungeon loading, focused XP and bounded network catchup; includes prior releases.',native_owner_shops_v2={'ordinary_trade_stock':True,'catalog_items':844,'with_installed_native_shops':529,'live_windows_verified':False},free_inventory_or_gold_grants='Only owner-authorized public bag expansions and profession/stall packages; no free gold, existing items/stats untouched',junk_classification_policy='New pickups limited to Patchouli/root/NP/eight selected gems; old safe junk can be sold; owned useful items protected')
     manifest.update(alpha57={'bot_tests':909,'native_tests':45,'blueprint_every_mob':True,'ground_protection_seconds':1,'possession_real_cost':True,'native_reaction_seconds':[.15,.21],'idle_recovery_seconds':60,'unproductive_travel_recovery_seconds':180,'live_windows_verified':False},status='Alpha57 cumulative: native Possession satiety fix, ground loot protection and universal blueprints, responsive farming and emergency recovery; Alpha58 forging/economy pending.')
     manifest.update(alpha58={'bot_tests':929,'native_tests':49,'legacy_tests':12,'gem_sellers':120,'native_forge_modes':[1,2,3,4,5],'normal_and_refining_combinations':True,'success_for_valid_operations':1.0,'normal_gem_cap':9,'created_socket_cap':2,'fusion_upgrade_cap':15,'island_portal_nodes':8,'island_routes':56,'native_tickets':43,'map_entrances':119,'live_windows_verified':False},status='Alpha58 cumulative: paid native crafting, gem market roles, source-backed island/ticket/event travel and native EXP consumables; includes Alpha57 stability/Possession fixes.')
+    manifest.update(alpha59={'bot_tests':936,'native_tests':51,'legacy_tests':12,'classic_combat_spell_compatibility':True,'stall_state_id':99,'closure_resync_after_seconds':60,'live_windows_verified':False},status='Alpha59 cumulative: classic missing-core-spell fallback and bounded stall closure recovery; Alpha58 forging/economy preserved.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

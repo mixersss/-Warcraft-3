@@ -12,8 +12,18 @@ function Owner56CombatBasics(role)
     if skill and GetChaAttr(role,ATTR_LV)>=9 and GetSkillLv(role,skill)==0 then
         -- One initial class spell is part of the shortcut profession package.
         -- Preserve all earned points and every previously learned skill/rank.
-        AddChaSkill(role,skill,1,1,0,1)
+        -- Newer engines accept the sixth prerequisite flag; classic builds
+        -- can reject it. Never retry if the first call actually learned it.
+        local ok,result=pcall(AddChaSkill,role,skill,1,1,0,1)
+        if GetSkillLv(role,skill)==0 then
+            ok,result=pcall(AddChaSkill,role,skill,1,1,0)
+        end
+        if GetSkillLv(role,skill)==0 then
+            SystemNotice(role,"Owner combat restore failed: skill="..skill.."; native result="..tostring(result))
+            return LUA_FALSE
+        end
     end
+    return LUA_TRUE
 end
 
 function OwnerProgressAction(role,npc,kind,value)
@@ -37,8 +47,7 @@ function OwnerProgressAction(role,npc,kind,value)
         SystemNotice(role,"Profession granted. Existing attributes and skills were preserved.")
         return LUA_TRUE
     elseif kind=="owner-combat" then
-        Owner56CombatBasics(role)
-        return LUA_TRUE
+        return Owner56CombatBasics(role)
     elseif kind=="owner-gem-stats" then
         local stats=Owner56GemStats
         if stats then

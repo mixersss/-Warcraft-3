@@ -39,6 +39,7 @@ class Town:
         self.xp_boosters=None
         self.hunt_travel=None
         self.last_purchase_failure=None
+        self.visit_started=None;self.visit_key=None;self.approach_timeouts=0
     def urgent_coral(self):
         return self.world.own.values.get(4) in (4,16) and not damage_ready(self.world,self.gear)
     def note_progress(self,kills,quests):
@@ -293,6 +294,7 @@ class Town:
             self.failed_suppliers[self.supply_plan['shop']['key']]=now+300
             if len(self.failed_suppliers)>128:self.failed_suppliers.pop(next(iter(self.failed_suppliers)))
         self.supply_plan=None
+        self.visit_started=None;self.visit_key=None
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
     def tick(self,now,policy,safe,dialogue_busy=False,medical=False):
         if self.next_break is None:self.next_break=now+600
@@ -365,6 +367,14 @@ class Town:
             if not shops:self.finish(now,300);return False
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
         point=self.target_shop['position']
+        key=(w.map,self.wanted[0],tuple(point))
+        if self.visit_key!=key:self.visit_key=key;self.visit_started=now
+        elif now-self.visit_started>=120:
+            # A real menu/payment already in flight is handled above. Bound
+            # only the approach; changing console labels must not reset it.
+            self.approach_timeouts+=1;self.finish(now,180)
+            self.reason='Не дошёл до продавца за120с; откладывает визит и продолжает охоту'
+            return False
         self.reason='покупки у городского торговца'
         returner=getattr(policy,'stuck_return',None)
         city_center=self.life.services.get('city_centres',{}).get(w.map,self.home)
@@ -377,4 +387,4 @@ class Town:
         goal=policy.nav.nearest(point,6)
         if goal and policy.move_to(goal,now):return True
         self.finish(now,300);return False
-    def summary(self):return {'urgent_coral_supply':self.urgent_coral(),'last_purchase_failure':self.last_purchase_failure,'knowledge_purchase_plans':self.knowledge_plans,'shopping_destination':self.supply_plan['map'] if self.supply_plan else None,'planned_item':self.supply_plan['item'] if self.supply_plan else None,'shopping_goal':self.supply_plan['reason'] if self.supply_plan else None,'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}
+    def summary(self):return {'approach_timeouts':self.approach_timeouts,'urgent_coral_supply':self.urgent_coral(),'last_purchase_failure':self.last_purchase_failure,'knowledge_purchase_plans':self.knowledge_plans,'shopping_destination':self.supply_plan['map'] if self.supply_plan else None,'planned_item':self.supply_plan['item'] if self.supply_plan else None,'shopping_goal':self.supply_plan['reason'] if self.supply_plan else None,'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}

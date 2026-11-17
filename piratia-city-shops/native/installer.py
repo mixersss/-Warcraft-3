@@ -170,7 +170,7 @@ def plan_server(root,cat=None):
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
   previous=json.loads(marker.read_text());match=None
-  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False),('Alpha57',ROOT/'catalog-alpha57.json',False)]:
+  for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False),('Alpha57',ROOT/'catalog-alpha57.json',False),('Alpha58',ROOT/'catalog-alpha58.json',False)]:
    oldcat=json.loads(path.read_text())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:

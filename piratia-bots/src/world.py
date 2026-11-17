@@ -139,6 +139,7 @@ class World:
     def __init__(self, item_types=None):
         self.entities = {}
         self.own_states = {}
+        self.own_states_revision = 0
         self.items = {}
         self.own_id = None
         self.map = None
@@ -264,6 +265,7 @@ class World:
         state_count = reader.byte()
         self.decode_info['skill_state_count'] = state_count
         self.own_states = {reader.byte():reader.byte() for _ in range(state_count)}
+        self.own_states_revision += 1
         self.decode_info.update(phase='attributes',offset=reader.position)
         own.values = attrs(reader)
         if not 0 < own.values.get(MAX_HP, 0) < 2000000000 or not 0 < own.values.get(LV, 0) < 2000:
@@ -329,7 +331,8 @@ class World:
         elif command == 511:
             identity=reader.long();count=reader.byte()
             states={reader.byte():reader.byte() for _ in range(count)};reader.end()
-            if identity==self.own_id:self.own_states=states
+            if identity==self.own_id:
+                self.own_states=states;self.own_states_revision+=1
         elif command == 531:
             identity,skill=reader.long(),reader.short();reader.end()
             if identity==self.own_id:self.default_skill=skill;self.default_skill_updates+=1

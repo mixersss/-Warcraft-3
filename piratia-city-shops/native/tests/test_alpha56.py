@@ -63,6 +63,28 @@ function Check_Baoliao(attacker,dead,...) SetItemFall(3,1,2,3) end
 class ProgressionLuaTests(unittest.TestCase):
     runlua=base.NativeLuaTests.runlua
 
+    def test_classic_five_argument_engine_restores_bolt_without_spending_points(self):
+        self.runlua(ROLE_MOCKS+'''
+local original=AddChaSkill
+function AddChaSkill(...)
+ if select("#",...)~=5 then return 0 end
+ return original(...)
+end
+local c=NewRole(4,5,27);c.gold=183;c.skills[97]=10;c.skills[79]=8
+assert(OwnerProgressAction(c,{},"owner-combat",0)==1)
+assert(c.skills[99]==1 and c.skills[97]==10 and c.skills[79]==8)
+assert(c.gold==183 and c.attrs[7]==0 and c.learns==1)
+OwnerProgressAction(c,{},"owner-combat",0);assert(c.learns==1)
+''')
+
+    def test_rejected_both_native_signatures_is_not_reported_as_success(self):
+        self.runlua(ROLE_MOCKS+'''
+function AddChaSkill(...) return 0 end
+local c=NewRole(4,5,27)
+assert(OwnerProgressAction(c,{},"owner-combat",0)==0)
+assert(c.skills[99]==nil and c.attrs[7]==0 and c.gold==12345)
+''')
+
     def test_professions_enforce_level_body_and_current_job_without_stat_reset(self):
         self.runlua(ROLE_MOCKS+'''
 local c=NewRole(2,0,8)

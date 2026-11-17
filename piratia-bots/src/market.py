@@ -144,6 +144,7 @@ class Market:
         self.is_crafter=int.from_bytes(hashlib.sha256((name+':life-profession').encode()).digest()[:8],'big')%100<15
         self.forging_economy=False;self.gem_seller=False;self.crafting=None
         self.pending_shape=None
+        self.close_started=None;self.close_states_revision=None;self.close_resyncs=0;self.state_confirmed_closes=0
     def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
     @property
     def busy(self):return self.state!='idle' or self.pending is not None or self.context is not None or self.learn_pending is not None
@@ -386,9 +387,12 @@ class Market:
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None
+        self.close_started=None;self.close_states_revision=None
         self.next_shift=now+self.rng.uniform(120,240) if self.forging_economy and self.gem_seller else now+self.rng.uniform(600,1200) if self.broad_goods else now+self.rng.uniform(1200,2400);self.reason='';self.active_confirmed=False
     def request_close(self,now):
         if self.state!='closing' or now>=self.deadline:
+            if self.close_started is None:
+                self.close_started=now;self.close_states_revision=getattr(self.world,'own_states_revision',0)
             self.send(CLOSE,b'');self.close_requests+=1;self.state='closing';self.deadline=now+15
             self.reason='ждёт подтверждения закрытия ларька'
     def learn(self,now,policy):
@@ -413,6 +417,17 @@ class Market:
             if self.directory.reserve(self.name,w.map,now) is None and self.state!='closing':
                 self.request_close(now);return True
             if self.state=='closing':
+                # Native StallAction(false) removes SSTATE_STALL=99. Require a
+                # NEW own state snapshot, never stale startup/other-player data.
+                if (getattr(w,'own_states_revision',0)>(self.close_states_revision or 0)
+                        and not getattr(w,'own_states',{}).get(99) and w.bag_ready and not w.bag_disabled):
+                    self.state_confirmed_closes+=1;self.finish(now);return False
+                if self.close_started is not None and now-self.close_started>=60:
+                    rescue=getattr(policy,'escape_plan',None)
+                    if rescue and rescue.directory.claim(self.name,w.map,w.own.position,now):
+                        from escape_plan import RecoveryResync
+                        self.close_resyncs+=1;self.directory.release(self.name)
+                        raise RecoveryResync('Нет подтверждения закрытия ларька60с; повторный вход для сверки состояния')
                 if now>=self.deadline:
                     if self.active_confirmed:self.request_close(now)
                     else:self.finish(now)
@@ -493,7 +508,7 @@ class Market:
         return now-policy.started>=900 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
     def loot_needs(self):return set(self.catalog.items)
     def summary(self):
-        return {'economic_role':'gem_seller' if self.forging_economy and self.gem_seller else 'developer' if self.forging_economy else None,'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
+        return {'state_confirmed_closes':self.state_confirmed_closes,'closure_resyncs':self.close_resyncs,'economic_role':'gem_seller' if self.forging_economy and self.gem_seller else 'developer' if self.forging_economy else None,'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
                 'close_requests':self.close_requests,'purchase_requests':self.buy_requests,'confirmed_purchases':self.confirmed_buys,
                 'sold_units_server_notices':self.sold_units,'timeouts':self.timeouts,'stall_skill_learned':bool(self.world.skills.get(241,{}).get('level',0)),
                 'confirmed_book_learns':self.confirmed_learns,'goals':self.needed(),'rune_exchange_goal':self.rune_goal(),'black_market_barter_implemented':False}

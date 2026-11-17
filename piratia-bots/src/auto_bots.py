@@ -94,7 +94,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha58'
+    report.result['version'] = 'AutoAccountsAlpha59'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -263,7 +263,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha58'
+    setup_report.result['version'] = 'AutoAccountsAlpha59'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -317,7 +317,7 @@ def main():
         from regions import Regions
         from social import ChatBudget
         from restore_shop_knowledge import ensure_shop_knowledge
-        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets',minimum_revision=58)
+        setup_report.result['shop_bootstrap']=ensure_shop_knowledge(ROOT/'assets',minimum_revision=59)
         if setup_report.result['shop_bootstrap'].get('restored'):print('Знания торговцев восстановлены по проверенной серверной установке.')
         if not setup_report.result['shop_bootstrap'].get('ready'):
             print('Нет проверенных знаний новых торговцев. Это блокирует покупку фей.')
@@ -325,7 +325,7 @@ def main():
             if not selected:raise RuntimeError('Нужен проверенный серверный патч и справочник магазинов. Существующие боты сохранены.')
             from restore_shop_knowledge import restore
             setup_report.result['shop_bootstrap']=dict(restore(selected,ROOT/'assets'),ready=True)
-            if setup_report.result['shop_bootstrap']['catalog_revision']<58:raise RuntimeError('Сначала установи серверные магазины Alpha58 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
+            if setup_report.result['shop_bootstrap']['catalog_revision']<59:raise RuntimeError('Сначала установи серверные магазины Alpha59 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
             from diagnostic_io import write_snapshot
             write_snapshot(ROOT/'data/server-source.json',{'resource':selected})
         navigation = Regions(ROOT/'assets',population_count=args.count)

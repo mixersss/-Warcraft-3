@@ -71,7 +71,7 @@ assert(unchanged_tail()==987)
   with tempfile.TemporaryDirectory() as tmp:
    root=Path(tmp);server,client=base.fixture(root);assets=root/'assets';assets.mkdir();(assets/'world-npcs.json').write_text('{}')
    base.isolated_install(server,client,True,assets)
-   self.assertEqual(restore(server,assets)['catalog_revision'],58)
+   self.assertEqual(restore(server,assets)['catalog_revision'],base.CAT['catalog_revision'])
    target=server/'script/calculate/forge.lua';target.write_bytes(target.read_bytes()+b'\n-- changed externally\n')
    before=(assets/'owner-city-shops.json').read_bytes()
    with self.assertRaisesRegex(ValueError,'ковка'):restore(server,assets)

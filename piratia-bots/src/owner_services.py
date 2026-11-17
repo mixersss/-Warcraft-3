@@ -14,6 +14,7 @@ class OwnerServices:
         self.world,self.role,self.overlay,self.send=world,role,overlay,send
         self.context=None;self.pending=None;self.retry=0;self.reason=''
         self.requests=self.confirmed=self.timeouts=0
+        self.last_request=None;self.last_failure=None
     @property
     def busy(self):return bool(self.context or self.pending)
     def profession(self):
@@ -42,6 +43,7 @@ class OwnerServices:
         label=('First profession: ' if value in (1,2,4,5) else 'Second profession: ')+LABELS[value] if kind=='profession' else 'Get missing bag expansions' if kind=='bags' else 'Restore basic combat spell' if kind=='combat' else 'Get level 3 stall'
         if label in labels:
             self.send(301,function_request(npc,page,labels.index(label)))
+            self.last_request={'npc':npc,'kind':kind,'value':value,'page':page,'label':label}
             self.pending=kind,value,(self.world.bag_capacity,tuple((s,i.identity,i.count) for s,i in self.world.bag.items())),now+12
             self.context=None;self.requests+=1
         elif kind=='profession' and value in (8,9,12,13,14,16) and 'Second profession' in labels:
@@ -61,7 +63,10 @@ class OwnerServices:
                        w.bag_capacity>=value and any(3088<=i<=3093 and not any(s2==s and item.identity==i and item.count>=n for s2,item in w.bag.items()) for s,i,n in before[1]) if kind=='expand' else
                        w.bag_capacity>before[0] or any(3088<=i.identity<=3093 and (s,i.identity,i.count) not in before[1] for s,i in w.bag.items()))
             if confirmed:self.finish(now,True)
-            elif now>=deadline:self.timeouts+=1;self.reason='Услуга НПС не подтверждена сервером';self.finish(now)
+            elif now>=deadline:
+                self.timeouts+=1;self.last_failure={'kind':kind,'value':value,'requests':self.requests,'timeouts':self.timeouts}
+                self.reason=('Не получен боевой навык; нужен серверный патч Alpha59, а не повторное ожидание' if kind=='combat' else 'Услуга НПС не подтверждена сервером')
+                self.finish(now)
             return bool(self.pending)
         if self.context:
             if now>=self.context[3]:self.timeouts+=1;self.finish(now)
@@ -98,4 +103,4 @@ class OwnerServices:
             if policy.move_to(goal,now):return True
         self.retry=now+10;self.reason='Нет проверенного подхода к НПС; продолжает охоту';return False
     def summary(self):
-        return {'state':self.reason,'wanted':self.need(),'requests':self.requests,'confirmed':self.confirmed,'timeouts':self.timeouts,'bag_capacity':self.world.bag_capacity,'profession_quests_required':False}
+        return {'state':self.reason,'wanted':self.need(),'requests':self.requests,'confirmed':self.confirmed,'timeouts':self.timeouts,'bag_capacity':self.world.bag_capacity,'profession_quests_required':False,'last_request':self.last_request,'last_failure':self.last_failure}
