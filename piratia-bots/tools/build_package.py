@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-62'
-NAME = 'Piratia-Auto-Bots-Alpha62'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-63'
+NAME = 'Piratia-Auto-Bots-Alpha63'
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
-    sources += [ROOT / 'knowledge/ALPHA62.md']
+    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -400,6 +400,8 @@ def main():
     manifest.update(alpha61={'bot_tests':971,'native_tests':55,'legacy_tests':12,'minimum_server_revision':60,'ground_camps_only':True,'required_coral_first':True,'prequote_repair_backoff':True,'hunting_coordinates_in_reports':True,'live_windows_verified':False},status='Alpha61 cumulative: land hunting, required coral priority, food/staff deadlock and repair/supply loops; native60 unchanged.')
     manifest.update(alpha62={'minimum_server_revision':60,'live_windows_verified':False},
                     status='Alpha62 limits ticket and merchant detours and preserves local hunting.')
+    manifest.update(alpha63={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha63 reconciles pending merchant operations before optional task gates.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

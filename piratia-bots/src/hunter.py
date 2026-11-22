@@ -806,6 +806,14 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
+        if self.town and (self.town.context or self.town.pending):
+            # Finish an already-open merchant exchange before optional task
+            # gates, which can reject shopping as soon as its goal is fulfilled.
+            self.town.tick(now,self,False)
+            if self.town.context or self.town.pending:
+                self.change('ожидает подтверждение операции торговца')
+                self.next_action=now+.2
+                return
         if self.stuck_return.pending and self.pending_action:
             self.flush_action(now)
         if self.stuck_return.poll(now,self):

@@ -88,6 +88,30 @@ class Travel58Tests(unittest.TestCase):
   self.assertFalse(c.tick(190,p,True))
   c.choose.assert_called_once()
 
+ def test_hunter_reconciles_ticket_purchase_before_optional_shopping_gate(self):
+  import random
+  from town import Town
+  from test_coordination import CohortCombatTests
+  CohortCombatTests.setUpClass()
+  w,p=CohortCombatTests().policy()
+  w.own.values[8]=6000
+  w.bag={}
+  town=Town(w,source.LIFE,None,None,random.Random(1),w.own.position)
+  p.town=town
+  p.task_budget.paused['town']=1000
+  town.wanted=(3057,1)
+  town.context=(77,'confirmation',112)
+  town.pending=(3057,0,6000,112)
+  p.tick(100)
+  self.assertEqual(p.attacks,0)
+  self.assertIsNotNone(town.pending)
+  w.bag[0]=source.item(3057)
+  w.own.values[8]=1000
+  p.tick(101)
+  self.assertEqual(town.confirmed,1)
+  self.assertIsNone(town.context)
+  self.assertIsNone(town.pending)
+
  def test_published_knowledge_covers_real_tickets_nodes_and_entries(self):
   data=json.loads((ROOT/'assets/hunting-travel58.json').read_text())
   self.assertEqual((len(data['birthplaces']),len(data['tickets']),len(data['island_nodes']),len(data['entrances'])),(71,43,8,119))
