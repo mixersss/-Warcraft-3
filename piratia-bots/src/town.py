@@ -41,6 +41,7 @@ class Town:
         self.last_purchase_failure=None
         self.visit_started=None;self.visit_key=None;self.approach_timeouts=0
         self.progression_visit=False
+        self.trip_purchase=False
     def urgent_coral(self):
         return self.world.own.values.get(4) in (4,16) and not damage_ready(self.world,self.gear)
     def combat_supply_required(self):
@@ -164,7 +165,7 @@ class Town:
         if self.urgent_coral() and (food>=2 or any(self.life.prices.get(i)==1 for i in critical)) and w.own.values.get(1,0)>w.own.values.get(31,1)*.55:
             for identity in critical:
                 if self.gear.types.get(identity)==29 and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
-        if food<5:return 1847,min(10,15-food)
+        if food<5 and 0<self.life.prices.get(1847,0)<=self.spend_limit(1847):return 1847,min(10,15-food)
         if cash<120:return None
         for identity in critical:
             if identity in self.combat_items and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
@@ -327,6 +328,7 @@ class Town:
             self.failed_suppliers[self.supply_plan['shop']['key']]=now+300
             if len(self.failed_suppliers)>128:self.failed_suppliers.pop(next(iter(self.failed_suppliers)))
         self.supply_plan=None
+        self.trip_purchase=False
         self.visit_started=None;self.visit_key=None
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
     def tick(self,now,policy,safe,dialogue_busy=False,medical=False):
@@ -349,16 +351,16 @@ class Town:
         if not safe or dialogue_busy:return False
         activity=getattr(policy,'activity',None)
         self.progression_visit=bool(activity and activity.hunting(now) is True)
-        if self.progression_visit and not self.combat_supply_required() and not (self.petcare and self.petcare.needs_food_visit()):
-            # Do not continue an old optional shopping walk just because a new
-            # travel ticket made this controller essential. Native payments
-            # and menus in flight have already been handled above.
-            trip_items={i for i,n,r in self.hunt_travel.purchase_goals()} if self.hunt_travel and self.hunt_travel.plan else set()
-            self.critical_items()
-            required=self.combat_items|trip_items|{self.emergency_ticket}
-            planned=self.supply_plan['item'] if self.supply_plan else self.wanted[0] if self.wanted else None
-            if planned is not None and planned not in required:self.supply_plan=self.wanted=self.target_shop=None
         food_needed=bool(self.petcare and self.petcare.needs_food_visit())
+        trip_items={i for i,_,_ in self.hunt_travel.purchase_goals()} if self.hunt_travel else set()
+        if self.progression_visit or self.trip_purchase:
+            # Revalidate walking goals after a trip ends. Native menus and
+            # payments in flight have already been handled above.
+            self.critical_items()
+            required=self.combat_items|trip_items|{self.emergency_ticket,1847}
+            if food_needed:required.add(2312)
+            planned=self.supply_plan['item'] if self.supply_plan else self.wanted[0] if self.wanted else None
+            if planned is not None and planned not in required:self.finish(now,0)
         if food_needed and not self.food_visit_requested:
             self.next_shop=min(self.next_shop,now);self.next_supply_check=min(self.next_supply_check,now)
             if self.rest_until:self.end_rest(now)
@@ -410,6 +412,7 @@ class Town:
             shops=[s for s in self.life.services['shops'].get(w.map,[]) if self.wanted[0] in s['offers']]
             if not shops:self.finish(now,300);return False
             self.target_shop=min(shops,key=lambda s:math.dist(policy.position(now),s['position']))
+        self.trip_purchase=self.wanted[0] in trip_items
         point=self.target_shop['position']
         key=(w.map,self.wanted[0],tuple(point))
         if self.visit_key!=key:self.visit_key=key;self.visit_started=now
@@ -421,6 +424,8 @@ class Town:
             return False
         self.reason='покупки у городского торговца'
         returner=getattr(policy,'stuck_return',None)
+        # Do not consume a reserved return ticket en route to the ticket shop.
+        if self.trip_purchase:returner=None
         city_center=self.life.services.get('city_centres',{}).get(w.map,self.home)
         if (returner and math.dist(policy.position(now),point)>8000 and math.dist(point,city_center)<5000
                 and returner.tick(now,policy,destination=w.map) is True):
@@ -428,7 +433,7 @@ class Town:
         npc=npc_near(w,point)
         if npc and math.dist(policy.position(now),npc.position)<=220:
             policy.send(301,talk_request(npc.identity));self.context=npc.identity,'talk',now+8;return True
-        goal=policy.nav.nearest(point,6)
+        goal=policy.nav.nearest(npc.position if npc else point,6)
         if goal and policy.move_to(goal,now):return True
         self.finish(now,300);return False
-    def summary(self):return {'approach_timeouts':self.approach_timeouts,'urgent_coral_supply':self.urgent_coral(),'last_purchase_failure':self.last_purchase_failure,'knowledge_purchase_plans':self.knowledge_plans,'shopping_destination':self.supply_plan['map'] if self.supply_plan else None,'planned_item':self.supply_plan['item'] if self.supply_plan else None,'shopping_goal':self.supply_plan['reason'] if self.supply_plan else None,'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}
+    def summary(self):return {'wanted_item':self.wanted[0] if self.wanted else None,'visit_stage':self.context[1] if self.context else 'approach' if self.wanted else None,'approach_timeouts':self.approach_timeouts,'urgent_coral_supply':self.urgent_coral(),'last_purchase_failure':self.last_purchase_failure,'knowledge_purchase_plans':self.knowledge_plans,'shopping_destination':self.supply_plan['map'] if self.supply_plan else None,'planned_item':self.supply_plan['item'] if self.supply_plan else None,'shopping_goal':self.supply_plan['reason'] if self.supply_plan else None,'purchase_requests':self.requests,'confirmed_purchases':self.confirmed,'timeouts':self.timeouts,'city_breaks':self.breaks,'city_walk_stops':self.walk_stops,'state':self.reason,'rest_due_after_tasks':self.rest_due,'kills_since_break':self.work_kills,'quests_since_break':self.work_quests,'bench_sitting_implemented':False}

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-61'
-NAME = 'Piratia-Auto-Bots-Alpha61'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-62'
+NAME = 'Piratia-Auto-Bots-Alpha62'
 
 
 def main():
@@ -26,6 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
+    sources += [ROOT / 'knowledge/ALPHA62.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -397,6 +398,8 @@ def main():
     manifest.update(alpha59={'bot_tests':936,'native_tests':51,'legacy_tests':12,'classic_combat_spell_compatibility':True,'stall_state_id':99,'closure_resync_after_seconds':60,'live_windows_verified':False},status='Alpha59 cumulative: classic missing-core-spell fallback and bounded stall closure recovery; Alpha58 forging/economy preserved.')
     manifest.update(alpha60={'bot_tests':953,'native_tests':55,'legacy_tests':12,'critical_foreign_combat_supplies':True,'prepurchase_travel_planning':True,'source_rectangle_scouting':True,'normal_player_exp_scale_floor':100,'configured_exp_rate_unchanged':True,'native_xp_receipts':True,'fairy_growth_restored':True,'preventive_weapon_repair_threshold':1/3,'live_windows_verified':False},status='Alpha60 cumulative: source-backed scouting, mandatory staff/tickets, continuous native XP, restored fairy growth and preventive repair; includes previous releases.')
     manifest.update(alpha61={'bot_tests':971,'native_tests':55,'legacy_tests':12,'minimum_server_revision':60,'ground_camps_only':True,'required_coral_first':True,'prequote_repair_backoff':True,'hunting_coordinates_in_reports':True,'live_windows_verified':False},status='Alpha61 cumulative: land hunting, required coral priority, food/staff deadlock and repair/supply loops; native60 unchanged.')
+    manifest.update(alpha62={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha62 limits ticket and merchant detours and preserves local hunting.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

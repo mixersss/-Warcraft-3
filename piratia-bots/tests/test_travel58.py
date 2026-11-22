@@ -43,12 +43,12 @@ class Travel58Tests(unittest.TestCase):
   w.own.x,w.own.y=326000,328000;c.tick(100.1,p,True);self.assertEqual(c.confirmed,0)
   w.bag={};c.tick(100.2,p,True);self.assertEqual(c.confirmed,1)
  def test_event_requires_visible_matching_native_identity_and_exact_action(self):
-  w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,model=193);c.target_started=100
+  w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,event_model=193,model=295);c.target_started=100
   entity=dataclasses.replace(w.own,identity=88,model=193,handle=900,event_identity=88,event_id=6)
   w.entities[88]=entity;self.assertTrue(c.tick(100,p,True))
   self.assertEqual(p.emit.call_args.args[0][8:],struct.pack('>BIIH',18,88,900,6));self.assertEqual(c.confirmed,0)
  def test_closed_event_is_released_to_normal_hunting_without_fake_move(self):
-  w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,model=193);c.target_started=100
+  w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,event_model=193,model=295);c.target_started=100
   self.assertFalse(c.tick(100,p,True));self.assertIsNone(c.plan);p.emit.assert_not_called();self.assertTrue(c.blocked)
  def test_far_trip_needs_owned_return_ticket_even_for_portals(self):
   w,c,p=self.make();c.routes=lambda *a:[self.plan(w)];c.nearby=lambda *a:[(295,0)];c.rate=lambda *a:1
@@ -56,6 +56,38 @@ class Travel58Tests(unittest.TestCase):
   c.plan=c.choose(100,p);self.assertIsNotNone(c.plan);c.target_started=100
   self.assertFalse(c.tick(100,p,True));p.emit.assert_not_called();c.send.assert_not_called()
   w.bag={0:source.item(4602)};self.assertIsNotNone(c.choose(100,p))
+ def test_waiting_for_tickets_releases_trip_after_bounded_attempt(self):
+  w,c,p=self.make();c.plan=self.plan(w,'event');c.target_started=100
+  c.life=SimpleNamespace(prices={4602:1000})
+  w.bag={}
+  w.own.values[8]=5000
+  self.assertFalse(c.tick(100,p,True))
+  self.assertEqual([item for item,_,_ in c.purchase_goals()],[4602])
+  self.assertFalse(c.tick(219,p,True))
+  self.assertEqual(c.target_started,100)
+  self.assertFalse(c.tick(220,p,True))
+  self.assertIsNone(c.plan)
+  self.assertEqual(c.purchase_goals(),[])
+  p.move_to.assert_not_called()
+
+ def test_combined_ticket_cost_is_checked_before_starting_shopping(self):
+  w,c,p=self.make();c.plan=dict(self.plan(w,'ticket'),item_id=3056);c.target_started=100
+  c.life=SimpleNamespace(prices={4602:2500,3056:3500})
+  w.bag={}
+  w.own.values[8]=5000
+  self.assertFalse(c.tick(100,p,True))
+  self.assertIsNone(c.plan)
+  self.assertEqual(c.purchase_goals(),[])
+  p.emit.assert_not_called()
+
+ def test_local_hunting_gets_a_head_start_before_optional_travel(self):
+  w,c,p=self.make();p.started=100
+  c.choose=Mock(return_value=None)
+  self.assertFalse(c.tick(189,p,True))
+  c.choose.assert_not_called()
+  self.assertFalse(c.tick(190,p,True))
+  c.choose.assert_called_once()
+
  def test_published_knowledge_covers_real_tickets_nodes_and_entries(self):
   data=json.loads((ROOT/'assets/hunting-travel58.json').read_text())
   self.assertEqual((len(data['birthplaces']),len(data['tickets']),len(data['island_nodes']),len(data['entrances'])),(71,43,8,119))

@@ -648,7 +648,7 @@ class Hunter:
             # another city and the current-map offers contain no such weapon.
             if hasattr(feature,'combat_supply_required') and feature.combat_supply_required() is True:essential_combat=True
             trip=getattr(feature,'hunt_travel',None)
-            if trip and isinstance(trip.plan,dict) and trip.purchase_goals():essential_combat=True
+            if trip and trip.purchase_goals():essential_combat=True
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and (not getattr(feature,"progression_first",False) or feature.shift_allowed(self,now))
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
@@ -1056,8 +1056,16 @@ class Hunter:
                 self.drop_target();self.clear_zone();self.change(self.town.reason);return
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
-        if self.hunt_travel and not self.transaction_busy() and self.hunt_travel.tick(now,self,safe,loot_dialogue):
-            self.drop_target();self.clear_zone();self.change(self.hunt_travel.reason);return
+        if self.hunt_travel and not self.transaction_busy():
+            scope=self.nav.background_work(True) if hasattr(self.nav,'background_work') else nullcontext()
+            try:
+                with scope:
+                    travelling=self.hunt_travel.tick(now,self,safe,loot_dialogue)
+            except RoutePending:
+                self.background_task='hunt_travel'
+                travelling=False
+            if travelling:
+                self.drop_target();self.clear_zone();self.change(self.hunt_travel.reason);return
         if self.owner_services and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
             if self.owner_services.tick(now,self,safe,loot_dialogue or bool(self.town and self.town.context)):
                 self.drop_target();self.clear_zone();self.change(self.owner_services.reason);return

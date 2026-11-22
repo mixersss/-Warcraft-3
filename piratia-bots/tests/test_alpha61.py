@@ -139,4 +139,18 @@ class Supplies61Tests(unittest.TestCase):
   t.hunt_travel=SimpleNamespace(plan={'kind':'ticket'},purchase_goals=lambda:[(3073,1,'hunt ticket')])
   self.assertEqual(t.choose_want(),(3073,1))
 
+ def test_cancelled_hunt_ticket_releases_merchant_walk(self):
+  import unittest.mock
+  w,t,p=self.make();w.own.equipment={9:97}
+  w.bag={0:pets.item(1847,10),1:pets.item(4602)}
+  t.wanted=(3073,1);t.trip_purchase=True
+  t.target_shop={'position':list(w.own.position)}
+  t.hunt_travel=SimpleNamespace(plan=None,purchase_goals=lambda:[])
+  t.plan_supplies=unittest.mock.Mock(return_value=None)
+  t.choose_want=unittest.mock.Mock(return_value=None)
+  p.move_to=unittest.mock.Mock()
+  self.assertFalse(t.tick(100,p,True))
+  self.assertIsNone(t.wanted)
+  p.move_to.assert_not_called()
+
 if __name__=='__main__':unittest.main()

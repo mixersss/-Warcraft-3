@@ -22,10 +22,10 @@ class HuntTravel:
  def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity and i.valid)
  def purchase_goals(self):
   w=self.world
-  if not w.own or w.own.values.get(0,0)<20:return []
+  if not w.own or w.own.values.get(0,0)<20 or not self.plan:return []
   result=[]
-  if not self.count(4602):result.append((4602,1,'обратный билет в Аргент перед дальней поездкой'))
-  if self.plan and self.plan['kind']=='ticket' and not self.count(self.plan['item_id']):result.append((self.plan['item_id'],1,'билет к выбранной точке прокачки'))
+  if not self.plan.get('returning') and not self.count(4602):result.append((4602,1,'обратный билет в Аргент перед дальней поездкой'))
+  if self.plan['kind']=='ticket' and self.plan['item_id'] not in {i for i,_,_ in result} and not self.count(self.plan['item_id']):result.append((self.plan['item_id'],1,'билет к выбранной точке прокачки'))
   return result
  def same_land(self,policy,point):
   nearest=policy.nav.nearest(tuple(point),3)
@@ -53,7 +53,7 @@ class HuntTravel:
   if not returning:
    for entry in self.data['entrances']:
     if entry['map']!=w.map or entry['to_map'] not in self.regions.map_catalog or not self.same_land(policy,entry['position']):continue
-    rows.append({'kind':'event','map':w.map,'to_map':entry['to_map'],'position':entry['position'],'arrival_cm':entry['arrival_cm'],'fare':0,'event_id':entry['event_id'],'model':entry['model'],'name':entry['name']})
+    rows.append({'kind':'event','map':w.map,'to_map':entry['to_map'],'position':entry['position'],'arrival_cm':entry['arrival_cm'],'fare':0,'event_id':entry['event_id'],'event_model':entry['model'],'name':entry['name']})
   return [r for r in rows if self.blocked.get(self.route_key(r),0)<=now]
  def nearby(self,map_name,point):
   return self.knowledge.nearby_ground(map_name,tuple(point))
@@ -84,7 +84,7 @@ class HuntTravel:
    shops=self.life.services['shops'].get(w.map,[])
    if not any(math.dist(policy.position(now),s['position'])<12000 and self.same_land(policy,s['position']) for s in shops):return True
   town=getattr(policy,'town',None);supply=getattr(town,'supply_plan',None)
-  if supply and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
+  if supply and supply['item'] not in {i for i,_,_ in self.purchase_goals()} and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
   return False
  def choose(self,now,policy,returning=False):
   w=self.world;rows=[]
@@ -111,7 +111,7 @@ class HuntTravel:
    last=getattr(policy.learning,'last_progress_at',None)
    if score<current*1.2 and last is not None and now-last<180:return None
   self.preferred_model=model
-  return dict(route,model=model)
+  return dict(route,model=model,returning=returning)
  def abort(self,now,reason):
   if self.plan:self.blocked[self.route_key(self.plan)]=now+900
   self.context=None;self.pending=None;self.plan=None;self.preferred_model=None
@@ -151,20 +151,28 @@ class HuntTravel:
   if returning and near_argent:
    self.plan=None;self.preferred_model=None
    return False
-  if not returning and self.economy.phase(w,now)!='progression':return False
+  if self.plan and (self.plan['map']!=w.map or self.plan.get('returning',False)!=returning):
+   self.abort(now,'Условия поездки изменились');return False
+  if not returning and self.economy.phase(w,now)!='progression':
+   if self.plan:self.abort(now,'Фаза дальней охоты завершена')
+   return False
   if self.level!=w.own.values.get(0):self.level=w.own.values.get(0);self.next_check=0
   if not self.plan:
-   if now<self.next_check and not returning:return False
+   if not returning and (now<self.next_check or now-getattr(policy,'started',now-90)<90):return False
    self.plan=self.choose(now,policy,returning);self.next_check=now+120;self.target_started=now
   if not self.plan:return False
-  if not returning and not self.count(4602):
-   self.target_started=now;self.reason='Покупает собственный обратный билет перед дальней охотой';return False
-  if now-self.target_started>120:self.abort(now,'Истекло время подхода к переходу');return False
+  missing=self.purchase_goals()
+  if now-self.target_started>=120:
+   self.abort(now,'Не удалось купить билеты вовремя' if missing else 'Истекло время подхода к переходу');return False
+  if missing:
+   prices=[self.life.prices.get(identity,0) for identity,_,_ in missing]
+   fare=self.plan['fare'] if self.plan['kind']=='portal' else 0
+   if min(prices)<=0 or w.own.values.get(8,0)<sum(prices)+(fare+2000 if self.plan['kind']=='portal' else 100):
+    self.abort(now,'Не хватает денег на билеты или переход');return False
+   self.reason='Ожидает покупку билетов; доступна местная охота';return False
   plan=self.plan;self.reason='Переход к точке прокачки: '+plan['name']
   if plan['kind']=='ticket':
-   slot=next((s for s,i in w.bag.items() if i.identity==plan['item_id'] and i.valid),None)
-   if slot is None:
-    self.target_started=now;return False # Normal Town purchase controller handles it.
+   slot=next(s for s,i in w.bag.items() if i.identity==plan['item_id'] and i.valid)
    if any(w.own.values.get(a,0)<w.own.values.get(b,1) for a,b in ((1,31),(2,32))):
     policy.resting=True;policy.mana_resting=True;self.reason='Восстанавливает HP/SP для собственного билета';return False
    from hunter import action_header
@@ -180,7 +188,7 @@ class HuntTravel:
    npc=npc_near(w,point)
    if not npc:self.abort(now,'Нет видимой портальщицы');return False
    self.send(301,talk_request(npc.identity));self.context={'npc':npc.identity,'stage':'menu','deadline':now+8};return True
-  event=next((e for e in w.entities.values() if e.model==plan['model'] and e.event_identity==e.identity and e.event_id==plan['event_id'] and math.dist(e.position,point)<350),None)
+  event=next((e for e in w.entities.values() if e.model==plan['event_model'] and e.event_identity==e.identity and e.event_id==plan['event_id'] and math.dist(e.position,point)<350),None)
   if not event:self.abort(now,'Вход сейчас недоступен; видимый нативный портал не найден');return False
   from hunter import action_header
   policy.emit(action_header(w.own_id,policy.sequence,18)+struct.pack('>IIH',event.identity,event.handle,event.event_id));self.requests+=1
