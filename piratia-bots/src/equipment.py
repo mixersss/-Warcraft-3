@@ -129,13 +129,25 @@ class ItemCatalog:
                 return None
         # Compare only affected links: unrelated unknown armour is not a blocker.
         affected={chosen}|{k for k in own.equipment.keys()|equipment.keys() if own.equipment.get(k)!=equipment.get(k)}
+        job=own.values.get(4)
+        essential=({3,4} if job in (2,12) else {9} if job in (5,13,14) else set())
+        incoming=self.gear[identity].get('kind')
+        working_class_links=set()
+        for link in (6,9):
+            equipped=own.equipment.get(link)
+            details=getattr(own,'equipment_details',{}).get(link,{})
+            if (self.types.get(equipped) in essential and details.get('valid',True)
+                    and (details.get('max_endurance',0)<=0 or details.get('endurance',0)>0)):
+                working_class_links.add(link)
+        # The reverse swap must not undo the same class requirement that
+        # gives a starter staff or bow priority over a higher-scoring sword.
+        if incoming not in essential and working_class_links and working_class_links<=affected:
+            return None
         before=self.loadout_score(own,{k:own.equipment.get(k,0) for k in affected})
         after=self.loadout_score(own,{k:equipment.get(k,0) for k in affected},{chosen:item} if item else None)
         if before is None or after is None:return None
         gain=after-before
-        job=own.values.get(4)
-        essential=({3,4} if job in (2,12) else {9} if job in (5,13,14) else set())
-        if self.gear[identity].get('kind') in essential and not any(self.types.get(own.equipment.get(link)) in essential for link in (6,9)):
+        if incoming in essential and not working_class_links:
             gain=max(1,gain) # A class weapon enables ranged attacks/spells even if a novice sword scores higher.
         return (gain,[chosen]) if gain>0 else None
 

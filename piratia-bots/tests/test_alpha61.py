@@ -190,6 +190,30 @@ class Supplies61Tests(unittest.TestCase):
   t.hunt_travel=SimpleNamespace(plan={'kind':'ticket'},purchase_goals=lambda:[(3073,1,'hunt ticket')])
   self.assertEqual(t.choose_want(),(3073,1))
 
+ def test_native_staff_echo_cannot_trigger_newbie_sword_swap(self):
+  from unittest.mock import Mock
+  from equipment import Equipment
+  w,p=magic.MagicTests().make(job=5,body=3)
+  w.own.values[0]=12
+  w.own.equipment.update({6:9999,9:9})
+  w.own.equipment_details[9]={'identity':9,'valid':True,'endurance':9996,'max_endurance':10000}
+  w.bag_ready=True;w.bag_capacity=48;w.bag={0:pets.item(5006)}
+  p.emit=Mock()
+  equipment=Equipment(w,magic.GEAR,p.send)
+  self.assertTrue(equipment.tick(100,p))
+  self.assertEqual(equipment.pending[0],5006)
+  w.bag={0:pets.item(9)}
+  w.own.equipment[9]=5006
+  w.own.equipment_details[9]={'identity':5006,'valid':True,'endurance':20000,'max_endurance':20000}
+  self.assertTrue(equipment.tick(101,p))
+  self.assertFalse(equipment.tick(103,p))
+  self.assertEqual(equipment.confirmed,1)
+  self.assertEqual(p.emit.call_count,1)
+  self.assertEqual(p.combat_skills.select(103),99)
+  p.equipment=equipment
+  p.tick(104)
+  self.assertEqual(p.emit.call_args.args[0][8],2)
+
  def test_cancelled_hunt_ticket_releases_merchant_walk(self):
   import unittest.mock
   w,t,p=self.make();w.own.equipment={9:97}
