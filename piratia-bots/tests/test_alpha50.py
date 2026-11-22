@@ -17,6 +17,21 @@ import test_alpha18 as vendor_fixtures
 import test_alpha26 as scheduling_fixtures
 from classic_wire import string
 
+class ExtendedShoreRecoveryTests(unittest.TestCase):
+    def test_snapshot_shore_needs_more_than_250cm_but_remains_bounded(self):
+        import math
+        from regions import Regions
+        nav=Regions(ROOT/'assets').nav('garner')
+        point=(212376,274878)
+        self.assertFalse(nav.recovery_path(point))
+        self.assertFalse(nav.shore_exit(point))
+        self.assertFalse(nav.shore_exit(point,maximum_cm=500))
+        route=nav.shore_exit(point,maximum_cm=550)
+        self.assertGreater(len(route),1)
+        self.assertEqual(route[0],point)
+        self.assertFalse(nav.needs_recovery(route[-1]))
+        self.assertLessEqual(sum(math.dist(a,b) for a,b in zip(route,route[1:])),550)
+
 class FundingAndGearTests(unittest.TestCase):
     def test_report288_28_blueprints_are_sellable_but_np_and_gear_stay_safe(self):
         w,v,p=vendor_fixtures.VendorTests().make();v.sell_patchouli=True;w.bag={0:item(1000,28),1:item(684),2:item(289)}

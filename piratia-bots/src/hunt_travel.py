@@ -16,14 +16,14 @@ class HuntTravel:
   self.data=regions.hunting_travel_data;self.knowledge=regions.mob_knowledge
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
-  self.site_arrival=None
+  self.site_arrival=None;self.escaping_mine=False
   self.requests=0;self.confirmed=0;self.timeouts=0;self.reason='';self.clock=0;self.target_started=0
  @property
  def busy(self):return bool(self.context or self.pending)
  def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity and i.valid)
  def purchase_goals(self):
   w=self.world
-  if not w.own or w.own.values.get(0,0)<20 or not self.plan:return []
+  if not w.own or w.own.values.get(0,0)<20 or not self.plan or self.plan.get('mine_exit'):return []
   result=[]
   if not self.plan.get('returning') and not self.count(4602):result.append((4602,1,'обратный билет в Аргент перед дальней поездкой'))
   if self.plan['kind']=='ticket' and self.plan['item_id'] not in {i for i,_,_ in result} and not self.count(self.plan['item_id']):result.append((self.plan['item_id'],1,'билет к выбранной точке прокачки'))
@@ -146,14 +146,41 @@ class HuntTravel:
   else:
    self.pending={'deadline':now+15,'gold':self.world.own.values.get(8,0),'item_count':None};self.context=None
   return True
+ def exit_mine(self,now,policy,entry):
+  w=self.world;point=entry['position']
+  route=dict(entry,kind='event',event_model=entry['model'],model=None,fare=0,mine_exit=True)
+  if self.blocked.get(self.route_key(route),0)>now:return False
+  if not self.plan or not self.plan.get('mine_exit') or self.route_key(self.plan)!=self.route_key(route):
+   self.plan=route;self.target_started=now
+   self.preferred_model=None
+  if now-self.target_started>=150:
+   self.abort(now,'Не дошёл до двери выхода из шахты');return False
+  self.reason='Выходит из шахты: '+route['name']
+  if math.dist(policy.position(now),point)>220:
+   goal=policy.nav.nearest(point,3)
+   if goal and policy.move_to(goal,now):return True
+   self.abort(now,'Нет проверенного пути к двери шахты');return False
+  return self.use_visible_event(now,policy,route)
+ def use_visible_event(self,now,policy,plan):
+  point=plan['position'];w=self.world
+  event=next((e for e in w.entities.values() if e.model==plan['event_model'] and e.handle
+              and e.event_identity==e.identity and e.event_id==plan['event_id'] and math.dist(e.position,point)<350),None)
+  if not event:self.abort(now,'Вход сейчас недоступен; видимый нативный портал не найден');return False
+  from hunter import action_header
+  policy.emit(action_header(w.own_id,policy.sequence,18)+struct.pack('>IIH',event.identity,event.handle,event.event_id));self.requests+=1
+  self.pending={'deadline':now+15,'gold':w.own.values.get(8,0),'item_count':None};return True
  def tick(self,now,policy,safe,dialogue_busy=False):
   self.clock=now;w=self.world
   if self.pending:
    plan=self.plan;points=plan.get('arrival_options',[plan['arrival_cm']])
    moved=w.map==plan['to_map'] and any(math.dist(w.own.position,p)<=2500 for p in points)
+   if moved and plan.get('mine_exit'):
+    moved=policy.nav.land_component(w.own.position)==plan['arrival_component']
    paid=self.count(plan['item_id'])<self.pending['item_count'] if plan['kind']=='ticket' else w.own.values.get(8,0)<=self.pending['gold']-plan['fare']
    if moved and paid and w.bag_ready:
     self.confirmed+=1;self.pending=None;self.context=None;self.plan=None
+    if plan.get('mine_exit'):
+     self.reason='Сервер подтвердил переход на пути выхода из шахты';return False
     self.site_arrival=(w.map,now) if plan.get('model') else None
     self.site_until=now+600;self.next_check=now+(600 if plan.get('model') else 60);self.reason='Прибытие к новой точке подтверждено сервером';return False
    if now>=self.pending['deadline']:self.timeouts+=1;self.abort(now,'Переход не подтверждён')
@@ -161,7 +188,11 @@ class HuntTravel:
   if self.context:
    if now>=self.context['deadline']:self.timeouts+=1;self.abort(now,'Нет ответа портальщицы')
    return self.busy
-  if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled or w.own.values.get(0,0)<20:return False
+  if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled:return False
+  entry=self.regions.mine_exit_step(w.map,w.own.position,self.escaping_mine)
+  self.escaping_mine=bool(entry)
+  if entry:return self.exit_mine(now,policy,entry)
+  if w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))
@@ -206,9 +237,5 @@ class HuntTravel:
    npc=npc_near(w,point)
    if not npc:self.abort(now,'Нет видимой портальщицы');return False
    self.send(301,talk_request(npc.identity));self.context={'npc':npc.identity,'stage':'menu','deadline':now+8};return True
-  event=next((e for e in w.entities.values() if e.model==plan['event_model'] and e.event_identity==e.identity and e.event_id==plan['event_id'] and math.dist(e.position,point)<350),None)
-  if not event:self.abort(now,'Вход сейчас недоступен; видимый нативный портал не найден');return False
-  from hunter import action_header
-  policy.emit(action_header(w.own_id,policy.sequence,18)+struct.pack('>IIH',event.identity,event.handle,event.event_id));self.requests+=1
-  self.pending={'deadline':now+15,'gold':w.own.values.get(8,0),'item_count':None};return True
+  return self.use_visible_event(now,policy,plan)
  def summary(self):return {'state':self.reason,'plan':self.plan,'preferred_model':self.preferred_model,'requests':self.requests,'confirmed_arrivals':self.confirmed,'timeouts':self.timeouts,'known_island_portals':len(self.data['island_nodes']),'known_tickets':len(self.data['tickets']),'known_entrances':len(self.data['entrances']),'spawn_regions_are_not_live_mob_positions':True}

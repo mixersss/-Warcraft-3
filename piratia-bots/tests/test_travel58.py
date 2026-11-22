@@ -20,7 +20,7 @@ class Travel58Tests(unittest.TestCase):
   w=source.actor();w.own.values.update({0:35,1:1200,2:100,31:1200,32:100});w.map='garner';w.items={}
   w.bag={0:source.item(4602)}
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
-  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0})
+  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0},mine_exit_step=lambda *a:None)
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
   p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None),camp_route_active=lambda now:False,hunt_before_errands=lambda now:False)
   c.needs_town=lambda *a:False
@@ -160,6 +160,40 @@ class Travel58Tests(unittest.TestCase):
   self.assertEqual(c.choose(100,p)['model'],99)
   c.routes=lambda *a:[dict(good,arrival_options=[good['arrival_cm'],(0,0)])]
   self.assertIsNone(c.choose(100,p))
+ def test_detached_mine_exits_by_four_confirmed_native_events_without_ticket(self):
+  from regions import Regions
+  w,c,p=self.make()
+  c.regions=Regions(ROOT/'assets',400)
+  w.bag={}
+  w.bag_ready=True
+  w.own.x,w.own.y=164200,269800
+  p.nav=c.regions.nav('garner')
+  for i in range(4):
+   now=100+10*i
+   entry=c.regions.mine_exit_step(w.map,w.own.position,i>0)
+   self.assertIsNotNone(entry)
+   goal=p.nav.nearest(entry['position'],3)
+   self.assertTrue(p.nav.path(w.own.position,goal))
+   self.assertTrue(c.tick(now,p,True))
+   p.move_to.assert_called_with(goal,now)
+   self.assertEqual(c.purchase_goals(),[])
+   w.own.x,w.own.y=entry['position']
+   w.entities[88]=dataclasses.replace(w.own,identity=88,model=entry['model'],handle=900,
+                                     event_identity=88,event_id=entry['event_id'])
+   self.assertTrue(c.tick(now+1,p,True))
+   self.assertEqual(p.emit.call_args.args[0][8:],struct.pack('>BIIH',18,88,900,entry['event_id']))
+   self.assertTrue(c.tick(now+2,p,True))
+   self.assertEqual(c.confirmed,i)
+   w.entities.pop(88)
+   w.map=entry['to_map']
+   w.own.x,w.own.y=entry['arrival_cm']
+   p.nav=c.regions.nav(w.map)
+   self.assertFalse(c.tick(now+3,p,True))
+   self.assertEqual(c.confirmed,i+1)
+  self.assertEqual((w.map,p.nav.land_component(w.own.position)),('garner',23))
+  self.assertIsNone(c.regions.mine_exit_step(w.map,w.own.position,True))
+  self.assertFalse(w.bag)
+
  def test_waiting_for_tickets_releases_trip_after_bounded_attempt(self):
   w,c,p=self.make();c.plan=self.plan(w,'event');c.target_started=100
   c.life=SimpleNamespace(prices={4602:1000})

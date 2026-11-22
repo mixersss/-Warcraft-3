@@ -2,7 +2,7 @@
 import json
 import math
 import threading
-from functools import lru_cache
+from functools import cached_property,lru_cache
 from pathlib import Path
 from navigation import Navigation
 
@@ -115,6 +115,40 @@ class Regions:
                          if nav.land_component(p)==component and nav.combat_allowed(p)),default=math.inf)
             if closest<=25000:sites[int(identity)]=closest
         return sites
+
+    @cached_property
+    def mine_exit_entrance(self):
+        return next((e for e in (self.hunting_travel_data or {}).get('entrances',[])
+                     if e['name']=='Abandoned Mine 1 - Abandoned Mine 2'),None)
+
+    @cached_property
+    def mine_exit_steps(self):
+        # Source-backed exits from the detached Abandoned Mine 1 to the
+        # walkable Garner side of Silver Mine 1. Other mines retain normal travel.
+        names=('Abandoned Mine 1 - Abandoned Mine 2','Abandoned Mine 2 - Silver Mine 3',
+               'Silver Mine 3 - Silver Mine 2','Silver Mine 2 - Silver Mine 1')
+        by_name={row['name']:row for row in (self.hunting_travel_data or {}).get('entrances',[])}
+        if not all(name in by_name for name in names):return {}
+        result={};previous=None
+        for name in names:
+            entry=by_name[name]
+            source=self.nav(entry['map']).land_component(entry['position'])
+            target=self.nav(entry['to_map']).land_component(entry['arrival_cm'])
+            if not source or not target or (previous and previous!=(entry['map'],source)):return {}
+            result[entry['map'],source]=dict(entry,arrival_component=target)
+            previous=(entry['to_map'],target)
+        return result
+
+    def mine_exit_step(self,map_name,position,continuing):
+        if map_name not in (('garner','eastgoaf') if continuing else ('garner',)):return None
+        nav=self.nav(map_name)
+        # Do not load interior navigation on every outdoor decision.
+        component=nav.land_component(position)
+        if not component:return None
+        if not continuing:
+            start=self.mine_exit_entrance
+            if not start or component!=nav.land_component(start['position']):return None
+        return self.mine_exit_steps.get((map_name,component))
 
     def nav(self,name):
         if name not in self.navigation and name in self.map_catalog:

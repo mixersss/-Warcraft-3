@@ -406,7 +406,8 @@ class Hunter:
         route=self.nav.recovery_path(own.position,blocked) if hasattr(self.nav,'recovery_path') else []
         shore_probe=False
         if not route and self.offmesh_batch<4 and hasattr(self.nav,'shore_exit'):
-            route=self.nav.shore_exit(own.position,blocked);shore_probe=bool(route)
+            route=self.nav.shore_exit(own.position,blocked) or self.nav.shore_exit(own.position,blocked,maximum_cm=550)
+            shore_probe=bool(route)
         if not route and getattr(self.nav,'recovery_cells',None) is None and getattr(self.nav,'recovery_bits',None) is None:
             # Compatibility with older small grids; new maps use checked egress.
             goal=self.nav.nearest(own.position,3)
