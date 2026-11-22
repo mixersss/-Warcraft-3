@@ -24,6 +24,7 @@ def render(catalog,compat=False):
  if catalog.get('catalog_revision')==56:return (ROOT/'render-alpha56.lua').read_bytes()
  if catalog.get('catalog_revision')==57:return (ROOT/'render-alpha57.lua').read_bytes()
  if catalog.get('catalog_revision')==58:return (ROOT/'render-alpha58.lua').read_bytes()
+ if catalog.get('catalog_revision')==59:return (ROOT/'render-alpha59.lua').read_bytes()
  lines=['-- OWNER_CITY_SHOPS_V2_BEGIN','OwnerNativeShops = {}','OwnerNativeSelection = {}',
         'OwnerBasicGems={'+','.join('[%d]=true'%i['id'] for s in catalog['shops'] for i in s['items'] if i['kind'] in (49,50))+'}']
  if not compat:
@@ -63,5 +64,8 @@ def render(catalog,compat=False):
    lines.extend([' Text(2,"Back",JumpPage,1)',' Text(2,"Close",CloseTalk)'])
   lines.extend([' Text(1,"Close",CloseTalk)','end'])
  if catalog.get('catalog_revision',0)>=57:lines.append((ROOT/'possession.lua').read_text())
+ if catalog.get('catalog_revision',0)>=60:
+  lines.append((ROOT/'continuous_experience.lua').read_text())
+  lines.append((ROOT/'experience_diagnostics.lua').read_text())
  lines.append('-- OWNER_CITY_SHOPS_V2_END')
  return ('\n'.join(lines)+'\n').encode('ascii')

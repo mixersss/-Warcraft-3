@@ -126,6 +126,7 @@ class Hunter:
         self.crafting=None
         self.xp_boosters=None
         self.hunt_travel=None
+        self.camp_scouting=False
         from activity import Activity
         self.activity=Activity();self.offmesh_next=0;self.offmesh_requests=0
         from stuck_return import StuckReturn
@@ -642,6 +643,12 @@ class Hunter:
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
                 essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-(0 if i in (817,867,635) and feature.life.prices.get(i)==1 else 100) for i in critical)
+            # A missing staff/bow cannot be repaired by farming without it.
+            # Allow the supplier scan and paid trip even when its shop is in
+            # another city and the current-map offers contain no such weapon.
+            if hasattr(feature,'combat_supply_required') and feature.combat_supply_required() is True:essential_combat=True
+            trip=getattr(feature,'hunt_travel',None)
+            if trip and isinstance(trip.plan,dict) and trip.purchase_goals():essential_combat=True
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and (not getattr(feature,"progression_first",False) or feature.shift_allowed(self,now))
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
@@ -1260,6 +1267,9 @@ class Hunter:
         goals=list(dict.fromkeys(self.nav.nearest(p) for p in raw_goals))
         goals=[p for p in goals if p and self.goal_blacklist.get(p,0)<=now]
         if not goals:
+            if self.camp_scouting:
+                for model in self.planned_models():self.learning.avoid[model]=max(self.learning.avoid.get(model,0),now+15)
+                self.learning.until=0
             self.change('нет свободного проверенного маршрута; повторный поиск')
             self.next_action=now+2
             return
@@ -1276,7 +1286,7 @@ class Hunter:
             speed=max(100,self.world.own.values.get(44,480))
             self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
         if distance(self.position(now),goal)<300 or now>self.search_deadline:
-            self.goal_blacklist[goal]=now+20
+            self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             self.clear_zone()
             self.waypoint+=1
@@ -1527,7 +1537,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.adventure=policy.career=policy.story=None
         policy.optional_quests=False;policy.town.professions=policy.town.treasure=None
         policy.professions=policy.treasure=None
-        policy.petcare.maintenance_only=True
+        policy.petcare.maintenance_only=life.owner_shops.get('catalog_revision',0)<60
+        policy.petcare.progression_first=life.owner_shops.get('catalog_revision',0)>=60
+        if policy.repair:policy.repair.preventive=life.owner_shops.get('catalog_revision',0)>=60
         policy.town.next_break=float('inf')
         if policy.loot:
             policy.loot.collect_all=False;policy.loot.allowed_items=set(LOOT)
@@ -1559,6 +1571,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             if policy.market:
                 policy.market.forging_economy=True;policy.market.gem_seller=policy.economy.economic_role=='gem_seller'
                 policy.market.crafting=policy.crafting
+        if life.owner_shops.get('catalog_revision',0)>=60:policy.camp_scouting=True
     if policy.bank:policy.bank.patchouli_audit=True
     if policy.market:policy.market.progression_first=True
     social.context_provider=context_line
@@ -1640,8 +1653,12 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                          quests=policy.adventure.delivered if policy.adventure else 0,
                          target_job=role['target_job'] if role else 0)
 
+    from xp_diagnostics import XPDiagnostics
+    xp_diagnostics=XPDiagnostics()
     def observe(command, payload):
         now=time.monotonic()
+        if xp_diagnostics.observe(command,payload):
+            report.result['xp_server']=xp_diagnostics.summary();return
         if policy.treasure:policy.treasure.observe(command,payload)
         if command==811 or command in range(812,820):
             if policy.direct_trade:policy.direct_trade.observe(command,payload,now,policy)

@@ -1,0 +1,62 @@
+{
+  "source": "owner supplied three Alpha59 reports; no account or raw transcript data",
+  "owner_observation": "server ran three days; no character above37; not independently measured",
+  "rows": [
+    {
+      "index": 278,
+      "version": "AutoAccountsAlpha59",
+      "level": 13,
+      "job": 5,
+      "state": "готовит магию: навык не активирован сервером",
+      "attacks": 0,
+      "observed_deaths": 0,
+      "session_xp_net": 0,
+      "selected_models": [
+        227
+      ],
+      "skill99": 3,
+      "native_core_spell_state": 0,
+      "native_xp_scale_measured": false
+    },
+    {
+      "index": 28,
+      "version": "AutoAccountsAlpha59",
+      "level": 27,
+      "job": 5,
+      "state": "покупки у городского торговца",
+      "attacks": 21,
+      "observed_deaths": 3,
+      "session_xp_net": 0,
+      "selected_models": [
+        85
+      ],
+      "skill99": 1,
+      "native_core_spell_state": 1,
+      "native_xp_scale_measured": false
+    },
+    {
+      "index": 11,
+      "version": "AutoAccountsAlpha59",
+      "level": 34,
+      "job": 2,
+      "state": "планирует безопасный маршрут; продолжает принимать сеть",
+      "attacks": 0,
+      "observed_deaths": 0,
+      "session_xp_net": 0,
+      "selected_models": [
+        136
+      ],
+      "skill99": null,
+      "native_core_spell_state": null,
+      "native_xp_scale_measured": false
+    }
+  ],
+  "specific_code_findings": [
+    "required foreign staff shopping gated by emergency hunting",
+    "outbound plan gated on return-ticket ownership before purchase goals existed",
+    "large farm lists evaluated against all leases under shared lock",
+    "first pet purchases and existing fairy growth deferred by maintenance-only flag",
+    "native online-time XP reduction exists; actual zero coefficient in owner reports not measured"
+  ],
+  "rates_not_inferred_from_level_caps": true
+}

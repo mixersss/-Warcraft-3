@@ -67,6 +67,14 @@ class Regions:
         self.full_regions=forging_economy
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
         for nav in self.navigation.values():nav.enable_incremental()
+        if self.life.owner_shops and self.life.owner_shops.get('catalog_revision',0)>=60 and self.mob_knowledge:
+            from farm_scouting import scout_points
+            for name,region in self.data.items():
+                nav=self.navigation[name]
+                for identity,farm in region['farms'].items():
+                    locations=self.mob_knowledge.by_map.get(name,{}).get(int(identity),[])
+                    farm['points']=scout_points(nav,locations,farm['points'])
+                    farm['source_region_scouting']=True
 
     def get(self,name):
         if name not in self.data and getattr(self,'full_regions',False) and name in self.map_catalog and self.mob_knowledge:

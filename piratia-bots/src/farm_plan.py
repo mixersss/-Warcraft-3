@@ -225,6 +225,12 @@ class HuntLearning:
             and now-self.probe_attempts.get(m,-1e9)>=300]
     self.next_idle_probe=now+120
    if unseen:
+    if position is not None and scored:
+     nearby=min(min(math.dist(position,p) for p in region['farms'][str(m)]['points']) for _,m in scored)
+     # An idle probe must not abandon an available camp for an ever more
+     # distant unknown species. Real paid travel is planned separately.
+     unseen=[(s,m) for s,m in unseen if min(math.dist(position,p) for p in region['farms'][str(m)]['points'])<=nearby+6000]
+   if unseen:
     if idle_trial:self.idle_probes+=1
     self.last_probe_trial=trials
     # Finish one trial before spending another trip on the same fight counter.

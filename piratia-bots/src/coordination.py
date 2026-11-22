@@ -60,6 +60,10 @@ class Coordination:
         """Keep a leased destination; otherwise prefer the least occupied real farm."""
         if not goals:return None
         goals=list(dict.fromkeys(tuple(p) for p in goals))
+        if origin is not None and len(goals)>24:
+            # Do not evaluate every destination against400leases under one
+            # shared lock. Only nearby real destinations can win this visit.
+            goals=sorted(goals,key=lambda p:math.dist(origin,p))[:24]
         with self.lock:
             self._expire(now)
             previous=self.zones.get(owner)

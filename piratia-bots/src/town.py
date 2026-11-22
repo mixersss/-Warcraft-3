@@ -42,6 +42,17 @@ class Town:
         self.visit_started=None;self.visit_key=None;self.approach_timeouts=0
     def urgent_coral(self):
         return self.world.own.values.get(4) in (4,16) and not damage_ready(self.world,self.gear)
+    def combat_supply_required(self):
+        w=self.world;job=w.own.values.get(4)
+        if job in (4,16):return self.urgent_coral()
+        kinds=(9,) if job in (5,13,14) else (3,4) if job in (2,12) else ()
+        if not kinds:return False
+        for link in ((9,) if 9 in kinds else (6,9)):
+            identity=w.own.equipment.get(link);detail=w.own.equipment_details.get(link,{})
+            if (self.gear.types.get(identity) in kinds and detail.get('valid',True)
+                    and (detail.get('max_endurance',0)<=0 or detail.get('endurance',0)>0)):return False
+        return not any(self.gear.types.get(i.identity) in kinds and self.gear.compatible(w.own,i.identity,i) and i.valid
+                       and (i.max_endurance<=0 or i.endurance>0) for i in w.bag.values())
     def note_progress(self,kills,quests):
         if self.work_baseline is None:self.work_baseline=(kills,quests)
         self.work_kills=max(0,kills-self.work_baseline[0]);self.work_quests=max(0,quests-self.work_baseline[1])
@@ -126,6 +137,7 @@ class Town:
         critical=self.critical_items()
         if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity:critical.append(identity)
         essential=identity in self.combat_items or identity in PET_IDS|{1847,2312,227,4602,4603,4604}
+        if self.hunt_travel and self.hunt_travel.plan and identity in {i for i,n,r in self.hunt_travel.purchase_goals()}:essential=True
         if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity and self.gear.types.get(identity) in (3,4,9,29):essential=True
         if self.petcare and not essential:reserve+=min(max(0,cash-reserve),self.petcare.savings())
         goal=self.equipment_goal()

@@ -95,7 +95,8 @@ class HuntTravel:
     if route['to_map']!='garner' or not any(math.dist(route['arrival_cm'],p)<3000 for p in argents):continue
     score=1/(1+math.dist(w.own.position,route.get('position',w.own.position))/250+route['fare']/400)
     rows.append((score,route,None));continue
-   if not self.count(4602):continue
+   # Planning a paid trip must be possible BEFORE buying its tickets. Actual
+   # departure below still requires an owned return ticket and native use.
    approach=math.dist(policy.position(now),route.get('position',policy.position(now)))/250
    for model,distance in self.nearby(route['to_map'],route['arrival_cm']):
     score=self.rate(model,policy,now)
@@ -156,11 +157,14 @@ class HuntTravel:
    if now<self.next_check and not returning:return False
    self.plan=self.choose(now,policy,returning);self.next_check=now+120;self.target_started=now
   if not self.plan:return False
+  if not returning and not self.count(4602):
+   self.target_started=now;self.reason='Покупает собственный обратный билет перед дальней охотой';return False
   if now-self.target_started>120:self.abort(now,'Истекло время подхода к переходу');return False
   plan=self.plan;self.reason='Переход к точке прокачки: '+plan['name']
   if plan['kind']=='ticket':
    slot=next((s for s,i in w.bag.items() if i.identity==plan['item_id'] and i.valid),None)
-   if slot is None:return False # Normal Town purchase controller handles it.
+   if slot is None:
+    self.target_started=now;return False # Normal Town purchase controller handles it.
    if any(w.own.values.get(a,0)<w.own.values.get(b,1) for a,b in ((1,31),(2,32))):
     policy.resting=True;policy.mana_resting=True;self.reason='Восстанавливает HP/SP для собственного билета';return False
    from hunter import action_header

@@ -18,6 +18,7 @@ class Repairs:
         self.world,self.npcs,self.gear,self.send=world,npcs,gear,send
         self.context=None;self.pending=None;self.target=None;self.candidate=None;self.failed={};self.next_try=0
         self.reason='';self.requests=self.confirmed=self.refused=self.timeouts=0;self.last_quote=None
+        self.preventive=False;self.visit_started=None;self.approach_timeouts=0
     @property
     def busy(self):return self.context is not None or self.pending is not None
     def item(self,key):
@@ -33,13 +34,15 @@ class Repairs:
                 identity=get('identity');meta=self.gear.gear.get(identity)
                 maximum=get('max_endurance',0);endurance=get('endurance',maximum)
                 if not meta or meta['kind'] not in (1,2,3,4,7,11,20,22,23,24,27,9) or maximum<=2500 or endurance>=maximum or not self.gear.compatible(w.own,identity):continue
-                if get('valid',True) and endurance>max(50,maximum//5):continue
+                threshold=maximum//3 if self.preventive and kind==1 and meta['kind'] in essential else maximum//5
+                if get('valid',True) and endurance>max(50,threshold):continue
                 if kind==2 and meta['kind'] not in essential and not self.gear.upgrade(w.own,identity):continue
                 result.append(((meta['kind'] not in essential,get('valid',True),kind,endurance/max(1,maximum),slot),(kind,slot)))
         return [key for _,key in sorted(result)]
     def finish(self,now,reason='',failed=False):
         if failed and self.target:self.failed[self.target['key']]=now+60
         self.context=self.pending=self.target=self.candidate=None;self.next_try=now+(15 if failed else 0);self.reason=reason
+        self.visit_started=None
     def observe(self,command,payload,now):
         if not self.context:return False
         npc,stage,deadline=self.context
@@ -91,7 +94,17 @@ class Repairs:
             shops=[n for n in self.npcs.by_service.get('repair',()) if n['map']==w.map and self.failed.get(n['key'],0)<=now]
             if not shops:self.reason='на текущей карте нет подтверждённого мастера ремонта';return False
             self.target=min(shops,key=lambda n:math.dist(policy.position(now),n['position']))
+            self.visit_started=now
         point=self.target['position'];actor=npc_near(w,point);self.reason='идёт чинить классовое оружие и изношенную экипировку'
+        if self.visit_started is None:self.visit_started=now
+        if now-self.visit_started>=120:
+            self.approach_timeouts+=1;self.finish(now,'Не дошёл до мастера за120с; проверяет другой ремонт',True);return False
+        returner=getattr(policy,'stuck_return',None)
+        centre=getattr(getattr(policy,'town',None),'life',None)
+        centre=centre.services.get('city_centres',{}).get(w.map) if centre else None
+        if (returner and centre and math.dist(policy.position(now),point)>8000 and math.dist(point,centre)<5000
+                and returner.tick(now,policy,destination=w.map) is True):
+            self.reason=returner.reason;return True
         if actor and math.dist(actor.position,policy.position(now))<=220:
             key=choices[0];item=self.item(key);get=item.get if isinstance(item,dict) else lambda k,d=None:getattr(item,k,d)
             self.candidate={'key':key,'fingerprint':fingerprint(item),'endurance':get('endurance',0)}
@@ -100,4 +113,4 @@ class Repairs:
             goal=policy.nav.nearest((point[0]+dx,point[1]+dy),2)
             if goal and math.dist(goal,point)<=220 and policy.move_to(goal,now):return True
         self.finish(now,'ищет другого доступного мастера ремонта',True);return False
-    def summary(self):return {'state':self.reason,'repair_requests':self.requests,'confirmed_repairs':self.confirmed,'refused_quotes':self.refused,'timeouts':self.timeouts,'last_native_quote':self.last_quote,'pending':self.busy,'damaged_slots':[list(k) for k in self.candidates()]}
+    def summary(self):return {'approach_timeouts':self.approach_timeouts,'preventive_weapon_threshold':1/3 if self.preventive else .2,'state':self.reason,'repair_requests':self.requests,'confirmed_repairs':self.confirmed,'refused_quotes':self.refused,'timeouts':self.timeouts,'last_native_quote':self.last_quote,'pending':self.busy,'damaged_slots':[list(k) for k in self.candidates()]}

@@ -22,9 +22,9 @@ class CombatSkills:
     def usable(self,identity,now,ignore_cooldown=False,ignore_mana=False):
         own=self.world.own;rule=self.rules.get(identity);skill=self.world.skills.get(identity,{})
         if not rule or not skill.get('level') or own.values.get(4) not in rule['jobs']:return False
-        if skill.get('state')!=1:self.reason='навык не активирован сервером';return False
         if not self.hand_ok(6,rule['left']) or not self.hand_ok(9,rule['right']) or not self.hand_ok(2,rule['body']):
             self.reason='не выполнено требование оружия';return False
+        if skill.get('state')!=1:self.reason='навык не активирован сервером';return False
         if rule['coral']:
             link,_,kind=rule['coral'];item=own.equipment.get(link,0);details=own.equipment_details.get(link,{})
             if self.catalog.types.get(item)!=kind:self.reason='нет нужного коралла';return False

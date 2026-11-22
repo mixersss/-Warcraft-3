@@ -448,6 +448,7 @@ class World:
                 'position': list(own.position) if own else None,
                 'hp': own.values.get(HP) if own else None,
                 'max_hp': own.values.get(MAX_HP) if own else None,
+                'combat_attributes':{str(k):own.values.get(k) for k in (2,26,29,32,33,34,35,43,44)} if own else {},
                 'existence_state':own.state if own else None,
                 'level': own.values.get(LV) if own else None,
                 'default_skill': self.default_skill, 'updates': self.updates,

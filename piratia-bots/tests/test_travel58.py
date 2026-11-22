@@ -18,6 +18,7 @@ from classic_wire import string
 class Travel58Tests(unittest.TestCase):
  def make(self):
   w=source.actor();w.own.values.update({0:35,1:1200,2:100,31:1200,32:100});w.map='garner';w.items={}
+  w.bag={0:source.item(4602)}
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
   regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}})
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
@@ -51,7 +52,9 @@ class Travel58Tests(unittest.TestCase):
   self.assertFalse(c.tick(100,p,True));self.assertIsNone(c.plan);p.emit.assert_not_called();self.assertTrue(c.blocked)
  def test_far_trip_needs_owned_return_ticket_even_for_portals(self):
   w,c,p=self.make();c.routes=lambda *a:[self.plan(w)];c.nearby=lambda *a:[(295,0)];c.rate=lambda *a:1
-  self.assertIsNone(c.choose(100,p))
+  w.bag={}
+  c.plan=c.choose(100,p);self.assertIsNotNone(c.plan);c.target_started=100
+  self.assertFalse(c.tick(100,p,True));p.emit.assert_not_called();c.send.assert_not_called()
   w.bag={0:source.item(4602)};self.assertIsNotNone(c.choose(100,p))
  def test_published_knowledge_covers_real_tickets_nodes_and_entries(self):
   data=json.loads((ROOT/'assets/hunting-travel58.json').read_text())

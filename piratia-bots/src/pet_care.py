@@ -65,6 +65,7 @@ class PetCare:
   if self.fairy() or not self.world.own.values.get(4,0) or not owner or not owner.get('fresh_fairies'):return 0
   return self.life.prices.get(self.preferred,0)+max(0,2-self.count(2312))*self.life.prices.get(2312,0)
  def affordable_care(self):
+  if getattr(self,'progression_first',False) and not self.any_fairy():return False
   for identity,count,_ in self.purchase_goals():
    if identity not in PET_IDS|{2312,227}:continue
    reserve=100+(max(0,2-self.count(2312))*self.life.prices.get(2312,0) if identity in PET_IDS else 0)
