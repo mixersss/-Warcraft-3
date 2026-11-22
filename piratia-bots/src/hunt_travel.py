@@ -82,7 +82,7 @@ class HuntTravel:
   w=self.world
   services=getattr(policy,'owner_services',None)
   if services and services.need():return True
-  settling=self.settling_site(now,policy) or policy.camp_route_active(now)
+  settling=self.settling_site(now,policy) or policy.hunt_before_errands(now)
   free=(w.bag_capacity or 0)-len(w.bag)
   if free<=0 or (not settling and (free<=4 or sum(i.count for i in w.bag.values() if i.identity==1000)>=30)):
    shops=self.life.services['shops'].get(w.map,[])
@@ -164,13 +164,13 @@ class HuntTravel:
   if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled or w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
-  if not returning and (self.settling_site(now,policy) or policy.camp_route_active(now)):return False
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))
   if returning and near_argent:
    self.plan=None;self.preferred_model=None
    return False
   if self.plan and (self.plan['map']!=w.map or self.plan.get('returning',False)!=returning):
    self.abort(now,'Условия поездки изменились');return False
+  if not returning and (self.settling_site(now,policy) or policy.camp_route_active(now)):return False
   if not returning and self.economy.phase(w,now)!='progression':
    if self.plan:self.abort(now,'Фаза дальней охоты завершена')
    return False

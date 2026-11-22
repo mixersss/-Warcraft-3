@@ -195,6 +195,11 @@ class Hunter:
     def camp_route_active(self,now):
         return bool((self.search_goal and now<self.search_deadline) or now<self.camp_arrival_until)
 
+    def hunt_before_errands(self,now):
+        last=self.learning.last_progress_at
+        return self.camp_route_active(now) or bool(
+            getattr(self,'fast_progression',False) and self.region and last is not None and now-last>=180)
+
     def available_spot(self,point,now):
         return not any(e.identity!=self.world.own_id and e.control==1 and e.alive
                        and distance(point,self.world.position(now,e.identity))<100
@@ -651,11 +656,14 @@ class Hunter:
             if key in ('market','story','career','adventure'):return False
             if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
-        if key=='market' and self.camp_route_active(now):return False
-        if (key=='town' and feature and (self.camp_route_active(now)
+        if key=='market' and self.hunt_before_errands(now):return False
+        if (key=='town' and feature and (self.hunt_before_errands(now)
                 or (self.hunt_travel and self.hunt_travel.settling_site(now,self)))
                 and not (feature.context or feature.pending or feature.combat_supply_required()
-                         or (self.petcare and self.petcare.urgent_hunger()))):
+                         or (self.petcare and self.petcare.urgent_hunger())
+                         or (not self.camp_route_active(now) and self.hunt_travel and self.hunt_travel.plan
+                             and not self.hunt_travel.plan.get('returning')
+                             and self.hunt_travel.purchase_goals()))):
             return False
         can_sell_full=(key=='market' and (self.world.skills.get(241,{}).get('level',0)>0 or
                        self.world.own.values.get(13,0)>0 and any(i.identity==3296 and i.valid for i in self.world.bag.values())))
@@ -858,7 +866,7 @@ class Hunter:
             self.adventure.review_objective(now,busy=bool(current and current.alive))
         self.update_tactic(now)
         if self.economy:
-            self.economy.camp_hunting=self.camp_route_active(now)
+            self.economy.camp_hunting=self.hunt_before_errands(now)
             self.economy.group_hunting=bool(self.group_hunt and self.group_hunt.active())
             target=self.world.entities.get(self.target)
             self.economy.busy=bool(self.group_hunt and self.group_hunt.active()) or bool(target and target.alive) or self.transaction_busy() or bool(self.pending_action) or any(
@@ -1389,6 +1397,7 @@ class Hunter:
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
         return {'sites':sites,'current_goal_cm':self.search_goal,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
+                'hunt_before_errands':self.hunt_before_errands(self.clock),
                 'source_regions_not_live_monster_positions':True}
 
     def farm_reason(self):

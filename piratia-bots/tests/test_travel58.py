@@ -22,7 +22,7 @@ class Travel58Tests(unittest.TestCase):
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
   regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0})
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
-  p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None),camp_route_active=lambda now:False)
+  p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None),camp_route_active=lambda now:False,hunt_before_errands=lambda now:False)
   c.needs_town=lambda *a:False
   return w,c,p
  def plan(self,w,kind='portal'):
@@ -92,6 +92,41 @@ class Travel58Tests(unittest.TestCase):
   self.assertTrue(c.needs_town(p,100))
   p.owner_services=None
   self.assertTrue(c.needs_town(p,250))
+
+ def test_expired_camp_route_does_not_send_an_xp_starved_bot_back_to_argent(self):
+  from test_coordination import CohortCombatTests
+  CohortCombatTests.setUpClass()
+  w,p=CohortCombatTests().policy(monsters=0)
+  w.own.values.update({0:32,4:2})
+  w.own.x,w.own.y=198751,266614
+  w.bag_ready=True;w.bag_capacity=48;w.bag={0:source.item(4602)}
+  p.fast_progression=True
+  p.region={'farms':{}}
+  p.search_goal=(155150,266150)
+  p.search_deadline=940
+  p.learning.last_progress_at=10
+  _,c,_=self.make()
+  del c.needs_town
+  c.world=w
+  p.market=SimpleNamespace(offers=lambda policy:[1])
+  c.economy.phase=lambda *a:'trade'
+  c.plan=dict(self.plan(w,'ticket'),item_id=4602,returning=True)
+  p.emit=Mock()
+  self.assertFalse(p.camp_route_active(941))
+  self.assertTrue(p.hunt_before_errands(941))
+  self.assertFalse(c.tick(941,p,True))
+  self.assertIsNone(c.plan)
+  p.emit.assert_not_called()
+  w.bag_capacity=1
+  self.assertTrue(c.needs_town(p,941))
+  w.bag_capacity=48
+  p.learning.last_progress_at=942
+  self.assertTrue(c.needs_town(p,943))
+  p.learning.last_progress_at=10
+  c.economy.phase=lambda *a:'progression'
+  c.choose=Mock(return_value=None)
+  self.assertFalse(c.tick(1010,p,True))
+  c.choose.assert_called_once_with(1010,p,False)
 
  def test_event_requires_visible_matching_native_identity_and_exact_action(self):
   w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,event_model=193,model=295);c.target_started=100
