@@ -119,8 +119,12 @@ class ItemCatalog:
             if item.endurance>worn.get('endurance',0):return 1,[chosen]
         # A depleted coral may be replaced by a fresh copy of the same item ID.
         if self.gear[identity].get('kind')==29:
+            if hasattr(own,'required_coral_links') and chosen not in own.required_coral_links:return None
             old_id=own.equipment.get(chosen,0);old=own.equipment_details.get(chosen,{})
-            if old_id and old.get('identity')==old_id and (old.get('energy',energy_need)<energy_need or old.get('valid') is False):
+            if self.types.get(old_id)==29 and old.get('identity')==old_id and (old.get('energy',energy_need)<energy_need or old.get('valid') is False):
+                if item is None or item.energy>=energy_need:return 1,[chosen]
+                return None
+            if hasattr(own,'required_coral_links') and chosen in own.required_coral_links and self.types.get(old_id)!=29:
                 if item is None or item.energy>=energy_need:return 1,[chosen]
                 return None
         # Compare only affected links: unrelated unknown armour is not a blocker.
@@ -224,7 +228,12 @@ class Equipment:
             coral_skill={5:213,6:216,7:214}.get(next(iter(gear.get('links',[])),None))
             need=max(1,self.world.skills.get(coral_skill,{}).get('energy',1))
             upgrade=self.catalog.upgrade(own,item.identity,free,item,need)
-            if upgrade:options.append((upgrade[0],slot,item.identity,upgrade[1]))
+            if upgrade:
+                urgent_coral=(gear.get('kind')==29 and upgrade[1][0] in own.required_coral_links
+                    and (self.catalog.types.get(own.equipment.get(upgrade[1][0]))!=29
+                         or own.equipment_details.get(upgrade[1][0],{}).get('energy',0)<need
+                         or own.equipment_details.get(upgrade[1][0],{}).get('valid') is False))
+                options.append((upgrade[0]+(1000000 if urgent_coral else 0),slot,item.identity,upgrade[1]))
             elif item.identity in self.catalog.gear:
                 gear=self.catalog.gear[item.identity]
                 reason=('нужен уровень '+str(gear['level']) if gear['level']>level else

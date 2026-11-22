@@ -65,6 +65,13 @@ class Regions:
         travel=self.assets/'hunting-travel58.json'
         self.hunting_travel_data=json.loads(travel.read_text()) if travel.exists() else None
         self.full_regions=forging_economy
+        # Home-city tables predate the land/sea audit. A dry point inside a
+        # huge sea spawn rectangle does not make its monster a ground target.
+        if self.mob_knowledge:
+            for region in self.data.values():
+                region['farms']={identity:dict(farm,territory=0)
+                    for identity,farm in region['farms'].items()
+                    if (self.mob_knowledge.get(int(identity)) or {}).get('territory')==0}
         self.navigation={name:Navigation(self.assets/info['navigation']) for name,info in self.data.items()}
         for nav in self.navigation.values():nav.enable_incremental()
         if self.life.owner_shops and self.life.owner_shops.get('catalog_revision',0)>=60 and self.mob_knowledge:
@@ -86,7 +93,7 @@ class Regions:
                 for location in locations:
                     lo,hi=location['rectangle_cm']
                     points.extend([(int((lo[0]+hi[0])/2),int((lo[1]+hi[1])/2)),tuple(lo),tuple(hi),(lo[0],hi[1]),(hi[0],lo[1])])
-                farms[str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},'points':list(dict.fromkeys(points)),'source_regions_not_live_positions':True}
+                farms[str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},'territory':0,'points':list(dict.fromkeys(points)),'source_regions_not_live_positions':True}
             births=(self.hunting_travel_data or {}).get('birthplaces',{})
             spawns=list(dict.fromkeys(tuple(p) for b in births.values() if b['map']==name for p in b['points']))
             self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})

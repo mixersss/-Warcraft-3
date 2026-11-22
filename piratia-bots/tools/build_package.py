@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-60'
-NAME = 'Piratia-Auto-Bots-Alpha60'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-61'
+NAME = 'Piratia-Auto-Bots-Alpha61'
 
 
 def main():
@@ -25,6 +25,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA58.md',ROOT/'knowledge/ALPHA58-INSTALL.md',ROOT/'tools/build_travel58.py']
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
+    sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -395,6 +396,7 @@ def main():
     manifest.update(alpha58={'bot_tests':929,'native_tests':49,'legacy_tests':12,'gem_sellers':120,'native_forge_modes':[1,2,3,4,5],'normal_and_refining_combinations':True,'success_for_valid_operations':1.0,'normal_gem_cap':9,'created_socket_cap':2,'fusion_upgrade_cap':15,'island_portal_nodes':8,'island_routes':56,'native_tickets':43,'map_entrances':119,'live_windows_verified':False},status='Alpha58 cumulative: paid native crafting, gem market roles, source-backed island/ticket/event travel and native EXP consumables; includes Alpha57 stability/Possession fixes.')
     manifest.update(alpha59={'bot_tests':936,'native_tests':51,'legacy_tests':12,'classic_combat_spell_compatibility':True,'stall_state_id':99,'closure_resync_after_seconds':60,'live_windows_verified':False},status='Alpha59 cumulative: classic missing-core-spell fallback and bounded stall closure recovery; Alpha58 forging/economy preserved.')
     manifest.update(alpha60={'bot_tests':953,'native_tests':55,'legacy_tests':12,'critical_foreign_combat_supplies':True,'prepurchase_travel_planning':True,'source_rectangle_scouting':True,'normal_player_exp_scale_floor':100,'configured_exp_rate_unchanged':True,'native_xp_receipts':True,'fairy_growth_restored':True,'preventive_weapon_repair_threshold':1/3,'live_windows_verified':False},status='Alpha60 cumulative: source-backed scouting, mandatory staff/tickets, continuous native XP, restored fairy growth and preventive repair; includes previous releases.')
+    manifest.update(alpha61={'bot_tests':971,'native_tests':55,'legacy_tests':12,'minimum_server_revision':60,'ground_camps_only':True,'required_coral_first':True,'prequote_repair_backoff':True,'hunting_coordinates_in_reports':True,'live_windows_verified':False},status='Alpha61 cumulative: land hunting, required coral priority, food/staff deadlock and repair/supply loops; native60 unchanged.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

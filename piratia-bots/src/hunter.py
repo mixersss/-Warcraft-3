@@ -558,7 +558,7 @@ class Hunter:
             for model,record in self.region['farms'].items():
                 points=[p for p in record['points'] if self.nav.land_component(p)==component]
                 if points:farms[model]=dict(record,points=points)
-            self.local_region_key=key;self.local_region=dict(self.region,farms=farms) if farms else self.region
+            self.local_region_key=key;self.local_region=dict(self.region,farms=farms)
         return self.local_region
 
     def starter_models(self):
@@ -731,6 +731,9 @@ class Hunter:
 
     def eligible(self, entity, now, models=None):
         own = self.world.own
+        if self.mob_knowledge:
+            record=self.mob_knowledge.get(entity.model)
+            if record and record.get('territory')!=0:return False
         models=set(models) if models is not None else ({self.world.entities[self.assist_target].model} if self.assist_target in self.world.entities else self.planned_models())
         if entity.identity==self.target and self.opportunity_model:models=set(models)|{self.opportunity_model}
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:return False
@@ -1266,6 +1269,9 @@ class Hunter:
             raw_goals=[self.nav.waypoints[i] for i in self.route]
         goals=list(dict.fromkeys(self.nav.nearest(p) for p in raw_goals))
         goals=[p for p in goals if p and self.goal_blacklist.get(p,0)<=now]
+        if hasattr(self.nav,'land_component'):
+            component=self.nav.land_component(self.position(now))
+            if component:goals=[p for p in goals if self.nav.land_component(p)==component]
         if not goals:
             if self.camp_scouting:
                 for model in self.planned_models():self.learning.avoid[model]=max(self.learning.avoid.get(model,0),now+15)
@@ -1296,6 +1302,21 @@ class Hunter:
             self.clear_zone()
             self.next_action=now+1
 
+    def hunting_coordinates(self):
+        """Bounded source-backed sites, in native cm and the client's tile units."""
+        region=self.local_hunting_region();sites=[]
+        if region and self.world.own:
+            origin=self.position(self.clock)
+            for model in sorted(self.planned_models()):
+                farm=region['farms'].get(str(model))
+                if not farm or farm.get('territory',0)!=0:continue
+                points=sorted(farm['points'],key=lambda p:distance(origin,p))[:3]
+                record=self.mob_knowledge.get(model) if self.mob_knowledge else None
+                sites.append({'model':model,'name':record.get('name') if record else None,'level':farm['level'],
+                    'map':self.world.map,'points_cm':[list(p) for p in points],
+                    'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
+        return {'sites':sites,'current_goal_cm':self.search_goal,'source_regions_not_live_monster_positions':True}
+
     def farm_reason(self):
         models=set(self.planned_models())
         if self.raising_travel_funds and self.economy:return {'source':'class_travel_funding','models':sorted(models),'goal_gold':500,'patchouli_sale_to_npc':True}
@@ -1318,7 +1339,7 @@ class Hunter:
     def summary(self):
         return {'escape_plan':self.escape_plan.summary() if self.escape_plan else {},'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
                 'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
-                'hunting_learning':self.learning.summary(),
+                'hunting_learning':self.learning.summary(),'hunting_coordinates':self.hunting_coordinates(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
                                'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
@@ -1539,7 +1560,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.professions=policy.treasure=None
         policy.petcare.maintenance_only=life.owner_shops.get('catalog_revision',0)<60
         policy.petcare.progression_first=life.owner_shops.get('catalog_revision',0)>=60
-        if policy.repair:policy.repair.preventive=life.owner_shops.get('catalog_revision',0)>=60
+        if policy.repair:
+            policy.repair.preventive=life.owner_shops.get('catalog_revision',0)>=60
+            policy.repair.budget_preflight=life.owner_shops.get('catalog_revision',0)>=60
         policy.town.next_break=float('inf')
         if policy.loot:
             policy.loot.collect_all=False;policy.loot.allowed_items=set(LOOT)
@@ -1694,7 +1717,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                     report.result['party_decode']='unsupported';policy.party=None;policy.group_hunt=None
                     public_chat.recruitment_provider=None
             return
-        if policy.repair and policy.repair.context and command in (802,544,546):
+        if policy.repair and policy.repair.context and command in (517,802,544,546):
             try:
                 if policy.repair.observe(command,payload,now):return
             except ProtocolError:

@@ -111,7 +111,7 @@ class HuntLearning:
  def minimum_farm_level(self,region,own,now):
   level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
   for model,r in region['farms'].items():
-   if (r['points'] and level-3<=r['level']<=level+max(3,self.profile[1])
+   if (r.get('territory',0)==0 and r['points'] and level-3<=r['level']<=level+max(3,self.profile[1])
        and not self.blocked(int(model),now) and not self.dangerous(int(model),now)
        and r['hp']<=hp*self.profile[3]):
     return max(1,level-5)
@@ -122,7 +122,7 @@ class HuntLearning:
   floor=self.minimum_farm_level(region,own,now)
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
-   if not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
+   if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
    if not floor<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
@@ -153,9 +153,11 @@ class HuntLearning:
    self.session_gain+=max(0,delta);self.session_loss+=max(0,-delta);self.session_last_xp=xp
   previous=self.progress_signature;self.progress_signature=progress
   if previous is None or progress[0]>previous[0] or progress[1]>previous[1]:self.last_progress_at=now
+  self.selected={m for m in self.selected if str(m) in region['farms'] and region['farms'][str(m)].get('territory',0)==0}
   if hold and self.selected:return set(self.selected)
   idle_trial=now-self.last_progress_at>=90 and now>=self.next_idle_probe
-  signature=(own.values.get(0,1),own.values.get(4,0),tuple(sorted(own.equipment.items())),fallback)
+  signature=(own.values.get(0,1),own.values.get(4,0),tuple(sorted(own.equipment.items())),fallback,id(region))
+  self.region_reference=region # Keep the identity alive while its cache is used.
   if signature==self.signature and now<self.until and not idle_trial:return set(self.selected)
   if self.signature and signature[:3]!=self.signature[:3]:self.avoid.clear();self.danger_until.clear()
   self.signature=signature;level=own.values.get(0,1);max_hp=max(1,own.values.get(31,1))
@@ -164,7 +166,7 @@ class HuntLearning:
   scored=[];alternatives=[];self.scores={};self.candidate_details={}
   for model,record in region['farms'].items():
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
-   if not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
+   if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
    if level<=3 and model==75 and not self.rows:continue
    primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
             and not (level<=3 and model==71))

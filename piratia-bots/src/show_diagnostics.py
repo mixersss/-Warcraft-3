@@ -36,6 +36,7 @@ def render_report(report):
     lines.append('  Знания НПС: '+json.dumps(fight.get('npc_knowledge',{}),ensure_ascii=False))
     lines.append('  Билд и очки: '+json.dumps(report.get('progression',{}),ensure_ascii=False))
     lines.append('  Причина выбора мобов: '+json.dumps(fight.get('farm_reason',{}),ensure_ascii=False))
+    lines.append('  Координаты кача (карта, уровень, точки): '+json.dumps(fight.get('hunting_coordinates',{}),ensure_ascii=False))
     lines.append('  Текущая цель и её выгодность: '+json.dumps(fight.get('farm_plan',{}).get('target'),ensure_ascii=False))
     lines.append('  Исключённые невыгодные виды: '+json.dumps(fight.get('hunting_learning',{}).get('inefficient_models',[]),ensure_ascii=False))
     lines.append('  Развитие навыков: '+json.dumps(report.get('skills',{}).get('development_plan',{}),ensure_ascii=False))

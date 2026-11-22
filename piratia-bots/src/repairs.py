@@ -19,6 +19,7 @@ class Repairs:
         self.context=None;self.pending=None;self.target=None;self.candidate=None;self.failed={};self.next_try=0
         self.reason='';self.requests=self.confirmed=self.refused=self.timeouts=0;self.last_quote=None
         self.preventive=False;self.visit_started=None;self.approach_timeouts=0
+        self.budget_preflight=False;self.item_retries={};self.native_refusals=0;self.funding_needed=0
     @property
     def busy(self):return self.context is not None or self.pending is not None
     def item(self,key):
@@ -39,6 +40,22 @@ class Repairs:
                 if kind==2 and meta['kind'] not in essential and not self.gear.upgrade(w.own,identity):continue
                 result.append(((meta['kind'] not in essential,get('valid',True),kind,endurance/max(1,maximum),slot),(kind,slot)))
         return [key for _,key in sorted(result)]
+    def estimated_fee(self,key):
+        item=self.item(key)
+        get=item.get if isinstance(item,dict) else lambda k,d=None:getattr(item,k,d)
+        meta=self.gear.effective(get('identity'),item)
+        if not meta:return None
+        # Audited get_item_repair_moneyLua. Only a planning budget: the live
+        # native quote still decides the amount actually paid.
+        point=math.floor((meta['level']/10)**1.7)-1
+        return max(1,(get('max_endurance',0)//50-get('endurance',0)//50)*point)
+    def retry_key(self,key):
+        return key,fingerprint(self.item(key)),self.world.own.values.get(8,0)
+    def defer_item(self,now,denied=False):
+        if not self.candidate or self.item(self.candidate['key']) is None:return
+        key=self.retry_key(self.candidate['key']);old=self.item_retries.get(key,(0,0))
+        self.item_retries[key]=(now+(600 if denied else min(600,60*2**min(old[1],4))),old[1]+1)
+        while len(self.item_retries)>48:self.item_retries.pop(next(iter(self.item_retries)))
     def finish(self,now,reason='',failed=False):
         if failed and self.target:self.failed[self.target['key']]=now+60
         self.context=self.pending=self.target=self.candidate=None;self.next_try=now+(15 if failed else 0);self.reason=reason
@@ -46,6 +63,11 @@ class Repairs:
     def observe(self,command,payload,now):
         if not self.context:return False
         npc,stage,deadline=self.context
+        if command==517 and stage=='quote':
+            r=Reader(payload);notice=r.string().strip();r.end()
+            if notice not in ('Insufficient gold. Unable to repair','Non-repairable item','Items durability too low. Unable to repair','Full durability. No need to repair'):return False
+            self.native_refusals+=1;self.defer_item(now,True)
+            self.finish(now,'сервер отказал в ремонте: '+notice,True);return True
         if command==802 and stage=='talk':
             r=Reader(payload);source,page=r.long(),r.byte();r.string_bytes();count=r.byte()
             if source!=npc:return False
@@ -77,7 +99,7 @@ class Repairs:
         if self.context:
             npc,stage,deadline=self.context
             if now>=deadline:
-                if stage=='quote':self.send(24,b'\x00')
+                if stage=='quote':self.send(24,b'\x00');self.defer_item(now)
                 self.timeouts+=1;self.finish(now,'истекло ожидание ремонта',True);return False
             if stage=='ready':
                 item=self.item(self.candidate['key']);actor=w.entities.get(npc)
@@ -89,6 +111,13 @@ class Repairs:
         if not safe or now<self.next_try or not self.npcs:return False
         choices=self.candidates()
         if not choices:return False
+        choices=[key for key in choices if self.item_retries.get(self.retry_key(key),(0,0))[0]<=now]
+        if self.budget_preflight:
+            affordable=[key for key in choices if (self.estimated_fee(key) or 1)<=max(0,w.own.values.get(8,0)-100)]
+            self.funding_needed=min((self.estimated_fee(key) or 1 for key in choices),default=0) if not affordable else 0
+            choices=affordable
+        if not choices:
+            self.reason='ремонт отложен: зарабатывает деньги или ждёт повторной проверки отказа';return False
         if w.own.values.get(8,0)<=101:self.reason='ремонту нужны заработанные деньги';return False
         if not self.target:
             shops=[n for n in self.npcs.by_service.get('repair',()) if n['map']==w.map and self.failed.get(n['key'],0)<=now]
@@ -113,4 +142,4 @@ class Repairs:
             goal=policy.nav.nearest((point[0]+dx,point[1]+dy),2)
             if goal and math.dist(goal,point)<=220 and policy.move_to(goal,now):return True
         self.finish(now,'ищет другого доступного мастера ремонта',True);return False
-    def summary(self):return {'approach_timeouts':self.approach_timeouts,'preventive_weapon_threshold':1/3 if self.preventive else .2,'state':self.reason,'repair_requests':self.requests,'confirmed_repairs':self.confirmed,'refused_quotes':self.refused,'timeouts':self.timeouts,'last_native_quote':self.last_quote,'pending':self.busy,'damaged_slots':[list(k) for k in self.candidates()]}
+    def summary(self):return {'budget_preflight':self.budget_preflight,'estimated_funding_needed':self.funding_needed,'native_prequote_refusals':self.native_refusals,'item_retry_count':len(self.item_retries),'approach_timeouts':self.approach_timeouts,'preventive_weapon_threshold':1/3 if self.preventive else .2,'state':self.reason,'repair_requests':self.requests,'confirmed_repairs':self.confirmed,'refused_quotes':self.refused,'timeouts':self.timeouts,'last_native_quote':self.last_quote,'pending':self.busy,'damaged_slots':[list(k) for k in self.candidates()]}

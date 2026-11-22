@@ -83,7 +83,7 @@ class ShoppingTests(unittest.TestCase):
         w,t,p=self.make();p.travel.portals=None;plan=t.plan_supplies(100,p)
         self.assertTrue(plan is None or plan['map']==w.map)
     def test_missing_food_keeps_medical_supply_priority(self):
-        w,t,p=self.make();w.bag.clear();self.assertIsNone(t.plan_supplies(100,p))
+        w,t,p=self.make();w.own.equipment={9:97};w.bag.clear();self.assertIsNone(t.plan_supplies(100,p))
         self.assertEqual(t.choose_want()[0],1847)
     def test_rings_become_explicit_goal_for_empty_appropriate_slots(self):
         w,t,p=self.make(1,1);w.own.values.update({0:30,8:200000});w.own.equipment={9:1}
