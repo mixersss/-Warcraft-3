@@ -97,6 +97,20 @@ class IncrementalNavigationTests(unittest.TestCase):
   n=self.nav();n.begin_turn(expansions=12)
   with self.assertRaises(RoutePending):n.path((1050,1050),(6050,1050))
   self.assertLessEqual(n.planning_stats()['expanded_nodes'],12);n.end_turn()
+ def test_reserved_background_search_leaves_nodes_and_fresh_foreground_clock(self):
+  from unittest.mock import patch
+  n=self.nav();n.begin_turn()
+  start=(1050,1050)
+  with patch('navigation.time.thread_time',return_value=0):
+   for goal in ((6050,1050),(6050,1150)):
+    with self.assertRaises(RoutePending):
+     with n.background_work(reserve_foreground=True):n.path(start,goal)
+  self.assertEqual(n.local.remaining,384)
+  self.assertIsNone(n.local.deadline)
+  with patch('navigation.time.thread_time',return_value=1):
+   with self.assertRaises(RoutePending):n.path(start,(7050,1050))
+  self.assertEqual(n.planning_stats()['expanded_nodes'],512)
+  n.end_turn()
  def test_direct_route_never_cuts_diagonal_corner(self):
   n=self.nav();cells=bytearray(n.cells);cells[1]=0;n.cells=bytes(cells)
   self.assertFalse(n.direct((0,0),(1,1)))

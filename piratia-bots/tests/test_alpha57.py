@@ -28,6 +28,29 @@ class RecoveryTests(unittest.TestCase):
   w,p,m=self.make();m.tick(0,p)
   for now in range(30,181,30):w.own.x+=200;m.tick(now,p)
   self.assertEqual(m.recoveries,1);self.assertGreater(p.economy.emergency_until,180)
+ def test_watchdog_preserves_a_growing_farm_search_past_idle_minute(self):
+  from route_search import RoutePending
+  from test_alpha24 import IncrementalNavigationTests
+  w,p,m=self.make()
+  p.target=None
+  p.nav=IncrementalNavigationTests().nav()
+  w.own.x,w.own.y=1050,1050
+  p.search_goal=(6050,1050)
+  p.search_started=0
+  p.search_deadline=180
+  for now in range(0,91,10):
+   p.nav.begin_turn(expansions=20)
+   try:
+    m.tick(now,p)
+    with self.assertRaises(RoutePending):p.nav.path((1050,1050),p.search_goal)
+   finally:p.nav.end_turn()
+  self.assertEqual(m.recoveries,0)
+  m.tick(100,p)
+  self.assertEqual(m.recoveries,0)
+  m.tick(115,p)
+  self.assertEqual(m.recoveries,1)
+  self.assertIsNone(p.search_goal)
+  self.assertFalse(p.nav.local.searches)
  def test_real_damage_and_native_transactions_are_preserved(self):
   w,p,m=self.make();m.tick(0,p)
   w.entities[1000].values[1]-=20;m.tick(59,p);m.tick(100,p)

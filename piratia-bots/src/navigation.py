@@ -295,7 +295,8 @@ class Navigation:
         local=self.local
         if not hasattr(local,'searches'):
             local.searches=OrderedDict();local.yields=local.expansions=local.finished=0
-        local.remaining=expansions;local.turn_expanded=0;local.deadline=None;local.active=True;local.lane='foreground'
+        local.remaining=expansions;local.background_remaining=128
+        local.turn_expanded=0;local.deadline=None;local.active=True;local.lane='foreground'
 
     @contextmanager
     def background_work(self,reserve_foreground=False):
@@ -305,19 +306,34 @@ class Navigation:
             return
         old_lane=local.lane;old_remaining=local.remaining
         outer_deadline=local.deadline
-        if outer_deadline is None:outer_deadline=time.thread_time()+.006
-        allowance=min(old_remaining,128) if reserve_foreground else old_remaining
+        allowance=min(old_remaining,local.background_remaining) if reserve_foreground else old_remaining
         local.lane='background';local.remaining=allowance
-        local.deadline=min(outer_deadline,time.thread_time()+.0015) if reserve_foreground else outer_deadline
+        if reserve_foreground:
+            deadline=time.thread_time()+.0015
+            local.deadline=min(outer_deadline,deadline) if outer_deadline is not None else deadline
         try:yield
         finally:
             used=allowance-local.remaining
-            local.remaining=max(0,old_remaining-used);local.deadline=outer_deadline;local.lane=old_lane
+            if reserve_foreground:local.background_remaining-=used
+            local.remaining=max(0,old_remaining-used)
+            if reserve_foreground:local.deadline=outer_deadline
+            local.lane=old_lane
 
     def end_turn(self):self.local.active=False
 
-    def cancel_pending(self):
-        if getattr(self,'incremental',False) and hasattr(self.local,'searches'):self.local.searches.clear()
+    def cancel_pending(self,goal=None):
+        if getattr(self,'incremental',False) and hasattr(self.local,'searches'):
+            if goal is None:self.local.searches.clear()
+            else:
+                cell=self.cell(goal)
+                for key in list(self.local.searches):
+                    if key[1]==cell and key[4]=='foreground':self.local.searches.pop(key)
+
+    def pending_farm_search(self,goal):
+        local=getattr(self,'local',None)
+        cell=self.cell(goal)
+        return next(((key,len(search.closed)) for key,search in getattr(local,'searches',{}).items()
+                     if key[1]==cell and key[4]=='foreground'),None)
 
     def planning_stats(self):
         if not getattr(self,'incremental',False):return {}

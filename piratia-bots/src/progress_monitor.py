@@ -6,6 +6,7 @@ class ProgressMonitor:
         self.signature=None;self.anchor=None;self.since=None;self.next_recovery=0
         self.recoveries=0;self.reason='';self.idle_seconds=0
         self.work_signature=None;self.work_since=None;self.last_target=None;self.last_target_hp=None
+        self.farm_search=None;self.farm_search_advanced_at=None
     def fast_tick(self,now,policy):
         w=policy.world;own=w.own;target=w.entities.get(policy.target)
         signature=(tuple(own.values.get(i) for i in (0,15,4,7,8,13)),
@@ -24,7 +25,16 @@ class ProgressMonitor:
             self.anchor=point;self.since=now
         self.idle_seconds=max(0,now-(self.since if self.since is not None else now))
         if policy.transaction_busy():self.reason='ждёт штатное подтверждение операции';return
+        goal=policy.search_goal
+        pending=policy.nav.pending_farm_search(goal) if goal and hasattr(policy.nav,'pending_farm_search') else None
+        if pending!=self.farm_search:
+            self.farm_search=pending;self.farm_search_advanced_at=now
         if (self.idle_seconds<60 and now-self.work_since<180) or now<self.next_recovery:return
+        if goal and now<policy.search_deadline:
+            if pending and now-policy.search_started<300 and now-self.farm_search_advanced_at<15:
+                self.reason='поиск пути к лагерю продолжает продвигаться';return
+            if policy.move_goal==goal and self.idle_seconds<15:
+                self.reason='движется к лагерю по подтверждённому пути';return
         if any(getattr(f,'context',None) or getattr(f,'pending',None) for f in
                (policy.town,policy.vendor,policy.career,policy.story,policy.adventure) if f):
             self.reason='ожидает ограниченную операцию НПС';return

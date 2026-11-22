@@ -699,7 +699,7 @@ class Hunter:
         optional=key in ('vendor','market','town','story','repair')
         nearby=optional and any(self.eligible(e,now) and distance(self.position(now),self.world.position(now,e.identity))<=2000
                                 for e in self.world.entities.values())
-        scope=self.nav.background_work(nearby) if optional and hasattr(self.nav,'background_work') else nullcontext()
+        scope=self.nav.background_work(nearby or self.search_goal is not None) if optional and hasattr(self.nav,'background_work') else nullcontext()
         try:
             with scope:used=callback()
         except RoutePending:
@@ -1341,6 +1341,7 @@ class Hunter:
             speed=max(100,self.world.own.values.get(44,480))
             self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
         if distance(self.position(now),goal)<300 or now>self.search_deadline:
+            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(goal)
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             self.clear_zone()
