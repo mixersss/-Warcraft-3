@@ -42,6 +42,32 @@ class Travel58Tests(unittest.TestCase):
   self.assertTrue(c.tick(100,p,True));self.assertEqual(p.emit.call_args.args[0][8:],struct.pack('>Bhh',11,4,-1))
   w.own.x,w.own.y=326000,328000;c.tick(100.1,p,True);self.assertEqual(c.confirmed,0)
   w.bag={};c.tick(100.2,p,True);self.assertEqual(c.confirmed,1)
+ def test_paid_arrival_defers_optional_city_return_until_progress_or_deadline(self):
+  w,c,p=self.make()
+  del c.needs_town
+  w.bag_capacity=48
+  w.bag[4]=source.item(3057)
+  c.life=SimpleNamespace(services={'shops':{}},prices={})
+  c.plan=dict(self.plan(w,'ticket'),item_id=3057,to_map='eastgoaf',model=295)
+  c.target_started=100
+  self.assertTrue(c.tick(100,p,True))
+  w.map='eastgoaf'
+  w.own.x,w.own.y=326000,328000
+  w.bag.pop(4)
+  c.tick(101,p,True)
+  self.assertEqual(c.confirmed,1)
+  p.crafting=SimpleNamespace(due=lambda now:True,goals=[1],op=None)
+  self.assertFalse(c.needs_town(p,102))
+  c.choose=Mock()
+  self.assertFalse(c.tick(102,p,True))
+  c.choose.assert_not_called()
+  p.owner_services=SimpleNamespace(need=lambda:True)
+  self.assertTrue(c.needs_town(p,102))
+  p.owner_services=None
+  self.assertTrue(c.needs_town(p,281))
+  p.learning.last_progress_at=103
+  self.assertTrue(c.needs_town(p,104))
+
  def test_event_requires_visible_matching_native_identity_and_exact_action(self):
   w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,event_model=193,model=295);c.target_started=100
   entity=dataclasses.replace(w.own,identity=88,model=193,handle=900,event_identity=88,event_id=6)

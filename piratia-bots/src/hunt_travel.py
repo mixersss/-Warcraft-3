@@ -16,6 +16,7 @@ class HuntTravel:
   self.data=regions.hunting_travel_data;self.knowledge=regions.mob_knowledge
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
+  self.site_arrival=None
   self.requests=0;self.confirmed=0;self.timeouts=0;self.reason='';self.clock=0;self.target_started=0
  @property
  def busy(self):return bool(self.context or self.pending)
@@ -72,19 +73,28 @@ class HuntTravel:
   if observed.get('observed_level')==level and observed.get('level_wins',0)>=2 and observed.get('level_seconds',0)>0:
    return observed.get('level_xp',0)/observed['level_seconds']
   return mob.get('base_xp',0)/xp_level_divisor(level,mob['level'])/seconds
+ def settling_site(self,now,policy):
+  if not self.site_arrival:return False
+  map_name,arrived=self.site_arrival
+  progress=policy.learning.last_progress_at
+  return self.world.map==map_name and now-arrived<180 and (progress is None or progress<=arrived)
  def needs_town(self,policy,now):
   w=self.world
   services=getattr(policy,'owner_services',None)
   if services and services.need():return True
+  settling=self.settling_site(now,policy)
+  free=(w.bag_capacity or 0)-len(w.bag)
+  if free<=0 or (not settling and (free<=4 or sum(i.count for i in w.bag.values() if i.identity==1000)>=30)):
+   shops=self.life.services['shops'].get(w.map,[])
+   if not any(math.dist(policy.position(now),s['position'])<12000 and self.same_land(policy,s['position']) for s in shops):return True
+  town=getattr(policy,'town',None);supply=getattr(town,'supply_plan',None)
+  if supply and (not settling or town.combat_supply_required()):
+   if supply['item'] not in {i for i,_,_ in self.purchase_goals()} and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
+  if settling:return False
   craft=getattr(policy,'crafting',None)
   if craft and craft.due(now) and (craft.goals or craft.op):return True
   market=getattr(policy,'market',None)
   if market and self.economy.phase(w,now)=='trade' and market.offers(policy):return True
-  if sum(i.count for i in w.bag.values() if i.identity==1000)>=30 or (w.bag_capacity or 0)-len(w.bag)<=4:
-   shops=self.life.services['shops'].get(w.map,[])
-   if not any(math.dist(policy.position(now),s['position'])<12000 and self.same_land(policy,s['position']) for s in shops):return True
-  town=getattr(policy,'town',None);supply=getattr(town,'supply_plan',None)
-  if supply and supply['item'] not in {i for i,_,_ in self.purchase_goals()} and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
   return False
  def choose(self,now,policy,returning=False):
   w=self.world;rows=[]
@@ -138,6 +148,7 @@ class HuntTravel:
    paid=self.count(plan['item_id'])<self.pending['item_count'] if plan['kind']=='ticket' else w.own.values.get(8,0)<=self.pending['gold']-plan['fare']
    if moved and paid and w.bag_ready:
     self.confirmed+=1;self.pending=None;self.context=None;self.plan=None
+    self.site_arrival=(w.map,now) if plan.get('model') else None
     self.site_until=now+600;self.next_check=now+(600 if plan.get('model') else 60);self.reason='Прибытие к новой точке подтверждено сервером';return False
    if now>=self.pending['deadline']:self.timeouts+=1;self.abort(now,'Переход не подтверждён')
    return self.busy
@@ -147,6 +158,7 @@ class HuntTravel:
   if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled or w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
+  if not returning and self.settling_site(now,policy):return False
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))
   if returning and near_argent:
    self.plan=None;self.preferred_model=None

@@ -646,6 +646,10 @@ class Hunter:
             if key in ('market','story','career','adventure'):return False
             if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
+        if (key=='town' and feature and self.hunt_travel and self.hunt_travel.settling_site(now,self)
+                and not (feature.context or feature.pending or feature.combat_supply_required()
+                         or (self.petcare and self.petcare.urgent_hunger()))):
+            return False
         can_sell_full=(key=='market' and (self.world.skills.get(241,{}).get('level',0)>0 or
                        self.world.own.values.get(13,0)>0 and any(i.identity==3296 and i.valid for i in self.world.bag.values())))
         if self.inventory_blocked and key in ('adventure','career','story','market','town') and not can_sell_full:return False

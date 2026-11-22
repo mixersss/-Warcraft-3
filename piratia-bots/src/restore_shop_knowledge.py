@@ -7,7 +7,7 @@ def restore(resource,assets):
     native=ROOT/'server-shops/native'
     # Installed complete bundle places server-shops beside src/; source checkout uses sibling.
     if not native.exists():native=ROOT.parent/'piratia-city-shops/native'
-    if not (native/'installer.py').is_file():raise ValueError('Для проверки серверного патча нужен полный комплект Piratia-Alpha65-Complete с папкой server-shops.')
+    if not (native/'installer.py').is_file():raise ValueError('Для проверки серверного патча нужен полный комплект Piratia-Alpha66-Complete с папкой server-shops.')
     sys.path.insert(0,str(native))
     import installer
     server=installer.legacy.locate(resource);marker=server/installer.MARKER
