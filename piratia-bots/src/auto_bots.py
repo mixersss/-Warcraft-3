@@ -94,7 +94,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha63'
+    report.result['version'] = 'AutoAccountsAlpha64'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -254,7 +254,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 63).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 64).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -263,7 +263,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha63'
+    setup_report.result['version'] = 'AutoAccountsAlpha64'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':

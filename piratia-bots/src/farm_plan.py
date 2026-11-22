@@ -116,14 +116,15 @@ class HuntLearning:
        and r['hp']<=hp*self.profile[3]):
     return max(1,level-5)
   return max(1,level-9) # Safe recovery fallback when the higher band is unavailable.
- def admissible(self,region,own,now):
+ def admissible(self,region,own,now,recovery=False):
   """Safe observed opportunities, even if the current shortlist is elsewhere."""
   level=own.values.get(0,1);maximum=max(1,own.values.get(31,1));result=set()
-  floor=self.minimum_farm_level(region,own,now)
+  floor=max(1,level-9) if recovery else self.minimum_farm_level(region,own,now)
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
    if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
-   if not floor<=record['level']<=level+(8 if row.get('wins',0) else max(3,self.profile[1])):continue
+   ceiling=level if recovery else level+(8 if row.get('wins',0) else max(3,self.profile[1]))
+   if not floor<=record['level']<=ceiling:continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
   return result-self.inefficient(region,result,level)

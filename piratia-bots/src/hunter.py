@@ -115,6 +115,7 @@ class Hunter:
         self.recoveries=self.no_damage_retargets=self.busy_targets=0
         self.next_recovery=0
         self.search_goal=None
+        self.search_recovery=False
         self.search_started=0
         self.search_deadline=0
         self.goal_blacklist={}
@@ -187,6 +188,7 @@ class Hunter:
     def clear_zone(self):
         if self.coordination:self.coordination.leave_zone(self.owner)
         self.search_goal=None
+        self.search_recovery=False
 
     def available_spot(self,point,now):
         return not any(e.identity!=self.world.own_id and e.control==1 and e.alive
@@ -606,13 +608,31 @@ class Hunter:
                 if useful:return set(models)
         return set(self.farm_models())
 
+    def farm_recovery(self,now):
+        last=self.learning.last_progress_at
+        return bool(self.camp_scouting and self.region and last is not None and now-last>=90
+                    and not self.mandatory_work() and not self.starter_models()
+                    and not self.quest_models() and not self.assist_target
+                    and not (self.group_hunt and self.group_hunt.active())
+                    and not (self.hunt_travel and self.hunt_travel.preferred_model
+                             and not self.hunt_travel.plan and now<self.hunt_travel.site_until))
+
+    def reachable_camp_goals(self,raw_goals,now):
+        component=self.nav.land_component(self.position(now)) if hasattr(self.nav,'land_component') else None
+        goals=dict.fromkeys(self.nav.nearest(p) for p in raw_goals)
+        return [p for p in goals if p and self.goal_blacklist.get(p,0)<=now
+                and (not component or self.nav.land_component(p)==component)]
+
     def refresh_farm_plan(self):
         key=(self.world.map,self.world.own.values.get(LV,1),tuple(sorted(self.planned_models())))
         if key!=self.farm_plan_key:
             if self.farm_plan_key is not None:
                 self.farm_plan_changes+=1
-                self.clear_zone();self.waypoint=0
-                if not self.target:self.move_goal=None
+                # Species scores refresh while the actor is still walking. Keep
+                # the current recovery destination if the new goal set validates it.
+                if self.farm_plan_key[:2]!=key[:2] or not self.farm_recovery(self.clock):
+                    self.clear_zone();self.waypoint=0
+                    if not self.target:self.move_goal=None
             self.farm_plan_key=key
 
     def allow_visit(self,point,now,mandatory=False):
@@ -1183,7 +1203,7 @@ class Hunter:
             if group_target:candidates.sort(key=lambda e:e.identity!=group_target.identity)
             if self.region and now-self.last_target_at>=20 and not self.assist_target:
                 known={e.identity for e in candidates}
-                models=self.learning.admissible(self.local_hunting_region(),own,now)
+                models=self.learning.admissible(self.local_hunting_region(),own,now,recovery=self.farm_recovery(now))
                 extras=[e for e in self.world.entities.values()
                         if e.identity not in known and self.eligible(e,now,models)]
                 extras.sort(key=lambda e:self.target_score(e,now))
@@ -1283,11 +1303,24 @@ class Hunter:
             raw_goals=self.adventure.farm_goals()
         else:
             raw_goals=[self.nav.waypoints[i] for i in self.route]
-        goals=list(dict.fromkeys(self.nav.nearest(p) for p in raw_goals))
-        goals=[p for p in goals if p and self.goal_blacklist.get(p,0)<=now]
-        if hasattr(self.nav,'land_component'):
-            component=self.nav.land_component(self.position(now))
-            if component:goals=[p for p in goals if self.nav.land_component(p)==component]
+        goals=[]
+        recovery=self.farm_recovery(now)
+        origin=self.position(now)
+        if recovery:
+            region=self.local_hunting_region()
+            models=self.learning.admissible(region,own,now,recovery=True)
+            nearby=self.reachable_camp_goals((p for model in models for p in region['farms'][str(model)]['points']),now)
+            goals=[p for p in nearby if self.combat_allowed(p)]
+            if self.search_recovery and self.search_goal in goals:
+                goals=[self.search_goal]
+            elif goals:
+                closest=min(distance(origin,p) for p in goals)
+                # Spread bots across nearby sites without sending one far away
+                # merely because the nearest good patch is shared.
+                goals=[p for p in goals if distance(origin,p)<=closest+3000]
+        using_recovery=bool(goals)
+        if not goals:
+            goals=self.reachable_camp_goals(raw_goals,now)
         if not goals:
             if self.camp_scouting:
                 for model in self.planned_models():self.learning.avoid[model]=max(self.learning.avoid.get(model,0),now+15)
@@ -1298,11 +1331,11 @@ class Hunter:
         # Stable per-bot ordering, independent of the order of the JSON species.
         # Choose a nearby available farm instead of crossing the whole region
         # in a hash-random order. Reservation ties remain different per bot.
-        origin=self.position(now)
         goals.sort(key=lambda pt:(int(distance(origin,pt)//1500),
                     (pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
-        goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now,self.position(now))
+        goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now,origin)
               if self.coordination else goals[self.waypoint%len(goals)])
+        self.search_recovery=using_recovery
         if goal!=self.search_goal:
             self.search_goal,self.search_started=goal,now
             speed=max(100,self.world.own.values.get(44,480))
@@ -1331,7 +1364,8 @@ class Hunter:
                 sites.append({'model':model,'name':record.get('name') if record else None,'level':farm['level'],
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
-        return {'sites':sites,'current_goal_cm':self.search_goal,'source_regions_not_live_monster_positions':True}
+        return {'sites':sites,'current_goal_cm':self.search_goal,'nearby_recovery':self.search_recovery,
+                'source_regions_not_live_monster_positions':True}
 
     def farm_reason(self):
         models=set(self.planned_models())

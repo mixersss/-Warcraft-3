@@ -36,6 +36,39 @@ class Ground61Tests(unittest.TestCase):
    self.assertEqual(self.regions.mob_knowledge.get(model)['territory'],0)
    self.assertTrue(region['farms'][str(model)]['points'])
   self.assertFalse({58,90,91,97}&chosen)
+ def test_idle_hunter_leaves_distant_shortlist_for_nearer_safe_camp_and_keeps_it(self):
+  from unittest.mock import Mock
+  w,p=magic.MagicTests().make(job=1)
+  w.own.values.update({0:38,1:1956,31:1956})
+  w.entities={w.own_id:w.own}
+  p.combat_skills=None
+  p.camp_scouting=True
+  p.learning.last_progress_at=1
+  p.learning.progress_signature=(38,w.own.values.get(15,0))
+  p.planned_models=Mock(return_value={128})
+  p.move_to=Mock(return_value=True)
+  o=w.own.position
+  near=(o[0]+8000,o[1]);far=(o[0]+80000,o[1])
+  p.nav.nearest=lambda point:point
+  p.nav.land_component=lambda point:1
+  p.region={'farms':{
+      '128':{'level':37,'hp':900,'points':[far]},
+      '225':{'level':32,'hp':600,'points':[near]},
+      '90':{'level':35,'hp':500,'territory':1,'points':[(o[0]+1000,o[1])]},
+      '277':{'level':38,'hp':600,'points':[(o[0]+2000,o[1])]},
+  }}
+  p.learning.danger_until[277]=500
+  p.search_goal=far
+  p.tick(100)
+  self.assertEqual(p.search_goal,near)
+  self.assertTrue(p.search_recovery)
+  self.assertEqual(p.move_to.call_args.args[0],near)
+  started=p.search_started
+  p.planned_models.return_value={277}
+  p.tick(101)
+  self.assertEqual(p.search_goal,near)
+  self.assertEqual(p.search_started,started)
+
  def test_cached_held_sea_choice_is_not_retained(self):
   w,_=magic.MagicTests().make();w.own.values.update({0:26,31:1000})
   sea={'90':{'territory':1,'level':26,'hp':1,'points':[(0,0)]}}
