@@ -22,7 +22,7 @@ class Travel58Tests(unittest.TestCase):
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
   regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0})
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
-  p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None))
+  p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None),camp_route_active=lambda now:False)
   c.needs_town=lambda *a:False
   return w,c,p
  def plan(self,w,kind='portal'):
@@ -67,6 +67,31 @@ class Travel58Tests(unittest.TestCase):
   self.assertTrue(c.needs_town(p,281))
   p.learning.last_progress_at=103
   self.assertTrue(c.needs_town(p,104))
+
+ def test_trade_window_cannot_replace_an_active_walk_with_argent_return(self):
+  from economy import Economy
+  from test_coordination import CohortCombatTests
+  CohortCombatTests.setUpClass()
+  w,p=CohortCombatTests().policy(monsters=0)
+  w.own.values.update({0:32,4:2})
+  w.own.x,w.own.y=198751,266614
+  w.bag_ready=True;w.bag_capacity=48;w.bag={0:source.item(4602)}
+  p.search_goal=(155150,266150)
+  p.search_deadline=250
+  _,c,_=self.make()
+  del c.needs_town
+  c.world=w
+  p.economy=c.economy=Economy('test',ROOT/'assets')
+  p.economy.cycle=0;p.economy.offset=0;p.economy.stages=[('trade',1800)]
+  p.market=SimpleNamespace(offers=lambda policy:[1])
+  self.assertEqual(c.economy.phase(w,100),'trade')
+  self.assertFalse(c.needs_town(p,100))
+  self.assertFalse(c.tick(100,p,True))
+  self.assertIsNone(c.plan)
+  p.owner_services=SimpleNamespace(need=lambda:True)
+  self.assertTrue(c.needs_town(p,100))
+  p.owner_services=None
+  self.assertTrue(c.needs_town(p,250))
 
  def test_event_requires_visible_matching_native_identity_and_exact_action(self):
   w,c,p=self.make();c.plan=dict(self.plan(w,'event'),event_id=6,event_model=193,model=295);c.target_started=100

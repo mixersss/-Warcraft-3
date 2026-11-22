@@ -118,6 +118,7 @@ class Hunter:
         self.search_recovery=False
         self.search_started=0
         self.search_deadline=0
+        self.camp_arrival_until=0
         self.goal_blacklist={}
         self.tactic='quests'
         self.quest_phase='quests'
@@ -158,7 +159,7 @@ class Hunter:
     def update_tactic(self,now):
         if not self.tactic_schedule or not self.world.own:return
         current=self.world.entities.get(self.target)
-        busy=bool(current and current.alive) or self.resting
+        busy=bool(current and current.alive) or self.resting or self.camp_route_active(now)
         for feature in (self.adventure,self.career,self.story,self.town,self.equipment,self.skills,self.chests,self.market):
             if feature and (getattr(feature,'context',None) or getattr(feature,'pending',None)):busy=True
         mandatory=(self.world.own.values.get(4)==0 and self.world.own.values.get(0,1)>=9)
@@ -189,6 +190,10 @@ class Hunter:
         if self.coordination:self.coordination.leave_zone(self.owner)
         self.search_goal=None
         self.search_recovery=False
+        self.camp_arrival_until=0
+
+    def camp_route_active(self,now):
+        return bool((self.search_goal and now<self.search_deadline) or now<self.camp_arrival_until)
 
     def available_spot(self,point,now):
         return not any(e.identity!=self.world.own_id and e.control==1 and e.alive
@@ -630,7 +635,7 @@ class Hunter:
                 self.farm_plan_changes+=1
                 # Species scores refresh while the actor is still walking. Keep
                 # the current recovery destination if the new goal set validates it.
-                if self.farm_plan_key[:2]!=key[:2] or not self.farm_recovery(self.clock):
+                if self.farm_plan_key[:2]!=key[:2] or not (self.camp_route_active(self.clock) or self.farm_recovery(self.clock)):
                     self.clear_zone();self.waypoint=0
                     if not self.target:self.move_goal=None
             self.farm_plan_key=key
@@ -646,7 +651,9 @@ class Hunter:
             if key in ('market','story','career','adventure'):return False
             if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
-        if (key=='town' and feature and self.hunt_travel and self.hunt_travel.settling_site(now,self)
+        if key=='market' and self.camp_route_active(now):return False
+        if (key=='town' and feature and (self.camp_route_active(now)
+                or (self.hunt_travel and self.hunt_travel.settling_site(now,self)))
                 and not (feature.context or feature.pending or feature.combat_supply_required()
                          or (self.petcare and self.petcare.urgent_hunger()))):
             return False
@@ -851,6 +858,7 @@ class Hunter:
             self.adventure.review_objective(now,busy=bool(current and current.alive))
         self.update_tactic(now)
         if self.economy:
+            self.economy.camp_hunting=self.camp_route_active(now)
             self.economy.group_hunting=bool(self.group_hunt and self.group_hunt.active())
             target=self.world.entities.get(self.target)
             self.economy.busy=bool(self.group_hunt and self.group_hunt.active()) or bool(target and target.alive) or self.transaction_busy() or bool(self.pending_action) or any(
@@ -1352,11 +1360,14 @@ class Hunter:
             self.search_goal,self.search_started=goal,now
             speed=max(100,self.world.own.values.get(44,480))
             self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
-        if distance(self.position(now),goal)<300 or now>self.search_deadline:
+        arrived=distance(origin,goal)<300
+        if arrived or now>=self.search_deadline:
             if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(goal)
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
+            arrival_window=self.camp_arrival_until
             self.clear_zone()
+            if arrived and self.region:self.camp_arrival_until=arrival_window or now+45
             self.waypoint+=1
             self.next_action=now+.5
         elif not self.move_to(goal,now):
@@ -1377,7 +1388,7 @@ class Hunter:
                 sites.append({'model':model,'name':record.get('name') if record else None,'level':farm['level'],
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
-        return {'sites':sites,'current_goal_cm':self.search_goal,'nearby_recovery':self.search_recovery,
+        return {'sites':sites,'current_goal_cm':self.search_goal,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
                 'source_regions_not_live_monster_positions':True}
 
     def farm_reason(self):
