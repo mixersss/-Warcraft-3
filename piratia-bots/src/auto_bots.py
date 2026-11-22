@@ -254,7 +254,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 56).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 62).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -321,7 +321,7 @@ def main():
         if setup_report.result['shop_bootstrap'].get('restored'):print('Знания торговцев восстановлены по проверенной серверной установке.')
         if not setup_report.result['shop_bootstrap'].get('ready'):
             print('Нет проверенных знаний новых торговцев. Это блокирует покупку фей.')
-            selected=input('Укажи папку серверной resource; Enter — остановить запуск и установить INSTALL-SERVER-SHOPS.cmd: ').strip().strip('"')
+            selected=input('Укажи папку resource установленного сервера для проверки; Enter — отменить запуск: ').strip().strip('"')
             if not selected:raise RuntimeError('Нужен проверенный серверный патч и справочник магазинов. Существующие боты сохранены.')
             from restore_shop_knowledge import restore
             setup_report.result['shop_bootstrap']=dict(restore(selected,ROOT/'assets'),ready=True)
