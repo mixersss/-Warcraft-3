@@ -214,6 +214,32 @@ class Supplies61Tests(unittest.TestCase):
   p.tick(104)
   self.assertEqual(p.emit.call_args.args[0][8],2)
 
+ def test_broken_staff_and_low_gold_fund_repair_with_native_weak_mob_attack(self):
+  from economy import Economy
+  from repairs import Repairs
+  w,p=magic.MagicTests().make(job=5,body=3)
+  w.own.values.update({0:26,1:935,31:935,8:180,33:7,34:7,35:12})
+  w.own.equipment[9]=105
+  w.own.equipment_details[9]={'identity':105,'valid':False,'endurance':49,'max_endurance':10000}
+  w.skills[99]['state']=0
+  w.default_skill=25
+  w.bag_ready=True;w.bag_capacity=48;w.bag={}
+  p.town=Town(w,magic.LIFE,magic.GEAR,None,random.Random(1),w.own.position)
+  p.town.next_shop=99999
+  p.repair=Repairs(w,None,magic.GEAR,p.send)
+  p.repair.budget_preflight=True
+  p.economy=Economy('funding test',ROOT/'assets')
+  p.economy.all_mobs_patchouli=True
+  p.region={'farms':{'75':{'level':1,'hp':120,'defence':1,'attack_max':0,'points':[w.entities[1000].position]}}}
+  p.tick(100)
+  self.assertEqual(p.supply_funding_goal,700)
+  self.assertEqual(p.planned_models(),{75})
+  self.assertEqual(magic.MagicTests().last_skill(p),25)
+  self.assertEqual(w.own.values[8],180)
+  w.own.values[8]=2180
+  p.tick(103)
+  self.assertEqual(p.supply_funding_goal,0)
+
  def test_cancelled_hunt_ticket_releases_merchant_walk(self):
   import unittest.mock
   w,t,p=self.make();w.own.equipment={9:97}

@@ -67,6 +67,29 @@ class Fairy57Tests(unittest.TestCase):
   self.assertFalse(c.possession_usable(1))
 
 class Loot57Tests(unittest.TestCase):
+ def test_earned_patchouli_can_fill_existing_stack_in_full_bag(self):
+  w,p=magic.MagicTests().make();w.bag_ready=True;w.bag_capacity=1
+  w.bag={0:vendor.VendorTests().item(1000,3)}
+  w.own_hits={123:(9,True)};w.items={10:(1000,10,w.own.position,1,123,8)}
+  loot=QuestLoot(w);loot.fast_mode=True;loot.ground_gems={1000}
+  p.emit=Mock()
+  self.assertTrue(loot.tick(10,p,{1000}))
+  self.assertEqual(loot.confirmed,0)
+  w.bag[0]=vendor.VendorTests().item(1000,4)
+  w.items={}
+  loot.tick(11,p,{1000})
+  self.assertEqual(loot.confirmed,1)
+
+ def test_funding_sells_patchouli_first_without_batch_delay(self):
+  v=vendor.VendorTests()
+  w,seller,p=v.make()
+  w.bag={0:v.item(4315,1),1:v.item(1000,1)}
+  w.own.values[8]=900
+  seller.sell_patchouli=True;seller.batch_farming=True
+  p.supply_funding_goal=1200
+  self.assertEqual(seller.choices(p)[0],(1,1000,1))
+  self.assertTrue(seller.tick(100,p,True))
+
  def test_waits_for_native_protection_then_picks_blueprint_with_short_ack_deadline(self):
   w,p=magic.MagicTests().make();w.bag_ready=True;w.bag_capacity=24;w.bag={}
   w.own_hits={123:(9,True)};w.items={10:(1000,10,w.own.position,1,123,9)}

@@ -42,7 +42,7 @@ class Vendor(Town):
   for slot,item in sorted(w.bag.items()):
    curated=bool(policy.market and getattr(policy.market.catalog,'curated_mode',False))
    spent=spent_basic(w,item)
-   if curated and item.identity in policy.market.catalog.items and item.identity!=4915 and not spent:continue
+   if curated and item.identity in policy.market.catalog.items and item.identity!=4915 and not (self.sell_patchouli and item.identity==1000) and not spent:continue
    gear=self.gear.gear.get(item.identity,{})
    novice=curated and bool(gear and 0<gear['level']<20 and not 5000<=item.identity<=5999 and item.identity not in w.own.equipment.values() and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item))
    if (item.identity not in self.junk and not novice and not spent and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
@@ -51,6 +51,7 @@ class Vendor(Town):
    keep=0 if self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
    count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))
+  if self.sell_patchouli:choices.sort(key=lambda row:row[1]!=1000)
   return choices
  def finish_sale(self,now):
   self.context=None;self.pending=None;self.sale_target=None;self.sale_slot=None;self.batch=0;self.next_sale=now;self.sale_goals=[];self.failed_shops.clear()
@@ -107,7 +108,7 @@ class Vendor(Town):
    if self.stock_since is None:self.stock_since=now
    count=sum(n for _,identity,n in choices if identity in (1000,4915))
    nearby=any(math.dist(policy.position(now),s['position'])<=350 for s in shops)
-   urgent=(w.bag_capacity or 0)-len(w.bag)<=4 or w.own.values.get(8,0)<500
+   urgent=(w.bag_capacity or 0)-len(w.bag)<=4 or w.own.values.get(8,0)<500 or bool(getattr(policy,'supply_funding_goal',0))
    if not nearby and not urgent and count<30 and now-self.stock_since<300:
     self.reason='копит партию добычи; продолжает охоту';return False
   if not self.sale_target:

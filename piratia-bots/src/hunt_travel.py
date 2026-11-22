@@ -88,7 +88,7 @@ class HuntTravel:
    shops=self.life.services['shops'].get(w.map,[])
    if not any(math.dist(policy.position(now),s['position'])<12000 and self.same_land(policy,s['position']) for s in shops):return True
   town=getattr(policy,'town',None);supply=getattr(town,'supply_plan',None)
-  if supply and (not settling or town.combat_supply_required()):
+  if supply and not getattr(policy,'supply_funding_goal',0) and (not settling or town.combat_supply_required()):
    if supply['item'] not in {i for i,_,_ in self.purchase_goals()} and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
   if settling:return False
   craft=getattr(policy,'crafting',None)
@@ -170,7 +170,7 @@ class HuntTravel:
    return False
   if self.plan and (self.plan['map']!=w.map or self.plan.get('returning',False)!=returning):
    self.abort(now,'Условия поездки изменились');return False
-  if not returning and (self.settling_site(now,policy) or policy.camp_route_active(now)):return False
+  if not returning and (self.settling_site(now,policy) or policy.camp_route_active(now) or getattr(policy,'supply_funding_goal',0)):return False
   if not returning and self.economy.phase(w,now)!='progression':
    if self.plan:self.abort(now,'Фаза дальней охоты завершена')
    return False

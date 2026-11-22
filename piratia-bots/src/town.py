@@ -151,6 +151,22 @@ class Town:
         goal=self.equipment_goal()
         if goal and identity not in critical:reserve+=min(max(0,cash-reserve),self.equipment_savings())
         return max(0,cash-reserve) if identity in critical else min(cash//4,max(0,cash-reserve))
+    def essential_funding_target(self,repair_cost=0):
+        w=self.world
+        prices=self.life.prices
+        weapons=[]
+        if self.combat_supply_required():
+            self.critical_items()
+            weapons=[prices[i]+(0 if i in (817,867,635) and prices[i]==1 else 100)
+                     for i in self.combat_items if prices.get(i,0)>0]
+        if repair_cost:weapons.append(repair_cost)
+        costs=[min(weapons)] if weapons else []
+        if w.own.values.get(1,0)<w.own.values.get(31,1)*.85 and not self.count(1847) and prices.get(1847,0)>0:
+            costs.append(max(100+prices[1847],4*prices[1847]))
+        if self.petcare and self.petcare.urgent_hunger() and self.petcare.needs_food_visit() and prices.get(2312,0)>0:
+            costs.append(100+prices[2312])
+        return max(costs,default=0)
+
     def choose_want(self):
         w=self.world;cash=w.own.values.get(8,0)
         if not w.bag_ready or w.bag_disabled or cash<1:return None

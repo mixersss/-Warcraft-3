@@ -153,6 +153,7 @@ class Hunter:
         self.inventory_blocked=False
         self.inventory_blocker=None
         self.raising_travel_funds=False
+        self.supply_funding_goal=0;self.supply_funding_models=set()
         from sitting import Sitting
         self.sitting=Sitting(world)
 
@@ -197,7 +198,7 @@ class Hunter:
 
     def hunt_before_errands(self,now):
         last=self.learning.last_progress_at
-        return self.camp_route_active(now) or bool(
+        return bool(self.supply_funding_goal) or self.camp_route_active(now) or bool(
             getattr(self,'fast_progression',False) and self.region and last is not None and now-last>=180)
 
     def available_spot(self,point,now):
@@ -585,11 +586,14 @@ class Hunter:
 
     def planned_models(self):
         if self.starter_models():return self.starter_models()
+        if self.supply_funding_models:return set(self.supply_funding_models)
         travel=self.hunt_travel
         if travel and travel.preferred_model and not travel.plan and self.clock<travel.site_until and self.region:
             if travel.preferred_model in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):return {travel.preferred_model}
         if self.raising_travel_funds and self.economy:
-            funding=self.economy.funding_models(self.world,self.region,self.learning,self.clock)
+            funding=(self.economy.weak_funding_models(self.world,self.local_hunting_region(),self.learning,self.clock)
+                     if getattr(self.economy,'all_mobs_patchouli',False)
+                     else self.economy.funding_models(self.world,self.region,self.learning,self.clock))
             if funding:return funding
         group_target=self.group_hunt.target(self.clock) if self.group_hunt else None
         if group_target and self.region and not self.mandatory_work():
@@ -621,7 +625,7 @@ class Hunter:
     def farm_recovery(self,now):
         last=self.learning.last_progress_at
         return bool(self.camp_scouting and self.region and last is not None and now-last>=90
-                    and not self.mandatory_work() and not self.starter_models()
+                    and not self.supply_funding_models and not self.mandatory_work() and not self.starter_models()
                     and not self.quest_models() and not self.assist_target
                     and not (self.group_hunt and self.group_hunt.active())
                     and not (self.hunt_travel and self.hunt_travel.preferred_model
@@ -864,6 +868,16 @@ class Hunter:
         if self.adventure and hasattr(self.adventure,'review_objective'):
             current=self.world.entities.get(self.target)
             self.adventure.review_objective(now,busy=bool(current and current.alive))
+        self.supply_funding_goal=0
+        self.supply_funding_models=set()
+        if (self.economy and getattr(self.economy,'all_mobs_patchouli',False) and self.town and self.region
+                and self.world.bag_ready and not self.world.bag_disabled and not self.mandatory_work() and not self.assist_target):
+            repair_cost=self.repair.weapon_funding_target() if self.repair else 0
+            budget=self.town.essential_funding_target(repair_cost)
+            if own.values.get(8,0)<budget:
+                self.supply_funding_goal=budget
+                self.supply_funding_models=self.economy.weak_funding_models(
+                    self.world,self.local_hunting_region(),self.learning,now)
         self.update_tactic(now)
         if self.economy:
             self.economy.camp_hunting=self.hunt_before_errands(now)
@@ -1140,6 +1154,8 @@ class Hunter:
                 if self.owner_services:
                     from owner_services import LOOT
                     needed=set(LOOT)
+                if self.vendor and self.vendor.sell_patchouli:
+                    needed.add(1000);self.loot.value_priority[1000]=0
                 if self.loot.tick(now,self,needed):
                     self.change('подбор нужного лута; результат подтверждает сервер')
                     return
@@ -1147,7 +1163,7 @@ class Hunter:
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
-        if self.treasure and not mandatory and not self.raising_travel_funds and self.treasure.tick(now,self,safe,market_dialogue):
+        if self.treasure and not mandatory and not self.raising_travel_funds and not self.supply_funding_goal and self.treasure.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.treasure.reason);return
         if self.economy and self.economy.business(self.world,now) and self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
             self.drop_target();self.clear_zone();self.change(self.market.reason or 'городская торговля');return
@@ -1173,13 +1189,16 @@ class Hunter:
             self.change(self.adventure.reason)
             return
         shared_models=self.quest_models()
-        if (own.values.get(4) in (4,5,13,14,16) and self.combat_skills
-                and not self.combat_skills.select(now,ignore_cooldown=True)
+        caster=own.values.get(4) in (4,5,13,14,16) and self.combat_skills
+        needs_spell=bool(caster and not self.combat_skills.select(now,ignore_cooldown=True))
+        funding_attack=bool(needs_spell and self.supply_funding_models and self.world.default_skill in NORMAL_ATTACKS)
+        if (needs_spell and not funding_attack
                 and not (self.owner_services and self.combat_skills.training_weapon_bridge())):
             self.drop_target();self.change('готовит магию: '+(self.combat_skills.reason or 'нужен изученный боевой навык и подходящее снаряжение'))
             self.next_action=now+.5;return
         target = self.world.entities.get(self.target)
-        if self.target and (not target or not target.alive):
+        if (self.target and (not target or not target.alive
+                or (funding_attack and target.model not in self.supply_funding_models))):
             if target and target.values.get(HP,1)<=0:self.kills+=1
             self.drop_target()
             target=None
@@ -1221,7 +1240,7 @@ class Hunter:
             candidates.sort(key=lambda e:self.target_score(e,now))
             group_target=self.group_hunt.target(now) if self.group_hunt else None
             if group_target:candidates.sort(key=lambda e:e.identity!=group_target.identity)
-            if self.region and now-self.last_target_at>=20 and not self.assist_target:
+            if self.region and now-self.last_target_at>=20 and not self.assist_target and not self.supply_funding_models:
                 known={e.identity for e in candidates}
                 models=self.learning.admissible(self.local_hunting_region(),own,now,recovery=self.farm_recovery(now))
                 extras=[e for e in self.world.entities.values()
@@ -1258,7 +1277,7 @@ class Hunter:
                     break
                 if target:break
         if target:
-            spell=(self.combat_skills.select(now) or self.combat_skills.control(now)) if self.combat_skills else None
+            spell=(self.combat_skills.select(now) or self.combat_skills.control(now)) if self.combat_skills and not funding_attack else None
             ranged=self.combat_skills.select(now,ignore_cooldown=True) if self.combat_skills else None
             # Finish a current one-shot cast; a ready spell may replace repeating melee.
             casting=bool(self.combat_skills and self.last_attack_skill in self.combat_skills.rules
@@ -1303,7 +1322,8 @@ class Hunter:
                     self.move_to(goal,now)
                     self.change('повторный подход: нет подтверждённого урона')
                     return
-            self.change('применяет боевой навык '+str(spell) if spell else 'обычная атака')
+            self.change('применяет боевой навык '+str(spell) if spell else
+                        'бьёт слабого моба ради Пачкули' if funding_attack else 'обычная атака')
             self.fight = (self.fight+1) & 255
             self.emit(normal_attack(own.identity, self.sequence, self.fight, spell or self.world.default_skill,
                                     target.identity, target.handle, self.position(now)))
@@ -1402,6 +1422,7 @@ class Hunter:
 
     def farm_reason(self):
         models=set(self.planned_models())
+        if self.supply_funding_goal:return {'source':'essential_supply_funding','models':sorted(models),'goal_gold':self.supply_funding_goal,'patchouli_sale_to_npc':True}
         if self.raising_travel_funds and self.economy:return {'source':'class_travel_funding','models':sorted(models),'goal_gold':500,'patchouli_sale_to_npc':True}
         if self.economy and self.economy.phase(self.world,self.clock)=='income' and models==set(self.economy.last_models) and models:
             return {'source':'economic_patchouli_hunt','models':sorted(models),'player_unit_price':None,'npc_buyback':500,'bounded_phase':True}
@@ -1520,7 +1541,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.town.professions=policy.professions
         from vendor import Vendor
         policy.vendor=Vendor(world,life,catalog,role,policy.rng,policy.home,getattr(navigation,"assets",Path(__file__).resolve().parents[1]/"assets"))
-        policy.vendor.sell_patchouli=True;policy.vendor.junk[1000]={'name':'Чертёж Пачкули','npc_buyback':500}
+        policy.vendor.sell_patchouli=True;policy.vendor.junk[1000]={'name':'Чертёж Пачкули','npc_buyback':policy.vendor.patchouli_buyback}
         policy.career=Career(world,client.wire.send,role,life,navigation)
         policy.story=Story(world,client.wire.send,role,life,navigation)
         policy.story.owner=bot_name

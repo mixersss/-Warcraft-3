@@ -25,14 +25,16 @@ class Repairs:
     def item(self,key):
         kind,slot=key
         return self.world.own.equipment_details.get(slot) if kind==1 else self.world.bag.get(slot)
-    def candidates(self):
+    def candidates(self,worn_weapons_only=False):
         w=self.world;result=[];job=w.own.values.get(4)
         essential={3,4} if job in (2,12) else {9} if job in (5,13,14) else {1,7} if job in (4,16) else {1,2}
         if not w.bag_ready or w.bag_disabled:return []
-        for kind,rows in ((1,w.own.equipment_details),(2,w.bag)):
+        containers=((1,w.own.equipment_details),) if worn_weapons_only else ((1,w.own.equipment_details),(2,w.bag))
+        for kind,rows in containers:
             for slot,item in rows.items():
                 get=item.get if isinstance(item,dict) else lambda k,d=None:getattr(item,k,d)
                 identity=get('identity');meta=self.gear.gear.get(identity)
+                if worn_weapons_only and (slot not in (6,9) or self.gear.types.get(identity) not in (1,2,3,4,7,9,11)):continue
                 maximum=get('max_endurance',0);endurance=get('endurance',maximum)
                 if not meta or meta['kind'] not in (1,2,3,4,7,11,20,22,23,24,27,9) or maximum<=2500 or endurance>=maximum or not self.gear.compatible(w.own,identity):continue
                 threshold=maximum//3 if self.preventive and kind==1 and meta['kind'] in essential else maximum//5
@@ -49,6 +51,12 @@ class Repairs:
         # native quote still decides the amount actually paid.
         point=math.floor((meta['level']/10)**1.7)-1
         return max(1,(get('max_endurance',0)//50-get('endurance',0)//50)*point)
+    def weapon_funding_target(self):
+        if not self.budget_preflight:return 0
+        estimates=[self.estimated_fee(key) for key in self.candidates(worn_weapons_only=True)]
+        cheapest=min((fee for fee in estimates if fee),default=0)
+        return max(102,cheapest+100) if cheapest else 0
+
     def retry_key(self,key):
         return key,fingerprint(self.item(key)),self.world.own.values.get(8,0)
     def defer_item(self,now,denied=False):
