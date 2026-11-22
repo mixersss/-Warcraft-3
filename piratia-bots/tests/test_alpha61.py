@@ -69,6 +69,24 @@ class Ground61Tests(unittest.TestCase):
   self.assertEqual(p.search_goal,near)
   self.assertEqual(p.search_started,started)
 
+ def test_isolated_dry_component_uses_owned_native_return_ticket(self):
+  w,p=magic.MagicTests().make(job=1)
+  w.own.values.update({0:34,1:1956,31:1956,2:134,32:134})
+  w.entities={w.own_id:w.own};w.bag_ready=True;w.bag_capacity=48
+  w.bag={0:pets.item(4602)}
+  w.own.x,w.own.y=164200,269800
+  p.nav=self.regions.nav('garner')
+  p.region=self.regions.get('garner')
+  p.camp_scouting=True
+  p.combat_skills=None
+  p.activity.hunting=lambda now:True
+  self.assertFalse(p.nav.needs_recovery(w.own.position))
+  self.assertFalse(p.local_hunting_region()['farms'])
+  p.tick(100)
+  self.assertEqual(p.stuck_return.requests,1)
+  self.assertEqual(p.stuck_return.confirmed,0)
+  self.assertIn(0,w.bag)
+
  def test_cached_held_sea_choice_is_not_retained(self):
   w,_=magic.MagicTests().make();w.own.values.update({0:26,31:1000})
   sea={'90':{'territory':1,'level':26,'hp':1,'points':[(0,0)]}}

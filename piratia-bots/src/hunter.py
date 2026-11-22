@@ -1326,6 +1326,14 @@ class Hunter:
         if not goals:
             goals=self.reachable_camp_goals(raw_goals,now)
         if not goals:
+            if self.camp_scouting and self.region and not self.local_hunting_region()['farms']:
+                if self.stuck_return.tick(now,self):
+                    self.change(self.stuck_return.reason)
+                    return
+                if self.stuck_return.reason=='билет требует полные HP и SP':
+                    self.sitting.tick(now,self,True)
+                    self.change(self.stuck_return.reason)
+                    return
             if self.camp_scouting:
                 for model in self.planned_models():self.learning.avoid[model]=max(self.learning.avoid.get(model,0),now+15)
                 self.learning.until=0

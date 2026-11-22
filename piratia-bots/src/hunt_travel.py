@@ -115,7 +115,13 @@ class HuntTravel:
     jitter=int.from_bytes(hashlib.sha256(f'{self.name}:{model}:{int(now//900)}'.encode()).digest()[:2],'big')/65535
     rows.append((score*(.8+.4*jitter),route,model))
   if not rows:return None
-  score,route,model=max(rows,key=lambda row:row[0])
+  for score,route,model in sorted(rows,key=lambda row:row[0],reverse=True):
+   if returning:break
+   # A ticket can land at any of its confirmed birth points. Every option
+   # must offer the selected species on the same walkable component.
+   arrivals=route.get('arrival_options',[route['arrival_cm']])
+   if all(model in self.regions.hunting_arrival_sites(route['to_map'],tuple(point)) for point in arrivals):break
+  else:return None
   if not returning:
    current=max((self.rate(m,policy,now) for m,d in self.nearby(w.map,w.own.position) if d<5000),default=0)
    last=getattr(policy.learning,'last_progress_at',None)

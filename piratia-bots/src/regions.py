@@ -1,6 +1,8 @@
 """Shared ground navigation for paired maps and beginner farms for three home cities."""
 import json
+import math
 import threading
+from functools import lru_cache
 from pathlib import Path
 from navigation import Navigation
 
@@ -98,6 +100,21 @@ class Regions:
             spawns=list(dict.fromkeys(tuple(p) for b in births.values() if b['map']==name for p in b['points']))
             self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})
         return self.data.get(name)
+
+    @lru_cache(maxsize=512)
+    def hunting_arrival_sites(self,map_name,arrival):
+        """Known camps on the same land component as a native arrival."""
+        region=self.get(map_name)
+        if not region:return {}
+        nav=self.nav(map_name)
+        component=nav.land_component(arrival)
+        if not component:return {}
+        sites={}
+        for identity,farm in region['farms'].items():
+            closest=min((math.dist(arrival,p) for p in farm['points']
+                         if nav.land_component(p)==component and nav.combat_allowed(p)),default=math.inf)
+            if closest<=25000:sites[int(identity)]=closest
+        return sites
 
     def nav(self,name):
         if name not in self.navigation and name in self.map_catalog:

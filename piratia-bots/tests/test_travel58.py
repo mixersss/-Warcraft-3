@@ -20,7 +20,7 @@ class Travel58Tests(unittest.TestCase):
   w=source.actor();w.own.values.update({0:35,1:1200,2:100,31:1200,32:100});w.map='garner';w.items={}
   w.bag={0:source.item(4602)}
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
-  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}})
+  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0})
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
   p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None))
   c.needs_town=lambda *a:False
@@ -82,6 +82,24 @@ class Travel58Tests(unittest.TestCase):
   c.plan=c.choose(100,p);self.assertIsNotNone(c.plan);c.target_started=100
   self.assertFalse(c.tick(100,p,True));p.emit.assert_not_called();c.send.assert_not_called()
   w.bag={0:source.item(4602)};self.assertIsNotNone(c.choose(100,p))
+ def test_real_mine_ticket_landing_rejects_camps_across_disconnected_land(self):
+  from regions import Regions
+  w,c,p=self.make()
+  regions=Regions(ROOT/'assets',400)
+  regions.full_regions=True
+  c.regions=regions
+  bad=dict(self.plan(w,'ticket'),item_id=3847,arrival_cm=(164200,269800))
+  good=dict(self.plan(w,'event'),to_map='eastgoaf',arrival_cm=(11623,3330))
+  nav=regions.nav('garner')
+  self.assertNotEqual(nav.land_component(bad['arrival_cm']),nav.land_component((223100,278800)))
+  self.assertFalse(regions.hunting_arrival_sites('garner',bad['arrival_cm']))
+  self.assertIn(99,regions.hunting_arrival_sites('eastgoaf',good['arrival_cm']))
+  c.routes=lambda *a:[bad,good]
+  c.nearby=lambda map_name,point:[(225,0)] if map_name=='garner' else [(99,10521)]
+  c.rate=lambda *a:1
+  self.assertEqual(c.choose(100,p)['model'],99)
+  c.routes=lambda *a:[dict(good,arrival_options=[good['arrival_cm'],(0,0)])]
+  self.assertIsNone(c.choose(100,p))
  def test_waiting_for_tickets_releases_trip_after_bounded_attempt(self):
   w,c,p=self.make();c.plan=self.plan(w,'event');c.target_started=100
   c.life=SimpleNamespace(prices={4602:1000})

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-66'
-NAME = 'Piratia-Auto-Bots-Alpha66'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-67'
+NAME = 'Piratia-Auto-Bots-Alpha67'
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
-    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md']
+    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -408,6 +408,8 @@ def main():
                     status='Alpha65 preserves advancing camp searches and reserves foreground search work.')
     manifest.update(alpha66={'minimum_server_revision':60,'live_windows_verified':False},
                     status='Alpha66 defers optional city trips after confirmed hunting-site arrival.')
+    manifest.update(alpha67={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha67 verifies hunting camp connectivity at each possible arrival.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)
