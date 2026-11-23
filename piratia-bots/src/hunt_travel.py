@@ -17,6 +17,8 @@ class HuntTravel:
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
   self.site_arrival=None;self.escaping_mine=False;self.outbound_resume=None;self.island_scout=None;self.scout_return=False
+  self.deep_mine_cohort=hashlib.sha256((name+':silver-floor').encode()).digest()[0]%4==0
+  self.next_deep_check=0
   self.approach_clock=None;self.mine_requests=0;self.mine_arrivals=0;self.last_arrival=None
   self.requests=0;self.confirmed=0;self.timeouts=0;self.reason='';self.clock=0;self.target_started=0
  @property
@@ -175,6 +177,21 @@ class HuntTravel:
   market=getattr(policy,'market',None)
   if market and self.economy.phase(w,now)=='trade' and market.offers(policy):return True
   return False
+ def deeper_mine_plan(self,now,policy):
+  w=self.world;own=w.own
+  if (w.map!='eastgoaf' or not self.deep_mine_cohort or own.values.get(0,0)<40
+      or own.values.get(1,0)<own.values.get(31,1)*.85 or not self.count(4602)
+      or now<self.next_deep_check or now-getattr(policy,'started',now-90)<90
+      or (self.site_arrival and now-self.site_arrival[1]<45)):return None
+  self.next_deep_check=now+30
+  entry=next((row for row in self.data['entrances'] if row['name']=='Silver Mine 2 - Silver Mine 3'),None)
+  if not entry or not self.same_land(policy,entry['position']):return None
+  plan=dict(entry,kind='event',event_model=entry['model'],fare=0,returning=False,deep_mine=True)
+  if self.blocked.get(self.route_key(plan),0)>now:return None
+  sites=self.regions.hunting_arrival_sites(w.map,tuple(plan['arrival_cm']))
+  score,model=max(((self.rate(model,policy,now)/(1+dist/12000),model)
+                   for model,dist in sites.items()),default=(0,None))
+  return dict(plan,model=model) if score>0 else None
  def choose(self,now,policy,returning=False,alternative_to=None,resume=None):
   w=self.world;rows=[];scout_routes=[]
   for route in self.routes(now,policy,returning):
@@ -295,6 +312,8 @@ class HuntTravel:
    moved=w.map==plan['to_map'] and any(math.dist(w.own.position,p)<=2500 for p in points)
    if moved and plan.get('mine_exit'):
     moved=policy.nav.land_component(w.own.position)==plan['arrival_component']
+   if moved and plan.get('deep_mine'):
+    moved=policy.nav.land_component(w.own.position)==policy.nav.land_component(plan['arrival_cm'])
    paid=self.count(plan['item_id'])<self.pending['item_count'] if plan['kind']=='ticket' else w.own.values.get(8,0)<=self.pending['gold']-plan['fare']
    if moved and paid and w.bag_ready:
     self.confirmed+=1;self.pending=None;self.context=None;self.plan=None;self.approach_clock=None
@@ -321,8 +340,13 @@ class HuntTravel:
   if w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
+  if not returning and not self.plan:
+   self.plan=self.deeper_mine_plan(now,policy)
+   if self.plan:
+    self.preferred_model=self.plan['model'];self.target_started=now
+  deep_mine=bool(self.plan and self.plan.get('deep_mine'))
   local_combat=getattr(policy,'local_combat_ready',None)
-  if not returning and local_combat and local_combat(now) is True:
+  if not returning and not deep_mine and local_combat and local_combat(now) is True:
    if self.plan:self.target_started=now
    return False
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))
@@ -339,7 +363,7 @@ class HuntTravel:
   if not returning and getattr(policy,'supply_funding_goal',0):
    if self.plan:self.target_started=now
    return False
-  if not returning and self.settling_site(now,policy):return False
+  if not returning and not deep_mine and self.settling_site(now,policy):return False
   if not returning and not self.plan and policy.camp_route_active(now):
    goal=getattr(policy,'search_goal',None)
    last=policy.learning.last_progress_at

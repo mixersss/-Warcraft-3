@@ -21,6 +21,7 @@ class PetCare:
   self.pending=None;self.next_action=0;self.berry_retry=0;self.reason='';self.clock=0;self.home_city='garner'
   self.moves=self.feed_requests=self.fruit_requests=self.berry_requests=self.skill_requests=0
   self.confirmed=self.timeouts=self.growth_success=self.growth_failures=0
+  self.confirmed_feeds=0
   self.pet_skill_requests=0;self.pet_training_attempts=0;self.training_retry=0;self.training_window=None
   self.possession_requests=0;self.possession_confirmed=0;self.possession_pending=None;self.possession_retry=0
  def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity)
@@ -90,10 +91,8 @@ class PetCare:
   owned=self.any_fairy()
   if owned and self.count(2312)<6:goals.insert(0,(2312,6-self.count(2312),'пополняет запас автокорма феи'))
   if getattr(self,'maintenance_only',False):return [g for g in goals if g[0]==2312]
-  if fairy:
-   slot,item,state=fairy
-   fruit=FRUITS[self.stat]
-   if item.max_energy>0 and item.energy>=item.max_energy and not self.count(fruit):goals.append((fruit,1,'покупает плод одной выбранной статы'))
+  fruit=self.ripe_fruit(fairy)
+  if fruit and not self.count(fruit):goals.append((fruit,1,'покупает плод одной выбранной статы'))
   if w.own.values.get(0,0)>=15:
    for ticket in sorted({4602,{'garner':4602,'magicsea':4603,'darkblue':4604}.get(self.home_city,4602)}):
     if not self.count(ticket):goals.append((ticket,1,'покупает нужный городской билет'))
@@ -103,6 +102,11 @@ class PetCare:
    goals.append((609,1,'покупает Expert Fairy Possession'))
   goals.extend(g for g in self.pet_skill_goals(now) if not self.count(g[0]))
   return goals
+ def ripe_fruit(self,fairy=None):
+  if fairy is None:fairy=self.fairy()
+  if not fairy or getattr(self,'maintenance_only',False):return None
+  item=fairy[1]
+  return FRUITS[self.stat] if item.valid and item.max_energy>0 and item.energy>=item.max_energy else None
  def slot_count(self,slot,identity):
   i=self.world.bag.get(slot);return i.count if i and i.identity==identity else 0
  def use(self,slot,target,now,policy,kind):
@@ -140,6 +144,7 @@ class PetCare:
     else:done=consumed
    if done:
     self.confirmed+=1
+    if p['kind']=='feed':self.confirmed_feeds+=1
     if p['kind']=='berry':self.berry_retry=now+900
     self.pending=None
    elif now>=p['deadline']:
@@ -193,7 +198,8 @@ class PetCare:
    # After reconnect, wait a full possible native15-minute buff before reuse.
    if not self.berry_retry:self.berry_retry=now+900
    elif source is not None:self.reason='использует НЯ перед качем';self.use(source,-1,now,policy,'berry');return True
-  self.reason='фея растёт в сумке; стата '+self.stat;return False
+  self.reason=('рост заполнен; нужен плод '+self.stat if self.ripe_fruit(fairy)
+               else 'фея растёт в сумке; стата '+self.stat);return False
  def pet_skill_goals(self,now):
   if self.training_window is None:self.training_window=now
   if now-self.training_window>=1800:self.training_window=now;self.pet_training_attempts=0
@@ -231,9 +237,12 @@ class PetCare:
   self.moves+=1;self.next_action=now+2;self.reason=reason;return True
  def summary(self):
   fairy=self.fairy()
+  fruit=self.ripe_fruit(fairy)
   return {'fairy_skill_requests':self.pet_skill_requests,'fairy_training_attempts':self.pet_training_attempts,'possession_cast_requests':self.possession_requests,'confirmed_possession_states':self.possession_confirmed,'native_skill_states':dict(getattr(self.world,'own_states',{})),'savings_goal':self.savings(),'purchase_blocker':self.purchase_blocker(),'purchase_choice':self.purchase_identity(),'cash':self.world.own.values.get(8,0),'goal_applies_to_every_bot':True,'food_owned':self.count(2312)+self.count(227),'autofeed_ready':bool(self.slot_count(2,2312)),'food_stock_target':6,'urgently_hungry':self.urgent_hunger(),'state':self.reason,'chosen_stat':self.stat,'preferred_fairy':self.preferred,
    'owner_shops_ready':bool(getattr(self.life,'owner_shops',None) and self.life.owner_shops.get('catalog_revision',0)>=48 and self.life.owner_shops.get('fresh_fairies')),
    'observed_fairy':dict(fairy[2],slot=fairy[0],id=fairy[1].identity) if fairy else None,
    'pending':self.pending['kind'] if self.pending else None,'moves':self.moves,'feeding_requests':self.feed_requests,
+   'confirmed_feeds':self.confirmed_feeds,'full_growth':bool(fruit),'required_fruit':fruit,
+   'required_fruit_owned':self.count(fruit) if fruit else 0,
    'fruit_requests':self.fruit_requests,'growth_successes':self.growth_success,'growth_failures':self.growth_failures,
    'berry_requests':self.berry_requests,'expert_possession_requests':self.skill_requests,'confirmed':self.confirmed,'timeouts':self.timeouts}

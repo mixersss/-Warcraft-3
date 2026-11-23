@@ -61,14 +61,16 @@ class Coordination:
             for pair,(requester,_) in list(self.assistants.items()):
                 if pair[1]==owner or requester==owner:self.assistants.pop(pair,None)
 
-    def choose_zone(self,owner,map_name,goals,now,origin=None):
+    def choose_zone(self,owner,map_name,goals,now,origin=None,mine=False):
         """Keep a leased destination; otherwise prefer the least occupied real farm."""
         if not goals:return None
         goals=list(dict.fromkeys(tuple(p) for p in goals))
-        if origin is not None and len(goals)>24:
+        if not mine and origin is not None and len(goals)>24:
             # Do not evaluate every destination against400leases under one
             # shared lock. Only nearby real destinations can win this visit.
             goals=sorted(goals,key=lambda p:math.dist(origin,p))[:24]
+        owner=(owner,'mine') if mine else owner
+        map_name=(map_name,'mine') if mine else map_name
         with self.lock:
             self._expire(now)
             previous=self.zones.get(owner)
@@ -84,10 +86,10 @@ class Coordination:
                     density=sum(max(0,2500-math.dist(point,p))+(1000 if point==p else 0)
                                 for i in range(x-1,x+2) for j in range(y-1,y+2)
                                 for p in patches.get((i,j),()))
-                    travel=math.dist(origin,point)*.2 if origin is not None else 0
+                    travel=math.dist(origin,point)*(.08 if mine else .2) if origin is not None else 0
                     return density+travel
                 selected=min(goals,key=cost)
-            self.zones[owner]=((map_name,selected),now+45)
+            self.zones[owner]=((map_name,selected),now+(90 if mine else 45))
             return selected
 
     def visit(self,owner,map_name,point,now,mandatory=False):
@@ -107,7 +109,8 @@ class Coordination:
     def leave_visit(self,owner):
         with self.lock:self.visits.pop(owner,None)
 
-    def leave_zone(self,owner):
+    def leave_zone(self,owner,mine=False):
+        if mine:owner=(owner,'mine')
         with self.lock:self.zones.pop(owner,None)
 
 

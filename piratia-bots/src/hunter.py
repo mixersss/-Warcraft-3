@@ -16,6 +16,8 @@ from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 from coral_supplies import spent_basic
 from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, xp_level_divisor
 
+ARGENT_WEST_EXITS=((214450,274650),(214450,276350))
+MINE_ENTRIES=((22967,2878),(38675,12625),(11623,3330))
 
 def distance(a, b):
     return math.hypot(a[0]-b[0], a[1]-b[1])
@@ -76,6 +78,7 @@ class Hunter:
         self.next_console_state=0;self.last_console_mode=None
         self.resting = False
         self.retreat_goal=None;self.retreat_replans=0
+        self.mine_goal=None;self.mine_models=set();self.mine_arrived=None;self.mine_visited={}
         self.cancel_pending = False
         self.waypoint = 0
         self.moves = self.attacks = self.kills = 0
@@ -693,6 +696,7 @@ class Hunter:
     def planned_models(self):
         if self.starter_models():return self.starter_models()
         if self.supply_funding_models:return set(self.supply_funding_models)
+        if self.mine_goal and self.world.map=='eastgoaf':return self.mine_models
         preferred=self.travel_farm_preference(self.clock)
         if preferred and self.region and preferred in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):
             return {preferred}
@@ -739,6 +743,82 @@ class Hunter:
         return [p for p in goals if p and self.goal_blacklist.get(p,0)<=now
                 and (not component or self.nav.land_component(p)==component)]
 
+    def camp_route_waypoint(self,goal,now):
+        if not self.fast_progression or self.world.map!='garner' or goal[0]>200000:return goal
+        origin=self.position(now)
+        if origin[0]<=214750 or distance(origin,(223200,274500))>15000:return goal
+        component=self.nav.land_component(origin)
+        exits=[point for point in ARGENT_WEST_EXITS if component
+               and self.nav.land_component(point)==component and self.nav.nearest(point,0)==point]
+        if self.move_goal in exits:return self.move_goal
+        return min(exits,key=lambda p:distance(origin,p),default=goal)
+
+    def move_to_camp(self,goal,now):
+        waypoint=self.camp_route_waypoint(goal,now)
+        if waypoint==goal:return self.move_to(goal,now)
+        if self.shortcut and self.shortcut.consider(goal,now,self):return True
+        return self.move_to(waypoint,now,use_portals=False) or self.move_to(goal,now,use_portals=False)
+
+    def clear_mine_camp(self):
+        if self.mine_goal and self.coordination:self.coordination.leave_zone(self.owner,mine=True)
+        self.mine_goal=None;self.mine_models=set();self.mine_arrived=None
+
+    def mine_camp_tick(self,now):
+        if not self.fast_progression or self.world.map!='eastgoaf' or not self.region:return False
+        if self.mine_goal and self.coordination and now>=self.mine_lease_at:
+            self.coordination.choose_zone(self.owner,self.world.map,[self.mine_goal],now,mine=True)
+            self.mine_lease_at=now+25
+        if (self.target or self.assist_target or self.supply_funding_goal
+                or self.inventory_blocked or self.mandatory_work()):
+            return False
+        own=self.world.own
+        if own.values.get(HP,0)<own.values.get(MAX_HP,1)*.65:return False
+        origin=self.position(now)
+        component=self.nav.land_component(origin)
+        if self.mine_goal and component!=self.nav.land_component(self.mine_goal):self.clear_mine_camp()
+        entrance=next((p for p in MINE_ENTRIES if component and self.nav.land_component(p)==component),None)
+        if entrance is None:return False
+        if self.mine_goal and self.mine_arrived is not None:
+            if now-max(self.mine_arrived,self.learning.last_progress_at or 0)<40:return False
+        if self.mine_goal and (self.mine_arrived is not None or now>=self.mine_deadline or self.stuck>=5):
+            self.mine_visited[(self.mine_goal[0]//3000,self.mine_goal[1]//3000)]=now+120
+            self.clear_mine_camp()
+            self.clear_zone()
+        if not self.mine_goal:
+            region=self.local_hunting_region(funding=True)
+            models=self.learning.admissible(region,own,now)
+            candidates={}
+            for model in sorted(models):
+                for point in region['farms'][str(model)]['points']:
+                    point=tuple(point)
+                    sector=(point[0]//3000,point[1]//3000)
+                    if (distance(point,entrance)<4200 or self.mine_visited.get(sector,0)>now
+                            or not self.combat_allowed(point) or self.nav.nearest(point,0)!=point):continue
+                    candidates.setdefault(sector,point)
+            if not candidates:return False
+            goals=list(candidates.values())
+            self.mine_goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now,origin,mine=True)
+                            if self.coordination else min(goals,key=lambda p:distance(origin,p)))
+            self.mine_models={model for model in models if any(distance(p,self.mine_goal)<=2600
+                              for p in region['farms'][str(model)]['points'])}
+            speed=max(100,own.values.get(44,480))
+            self.mine_started=now;self.mine_lease_at=now+25
+            self.mine_deadline=now+max(60,25+distance(origin,self.mine_goal)*3/speed)
+        if distance(origin,self.mine_goal)<=900:
+            self.mine_arrived=now
+            self.clear_zone()
+            return False
+        self.search_goal=self.mine_goal
+        self.search_deadline=self.mine_deadline
+        self.search_started=self.mine_started
+        if self.move_to(self.mine_goal,now,use_portals=False):
+            self.change('идёт к выбранному участку в глубине шахты')
+            return True
+        self.mine_visited[(self.mine_goal[0]//3000,self.mine_goal[1]//3000)]=now+120
+        self.clear_mine_camp()
+        self.clear_zone()
+        return False
+
     def refresh_farm_plan(self):
         key=(self.world.map,self.world.own.values.get(LV,1),tuple(sorted(self.planned_models())))
         if key!=self.farm_plan_key:
@@ -755,17 +835,19 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        local_fruit=bool(key=='town' and feature and not self.target
+                         and getattr(feature,'nearby_fairy_fruit',lambda *args:None)(self,now))
         if self.group_hunt and self.group_hunt.active() and not self.mandatory_work():
             # A confirmed XP session finishes before optional city errands.
             # Full bags still use unlimited ordinary vendor sales; food can be
             # replenished, and owned gear/books are used earlier in the loop.
             if key in ('market','story','career','adventure'):return False
-            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (self.petcare and self.petcare.affordable_care()):return False
+            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not local_fruit and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
         if key=='market' and self.hunt_before_errands(now):return False
         if (key=='town' and feature and (self.hunt_before_errands(now)
                 or (self.hunt_travel and self.hunt_travel.settling_site(now,self)))
-                and not (feature.context or feature.pending or feature.combat_supply_required()
+                and not (feature.context or feature.pending or feature.combat_supply_required() or local_fruit
                          or (self.petcare and self.petcare.urgent_hunger())
                          or (not self.camp_route_active(now) and self.hunt_travel and self.hunt_travel.plan
                              and not self.hunt_travel.plan.get('returning')
@@ -783,11 +865,11 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
-        essential_combat=False;travel_work=False
+        essential_combat=local_fruit;travel_work=False
         if key=='town' and feature and hasattr(feature,'critical_items'):
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
-                essential_combat=any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-(0 if i in (817,867,635) and feature.life.prices.get(i)==1 else 100) for i in critical)
+                essential_combat=essential_combat or any(i in getattr(feature,'combat_items',()) and 0<feature.life.prices.get(i,0)<=self.world.own.values.get(8,0)-(0 if i in (817,867,635) and feature.life.prices.get(i)==1 else 100) for i in critical)
             # A missing staff/bow cannot be repaired by farming without it.
             # Allow the supplier scan and paid trip even when its shop is in
             # another city and the current-map offers contain no such weapon.
@@ -972,6 +1054,9 @@ class Hunter:
                 or (self.assist_target and entity.identity!=self.assist_target)):
             return False
         own = self.world.own
+        if (self.mine_goal and self.mine_arrived is not None and self.world.map=='eastgoaf'
+                and distance(entity.position,self.mine_goal)>2600 and not self.weak_target_exception(entity,now)):
+            return False
         if not self.hunting_level_allowed(entity,now):return False
         if self.mob_knowledge:
             record=self.mob_knowledge.get(entity.model)
@@ -1156,6 +1241,7 @@ class Hunter:
             self.pending_action=None;self.action_open=False
             self.sitting.reset()
             self.retreat_goal=None
+            self.clear_mine_camp()
             if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
             if self.bank and self.bank.busy:self.bank.end(now)
             if self.direct_trade and self.direct_trade.busy:self.direct_trade.cancel('персонаж погиб')
@@ -1563,6 +1649,7 @@ class Hunter:
             self.clear_zone()
             self.change(self.adventure.reason)
             return
+        if not defence and self.mine_camp_tick(now):return
         shared_models=self.quest_models()
         caster=own.values.get(4) in (4,5,13,14,16) and self.combat_skills
         needs_spell=bool(caster and not self.combat_skills.select(now,ignore_cooldown=True))
@@ -1797,7 +1884,7 @@ class Hunter:
             self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
         arrived=distance(origin,goal)<300
         if arrived or now>=self.search_deadline:
-            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(goal)
+            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(self.camp_route_waypoint(goal,now))
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             arrival_window=self.camp_arrival_until
@@ -1805,7 +1892,7 @@ class Hunter:
             if arrived and self.region:self.camp_arrival_until=arrival_window or now+45
             self.waypoint+=1
             self.next_action=now+.5
-        elif not self.move_to(goal,now):
+        elif not self.move_to_camp(goal,now):
             self.goal_blacklist[goal]=now+45
             self.clear_zone()
             self.next_action=now+1
@@ -1825,6 +1912,8 @@ class Hunter:
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
         paused=self.paused_camp
         return {'sites':sites,'current_goal_cm':self.search_goal,
+                'route_waypoint_cm':self.camp_route_waypoint(self.search_goal,self.clock) if self.search_goal else None,
+                'mine_sector_cm':self.mine_goal,'mine_sector_arrived':self.mine_arrived is not None,
                 'paused_camp':{'map':paused[0],'goal_cm':paused[1]} if paused and paused[2]>self.clock else None,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
                 'hunt_before_errands':self.hunt_before_errands(self.clock),
                 'source_regions_not_live_monster_positions':True}
@@ -2298,6 +2387,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.pending_action=None;policy.action_open=False
             policy.sitting.reset()
             policy.retreat_goal=None
+            policy.clear_mine_camp()
+            policy.mine_visited.clear()
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)
