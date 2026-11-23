@@ -6,13 +6,49 @@ from pathlib import Path
 
 
 class MobKnowledge:
-    def __init__(self,path):
+    def __init__(self,path,local_spawns=None):
         data=json.loads(Path(path).read_text(encoding='utf-8'))
         self.monsters={int(k):v for k,v in data['monsters'].items()}
+        known = {
+            (area['map'], model, tuple(area['rectangle_cm'][0]), tuple(area['rectangle_cm'][1])): area
+            for model, record in self.monsters.items() for area in record['locations']
+        }
+        for overlay in (Path(path).with_name('startup-spawns.json'), local_spawns):
+            if overlay is not None:
+                self.add_spawns(overlay, known)
         self.by_map={}
         for model,record in self.monsters.items():
             for location in record['locations']:
                 self.by_map.setdefault(location['map'],{}).setdefault(model,[]).append(location)
+
+    def add_spawns(self, path, known):
+        try:
+            data = json.loads(Path(path).read_text(encoding='utf-8'))
+            if data.get('version') != 1 or not isinstance(data.get('maps'), dict):
+                return
+        except (OSError, ValueError, AttributeError):
+            return
+        for name, rows in data['maps'].items():
+            if not isinstance(rows, list):
+                continue
+            for row in rows:
+                if not isinstance(row, list) or len(row) != 8:
+                    continue
+                model,x,y,x2,y2,count,delay,kind = row
+                if (not all(type(n) is int for n in row[:7]) or model not in self.monsters
+                        or kind not in ('startup', 'table') or count<=0
+                        or not (0<=x<=x2<409600 and 0<=y<=y2<409600)):
+                    continue
+                key = name, model, (x,y), (x2,y2)
+                area = dict(map=name, rectangle_cm=[[x,y],[x2,y2]], count=count, respawn_seconds=delay,
+                            source_kind='map_startup' if kind=='startup' else 'server_spawn_table')
+                previous = known.get(key)
+                if previous is None:
+                    known[key] = area
+                    self.monsters[model]['locations'].append(area)
+                elif previous.get('conditions_not_evaluated'):
+                    previous.clear()
+                    previous.update(area)
 
     def get(self,model):return self.monsters.get(model)
 

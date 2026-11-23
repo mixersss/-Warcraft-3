@@ -7,6 +7,11 @@ def scout_points(nav,locations,fallback,limit=96):
     for area in locations:
         if area.get('conditions_not_evaluated'):continue
         lo,hi=area['rectangle_cm']
+        if lo == hi:
+            point=tuple(lo)
+            if allowed(point) and (nav.land_component(point) if hasattr(nav,'land_component') else nav.nearest(point,0)):
+                extra.append(point)
+            continue
         width,height=hi[0]-lo[0],hi[1]-lo[1]
         if width<0 or height<0:continue
         # At most~96 candidates per area, close enough for native eyesight.

@@ -21,7 +21,7 @@ class HuntLearning:
   self.profile=PROFILES[self.seed%len(PROFILES)];self.rng=random.Random(self.seed)
   self.rows={};self.avoid={};self.danger_until={};self.active=None;self.path=None;self.dirty=False;self.save_errors=0
   self.signature=None;self.selected=set();self.until=0;self.scores={};self.last_save=0
-  self.events=[]
+  self.events=[];self.location_observer=None
   self.async_rewards=False;self.pending_rewards=[];self.reward_xp_floor=None
   self.inefficient_models=set();self.candidate_details={}
   self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
@@ -55,6 +55,8 @@ class HuntLearning:
   self.active={'id':target.identity,'handle':target.handle,'model':target.model,'start':now,
                'hp':own.values.get(1,0),'low':own.values.get(1,0),'max_hp':max(1,own.values.get(31,1)),
                'level':own.values.get(0,1),'xp':own.values.get(15,0),'gold':own.values.get(8,0)}
+  if self.location_observer:
+   self.active.update(map=world.map,point=target.position)
  def finish(self,world,now,outcome):
   a=self.active
   if not a:return
@@ -73,6 +75,13 @@ class HuntLearning:
    if self.async_rewards and self.reward_xp_floor is not None:baseline=max(baseline,self.reward_xp_floor)
    earned=max(0,own.values.get(15,a['xp'])-baseline)
    if self.async_rewards:self.reward_xp_floor=own.values.get(15,a['xp'])
+   if earned and self.location_observer and a.get('map')==world.map:
+    hit=world.own_hits.get(a['id'])
+    if hit and hit[1] and hit[0]>=a['start']:
+     target=world.entities.get(a['id'])
+     if target is None or target.handle==a['handle']:
+      self.location_observer(a['map'],a['model'],target.position if target else a['point'],
+                             (a['id'],a['handle']))
    row['xp']+=earned;row['level_xp']+=earned;row['level_wins']+=1
    row['dry_wins']=0 if earned or level_ups else row.get('dry_wins',0)+1
    if row['dry_wins']>=4:self.avoid[a['model']]=now+120

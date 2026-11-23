@@ -37,16 +37,17 @@ class Economy:
   attack=(own.values.get(33,0)+own.values.get(34,0))/2
   defence=own.values.get(35,0)
   hp=own.values.get(1,0)
-  choices=[]
+  choices=[];fallback=[]
   for key,farm in region['farms'].items():
    model=int(key)
-   if (farm.get('territory',0)!=0 or not farm['points'] or farm['level']>min(12,own.values.get(0,1))
+   if (farm.get('territory',0)!=0 or not farm['points'] or farm['level']>own.values.get(0,1)
        or learning.blocked(model,now) or learning.dangerous(model,now)):continue
    hits=math.ceil(farm['hp']/max(1,attack-farm.get('defence',0)))
    if hits>40 or hits*max(1,farm.get('attack_max',1)-defence)>hp*.35:continue
    distance=min(math.dist(position,point) for point in farm['points'])
-   choices.append((distance/480+hits*2,model))
-  return {model for _,model in sorted(choices)[:3]}
+   ranked=choices if farm['level']<=12 else fallback
+   ranked.append((distance/480+hits*2,model))
+  return {model for _,model in sorted(choices or fallback)[:3]}
 
  def phase(self,world,now):
   if now<self.emergency_until:return 'progression'

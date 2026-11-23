@@ -94,7 +94,7 @@ def ensure_character(bot, client, chars):
 
 def _run_bot_once(index, bot, port, seconds, stop, report_dir, mode='idle', navigation=None, chat_budget=None, fleet=None, history=None, total_deadline=None):
     report = Report()
-    report.result['version'] = 'AutoAccountsAlpha73'
+    report.result['version'] = 'AutoAccountsAlpha74'
     report.result['bot_index'] = index
     report.result['character_tag'] = hashlib.sha256(bot.get('character','').encode('utf-8')).hexdigest()[:12]
     report.result['session_history']=list(history or [])
@@ -254,7 +254,7 @@ def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, 'reconfigure'):
             stream.reconfigure(encoding='utf-8', errors='replace')
-    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 73).')
+    print('Пиратия — прогресс, торговля и общение; сохранение текущих ботов (Alpha 74).')
     if args.grow_to:args.count=args.grow_to
     print(f'Количество: {args.count}. Используются прежние сохранённые аккаунты.')
     duration_label='без ограничения' if args.seconds==0 else str(args.seconds)+' секунд'
@@ -263,7 +263,7 @@ def main():
     lock = None
     session_guard = None
     setup_report = Report()
-    setup_report.result['version'] = 'AutoAccountsAlpha73'
+    setup_report.result['version'] = 'AutoAccountsAlpha74'
     report_path = ROOT / 'bot-report.json'
     try:
         if os.name != 'nt':
@@ -328,6 +328,8 @@ def main():
             if setup_report.result['shop_bootstrap']['catalog_revision']<60:raise RuntimeError('Сначала установи серверные магазины Alpha60 через INSTALL-SERVER-SHOPS.cmd, затем запускай ботов.')
             from diagnostic_io import write_snapshot
             write_snapshot(ROOT/'data/server-source.json',{'resource':selected})
+        from spawn_sources import refresh_local_spawns
+        setup_report.result['spawn_sources']=refresh_local_spawns(ROOT/'assets',data)
         navigation = Regions(ROOT/'assets',population_count=args.count)
         setup_report.result['owner_shop_knowledge_ready']=bool(navigation.life.owner_shops and navigation.life.owner_shops.get('fresh_fairies') and navigation.life.owner_shops.get('catalog_revision',0)>=48)
         if not setup_report.result['owner_shop_knowledge_ready']:

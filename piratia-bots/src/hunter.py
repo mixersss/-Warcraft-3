@@ -153,7 +153,7 @@ class Hunter:
         self.inventory_blocked=False
         self.inventory_blocker=None
         self.raising_travel_funds=False
-        self.supply_funding_goal=0;self.supply_funding_models=set()
+        self.supply_funding_goal=0;self.supply_funding_models=set();self.paused_camp=None
         from sitting import Sitting
         self.sitting=Sitting(world)
 
@@ -192,6 +192,11 @@ class Hunter:
         self.search_goal=None
         self.search_recovery=False
         self.camp_arrival_until=0
+
+    def pause_camp(self,now):
+        if self.search_goal and self.search_deadline>now and not self.paused_camp:
+            self.paused_camp=(self.world.map,self.search_goal,now+900)
+        self.clear_zone()
 
     def camp_route_active(self,now):
         return bool((self.search_goal and now<self.search_deadline) or now<self.camp_arrival_until)
@@ -562,8 +567,8 @@ class Hunter:
         if not self.region:return (71,75)
         return self.learning.choose(self.local_hunting_region(),self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
 
-    def local_hunting_region(self):
-        if not self.region or not self.activity.hunting(self.clock) or not hasattr(self.nav,'land_component'):return self.region
+    def local_hunting_region(self,funding=False):
+        if not self.region or not (funding or self.activity.hunting(self.clock)) or not hasattr(self.nav,'land_component'):return self.region
         component=self.nav.land_component(self.position(self.clock))
         if not component:return self.region
         key=(id(self.region),self.world.map,component)
@@ -702,7 +707,7 @@ class Hunter:
         if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
-                and not self.raising_travel_funds and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
+                and not self.raising_travel_funds and not self.supply_funding_goal and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
                 and not any(spent_basic(self.world,i) for i in self.world.bag.values())
                 and not getattr(feature,'context',None) and not getattr(feature,'pending',None)):
             return False # A stalled optional selling trip must yield to the earned-XP watchdog.
@@ -874,6 +879,12 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
+        previous_target=self.world.entities.get(self.target)
+        credited=self.world.own_hits.get(self.target) if self.target else None
+        if (previous_target and not previous_target.alive) or (not previous_target and credited and credited[1]):
+            if not previous_target or previous_target.values.get(HP,1)<=0:self.kills+=1
+            self.drop_target()
+            self.next_action=min(now,self.next_action)
         if self.town and (self.town.context or self.town.pending):
             # Finish an already-open merchant exchange before optional task
             # gates, which can reject shopping as soon as its goal is fulfilled.
@@ -893,16 +904,21 @@ class Hunter:
         if self.adventure and hasattr(self.adventure,'review_objective'):
             current=self.world.entities.get(self.target)
             self.adventure.review_objective(now,busy=bool(current and current.alive))
+        prior_funding=self.supply_funding_goal
         self.supply_funding_goal=0
         self.supply_funding_models=set()
         if (self.economy and getattr(self.economy,'all_mobs_patchouli',False) and self.town and self.region
                 and self.world.bag_ready and not self.world.bag_disabled and not self.mandatory_work() and not self.assist_target):
             repair_cost=self.repair.weapon_funding_target() if self.repair else 0
             budget=self.town.essential_funding_target(repair_cost)
+            if self.hunt_travel:
+                budget=max(budget,self.hunt_travel.funding_target())
             if own.values.get(8,0)<budget:
+                if not prior_funding and self.search_goal and not self.paused_camp:
+                    self.paused_camp=(self.world.map,self.search_goal,now+900)
                 self.supply_funding_goal=budget
                 self.supply_funding_models=self.economy.weak_funding_models(
-                    self.world,self.local_hunting_region(),self.learning,now)
+                    self.world,self.local_hunting_region(funding=True),self.learning,now)
         self.update_tactic(now)
         if self.economy:
             self.economy.camp_hunting=self.hunt_before_errands(now)
@@ -1140,7 +1156,7 @@ class Hunter:
             if self.wants_story() and (self.economy.phase(self.world,now)=='history' or (self.market and self.market.needs_life_study()) or (self.professions and self.professions.needs_points())) and self.task('story',self.story,lambda:self.story.tick(now,self,safe,market_dialogue),now):
                 self.drop_target();self.clear_zone();self.change('получает очки жизненных навыков для ларька');return
             if self.task('town',self.town,lambda:self.town.tick(now,self,safe,market_dialogue),now):
-                self.drop_target();self.clear_zone();self.change(self.town.reason);return
+                self.drop_target();self.pause_camp(now);self.change(self.town.reason);return
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
         if self.hunt_travel and not self.transaction_busy():
@@ -1189,7 +1205,7 @@ class Hunter:
         if not self.quest_combat_ready and self.travel and (not self.activity.hunting(now) or self.mandatory_work() or self.travel.starter_trip()) and not (self.helper and self.helper.active(now)) and self.travel.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.travel.reason);return
         if self.task('vendor',self.vendor,lambda:self.vendor.tick(now,self,safe,market_dialogue),now):
-            self.drop_target();self.clear_zone();self.change(self.vendor.reason);return
+            self.drop_target();self.pause_camp(now);self.change(self.vendor.reason);return
         if self.treasure and not mandatory and not self.raising_travel_funds and not self.supply_funding_goal and self.treasure.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.treasure.reason);return
         if self.economy and self.economy.business(self.world,now) and self.task('market',self.market,lambda:self.market.tick(now,self,safe and not mandatory,market_dialogue),now):
@@ -1205,7 +1221,7 @@ class Hunter:
         if self.wants_story() and self.task('story',self.story,lambda:self.story.tick(now,self,safe,dialogue_busy or bool(self.town and self.town.context) or bool(self.career and self.career.context)),now):
             self.drop_target();self.clear_zone();self.change('сюжетное задание: жизненные навыки');return
         if self.task('town',self.town,lambda:self.town.tick(now,self,safe,dialogue_busy or bool(self.career and self.career.context) or bool(self.story and self.story.context)),now):
-            self.drop_target();self.clear_zone();self.change(self.town.reason);return
+            self.drop_target();self.pause_camp(now);self.change(self.town.reason);return
         if self.crafting and self.crafting.tick(now,self,safe,market_dialogue):
             self.drop_target();self.clear_zone();self.change(self.crafting.reason);return
         if self.xp_boosters and self.xp_boosters.tick(now,self,safe,market_dialogue):
@@ -1379,6 +1395,11 @@ class Hunter:
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:
             self.change('ожидание перехода в Аргент: старт на Forest Spirit');self.next_action=now+1;return
         self.change('поиск свободного места фарма')
+        scout_goal=self.hunt_travel.scout_goal(now) if hasattr(self.hunt_travel,'scout_goal') else None
+        if scout_goal and distance(self.position(now),scout_goal)>=300:
+            if self.move_to(scout_goal,now):
+                self.change('проверяет место появления мобов на острове')
+                return
         if self.region:
             raw_goals=[pt for model in self.planned_models() if str(model) in self.region['farms']
                        for pt in self.region['farms'][str(model)]['points']]
@@ -1402,6 +1423,16 @@ class Hunter:
                 # merely because the nearest good patch is shared.
                 goals=[p for p in goals if distance(origin,p)<=closest+3000]
         using_recovery=bool(goals)
+        if self.paused_camp and not (self.supply_funding_goal or self.raising_travel_funds):
+            map_name,point,expires=self.paused_camp
+            if now>=expires:
+                self.paused_camp=None
+            elif map_name==self.world.map and point in map(tuple,raw_goals):
+                resumed=self.reachable_camp_goals([point],now)
+                if resumed:
+                    goals=resumed
+                    using_recovery=False
+                self.paused_camp=None
         if not goals:
             goals=self.reachable_camp_goals(raw_goals,now)
         if not goals:
@@ -1459,7 +1490,9 @@ class Hunter:
                 sites.append({'model':model,'name':record.get('name') if record else None,'level':farm['level'],
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
-        return {'sites':sites,'current_goal_cm':self.search_goal,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
+        paused=self.paused_camp
+        return {'sites':sites,'current_goal_cm':self.search_goal,
+                'paused_camp':{'map':paused[0],'goal_cm':paused[1]} if paused and paused[2]>self.clock else None,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
                 'hunt_before_errands':self.hunt_before_errands(self.clock),
                 'source_regions_not_live_monster_positions':True}
 
@@ -1516,8 +1549,11 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
     policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
+    observations=getattr(navigation,'hunt_observations',None)
+    if observations and bot_index and policy.mob_knowledge:policy.learning.location_observer=navigation.record_hunting_observation
+    region_for=getattr(navigation,'hunting_region',getattr(navigation,'get',lambda name:None))
     policy.mechanics=getattr(navigation,'mechanics',None)
-    policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
+    policy.region=region_for(world.map)
     if policy.region and policy.region['spawns']:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
     policy.npc_knowledge=getattr(navigation,'npc_knowledge',None)
     policy.equipment=Equipment(world,catalog,client.wire.send,tell)
@@ -1774,6 +1810,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             policy.direct_trade.notify=lambda name,text,now:chat_adapter.enqueue(chat_adapter.quote_scopes.get(name.casefold(),'private'),name,text,now)
 
     def snapshot(now):
+        if observations:
+            policy.region=region_for(world.map)
+            if bot_index:observations.save(now)
         policy.learning.save(now)
         if policy.market and policy.market.catalog.prices:policy.market.catalog.prices.save()
         report.result['decision_loop']=dict(think_stats)
@@ -1934,7 +1973,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 policy.market.finish(now);policy.market.context=None;policy.market.pending=None
             policy.nav=navigation.nav(world.map) if hasattr(navigation,'nav') else nav
             if getattr(policy.nav,'incremental',False) is True:policy.nav.cancel_pending()
-            policy.region=navigation.get(world.map) if hasattr(navigation,'get') else None
+            policy.region=region_for(world.map)
             policy.home=world.own.position
             if policy.region and policy.region['spawns']:policy.home=policy.nav.nearest(policy.region['spawns'][0],12) or policy.home
             if was_dead:

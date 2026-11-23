@@ -56,7 +56,7 @@ class PetCare:
   return bool(fairy and fairy[1].endurance<=500)
  def needs_food_visit(self):
   fairy=self.any_fairy()
-  return bool(fairy and fairy[1].endurance<2000 and (self.count(2312)+self.count(227)==0 or self.slot_count(2,2312)==0))
+  return bool(fairy and fairy[1].endurance<2000 and self.count(2312)+self.count(227)==0)
  def purchase_identity(self):
   return self.preferred
  def savings(self):
@@ -161,8 +161,6 @@ class PetCare:
   if slot!=1:
    return self.move(slot,1,now,policy,'размещает фею во второй ячейке сумки')
   food=next((s for s,i in w.bag.items() if i.identity==2312 and i.valid and s!=2),None)
-  if food is not None and self.slot_count(2,2312)==0:
-   return self.move(food,2,now,policy,'размещает автокорм в третьей ячейке сумки')
   feed_target=5500 if w.skills.get(280,{}).get('level') else 2550
   if getattr(self,'cost_based_possession',False):
    rank=w.skills.get(280,{}).get('level',0)
@@ -170,6 +168,8 @@ class PetCare:
   if item.endurance<min(item.max_endurance,feed_target):
    source=next((s for s,i in w.bag.items() if i.identity in (227,2312) and i.valid),None)
    if source is not None:self.reason='кормит свою фею';self.use(source,slot,now,policy,'feed');return True
+  if food is not None and self.slot_count(2,2312)==0:
+   return self.move(food,2,now,policy,'размещает автокорм в третьей ячейке сумки')
   if not state['monostat_matches_owner_policy']:
    self.reason='сохраняет и кормит прежнюю фею; рост смешанных статов не продолжает';return False
   if item.max_energy>0 and item.energy>=item.max_energy:

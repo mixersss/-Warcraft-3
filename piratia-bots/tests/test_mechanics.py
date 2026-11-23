@@ -188,7 +188,10 @@ class WorldTests(unittest.TestCase):
         d=K.sources_for_item(3457);self.assertEqual(len(d['monster_sources']),2)
         self.assertTrue(any('Demonic' in m['name'] for m in d['monster_sources']))
         self.assertTrue(all(not m['live_spawn_verified'] and not m['drop_probability_known'] for m in d['monster_sources']))
-        self.assertEqual(K.sources_for_item(1774)['monster_sources'][0]['locations'],[])
+        self.assertEqual(K.sources_for_item(79)['monster_sources'][0]['locations'],[])
+        locations=K.sources_for_item(1774)['monster_sources'][0]['locations']
+        self.assertTrue(any(location['map']=='eastgoaf' and location['source_kind']=='map_startup'
+                            for location in locations))
 
     def test_chat_explains_mechanics_without_breaking_existing_npc_questions(self):
         w=actor();s=Social(w,Mock(),w.own.name,ChatBudget(),1);s.mechanics_provider=lambda words:K.answer(words,w)

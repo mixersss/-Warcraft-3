@@ -54,7 +54,7 @@ class Regions:
         self.rest_directory=ActivitySlots(population_count,live_count=self.directory.active_count)
         from mob_knowledge import MobKnowledge
         knowledge=self.assets/'world-mobs.json'
-        self.mob_knowledge=MobKnowledge(knowledge) if knowledge.exists() else None
+        self.mob_knowledge=MobKnowledge(knowledge,self.assets.parent/'data/server-spawns.json') if knowledge.exists() else None
         from mechanics import load_knowledge
         mechanics=self.assets/'mechanics.json'
         self.mechanics=load_knowledge(self.assets,self.npc_knowledge,self.mob_knowledge) if mechanics.exists() else None
@@ -65,6 +65,10 @@ class Regions:
         self.map_catalog=json.loads(catalog.read_text(encoding='utf-8')).get('maps',{}) if catalog.exists() else {}
         self.navigation_lock=threading.Lock()
         self.region_lock=threading.Lock()
+        from hunt_observations import HuntObservations
+        self.hunt_observations=HuntObservations(self.assets.parent/'data/hunting-observations.json')
+        self.observed_regions={}
+        self.island_scout_cooldowns={}
         travel=self.assets/'hunting-travel58.json'
         self.hunting_travel_data=json.loads(travel.read_text()) if travel.exists() else None
         self.full_regions=forging_economy
@@ -118,8 +122,93 @@ class Regions:
                 self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})
         return self.data.get(name)
 
-    @lru_cache(maxsize=512)
+    def record_hunting_observation(self,name,model,point,identity):
+        mob=self.mob_knowledge.get(model)
+        if name not in self.map_catalog or not mob or mob['territory']!=0:
+            return
+        if model in self.mob_knowledge.by_map.get(name,{}) and any(
+                not location.get('conditions_not_evaluated')
+                and all(a<=x<=b for a,x,b in zip(location['rectangle_cm'][0],point,location['rectangle_cm'][1]))
+                for location in self.mob_knowledge.by_map[name][model]):
+            return
+        nav=self.nav(name)
+        if nav.land_component(point) and nav.combat_allowed(point):
+            self.hunt_observations.record(name,model,point,identity)
+
+    def hunting_region(self,name):
+        region=self.get(name)
+        points=self.hunt_observations.points(name)
+        if not region or not points:
+            return region
+        with self.region_lock:
+            cached=self.observed_regions.get(name)
+            if cached and cached[0] is points:
+                return cached[1]
+            farms=dict(region['farms'])
+            nav=self.nav(name)
+            for model,locations in points.items():
+                mob=self.mob_knowledge.get(model)
+                if not mob or mob['territory']!=0:
+                    continue
+                verified=[p for p in locations if nav.land_component(p) and nav.combat_allowed(p)]
+                if verified:
+                    key=str(model)
+                    farm=farms.get(key,{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max','territory')})
+                    farms[key]=dict(farm,points=list(dict.fromkeys([*farm.get('points',()),*verified])))
+            result=dict(region,farms=farms)
+            self.observed_regions[name]=(points,result)
+            return result
+
+    @lru_cache(maxsize=32)
+    def island_scout_sites(self,name,arrival):
+        nav=self.nav(name)
+        component=nav.land_component(arrival)
+        sites={}
+        if not component:
+            return sites
+        for model,locations in self.mob_knowledge.by_map.get(name,{}).items():
+            if self.mob_knowledge.get(model)['territory']!=0:
+                continue
+            for area in locations:
+                lo,hi=area['rectangle_cm']
+                if not area.get('conditions_not_evaluated') or lo!=hi:
+                    continue
+                distance=math.dist(arrival,lo)
+                if (distance<sites.get(model,(25001,None))[0] and distance<=25000
+                        and nav.land_component(lo)==component and nav.combat_allowed(lo)):
+                    sites[model]=(distance,tuple(lo))
+        return sites
+
+    def reserve_island_scout(self,name,arrival,now):
+        key=name,arrival
+        with self.region_lock:
+            if self.island_scout_cooldowns.get(key,0)>now:
+                return False
+            self.island_scout_cooldowns[key]=now+1800
+            return True
+
     def hunting_arrival_sites(self,map_name,arrival):
+        sites=self._source_arrival_sites(map_name,arrival)
+        observations=self.hunt_observations.points(map_name)
+        if not observations:
+            return sites
+        nav=self.nav(map_name)
+        component=nav.land_component(arrival)
+        if not component:
+            return sites
+        merged=dict(sites)
+        for model,points in observations.items():
+            mob=self.mob_knowledge.get(model)
+            if not mob or mob['territory']!=0:
+                continue
+            closest=min((math.dist(arrival,p) for p in points
+                         if nav.land_component(p)==component and nav.combat_allowed(p)),default=math.inf)
+            if closest<=25000:
+                merged[model]=min(closest,merged.get(model,math.inf))
+        return merged
+
+    @lru_cache(maxsize=512)
+    def _source_arrival_sites(self,map_name,arrival):
         """Known camps on the same land component as a native arrival."""
         region=self.get(map_name)
         if not region:return {}

@@ -104,6 +104,12 @@ class Vendor(Town):
    self.stock_since=None;self.reason='нет разрешённых простых трофеев для продажи';return False
   shops=self.life.services['shops'].get(w.map,[])
   if not shops:self.reason='нет известного торговца на текущей карте';return False
+  component=getattr(policy.nav,'land_component',None)
+  own_component=component(policy.position(now)) if component else None
+  if own_component:
+   shops=[s for s in shops if any(component((s['position'][0]+dx,s['position'][1]+dy))==own_component
+             for dx,dy in ((0,0),(-150,0),(0,-150),(150,0),(0,150)))]
+  if not shops:self.reason='нет торговца на доступной части карты';return False
   if self.batch_farming and not self.sale_target:
    if self.stock_since is None:self.stock_since=now
    count=sum(n for _,identity,n in choices if identity in (1000,4915))
