@@ -164,6 +164,7 @@ class World:
         self.skill_packet_number = None
         self.skill_revision = 0
         self.own_hits = {}
+        self.combat_revision=0
         self.own_recent_damage=deque(maxlen=8)
         self.look_revision = 0
         self.skills = {}
@@ -314,6 +315,8 @@ class World:
             if len(self.entities) < 2048 or seen.identity in self.entities:
                 self.motion.pop(seen.identity,None)
                 self.entities[seen.identity] = seen
+                if seen.control==5 and seen.alive and self.own and math.dist(seen.position,self.own.position)<=2500:
+                    self.combat_revision+=1
         elif command == 505:
             reader.byte()
             identity = reader.long()
@@ -326,6 +329,7 @@ class World:
             if identity in self.entities:
                 self.entities[identity].values.update(values)
                 if values.get(HP,1)<=0 and identity in self.own_hits:
+                    if not self.own_hits[identity][1]:self.combat_revision+=1
                     self.own_hits[identity]=(self.own_hits[identity][0],True)
         elif command == 510:
             identity=reader.long()
@@ -400,6 +404,8 @@ class World:
                     current.values.update(values)
                     if identity==self.own_id and before is not None and HP in values and values[HP]<before:
                         self.own_recent_damage.append((time.monotonic(),before-values[HP]))
+                    if current.control==5 and before and (values.get(HP,1)<=0 or state & 0x100):
+                        if identity in self.own_hits or source==self.own_id:self.combat_revision+=1
                     if (source==self.own_id and current.control==5 and before is not None
                             and HP in values and values[HP]<before):
                         self.own_hits[identity]=(time.monotonic(),values[HP]<=0 or bool(state & 0x100))

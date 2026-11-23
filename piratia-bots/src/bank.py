@@ -30,6 +30,7 @@ class Bank:
         self.mode='deposit';self.patchouli_audit=False;self.patchouli_audited=False;self.deposits=self.withdrawals=self.requests=self.timeouts=0
         self.last_world_map=world.map
         self.trip_started=None;self.progress_at=0;self.last_position=None
+        self.inventory_relief=False
 
     @property
     def busy(self):return self.state!='idle'
@@ -40,21 +41,24 @@ class Bank:
             policy.emit(action_header(self.world.own_id,policy.sequence,CLOSE_BANK))
         self.state='idle';self.context=None;self.pending=None;self.npc=None
         self.next_visit=now+1200;self.reason=''
-        self.trip_started=None;self.last_position=None
+        self.trip_started=None;self.last_position=None;self.inventory_relief=False
 
     def candidates(self,policy,items=None):
         market=policy.market
         if not market:return []
         source=self.world.bag if items is None else items
         protected=market.protected(policy);reserved={};result=[]
-        stall_stock={slot:count for _,_,count,slot in market.offers(policy)} if items is None and getattr(market,'keep_stall_stock',False) is True and self.world.own.values.get(0,0)>=getattr(market,'minimum_level',30) else {}
+        stall_stock={slot:count for _,_,count,slot in market.offers(policy)} if items is None and not self.inventory_relief and getattr(market,'keep_stall_stock',False) is True and self.world.own.values.get(0,0)>=getattr(market,'minimum_level',30) else {}
         for slot,item in sorted(source.items()):
             if item.identity==1000:
                 if items is not None and item.valid and item.identity not in protected and not item.forge and not any(item.parameters) and not any(a or b for a,b in item.instance_attributes):result.insert(0,(slot,item,item.count))
                 continue # Patchouli is NPC cash, never a bank deposit or stall reserve.
             if (not item.valid or item.identity not in market.catalog.items or item.identity in protected
                 or item.identity in self.world.own.equipment.values() or market.useful_gear(item.identity)):continue
-            keep=max(stall_stock.get(slot,0),max(0,market.reserve_count(item.identity)-reserved.get(item.identity,0))) if items is None else 0
+            reserve=market.reserve_count(item.identity)
+            if self.inventory_relief and market.catalog.items[item.identity].get('category')=='gem':
+                reserve=max(1,min(2,reserve))
+            keep=max(stall_stock.get(slot,0),max(0,reserve-reserved.get(item.identity,0))) if items is None else 0
             reserved[item.identity]=reserved.get(item.identity,0)+min(keep,item.count)
             if item.count>keep:result.append((slot,item,item.count-keep))
         return result
@@ -110,6 +114,7 @@ class Bank:
             if self.mode=='withdraw_patchouli':options=[r for r in options if r[1].identity==1000]
             empty=next((s for s in range(capacity or 0) if s not in destination),None)
             if (not options or empty is None or
+                (self.mode=='deposit' and self.inventory_relief and (w.bag_capacity or 0)-len(w.bag)>=6) or
                 (self.mode=='withdraw' and (w.bag_capacity or 0)-len(w.bag)<=6)):
                 self.end(now,policy);return False
             slot,item,count=options[0]
@@ -121,6 +126,7 @@ class Bank:
         if (now<self.next_visit or not safe or dialogue_busy or not policy.market or policy.market.busy
             or not w.bag_ready or w.bag_disabled or w.bank_disabled or w.own.values.get(8,0)<300):return False
         free=(w.bag_capacity or 0)-len(w.bag)
+        self.inventory_relief=bool(getattr(policy,'fast_progression',False) and free<=1)
         valuables=self.candidates(policy)
         deposit=bool(valuables) and (free<=8 or len(valuables)>=4)
         withdraw=(w.own.values.get(0,0)>=getattr(policy.market,'minimum_level',30) and w.skills.get(241,{}).get('level',0)

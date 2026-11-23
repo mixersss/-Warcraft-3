@@ -193,6 +193,7 @@ class Equipment:
         self.world,self.catalog,self.send,self.tell=world,catalog,send,tell
         self.pending=None;self.pending_refill=None;self.pending_restore=None;self.blockers=[];self.settling=False
         self.next_action=0
+        self.progression_first=False;self.next_optional=0;self.pending_bag=None
         self.blacklist={}
         self.requests=self.confirmed=self.failed=0
 
@@ -203,6 +204,21 @@ class Equipment:
             if self.catalog.upgrade(own,model):result.add(model)
         return result
 
+    def urgent_upgrade(self,own,identity,link,need):
+        kind=self.catalog.types.get(identity)
+        worn=own.equipment_details.get(link,{})
+        if kind==29:
+            return link in own.required_coral_links and (self.catalog.types.get(own.equipment.get(link))!=29
+                    or worn.get('energy',0)<need or worn.get('valid') is False)
+        job=own.values.get(4)
+        weapon=({3,4} if job in (2,12) else {9} if job in (5,13,14) else set())
+        for hand in (6,9):
+            equipped=own.equipment_details.get(hand,{})
+            if (self.catalog.types.get(own.equipment.get(hand)) in weapon and equipped.get('valid',True)
+                    and (equipped.get('max_endurance',0)<=0 or equipped.get('endurance',0)>0)):
+                return False
+        return kind in weapon
+
     def tick(self,now,policy,safe=True):
         own=self.world.own
         from coral_supplies import required_links
@@ -211,7 +227,11 @@ class Equipment:
             identity,links,deadline=self.pending
             refill_ok=not self.pending_refill or own.equipment_details.get(self.pending_refill[0],{}).get('energy',0)>self.pending_refill[1]
             restore_ok=not self.pending_restore or (own.equipment_details.get(self.pending_restore[0],{}).get('valid') is True and own.equipment_details.get(self.pending_restore[0],{}).get('endurance',0)>self.pending_restore[1])
-            if any(own.equipment.get(link)==identity for link in links) and refill_ok and restore_ok:
+            bag_changed=True
+            if self.pending_bag:
+                slot,before=self.pending_bag
+                bag_changed=self.world.bag_ready and not self.world.bag_disabled and self.world.bag.get(slot)!=before
+            if any(own.equipment.get(link)==identity for link in links) and refill_ok and restore_ok and bag_changed:
                 self.confirmed+=1;self.pending=None;self.next_action=now+1;self.settling=True
                 self.tell('Экипировка подтверждена сервером.')
             elif now>deadline:
@@ -230,6 +250,7 @@ class Equipment:
         level,job=own.values.get(0),own.values.get(4)
         if level is None or job is None:return False
         options=[];self.blockers=[]
+        optional=not self.progression_first or (now>=self.next_optional and not policy.local_combat_ready(now))
         for slot,item in self.world.bag.items():
             if item.identity in self.catalog.gear and (not item.valid or item.max_endurance>0 and item.endurance<=0):
                 self.blockers.append({'slot':slot,'id':item.identity,'reason':'вещь непригодна или изношена; нужен ремонт'});continue
@@ -241,11 +262,9 @@ class Equipment:
             need=max(1,self.world.skills.get(coral_skill,{}).get('energy',1))
             upgrade=self.catalog.upgrade(own,item.identity,free,item,need)
             if upgrade:
-                urgent_coral=(gear.get('kind')==29 and upgrade[1][0] in own.required_coral_links
-                    and (self.catalog.types.get(own.equipment.get(upgrade[1][0]))!=29
-                         or own.equipment_details.get(upgrade[1][0],{}).get('energy',0)<need
-                         or own.equipment_details.get(upgrade[1][0],{}).get('valid') is False))
-                options.append((upgrade[0]+(1000000 if urgent_coral else 0),slot,item.identity,upgrade[1]))
+                urgent=self.urgent_upgrade(own,item.identity,upgrade[1][0],need)
+                if optional or urgent:
+                    options.append((upgrade[0]+(1000000 if urgent else 0),slot,item.identity,upgrade[1]))
             elif item.identity in self.catalog.gear:
                 gear=self.catalog.gear[item.identity]
                 reason=('нужен уровень '+str(gear['level']) if gear['level']>level else
@@ -253,15 +272,17 @@ class Equipment:
                         'не подходит профессия' if gear['jobs']!=[-1] and job not in gear['jobs'] else
                         'нужно место для снятой вещи' if free<1 else 'нет подтверждённого улучшения комплекта')
                 self.blockers.append({'slot':slot,'id':item.identity,'reason':reason})
-        pair=self.catalog.pair_upgrade(self.world,self.blacklist,now)
+        pair=self.catalog.pair_upgrade(self.world,self.blacklist,now) if optional else None
         if pair:options.append(pair)
         if not options:return False
-        _,slot,identity,links=max(options)
+        score,slot,identity,links=max(options)
         from hunter import action_header
         # Native stNetUseItem: bag slot, automatic target=-1, exactly like double click.
         destination=-2 if self.catalog.types.get(identity)==26 and links==[8] else -1
         policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,destination))
         self.requests+=1
+        self.pending_bag=(slot,self.world.bag[slot]) if self.progression_first else None
+        if self.progression_first and score<1000000:self.next_optional=now+60
         self.pending_refill=None
         self.pending_restore=None
         worn=own.equipment_details.get(links[0],{})
