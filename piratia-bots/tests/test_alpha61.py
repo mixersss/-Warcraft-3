@@ -53,7 +53,7 @@ class Ground61Tests(unittest.TestCase):
   p.nav.land_component=lambda point:1
   p.region={'farms':{
       '128':{'level':37,'hp':900,'points':[far]},
-      '225':{'level':32,'hp':600,'points':[near]},
+      '225':{'level':33,'hp':600,'points':[near]},
       '90':{'level':35,'hp':500,'territory':1,'points':[(o[0]+1000,o[1])]},
       '277':{'level':38,'hp':600,'points':[(o[0]+2000,o[1])]},
   }}

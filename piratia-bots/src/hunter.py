@@ -14,6 +14,7 @@ from progression import Progression
 from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 from coral_supplies import spent_basic
+from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, xp_level_divisor
 
 
 def distance(a, b):
@@ -396,6 +397,7 @@ class Hunter:
             if healing:
                 if not self.combat_skills.healing_target_valid(target,self.party,now):return True
             else:
+                if target.control==5 and not self.hunting_level_allowed(target,now):return True
                 if not self.combat_allowed(self.position(now)) or not self.combat_allowed(self.world.position(now,identity)):return True
                 if self.combat_since is not None and now-self.last_damage_at>=14:return False
             if self.combat_skills and skill in self.combat_skills.rules:
@@ -638,17 +640,20 @@ class Hunter:
                 return None
         return travel.preferred_model
 
+    def class_funding_models(self):
+        if not self.raising_travel_funds or not self.economy:return set()
+        if getattr(self.economy,'all_mobs_patchouli',False):
+            return self.economy.weak_funding_models(self.world,self.local_hunting_region(),self.learning,self.clock)
+        return self.economy.funding_models(self.world,self.region,self.learning,self.clock)
+
     def planned_models(self):
         if self.starter_models():return self.starter_models()
         if self.supply_funding_models:return set(self.supply_funding_models)
         preferred=self.travel_farm_preference(self.clock)
         if preferred and self.region and preferred in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):
             return {preferred}
-        if self.raising_travel_funds and self.economy:
-            funding=(self.economy.weak_funding_models(self.world,self.local_hunting_region(),self.learning,self.clock)
-                     if getattr(self.economy,'all_mobs_patchouli',False)
-                     else self.economy.funding_models(self.world,self.region,self.learning,self.clock))
-            if funding:return funding
+        funding=self.class_funding_models()
+        if funding:return funding
         group_target=self.group_hunt.target(self.clock) if self.group_hunt else None
         if group_target and self.region and not self.mandatory_work():
             if group_target.model in self.learning.admissible(self.region,self.world.own,self.clock):
@@ -824,6 +829,31 @@ class Hunter:
             self.visible_mob_cache=cached
         return cached[1]
 
+    def minimum_xp_mob_level(self,now):
+        own=self.world.own
+        level=own.values.get(LV,1)
+        if not self.region:return max(1,level-MAX_RECOVERY_LEVEL_GAP) if self.fast_progression else 1
+        key=(now,self.world.map,id(self.region),level)
+        cached=getattr(self,'xp_level_floor_cache',None)
+        if cached and cached[0]==key:return cached[1]
+        floor=self.learning.minimum_farm_level(self.local_hunting_region(funding=True),own,now)
+        self.xp_level_floor_cache=key,floor
+        return floor
+
+    def weak_target_exception(self,entity,now):
+        if self.assist_target==entity.identity:return 'requested_assist'
+        hit=self.world.own_attackers.get(entity.identity)
+        if self.fast_progression and hit and hit[0]==entity.handle and 0<=now-hit[1]<=8:
+            return 'self_defence'
+        if entity.model in self.supply_funding_models:return 'essential_supply_funding'
+        if entity.model in self.class_funding_models():return 'class_travel_funding'
+        if entity.model in self.quest_models():return 'active_quest'
+        return None
+
+    def hunting_level_allowed(self,entity,now):
+        return (entity.values.get(LV,0)>=self.minimum_xp_mob_level(now)
+                or self.weak_target_exception(entity,now) is not None)
+
     def visible_ground_opportunities(self,now,origin):
         if (not self.camp_scouting or not self.mob_knowledge or not self.region
                 or self.supply_funding_models or self.assist_target
@@ -832,9 +862,7 @@ class Hunter:
             return set()
         own=self.world.own
         level=own.values.get(LV,1)
-        last=self.learning.last_progress_at
-        stalled=last is not None and now-last>=180
-        floor=max(1,level-(14 if stalled else 9))
+        floor=self.minimum_xp_mob_level(now)
         max_hp=own.values.get(MAX_HP,1)
         choices=set()
         for candidate in self.visible_mobs(now):
@@ -883,8 +911,12 @@ class Hunter:
         if not target:return None
         level=self.world.own.values.get(LV,1);ml=target.values.get(LV)
         reason=self.farm_reason()
+        floor=self.minimum_xp_mob_level(self.clock)
         return {'identity':target.identity,'model':target.model,'level':ml,
                 'character_level':level,'level_gap':level-ml if ml is not None else None,
+                'minimum_xp_mob_level':floor,
+                'level_xp_divisor':xp_level_divisor(level,ml) if ml else None,
+                'weak_target_exception':self.weak_target_exception(target,self.clock) if ml and ml<floor else None,
                 'quest_required':target.model in self.quest_models(),
                 'selection_source':reason['source'],
                 'opportunity':target.model==self.opportunity_model,
@@ -896,6 +928,7 @@ class Hunter:
                 or (self.assist_target and entity.identity!=self.assist_target)):
             return False
         own = self.world.own
+        if not self.hunting_level_allowed(entity,now):return False
         if self.mob_knowledge:
             record=self.mob_knowledge.get(entity.model)
             if record and record.get('territory')!=0:return False
@@ -1143,6 +1176,16 @@ class Hunter:
                 self.supply_funding_goal=budget
                 self.supply_funding_models=self.economy.weak_funding_models(
                     self.world,self.local_hunting_region(funding=True),self.learning,now)
+        current=self.world.entities.get(self.target)
+        if current and current.alive and not self.hunting_level_allowed(current,now):
+            if self.pending_action and self.pending_action[0][8]==2:
+                if struct.unpack('>I',self.pending_action[0][-8:-4])[0]==current.identity:self.pending_action=None
+            self.next_action=min(now,self.next_action)
+            if self.action_open and not self.action_stopped() and self.last_attack_target==(current.identity,current.handle):
+                self.stop_action()
+                self.next_action=now+.2
+            self.drop_target()
+            self.learning.until=0
         self.update_tactic(now)
         if self.economy:
             self.economy.camp_hunting=self.hunt_before_errands(now)
@@ -1545,8 +1588,13 @@ class Hunter:
                      for candidate in candidates}
             in_range={candidate.identity for candidate in candidates if can_attack_here
                       and distance(origin,self.world.position(now,candidate.identity))<=reaches[candidate.identity]}
-            # Take an immediately attackable target before asking A* for an approach.
-            candidates.sort(key=lambda candidate:(candidate.identity not in in_range,candidate is not defence if defence else False))
+            # Within each level band, try in-range targets before pathfinding.
+            preferred_floor=max(1,own.values.get(LV,1)-PREFERRED_LEVEL_GAP)
+            candidates.sort(key=lambda candidate:(
+                candidate is not defence if defence else False,
+                not (candidate.values.get(LV,0)>=preferred_floor or candidate.model in shared_models
+                     or self.raising_travel_funds or self.supply_funding_models),
+                candidate.identity not in in_range))
             # Prefer unclaimed reachable mobs. If every viable target is busy,
             # join a real fight instead of waiting for another bot's lease.
             # Active quest mobs can be shared on the first pass.
@@ -1597,7 +1645,7 @@ class Hunter:
             reach = self.combat_skills.reach(ranged or spell,target) if (ranged or spell) else self.attack_reach(target)
             if (not self.combat_allowed(self.position(now)) or
                     distance(self.position(now),self.world.position(now,target.identity)) > reach):
-                self.change('подход к слабому мобу')
+                self.change('подход к выбранному мобу')
                 goal=selected_approach or self.approach(target,reach,now)
                 if self.attack_on_approach(now,target,goal,spell,ranged):return
                 if not goal or not self.move_to(goal,now):
@@ -1746,7 +1794,7 @@ class Hunter:
                   'character_level':self.world.own.values.get(LV,1),
                   'selected_levels':{str(m):self.region['farms'][str(m)]['level'] for m in models
                                      if self.region and str(m) in self.region['farms']},
-                  'minimum_candidate_level':self.learning.minimum_farm_level(self.region,self.world.own,self.clock) if self.region else None}
+                  'minimum_candidate_level':self.minimum_xp_mob_level(self.clock) if self.region else None}
         if self.starter_models():return {'source':'initial_trial','models':sorted(models)}
         if self.activity.hunting(self.clock) and not self.mandatory_work():return adaptive
         for name,feature in (('advanced_profession',self.career),('story_quest',self.story if self.wants_story() else None),('profession_quest',self.adventure)):

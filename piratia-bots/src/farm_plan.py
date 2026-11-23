@@ -8,6 +8,9 @@ PROFILES=(
  ('собиратель',2,.7,3.0,.75),('упорный',2,.65,3.5,.65))
 FIELDS=('wins','losses','stalls','seconds','hp_cost','xp','gold','level_ups','dry_wins','observed_level','level_xp','level_seconds','level_wins')
 
+PREFERRED_LEVEL_GAP=5
+MAX_RECOVERY_LEVEL_GAP=9
+
 def xp_level_divisor(actor_level,monster_level):
  # Exact level-only divisor from the supplied ShareTeamExp, before other bonuses.
  gap=actor_level-monster_level
@@ -120,15 +123,15 @@ class HuntLearning:
  def minimum_farm_level(self,region,own,now):
   level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
   for model,r in region['farms'].items():
-   if (r.get('territory',0)==0 and r['points'] and level-3<=r['level']<=level+max(3,self.profile[1])
+   if (r.get('territory',0)==0 and r['points'] and level-PREFERRED_LEVEL_GAP<=r['level']<=level+max(3,self.profile[1])
        and not self.blocked(int(model),now) and not self.dangerous(int(model),now)
        and r['hp']<=hp*self.profile[3]):
-    return max(1,level-5)
-  return max(1,level-9) # Safe recovery fallback when the higher band is unavailable.
+    return max(1,level-PREFERRED_LEVEL_GAP)
+  return max(1,level-MAX_RECOVERY_LEVEL_GAP)
  def admissible(self,region,own,now,recovery=False):
   """Safe observed opportunities, even if the current shortlist is elsewhere."""
   level=own.values.get(0,1);maximum=max(1,own.values.get(31,1));result=set()
-  floor=max(1,level-9) if recovery else self.minimum_farm_level(region,own,now)
+  floor=self.minimum_farm_level(region,own,now)
   for model,record in region['farms'].items():
    model=int(model);row=self.rows.get(str(model),{})
    if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
@@ -166,9 +169,9 @@ class HuntLearning:
  def choose(self,region,own,now,fallback=False,hold=False,position=None):
   self.record_progress(own,now)
   self.selected={m for m in self.selected if str(m) in region['farms'] and region['farms'][str(m)].get('territory',0)==0}
-  if hold and self.selected:return set(self.selected)
   idle_trial=now-self.last_progress_at>=90 and now>=self.next_idle_probe
   signature=(own.values.get(0,1),own.values.get(4,0),tuple(sorted(own.equipment.items())),fallback,id(region))
+  if hold and self.selected and self.signature==signature:return set(self.selected)
   self.region_reference=region # Keep the identity alive while its cache is used.
   if signature==self.signature and now<self.until and not idle_trial:return set(self.selected)
   if self.signature and signature[:3]!=self.signature[:3]:self.avoid.clear();self.danger_until.clear()

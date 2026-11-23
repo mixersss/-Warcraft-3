@@ -73,7 +73,7 @@ class Progress75Tests(unittest.TestCase):
         shop['offers']=[3051]
         self.assertFalse(travel.routes(100,policy))
 
-    def test_after_no_xp_an_easy_visible_mob_can_restart_the_cycle(self):
+    def test_no_xp_does_not_override_maximum_level_gap(self):
         world,policy=test_alpha24.ProgressAndDeathTests().policy(monsters=1)
         world.own.values.update({0:35,4:1,31:1000})
         entity=world.entities[1000]
@@ -83,7 +83,7 @@ class Progress75Tests(unittest.TestCase):
         policy.mob_knowledge={entity.model:{'territory':0,'base_xp':150,'hp':100}}
         policy.learning.last_progress_at=100
         self.assertFalse(policy.visible_ground_opportunities(250,world.own.position))
-        self.assertEqual(policy.visible_ground_opportunities(281,world.own.position),{1000})
+        self.assertFalse(policy.visible_ground_opportunities(281,world.own.position))
 
     def test_fast_native_hp_loss_triggers_retreat_before_static_threshold(self):
         world,policy=test_alpha24.ProgressAndDeathTests().policy()

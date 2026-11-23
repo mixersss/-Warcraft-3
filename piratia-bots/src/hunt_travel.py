@@ -4,7 +4,7 @@ import math
 import struct
 from adventure import talk_request
 from classic_wire import Reader,ProtocolError
-from farm_plan import xp_level_divisor
+from farm_plan import PREFERRED_LEVEL_GAP,xp_level_divisor
 from town import function_request
 
 def npc_near(world,point):
@@ -106,7 +106,7 @@ class HuntTravel:
   return tuple(merged.items())
  def rate(self,model,policy,now):
   w=self.world;own=w.own;mob=self.knowledge.get(model);level=own.values.get(0,1)
-  if (not max(1,level-5)<=mob['level']<=level+3 or mob['hp']>own.values.get(31,1)*4
+  if (not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+3 or mob['hp']>own.values.get(31,1)*4
       or policy.learning.blocked(model,now) or policy.learning.dangerous(model,now)):return 0
   attack=max(1,(own.values.get(33,1)+own.values.get(34,1))/2)
   mage=own.values.get(4) in (4,5,13,14,16)
