@@ -181,7 +181,9 @@ class PolicyTests(unittest.TestCase):
         _, payload = self.send.call_args.args
         self.assertEqual(payload,movement(123,1,[(223200,278700),(223200,278700)]))
         self.policy.tick(102)
-        self.assertEqual(self.send.call_count,1)
+        self.assertEqual(self.send.call_count,2)
+        self.assertNotEqual(self.policy.retreat_goal,self.world.own.position)
+        self.assertEqual(self.policy.attacks,0)
 
     def test_request_rate_is_bounded(self):
         self.monster()

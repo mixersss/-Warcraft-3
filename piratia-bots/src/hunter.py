@@ -75,6 +75,7 @@ class Hunter:
         self.mode_since=self.clock
         self.next_console_state=0;self.last_console_mode=None
         self.resting = False
+        self.retreat_goal=None;self.retreat_replans=0
         self.cancel_pending = False
         self.waypoint = 0
         self.moves = self.attacks = self.kills = 0
@@ -287,6 +288,49 @@ class Hunter:
         for point in options:
             if self.nav.path(origin,point):return point
         return None
+
+    def move_to_recovery(self,now):
+        origin=self.position(now)
+        if self.stuck>=5:
+            if self.retreat_goal:
+                self.goal_blacklist[self.retreat_goal]=now+20
+                if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
+            self.retreat_replans+=1
+            self.retreat_goal=self.move_goal=None
+            self.motion_anchor=origin;self.motion_progress_at=now;self.stuck=0
+        if self.retreat_goal and distance(origin,self.retreat_goal)>150:
+            if self.move_to(self.retreat_goal,now,use_portals=False):return
+        self.retreat_goal=None
+        mobs=[self.world.position(now,e.identity) for e in self.visible_mobs(now)]
+        threats=[point for point in mobs if distance(origin,point)<1800]
+        component=self.nav.land_component(origin)
+        home=self.home
+        if (not threats and distance(origin,home)>300 and self.goal_blacklist.get(home,0)<=now
+                and (not component or self.nav.land_component(home)==component)):
+            if self.move_to(home,now,use_portals=False):
+                self.retreat_goal=home
+                return
+        if threats:
+            clearance=min(distance(origin,point) for point in threats)
+            options=[]
+            for radius in (1000,500,230):
+                for i in range(16):
+                    angle=i*math.tau/16
+                    point=self.nav.nearest((round(origin[0]+radius*math.cos(angle)),
+                                            round(origin[1]+radius*math.sin(angle))),1)
+                    if not point or distance(origin,point)<150 or self.goal_blacklist.get(point,0)>now:continue
+                    gap=min(distance(point,mob) for mob in threats)
+                    if gap<clearance+100 or not self.nav.line_clear(origin,point):continue
+                    midpoint=((origin[0]+point[0])/2,(origin[1]+point[1])/2)
+                    if min(distance(midpoint,mob) for mob in threats)<clearance-100:continue
+                    options.append((gap,point))
+                if options:break
+            if options:
+                _,point=max(options)
+                if self.move_to(point,now,use_portals=False):
+                    self.retreat_goal=point
+                    return
+        self.next_action=now+1
 
     def recover_path(self,now):
         self.drop_target(now,avoid=True)
@@ -1111,6 +1155,7 @@ class Hunter:
             self.learning.observe(self.world,now)
             self.pending_action=None;self.action_open=False
             self.sitting.reset()
+            self.retreat_goal=None
             if self.market and self.market.state in ('opening','selling','closing'):self.market.request_close(now)
             if self.bank and self.bank.busy:self.bank.end(now)
             if self.direct_trade and self.direct_trade.busy:self.direct_trade.cancel('персонаж погиб')
@@ -1299,7 +1344,7 @@ class Hunter:
             if hp / maximum >= .85 and not (self.mana_resting and self.combat_skills and self.combat_skills.needs_mana(now,True)):
                 if self.sitting.tick(now,self,False):
                     self.change('встаёт после восстановления');return
-                self.resting = False;self.mana_resting=False
+                self.resting = False;self.mana_resting=False;self.retreat_goal=None
             else:
                 self.change('восстанавливает SP для боевых навыков' if self.mana_resting else 'отступление и восстановление')
                 if not self.cancel_pending and self.sitting.tick(now,self,True):
@@ -1315,8 +1360,8 @@ class Hunter:
                     self.cancel_pending = False
                     self.moves += 1
                     self.next_action = now+1
-                if now >= self.next_action and distance(self.position(now), self.home) > 300:
-                    self.move_to(self.home, now)
+                if now >= self.next_action:
+                    self.move_to_recovery(now)
                 return
         if self.shortcut and self.shortcut.busy and (not defence or self.shortcut.context or self.shortcut.ticket):
             if self.shortcut.resume(now,self):
@@ -1806,7 +1851,7 @@ class Hunter:
 
     def summary(self):
         return {'escape_plan':self.escape_plan.summary() if self.escape_plan else {},'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
-                'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
+                'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'retreat':{'active':self.resting,'goal_cm':self.retreat_goal,'replans_after_stop':self.retreat_replans},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),'hunting_coordinates':self.hunting_coordinates(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
@@ -2252,6 +2297,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
             world.own.build_id=progression.build_id
             policy.pending_action=None;policy.action_open=False
             policy.sitting.reset()
+            policy.retreat_goal=None
             policy.assist_target=None
             if policy.helper:policy.helper.source=None
             if policy.travel:policy.travel.on_map(now)

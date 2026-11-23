@@ -364,9 +364,10 @@ class Navigation:
         return tuple(route)
 
     def _runtime_path(self,key):
+        route_key=key[:4]
         with self.cache_lock:
-            if key in self.completed:
-                self.completed.move_to_end(key);return self.completed[key]
+            if route_key in self.completed:
+                self.completed.move_to_end(route_key);return self.completed[route_key]
         local=self.local
         reused=self._reuse_corridor(key)
         if reused:
@@ -379,11 +380,15 @@ class Navigation:
             if not self.free(start) or not self.free(goal):return ()
             direct=self.direct(start,goal)
             if direct:return self._remember(key,direct)
+            other=route_key+('background' if key[4]=='foreground' else 'foreground',)
+            if other in local.searches and key[4]=='background':
+                # Advance the existing route while retaining this caller's slice.
+                return self._runtime_path(other)
             previous=next((old for old in local.searches if old[4]==key[4]),None)
             # Only another expensive route waits for the current search. A
             # straight combat approach can proceed without finishing that job.
             if previous is not None:self._runtime_path(previous)
-            local.searches[key]=Search(start,goal,heuristic_weight=4)
+            local.searches[key]=local.searches.pop(other,None) or Search(start,goal,heuristic_weight=4)
             while len(local.searches)>2:local.searches.popitem(last=False)
         search=local.searches[key];local.searches.move_to_end(key)
         def spend():
@@ -426,7 +431,8 @@ class Navigation:
 
     def _remember(self,key,result):
         with self.cache_lock:
-            self.completed[key]=result;self.completed.move_to_end(key)
+            route_key=key[:4]
+            self.completed[route_key]=result;self.completed.move_to_end(route_key)
             while len(self.completed)>512:self.completed.popitem(last=False)
             if len(result)>1:
                 goal_key=(key[1],key[3]);routes=self.corridors.setdefault(goal_key,[])

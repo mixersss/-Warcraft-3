@@ -45,7 +45,7 @@ class PortalShortcut(CityTravel):
         key=self.world.map,tuple(goal)
         if key==self.last_check and now<self.next_check:return False
         self.last_check=key
-        own=self.world.own;origin=own.position
+        own=self.world.own;origin=self.world.position(now)
         straight=math.dist(origin,goal)
         if straight<6000:return False
         if any(getattr(f,'context',None) or getattr(f,'pending',None) for f in
@@ -123,7 +123,7 @@ class PortalShortcut(CityTravel):
             identity=record['item_id']
             slot=next(slot for slot,item in self.world.bag.items() if item.identity==identity and item.valid)
             self.ticket=identity,record['points'],self.ticket_count(identity),now+20
-            self.arrival_origin=origin;self.target=self.world.map
+            self.arrival_origin=own.position;self.target=self.world.map
             self.reason='сокращает путь билетом '+record['name']
             self.requests+=1
             policy.emit(action_header(self.world.own_id,policy.sequence,11)+struct.pack('>hh',slot,-1))
