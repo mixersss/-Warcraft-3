@@ -225,6 +225,38 @@ class Travel58Tests(unittest.TestCase):
   c.tick(101,p,True)
   self.assertEqual(c.confirmed,1)
 
+ def test_near_silver_mine_door_can_replace_long_walk_for_level40(self):
+  from regions import Regions
+  from farm_plan import HuntLearning
+  w,c,p=self.make()
+  c.regions=Regions(ROOT/'assets',400);c.regions.full_regions=True
+  c.data=c.regions.hunting_travel_data;c.knowledge=c.regions.mob_knowledge
+  w.own.values.update({0:40,4:9,33:206,34:231,35:48,31:1508,44:480})
+  w.own.x,w.own.y=178614,264696
+  p.nav=c.regions.nav('garner')
+  p.learning=HuntLearning('silver mine')
+  routes=c.routes(130,p)
+  found=next(route for route in routes if route['name']=='Silver Mine 1 to Silver Mine 2')
+  c.routes=lambda *a:[found]
+  choice=c.choose(130,p,alternative_to=(113120,273504))
+  self.assertEqual((choice['kind'],choice['to_map'],choice['model']),('event','eastgoaf',243))
+  self.assertTrue(choice['walking_alternative'])
+
+ def test_long_mine_approach_keeps_progress_and_releases_a_stuck_bot(self):
+  w,c,p=self.make()
+  w.own.x,w.own.y=135726,268849
+  w.own.values[44]=480
+  c.plan=dict(self.plan(w,'event'),name='Silver Mine 1 to Silver Mine 2',
+              position=[178614,264696],arrival_cm=[22967,2878],to_map='eastgoaf')
+  c.target_started=100
+  for now in (100,130,160,190,220,250):
+   self.assertTrue(c.tick(now,p,True))
+   w.own.x+=5000
+  w.own.x-=5000
+  self.assertIsNotNone(c.plan)
+  self.assertFalse(c.tick(285,p,True))
+  self.assertIsNone(c.plan)
+
  def test_outbound_hunt_considers_verified_argent_portal_and_native_fare(self):
   from regions import Regions
   w,c,p=self.make()

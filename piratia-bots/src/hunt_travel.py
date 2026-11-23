@@ -17,6 +17,7 @@ class HuntTravel:
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
   self.site_arrival=None;self.escaping_mine=False;self.outbound_resume=None;self.island_scout=None;self.scout_return=False
+  self.approach_clock=None
   self.requests=0;self.confirmed=0;self.timeouts=0;self.reason='';self.clock=0;self.target_started=0
  @property
  def busy(self):return bool(self.context or self.pending)
@@ -180,7 +181,10 @@ class HuntTravel:
     ready_ticket=(route['kind']=='ticket' and self.count(route['item_id'])
                   and all(w.own.values.get(a,0)>=w.own.values.get(b,1) for a,b in ((1,31),(2,32))))
     nearby_portal=route['kind']=='portal' and math.dist(w.own.position,route['position'])<=8000
-    if not self.count(4602) or not (ready_ticket or nearby_portal):continue
+    mine_door=(route['kind']=='event' and 'Mine' in route['name']
+               and 'eastgoaf' in (route['map'],route['to_map'])
+               and math.dist(w.own.position,route['position'])<=8000)
+    if not self.count(4602) or not (ready_ticket or nearby_portal or mine_door):continue
    if returning:
     argents=self.data['birthplaces'].get('Argent City',{}).get('points',[])
     if route['to_map']!='garner' or not any(math.dist(route['arrival_cm'],p)<3000 for p in argents):continue
@@ -224,7 +228,7 @@ class HuntTravel:
   return dict(route,model=model,returning=returning,walking_alternative=bool(alternative_to))
  def abort(self,now,reason):
   if self.plan:self.blocked[self.route_key(self.plan)]=now+900
-  self.context=None;self.pending=None;self.plan=None;self.preferred_model=None
+  self.context=None;self.pending=None;self.plan=None;self.preferred_model=None;self.approach_clock=None
   self.next_check=now+60;self.reason=reason+'; продолжает доступную охоту'
  def observe(self,command,payload,now):
   if command!=802 or not self.context or not self.plan:return False
@@ -263,6 +267,20 @@ class HuntTravel:
   from hunter import action_header
   policy.emit(action_header(w.own_id,policy.sequence,18)+struct.pack('>IIH',event.identity,event.handle,event.event_id));self.requests+=1
   self.pending={'deadline':now+15,'gold':w.own.values.get(8,0),'item_count':None};return True
+ def approach_expired(self,now,plan):
+  key=self.route_key(plan)
+  position=self.world.own.position
+  old=self.approach_clock
+  if not old or old[0]!=key:
+   speed=max(100,min(self.world.own.values.get(44,480),3000))
+   seconds=max(120,min(420,30+2*math.dist(position,plan['position'])/speed))
+   self.approach_clock=(key,now+seconds,position,now)
+   return now-self.target_started>=seconds
+  _,deadline,anchor,advanced=old
+  if math.dist(position,anchor)>=100:
+   anchor,advanced=position,now
+   self.approach_clock=key,deadline,anchor,advanced
+  return now>=deadline or now-advanced>=35
  def tick(self,now,policy,safe,dialogue_busy=False):
   self.clock=now;w=self.world
   if self.pending:
@@ -272,7 +290,7 @@ class HuntTravel:
     moved=policy.nav.land_component(w.own.position)==plan['arrival_component']
    paid=self.count(plan['item_id'])<self.pending['item_count'] if plan['kind']=='ticket' else w.own.values.get(8,0)<=self.pending['gold']-plan['fare']
    if moved and paid and w.bag_ready:
-    self.confirmed+=1;self.pending=None;self.context=None;self.plan=None
+    self.confirmed+=1;self.pending=None;self.context=None;self.plan=None;self.approach_clock=None
     if plan.get('mine_exit'):
      self.reason='Сервер подтвердил переход на пути выхода из шахты';return False
     self.site_arrival=(w.map,now) if plan.get('model') else None
@@ -285,7 +303,9 @@ class HuntTravel:
   if self.context:
    if now>=self.context['deadline']:self.timeouts+=1;self.abort(now,'Нет ответа портальщицы')
    return self.busy
-  if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled:return False
+  if not safe or dialogue_busy or not w.bag_ready or w.bag_disabled:
+   self.approach_clock=None
+   return False
   entry=self.regions.mine_exit_step(w.map,w.own.position,self.escaping_mine)
   self.escaping_mine=bool(entry)
   if entry:return self.exit_mine(now,policy,entry)
@@ -334,9 +354,10 @@ class HuntTravel:
    self.next_check=now+120;self.target_started=now
   if not self.plan:return False
   missing=self.purchase_goals()
-  if now-self.target_started>=120:
-   self.abort(now,'Не удалось купить билеты вовремя' if missing else 'Истекло время подхода к переходу');return False
   if missing:
+   self.approach_clock=None
+   if now-self.target_started>=120:
+    self.abort(now,'Не удалось купить билеты вовремя');return False
    prices=[self.life.prices.get(identity,0) for identity,_,_ in missing]
    fare=self.plan['fare'] if self.plan['kind']=='portal' else 0
    if min(prices)<=0 or w.own.values.get(8,0)<sum(prices)+(fare+2000 if self.plan['kind']=='portal' else 100):
@@ -344,6 +365,8 @@ class HuntTravel:
    self.reason='Ожидает покупку билетов; доступна местная охота';return False
   plan=self.plan;self.reason='Переход к точке прокачки: '+plan['name']
   if plan['kind']=='ticket':
+   if now-self.target_started>=120:
+    self.abort(now,'Истекло время подготовки билета');return False
    slot=next(s for s,i in w.bag.items() if i.identity==plan['item_id'] and i.valid)
    if any(w.own.values.get(a,0)<w.own.values.get(b,1) for a,b in ((1,31),(2,32))):
     if plan.get('walking_alternative'):
@@ -355,6 +378,8 @@ class HuntTravel:
    self.pending={'deadline':now+20,'item_count':before,'gold':w.own.values.get(8,0)};return True
   point=plan['position']
   if math.dist(policy.position(now),point)>220:
+   if self.approach_expired(now,plan):
+    self.abort(now,'Подход к переходу не продвигается или истёк срок дороги');return False
    goal=policy.nav.nearest(point,3)
    if goal and policy.move_to(goal,now):return True
    self.abort(now,'Нет проверенного маршрута к переходу');return False
