@@ -87,6 +87,20 @@ class Ground61Tests(unittest.TestCase):
   self.assertEqual(p.stuck_return.confirmed,0)
   self.assertIn(0,w.bag)
 
+ def test_visible_zephyr_mob_outside_shortlist_uses_native_ground_observation(self):
+  w,p=magic.MagicTests().make(job=1)
+  w.own.values.update({0:52,1:2000,31:2000})
+  w.default_skill=28
+  p.camp_scouting=True;p.combat_skills=None
+  p.mob_knowledge=self.regions.mob_knowledge
+  p.region={'farms':{}}
+  target=w.entities[1000]
+  target.model=540
+  target.values.update({0:51,1:100,31:100})
+  p.tick(100)
+  self.assertEqual(p.target,target.identity)
+  self.assertEqual(p.attacks,1)
+
  def test_cached_held_sea_choice_is_not_retained(self):
   w,_=magic.MagicTests().make();w.own.values.update({0:26,31:1000})
   sea={'90':{'territory':1,'level':26,'hp':1,'points':[(0,0)]}}

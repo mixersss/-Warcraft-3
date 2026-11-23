@@ -88,8 +88,12 @@ class MagicTests(unittest.TestCase):
             self.assertEqual(self.last_skill(p),99);self.assertEqual(p.combat_skills.requests,1)
             self.assertEqual(w.own.values[2],200) # No fabricated local SP deduction.
     def test_spell_uses_range800_instead_of_melee_chase(self):
-        w,p=self.make();w.entities[1000].x=w.own.x+650;p.tick(100)
+        w,p=self.make();w.entities[1000].x=w.own.x+650
+        from route_search import RoutePending
+        p.approach=Mock(side_effect=RoutePending)
+        p.tick(100)
         self.assertEqual(self.last_skill(p),99);self.assertEqual(p.moves,0)
+        p.approach.assert_not_called()
     def test_cooldown_is_not_treated_as_repeating_auto_attack_or_spammed(self):
         w,p=self.make();p.tick(100);p.tick(103);self.assertEqual(p.combat_skills.requests,1)
         p.tick(105);self.assertEqual(p.combat_skills.requests,1)

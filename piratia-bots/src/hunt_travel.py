@@ -52,6 +52,13 @@ class HuntTravel:
    for point in t['points']:
     rows.append({'kind':'ticket','map':w.map,'to_map':t['map'],'arrival_cm':point,'arrival_options':t['points'],'fare':0 if owned else price,'item_id':t['item_id'],'name':t['birthplace']})
   if not returning:
+   for node in (getattr(self.regions,'portal_catalog',None) or {}).get('nodes',[]):
+    if node['map']!=w.map or not self.same_land(policy,node['position']):continue
+    for edge in node['routes']:
+     fee=0 if level<=edge['free_through_level'] else edge['fare']
+     if edge['map'] in self.regions.map_catalog and cash>=fee+2000:
+      rows.append({'kind':'portal','map':w.map,'position':node['position'],'to_map':edge['map'],
+                   'arrival_cm':edge['arrival_cm'],'fare':fee,'label':edge['label'],'name':node['name']})
    for entry in self.data['entrances']:
     if entry['map']!=w.map or entry['to_map'] not in self.regions.map_catalog or not self.same_land(policy,entry['position']):continue
     rows.append({'kind':'event','map':w.map,'to_map':entry['to_map'],'position':entry['position'],'arrival_cm':entry['arrival_cm'],'fare':0,'event_id':entry['event_id'],'event_model':entry['model'],'name':entry['name']})
@@ -96,10 +103,15 @@ class HuntTravel:
   market=getattr(policy,'market',None)
   if market and self.economy.phase(w,now)=='trade' and market.offers(policy):return True
   return False
- def choose(self,now,policy,returning=False):
+ def choose(self,now,policy,returning=False,alternative_to=None):
   w=self.world;rows=[]
   for route in self.routes(now,policy,returning):
    if route['to_map']==w.map and math.dist(w.own.position,route['arrival_cm'])<5000:continue
+   if alternative_to:
+    ready_ticket=(route['kind']=='ticket' and self.count(route['item_id'])
+                  and all(w.own.values.get(a,0)>=w.own.values.get(b,1) for a,b in ((1,31),(2,32))))
+    nearby_portal=route['kind']=='portal' and math.dist(w.own.position,route['position'])<=8000
+    if not self.count(4602) or not (ready_ticket or nearby_portal):continue
    if returning:
     argents=self.data['birthplaces'].get('Argent City',{}).get('points',[])
     if route['to_map']!='garner' or not any(math.dist(route['arrival_cm'],p)<3000 for p in argents):continue
@@ -120,14 +132,21 @@ class HuntTravel:
    # A ticket can land at any of its confirmed birth points. Every option
    # must offer the selected species on the same walkable component.
    arrivals=route.get('arrival_options',[route['arrival_cm']])
-   if all(model in self.regions.hunting_arrival_sites(route['to_map'],tuple(point)) for point in arrivals):break
+   sites=[self.regions.hunting_arrival_sites(route['to_map'],tuple(point)) for point in arrivals]
+   if not all(model in site for site in sites):continue
+   if alternative_to:
+    speed=max(100,w.own.values.get(44,480))
+    approach=math.dist(w.own.position,route.get('position',w.own.position))
+    via=(approach+max(site[model] for site in sites))*1.5/speed+20
+    if via+30>=math.dist(w.own.position,alternative_to)/speed:continue
+   break
   else:return None
   if not returning:
    current=max((self.rate(m,policy,now) for m,d in self.nearby(w.map,w.own.position) if d<5000),default=0)
    last=getattr(policy.learning,'last_progress_at',None)
    if score<current*1.2 and last is not None and now-last<180:return None
   self.preferred_model=model
-  return dict(route,model=model,returning=returning)
+  return dict(route,model=model,returning=returning,walking_alternative=bool(alternative_to))
  def abort(self,now,reason):
   if self.plan:self.blocked[self.route_key(self.plan)]=now+900
   self.context=None;self.pending=None;self.plan=None;self.preferred_model=None
@@ -201,7 +220,15 @@ class HuntTravel:
    return False
   if self.plan and (self.plan['map']!=w.map or self.plan.get('returning',False)!=returning):
    self.abort(now,'Условия поездки изменились');return False
-  if not returning and (self.settling_site(now,policy) or policy.camp_route_active(now) or getattr(policy,'supply_funding_goal',0)):return False
+  if not returning and (self.settling_site(now,policy) or getattr(policy,'supply_funding_goal',0)):return False
+  if not returning and policy.camp_route_active(now) and not (self.plan and self.plan.get('walking_alternative')):
+   goal=getattr(policy,'search_goal',None)
+   last=policy.learning.last_progress_at
+   if not goal or last is None or now-last<90 or now<self.next_check:return False
+   alternative=self.choose(now,policy,alternative_to=goal)
+   self.next_check=now+120
+   if not alternative:return False
+   self.plan=alternative;self.target_started=now
   if not returning and self.economy.phase(w,now)!='progression':
    if self.plan:self.abort(now,'Фаза дальней охоты завершена')
    return False
@@ -223,6 +250,8 @@ class HuntTravel:
   if plan['kind']=='ticket':
    slot=next(s for s,i in w.bag.items() if i.identity==plan['item_id'] and i.valid)
    if any(w.own.values.get(a,0)<w.own.values.get(b,1) for a,b in ((1,31),(2,32))):
+    if plan.get('walking_alternative'):
+     self.abort(now,'Билет требует полные HP/SP');return False
     policy.resting=True;policy.mana_resting=True;self.reason='Восстанавливает HP/SP для собственного билета';return False
    from hunter import action_header
    before=self.count(plan['item_id'])

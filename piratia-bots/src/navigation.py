@@ -60,9 +60,12 @@ class Navigation:
         if self.connected_bits is not None and len(self.connected_bits)!=(self.width*self.height+7)//8:
             raise ValueError('Incomplete connected ground grid')
 
-    def needs_recovery(self,position):
+    def needs_recovery(self,position,ignore_temporary=False):
         cell=self.cell(position)
-        if not self.free(cell):return True
+        if ignore_temporary:
+            x,y=cell
+            if not (0<=x<self.width and 0<=y<self.height and self.cells[y*self.width+x]==1):return True
+        elif not self.free(cell):return True
         bits=getattr(self,'connected_bits',None)
         if bits is None:return False
         index=cell[1]*self.width+cell[0]
@@ -125,7 +128,7 @@ class Navigation:
         step=100//scale
         return position[0]//step-self.origin[0]*scale,position[1]//step-self.origin[1]*scale
 
-    def recovery_path(self,position,blocked=(),radius=24,limit=4096):
+    def recovery_path(self,position,blocked=(),radius=24,limit=4096,static=False):
         """Exit an occupied excluded shore cell; never use this for normal travel.
 
         Original client/server hard obstacles and native land/bridge permissions
@@ -151,13 +154,14 @@ class Navigation:
             # subsequent cell must still be dry. Never centre deeper into it.
             if c==start and occupied_physical:return True
             return bool(bits[index//8]&(1<<(7-index%8))) if bits is not None else physical[index]==1
-        if not free(start) or not self.needs_recovery(position):return []
+        needs_recovery=(lambda point:self.needs_recovery(point,ignore_temporary=True)) if static else self.needs_recovery
+        if not free(start) or not needs_recovery(position):return []
         parents={start:None};queue=deque([start]);goal=None
         while queue and len(parents)<=limit:
             current=queue.popleft()
             point=((current[0]+self.origin[0]*scale)*step+step//2,
                    (current[1]+self.origin[1]*scale)*step+step//2)
-            if current!=start and not self.needs_recovery(point):goal=current;break
+            if current!=start and not needs_recovery(point):goal=current;break
             x,y=current
             for dx,dy in ((0,-1),(-1,0),(1,0),(0,1),(-1,-1),(1,-1),(-1,1),(1,1)):
                 cell=x+dx,y+dy

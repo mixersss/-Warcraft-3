@@ -731,7 +731,10 @@ class Hunter:
             self.background_task=key
             return False  # Keep the planning job, but allow a visible fight/direct move.
         if not used and point and self.coordination:self.coordination.leave_visit(self.owner)
-        allowed=self.task_budget.track(key,feature,used,self.position(now),now,progress_only=key=='vendor')
+        wanted=getattr(feature,'wanted',None) if key=='town' and used else None
+        required_supply=(wanted and wanted[0] in getattr(feature,'combat_items',())
+                         and feature.combat_supply_required())
+        allowed=self.task_budget.track(key,feature,used,self.position(now),now,progress_only=key=='vendor' or required_supply)
         if used and not allowed:
             if key=='vendor':
                 self.task_budget.paused.pop(key,None)
@@ -759,6 +762,27 @@ class Hunter:
         gap=max(0,own.values.get(LV,1)-entity.values.get(LV,1))
         preference=self.learning.scores.get(entity.model,0)
         return distance(self.position(now),self.world.position(now,entity.identity))+health*200+gap*20-preference*300
+
+    def visible_ground_opportunities(self,now,origin):
+        if (not self.camp_scouting or not self.mob_knowledge or not self.region
+                or self.supply_funding_models or self.assist_target
+                or self.starter_models() or self.quest_models()
+                or (self.group_hunt and self.group_hunt.active())):
+            return set()
+        own=self.world.own
+        level=own.values.get(LV,1)
+        max_hp=own.values.get(MAX_HP,1)
+        choices=set()
+        for candidate in self.world.entities.values():
+            if (candidate.control!=5 or not candidate.alive
+                    or not max(1,level-9)<=candidate.values.get(LV,0)<=level
+                    or distance(origin,candidate.position)>2500):
+                continue
+            record=self.mob_knowledge.get(candidate.model)
+            if (record and record['territory']==0 and record['hp']<=max_hp*self.learning.profile[3]
+                    and not self.learning.blocked(candidate.model,now)):
+                choices.add(candidate.identity)
+        return choices
 
     def target_explanation(self):
         target=self.world.entities.get(self.target)
@@ -1157,6 +1181,8 @@ class Hunter:
                     needed=set(LOOT)
                 if self.vendor and self.vendor.sell_patchouli:
                     needed.add(1000);self.loot.value_priority[1000]=0
+                for identity in self.loot.ground_gems:
+                    if identity in needed:self.loot.value_priority[identity]=0
                 if self.loot.tick(now,self,needed):
                     self.change('подбор нужного лута; результат подтверждает сервер')
                     return
@@ -1235,8 +1261,13 @@ class Hunter:
                     if stalled:self.learning.finish(self.world,now,'stalled')
                     self.drop_target(now,avoid=True)
                     target=None
+        selected_approach=None
         if not target:
-            candidates=[e for e in self.world.entities.values() if self.eligible(e,now)]
+            origin=self.position(now)
+            visible=self.visible_ground_opportunities(now,origin)
+            models=None if self.assist_target else self.planned_models()
+            candidates=[e for e in self.world.entities.values()
+                        if self.eligible(e,now,{e.model} if e.identity in visible else models)]
             self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
             candidates.sort(key=lambda e:self.target_score(e,now))
             group_target=self.group_hunt.target(now) if self.group_hunt else None
@@ -1248,6 +1279,16 @@ class Hunter:
                         if e.identity not in known and self.eligible(e,now,models)]
                 extras.sort(key=lambda e:self.target_score(e,now))
                 candidates.extend(extras)
+            approach_spell=(self.combat_skills.select(now,ignore_cooldown=True)
+                            if self.combat_skills and not funding_attack else None)
+            can_attack_here=self.combat_allowed(origin)
+            reaches={candidate.identity:(self.combat_skills.reach(approach_spell,candidate)
+                                           if approach_spell else self.attack_reach(candidate))
+                     for candidate in candidates}
+            in_range={candidate.identity for candidate in candidates if can_attack_here
+                      and distance(origin,self.world.position(now,candidate.identity))<=reaches[candidate.identity]}
+            # Take an immediately attackable target before asking A* for an approach.
+            candidates.sort(key=lambda candidate:candidate.identity not in in_range)
             # Prefer unclaimed reachable mobs. If every viable target is busy,
             # join a real fight instead of waiting for another bot's lease.
             # Active quest mobs can be shared on the first pass.
@@ -1258,12 +1299,13 @@ class Hunter:
                     if self.coordination and not self.coordination.available(self.owner,key,now,shared=shared):
                         self.busy_targets+=1
                         continue
-                    reach=self.attack_reach(candidate)
-                    in_range=(self.combat_allowed(self.position(now)) and
-                              distance(self.position(now),self.world.position(now,candidate.identity))<=reach)
-                    if not in_range and self.approach(candidate,reach,now,shared=shared) is None:continue
+                    approach_point=None
+                    if candidate.identity not in in_range:
+                        approach_point=self.approach(candidate,reaches[candidate.identity],now,shared=shared)
+                        if approach_point is None:continue
                     if self.coordination and not self.coordination.claim(self.owner,key,now,shared=shared):continue
                     target=candidate
+                    selected_approach=approach_point
                     self.shared_target=shared
                     if candidate.model not in self.planned_models():
                         self.opportunity_model=candidate.model;self.opportunity_targets+=1
@@ -1292,7 +1334,7 @@ class Hunter:
             if (not self.combat_allowed(self.position(now)) or
                     distance(self.position(now),self.world.position(now,target.identity)) > reach):
                 self.change('подход к слабому мобу')
-                goal=self.approach(target,reach,now)
+                goal=selected_approach or self.approach(target,reach,now)
                 if not goal or not self.move_to(goal,now):
                     self.drop_target(now,avoid=True)
                 return

@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-72'
-NAME = 'Piratia-Auto-Bots-Alpha72'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-73'
+NAME = 'Piratia-Auto-Bots-Alpha73'
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
-    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md']
+    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md',ROOT / 'knowledge/ALPHA73.md',ROOT / 'knowledge/ALPHA73-MAP-AUDIT.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -420,6 +420,8 @@ def main():
                     status='Alpha71 earns essential supply gold from weak mobs and prioritizes Patchouli.')
     manifest.update(alpha72={'minimum_server_revision':60,'live_windows_verified':False},
                     status='Alpha72 recovers using verified mine exits and bounded shoreline routes.')
+    manifest.update(alpha73={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha73 prioritizes in-range attacks and verifies recovery from ticket arrivals.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

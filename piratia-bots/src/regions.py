@@ -64,6 +64,7 @@ class Regions:
         catalog=self.assets/'world-navigation.json'
         self.map_catalog=json.loads(catalog.read_text(encoding='utf-8')).get('maps',{}) if catalog.exists() else {}
         self.navigation_lock=threading.Lock()
+        self.region_lock=threading.Lock()
         travel=self.assets/'hunting-travel58.json'
         self.hunting_travel_data=json.loads(travel.read_text()) if travel.exists() else None
         self.full_regions=forging_economy
@@ -84,21 +85,37 @@ class Regions:
                     locations=self.mob_knowledge.by_map.get(name,{}).get(int(identity),[])
                     farm['points']=scout_points(nav,locations,farm['points'])
                     farm['source_region_scouting']=True
+                for identity,locations in self.mob_knowledge.by_map.get(name,{}).items():
+                    if str(identity) in region['farms']:continue
+                    mob=self.mob_knowledge.get(identity)
+                    if mob.get('territory')!=0:continue
+                    points=scout_points(nav,locations,[])
+                    if points:
+                        region['farms'][str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},
+                                                       'territory':0,'points':points,'source_region_scouting':True}
 
     def get(self,name):
         if name not in self.data and getattr(self,'full_regions',False) and name in self.map_catalog and self.mob_knowledge:
-            farms={}
-            for identity,locations in self.mob_knowledge.by_map.get(name,{}).items():
-                mob=self.mob_knowledge.get(identity)
-                if mob.get('territory')!=0:continue # Ships remain a separate native control mode.
-                points=[]
-                for location in locations:
-                    lo,hi=location['rectangle_cm']
-                    points.extend([(int((lo[0]+hi[0])/2),int((lo[1]+hi[1])/2)),tuple(lo),tuple(hi),(lo[0],hi[1]),(hi[0],lo[1])])
-                farms[str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},'territory':0,'points':list(dict.fromkeys(points)),'source_regions_not_live_positions':True}
-            births=(self.hunting_travel_data or {}).get('birthplaces',{})
-            spawns=list(dict.fromkeys(tuple(p) for b in births.values() if b['map']==name for p in b['points']))
-            self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})
+            with self.region_lock:
+                if name in self.data:return self.data[name]
+                from farm_scouting import scout_points
+                farms={}
+                nav=self.nav(name)
+                for identity,locations in self.mob_knowledge.by_map.get(name,{}).items():
+                    mob=self.mob_knowledge.get(identity)
+                    if mob.get('territory')!=0:continue # Ships remain a separate native control mode.
+                    ordinary=[location for location in locations if not location.get('conditions_not_evaluated')]
+                    points=scout_points(nav,ordinary,[])
+                    if not ordinary:
+                        # Preserve hints when already inside a conditional room.
+                        # These hints cannot qualify a destination for an automatic trip.
+                        for location in locations:
+                            lo,hi=location['rectangle_cm']
+                            points.extend([(int((lo[0]+hi[0])/2),int((lo[1]+hi[1])/2)),tuple(lo),tuple(hi),(lo[0],hi[1]),(hi[0],lo[1])])
+                    farms[str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},'territory':0,'points':list(dict.fromkeys(points)),'conditional_only':not ordinary,'source_regions_not_live_positions':True}
+                births=(self.hunting_travel_data or {}).get('birthplaces',{})
+                spawns=list(dict.fromkeys(tuple(p) for b in births.values() if b['map']==name for p in b['points']))
+                self.data.setdefault(name,{'birthplace':name,'label':name,'spawns':spawns,'farms':farms,'navigation':self.map_catalog[name]['navigation']})
         return self.data.get(name)
 
     @lru_cache(maxsize=512)
@@ -108,9 +125,16 @@ class Regions:
         if not region:return {}
         nav=self.nav(map_name)
         component=nav.land_component(arrival)
-        if not component:return {}
+        if not component:
+            recovery=nav.recovery_path(arrival,radius=6,static=True)
+            if not recovery or nav.needs_recovery(recovery[-1],ignore_temporary=True):return {}
+            if sum(math.dist(a,b) for a,b in zip(recovery,recovery[1:]))>550:return {}
+            arrival=recovery[-1]
+            component=nav.land_component(arrival)
+            if not component:return {}
         sites={}
         for identity,farm in region['farms'].items():
+            if farm.get('conditional_only'):continue
             closest=min((math.dist(arrival,p) for p in farm['points']
                          if nav.land_component(p)==component and nav.combat_allowed(p)),default=math.inf)
             if closest<=25000:sites[int(identity)]=closest

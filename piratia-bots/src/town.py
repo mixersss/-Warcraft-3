@@ -39,7 +39,7 @@ class Town:
         self.xp_boosters=None
         self.hunt_travel=None
         self.last_purchase_failure=None
-        self.visit_started=None;self.visit_key=None;self.approach_timeouts=0
+        self.visit_started=None;self.visit_deadline=0;self.visit_key=None;self.approach_timeouts=0
         self.progression_visit=False
         self.trip_purchase=False
     def urgent_coral(self):
@@ -172,7 +172,7 @@ class Town:
         if not w.bag_ready or w.bag_disabled or cash<1:return None
         free=(w.bag_capacity or 0)-len(w.bag)
         if free<2:return None
-        if self.petcare and self.petcare.needs_food_visit() and w.own.values.get(1,0)>w.own.values.get(31,1)*.55:
+        if self.petcare and self.petcare.needs_food_visit() and not self.combat_supply_required() and w.own.values.get(1,0)>w.own.values.get(31,1)*.55:
             goal=next(((i,n) for i,n,_ in self.petcare.purchase_goals() if i==2312),None)
             price=self.life.prices.get(2312,0)
             if goal and price>0 and price<=self.spend_limit(2312):return 2312,min(goal[1],self.spend_limit(2312)//price)
@@ -345,7 +345,7 @@ class Town:
             if len(self.failed_suppliers)>128:self.failed_suppliers.pop(next(iter(self.failed_suppliers)))
         self.supply_plan=None
         self.trip_purchase=False
-        self.visit_started=None;self.visit_key=None
+        self.visit_started=None;self.visit_deadline=0;self.visit_key=None
         self.context=None;self.pending=None;self.target_shop=None;self.wanted=None;self.next_shop=now+delay
     def tick(self,now,policy,safe,dialogue_busy=False,medical=False):
         if self.next_break is None:self.next_break=now+600
@@ -367,7 +367,7 @@ class Town:
         if not safe or dialogue_busy:return False
         activity=getattr(policy,'activity',None)
         self.progression_visit=bool(activity and activity.hunting(now) is True)
-        food_needed=bool(self.petcare and self.petcare.needs_food_visit())
+        food_needed=bool(self.petcare and not self.combat_supply_required() and self.petcare.needs_food_visit())
         trip_items={i for i,_,_ in self.hunt_travel.purchase_goals()} if self.hunt_travel else set()
         if self.progression_visit or self.trip_purchase:
             # Revalidate walking goals after a trip ends. Native menus and
@@ -431,12 +431,17 @@ class Town:
         self.trip_purchase=self.wanted[0] in trip_items
         point=self.target_shop['position']
         key=(w.map,self.wanted[0],tuple(point))
-        if self.visit_key!=key:self.visit_key=key;self.visit_started=now
-        elif now-self.visit_started>=120:
-            # A real menu/payment already in flight is handled above. Bound
-            # only the approach; changing console labels must not reset it.
+        if self.visit_key!=key:
+            self.visit_key=key
+            self.visit_started=now
+            permitted=120
+            if self.wanted[0] in getattr(self,'combat_items',()) and self.combat_supply_required():
+                speed=max(100,w.own.values.get(44,480))
+                permitted=max(120,min(420,30+2*math.dist(policy.position(now),point)/speed))
+            self.visit_deadline=now+permitted
+        elif now>=self.visit_deadline:
             self.approach_timeouts+=1;self.finish(now,180)
-            self.reason='Не дошёл до продавца за120с; откладывает визит и продолжает охоту'
+            self.reason='Не дошёл до продавца в срок; откладывает визит и продолжает охоту'
             return False
         self.reason='покупки у городского торговца'
         returner=getattr(policy,'stuck_return',None)

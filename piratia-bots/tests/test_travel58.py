@@ -194,6 +194,64 @@ class Travel58Tests(unittest.TestCase):
   self.assertIsNone(c.regions.mine_exit_step(w.map,w.own.position,True))
   self.assertFalse(w.bag)
 
+ def test_owned_andes_ticket_shortens_long_walk_after_safe_landing_check(self):
+  from regions import Regions
+  from farm_scouting import scout_points
+  w,c,p=self.make()
+  c.regions=Regions(ROOT/'assets',400)
+  w.own.values.update({0:35,4:1,33:180,34:200,35:100})
+  c.knowledge=c.regions.mob_knowledge
+  w.bag={0:source.item(4602),4:source.item(3051)}
+  n=c.regions.nav('garner')
+  for model,farm in c.regions.get('garner')['farms'].items():
+   farm['points']=scout_points(n,c.regions.mob_knowledge.by_map['garner'].get(int(model),[]),farm['points'])
+  self.assertFalse(n.land_component((101800,297500)))
+  self.assertIn(253,c.regions.hunting_arrival_sites('garner',(101800,297500)))
+  w.own.x,w.own.y=224700,277900
+  options=[[100700,296600],[101800,297500]]
+  route=dict(self.plan(w,'ticket'),item_id=3051,arrival_cm=options[0],arrival_options=options,name='Andes Forest Haven')
+  c.routes=lambda *a:[route]
+  p.camp_route_active=lambda now:True
+  p.search_goal=(124250,265550)
+  from farm_plan import HuntLearning
+  p.learning=HuntLearning('level 35 swordsman')
+  p.learning.last_progress_at=1
+  self.assertTrue(c.tick(100,p,True))
+  self.assertEqual(c.plan['name'],'Andes Forest Haven')
+  self.assertTrue(c.plan['walking_alternative'])
+  self.assertEqual(c.confirmed,0)
+  self.assertEqual(p.emit.call_args.args[0][8:],struct.pack('>Bhh',11,4,-1))
+  w.own.x,w.own.y=options[1];w.bag.pop(4)
+  c.tick(101,p,True)
+  self.assertEqual(c.confirmed,1)
+
+ def test_outbound_hunt_considers_verified_argent_portal_and_native_fare(self):
+  from regions import Regions
+  w,c,p=self.make()
+  c.regions=Regions(ROOT/'assets',400)
+  w.own.x,w.own.y=218700,277600
+  p.nav=c.regions.nav('garner')
+  w.own.values[8]=10000
+  routes=c.routes(100,p)
+  argent=[r for r in routes if r['kind']=='portal' and r['name']=='Argent Teleporter - Jovial']
+  self.assertEqual({(r['to_map'],r['fare']) for r in argent},{('magicsea',500),('darkblue',500)})
+  w.own.values[8]=0
+  self.assertFalse(any(r['kind']=='portal' for r in c.routes(100,p)))
+
+ def test_mine_scout_points_use_walkable_spawn_regions_and_conditionals_do_not_qualify_arrivals(self):
+  from regions import Regions
+  regions=Regions(ROOT/'assets',400)
+  regions.full_regions=True
+  nav=regions.nav('eastgoaf')
+  farm=regions.get('eastgoaf')['farms']['243']
+  self.assertTrue(farm['points'])
+  self.assertTrue(all(nav.combat_allowed(p) and not nav.needs_recovery(p) for p in farm['points']))
+  self.assertIn(243,regions.hunting_arrival_sites('eastgoaf',(23800,2700)))
+  conditional=regions.get('abandonedcity')
+  self.assertTrue(conditional['farms'])
+  self.assertTrue(all(f['conditional_only'] for f in conditional['farms'].values()))
+  self.assertFalse(regions.hunting_arrival_sites('abandonedcity',tuple(conditional['spawns'][0])))
+
  def test_waiting_for_tickets_releases_trip_after_bounded_attempt(self):
   w,c,p=self.make();c.plan=self.plan(w,'event');c.target_started=100
   c.life=SimpleNamespace(prices={4602:1000})
@@ -254,6 +312,15 @@ class Travel58Tests(unittest.TestCase):
   data=json.loads((ROOT/'assets/hunting-travel58.json').read_text())
   self.assertEqual((len(data['birthplaces']),len(data['tickets']),len(data['island_nodes']),len(data['entrances'])),(71,43,8,119))
   self.assertEqual(sum(len(n['routes']) for n in data['island_nodes']),56)
+  from regions import Regions
+  regions=Regions(ROOT/'assets',400)
+  landings={(route['map'],tuple(route['arrival_cm'])) for n in data['island_nodes'] for route in n['routes']}
+  self.assertEqual(len(landings),8)
+  for map_name,point in landings:
+   with self.subTest(map_name=map_name,point=point):
+    nav=regions.nav(map_name)
+    self.assertTrue(nav.land_component(point))
+    self.assertFalse(nav.needs_recovery(point))
   self.assertTrue(all(t['points'] and t['minimum_level']>=0 for t in data['tickets']))
 
 class Booster58Tests(unittest.TestCase):

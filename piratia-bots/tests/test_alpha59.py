@@ -65,6 +65,19 @@ class Shopping59Tests(unittest.TestCase):
   w,t,p=self.make();self.assertTrue(t.tick(100,p,True));self.assertTrue(t.tick(219,p,True))
   self.assertFalse(t.tick(220,p,True));self.assertIsNone(t.wanted);self.assertEqual(t.approach_timeouts,1)
   p.send.assert_not_called();self.assertEqual(t.confirmed,0)
+ def test_long_essential_staff_approach_survives_ordinary_120_second_limit(self):
+  w,t,p=self.make()
+  w.own.values[44]=480
+  t.wanted=(97,1)
+  t.target_shop={'position':(w.own.x+65000,w.own.y),'name':'Smithy'}
+  t.combat_items={97}
+  t.combat_supply_required=lambda:True
+  self.assertTrue(t.tick(100,p,True))
+  self.assertTrue(t.tick(240,p,True))
+  self.assertEqual(t.approach_timeouts,0)
+  self.assertFalse(t.tick(410,p,True))
+  self.assertEqual(t.approach_timeouts,1)
+
  def test_native_purchase_confirmation_is_not_cancelled_by_walk_deadline(self):
   w,t,p=self.make();t.visit_started=0;t.pending=(1847,0,w.own.values[8],200)
   self.assertTrue(t.tick(150,p,True));self.assertIsNotNone(t.pending);self.assertEqual(t.approach_timeouts,0)
