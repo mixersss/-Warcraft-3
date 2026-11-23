@@ -17,10 +17,14 @@ class HuntTravel:
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
   self.site_arrival=None;self.escaping_mine=False;self.outbound_resume=None;self.island_scout=None;self.scout_return=False
-  self.approach_clock=None
+  self.approach_clock=None;self.mine_requests=0;self.mine_arrivals=0;self.last_arrival=None
   self.requests=0;self.confirmed=0;self.timeouts=0;self.reason='';self.clock=0;self.target_started=0
  @property
  def busy(self):return bool(self.context or self.pending)
+ def mine_approach(self):
+  plan=self.plan
+  return bool(plan and plan['kind']=='event' and plan['to_map']=='eastgoaf' and 'Mine' in plan.get('name','')
+              and not plan.get('mine_exit') and not self.purchase_goals())
  def count(self,identity):return sum(i.count for i in self.world.bag.values() if i.identity==identity and i.valid)
  def purchase_goals(self):
   w=self.world
@@ -266,20 +270,23 @@ class HuntTravel:
   if not event:self.abort(now,'Вход сейчас недоступен; видимый нативный портал не найден');return False
   from hunter import action_header
   policy.emit(action_header(w.own_id,policy.sequence,18)+struct.pack('>IIH',event.identity,event.handle,event.event_id));self.requests+=1
+  if plan['to_map']=='eastgoaf' and 'Mine' in plan.get('name','') and not plan.get('mine_exit'):self.mine_requests+=1
   self.pending={'deadline':now+15,'gold':w.own.values.get(8,0),'item_count':None};return True
- def approach_expired(self,now,plan):
+ def approach_expired(self,now,plan,search=None):
   key=self.route_key(plan)
   position=self.world.own.position
   old=self.approach_clock
   if not old or old[0]!=key:
    speed=max(100,min(self.world.own.values.get(44,480),3000))
    seconds=max(120,min(420,30+2*math.dist(position,plan['position'])/speed))
-   self.approach_clock=(key,now+seconds,position,now)
+   self.approach_clock=(key,now+seconds,position,now,search)
    return now-self.target_started>=seconds
-  _,deadline,anchor,advanced=old
+  _,deadline,anchor,advanced,old_search=old
   if math.dist(position,anchor)>=100:
    anchor,advanced=position,now
-   self.approach_clock=key,deadline,anchor,advanced
+  if search and old_search and search[0]==old_search[0] and search[1]>old_search[1]:
+   advanced=now
+  self.approach_clock=key,deadline,anchor,advanced,search
   return now>=deadline or now-advanced>=35
  def tick(self,now,policy,safe,dialogue_busy=False):
   self.clock=now;w=self.world
@@ -291,6 +298,8 @@ class HuntTravel:
    paid=self.count(plan['item_id'])<self.pending['item_count'] if plan['kind']=='ticket' else w.own.values.get(8,0)<=self.pending['gold']-plan['fare']
    if moved and paid and w.bag_ready:
     self.confirmed+=1;self.pending=None;self.context=None;self.plan=None;self.approach_clock=None
+    self.last_arrival={'name':plan.get('name'),'map':w.map,'position':list(w.own.position),'kind':plan['kind']}
+    if w.map=='eastgoaf' and 'Mine' in plan.get('name','') and not plan.get('mine_exit'):self.mine_arrivals+=1
     if plan.get('mine_exit'):
      self.reason='Сервер подтвердил переход на пути выхода из шахты';return False
     self.site_arrival=(w.map,now) if plan.get('model') else None
@@ -331,7 +340,7 @@ class HuntTravel:
    if self.plan:self.target_started=now
    return False
   if not returning and self.settling_site(now,policy):return False
-  if not returning and policy.camp_route_active(now) and not (self.plan and self.plan.get('walking_alternative')):
+  if not returning and not self.plan and policy.camp_route_active(now):
    goal=getattr(policy,'search_goal',None)
    last=policy.learning.last_progress_at
    if not goal or last is None or now-last<30 or now<self.next_check:return False
@@ -339,7 +348,7 @@ class HuntTravel:
    self.next_check=now+120
    if not alternative:return False
    self.plan=alternative;self.target_started=now
-  if not returning and self.economy.phase(w,now)!='progression':
+  if not returning and not self.mine_approach() and self.economy.phase(w,now)!='progression':
    if self.plan:self.abort(now,'Фаза дальней охоты завершена')
    return False
   if self.level!=w.own.values.get(0):self.level=w.own.values.get(0);self.next_check=0
@@ -378,9 +387,13 @@ class HuntTravel:
    self.pending={'deadline':now+20,'item_count':before,'gold':w.own.values.get(8,0)};return True
   point=plan['position']
   if math.dist(policy.position(now),point)>220:
-   if self.approach_expired(now,plan):
-    self.abort(now,'Подход к переходу не продвигается или истёк срок дороги');return False
+   if self.mine_approach() and self.approach_clock is None and hasattr(policy.nav,'cancel_pending'):
+    policy.nav.cancel_pending()
    goal=policy.nav.nearest(point,3)
+   path_status=getattr(policy.nav,'pending_farm_search',None)
+   search=path_status(goal) if self.mine_approach() and goal and path_status else None
+   if self.approach_expired(now,plan,search):
+    self.abort(now,'Подход к переходу не продвигается или истёк срок дороги');return False
    if goal and policy.move_to(goal,now):return True
    self.abort(now,'Нет проверенного маршрута к переходу');return False
   if plan['kind']=='portal':
@@ -388,4 +401,4 @@ class HuntTravel:
    if not npc:self.abort(now,'Нет видимой портальщицы');return False
    self.send(301,talk_request(npc.identity));self.context={'npc':npc.identity,'stage':'menu','deadline':now+8};return True
   return self.use_visible_event(now,policy,plan)
- def summary(self):return {'state':self.reason,'plan':self.plan,'preferred_model':self.preferred_model,'requests':self.requests,'confirmed_arrivals':self.confirmed,'timeouts':self.timeouts,'known_island_portals':len(self.data['island_nodes']),'known_tickets':len(self.data['tickets']),'known_entrances':len(self.data['entrances']),'spawn_regions_are_not_live_mob_positions':True}
+ def summary(self):return {'state':self.reason,'plan':self.plan,'preferred_model':self.preferred_model,'requests':self.requests,'confirmed_arrivals':self.confirmed,'timeouts':self.timeouts,'mine_door_requests':self.mine_requests,'confirmed_mine_arrivals':self.mine_arrivals,'last_arrival':self.last_arrival,'known_island_portals':len(self.data['island_nodes']),'known_tickets':len(self.data['tickets']),'known_entrances':len(self.data['entrances']),'spawn_regions_are_not_live_mob_positions':True}

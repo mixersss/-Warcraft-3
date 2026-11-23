@@ -26,12 +26,17 @@ class ProgressMonitor:
         self.idle_seconds=max(0,now-(self.since if self.since is not None else now))
         if policy.transaction_busy():self.reason='ждёт штатное подтверждение операции';return
         goal=policy.search_goal
+        started=policy.search_started
+        travel=getattr(policy,'hunt_travel',None)
+        if travel and getattr(travel,'mine_approach',lambda:False)() and travel.approach_clock:
+            goal=policy.nav.nearest(travel.plan['position'],3)
+            started=travel.target_started
         pending=policy.nav.pending_farm_search(goal) if goal and hasattr(policy.nav,'pending_farm_search') else None
         if pending!=self.farm_search:
             self.farm_search=pending;self.farm_search_advanced_at=now
         if (self.idle_seconds<60 and now-self.work_since<180) or now<self.next_recovery:return
         if goal and now<policy.search_deadline:
-            if pending and now-policy.search_started<300 and now-self.farm_search_advanced_at<15:
+            if pending and now-started<300 and now-self.farm_search_advanced_at<15:
                 self.reason='поиск пути к лагерю продолжает продвигаться';return
             if policy.move_goal==goal and self.idle_seconds<15:
                 self.reason='движется к лагерю по подтверждённому пути';return

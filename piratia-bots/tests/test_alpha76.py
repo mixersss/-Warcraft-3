@@ -45,9 +45,9 @@ class Combat76Tests(unittest.TestCase):
         world.stop_revision+=1
         world.stop_packet_number=policy.last_sent_sequence
         world.stop_packet_kind=1
-        self.assertFalse(policy.wake_for_combat(100.05))
-        self.assertTrue(policy.wake_for_combat(100.16))
-        policy.tick(100.16)
+        self.assertFalse(policy.wake_for_combat(100.04))
+        self.assertTrue(policy.wake_for_combat(100.06))
+        policy.tick(100.06)
         self.assertEqual(policy.attacks,1)
 
     def test_second_mob_is_tried_when_first_approach_waits_on_routing(self):

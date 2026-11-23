@@ -164,6 +164,7 @@ class World:
         self.skill_packet_number = None
         self.skill_revision = 0
         self.own_hits = {}
+        self.observed_xp_gain_by_map={}
         self.combat_revision=0
         self.own_attackers={}
         self.own_recent_damage=deque(maxlen=8)
@@ -329,7 +330,10 @@ class World:
             identity = reader.long()
             values = attrs(reader)
             if identity in self.entities:
-                self.entities[identity].values.update(values)
+                previous=self.entities[identity].values
+                if identity==self.own_id and 15 in previous and 15 in values and values[15]>previous[15]:
+                    self.observed_xp_gain_by_map[self.map]=self.observed_xp_gain_by_map.get(self.map,0)+values[15]-previous[15]
+                previous.update(values)
                 if values.get(HP,1)<=0 and identity in self.own_hits:
                     if not self.own_hits[identity][1]:self.combat_revision+=1
                     self.own_hits[identity]=(self.own_hits[identity][0],True)
@@ -472,4 +476,4 @@ class World:
                 'existence_state':own.state if own else None,
                 'level': own.values.get(LV) if own else None,
                 'default_skill': self.default_skill, 'updates': self.updates,
-                'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action,'failed_action_counts':self.failed_action_counts,'default_skill_updates':self.default_skill_updates,'stop_revision':self.stop_revision,'skill_action_state':self.skill_action_state}
+                'xp_gained_from_attribute_updates_by_map':dict(self.observed_xp_gain_by_map), 'damage_events': self.damage_events, 'failed_actions': self.failed_actions,'last_failed_action':self.last_failed_action,'failed_action_counts':self.failed_action_counts,'default_skill_updates':self.default_skill_updates,'stop_revision':self.stop_revision,'skill_action_state':self.skill_action_state}

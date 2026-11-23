@@ -67,6 +67,7 @@ class Hunter:
         self.opportunity_model=None;self.opportunity_targets=0;self.last_target_at=None
         self.next_action = 0
         self.fast_progression=False
+        self.immediate_defences=0
         self.combat_wakes=0;self.next_combat_wake=0;self.goldie_exit_retry=0
         self.approach_attacks=0;self.approach_attack_tried=False
         self.mode = 'observe'
@@ -208,7 +209,8 @@ class Hunter:
 
     def hunt_before_errands(self,now):
         last=self.learning.last_progress_at
-        return bool(self.supply_funding_goal) or self.camp_route_active(now) or bool(
+        mine_approach=getattr(self.hunt_travel,'mine_approach',lambda:False)
+        return bool(self.supply_funding_goal) or self.camp_route_active(now) or mine_approach() or bool(
             getattr(self,'fast_progression',False) and self.region and last is not None and now-last>=180)
 
     def available_spot(self,point,now):
@@ -353,11 +355,23 @@ class Hunter:
             self.send_action(body)
         self.sequence=(self.sequence+1)&0xffffffff
 
+    def acknowledged_attack_release(self):
+        if not self.fast_progression or not self.pending_action:
+            return None
+        body,earliest,fallback,revision=self.pending_action
+        if body[8]!=2 or self.world.stop_revision==revision or not self.action_stopped():
+            return None
+        return self.action_release_time(body,earliest,fallback,True)
+
+    def action_release_time(self,body,earliest,fallback,ack):
+        if not ack:return fallback
+        return earliest-.10 if self.fast_progression and body[8]==2 else earliest
+
     def flush_action(self,now):
         if not self.pending_action:return False
         body,earliest,fallback,stop_revision=self.pending_action
         ack=(self.world.stop_revision!=stop_revision and self.action_stopped())
-        if now<earliest or (not ack and now<fallback):return True
+        if now<self.action_release_time(body,earliest,fallback,ack):return True
         self.pending_action=None
         kind=body[8];number=int.from_bytes(body[4:8],'big')
         own=self.world.own
@@ -930,7 +944,8 @@ class Hunter:
         if self.pending_action:
             body,earliest,_,stop_revision=self.pending_action
             defence=bool(attacker and body[8]==1)
-            ready=(body[8]==2 and now>=earliest and self.world.stop_revision!=stop_revision and self.action_stopped())
+            ack=self.world.stop_revision!=stop_revision and self.action_stopped()
+            ready=(body[8]==2 and ack and now>=self.action_release_time(body,earliest,earliest,True))
             if not (defence or ready):return False
         else:
             target=self.world.entities.get(self.target)
@@ -938,6 +953,47 @@ class Hunter:
         self.next_combat_wake=now+.1
         self.next_action=min(now,self.next_action)
         self.combat_wakes+=1
+        return True
+
+    def send_in_range_attack(self,now,target,spell,funding_attack=False):
+        own=self.world.own
+        if self.combat_since is None:self.combat_since=self.last_damage_at=now
+        self.change('применяет боевой навык '+str(spell) if spell else
+                    'бьёт слабого моба ради Пачкули' if funding_attack else 'обычная атака')
+        self.fight=(self.fight+1)&255
+        self.emit(normal_attack(own.identity,self.sequence,self.fight,spell or self.world.default_skill,
+                                target.identity,target.handle,self.position(now)))
+        self.world.freeze_prediction(now)
+        self.move_goal=None
+        if self.loot:self.loot.note_attack(target.identity,now)
+        self.next_action=now+(.15 if spell else self.attack_interval)
+
+    def immediate_defence(self,now,target):
+        if not target or self.target or self.pending_action or self.transaction_busy():
+            return False
+        if self.world.failed_actions!=self.attack_failure_seen:
+            return False
+        if any(getattr(f,'context',None) or getattr(f,'pending',None) for f in
+               (self.town,self.vendor,self.petcare,self.equipment,self.shortcut) if f):
+            return False
+        own=self.world.own
+        spell=self.combat_skills.select(now) if self.combat_skills else None
+        if not spell and (self.world.default_skill not in NORMAL_ATTACKS
+                           or (self.combat_skills and own.values.get(4) in (4,5,13,14,16))):
+            return False
+        reach=self.combat_skills.reach(spell,target) if spell else self.attack_reach(target)
+        if distance(self.position(now),self.world.position(now,target.identity))>reach:
+            return False
+        key=self.world.map,target.identity,target.handle
+        if self.coordination and not self.coordination.claim(self.owner,key,now,shared=True):
+            return False
+        self.target=target.identity;self.target_key=key
+        self.shared_target=True;self.opportunity_model=target.model
+        self.target_since=self.last_target_at=now
+        self.last_target_hp=target.values.get(HP)
+        self.clear_zone()
+        self.send_in_range_attack(now,target,spell)
+        self.immediate_defences+=1
         return True
 
     def attack_on_approach(self,now,target,goal,spell,ranged):
@@ -1224,6 +1280,8 @@ class Hunter:
                 self.change(self.shortcut.reason);return
         if now < self.next_action or now-self.started < 2:
             return
+        if self.immediate_defence(now,defence):
+            return
         if self.owner_services and self.owner_services.busy:
             if self.owner_services.tick(now,self,False):
                 self.change(self.owner_services.reason);return
@@ -1336,12 +1394,17 @@ class Hunter:
         if not self.quest_combat_ready and not self.raising_travel_funds and self.helper and self.helper.tick(now,self):return
         loot_dialogue=market_dialogue or any(getattr(f,'context',None) for f in (self.travel,self.market) if f)
         if self.hunt_travel and not self.transaction_busy():
-            scope=self.nav.background_work(True) if hasattr(self.nav,'background_work') else nullcontext()
+            mine_approach=getattr(self.hunt_travel,'mine_approach',lambda:False)
+            scope=self.nav.background_work(True) if hasattr(self.nav,'background_work') and not mine_approach() else nullcontext()
             try:
                 with scope:
                     travelling=self.hunt_travel.tick(now,self,safe,loot_dialogue)
             except RoutePending:
                 self.background_task='hunt_travel'
+                if mine_approach():
+                    self.clear_zone()
+                    self.change('строит путь к выбранному входу в шахту')
+                    return
                 travelling=False
             if travelling:
                 self.drop_target();self.clear_zone();self.change(self.hunt_travel.reason);return
@@ -1567,16 +1630,7 @@ class Hunter:
                     self.move_to(goal,now)
                     self.change('повторный подход: нет подтверждённого урона')
                     return
-            self.change('применяет боевой навык '+str(spell) if spell else
-                        'бьёт слабого моба ради Пачкули' if funding_attack else 'обычная атака')
-            self.fight = (self.fight+1) & 255
-            self.emit(normal_attack(own.identity, self.sequence, self.fight, spell or self.world.default_skill,
-                                    target.identity, target.handle, self.position(now)))
-            self.world.freeze_prediction(now)
-            self.move_goal=None
-            if self.loot:
-                self.loot.note_attack(target.identity,now)
-            self.next_action = now+(.15 if spell else self.attack_interval)
+            self.send_in_range_attack(now,target,spell,funding_attack)
             return
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:
             self.change('ожидание перехода в Аргент: старт на Forest Spirit');self.next_action=now+1;return
@@ -1710,7 +1764,7 @@ class Hunter:
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
                                'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
                 'shared_target':self.shared_target,'target_hp':self.last_target_hp,'seconds_since_target_damage':max(0,self.clock-self.last_damage_at) if self.target else None,'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
-                'combat_event_wakes':self.combat_wakes,'combined_approach_attacks':self.approach_attacks,'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
+                'combat_event_wakes':self.combat_wakes,'immediate_defence_attempts':self.immediate_defences,'combined_approach_attacks':self.approach_attacks,'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'observed_deaths_with_own_hit':self.own_hit_deaths, 'world': self.world.summary()}
 
@@ -2216,6 +2270,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 source=network_pump or client.wire
                 poll_deadline=min(deadline,time.monotonic()+.15)
                 if next_think:poll_deadline=min(poll_deadline,next_think)
+                release=policy.acknowledged_attack_release()
+                if release is not None and release>time.monotonic():
+                    poll_deadline=min(poll_deadline,release)
                 command,payload=source.receive(poll_deadline)
                 client.service(command, payload)
                 # Drain a bounded burst before expensive decisions; preserve ordering.
@@ -2236,7 +2293,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 continue # Apply authoritative packets before deciding from stale state.
             combat_wake=False
             signals=(world.combat_revision,world.stop_revision)
-            if signals!=combat_seen:
+            release=policy.acknowledged_attack_release()
+            if signals!=combat_seen or release is not None and now>=release:
                 combat_seen=signals
                 combat_wake=policy.wake_for_combat(now)
             if combat_wake or now>=next_think:
