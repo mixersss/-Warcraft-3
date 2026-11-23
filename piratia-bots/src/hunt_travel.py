@@ -159,7 +159,8 @@ class HuntTravel:
   needs_sale=bool(getattr(policy,'supply_funding_goal',0) and patchouli)
   if needs_sale or free<=0 or (not settling and (free<=4 or patchouli>=30)):
    shops=self.life.services['shops'].get(w.map,[])
-   if not any(math.dist(policy.position(now),s['position'])<12000 and self.same_land(policy,s['position']) for s in shops):return True
+   local_limit=12000 if free<=0 else 35000
+   if not any(math.dist(policy.position(now),s['position'])<local_limit and self.same_land(policy,s['position']) for s in shops):return True
   town=getattr(policy,'town',None);supply=getattr(town,'supply_plan',None)
   if supply and not getattr(policy,'supply_funding_goal',0) and (not settling or town.combat_supply_required()):
    if supply['item'] not in {i for i,_,_ in self.purchase_goals()} and (supply['map']!=w.map or not self.same_land(policy,supply['shop']['position'])):return True
@@ -313,7 +314,7 @@ class HuntTravel:
   if not returning and policy.camp_route_active(now) and not (self.plan and self.plan.get('walking_alternative')):
    goal=getattr(policy,'search_goal',None)
    last=policy.learning.last_progress_at
-   if not goal or last is None or now-last<90 or now<self.next_check:return False
+   if not goal or last is None or now-last<30 or now<self.next_check:return False
    alternative=self.choose(now,policy,alternative_to=goal)
    self.next_check=now+120
    if not alternative:return False

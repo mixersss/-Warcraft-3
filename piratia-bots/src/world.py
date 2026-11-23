@@ -165,6 +165,7 @@ class World:
         self.skill_revision = 0
         self.own_hits = {}
         self.combat_revision=0
+        self.own_attackers={}
         self.own_recent_damage=deque(maxlen=8)
         self.look_revision = 0
         self.skills = {}
@@ -276,6 +277,7 @@ class World:
         self.seated=False;self.pose_packet_number=None;self.pose_revision+=1
         self.motion.clear()
         self.own_hits.clear()
+        self.own_attackers.clear()
         self.own_recent_damage.clear()
         self.items.clear()
         self.move_revision += 1
@@ -403,7 +405,14 @@ class World:
                     before=current.values.get(HP)
                     current.values.update(values)
                     if identity==self.own_id and before is not None and HP in values and values[HP]<before:
-                        self.own_recent_damage.append((time.monotonic(),before-values[HP]))
+                        stamp=time.monotonic()
+                        self.own_recent_damage.append((stamp,before-values[HP]))
+                        attacker=self.entities.get(source)
+                        if attacker and attacker.control==5 and attacker.alive:
+                            self.own_attackers.pop(source,None)
+                            self.own_attackers[source]=(attacker.handle,stamp)
+                            if len(self.own_attackers)>8:del self.own_attackers[next(iter(self.own_attackers))]
+                            self.combat_revision+=1
                     if current.control==5 and before and (values.get(HP,1)<=0 or state & 0x100):
                         if identity in self.own_hits or source==self.own_id:self.combat_revision+=1
                     if (source==self.own_id and current.control==5 and before is not None

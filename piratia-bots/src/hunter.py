@@ -389,8 +389,19 @@ class Hunter:
                 reach=self.combat_skills.reach(skill,target)
             elif skill==self.world.default_skill:reach=self.attack_reach(target)
             else:return True
-            if distance(self.position(now),self.world.position(now,identity))>reach:return True
-            body=normal_attack(own.identity,number,body[10],skill,identity,handle,self.position(now))
+            origin=self.position(now)
+            point=self.world.position(now,identity)
+            approach=None
+            if distance(origin,point)>reach:
+                x,y,end_x,end_y=struct.unpack('<iiii',body[13:29])
+                expected=(end_x,end_y)
+                if (healing or (x,y)==expected or not 0<distance(origin,expected)<=800
+                        or not self.combat_allowed(expected) or not self.nav.line_clear(origin,expected)
+                        or distance(expected,point)>reach):
+                    self.approach_attack_tried=False
+                    return False
+                approach=expected
+            body=normal_attack(own.identity,number,body[10],skill,identity,handle,origin,approach)
         self.send_action(body);self.flushed_actions+=1
         self.next_action=max(self.next_action,now+.2)
         return True
@@ -893,19 +904,37 @@ class Hunter:
             return False
         return True
 
+    def nearby_attacker(self,now):
+        own=self.world.own
+        if not self.fast_progression or not own or self.assist_target or self.resting:
+            return None
+        if own.values.get(HP,0)<=own.values.get(MAX_HP,1)*.55:
+            return None
+        origin=self.position(now)
+        if not self.combat_allowed(origin):return None
+        for identity,(handle,stamp) in reversed(self.world.own_attackers.items()):
+            if not 0<=now-stamp<=8:continue
+            mob=self.world.entities.get(identity)
+            if (mob and mob.handle==handle and distance(origin,mob.position)<=1200
+                    and self.eligible(mob,now,{mob.model}) and not self.learning.dangerous(mob.model,now)):
+                return mob
+        return None
+
     def wake_for_combat(self,now):
         if (not self.fast_progression or now<self.next_combat_wake or self.resting
                 or self.transaction_busy()
                 or any(getattr(f,'context',None) or getattr(f,'pending',None)
                        for f in (self.town,self.vendor,self.petcare,self.equipment) if f)):
             return False
+        attacker=self.nearby_attacker(now)
         if self.pending_action:
             body,earliest,_,stop_revision=self.pending_action
-            if (body[8]!=2 or now<earliest or self.world.stop_revision==stop_revision or not self.action_stopped()):
-                return False
+            defence=bool(attacker and body[8]==1)
+            ready=(body[8]==2 and now>=earliest and self.world.stop_revision!=stop_revision and self.action_stopped())
+            if not (defence or ready):return False
         else:
             target=self.world.entities.get(self.target)
-            if target and target.alive:return False
+            if target and target.alive and not attacker:return False
         self.next_combat_wake=now+.1
         self.next_action=min(now,self.next_action)
         self.combat_wakes+=1
@@ -913,7 +942,7 @@ class Hunter:
 
     def attack_on_approach(self,now,target,goal,spell,ranged):
         if (not self.fast_progression or self.approach_attack_tried or not goal
-                or (self.action_open and not self.action_stopped())
+                or (self.action_open and not self.action_stopped() and self.last_sent_kind!=1)
                 or self.world.failed_actions!=self.attack_failure_seen):
             return False
         own=self.world.own
@@ -1101,6 +1130,17 @@ class Hunter:
             self.task_budget.paused.pop('adventure',None)
             self.task_budget.rows.pop('adventure',None)
         self.observe_movement(now)
+        defence=self.nearby_attacker(now)
+        if defence and self.target and self.target!=defence.identity and self.combat_since is None:
+            self.drop_target()
+        if defence and not self.target:
+            if self.pending_action and self.pending_action[0][8]==1:
+                _,earliest,fallback,revision=self.pending_action
+                acknowledged=self.world.stop_revision!=revision and self.action_stopped()
+                if now>=earliest and (acknowledged or now>=fallback):
+                    self.pending_action=None
+                    self.move_goal=None
+            self.next_action=min(now,self.next_action)
         before_flush=self.flushed_actions
         if self.flush_action(now):
             if self.pending_action:self.change('ожидание завершения предыдущего действия')
@@ -1114,7 +1154,7 @@ class Hunter:
             if self.xp_boosters.tick(now,self,False):self.change(self.xp_boosters.reason);self.next_action=now+.2;return
         if self.hunt_travel and self.hunt_travel.busy:
             if self.hunt_travel.tick(now,self,False):self.change(self.hunt_travel.reason);self.next_action=now+.2;return
-        if (hp/maximum>.55 and self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
+        if (not defence and hp/maximum>.55 and self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
                 and self.petcare.tick(now,self,safe=True,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.career,self.story) if f))):
             self.change(self.petcare.reason);self.next_action=now+.2;return
 
@@ -1179,7 +1219,7 @@ class Hunter:
                 if now >= self.next_action and distance(self.position(now), self.home) > 300:
                     self.move_to(self.home, now)
                 return
-        if self.shortcut and self.shortcut.busy:
+        if self.shortcut and self.shortcut.busy and (not defence or self.shortcut.context or self.shortcut.ticket):
             if self.shortcut.resume(now,self):
                 self.change(self.shortcut.reason);return
         if now < self.next_action or now-self.started < 2:
@@ -1198,7 +1238,7 @@ class Hunter:
         if (self.petcare and not self.transaction_busy() and
                 self.petcare.tick(now,self,safe=not self.target,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.adventure,self.career,self.story) if f))):
             self.change(self.petcare.reason);self.next_action=now+.2;return
-        if self.equipment and self.equipment.tick(now,self,safe=not self.target):
+        if self.equipment and self.equipment.tick(now,self,safe=not self.target and not defence):
             self.next_action=now+.2
             self.change('надевает подходящую экипировку')
             return
@@ -1216,7 +1256,7 @@ class Hunter:
             self.recover_path(now)
             return
         dialogue_busy=bool(self.adventure and self.adventure.context)
-        safe=not self.target and not self.resting and hp/maximum>.55
+        safe=not self.target and not defence and not self.resting and hp/maximum>.55
         market_dialogue=dialogue_busy or any(getattr(f,'context',None) or getattr(f,'pending',None) for f in (self.town,self.career,self.story,self.equipment,self.skills,self.chests,self.party,self.vendor) if f)
         mandatory=(own.values.get(4)==0 and own.values.get(0,1)>=9) or bool(self.career and self.career.eligible())
         self.quest_combat_ready=False
@@ -1308,7 +1348,7 @@ class Hunter:
         if self.owner_services and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
             if self.owner_services.tick(now,self,safe,loot_dialogue or bool(self.town and self.town.context)):
                 self.drop_target();self.clear_zone();self.change(self.owner_services.reason);return
-        if not loot_dialogue and not self.quest_combat_ready:
+        if not defence and not loot_dialogue and not self.quest_combat_ready:
             if self.loot and not (self.target and self.world.entities.get(self.target) and self.world.entities[self.target].alive):
                 task = self.adventure.farm() if self.adventure else None
                 needed = self.equipment.loot_needs() if self.equipment else set()
@@ -1423,6 +1463,7 @@ class Hunter:
             models=None if self.assist_target else self.planned_models()
             mobs=self.visible_mobs(now)
             candidates=[e for e in mobs if self.eligible(e,now,{e.model} if e.identity in visible else models)]
+            if defence and defence not in candidates:candidates.append(defence)
             self.rng.shuffle(candidates)  # Distinct tie ordering for each character.
             candidates.sort(key=lambda e:self.target_score(e,now))
             group_target=self.group_hunt.target(now) if self.group_hunt else None
@@ -1442,14 +1483,14 @@ class Hunter:
             in_range={candidate.identity for candidate in candidates if can_attack_here
                       and distance(origin,self.world.position(now,candidate.identity))<=reaches[candidate.identity]}
             # Take an immediately attackable target before asking A* for an approach.
-            candidates.sort(key=lambda candidate:candidate.identity not in in_range)
+            candidates.sort(key=lambda candidate:(candidate.identity not in in_range,candidate is not defence if defence else False))
             # Prefer unclaimed reachable mobs. If every viable target is busy,
             # join a real fight instead of waiting for another bot's lease.
             # Active quest mobs can be shared on the first pass.
             waiting_route=False
             for join_busy in (False,True):
                 for candidate in candidates:
-                    shared=join_busy or candidate.model in shared_models or bool(group_target and candidate.identity==group_target.identity)
+                    shared=join_busy or candidate is defence or candidate.model in shared_models or bool(group_target and candidate.identity==group_target.identity)
                     key=(self.world.map,candidate.identity,candidate.handle)
                     if self.coordination and not self.coordination.available(self.owner,key,now,shared=shared):
                         self.busy_targets+=1
@@ -1777,7 +1818,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         policy.petcare.home_city=policy.travel.home_city
         if getattr(navigation,'portal_catalog',None):
             from portal_shortcut import PortalShortcut
-            policy.shortcut=PortalShortcut(world,client.wire.send,navigation.portal_catalog)
+            policy.shortcut=PortalShortcut(world,client.wire.send,navigation.portal_catalog,getattr(navigation,'hunting_travel_data',None))
         if hasattr(navigation,'market_catalog'):
             from market import Market
             policy.market=Market(world,client.wire.send,bot_name,bot_index,navigation.market_catalog,catalog,life,navigation.market_directory)
@@ -2179,8 +2220,9 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 client.service(command, payload)
                 # Drain a bounded burst before expensive decisions; preserve ordering.
                 drain_started=time.thread_time()
-                for _ in range(511 if network_pump and network_pump.backlogged() else 63):
-                    if time.thread_time()-drain_started>=.004:break
+                catchup=bool(network_pump and network_pump.backlogged())
+                for _ in range(1023 if catchup else 63):
+                    if time.thread_time()-drain_started>=(.012 if catchup else .004):break
                     if network_pump is None or network_pump.queue.empty():break
                     command,payload=network_pump.receive(time.monotonic()+.001);client.service(command,payload)
             except TimeoutError:

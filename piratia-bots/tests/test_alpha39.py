@@ -246,7 +246,10 @@ class PortalTests(unittest.TestCase):
         self.assertEqual(t.context[1],'map');self.assertEqual(t.arrivals,0)
         self.assertTrue(t.resume(103,p));self.assertEqual(w.own.position,(74364,158606))
         # Only this synthetic server position update permits confirmation.
-        w.own.x,w.own.y=edge['arrival_cm'];self.assertFalse(t.resume(104,p))
+        w.own.x,w.own.y=edge['arrival_cm']
+        self.assertTrue(t.resume(104,p))
+        w.own.values[8]-=500
+        self.assertFalse(t.resume(104.1,p))
         self.assertEqual(t.arrivals,1);self.assertFalse(t.busy)
 
     def test_shortcut_not_started_without_fare_or_time_saving(self):
@@ -265,7 +268,10 @@ class PortalTests(unittest.TestCase):
                           party=None,market=None,nav=n,move_to=Mock(return_value=True))
         t=PortalShortcut(w,Mock(),self.data)
         n.begin_turn()
-        try:used=t.consider((219250,276750),100,p)
+        try:
+            from unittest.mock import patch
+            with patch('navigation.time.thread_time',return_value=0):
+                used=t.consider((219250,276750),100,p)
         finally:n.end_turn()
         self.assertTrue(used);self.assertTrue(t.busy)
         self.assertEqual(t.context[0],99);self.assertGreater(t.savings_seconds,300)
