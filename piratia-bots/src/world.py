@@ -2,6 +2,7 @@
 import struct
 import time
 import math
+from collections import deque
 from dataclasses import dataclass, field
 from classic_wire import Reader, ProtocolError
 
@@ -163,6 +164,7 @@ class World:
         self.skill_packet_number = None
         self.skill_revision = 0
         self.own_hits = {}
+        self.own_recent_damage=deque(maxlen=8)
         self.look_revision = 0
         self.skills = {}
         self.seated=False;self.pose_packet_number=None;self.pose_revision=0
@@ -273,6 +275,7 @@ class World:
         self.seated=False;self.pose_packet_number=None;self.pose_revision+=1
         self.motion.clear()
         self.own_hits.clear()
+        self.own_recent_damage.clear()
         self.items.clear()
         self.move_revision += 1
         self.move_state = 1
@@ -395,6 +398,8 @@ class World:
                 if current:
                     before=current.values.get(HP)
                     current.values.update(values)
+                    if identity==self.own_id and before is not None and HP in values and values[HP]<before:
+                        self.own_recent_damage.append((time.monotonic(),before-values[HP]))
                     if (source==self.own_id and current.control==5 and before is not None
                             and HP in values and values[HP]<before):
                         self.own_hits[identity]=(time.monotonic(),values[HP]<=0 or bool(state & 0x100))

@@ -152,7 +152,7 @@ class HuntLearning:
     rates[model]=row.get('level_xp',0)/row['level_seconds']
   best=max(rates.values(),default=0)
   return {model for model,rate in rates.items() if best>0 and rate<best*.5}
- def choose(self,region,own,now,fallback=False,hold=False,position=None):
+ def record_progress(self,own,now):
   progress=(own.values.get(0,1),own.values.get(15,0))
   self.last_clock=now
   if 15 in own.values:
@@ -163,6 +163,8 @@ class HuntLearning:
    self.session_gain+=max(0,delta);self.session_loss+=max(0,-delta);self.session_last_xp=xp
   previous=self.progress_signature;self.progress_signature=progress
   if previous is None or progress[0]>previous[0] or progress[1]>previous[1]:self.last_progress_at=now
+ def choose(self,region,own,now,fallback=False,hold=False,position=None):
+  self.record_progress(own,now)
   self.selected={m for m in self.selected if str(m) in region['farms'] and region['farms'][str(m)].get('territory',0)==0}
   if hold and self.selected:return set(self.selected)
   idle_trial=now-self.last_progress_at>=90 and now>=self.next_idle_probe

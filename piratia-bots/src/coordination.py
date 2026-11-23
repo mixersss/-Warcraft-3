@@ -11,8 +11,11 @@ class Coordination:
         self.targets={}
         self.zones={}
         self.assistants={}
+        self.next_sweep=0
 
     def _expire(self,now):
+        if now<self.next_sweep:return
+        self.next_sweep=now+1
         for owner,(_,_,until) in list(self.visits.items()):
             if until<=now:self.visits.pop(owner,None)
         for key,(_,until) in list(self.targets.items()):
@@ -25,9 +28,9 @@ class Coordination:
         with self.lock:
             self._expire(now)
             holder=self.targets.get(key)
-            if holder is None:return True
+            if holder is None or holder[1]<=now:return True
             if holder[0]!=requester:return False
-            if any(k==key and h!=helper for (k,h) in self.assistants):return False
+            if any(k==key and h!=helper and until>now for (k,h),(_,until) in self.assistants.items()):return False
             self.assistants[(key,helper)]=(requester,now+90);return True
     def _assisting(self,owner,key,now):
         grant=self.assistants.get((key,owner));holder=self.targets.get(key)
@@ -36,12 +39,14 @@ class Coordination:
     def available(self,owner,key,now,shared=False):
         with self.lock:
             self._expire(now)
-            return shared or key not in self.targets or self.targets[key][0]==owner or self._assisting(owner,key,now)
+            holder=self.targets.get(key)
+            return shared or holder is None or holder[1]<=now or holder[0]==owner or self._assisting(owner,key,now)
 
     def claim(self,owner,key,now,shared=False):
         with self.lock:
             self._expire(now)
-            if key in self.targets and self.targets[key][0]!=owner:
+            reservation=self.targets.get(key)
+            if reservation and reservation[1]>now and reservation[0]!=owner:
                 return shared or self._assisting(owner,key,now)
             for previous,(holder,_) in list(self.targets.items()):
                 if holder==owner and previous!=key:self.targets.pop(previous,None)
@@ -67,17 +72,20 @@ class Coordination:
         with self.lock:
             self._expire(now)
             previous=self.zones.get(owner)
-            if previous and previous[0][0]==map_name and previous[0][1] in goals:
+            if previous and previous[1]>now and previous[0][0]==map_name and previous[0][1] in goals:
                 selected=previous[0][1]
             else:
-                occupied=[p for (m,p),_ in self.zones.values() if m==map_name]
+                patches={}
+                for (name,point),until in self.zones.values():
+                    if name==map_name and until>now:
+                        patches.setdefault((point[0]//2500,point[1]//2500),[]).append(point)
                 def cost(point):
-                    # Nearby coordinates belong to the same hunting patch. Counting
-                    # only identical destinations sent everyone to adjacent tiles.
-                    density=sum(max(0,1-math.dist(point,p)/2500) for p in occupied)
-                    exact=sum(point==p for p in occupied)
+                    x,y=point[0]//2500,point[1]//2500
+                    density=sum(max(0,2500-math.dist(point,p))+(1000 if point==p else 0)
+                                for i in range(x-1,x+2) for j in range(y-1,y+2)
+                                for p in patches.get((i,j),()))
                     travel=math.dist(origin,point)*.2 if origin is not None else 0
-                    return density*2500+exact*1000+travel
+                    return density+travel
                 selected=min(goals,key=cost)
             self.zones[owner]=((map_name,selected),now+45)
             return selected
@@ -88,11 +96,11 @@ class Coordination:
         with self.lock:
             self._expire(now)
             previous=self.visits.get(owner)
-            if previous and previous[0]==site:
+            if previous and previous[2]>now and previous[0]==site:
                 self.visits[owner]=(site,mandatory,now+15);return True
-            nearby=sum(m==map_name and math.dist(p,point)<500
-                       for (m,p),_,_ in self.visits.values())
-            optional=sum(not required for _,required,_ in self.visits.values())
+            nearby=sum(until>now and m==map_name and math.dist(p,point)<500
+                       for (m,p),_,until in self.visits.values())
+            optional=sum(not required and until>now for _,required,until in self.visits.values())
             if not mandatory and (nearby>=2 or optional>=max(1,self.population//10)):return False
             self.visits[owner]=(site,mandatory,now+15);return True
 

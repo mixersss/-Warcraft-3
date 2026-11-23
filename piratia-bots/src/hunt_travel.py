@@ -43,8 +43,23 @@ class HuntTravel:
   return not own or not other or own==other
  def route_key(self,route):
   return (route['kind'],route.get('item_id'),route.get('map'),tuple(route.get('position',())),route.get('to_map'),tuple(route['arrival_cm']))
+ def supplier_distances(self,policy,now):
+  distances={}
+  origin=policy.position(now)
+  for shop in getattr(self.life,'services',{}).get('shops',{}).get(self.world.map,()):
+   point=shop['position']
+   distance=math.dist(origin,point)
+   if distance>12000 or not self.same_land(policy,point):continue
+   for identity in shop['offers']:
+    distances[identity]=min(distance,distances.get(identity,math.inf))
+  return distances
  def routes(self,now,policy,returning=False):
   w=self.world;level=w.own.values.get(0,0);cash=w.own.values.get(8,0);rows=[]
+  sellers=self.supplier_distances(policy,now)
+  return_ticket=self.count(4602)
+  purchase_distance=0 if returning or return_ticket else sellers.get(4602,math.inf)
+  if not returning and not return_ticket and purchase_distance==math.inf:
+   return []
   for node in self.data['island_nodes']:
    if node['map']!=w.map or not self.same_land(policy,node['position']):continue
    for r in node['routes']:
@@ -54,9 +69,10 @@ class HuntTravel:
    if t['map'] not in self.regions.map_catalog or level<t['minimum_level']:continue
    owned=self.count(t['item_id'])
    price=self.life.prices.get(t['item_id'],0)
-   if not owned and (w.map not in ('garner','magicsea','darkblue') or price<=0 or cash<price+2500):continue
+   if not owned and (t['item_id'] not in sellers or price<=0 or cash<price+2500):continue
    for point in t['points']:
-    rows.append({'kind':'ticket','map':w.map,'to_map':t['map'],'arrival_cm':point,'arrival_options':t['points'],'fare':0 if owned else price,'item_id':t['item_id'],'name':t['birthplace']})
+    rows.append({'kind':'ticket','map':w.map,'to_map':t['map'],'arrival_cm':point,'arrival_options':t['points'],'fare':0 if owned else price,'item_id':t['item_id'],'name':t['birthplace'],
+                 'ticket_shop_distance':0 if owned else sellers[t['item_id']]})
   if not returning:
    for node in (getattr(self.regions,'portal_catalog',None) or {}).get('nodes',[]):
     if node['map']!=w.map or not self.same_land(policy,node['position']):continue
@@ -68,7 +84,8 @@ class HuntTravel:
    for entry in self.data['entrances']:
     if entry['map']!=w.map or entry['to_map'] not in self.regions.map_catalog or not self.same_land(policy,entry['position']):continue
     rows.append({'kind':'event','map':w.map,'to_map':entry['to_map'],'position':entry['position'],'arrival_cm':entry['arrival_cm'],'fare':0,'event_id':entry['event_id'],'event_model':entry['model'],'name':entry['name']})
-  return [r for r in rows if self.blocked.get(self.route_key(r),0)<=now]
+  return [dict(r,shopping_distance=max(purchase_distance,r.get('ticket_shop_distance',0)))
+          for r in rows if self.blocked.get(self.route_key(r),0)<=now]
  def nearby(self,map_name,point):
   known=self.knowledge.nearby_ground(map_name,tuple(point))
   observations=getattr(self.regions,'hunt_observations',None)
@@ -170,7 +187,8 @@ class HuntTravel:
     rows.append((score,route,None));continue
    # Planning a paid trip must be possible BEFORE buying its tickets. Actual
    # departure below still requires an owned return ticket and native use.
-   approach=math.dist(policy.position(now),route.get('position',policy.position(now)))/250
+   approach=(math.dist(policy.position(now),route.get('position',policy.position(now)))
+             +route.get('shopping_distance',0))/250
    for model,distance in self.nearby(route['to_map'],route['arrival_cm']):
     score=self.rate(model,policy,now)
     if not score:continue
@@ -273,6 +291,10 @@ class HuntTravel:
   if w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
+  local_combat=getattr(policy,'local_combat_ready',None)
+  if not returning and local_combat and local_combat(now) is True:
+   if self.plan:self.target_started=now
+   return False
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))
   if returning and self.plan and not self.plan.get('returning'):
    if self.plan.get('model'):self.outbound_resume=(self.plan,now+900)

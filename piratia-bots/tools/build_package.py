@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-74'
-NAME = 'Piratia-Auto-Bots-Alpha74'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-75'
+NAME = 'Piratia-Auto-Bots-Alpha75'
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
-    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md',ROOT / 'knowledge/ALPHA73.md',ROOT / 'knowledge/ALPHA73-MAP-AUDIT.md',ROOT / 'knowledge/ALPHA74.md']
+    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md',ROOT / 'knowledge/ALPHA73.md',ROOT / 'knowledge/ALPHA73-MAP-AUDIT.md',ROOT / 'knowledge/ALPHA74.md',ROOT / 'knowledge/ALPHA75.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -424,6 +424,8 @@ def main():
                     status='Alpha73 prioritizes in-range attacks and verifies recovery from ticket arrivals.')
     manifest.update(alpha74={'minimum_server_revision':60,'startup_spawn_placements':3503,'live_windows_verified':False},
                     status='Alpha74 imports startup spawns and resumes hunting after essential errands.')
+    manifest.update(alpha75={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha75 keeps nearby combat ahead of optional journeys and tracks native progress independently.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
     print(artifact)

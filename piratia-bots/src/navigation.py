@@ -374,16 +374,15 @@ class Navigation:
             for previous in list(local.searches):
                 if previous[4]==key[4]:local.searches.pop(previous,None)
             return self._remember(key,reused)
-        same_lane=[previous for previous in local.searches if previous[4]==key[4]]
-        if key not in local.searches and same_lane:
-            # Finish the existing bounded job before accepting a changed goal.
-            # Random candidate ties must not discard half-built searches forever.
-            self._runtime_path(same_lane[0])
         if key not in local.searches:
-            start,goal,limit=key[:3]
+            start,goal,_=key[:3]
             if not self.free(start) or not self.free(goal):return ()
             direct=self.direct(start,goal)
             if direct:return self._remember(key,direct)
+            previous=next((old for old in local.searches if old[4]==key[4]),None)
+            # Only another expensive route waits for the current search. A
+            # straight combat approach can proceed without finishing that job.
+            if previous is not None:self._runtime_path(previous)
             local.searches[key]=Search(start,goal,heuristic_weight=4)
             while len(local.searches)>2:local.searches.popitem(last=False)
         search=local.searches[key];local.searches.move_to_end(key)

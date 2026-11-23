@@ -73,6 +73,7 @@ class Hunter:
         self.cancel_pending = False
         self.waypoint = 0
         self.moves = self.attacks = self.kills = 0
+        self.own_hit_deaths=0
         self.blacklist = {}
         self.last_position = self.home
         self.stuck = 0
@@ -270,8 +271,14 @@ class Hunter:
                 point=self.nav.nearest((round(center[0]+math.cos(angle)*radius),
                                         round(center[1]+math.sin(angle)*radius)),1)
                 if point and self.combat_allowed(point) and distance(point,center)<=reach-20:options.append(point)
-        for point in sorted(set(options),key=lambda pt:distance(self.position(now),pt)):
-            if self.nav.path(self.position(now),point):return point
+        origin=self.position(now)
+        options=sorted(set(options),key=lambda pt:distance(origin,pt))
+        line_clear=getattr(self.nav,'line_clear',None)
+        if line_clear:
+            direct=next((point for point in options if line_clear(origin,point)),None)
+            if direct:return direct
+        for point in options:
+            if self.nav.path(origin,point):return point
         return None
 
     def recover_path(self,now):
@@ -590,12 +597,24 @@ class Hunter:
         if self.starter_search_since is None:self.starter_search_since=self.clock
         return {103} if self.clock-self.starter_search_since<90 else set()
 
+    def travel_farm_preference(self,now):
+        travel=self.hunt_travel
+        if not travel or not travel.preferred_model or travel.plan or now>=travel.site_until:
+            return None
+        arrival=getattr(travel,'site_arrival',None)
+        if arrival:
+            name,arrived=arrival
+            progress=self.learning.last_progress_at
+            if name!=self.world.map or now-max(arrived,progress or arrived)>=90:
+                return None
+        return travel.preferred_model
+
     def planned_models(self):
         if self.starter_models():return self.starter_models()
         if self.supply_funding_models:return set(self.supply_funding_models)
-        travel=self.hunt_travel
-        if travel and travel.preferred_model and not travel.plan and self.clock<travel.site_until and self.region:
-            if travel.preferred_model in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):return {travel.preferred_model}
+        preferred=self.travel_farm_preference(self.clock)
+        if preferred and self.region and preferred in self.learning.admissible(self.local_hunting_region(),self.world.own,self.clock):
+            return {preferred}
         if self.raising_travel_funds and self.economy:
             funding=(self.economy.weak_funding_models(self.world,self.local_hunting_region(),self.learning,self.clock)
                      if getattr(self.economy,'all_mobs_patchouli',False)
@@ -634,8 +653,7 @@ class Hunter:
                     and not self.supply_funding_models and not self.mandatory_work() and not self.starter_models()
                     and not self.quest_models() and not self.assist_target
                     and not (self.group_hunt and self.group_hunt.active())
-                    and not (self.hunt_travel and self.hunt_travel.preferred_model
-                             and not self.hunt_travel.plan and now<self.hunt_travel.site_until))
+                    and not self.travel_farm_preference(now))
 
     def reachable_camp_goals(self,raw_goals,now):
         component=self.nav.land_component(self.position(now)) if hasattr(self.nav,'land_component') else None
@@ -687,7 +705,7 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
-        essential_combat=False
+        essential_combat=False;travel_work=False
         if key=='town' and feature and hasattr(feature,'critical_items'):
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
@@ -697,14 +715,17 @@ class Hunter:
             # another city and the current-map offers contain no such weapon.
             if hasattr(feature,'combat_supply_required') and feature.combat_supply_required() is True:essential_combat=True
             trip=getattr(feature,'hunt_travel',None)
-            if trip and trip.purchase_goals():essential_combat=True
+            travel_work=bool(trip and trip.purchase_goals())
         ready_stall=bool(key=='market' and feature and getattr(feature,'broad_goods',False) and feature.next_shift is not None and now>=feature.next_shift
                          and (not getattr(feature,"progression_first",False) or feature.shift_allowed(self,now))
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
         if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
         if key=='town' and self.petcare and self.petcare.affordable_care():essential_combat=True
         if key=='repair' and feature and feature.candidates():essential_combat=True
-        if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
+        if (key in ('town','market','story') and not essential_combat and not ready_stall and not self.mandatory_work()
+                and self.local_combat_ready(now)):
+            return False
+        if self.activity.hunting(self.clock) and key!='vendor' and not essential_combat and not travel_work and not ready_stall and not (key in ('adventure','career') and self.mandatory_work()) and not (business and key in ('market','town','story')):return False
         if (key=='vendor' and self.activity.hunting(now) and self.world.bag_ready
                 and (self.world.bag_capacity or 0)-len(self.world.bag)>2
                 and not self.raising_travel_funds and not self.supply_funding_goal and not (getattr(feature,'sell_patchouli',False) and any(i.identity==1000 for i in self.world.bag.values())) and feature
@@ -726,8 +747,7 @@ class Hunter:
                 and not any(spent_basic(self.world,i) for i in self.world.bag.values())):
             return False  # Finish required farming instead of leaving camp for a small sale.
         optional=key in ('vendor','market','town','story','repair')
-        nearby=optional and any(self.eligible(e,now) and distance(self.position(now),self.world.position(now,e.identity))<=2000
-                                for e in self.world.entities.values())
+        nearby=optional and self.local_combat_ready(now)
         scope=self.nav.background_work(nearby or self.search_goal is not None) if optional and hasattr(self.nav,'background_work') else nullcontext()
         try:
             with scope:used=callback()
@@ -776,18 +796,52 @@ class Hunter:
             return set()
         own=self.world.own
         level=own.values.get(LV,1)
+        last=self.learning.last_progress_at
+        stalled=last is not None and now-last>=180
+        floor=max(1,level-(14 if stalled else 9))
         max_hp=own.values.get(MAX_HP,1)
         choices=set()
         for candidate in self.world.entities.values():
             if (candidate.control!=5 or not candidate.alive
-                    or not max(1,level-9)<=candidate.values.get(LV,0)<=level
+                    or not floor<=candidate.values.get(LV,0)<=level
                     or distance(origin,candidate.position)>2500):
                 continue
             record=self.mob_knowledge.get(candidate.model)
-            if (record and record['territory']==0 and record['hp']<=max_hp*self.learning.profile[3]
+            if (record and record['territory']==0 and record.get('base_xp',0)>0
+                    and record['hp']<=max_hp*self.learning.profile[3]
                     and not self.learning.blocked(candidate.model,now)):
                 choices.add(candidate.identity)
         return choices
+
+    def local_combat_ready(self,now):
+        if not self.camp_scouting or not self.world.own or not self.region:
+            return False
+        cached=getattr(self,'local_combat_cache',None)
+        if cached and cached[0]==now:
+            return cached[1]
+        spell=self.combat_skills.select(now,ignore_cooldown=True) if self.combat_skills else None
+        caster=self.combat_skills and self.world.own.values.get(4) in (4,5,13,14,16)
+        if not spell and (self.world.default_skill not in NORMAL_ATTACKS
+                          or (caster and not self.supply_funding_models)):
+            self.local_combat_cache=now,False
+            return False
+        origin=self.position(now)
+        models=self.planned_models()
+        opportunities=self.visible_ground_opportunities(now,origin)
+        found=False
+        for entity in self.world.entities.values():
+            if entity.control!=5 or not entity.alive or distance(origin,entity.position)>1500:
+                continue
+            if not self.eligible(entity,now,{entity.model} if entity.identity in opportunities else models):
+                continue
+            point=self.world.position(now,entity.identity)
+            reach=self.combat_skills.reach(spell,entity) if spell else self.attack_reach(entity)
+            if (distance(origin,point)<=reach and self.combat_allowed(origin)
+                    or getattr(self.nav,'line_clear',lambda *a:False)(origin,point)):
+                found=True
+                break
+        self.local_combat_cache=now,found
+        return found
 
     def target_explanation(self):
         target=self.world.entities.get(self.target)
@@ -803,6 +857,9 @@ class Hunter:
                 'learning':self.learning.candidate_details.get(target.model)}
 
     def eligible(self, entity, now, models=None):
+        if (entity.control!=5 or not entity.alive or not entity.handle
+                or (self.assist_target and entity.identity!=self.assist_target)):
+            return False
         own = self.world.own
         if self.mob_knowledge:
             record=self.mob_knowledge.get(entity.model)
@@ -815,9 +872,8 @@ class Hunter:
             models=self.starter_models();maximum_level=3
         elif self.region:
             maximum_level=max([maximum_level]+[self.region['farms'][str(m)]['level'] for m in models if str(m) in self.region['farms']])
-        valid=(entity.control == 5 and (not self.assist_target or entity.identity==self.assist_target) and entity.model in models and entity.alive
-                and 0 < entity.values.get(LV, 9999) <= maximum_level
-                and entity.handle != 0 and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
+        valid=(entity.model in models and 0 < entity.values.get(LV, 9999) <= maximum_level
+                and distance(entity.position, self.home) <= (600000 if self.region else 45000 if self.adventure else 22000)
                 and self.blacklist.get(entity.identity, 0) < now and not self.learning.dangerous(entity.model,now))
         if not valid:return False
         point=self.world.position(now,entity.identity) or entity.position
@@ -852,6 +908,7 @@ class Hunter:
         # NPC visit after objective review switches from farming to verification.
         self.quest_combat_ready=False
         own = self.world.own
+        if own:self.learning.record_progress(own,now)
         self.progress_monitor.tick(now,self)
         if own and (own.values.get(HP,1)<=0 or own.state>=5):
             if self.shortcut and self.shortcut.busy:self.shortcut.abort(now,'персонаж погиб')
@@ -879,12 +936,16 @@ class Hunter:
         self.death_attempts=0
         if self.last_target_at is None:self.last_target_at=now
         self.learning.observe(self.world,now)
-        previous_target=self.world.entities.get(self.target)
-        credited=self.world.own_hits.get(self.target) if self.target else None
-        if (previous_target and not previous_target.alive) or (not previous_target and credited and credited[1]):
-            if not previous_target or previous_target.values.get(HP,1)<=0:self.kills+=1
-            self.drop_target()
-            self.next_action=min(now,self.next_action)
+        if self.target:
+            previous_target=self.world.entities.get(self.target)
+            if not previous_target or not previous_target.alive:
+                hit=self.world.own_hits.get(self.target)
+                credited=bool(hit and hit[1] and hit[0]>=self.target_since)
+                if credited:self.own_hit_deaths+=1
+                if credited or (previous_target and previous_target.values.get(HP,1)<=0):
+                    self.kills+=1
+                self.drop_target()
+                self.next_action=min(now,self.next_action)
         if self.town and (self.town.context or self.town.pending):
             # Finish an already-open merchant exchange before optional task
             # gates, which can reject shopping as soon as its goal is fulfilled.
@@ -958,13 +1019,6 @@ class Hunter:
             return
         if self.learning.waiting_reward(now):
             self.change('проверяет опыт после боя');self.next_action=now+.15;return
-        # Clear a finished fight before computing `safe` for NPC travel. Doing
-        # this after errands caused a dead target to deny every trip, followed
-        # immediately by another ordinary fight in the same decision.
-        previous_target = self.world.entities.get(self.target)
-        if self.target and (not previous_target or not previous_target.alive):
-            if previous_target and previous_target.values.get(HP,1)<=0:self.kills+=1
-            self.drop_target()
         if self.adventure and self.adventure.prepare_priority():
             self.task_budget.paused.pop('adventure',None)
             self.task_budget.rows.pop('adventure',None)
@@ -982,7 +1036,7 @@ class Hunter:
             if self.xp_boosters.tick(now,self,False):self.change(self.xp_boosters.reason);self.next_action=now+.2;return
         if self.hunt_travel and self.hunt_travel.busy:
             if self.hunt_travel.tick(now,self,False):self.change(self.hunt_travel.reason);self.next_action=now+.2;return
-        if (self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
+        if (hp/maximum>.55 and self.petcare and self.petcare.urgent_hunger() and not self.transaction_busy()
                 and self.petcare.tick(now,self,safe=True,dialogue_busy=any(getattr(f,'context',None) for f in (self.town,self.vendor,self.travel,self.career,self.story) if f))):
             self.change(self.petcare.reason);self.next_action=now+.2;return
 
@@ -1016,7 +1070,9 @@ class Hunter:
         if self.combat_skills and self.combat_skills.needs_mana(now):
             self.mana_resting=True;self.resting=True;self.drop_target();self.clear_zone()
         profession_trip = bool(self.adventure and self.adventure.profession_priority() and not self.adventure.farm())
-        if hp / maximum <= .35 or (profession_trip and not self.target and hp / maximum <= .55):
+        recent_loss=sum(amount for stamp,amount in self.world.own_recent_damage if 0<=now-stamp<=3)
+        retreat_hp=max(maximum*.35,min(maximum*.60,recent_loss*1.5))
+        if hp <= retreat_hp or (profession_trip and not self.target and hp / maximum <= .55):
             if not self.resting:
                 self.cancel_pending = True
             self.resting = True
@@ -1240,9 +1296,7 @@ class Hunter:
             self.drop_target();self.change('готовит магию: '+(self.combat_skills.reason or 'нужен изученный боевой навык и подходящее снаряжение'))
             self.next_action=now+.5;return
         target = self.world.entities.get(self.target)
-        if (self.target and (not target or not target.alive
-                or (funding_attack and target.model not in self.supply_funding_models))):
-            if target and target.values.get(HP,1)<=0:self.kills+=1
+        if target and funding_attack and target.model not in self.supply_funding_models:
             self.drop_target()
             target=None
         if target:
@@ -1526,7 +1580,7 @@ class Hunter:
                 'shared_target':self.shared_target,'target_hp':self.last_target_hp,'seconds_since_target_damage':max(0,self.clock-self.last_damage_at) if self.target else None,'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
                 'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
-                'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'world': self.world.summary()}
+                'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'observed_deaths_with_own_hit':self.own_hit_deaths, 'world': self.world.summary()}
 
 
 def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', chat_budget=None, adventure_mode=False, role_store=None, fleet=None, bot_index=0, tactic='quests'):
@@ -1543,6 +1597,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     report.result['world_decode'] = world.decode_info
     nav=navigation.nav(world.map) if hasattr(navigation,'nav') else navigation
     policy = Hunter(world, nav, client.wire.send, report, tell, bot_name)
+    policy.learning.record_progress(world.own, time.monotonic())
     if bot_index:policy.learning.load(Path(__file__).resolve().parents[1]/'data'/f'hunt-learning-{bot_index:03d}.json')
     policy.tactic=tactic
     from coordination import TacticSchedule
