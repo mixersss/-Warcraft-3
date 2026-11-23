@@ -16,7 +16,6 @@ from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 from coral_supplies import spent_basic
 from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, xp_level_divisor
 
-ARGENT_WEST_EXITS=((214450,274650),(214450,276350))
 MINE_ENTRIES=((22967,2878),(38675,12625),(11623,3330))
 
 def distance(a, b):
@@ -128,6 +127,7 @@ class Hunter:
         self.search_recovery=False
         self.search_started=0
         self.search_deadline=0
+        self.next_camp_route_check=0;self.camp_route_switches=0
         self.camp_arrival_until=0
         self.goal_blacklist={}
         self.tactic='quests'
@@ -743,21 +743,29 @@ class Hunter:
         return [p for p in goals if p and self.goal_blacklist.get(p,0)<=now
                 and (not component or self.nav.land_component(p)==component)]
 
-    def camp_route_waypoint(self,goal,now):
-        if not self.fast_progression or self.world.map!='garner' or goal[0]>200000:return goal
-        origin=self.position(now)
-        if origin[0]<=214750 or distance(origin,(223200,274500))>15000:return goal
-        component=self.nav.land_component(origin)
-        exits=[point for point in ARGENT_WEST_EXITS if component
-               and self.nav.land_component(point)==component and self.nav.nearest(point,0)==point]
-        if self.move_goal in exits:return self.move_goal
-        return min(exits,key=lambda p:distance(origin,p),default=goal)
-
-    def move_to_camp(self,goal,now):
-        waypoint=self.camp_route_waypoint(goal,now)
-        if waypoint==goal:return self.move_to(goal,now)
-        if self.shortcut and self.shortcut.consider(goal,now,self):return True
-        return self.move_to(waypoint,now,use_portals=False) or self.move_to(goal,now,use_portals=False)
+    def move_to_camp(self,goal,goals,now,origin):
+        try:
+            return self.move_to(goal,now)
+        except RoutePending:
+            ready=getattr(self.nav,'camp_route_ready',None)
+            if (not self.fast_progression or not ready or now-self.search_started<25
+                    or now<self.next_camp_route_check):
+                raise
+            self.next_camp_route_check=now+8
+            alternatives=[point for point in goals if point!=goal][:8]
+            for point in alternatives:
+                if not ready(origin,point):continue
+                self.nav.cancel_pending(goal)
+                self.goal_blacklist[goal]=now+45
+                if self.coordination:
+                    self.coordination.choose_zone(self.owner,self.world.map,[point],now,origin)
+                self.search_goal=point;self.search_started=now
+                speed=max(100,self.world.own.values.get(44,480))
+                self.search_deadline=now+max(45,min(900,distance(origin,point)/speed*1.8+20))
+                self.camp_route_switches+=1
+                self.change('идёт к другому подходящему лагерю по готовому пути')
+                return self.move_to(point,now,use_portals=False)
+            raise
 
     def clear_mine_camp(self):
         if self.mine_goal and self.coordination:self.coordination.leave_zone(self.owner,mine=True)
@@ -1884,7 +1892,7 @@ class Hunter:
             self.search_deadline=now+max(45,min(900,distance(self.position(now),goal)/speed*1.8+20))
         arrived=distance(origin,goal)<300
         if arrived or now>=self.search_deadline:
-            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(self.camp_route_waypoint(goal,now))
+            if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(goal)
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             arrival_window=self.camp_arrival_until
@@ -1892,8 +1900,8 @@ class Hunter:
             if arrived and self.region:self.camp_arrival_until=arrival_window or now+45
             self.waypoint+=1
             self.next_action=now+.5
-        elif not self.move_to_camp(goal,now):
-            self.goal_blacklist[goal]=now+45
+        elif not self.move_to_camp(goal,goals,now,origin):
+            self.goal_blacklist[self.search_goal or goal]=now+45
             self.clear_zone()
             self.next_action=now+1
 
@@ -1911,8 +1919,7 @@ class Hunter:
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
         paused=self.paused_camp
-        return {'sites':sites,'current_goal_cm':self.search_goal,
-                'route_waypoint_cm':self.camp_route_waypoint(self.search_goal,self.clock) if self.search_goal else None,
+        return {'sites':sites,'current_goal_cm':self.search_goal,'switches_to_ready_route':self.camp_route_switches,
                 'mine_sector_cm':self.mine_goal,'mine_sector_arrived':self.mine_arrived is not None,
                 'paused_camp':{'map':paused[0],'goal_cm':paused[1]} if paused and paused[2]>self.clock else None,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
                 'hunt_before_errands':self.hunt_before_errands(self.clock),

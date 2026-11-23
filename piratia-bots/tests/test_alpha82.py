@@ -31,21 +31,18 @@ class FleetRoutingTests(unittest.TestCase):
         policy.region=self.regions.get(world.map)
         return world,policy
 
-    def test_westbound_argent_bot_walks_to_exit_and_keeps_long_term_goal(self):
+    def test_westbound_argent_bot_routes_to_its_own_camp(self):
         world,policy=test_alpha76.Combat76Tests().policy()
         world.own.x,world.own.y=223250,273139
         policy.nav=self.regions.nav('garner')
         far=(188350,274550)
-        policy.shortcut=SimpleNamespace(consider=Mock(return_value=False))
+        policy.region={'farms':{'243':{'points':[far],'level':38,'hp':600}}}
+        world.own.values.update({0:43,4:8,1:2773,31:2773})
+        policy.planned_models=Mock(return_value={243})
         policy.move_to=Mock(return_value=True)
-        self.assertTrue(policy.move_to_camp(far,100))
-        policy.shortcut.consider.assert_called_once_with(far,100,policy)
-        (exit_point,_),kw=policy.move_to.call_args
-        self.assertFalse(kw['use_portals'])
-        self.assertLess(math.dist(world.own.position,exit_point),12000)
-        self.assertTrue(policy.nav.path(world.own.position,exit_point))
-        world.own.x,world.own.y=exit_point
-        self.assertEqual(policy.camp_route_waypoint(far,120),far)
+        policy.tick(100)
+        self.assertEqual(policy.search_goal,far)
+        policy.move_to.assert_called_once_with(far,100)
 
     def test_mine_chooses_distinct_dry_sectors_and_keeps_lease_in_combat(self):
         shared=Coordination(400)

@@ -1,12 +1,12 @@
-"""Package Alpha82 bots with the revision 60 server verification tools."""
+"""Package Alpha83 bots with the revision 60 server verification tools."""
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-82';NAME='Piratia-Alpha82-Complete'
+OUT=REPO/'releases/piratia/complete-83';NAME='Piratia-Alpha83-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-82/Piratia-Auto-Bots-Alpha82.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-83/Piratia-Auto-Bots-Alpha83.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -18,7 +18,7 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA82.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA83.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
@@ -59,6 +59,7 @@ def main():
  manifest.update(cumulative_bots='Alpha80 includes Alpha79 and previous releases',bot_checks=1036,alpha80={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha81 includes Alpha80 and previous releases',bot_checks=1039,alpha81={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha82 includes Alpha81 and previous releases',bot_checks=1043,alpha82={'server_patch_changed':False,'live_windows_verified':False})
- (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA82.md').read_bytes())
+ manifest.update(cumulative_bots='Alpha83 includes Alpha82 and previous releases',bot_checks=1047,alpha83={'server_patch_changed':False,'live_windows_verified':False})
+ (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA83.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()

@@ -339,6 +339,19 @@ class Navigation:
         return next(((key,len(search.closed)) for key,search in getattr(local,'searches',{}).items()
                      if key[1]==cell and key[4]=='foreground'),None)
 
+    def camp_route_ready(self,start,goal):
+        """Check already calculated paths without starting another A* job."""
+        if not getattr(self,'incremental',False):return False
+        blocked=tuple(sorted(getattr(self.local,'blocked_cells',())))
+        key=(self.cell(start),self.cell(goal),25000,blocked,'foreground')
+        with self.cache_lock:
+            result=self.completed.get(key[:4])
+        if result is not None:return len(result)>1
+        route=self._reuse_corridor(key)
+        if not route:return False
+        self._remember(key,route)
+        return True
+
     def planning_stats(self):
         if not getattr(self,'incremental',False):return {}
         l=self.local
@@ -362,6 +375,15 @@ class Navigation:
                 if not self.free((cell[0],previous[1])) or not self.free((previous[0],cell[1])):return ()
             route.append(self.position(cell));previous=cell
         return tuple(route)
+
+    def _new_search(self,start,goal):
+        x,y=self.position(start)
+        westbound_argent=(getattr(self,'map',None)=='garner' and 208000<=x<=237000 and 260000<=y<=288000
+                          and start[0]-goal[0]>=180)
+        # Checked dry grid edges are symmetric. Searching from the west
+        # reaches the narrow Argent approaches without exhausting the budget.
+        a,b=(goal,start) if westbound_argent else (start,goal)
+        return Search(a,b,heuristic_weight=4)
 
     def _runtime_path(self,key):
         route_key=key[:4]
@@ -388,7 +410,7 @@ class Navigation:
             # Only another expensive route waits for the current search. A
             # straight combat approach can proceed without finishing that job.
             if previous is not None:self._runtime_path(previous)
-            local.searches[key]=local.searches.pop(other,None) or Search(start,goal,heuristic_weight=4)
+            local.searches[key]=local.searches.pop(other,None) or self._new_search(start,goal)
             while len(local.searches)>2:local.searches.popitem(last=False)
         search=local.searches[key];local.searches.move_to_end(key)
         def spend():
@@ -399,28 +421,39 @@ class Navigation:
                 local.yields+=1;raise RoutePending()
             local.remaining-=1;local.expansions+=1;local.turn_expanded+=1
         result=search.advance(self,key[2],spend)
+        if search.goal==key[0]:result=result[::-1]
         local.finished+=1;local.searches.pop(key,None)
         return self._remember(key,result)
 
     def _reuse_corridor(self,key):
-        """Join a checked route to the same destination; no unchecked shortcuts."""
+        """Join a checked long route and check any final leg to a nearby goal."""
         goal_key=(key[1],key[3])
-        with self.cache_lock:routes=tuple(self.corridors.get(goal_key,()))
-        if not routes or not self.free(key[0]) or not self.free(key[1]):return ()
+        with self.cache_lock:
+            routes=tuple(self.corridors.get(goal_key,()))
+            cached=tuple((entry,paths[-1]) for entry,paths in self.corridors.items()) if not routes and math.dist(key[0],key[1])>=50 else ()
+        if not self.free(key[0]) or not self.free(key[1]):return ()
+        choices=[(route,()) for route in routes]
+        nearby=[(cell,route) for (cell,obstacles),route in cached
+                if obstacles==key[3] and math.dist(cell,key[1])<=16]
+        for cell,route in sorted(nearby,key=lambda row:math.dist(row[0],key[1]))[:4]:
+            tail=self.direct(cell,key[1])
+            if tail:choices.append((route,tail[1:]))
+        if not choices:return ()
         start=self.position(key[0]);candidates={}
-        for route in routes:
+        for route,tail in choices:
             for index in range(0,len(route),4):
                 point=route[index];dist=math.dist(start,point)
                 if dist>1600:continue
+                remaining=len(route)-index+len(tail)
                 old=candidates.get(point)
-                if old is None or len(route)-index<len(old[2])-old[1]:candidates[point]=(dist,index,route)
-        for _,index,route in sorted(candidates.values(),key=lambda row:row[0])[:16]:
+                if old is None or remaining<old[1]:candidates[point]=(dist,remaining,index,route,tail)
+        for _,_,index,route,tail in sorted(candidates.values(),key=lambda row:row[0])[:16]:
             prefix=self.direct(key[0],self.cell(route[index]))
             if prefix:
                 # Joining a corridor may cross its later suffix. Erase the
                 # resulting loop, retaining only already checked grid edges.
                 result=[];seen={}
-                for point in prefix+route[index+1:]:
+                for point in prefix+route[index+1:]+tail:
                     if point in seen:
                         cut=seen[point]
                         for old in result[cut+1:]:seen.pop(old,None)
@@ -445,4 +478,8 @@ class Navigation:
     @lru_cache(maxsize=256)
     def _path(self,start_cell,goal,limit,blocked=(),lane='foreground'):
         if not self.free(start_cell) or not self.free(goal):return ()
-        return self.direct(start_cell,goal) or Search(start_cell,goal,heuristic_weight=4).advance(self,limit,lambda:None)
+        direct=self.direct(start_cell,goal)
+        if direct:return direct
+        search=self._new_search(start_cell,goal)
+        result=search.advance(self,limit,lambda:None)
+        return result[::-1] if search.goal==start_cell else result
