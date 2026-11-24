@@ -1,4 +1,4 @@
-"""Remove Alpha90's additional gem roll and verify stock client gem records."""
+"""Enable the additional roll for genuine gems and verify client gem records."""
 import hashlib
 import json
 import re
@@ -16,7 +16,8 @@ ROLL = re.compile(
 VANILLA = b"    -- OWNER_NATIVE_GEM_DROPS"
 
 
-def restore_script(raw):
+def enable_script(raw):
+    """Normalize old rolls and enable exactly one, in the active handler."""
     nl = b"\r\n" if b"\r\n" in raw else b"\n"
     known = len(re.findall(rb"(?m)^function Owner56GroundGem\(", raw))
     if not known or known>2 or b"function Owner57GroundDrop(" not in raw:
@@ -28,8 +29,15 @@ def restore_script(raw):
         b"    for _,id in ipairs(Owner56GemIDs) do allowed[id]=true end",
         b"for _,id in ipairs(ground_stones) do replaced[id]=true end",
     }
-    return b"".join(line for line in raw.splitlines(keepends=True)
-                    if line.rstrip(b"\r\n") not in lines)
+    raw = b"".join(line for line in raw.splitlines(keepends=True)
+                   if line.rstrip(b"\r\n") not in lines)
+    before, after = raw.rsplit(VANILLA, 1)
+    native_roll = nl.join((
+        b"    if math.random(1,100)>3 then return end",
+        b"    Owner56GemStats.rolls=Owner56GemStats.rolls+1",
+        b"    Owner57GroundDrop(dead,Owner56GemIDs[math.random(1,8)],1)",
+    ))
+    return before + native_roll + after
 
 
 def native_text(raw):
@@ -93,7 +101,7 @@ def plan(resource, client):
     text=resource/"ItemInfo.txt"
     binary=resource/"ItemInfo.bin"
     old={p:p.read_bytes() for p in (script,text,binary,client)}
-    updated={script:restore_script(old[script]),text:native_text(old[text]),
+    updated={script:enable_script(old[script]),text:native_text(old[text]),
              binary:native_binary(old[binary]),client:native_binary(old[client])}
     # On older installations update the existing personal forge in place so
     # old acquired stacks can be exchanged without touching NPC placement.

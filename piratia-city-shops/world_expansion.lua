@@ -88,7 +88,9 @@ function Owner56GroundGem(dead, attacker)
     if trophy and not (masks[model] and masks[model].trophy) then
         Owner57GroundDrop(dead,trophy,99)
     end
-    -- OWNER_NATIVE_GEM_DROPS
+    if math.random(1,100)>3 then return end
+    Owner56GemStats.rolls=Owner56GemStats.rolls+1
+    Owner57GroundDrop(dead,Owner56GemIDs[math.random(1,8)],1)
 end
 
 -- Ordinary drops use indices into the compact positive ID/rate list.

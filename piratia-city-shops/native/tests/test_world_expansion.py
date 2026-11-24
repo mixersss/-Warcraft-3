@@ -170,7 +170,7 @@ class ExpansionTests(unittest.TestCase):
                 path.write_bytes(new)
             self.assertEqual(spawn_density.restore_plan(server),({},0,skipped))
 
-    def test_restore_old_drop_roll_with_original_client_tooltips(self):
+    def test_replace_old_drop_roll_with_original_gems_and_client_tooltips(self):
         with tempfile.TemporaryDirectory() as directory:
             server, game = test_native.fixture(Path(directory))
             test_native.isolated_install(server,game,True)
@@ -206,7 +206,8 @@ end
             self.assertNotIn(b"5608+math.random",changes[script])
             self.assertNotIn(b"allowed[id]=true",changes[script])
             self.assertEqual(changes[script].count(b"Owner57GroundDrop(dead,1000,99)"),2)
-            self.assertEqual(changes[script].count(native_gems.VANILLA),2)
+            self.assertEqual(changes[script].count(native_gems.VANILLA),1)
+            self.assertEqual(changes[script].count(b"Owner57GroundDrop(dead,Owner56GemIDs[math.random(1,8)],1)"),1)
             for file,data in changes.items():
                 file.write_bytes(data)
             self.assertEqual(native_gems.plan(server,client),{})
@@ -259,11 +260,15 @@ assert(more[1][3].item[1]==4019 and more[3][3].item[1]==1067 and more[1][3].item
 assert(more[1][3].count==36 and more[2][3].count==2 and more[5][3].count==23)
 assert(OwnerNativeShops['equipment'].pages[pages_before+1][1].count==14)
 local drops={}
+local native_gems=0
 ATTR_HP=1; ATTR_LV=2
 function IsPlayer(e) return e.player end
 function GetChaAttr(e, attr) if attr==ATTR_HP then return 0 else return e.level end end
 function GetChaTypeID(e) return 42 end
-function Owner57GroundDrop(e,id,stack) drops[id]=stack end
+function Owner57GroundDrop(e,id,stack)
+    drops[id]=stack
+    if id==860 then native_gems=native_gems+1 end
+end
 Owner56MonsterModels={[42]=true}
 expected=true
 Check_Baoliao({player=1},{player=0,level=50},101,102,103,104,105,106,107,108,109,100)
@@ -272,9 +277,15 @@ expected=false
 Check_Baoliao({player=1},{player=0,level=50},101,102)
 Check_Baoliao({player=1},{player=1,level=50},101,102,103,104,105,106,107,108,109)
 assert(Owner56FallFilter==nil)
-math.random=function(a,b) return 1 end
-Owner56GroundGem({player=0,level=50},{player=1})
-assert(drops[1000]==99 and not drops[860] and not drops[5609] and not drops[5622])
+local roll=0
+math.random=function(a,b)
+    if b==100 then roll=roll+1; return roll end
+    assert(a==1 and b==8)
+    return 1
+end
+for kill=1,100 do Owner56GroundGem({player=0,level=50},{player=1}) end
+assert(roll==100 and native_gems==3)
+assert(drops[1000]==99 and drops[860]==1 and not drops[5609] and not drops[5622])
 GetChaTypeID=function() return 43 end
 Owner56MonsterModels[43]=true
 Owner56GroundGem({player=0,level=60},{player=1})
