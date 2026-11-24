@@ -19,9 +19,9 @@ class ExpansionTests(unittest.TestCase):
             test_native.isolated_install(server, client, True)
             client = test_native.native.locate_client(client)
             text, binary = server/"ItemInfo.txt", server/"ItemInfo.bin"
-            known = expansion.item_text(text.read_bytes())
             all_items = {**{i: 31 for i in expansion.SUPPLIES},
                          **{i: 1 for i in expansion.WEAPONS}, 1591: 41, 684: 31}
+            known = expansion.item_text(text.read_bytes(), all_items)
             for identity, kind in all_items.items():
                 if identity in known:
                     continue
@@ -38,6 +38,12 @@ class ExpansionTests(unittest.TestCase):
                 for table in (binary, client):
                     with table.open("ab") as f:
                         f.write(row)
+            duplicate_lines = b"".join(
+                b"3037\t" + label + b"\t0"*24 + b"\r\n"
+                for label in (b"Legacy entry", b"Alternate legacy entry")
+            )
+            with text.open("ab") as f:
+                f.write(duplicate_lines)
             original = expansion.table_bin(binary.read_bytes())
             receipt_path = server/forge.MARKER
             receipt = json.loads(receipt_path.read_text())
@@ -51,6 +57,7 @@ class ExpansionTests(unittest.TestCase):
             (script/"functions.lua").write_bytes(b"function GetNum_Part1() end\nfunction SetNum_Part1() end")
             changes = expansion.plan(server, client)
             self.assertIn(client, changes)
+            self.assertIn(duplicate_lines, changes[text])
             for path, content in changes.items():
                 path.write_bytes(content)
             self.assertEqual(expansion.plan(server, client), {})
@@ -63,6 +70,11 @@ class ExpansionTests(unittest.TestCase):
             for i, money in ((6414,5_000),(6415,6_000)):
                 self.assertEqual(struct.unpack_from("<i",rows[i],320)[0],2*money)
             self.assertTrue(json.loads(receipt_path.read_text())["world_expansion"])
+
+    def test_duplicate_used_as_a_template_is_rejected(self):
+        row = b"860\tGem" + b"\t0"*24 + b"\n"
+        with self.assertRaisesRegex(ValueError, r"ItemInfo.txt: 860"):
+            expansion.make_item_tables(row * 2, b"", b"", False)
 
     def test_density_rounds_per_model_and_ignores_non_mobs(self):
         def row(index, count):

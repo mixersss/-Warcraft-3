@@ -40,13 +40,17 @@ def table_bin(raw):
     return rows
 
 
-def item_text(raw):
+def item_text(raw, relevant_ids):
     rows = {}
     for line in raw.splitlines(keepends=True):
         fields = line.rstrip(b"\r\n").split(b"\t")
-        if len(fields) <= 24 or not fields[0].strip().isdigit():
+        if not fields[0].strip().isdigit():
             continue
         identity = int(fields[0])
+        if identity not in relevant_ids:
+            continue
+        if len(fields) <= 24:
+            raise ValueError(f"Неполная запись нужного предмета в ItemInfo.txt: {identity}")
         if identity in rows:
             raise ValueError(f"Повтор предмета в ItemInfo.txt: {identity}")
         rows[identity] = fields
@@ -54,16 +58,15 @@ def item_text(raw):
 
 
 def make_item_tables(text, server, client, installed):
-    rows = item_text(text)
-    binaries = [table_bin(server), table_bin(client)]
-    if any(i not in rows or any(i not in table for table in binaries) for i in (*GEMS.values(), *SUPPLIES, *WEAPONS, 684)):
-        raise ValueError("В этой версии таблиц отсутствуют предметы обновления.")
     aliases = {i: (source, 31, 0, b" (Lv1)") for i, source in GEMS.items()}
     aliases.update({i: (source, 41, 2*price, f" Trophy {price//100}".encode())
                     for i, (source, price) in TROPHIES.items()})
-    if any(source not in rows or any(source not in table for table in binaries)
-           for source, _, _, _ in aliases.values()):
-        raise ValueError("В таблицах отсутствует шаблон трофея.")
+    required = {source for source, _, _, _ in aliases.values()} | SUPPLIES.keys() | WEAPONS.keys() | {684}
+    rows = item_text(text, required | aliases.keys())
+    binaries = [table_bin(server), table_bin(client)]
+    for table in (rows, *binaries):
+        if missing := required - table.keys():
+            raise ValueError("В таблице отсутствуют предметы обновления: " + ", ".join(map(str, sorted(missing))))
     existing = [set(aliases) & table.keys() for table in (rows, *binaries)]
     expected = set(aliases) if installed else set()
     valid_client = existing[2] in (set(), expected)
@@ -90,7 +93,8 @@ def make_item_tables(text, server, client, installed):
                 if field == b"ItemUse_hexin":
                     row[i] = b"0"
             added.append(b"\t".join(row))
-        text = text.rstrip(b"\r\n") + nl + nl.join(added) + nl
+        separator = b"" if text.endswith((b"\r", b"\n")) else nl
+        text += separator + nl.join(added) + nl
 
     results = []
     for raw, table in zip((server, client), binaries):

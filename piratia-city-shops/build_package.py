@@ -2,7 +2,7 @@
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-90';NAME='Piratia-Alpha90-Complete'
+OUT=REPO/'releases/piratia/complete-90-fix1';NAME='Piratia-Alpha90-Complete-Fix1'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
@@ -63,7 +63,7 @@ def main():
  manifest.update(cumulative_bots='Alpha84 includes Alpha83 and previous releases',bot_checks=1053,alpha84={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha85 includes Alpha84 and previous releases',bot_checks=1057,alpha85={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha89 includes Alpha88 and previous releases',bot_checks=1070,alpha89={'server_patch_changed':False,'live_windows_verified':False})
- manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1072,native_patch_checks=60,alpha90={'world_expansion_installer':True,'live_windows_verified':False})
+ manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1072,native_patch_checks=61,alpha90={'world_expansion_installer':True,'installer_fix':1,'live_windows_verified':False})
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()
