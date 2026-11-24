@@ -66,8 +66,10 @@ class ExpansionTests(unittest.TestCase):
                 self.assertEqual(rows[identity], original[identity])
                 self.assertEqual(struct.unpack_from("<h",rows[alias],308)[0],31)
                 self.assertEqual(struct.unpack_from("<i",rows[alias],352)[0],99)
+                self.assertEqual(rows[alias][356],0)
+                self.assertIn(b"Rank 1",rows[alias][600:856])
             self.assertEqual(struct.unpack_from("<i",rows[684],320)[0],200_000)
-            for i, money in ((6414,5_000),(6415,6_000)):
+            for i, money in ((5622,5_000),(5623,6_000)):
                 self.assertEqual(struct.unpack_from("<i",rows[i],320)[0],2*money)
             self.assertTrue(json.loads(receipt_path.read_text())["world_expansion"])
 
@@ -93,9 +95,11 @@ class ExpansionTests(unittest.TestCase):
 table.getn=function(t) return #t end
 local native_shop=OwnerNativeShops['equipment']
 local pages_before=#native_shop.pages
+unpack=table.unpack
+function Owner56OriginalDropCheck() assert(Owner56FallFilter[2]) end
 """ + lua + """
 local more=OwnerNativeShops['forge-supply'].pages
-assert(more[1][3].item[1]==1847 and more[2][3].item[1]==4602)
+assert(more[1][3].item[1]==1847 and more[2][3].item[1]==4602 and more[1][3].itemtype==2)
 assert(OwnerNativeShops['equipment'].pages[pages_before+1][1].count==14)
 local drops={}
 ATTR_HP=1; ATTR_LV=2
@@ -104,9 +108,13 @@ function GetChaAttr(e, attr) if attr==ATTR_HP then return 0 else return e.level 
 function GetChaTypeID(e) return 42 end
 function Owner57GroundDrop(e,id,stack) drops[id]=stack end
 Owner56MonsterModels={[42]=true}
+Owner56GemSlots={[42]={[2]=true}}
+Owner56PendingLoot=nil
+Check_Baoliao({player=1},{player=0,level=50},100,200)
+assert(Owner56FallFilter==nil)
 math.random=function(a,b) return 1 end
 Owner56GroundGem({player=0,level=50},{player=1})
-assert(drops[1000]==99 and drops[6400]==99 and drops[6414]==99)
+assert(drops[1000]==99 and drops[5609]==99 and drops[5622]==99)
 Owner56GroundGem({player=0,level=60},{player=1})
-assert(drops[6415]==99)
+assert(drops[5623]==99)
 """)

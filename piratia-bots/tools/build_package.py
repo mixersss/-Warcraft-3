@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-90'
-NAME = 'Piratia-Auto-Bots-Alpha90'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-90-fix2'
+NAME = 'Piratia-Auto-Bots-Alpha90-Fix2'
 
 
 def main():

@@ -14,8 +14,19 @@ import install as city
 import personal_forge as forge
 
 ROOT = Path(__file__).resolve().parent
-GEMS = dict(zip(range(6400, 6408), (860, 861, 862, 863, 864, 865, 866, 1012)))
-TROPHIES = {6410+level-1: (1591, level*1000) for level in range(1, 31)}
+GEMS = dict(zip(range(5609, 5617), (860, 861, 862, 863, 864, 865, 866, 1012)))
+TROPHIES = {5618+level-1: (1591, level*1000) for level in range(1, 31)}
+LEGACY = dict(zip((*range(6400, 6408), *range(6410, 6440)), (*GEMS, *TROPHIES)))
+GEM_BONUSES = {
+    860: ("Rank 1: Agility +5.", "1-й уровень: ловкость +5."),
+    861: ("Rank 1: Accuracy stat +5.", "1-й уровень: меткость +5."),
+    862: ("Rank 1: Constitution +5.", "1-й уровень: здоровье (CON) +5."),
+    863: ("Rank 1: Strength +5.", "1-й уровень: сила +5."),
+    864: ("Rank 1: min/max attack +50.", "1-й уровень: мин./макс. атака +50."),
+    865: ("Rank 1: Physical resistance +3.", "1-й уровень: физическое сопротивление +3."),
+    866: ("Rank 1: Max HP +500.", "1-й уровень: максимум HP +500."),
+    1012: ("Rank 1: Spirit +5.", "1-й уровень: дух +5."),
+}
 SUPPLIES = {1847: 10, 1848: 55, 1849: 180, 3094: 10_000,
             **dict.fromkeys((*range(893, 898), *range(1854, 1860)), 180),
             **dict.fromkeys(range(4602, 4605), 500)}
@@ -57,75 +68,106 @@ def item_text(raw, relevant_ids):
     return rows
 
 
-def make_item_tables(text, server, client, installed):
+def make_item_tables(text, server, client, installed, *, retire_legacy=False):
     aliases = {i: (source, 31, 0, b" (Lv1)") for i, source in GEMS.items()}
     aliases.update({i: (source, 41, 2*price, f" Trophy {price//100}".encode())
                     for i, (source, price) in TROPHIES.items()})
     required = {source for source, _, _, _ in aliases.values()} | SUPPLIES.keys() | WEAPONS.keys() | {684}
-    rows = item_text(text, required | aliases.keys())
+    rows = item_text(text, required | aliases.keys() | LEGACY.keys())
     binaries = [table_bin(server), table_bin(client)]
     for table in (rows, *binaries):
         if missing := required - table.keys():
             raise ValueError("В таблице отсутствуют предметы обновления: " + ", ".join(map(str, sorted(missing))))
-    existing = [set(aliases) & table.keys() for table in (rows, *binaries)]
-    expected = set(aliases) if installed else set()
-    valid_client = existing[2] in (set(), expected)
-    if existing[:2] != [expected, expected] or not valid_client:
-        raise ValueError("Выбранные ID стопок заняты или таблицы обновлены частично.")
-    for identity, (_, kind, _, _) in aliases.items():
-        if installed:
-            if int(rows[identity][10]) != kind or int(rows[identity][20]) != 99:
-                raise ValueError(f"Неверная текстовая запись стопки {identity}.")
-            if any(struct.unpack_from("<h", t[identity], 308)[0] != kind
-                   or struct.unpack_from("<i", t[identity], 352)[0] != 99
-                   for t in binaries if identity in t):
-                raise ValueError(f"Неверная двоичная запись стопки {identity}.")
-    if not installed:
-        nl = b"\r\n" if b"\r\n" in text else b"\n"
-        added = []
-        for identity, (original, kind, price, suffix) in aliases.items():
-            row = rows[original].copy()
-            if identity in GEMS and (int(row[10]) != 49 or int(row[20]) != 1):
-                raise ValueError(f"Неверный исходный гем {original}.")
-            row[0], row[1], row[10], row[20], row[22] = (
-                str(identity).encode(), row[1]+suffix, str(kind).encode(), b"99", str(price).encode())
-            for i, field in enumerate(row):
-                if field == b"ItemUse_hexin":
-                    row[i] = b"0"
-            added.append(b"\t".join(row))
-        separator = b"" if text.endswith((b"\r", b"\n")) else nl
-        text += separator + nl.join(added) + nl
+        for ids in (set(aliases), set(LEGACY)):
+            existing = ids & table.keys()
+            if existing and (not installed or existing != ids):
+                raise ValueError("Выбранные ID заняты или таблицы обновлены частично.")
+    if (set(aliases) & rows.keys()) != (set(aliases) & binaries[0].keys()):
+        raise ValueError("Серверные таблицы расходятся по новым ID.")
+    if (set(LEGACY) & rows.keys()) != (set(LEGACY) & binaries[0].keys()):
+        raise ValueError("Серверные таблицы расходятся по прежним ID.")
+    for identity in GEMS.values():
+        if int(rows[identity][10]) != 49 or int(rows[identity][20]) != 1:
+            raise ValueError(f"Неверный исходный гем {identity}.")
+        if any(struct.unpack_from("<h", t[identity], 308)[0] != 49
+               or struct.unpack_from("<i", t[identity], 352)[0] != 1 for t in binaries):
+            raise ValueError(f"Неверная двоичная запись исходного гема {identity}.")
+    all_aliases = aliases | {old: aliases[new] for old, new in LEGACY.items()}
+    nl = b"\r\n" if b"\r\n" in text else b"\n"
+
+    def check_identity(identity, name, suffix):
+        if not name.endswith(suffix):
+            raise ValueError(f"Новый ID {identity} уже занят другим предметом.")
+
+    def text_row(identity, previous=None):
+        source, kind, price, suffix = all_aliases[identity]
+        row = rows[source].copy()
+        if previous is not None:
+            check_identity(identity, previous[1], suffix)
+        row[0], row[1], row[10], row[20], row[21], row[22] = (
+            str(identity).encode(), row[1]+suffix, str(kind).encode(), b"99", b"0", str(price).encode())
+        for i, field in enumerate(row):
+            if field == b"ItemUse_hexin":
+                row[i] = b"0"
+        if source in GEM_BONUSES and len(row) > 93:
+            row[93] = row[93]+b" "+GEM_BONUSES[source][0].encode("ascii")
+        return b"\t".join(row)
+
+    out_text = []
+    for line in text.splitlines(keepends=True):
+        fields = line.rstrip(b"\r\n").split(b"\t")
+        identity = int(fields[0]) if fields[0].strip().isdigit() else None
+        if identity in LEGACY and retire_legacy:
+            check_identity(identity, fields[1], all_aliases[identity][3])
+            continue
+        if identity in all_aliases:
+            line = text_row(identity, fields)+line[len(line.rstrip(b"\r\n")):]
+        out_text.append(line)
+    text = b"".join(out_text)
+    added = [text_row(identity) for identity in aliases if identity not in rows]
+    if added:
+        text += (b"" if text.endswith((b"\r", b"\n")) else nl) + nl.join(added) + nl
 
     results = []
-    for raw, table in zip((server, client), binaries):
-        out = bytearray(raw)
-        for identity, (original, kind, price, suffix) in aliases.items():
+    for table, localized in zip(binaries, (False, True)):
+        def binary_row(identity):
+            source, kind, price, suffix = all_aliases[identity]
+            record = bytearray(table[source])
             if identity in table:
-                continue
-            record = bytearray(table[original])
-            if identity in GEMS and (struct.unpack_from("<h", record, 308)[0] != 49
-                                    or struct.unpack_from("<i", record, 352)[0] != 1):
-                raise ValueError(f"Неверная двоичная запись исходного гема {original}.")
+                previous = table[identity][112:192].split(b"\0", 1)[0]
+                check_identity(identity, previous, suffix)
             for offset in (4, 108):
                 struct.pack_into("<I", record, offset, identity)
             name = record[112:192].split(b"\0", 1)[0]
             if len(name)+len(suffix) >= 80:
-                raise ValueError(f"Слишком длинное имя исходного гема {original}.")
+                raise ValueError(f"Слишком длинное имя исходного предмета {source}.")
             record[112:192] = (name+suffix).ljust(80, b"\0")
             struct.pack_into("<h", record, 308, kind)
             struct.pack_into("<i", record, 320, price)
             struct.pack_into("<i", record, 352, 99)
+            record[356] = 0
             hook = b"ItemUse_hexin"
             offset = record.find(hook)
             if offset >= 0:
                 record[offset:offset+len(hook)] = b"0".ljust(len(hook), b"\0")
-            out.extend(record)
-        results.append(bytes(out))
+            if source in GEM_BONUSES:
+                desc = record[600:856].split(b"\0", 1)[0]
+                bonus = GEM_BONUSES[source][int(localized)].encode("cp1251" if localized else "ascii")
+                desc = desc.rstrip(b"\0\xff") if len(desc)<256 else b""
+                record[600:856] = (desc[:240-len(bonus)]+b" "+bonus).strip().ljust(256,b"\0")
+            return bytes(record)
+        records = []
+        for identity, record in table.items():
+            if identity in LEGACY and retire_legacy:
+                check_identity(identity, record[112:192].split(b"\0", 1)[0], all_aliases[identity][3])
+                continue
+            records.append(binary_row(identity) if identity in all_aliases else record)
+        records.extend(binary_row(identity) for identity in aliases if identity not in table)
+        results.append(struct.pack("<I",868)+b"".join(records))
     from price_tables import patch_binary, patch_text
     prices = {identity: {"kind": int(rows[identity][10]), "price": price}
               for identity, price in (SUPPLIES | WEAPONS | {684: 200_000}).items()}
     return patch_text(text, prices), *(patch_binary(data, prices) for data in results)
-
 
 def add_vendor(text, binary):
     rows, records = city.validate_npcs(text, binary)
@@ -163,7 +205,7 @@ def add_vendor(text, binary):
     return text, binary
 
 
-def plan(resource, client, encoding="cp1251", bot_assets=None):
+def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=False):
     sys.path.insert(0, str(ROOT / "native"))
     before, after, _ = forge.plan(resource, encoding)
     script = after[forge.SCRIPT]
@@ -186,7 +228,7 @@ def plan(resource, client, encoding="cp1251", bot_assets=None):
     text, binary = Path("ItemInfo.txt"), Path("ItemInfo.bin")
     before[text], before[binary] = (resource/text).read_bytes(), (resource/binary).read_bytes()
     client_before = client.read_bytes()
-    after[text], after[binary], client_after = make_item_tables(before[text], before[binary], client_before, installed)
+    after[text], after[binary], client_after = make_item_tables(before[text], before[binary], client_before, installed, retire_legacy=retire_legacy)
     after[forge.TEXT], after[forge.BINARY] = add_vendor(after[forge.TEXT], after[forge.BINARY])
     if forge.MARKER in after:
         receipt = json.loads(after[forge.MARKER])
@@ -213,17 +255,20 @@ def main():
     parser.add_argument("--server")
     parser.add_argument("--client")
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--retire-legacy-ids", action="store_true")
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "native"))
     from installer import apply_files, locate_client
     try:
         resource = city.locate(args.server or input("Папка GameServer или resource: "))
         client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
-        changes = plan(resource, client, bot_assets=ROOT.parent / "assets")
+        changes = plan(resource, client, bot_assets=ROOT.parent / "assets", retire_legacy=args.retire_legacy_ids)
         from spawn_density import plan as plan_density
         spawn_changes, added, skipped = plan_density(resource)
         changes.update(spawn_changes)
         print(f"Файлов к обновлению: {len(changes)}. Дополнительных мобов в проверенных группах: {added}.")
+        if not args.retire_legacy_ids and set(LEGACY) & item_text((resource/"ItemInfo.txt").read_bytes(), LEGACY).keys():
+            print("Старые ID сохранены для уже добытых предметов. См. инструкцию по переносу.")
         if skipped:
             print("Группы с отдельным двоичным спавном: " + ", ".join(skipped))
         if args.apply and changes:

@@ -1,12 +1,19 @@
 -- WORLD_EXPANSION_BEGIN
-ForgeGroundStacks = {[6400]=860,[6401]=861,[6402]=862,[6403]=863,
-                     [6404]=864,[6405]=865,[6406]=866,[6407]=1012}
+local ground_stones = {860,861,862,863,864,865,866,1012}
+ForgeGroundStacks = {}
+ForgeLegacyItems = {}
+for offset=0,29 do ForgeLegacyItems[6410+offset]=5618+offset end
+for offset,id in ipairs(ground_stones) do
+    ForgeGroundStacks[5608+offset]=id
+    ForgeGroundStacks[6399+offset]=id
+    ForgeLegacyItems[6399+offset]=5608+offset
+end
 
 local function supply_page(weapons, armour, goods, key)
     return {tp=TRADE_NOMAL, berth=-1, owner_native_shop=key,
-            [1]={itemtype=1,count=table.getn(weapons),item=weapons,price={}},
-            [2]={itemtype=2,count=table.getn(armour),item=armour,price={}},
-            [3]={itemtype=3,count=table.getn(goods),item=goods,price={}},
+            [1]={itemtype=0,count=table.getn(weapons),item=weapons,price={}},
+            [2]={itemtype=1,count=table.getn(armour),item=armour,price={}},
+            [3]={itemtype=2,count=table.getn(goods),item=goods,price={}},
             [4]={itemtype=3,count=0,item={},price={}}}
 end
 
@@ -41,11 +48,11 @@ function Owner56GroundGem(dead, attacker)
     Owner57GroundDrop(dead,1000,99)
     local level = GetChaAttr(dead,ATTR_LV)
     if level >= 10 and level <= 309 then
-        Owner57GroundDrop(dead,6410+math.floor(level/10)-1,99)
+        Owner57GroundDrop(dead,5618+math.floor(level/10)-1,99)
     end
     if math.random(1,100)>3 then return end
     Owner56GemStats.rolls=Owner56GemStats.rolls+1
-    Owner57GroundDrop(dead,6399+math.random(1,8),99)
+    Owner57GroundDrop(dead,5608+math.random(1,8),99)
 end
 
 -- Remove only cosmetic junk explicitly audited for this item set.
@@ -69,5 +76,22 @@ if source then
         end
     end
     source:close()
+end
+
+-- The engine can call ordinary loot before the EXP callback. Scope the
+-- mask to the current monster directly, leaving mission and PvP loot separate.
+if type(Owner56OriginalDropCheck)=="function" then
+    function Check_Baoliao(attacker,defender,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+        local previous=Owner56FallFilter
+        local model=GetChaTypeID(defender)
+        Owner56FallFilter=nil
+        if IsPlayer(defender)==0 and Owner56MonsterModels and Owner56MonsterModels[model] then
+            Owner56FallFilter=Owner56GemSlots[model]
+        end
+        local args={a1,a2,a3,a4,a5,a6,a7,a8,a9,a10}
+        local status,message=pcall(Owner56OriginalDropCheck,attacker,defender,unpack(args))
+        Owner56FallFilter=previous
+        if not status then error(message) end
+    end
 end
 -- WORLD_EXPANSION_END

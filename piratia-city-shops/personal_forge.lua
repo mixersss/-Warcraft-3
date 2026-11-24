@@ -76,6 +76,50 @@ local function can_pay_raw(role, identity, count)
     return seen >= count and CheckBagItem(role, identity) == seen
 end
 
+local function migration_plan(role)
+    for slot=2,3 do
+        local item=GetChaItem(role,2,slot)
+        local old=identify(item)
+        local new=ForgeLegacyItems and ForgeLegacyItems[old]
+        if new then
+            local count=CheckBagItem(role,old)
+            if count<=0 or GetChaFreeBagGridNum(role)<math.ceil(count/99) then
+                return nil, "Освободи в рюкзаке место для переноса."
+            end
+            return {item=item, old=old, new=new, count=count, slot=slot},
+                "Перенос всех "..count.." шт. одного вида из старой таблицы. Количество и вид сохранятся."
+        end
+    end
+    return nil, "Положи старые стопки в ячейку 3 или 4."
+end
+
+local function migrate(role,npc,quote)
+    local plan,message=migration_plan(role)
+    if not plan or plan.old~=quote.old or plan.count~=quote.count
+            or plan.slot~=quote.slot or not unchanged(plan.item,quote.item) then
+        return notice(role,npc,message or "Стопки изменились. Проверь перенос заново.")
+    end
+    local initial=CheckBagItem(role,plan.new)
+    -- Space was verified above so GiveItem cannot spill onto the ground.
+    pcall(GiveItem,role,0,plan.new,plan.count,101)
+    local gained=CheckBagItem(role,plan.new)-initial
+    local removed=0
+    if gained==plan.count then
+        pcall(DelBagItem,role,plan.old,plan.count)
+        removed=plan.count-CheckBagItem(role,plan.old)
+    end
+    if gained>removed then pcall(DelBagItem,role,plan.new,gained-removed) end
+    sync(role)
+    if removed~=plan.count or CheckBagItem(role,plan.new)~=initial+removed then
+        if type(LG)=="function" then
+            pcall(LG,"OwnerPersonalForge","Legacy transfer stopped; item="..plan.old.." moved="..removed)
+        end
+        return notice(role,npc,"Перенос остановлен. Перенесено "..removed.." шт. Проверь рюкзак.")
+    end
+    SendMissionPage(role,npc,3,"Перенесено "..removed.." шт. в новые стопки.",{"Назад"},1,nil,0)
+    return LUA_TRUE
+end
+
 local function request(role, mode, material_slot)
     material_slot = material_slot or 1
     local target = GetChaItem(role, 2, 0)
@@ -206,7 +250,7 @@ local function handle_action(role, npc, action)
     if action == 5 then
         return notice(role, npc, "Для ковки до рангов 1-9, в гемах первого ранга: 1, 1, 2, 4, 8, 16, 32, 64, 128. Принеси один гем соответствующего ранга.")
     end
-    if action < 1 or (action > 4 and action ~= 6) then return LUA_FALSE end
+    if action < 1 or (action > 4 and action ~= 6 and action ~= 7) then return LUA_FALSE end
     local actor = GetCharID(role)
     if type(actor) ~= "number" or actor == 0 then
         return notice(role, npc, "Сервер не распознал персонажа. Открой кузницу заново.")
@@ -214,6 +258,14 @@ local function handle_action(role, npc, action)
     local now = os.time()
     for id, quote in pairs(pending) do
         if quote.expires < now then pending[id] = nil end
+    end
+    if action == 7 then
+        pending[actor]=nil
+        local plan,message=migration_plan(role)
+        if not plan then return notice(role,npc,message) end
+        pending[actor]={migration=true, old=plan.old, count=plan.count, slot=plan.slot,
+                        item=snapshot(plan.item), expires=now+60}
+        return notice(role,npc,message,true)
     end
     if action <= 3 or action == 6 then
         pending[actor] = nil
@@ -233,6 +285,7 @@ local function handle_action(role, npc, action)
         return notice(role, npc, "На сервере недоступны функции обновления рюкзака.")
     end
     if not quote then return notice(role, npc, "Сначала снова проверь операцию.") end
+    if quote.migration then return migrate(role,npc,quote) end
     local plan = request(role, quote.mode, quote.material_slot)
     if not plan or quote.count ~= plan.count or quote.raw ~= plan.raw
             or not unchanged(plan.target, quote.first)
@@ -286,6 +339,7 @@ function OwnForgePrivate()
     if ForgeGroundStacks then
         Text(1, "Ковка гемом из ячейки 3", OwnerPersonalForgeAction, 2)
         Text(1, "Ковка гемом из ячейки 4", OwnerPersonalForgeAction, 6)
+        Text(1, "Перенести старые стопки", OwnerPersonalForgeAction, 7)
     else
         Text(1, "Проверить ковку", OwnerPersonalForgeAction, 2)
     end

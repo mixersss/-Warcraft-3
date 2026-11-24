@@ -234,4 +234,21 @@ assert(action(c,nil,2)==1 and c.dialog.message:find("128",1,true))
 assert(action(c,nil,4)==1)
 assert(c.items[2]==nil and c.items[3].count==11)
 assert(GetNum_Part3(TansferNum(app.forge))==9)
+ForgeLegacyItems={[6400]=5609}
+GetChaFreeBagGridNum=function() return 2 end
+function GiveItem(role,bag,id,count,event)
+    if role.items[2] and role.items[2].id==id then role.items[2].count=role.items[2].count+count
+    else role.items[2]={id=id, count=count} end
+end
+c.items[3]={id=6400,kind=31,forge=0,attrs={},count=11}
+assert(action(c,nil,7)==1 and action(c,nil,4)==1)
+assert(c.items[2].id==5609 and c.items[2].count==11 and not c.items[3])
+local previous_debit=DelBagItem
+DelBagItem=function(role,id,count)
+    if id==6400 then return 0 end
+    return previous_debit(role,id,count)
+end
+c.items[3]={id=6400,kind=31,forge=0,attrs={},count=5}
+assert(action(c,nil,7)==1 and action(c,nil,4)==0)
+assert(c.items[2].count==11 and c.items[3].count==5)
 """)

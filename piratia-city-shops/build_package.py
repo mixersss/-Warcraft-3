@@ -2,11 +2,11 @@
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-90-fix1';NAME='Piratia-Alpha90-Complete-Fix1'
+OUT=REPO/'releases/piratia/complete-90-fix2';NAME='Piratia-Alpha90-Complete-Fix2'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-90/Piratia-Auto-Bots-Alpha90.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-90-fix2/Piratia-Auto-Bots-Alpha90-Fix2.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
@@ -15,7 +15,7 @@ def main():
    raw=source.read_bytes()
    if source.suffix=='.cmd':raw=raw.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n')
    files[NAME+'/server-shops/'+source.relative_to(ROOT).as_posix()]=raw
- for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices'),('INSTALL-WORLD-EXPANSION','Install-World-Expansion')]:
+ for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices'),('INSTALL-WORLD-EXPANSION','Install-World-Expansion'),('RETIRE-ALPHA90-LEGACY','Retire-World-Legacy-IDs')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
  files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes()
@@ -63,7 +63,7 @@ def main():
  manifest.update(cumulative_bots='Alpha84 includes Alpha83 and previous releases',bot_checks=1053,alpha84={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha85 includes Alpha84 and previous releases',bot_checks=1057,alpha85={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha89 includes Alpha88 and previous releases',bot_checks=1070,alpha89={'server_patch_changed':False,'live_windows_verified':False})
- manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1072,native_patch_checks=61,alpha90={'world_expansion_installer':True,'installer_fix':1,'live_windows_verified':False})
+ manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1072,native_patch_checks=61,alpha90={'world_expansion_installer':True,'installer_fix':2,'live_windows_verified':False})
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()
