@@ -57,10 +57,12 @@ class HuntingLevelTests(unittest.TestCase):
     def test_defence_and_essential_funding_allow_weak_mob(self):
         world,policy,wolf=self.scene()
         world.own_attackers[wolf.identity]=(wolf.handle,299)
+        world.own.values[1]=1000
         self.assertEqual(policy.weak_target_exception(wolf,300),'self_defence')
         self.assertIs(policy.nearby_attacker(300),wolf)
         self.assertFalse(policy.eligible(wolf,308,{wolf.model}))
         policy.supply_funding_models={wolf.model}
+        world.own.values[1]=1500
         self.assertTrue(policy.eligible(wolf,308,{wolf.model}))
         self.assertEqual(policy.weak_target_exception(wolf,308),'essential_supply_funding')
 
@@ -88,3 +90,38 @@ class HuntingLevelTests(unittest.TestCase):
         self.assertIsNone(policy.target)
         self.assertEqual(policy.attacks,1)
         policy.send.assert_called_with(7,b'')
+
+    def test_healthy_level45_prefers_xp_target_over_aggro_from_level20_smuggler(self):
+        world,policy,smuggler=self.scene()
+        world.own.values[0]=45
+        smuggler.model=94
+        smuggler.values[0]=20
+        world.own_attackers[smuggler.identity]=(smuggler.handle,299)
+        world.own_recent_damage.append((299,1))
+        xp_mob=dataclasses.replace(smuggler,identity=1001,handle=smuggler.handle+1,
+                                   model=271,values=dict(smuggler.values))
+        xp_mob.values[0]=42
+        world.entities[xp_mob.identity]=xp_mob
+        self.assertIsNone(policy.nearby_attacker(300))
+        policy.tick(300)
+        self.assertEqual(policy.last_attack_target,(xp_mob.identity,xp_mob.handle))
+        self.assertEqual(policy.last_monster_attack['model'],271)
+        self.assertEqual(policy.weak_attack_reasons,{})
+
+    def test_recent_substantial_damage_allows_weak_attacker_in_self_defence(self):
+        world,policy,wolf=self.scene()
+        world.own_attackers[wolf.identity]=(wolf.handle,299)
+        world.own_recent_damage.append((299,160))
+        self.assertIs(policy.nearby_attacker(300),wolf)
+        policy.tick(300)
+        self.assertEqual(policy.weak_attack_reasons,{'self_defence':1})
+
+    def test_funding_below_the_xp_floor_remains_allowed_and_is_reported(self):
+        world,policy,wolf=self.scene()
+        world.own_attackers[wolf.identity]=(wolf.handle,299)
+        policy.supply_funding_models={wolf.model}
+        self.assertIsNone(policy.nearby_attacker(300))
+        self.assertTrue(policy.eligible(wolf,300,{wolf.model}))
+        policy.send_action(normal_attack(world.own_id,policy.sequence,1,world.default_skill,
+                                         wolf.identity,wolf.handle,policy.position(300)))
+        self.assertEqual(policy.weak_attack_reasons,{'essential_supply_funding':1})

@@ -70,6 +70,7 @@ class Hunter:
         self.next_action = 0
         self.fast_progression=False
         self.immediate_defences=0
+        self.weak_attack_reasons={};self.last_monster_attack=None
         self.combat_wakes=0;self.next_combat_wake=0;self.goldie_exit_retry=0
         self.approach_attacks=0;self.approach_attack_tried=False
         self.mode = 'observe'
@@ -397,7 +398,17 @@ class Hunter:
             if self.combat_skills:self.combat_skills.sent(self.last_attack_skill,self.clock)
             if self.petcare and self.last_attack_skill==280:self.petcare.possession_sent(self.clock)
             target=self.world.entities.get(self.last_attack_target[0])
-            if target and target.control==5:self.learning.begin(self.world,target,self.clock)
+            if target and target.control==5:
+                self.learning.begin(self.world,target,self.clock)
+                floor=self.minimum_xp_mob_level(self.clock)
+                level=target.values.get(LV,0)
+                reason=self.weak_target_exception(target,self.clock) if 0<level<floor else None
+                self.last_monster_attack={'model':target.model,'level':level,
+                                          'character_level':self.world.own.values.get(LV,1),
+                                          'minimum_xp_mob_level':floor,'weak_target_exception':reason}
+                if 0<level<floor:
+                    key=reason or 'unclassified'
+                    self.weak_attack_reasons[key]=self.weak_attack_reasons.get(key,0)+1
         elif body[8]==1:
             if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending()
             self.move_packet=self.last_sent_sequence
@@ -1020,14 +1031,22 @@ class Hunter:
         self.xp_level_floor_cache=key,floor
         return floor
 
+    def weak_attacker_threatens(self,now):
+        own=self.world.own
+        maximum=own.values.get(MAX_HP,1)
+        if own.values.get(HP,0)<=maximum*.75:return True
+        loss=sum(amount for stamp,amount in self.world.own_recent_damage if 0<=now-stamp<=3)
+        return loss>=maximum*.10
+
     def weak_target_exception(self,entity,now):
         if self.assist_target==entity.identity:return 'requested_assist'
-        hit=self.world.own_attackers.get(entity.identity)
-        if self.fast_progression and hit and hit[0]==entity.handle and 0<=now-hit[1]<=8:
-            return 'self_defence'
         if entity.model in self.supply_funding_models:return 'essential_supply_funding'
         if entity.model in self.class_funding_models():return 'class_travel_funding'
         if entity.model in self.quest_models():return 'active_quest'
+        hit=self.world.own_attackers.get(entity.identity)
+        if (self.fast_progression and hit and hit[0]==entity.handle and 0<=now-hit[1]<=8
+                and self.weak_attacker_threatens(now)):
+            return 'self_defence'
         return None
 
     def hunting_level_allowed(self,entity,now):
@@ -1144,10 +1163,14 @@ class Hunter:
             return None
         origin=self.position(now)
         if not self.combat_allowed(origin):return None
+        if not self.world.own_attackers:return None
+        floor=self.minimum_xp_mob_level(now)
+        weak_threat=self.weak_attacker_threatens(now)
         for identity,(handle,stamp) in reversed(self.world.own_attackers.items()):
             if not 0<=now-stamp<=8:continue
             mob=self.world.entities.get(identity)
             if (mob and mob.handle==handle and distance(origin,mob.position)<=1200
+                    and (mob.values.get(LV,0)>=floor or weak_threat)
                     and self.eligible(mob,now,{mob.model}) and not self.learning.dangerous(mob.model,now)):
                 return mob
         return None
@@ -2026,7 +2049,8 @@ class Hunter:
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
                                'last_sent_kind':self.last_sent_kind,'stop_kind':self.world.stop_packet_kind,'matching_stop':self.action_stopped()},
                 'shared_target':self.shared_target,'target_hp':self.last_target_hp,'seconds_since_target_damage':max(0,self.clock-self.last_damage_at) if self.target else None,'target_id':self.target,'opportunity_model':self.opportunity_model,'opportunity_targets':self.opportunity_targets,'path_recoveries':self.recoveries,'end_action_requests':self.end_action_requests,'queued_actions':self.queued_actions,'action_packets_sent':dict(self.sent_action_counts),'flushed_actions':self.flushed_actions,'awaiting_action_stop':bool(self.pending_action),'town_detours_yielded':self.task_budget.yields,
-                'combat_event_wakes':self.combat_wakes,'immediate_defence_attempts':self.immediate_defences,'combined_approach_attacks':self.approach_attacks,'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
+                'combat_event_wakes':self.combat_wakes,'immediate_defence_attempts':self.immediate_defences,
+                'last_monster_attack':self.last_monster_attack,'weak_attack_reasons':dict(self.weak_attack_reasons),'combined_approach_attacks':self.approach_attacks,'active_fight_wait_ticks':self.active_fight_waits,'rejected_target_releases':self.rejected_target_releases,'search_destination':self.search_goal,'movement_endpoint':self.move_endpoint,'last_action_kind':self.last_sent_kind,
                 'no_damage_retargets':self.no_damage_retargets,'reserved_targets_skipped':self.busy_targets, 'move_requests': self.moves, 'attack_requests': self.attacks,
                 'revive_requests':self.revive_requests, 'revival':{'episodes':self.death_episodes,'confirmed_returns':self.confirmed_revivals,'last_death_ago':max(0,self.clock-self.last_death_at) if self.last_death_at is not None else None,'last_return_ago':max(0,self.clock-self.last_return_at) if self.last_return_at is not None else None,'attempts_in_batch':self.death_attempts,'dead_seconds':max(0,self.clock-self.dead_since) if self.dead_since is not None else 0,'retry_in_seconds':max(0,self.next_revive-self.clock) if self.dead_since is not None else 0}, 'movement_wait_ticks':self.move_waits, 'observed_target_deaths': self.kills, 'observed_deaths_with_own_hit':self.own_hit_deaths, 'world': self.world.summary()}
 
