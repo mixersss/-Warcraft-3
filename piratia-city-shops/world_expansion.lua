@@ -88,15 +88,12 @@ function Owner56GroundGem(dead, attacker)
     if trophy and not (masks[model] and masks[model].trophy) then
         Owner57GroundDrop(dead,trophy,99)
     end
-    if math.random(1,100)>3 then return end
-    Owner56GemStats.rolls=Owner56GemStats.rolls+1
-    Owner57GroundDrop(dead,ground_stones[math.random(1,8)],1)
+    -- OWNER_NATIVE_GEM_DROPS
 end
 
 -- Ordinary drops use indices into the compact positive ID/rate list.
 -- Mission drops are evaluated separately by the engine.
 local replaced={[1000]=true}
-for _,id in ipairs(ground_stones) do replaced[id]=true end
 local iterate=string.gmatch or string.gfind
 local function fields(line, delimiter)
     local values={}

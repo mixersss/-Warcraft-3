@@ -10,6 +10,7 @@ import personal_forge as forge
 import spawn_density
 import world_expansion as expansion
 import trophy_drops
+import native_gems
 
 
 class ExpansionTests(unittest.TestCase):
@@ -169,6 +170,47 @@ class ExpansionTests(unittest.TestCase):
                 path.write_bytes(new)
             self.assertEqual(spawn_density.restore_plan(server),({},0,skipped))
 
+    def test_restore_old_drop_roll_with_original_client_tooltips(self):
+        with tempfile.TemporaryDirectory() as directory:
+            server, game = test_native.fixture(Path(directory))
+            test_native.isolated_install(server,game,True)
+            client = test_native.native.locate_client(game)
+            script = server/forge.SCRIPT
+            raw = script.read_bytes()
+            legacy = b"""-- WORLD_EXPANSION_BEGIN
+function Owner56GroundGem(dead, attacker)
+    Owner57GroundDrop(dead,1000,99)
+    if math.random(1,100)>3 then return end
+    Owner56GemStats.rolls=Owner56GemStats.rolls+1
+    Owner57GroundDrop(dead,5608+math.random(1,8),99)
+end
+-- WORLD_EXPANSION_END
+"""
+            script.write_bytes(raw+legacy)
+            stones=[]
+            for identity in native_gems.GEMS:
+                row=bytearray(192)
+                struct.pack_into("<I",row,108,identity)
+                row[128:132]=b"Hint"
+                stones.append(row)
+            (client.parent/"StoneInfo.bin").write_bytes(struct.pack("<I",192)+b"".join(stones))
+            data=bytearray(client.read_bytes())
+            index=next(i for i in range(4,len(data),868)
+                       if struct.unpack_from("<I",data,i+4)[0]==862)
+            original=data[:]
+            struct.pack_into("<h",data,index+308,31)
+            struct.pack_into("<i",data,index+352,99)
+            client.write_bytes(data)
+            changes=native_gems.plan(server,client)
+            self.assertEqual(changes[client],original)
+            self.assertNotIn(b"5608+math.random",changes[script])
+            self.assertNotIn(b"allowed[id]=true",changes[script])
+            self.assertEqual(changes[script].count(b"Owner57GroundDrop(dead,1000,99)"),2)
+            self.assertEqual(changes[script].count(native_gems.VANILLA),2)
+            for file,data in changes.items():
+                file.write_bytes(data)
+            self.assertEqual(native_gems.plan(server,client),{})
+
     def test_native_store_and_drop_hooks(self):
         lua = expansion.world_script().decode()
         test_native.NativeLuaTests().runlua("""
@@ -184,10 +226,10 @@ function SetItemFall(count,...)
 end
 function Owner56OriginalDropCheck()
     if not expected then assert(Owner56FallFilter==nil); return end
-    assert(Owner56FallFilter[1] and Owner56FallFilter[3] and Owner56FallFilter[7])
+    assert(Owner56FallFilter[1] and Owner56FallFilter[3] and not Owner56FallFilter[7])
     assert(not Owner56FallFilter[2] and not Owner56FallFilter[4] and not Owner56FallFilter[5])
     assert(not Owner56FallFilter[6] and not Owner56FallFilter[8] and not Owner56FallFilter[9])
-    SetItemFall(2,4,10)
+    SetItemFall(3,4,7,10)
 end
 function GetResPath(name) return name end
 local function row(id,fields,count)
@@ -225,14 +267,14 @@ function Owner57GroundDrop(e,id,stack) drops[id]=stack end
 Owner56MonsterModels={[42]=true}
 expected=true
 Check_Baoliao({player=1},{player=0,level=50},101,102,103,104,105,106,107,108,109,100)
-assert(#actual==2 and actual[1]==4 and actual[2]==10)
+assert(#actual==3 and actual[1]==4 and actual[2]==7 and actual[3]==10)
 expected=false
 Check_Baoliao({player=1},{player=0,level=50},101,102)
 Check_Baoliao({player=1},{player=1,level=50},101,102,103,104,105,106,107,108,109)
 assert(Owner56FallFilter==nil)
 math.random=function(a,b) return 1 end
 Owner56GroundGem({player=0,level=50},{player=1})
-assert(drops[1000]==99 and drops[860]==1 and not drops[5609] and not drops[5622])
+assert(drops[1000]==99 and not drops[860] and not drops[5609] and not drops[5622])
 GetChaTypeID=function() return 43 end
 Owner56MonsterModels[43]=true
 Owner56GroundGem({player=0,level=60},{player=1})

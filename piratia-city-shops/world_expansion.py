@@ -236,6 +236,8 @@ def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=
     client_before = client.read_bytes()
     after[text], after[binary], client_after = make_item_tables(before[text], before[binary], client_before, installed, retire_legacy=retire_legacy)
     after[forge.TEXT], after[forge.BINARY] = add_vendor(after[forge.TEXT], after[forge.BINARY])
+    from native_gems import restore_script
+    after[forge.SCRIPT] = restore_script(after[forge.SCRIPT])
     if forge.MARKER in after:
         receipt = json.loads(after[forge.MARKER])
         receipt["world_expansion"] = True
@@ -311,7 +313,9 @@ def main():
     parser.add_argument("--client")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--retire-legacy-ids", action="store_true")
-    parser.add_argument("--restore-spawns-only", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--restore-spawns-only", action="store_true")
+    mode.add_argument("--restore-gems-only", action="store_true")
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "native"))
     from installer import apply_files, locate_client
@@ -321,6 +325,12 @@ def main():
         resource = city.locate(args.server or input("Папка GameServer или resource: "))
         if args.restore_spawns_only:
             changes, skipped = restore_spawns(resource)
+        elif args.restore_gems_only:
+            from native_gems import plan as restore_gems
+            client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
+            changes = restore_gems(resource, client)
+            skipped = []
+            print("Проверены исходные ID гемов и клиентский StoneInfo. Дополнительный бросок Alpha90 отключён.")
         else:
             client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
             trophy_report = {}

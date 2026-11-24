@@ -2,7 +2,7 @@
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-90-fix5';NAME='Piratia-Alpha90-Complete-Fix5'
+OUT=REPO/'releases/piratia/complete-90-fix6';NAME='Piratia-Alpha90-Complete-Fix6'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
@@ -15,7 +15,7 @@ def main():
    raw=source.read_bytes()
    if source.suffix=='.cmd':raw=raw.replace(b'\r\n',b'\n').replace(b'\n',b'\r\n')
    files[NAME+'/server-shops/'+source.relative_to(ROOT).as_posix()]=raw
- for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices'),('INSTALL-WORLD-EXPANSION','Install-World-Expansion'),('RESTORE-SPAWN-DENSITY','Restore-Spawn-Density'),('RETIRE-ALPHA90-LEGACY','Retire-World-Legacy-IDs')]:
+ for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices'),('INSTALL-WORLD-EXPANSION','Install-World-Expansion'),('RESTORE-SPAWN-DENSITY','Restore-Spawn-Density'),('RESTORE-ORIGINAL-GEMS','Restore-Original-Gems'),('RETIRE-ALPHA90-LEGACY','Retire-World-Legacy-IDs')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
  files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes()
@@ -63,7 +63,7 @@ def main():
  manifest.update(cumulative_bots='Alpha84 includes Alpha83 and previous releases',bot_checks=1053,alpha84={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha85 includes Alpha84 and previous releases',bot_checks=1057,alpha85={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha89 includes Alpha88 and previous releases',bot_checks=1070,alpha89={'server_patch_changed':False,'live_windows_verified':False})
- manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1078,native_patch_checks=64,alpha90={'world_expansion_installer':True,'installer_fix':5,'cooking_products':38,'manufacturing_products':95,'native_level_trophies':True,'restores_original_spawn_density':True,'native_gem_drops':True,'gem_combination_rank_cap':9,'curated_ordinary_loot':True,'live_windows_verified':False})
+ manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1078,native_patch_checks=65,alpha90={'world_expansion_installer':True,'installer_fix':6,'cooking_products':38,'manufacturing_products':95,'native_level_trophies':True,'restores_original_spawn_density':True,'native_gem_drops':True,'original_gem_drop_rates':True,'gem_combination_rank_cap':9,'curated_ordinary_loot':True,'live_windows_verified':False})
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()
