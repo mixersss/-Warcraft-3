@@ -129,6 +129,46 @@ class ExpansionTests(unittest.TestCase):
         self.assertEqual(count,1)
         self.assertEqual(new.count(spawn),4)
 
+    def test_spawn_recovery_only_restores_marked_tables_and_scripts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            server,_=test_native.fixture(root)
+            (server/"CharacterInfo.txt").write_bytes(b"2\tMob\t0\t0\t5\n")
+            mapdir=server/"garner"
+            density=mapdir/"garnerChaSpn.txt"
+            base=b"1\t0,0\t100,100\t-1\t2\t3\t100\t12\r\n"
+            expanded,count,_=spawn_density.table_plan(base,{2})
+            self.assertEqual(count,2)
+            density.write_bytes(expanded)
+            record=bytearray(b"\xff"*160)
+            struct.pack_into("<I",record,4,1)
+            struct.pack_into("<4i",record,104,2,5,100,12)
+            compiled=density.with_suffix(".bin")
+            compiled.write_bytes(struct.pack("<I",160)+record)
+            scripts=server/"script/monster"
+            scripts.mkdir()
+            spawn=b"CreateCha(2,100,100,0,10)\n"
+            legacy=scripts/"unused.lua"
+            legacy.write_bytes(spawn*3+b"-- WORLD_EXPANSION_DENSITY_V1\n")
+            current=scripts/"spawn.lua"
+            current.write_bytes(spawn_density.startup(spawn,{2})[0])
+            untouched=scripts/"custom.lua"
+            untouched.write_bytes(spawn*2)
+            changed=scripts/"mixed.lua"
+            changed.write_bytes(spawn+b"do_other_work()\n-- WORLD_EXPANSION_DENSITY_V2\n")
+            changes,removed,skipped=spawn_density.restore_plan(server)
+            self.assertEqual(removed,4)
+            self.assertEqual(changes[density],base)
+            self.assertEqual(struct.unpack_from("<i",changes[compiled],112),(3,))
+            self.assertEqual(changes[legacy],spawn*2)
+            self.assertEqual(changes[current],spawn)
+            self.assertNotIn(untouched,changes)
+            self.assertNotIn(changed,changes)
+            self.assertIn(changed.name,skipped[0])
+            for path,new in changes.items():
+                path.write_bytes(new)
+            self.assertEqual(spawn_density.restore_plan(server),({},0,skipped))
+
     def test_native_store_and_drop_hooks(self):
         lua = expansion.world_script().decode()
         test_native.NativeLuaTests().runlua("""

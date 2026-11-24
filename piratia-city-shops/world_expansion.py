@@ -279,40 +279,69 @@ def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=
     return changes
 
 
+def restore_spawns(resource):
+    from spawn_density import restore_plan
+    changes, removed, skipped = restore_plan(resource)
+    if removed:
+        print(f"Убрано дополнительных мест мобов в исходных группах: {removed}.")
+    elif not skipped:
+        print("Отметок увеличения плотности Alpha90 не найдено.")
+    for detail in skipped:
+        print("Требуется сверка файла спавна: " + detail)
+    return changes, skipped
+
+
+def ensure_stopped(also_client):
+    if sys.platform!="win32":
+        return
+    import subprocess
+    try:
+        listing = subprocess.check_output(["tasklist", "/FO", "CSV", "/NH"])
+    except subprocess.CalledProcessError as error:
+        raise ValueError("Не удалось проверить, остановлен ли GameServer.") from error
+    if re.search(rb'(?i)"GameServer[0-9]*\.exe"', listing):
+        raise ValueError("Сначала останови все процессы GameServer.")
+    if also_client and re.search(rb'(?i)"Game\.exe"', listing):
+        raise ValueError("Сначала закрой игровой клиент.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--server")
     parser.add_argument("--client")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--retire-legacy-ids", action="store_true")
+    parser.add_argument("--restore-spawns-only", action="store_true")
     args = parser.parse_args()
     sys.path.insert(0, str(ROOT / "native"))
     from installer import apply_files, locate_client
     try:
+        if args.apply:
+            ensure_stopped(also_client=not args.restore_spawns_only)
         resource = city.locate(args.server or input("Папка GameServer или resource: "))
-        client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
-        trophy_report = {}
-        changes = plan(resource, client, bot_assets=ROOT.parent / "assets",
-                       retire_legacy=args.retire_legacy_ids, trophy_report=trophy_report)
-        if "warning" in trophy_report:
-            print("Таблицы трофеев оставлены без изменений: " + trophy_report["warning"])
+        if args.restore_spawns_only:
+            changes, skipped = restore_spawns(resource)
         else:
-            print(f"Трофей в штатной добыче: {trophy_report['managed']} видов мобов. "
-                  f"Сохранён прежний способ выдачи: {trophy_report['fallback']}.")
-
-        from spawn_density import plan as plan_density
-        spawn_changes, added, skipped = plan_density(resource)
-        changes.update(spawn_changes)
-        print(f"Файлов к обновлению: {len(changes)}. Дополнительных мобов в проверенных группах: {added}.")
-        if not args.retire_legacy_ids and set(LEGACY) & item_text((resource/"ItemInfo.txt").read_bytes(), LEGACY).keys():
-            print("Старые ID сохранены для уже добытых предметов. См. инструкцию по переносу.")
-        if skipped:
-            print("Пропущенные спавны: " + ", ".join(skipped))
+            client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
+            trophy_report = {}
+            changes = plan(resource, client, bot_assets=ROOT.parent / "assets",
+                           retire_legacy=args.retire_legacy_ids, trophy_report=trophy_report)
+            if "warning" in trophy_report:
+                print("Таблицы трофеев оставлены без изменений: " + trophy_report["warning"])
+            else:
+                print(f"Трофей в штатной добыче: {trophy_report['managed']} видов мобов. "
+                      f"Сохранён прежний способ выдачи: {trophy_report['fallback']}.")
+            restored, skipped = restore_spawns(resource)
+            changes.update(restored)
+            if not args.retire_legacy_ids and set(LEGACY) & item_text(
+                    (resource/"ItemInfo.txt").read_bytes(), LEGACY).keys():
+                print("Старые ID сохранены для уже добытых предметов. См. инструкцию по переносу.")
+        print(f"Файлов к обновлению: {len(changes)}.")
         if args.apply and changes:
             backup = resource.parent / ("world-expansion-backup-" + datetime.now().strftime("%Y%m%d-%H%M%S-%f"))
             apply_files(changes, backup)
             print(f"Обновление установлено. Резервная копия: {backup}")
-        return 0
+        return int(bool(skipped))
     except (OSError, ValueError, RuntimeError, StopIteration) as error:
         print(f"Ошибка установки: {error}")
         return 1

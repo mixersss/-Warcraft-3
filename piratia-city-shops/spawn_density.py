@@ -1,12 +1,10 @@
-"""Increase each ordinary persistent spawn by half, rounded up."""
+"""Read and reverse the verified Alpha90 spawn multipliers."""
 import re
 import struct
 
 OLD_MARKER = b"WORLD_EXPANSION_DENSITY_V1"
 MARKER = b"WORLD_EXPANSION_DENSITY_V2"
 CREATE = re.compile(rb"CreateCha\s*\(\s*(\d+)\s*,\s*\d+\s*,\s*\d+\s*,\s*-?\d+\s*,\s*(\d+)\s*\)\s*;?")
-MAP = re.compile(rb"(?m)^\s*(?:local +)?m\s*=\s*SetCurMap\([\'\"\w]+\)\s*\r?\nif\s+m\s*==\s*1\s+then\s*\r?\n([\s\S]*?)^end\s*$")
-INCLUDE = re.compile(rb"PM\s*\(\s*[\"\']([\w-]+)[\"\']\s*\)\s*;?")
 
 
 def monster_ids(raw):
@@ -18,24 +16,31 @@ def newline(raw):
     return b"\r\n" if b"\r\n" in raw else b"\n"
 
 
-def old_base(count, parity):
+def original_count(count, parity):
     approximate = count * 2 // 3
     for candidate in range(max(1, approximate-1), approximate+3):
         if candidate + (candidate+parity)//2 == count:
             return candidate
-    raise ValueError("Количество в таблице V1 не совпадает с известной схемой.")
+    raise ValueError("Количество не соответствует установленному множителю спавна.")
 
 
-def table_plan(raw, monsters):
-    if MARKER in raw:
+def density_version(raw, prefix):
+    for version, marker in ((2, MARKER), (1, OLD_MARKER)):
+        if prefix+marker in raw.splitlines():
+            return version
+    return 0
+
+
+def table_plan(raw, monsters, *, restore=False):
+    version = density_version(raw, b"// ")
+    if (restore and not version) or (not restore and version==2):
         return raw, 0, {}
     columns = {}
     output = []
     previous = {}
     extra = 0
-    legacy = OLD_MARKER in raw
     for line in raw.splitlines(keepends=True):
-        if OLD_MARKER in line:
+        if line.rstrip(b"\r\n") in (b"// "+OLD_MARKER, b"// "+MARKER):
             continue
         fields = line.split(b"\t")
         if len(fields)>=8 and fields[0].strip().isdigit():
@@ -53,14 +58,14 @@ def table_plan(raw, monsters):
                     if model not in monsters or count<1:
                         continue
                     parity = previous.get(model, 0)
-                    base = old_base(count, parity) if legacy else count
+                    base = original_count(count, parity if version==1 else 1) if version else count
                     previous[model] = (base+parity)%2
-                    target = base + (base+1)//2
+                    target = base if restore else base+(base+1)//2
                     original[index] = (model, base, odds, delay)
                     changed[index] = (model, target, odds, delay)
                     if target!=count:
                         values[1][index] = str(target).encode()
-                    extra += target-count
+                    extra += count-target if restore else target-count
                 identity = int(fields[0])
                 if identity in columns:
                     raise ValueError("Повтор строки в таблице спавна.")
@@ -68,7 +73,11 @@ def table_plan(raw, monsters):
                 fields[5] = b",".join(values[1])
                 line = b"\t".join(fields)
         output.append(line)
-    if not extra and not legacy:
+    if restore:
+        if not extra:
+            raise ValueError("В отмеченном файле нет увеличенных групп.")
+        return b"".join(output), extra, columns
+    if not extra and not version:
         return raw, 0, {}
     nl = newline(raw)
     return b"".join(output).rstrip(b"\r\n")+nl+b"// "+MARKER+nl, extra, columns
@@ -113,10 +122,12 @@ def update_binary(raw, columns):
     return bytes(out)
 
 
-def startup(raw, monsters):
-    if MARKER in raw or b"--[[" in raw:
+def startup(raw, monsters, *, restore=False):
+    version = density_version(raw, b"-- ")
+    if (restore and not version) or (not restore and version==2) or b"--[[" in raw:
         return raw, 0
-    lines = [line for line in raw.splitlines(keepends=True) if OLD_MARKER not in line]
+    lines = [line for line in raw.splitlines(keepends=True)
+             if line.rstrip(b"\r\n") not in (b"-- "+OLD_MARKER,b"-- "+MARKER)]
     parsed = []
     for line in lines:
         code = line.split(b"--",1)[0].strip()
@@ -140,69 +151,57 @@ def startup(raw, monsters):
             continue
         if delay<=600:
             seen[model]=seen.get(model,0)+1
-        if OLD_MARKER in raw and delay<=600 and seen[model]%2==0:
+        duplicated = version==2 or (version==1 and delay<=600 and seen[model]%2==0)
+        if duplicated:
             if index>=len(parsed) or parsed[index][0].strip()!=candidate[0]:
-                return raw,0  # locally edited V1 script
+                return raw,0  # locally edited marked script
             index+=1
+        if restore:
+            extra+=int(duplicated)
         else:
-            extra+=1
-        output.append(candidate[0]+nl)
+            extra+=int(not duplicated)
+            output.append(candidate[0]+nl)
     if not extra:
         return raw,0
+    if restore:
+        return b"".join(output),extra
     return b"".join(output).rstrip(b"\r\n")+nl+b"-- "+MARKER+nl,extra
 
 
-def plan(resource):
+def restore_plan(resource):
     monsters=monster_ids((resource/"CharacterInfo.txt").read_bytes())
     changes={}
     skipped=[]
-    added=0
+    removed=0
     for folder in sorted(p for p in resource.iterdir() if p.is_dir()):
         name=(folder.name+"ChaSpn").casefold()
         variants={p.suffix.lower():p for p in folder.iterdir() if p.stem.casefold()==name}
         path,binary=variants.get(".txt"),variants.get(".bin")
         if not path:
-            if binary:
-                skipped.append(binary.relative_to(resource).as_posix()+" (нет TXT)")
             continue
         raw=path.read_bytes()
-        result,count,columns=table_plan(raw,monsters)
-        if result==raw:
+        if not density_version(raw,b"// "):
             continue
-        if binary:
-            try:
-                data=binary.read_bytes()
-                patched=update_binary(data,columns)
-            except ValueError as error:
-                skipped.append(binary.relative_to(resource).as_posix()+f" ({error})")
-                continue
-            if patched!=data:
-                changes[binary]=patched
+        try:
+            result,count,columns=table_plan(raw,monsters,restore=True)
+            if binary:
+                original=binary.read_bytes()
+                restored=update_binary(original,columns)
+                if restored!=original:
+                    changes[binary]=restored
+        except ValueError as error:
+            skipped.append(path.relative_to(resource).as_posix()+f" ({error})")
+            continue
         changes[path]=result
-        added+=count
-    directory=resource/"script/monster"
-    listing=directory/"mlist.lua"
-    if listing.is_file():
-        scripts={p.stem.casefold():p for p in directory.glob("*.lua")}
-        used=set()
-        source=b"\n".join(line.split(b"--",1)[0] for line in listing.read_bytes().splitlines())
-        for block in MAP.findall(source):
-            parts=[line.strip() for line in block.splitlines()
-                   if line.strip() and not line.strip().startswith(b"LG(")]
-            calls=[INCLUDE.fullmatch(part) for part in parts]
-            if not calls or not all(calls):
-                continue
-            for call in calls:
-                path=scripts.get(call[1].decode("ascii").casefold())
-                if path and path not in used:
-                    used.add(path)
-                    raw=path.read_bytes()
-                    result,count=startup(raw,monsters)
-                    if count:
-                        changes[path]=result
-                        added+=count
-                    elif MARKER not in raw and any(
-                            CREATE.fullmatch(line.split(b"--",1)[0].strip())
-                            for line in raw.splitlines()):
-                        skipped.append(path.relative_to(resource).as_posix()+" (сложный сценарий или нет подходящих мобов)")
-    return changes,added,skipped
+        removed+=count
+    for path in sorted((resource/"script/monster").glob("*.lua")):
+        raw=path.read_bytes()
+        if not density_version(raw,b"-- "):
+            continue
+        result,count=startup(raw,monsters,restore=True)
+        if count:
+            changes[path]=result
+            removed+=count
+        else:
+            skipped.append(path.relative_to(resource).as_posix()+" (строки спавна отличаются)")
+    return changes,removed,skipped
