@@ -48,9 +48,7 @@ def refresh_shop_receipt(resource, original, result):
     result[MARKER] = (json.dumps(receipt, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
 
-def plan(resource, owner, encoding="cp1251"):
-    if not 1 <= len(owner) <= 24 or any(not c.isprintable() for c in owner):
-        raise ValueError("Укажи точное имя своего игрового персонажа.")
+def plan(resource, encoding="cp1251"):
     original = {p: (resource / p).read_bytes() for p in (SCRIPT, SDK, TEXT, BINARY)}
     result = dict(original)
     rows, records = city.validate_npcs(original[TEXT], original[BINARY])
@@ -69,9 +67,8 @@ def plan(resource, owner, encoding="cp1251"):
         raw = (resource / "script/calculate" / filename).read_bytes()
         if any(not re.search(rb"(?m)^\s*function\s+" + name.encode() + rb"\s*\(", raw) for name in names):
             raise ValueError("Серверные скрипты ковки отличаются от проверенной версии.")
-    local_name = "".join("\\%03d" % value for value in owner.encode(encoding))
     patch = (ROOT / "personal_forge.lua").read_text(encoding="utf-8").strip()
-    patch = patch.replace("__OWNER_BYTES__", local_name).encode(encoding)
+    patch = patch.encode(encoding)
     def newline(value):
         return b"\r\n" if b"\r\n" in value else b"\n"
     patch = patch.replace(b"\n", newline(script))
@@ -124,14 +121,12 @@ def plan(resource, owner, encoding="cp1251"):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--server")
-    parser.add_argument("--owner")
     parser.add_argument("--encoding", default="cp1251", choices=("cp1251", "utf-8"))
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
     try:
         resource = city.locate(args.server or input("Папка GameServer или resource: "))
-        owner = args.owner or input("Точное имя игрового персонажа владельца: ").strip()
-        before, after, identity = plan(resource, owner, args.encoding)
+        before, after, identity = plan(resource, args.encoding)
         changes = {resource / path: raw for path, raw in after.items() if before[path] != raw}
         if args.apply and changes:
             sys.path.insert(0, str(ROOT / "native"))

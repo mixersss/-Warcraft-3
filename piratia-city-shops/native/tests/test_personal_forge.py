@@ -23,32 +23,32 @@ class PersonalForgeInstallerTests(unittest.TestCase):
             paths = (forge.SCRIPT, forge.SDK, forge.TEXT, forge.BINARY, Path("ItemInfo.txt"), Path("ItemInfo.bin"))
             hashes = {path.as_posix(): hashlib.sha256((resource / path).read_bytes()).hexdigest() for path in paths}
             (resource / forge.MARKER).write_text(json.dumps({"installed_sha256": hashes}))
-            before, after, identity = forge.plan(resource, "Капитан")
+            before, after, identity = forge.plan(resource)
             receipt = json.loads(after[forge.MARKER])["installed_sha256"]
             for path in paths[:4]:
                 self.assertEqual(receipt[path.as_posix()], hashlib.sha256(after[path]).hexdigest())
             self.assertTrue(after[forge.BINARY].startswith(before[forge.BINARY]))
             self.assertIn(test_native.native.OPEN_HOOK + forge.city.ANCHOR, after[forge.SDK])
-            self.assertNotIn("Капитан".encode("cp1251"), after[forge.SCRIPT])
+            self.assertNotIn(b"GetChaDefaultName", after[forge.SCRIPT])
             rows, _ = forge.city.validate_npcs(after[forge.TEXT], after[forge.BINARY])
             self.assertEqual(rows[identity][5], b"225750,277050")
             for path, content in after.items():
                 (resource / path).write_bytes(content)
-            original, repeated, repeated_id = forge.plan(resource, "Капитан")
+            original, repeated, repeated_id = forge.plan(resource)
             self.assertEqual(original, repeated)
             self.assertEqual(identity, repeated_id)
 
 
 class PersonalForgeLuaTests(unittest.TestCase):
-    def test_owner_only_bulk_payment_rollback_rank_limit_and_three_sockets(self):
+    def test_public_dialog_bulk_payment_rollback_rank_limit_and_three_sockets(self):
         private = (forge.ROOT / "personal_forge.lua").read_text(encoding="utf-8")
-        test_native.NativeLuaTests().runlua(private.replace("__OWNER_BYTES__", "Captain") + """
+        test_native.NativeLuaTests().runlua(private + """
 ITEMATTR_VAL_FUSIONID=1
 ITEMATTR_VAL_LEVEL=2
 ITEMATTR_MAXURE=3
 ITEMATTR_URE=4
 function IsPlayer(role) return 1 end
-function GetChaDefaultName(role) return role.name end
+function GetCharID(role) return role.id end
 function GetChaPos(role) return 225750,277050 end
 function GetChaMapName(role) return "garner" end
 function GetChaItem(role,bag,slot) return role.items[slot] end
@@ -93,18 +93,41 @@ function DelBagItem(role,id,count)
     end
     return count==0 and 1 or 0
 end
-function SystemNotice(role,text) role.last=text end
+function SendMissionPage(role,npc,page,message,options,count,missions,mission_count)
+    assert(npc==44 and mission_count==0 and count==#options)
+    role.dialog={page=page,message=message,options=options}
+end
+local pages = {}
+function Talk(page, message) pages[page]={message=message} end
+function Text(page, label, handler, parameter)
+    table.insert(pages[page], {label=label,handler=handler,parameter=parameter})
+end
+function JumpPage() end
+function CloseTalk() end
 function CheckFusionItem(a,b) return 1 end
 function FusionItem(a,b) a.attrs[7]=b.attrs[7]; return 1 end
 local function stone(type_id,rank) return {id=680+type_id,kind=49,rank=rank,stone=type_id,forge=0,attrs={}} end
 local app={id=5100,kind=1,forge=0,attrs={}}
 local base={id=123,kind=1,forge=0,attrs={[7]=89}}
-local c={name="Other",items={[0]=app,[1]=base}}
-local action=OwnerPersonalForgeAction
-assert(action(c,nil,1)==0 and c.items[1]==base)
-c.name="Captain"
-assert(action(c,nil,1)==1 and app.attrs[2]==nil)
-assert(action(c,nil,4)==1 and app.attrs[2]==15 and app.attrs[1]==123 and app.attrs[7]==89)
+local c={id=1004,items={[0]=app,[1]=base}}
+local stranger={id=1005,items={}}
+local function action(role,_,command) return OwnerPersonalForgeAction(role,44,command) end
+OwnForgePrivate()
+assert(#pages[1]==5 and #pages[2]==2 and #pages[3]==1)
+local function click(page,index)
+    local option=pages[page][index]
+    return option.handler(c,44,option.parameter)
+end
+c.items[1]=nil
+assert(click(1,1)==0 and c.dialog.page==3)
+assert(c.dialog.message:find("ячейки рюкзака",1,true))
+c.items[1]=base
+assert(click(1,1)==1 and app.attrs[2]==nil and c.dialog.page==2)
+assert(c.dialog.options[1]==pages[2][1].label)
+assert(action(stranger,nil,4)==0 and stranger.dialog.page==3)
+assert(action(stranger,nil,5)==0 and stranger.dialog.message:find("128",1,true))
+assert(click(2,1)==1 and app.attrs[2]==15 and app.attrs[1]==123 and app.attrs[7]==89)
+assert(c.dialog.page==3 and c.dialog.message:find("Готово",1,true))
 assert(c.items[1]==nil and action(c,nil,4)==0)
 c.items[1]=stone(1,1)
 assert(action(c,nil,2)==1)
@@ -123,6 +146,15 @@ for kind=2,3 do
     assert(action(c,nil,2)==1 and action(c,nil,4)==1)
 end
 assert(GetNum_Part1(TansferNum(app.forge))==3)
+assert(GetNum_Part3(TansferNum(app.forge))==3)
+assert(GetNum_Part5(TansferNum(app.forge))==1)
+assert(GetNum_Part7(TansferNum(app.forge))==1)
+c.items[1]=stone(2,1)
+assert(action(c,nil,2)==1 and c.dialog.message:find("Гнездо 2",1,true))
+assert(action(c,nil,4)==1)
+assert(GetNum_Part3(TansferNum(app.forge))==3)
+assert(GetNum_Part5(TansferNum(app.forge))==2)
+assert(GetNum_Part7(TansferNum(app.forge))==1)
 c.items[1]=stone(4,1)
 assert(action(c,nil,2)==0 and c.items[1])
 c.items[1]=stone(1,3)
@@ -135,4 +167,7 @@ assert(action(c,nil,2)==1 and action(c,nil,4)==1)
 assert(GetNum_Part3(TansferNum(app.forge))==9 and c.items[1]==nil)
 c.items[1]=stone(1,9)
 assert(action(c,nil,2)==0 and c.items[1])
+GetChaPos=function() error("simulated native error") end
+assert(click(1,2)==0 and c.dialog.page==3)
+assert(c.dialog.message:find("журнал кузницы",1,true))
 """)
