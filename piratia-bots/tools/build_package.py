@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-90-fix2'
-NAME = 'Piratia-Auto-Bots-Alpha90-Fix2'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-90-fix3'
+NAME = 'Piratia-Auto-Bots-Alpha90-Fix3'
 
 
 def main():
@@ -454,8 +454,8 @@ def main():
                     status='Alpha88 enforces the same upper level limit from camp selection to live attacks.')
     manifest.update(alpha89={'minimum_server_revision':60,'live_windows_verified':False},
                     status='Alpha89 keeps trivial aggro from diverting XP hunts and reports weak attack reasons.')
-    manifest.update(alpha90={'minimum_server_revision':60,'world_expansion_installer':True,'live_windows_verified':False},
-                    status='Alpha90 supports stackable ground gems, level-based trophies and NPC parchment sales.')
+    manifest.update(alpha90={'minimum_server_revision':60,'world_expansion_installer':True,'installer_fix':3,'live_windows_verified':False},
+                    status='Alpha90 Fix3 restores normal gems, adds forge combinations and curates normal monster loot.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     (OUT / 'README.md').write_bytes((ROOT / 'knowledge/ALPHA90.md').read_bytes())
     print(artifact)

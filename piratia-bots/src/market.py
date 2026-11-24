@@ -3,7 +3,7 @@ import hashlib,json,math,random,struct,threading
 from pathlib import Path
 from classic_wire import Reader,ProtocolError,string
 from inventory import BagItem
-from world_drops import STACK_GEM_PRICES
+from world_drops import STACK_GEM_PRICES, WORLD_GEM_PRICES
 
 START,VIEW,BUY,CLOSE=330,331,332,333
 INFO,DELGOODS,CLOSED,STARTED,NAME=854,856,857,858,859
@@ -68,6 +68,7 @@ class MarketCatalog:
         self.world_expansion=bool(owner and owner.get('world_expansion'))
         self.focused=bool(owner and owner.get('catalog_revision',0)>=56)
         self.focused_prices={860:60000,861:60000,862:70000,863:80000,864:150000,865:150000,866:120000,1012:100000}
+        if self.world_expansion:self.focused_prices.update(WORLD_GEM_PRICES)
     def enable_broad_catalog(self):
         self.broad_catalog=True;self.items.update({int(i):r for i,r in self.useful_audit['items'].items()})
     def enable_curated_catalog(self):
@@ -279,8 +280,9 @@ class Market:
         return result
     def ask_price(self,identity):
         if identity==1000:return 1500
-        if getattr(self.catalog,'world_expansion',False) and identity in STACK_GEM_PRICES:
-            return STACK_GEM_PRICES[identity]
+        if getattr(self.catalog,'world_expansion',False):
+            fixed_price = WORLD_GEM_PRICES.get(identity) or STACK_GEM_PRICES.get(identity)
+            if fixed_price:return fixed_price
         price=self.catalog.price(identity)
         if not self.catalog.prices:return price
         # Stable per-seller negotiation margins plus current surplus; no personality reset.

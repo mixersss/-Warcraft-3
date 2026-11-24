@@ -240,6 +240,8 @@ local function apply(role, mode, plan)
     return put_attr(target, ITEMATTR_VAL_LEVEL, 15)
 end
 
+-- OWNER_GEM_COMBINE_CODE
+
 local function handle_action(role, npc, action)
     if IsPlayer(role) ~= 1 then return LUA_FALSE end
     local x, y = GetChaPos(role)
@@ -250,7 +252,7 @@ local function handle_action(role, npc, action)
     if action == 5 then
         return notice(role, npc, "Для ковки до рангов 1-9, в гемах первого ранга: 1, 1, 2, 4, 8, 16, 32, 64, 128. Принеси один гем соответствующего ранга.")
     end
-    if action < 1 or (action > 4 and action ~= 6 and action ~= 7) then return LUA_FALSE end
+    if action < 1 or (action > 9 and (action < 20 or action > 25)) then return LUA_FALSE end
     local actor = GetCharID(role)
     if type(actor) ~= "number" or actor == 0 then
         return notice(role, npc, "Сервер не распознал персонажа. Открой кузницу заново.")
@@ -258,6 +260,18 @@ local function handle_action(role, npc, action)
     local now = os.time()
     for id, quote in pairs(pending) do
         if quote.expires < now then pending[id] = nil end
+    end
+    for id, menu in pairs(combine_menus) do
+        if menu.expires<now then combine_menus[id]=nil end
+    end
+    if action == 8 or action == 9 then
+        pending[actor]=nil
+        local menu=combine_menus[actor]
+        return show_combinations(role,npc,actor,now,action==9 and menu and menu.next or 1)
+    end
+    if action >= 20 then
+        pending[actor]=nil
+        return combination_preview(role,npc,actor,action,now)
     end
     if action == 7 then
         pending[actor]=nil
@@ -286,6 +300,7 @@ local function handle_action(role, npc, action)
     end
     if not quote then return notice(role, npc, "Сначала снова проверь операцию.") end
     if quote.migration then return migrate(role,npc,quote) end
+    if quote.combination then return confirm_combination(role,npc,quote) end
     local plan = request(role, quote.mode, quote.material_slot)
     if not plan or quote.count ~= plan.count or quote.raw ~= plan.raw
             or not unchanged(plan.target, quote.first)
@@ -344,6 +359,7 @@ function OwnForgePrivate()
         Text(1, "Проверить ковку", OwnerPersonalForgeAction, 2)
     end
     Text(1, "Усиление аппарели 110%", OwnerPersonalForgeAction, 3)
+    Text(1, "Скомбинировать гемы", OwnerPersonalForgeAction, 8)
     Text(1, "Сколько гемов нужно", OwnerPersonalForgeAction, 5)
     Text(1, "Закрыть", CloseTalk)
     Talk(2, "Сначала проверь операцию.")
@@ -351,5 +367,9 @@ function OwnForgePrivate()
     Text(2, "Назад", JumpPage, 1)
     Talk(3, "Личная кузница")
     Text(3, "Назад", JumpPage, 1)
+    Talk(4, "Скомбинировать гемы")
+    Text(4, "Назад", JumpPage, 1)
+    Text(4, "Следующие виды", OwnerPersonalForgeAction, 9)
+    for i=20,25 do Text(4,"Самоцвет",OwnerPersonalForgeAction,i) end
 end
 -- OWNER_PERSONAL_FORGE_END

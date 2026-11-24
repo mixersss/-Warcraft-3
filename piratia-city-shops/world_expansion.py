@@ -1,4 +1,4 @@
-"""Install stackable first-rank gems and an additional Argent shop."""
+"""Install ordinary gem drops, curated loot and an additional Argent shop."""
 import argparse
 import base64
 import hashlib
@@ -78,7 +78,7 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
     for table in (rows, *binaries):
         if missing := required - table.keys():
             raise ValueError("В таблице отсутствуют предметы обновления: " + ", ".join(map(str, sorted(missing))))
-        for ids in (set(aliases), set(LEGACY)):
+        for ids in (set(GEMS), set(TROPHIES), set(range(6400, 6408)), set(range(6410, 6440))):
             existing = ids & table.keys()
             if existing and (not installed or existing != ids):
                 raise ValueError("Выбранные ID заняты или таблицы обновлены частично.")
@@ -113,6 +113,9 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
             row[93] = row[93]+b" "+GEM_BONUSES[source][0].encode("ascii")
         return b"\t".join(row)
 
+    new_ids = TROPHIES.keys()
+    if 6400 in rows and not retire_legacy:
+        new_ids = (*new_ids, *GEMS)  # keep the migration destination available
     out_text = []
     for line in text.splitlines(keepends=True):
         fields = line.rstrip(b"\r\n").split(b"\t")
@@ -124,7 +127,7 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
             line = text_row(identity, fields)+line[len(line.rstrip(b"\r\n")):]
         out_text.append(line)
     text = b"".join(out_text)
-    added = [text_row(identity) for identity in aliases if identity not in rows]
+    added = [text_row(identity) for identity in new_ids if identity not in rows]
     if added:
         text += (b"" if text.endswith((b"\r", b"\n")) else nl) + nl.join(added) + nl
 
@@ -162,7 +165,7 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
                 check_identity(identity, record[112:192].split(b"\0", 1)[0], all_aliases[identity][3])
                 continue
             records.append(binary_row(identity) if identity in all_aliases else record)
-        records.extend(binary_row(identity) for identity in aliases if identity not in table)
+        records.extend(binary_row(identity) for identity in new_ids if identity not in table)
         results.append(struct.pack("<I",868)+b"".join(records))
     from price_tables import patch_binary, patch_text
     prices = {identity: {"kind": int(rows[identity][10]), "price": price}

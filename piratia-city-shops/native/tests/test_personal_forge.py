@@ -17,7 +17,7 @@ class PersonalForgeInstallerTests(unittest.TestCase):
                 forge.city.ANCHOR, test_native.native.OPEN_HOOK + forge.city.ANCHOR))
             (resource / "script/calculate/forge.lua").write_text("\n".join(
                 f"function {name}() end" for name in
-                ("SetJinglian_Lv", "GetStone_TypeID", "Get_StoneLv", "TansferNum", "check_item_final_data")))
+                ("SetJinglian_Lv", "GetStone_TypeID", "Get_StoneLv", "Set_StoneLv", "TansferNum", "check_item_final_data")))
             (resource / "script/calculate/functions.lua").write_text(
                 "function GetNum_Part1() end\nfunction SetNum_Part1() end")
             paths = (forge.SCRIPT, forge.SDK, forge.TEXT, forge.BINARY, Path("ItemInfo.txt"), Path("ItemInfo.bin"))
@@ -65,7 +65,7 @@ class PersonalForgeInstallerTests(unittest.TestCase):
 
 class PersonalForgeLuaTests(unittest.TestCase):
     def test_public_dialog_bulk_payment_rollback_rank_limit_and_three_sockets(self):
-        private = (forge.ROOT / "personal_forge.lua").read_text(encoding="utf-8")
+        private = forge.forge_script()
         test_native.NativeLuaTests().runlua(private + """
 ITEMATTR_VAL_FUSIONID=1
 ITEMATTR_VAL_LEVEL=2
@@ -137,7 +137,7 @@ local c={id=1004,items={[0]=app,[1]=base}}
 local stranger={id=1005,items={}}
 local function action(role,_,command) return OwnerPersonalForgeAction(role,44,command) end
 OwnForgePrivate()
-assert(#pages[1]==5 and #pages[2]==2 and #pages[3]==1)
+assert(#pages[1]==6 and #pages[2]==2 and #pages[3]==1)
 local function click(page,index)
     local option=pages[page][index]
     return option.handler(c,44,option.parameter)
@@ -251,4 +251,33 @@ end
 c.items[3]={id=6400,kind=31,forge=0,attrs={},count=5}
 assert(action(c,nil,7)==1 and action(c,nil,4)==0)
 assert(c.items[2].count==11 and c.items[3].count==5)
+table.getn=function(t) return #t end
+function Set_StoneLv(item,rank) item.rank=rank end
+c.items={}
+for slot=0,9 do c.items[slot]=stone(1,1) end
+c.items[30]=stone(2,1)
+assert(action(c,nil,8)==1 and c.dialog.page==4 and #c.dialog.options==3)
+assert(action(c,nil,20)==1 and c.dialog.message:find("8 шт.",1,true))
+assert(action(c,nil,4)==1 and c.items[0].rank==4)
+assert(CheckBagItem(c,681)==3 and CheckBagItem(c,682)==1)
+c.items={[0]=stone(1,3),[1]=stone(1,3)}
+for slot=2,9 do c.items[slot]=stone(1,1) end
+c.items[10]=stone(1,4)
+assert(action(c,nil,8)==1 and action(c,nil,20)==1)
+assert(c.dialog.message:find("3 шт.",1,true))
+assert(action(c,nil,4)==1 and c.items[10].rank==5 and c.items[2].rank==1)
+c.items={[0]=stone(2,1),[1]=stone(2,1)}
+assert(action(c,nil,8)==1 and action(c,nil,20)==1)
+c.items[1].rank=2
+assert(action(c,nil,4)==0 and CheckBagItem(c,682)==2)
+c.items[1].rank=1
+assert(action(c,nil,8)==1 and action(c,nil,20)==1)
+c.fail=true
+assert(action(c,nil,4)==0 and c.items[0].rank==1 and CheckBagItem(c,682)==2)
+c.fail=false
+c.items={[0]={id=885,kind=50,rank=8},[1]={id=885,kind=50,rank=8}}
+assert(action(c,nil,8)==1 and action(c,nil,20)==1)
+assert(action(c,nil,4)==1 and c.items[0].rank==9 and CheckBagItem(c,885)==1)
+assert(action(c,nil,8)==0 and c.dialog.page==3)
+
 """)

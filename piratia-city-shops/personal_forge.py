@@ -53,6 +53,12 @@ def refresh_shop_receipt(resource, original, result, *, menu_update=False):
     result[MARKER] = (json.dumps(receipt, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
 
+def forge_script():
+    body = (ROOT / "personal_forge.lua").read_text(encoding="utf-8")
+    combine = (ROOT / "gem_combine.lua").read_text(encoding="utf-8").rstrip()
+    return body.replace("-- OWNER_GEM_COMBINE_CODE", combine).strip()
+
+
 def plan(resource, encoding="cp1251"):
     original = {p: (resource / p).read_bytes() for p in (SCRIPT, SDK, TEXT, BINARY)}
     result = dict(original)
@@ -66,14 +72,13 @@ def plan(resource, encoding="cp1251"):
             or sdk.count(b"elseif item.func == OwnerPersonalForgeAction then") != len(matches)):
         raise ValueError("Неполная установка личной кузницы. Проверь предыдущую резервную копию.")
     for filename, names in (
-        ("forge.lua", ("SetJinglian_Lv", "GetStone_TypeID", "Get_StoneLv", "TansferNum", "check_item_final_data")),
+        ("forge.lua", ("SetJinglian_Lv", "GetStone_TypeID", "Get_StoneLv", "Set_StoneLv", "TansferNum", "check_item_final_data")),
         ("functions.lua", ("GetNum_Part1", "SetNum_Part1")),
     ):
         raw = (resource / "script/calculate" / filename).read_bytes()
         if any(not re.search(rb"(?m)^\s*function\s+" + name.encode() + rb"\s*\(", raw) for name in names):
             raise ValueError("Серверные скрипты ковки отличаются от проверенной версии.")
-    patch = (ROOT / "personal_forge.lua").read_text(encoding="utf-8").strip()
-    patch = patch.encode(encoding)
+    patch = forge_script().encode(encoding)
     def newline(value):
         return b"\r\n" if b"\r\n" in value else b"\n"
     patch = patch.replace(b"\n", newline(script))
