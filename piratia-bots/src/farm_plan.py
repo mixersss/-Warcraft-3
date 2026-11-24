@@ -10,6 +10,7 @@ FIELDS=('wins','losses','stalls','seconds','hp_cost','xp','gold','level_ups','dr
 
 PREFERRED_LEVEL_GAP=5
 MAX_RECOVERY_LEVEL_GAP=9
+MAX_HUNT_LEVEL_ABOVE=3
 
 def xp_level_divisor(actor_level,monster_level):
  # Exact level-only divisor from the supplied ShareTeamExp, before other bonuses.
@@ -164,7 +165,7 @@ class HuntLearning:
   return ((key,farms[key]) for key in keys if key in farms and low<=farms[key]['level']<=high)
  def minimum_farm_level(self,region,own,now):
   level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
-  for model,r in self.farms_in_band(region,max(1,level-PREFERRED_LEVEL_GAP),level+max(3,self.profile[1])):
+  for model,r in self.farms_in_band(region,max(1,level-PREFERRED_LEVEL_GAP),level+MAX_HUNT_LEVEL_ABOVE):
    if (r.get('territory',0)==0 and r['points'] and r.get('base_xp',1)>0
        and not self.blocked(int(model),now) and not self.dangerous(int(model),now)
        and r['hp']<=hp*self.profile[3]):
@@ -174,11 +175,9 @@ class HuntLearning:
   """Safe observed opportunities, even if the current shortlist is elsewhere."""
   level=own.values.get(0,1);maximum=max(1,own.values.get(31,1));result=set()
   floor=self.minimum_farm_level(region,own,now)
-  for model,record in self.farms_in_band(region,floor,level if recovery else level+8):
+  for model,record in self.farms_in_band(region,floor,level if recovery else level+MAX_HUNT_LEVEL_ABOVE):
    model=int(model);row=self.rows.get(str(model),{})
    if record.get('territory',0)!=0 or not record['points'] or record.get('base_xp',1)<=0 or self.blocked(model,now) or self.dangerous(model,now):continue
-   ceiling=level if recovery else level+(8 if row.get('wins',0) else max(3,self.profile[1]))
-   if not floor<=record['level']<=ceiling:continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
    result.add(model)
   return result-self.inefficient(region,result,level)
@@ -210,24 +209,26 @@ class HuntLearning:
   if previous is None or progress[0]>previous[0] or progress[1]>previous[1]:self.last_progress_at=now
  def choose(self,region,own,now,fallback=False,hold=False,position=None):
   self.record_progress(own,now)
-  self.selected={m for m in self.selected if str(m) in region['farms'] and region['farms'][str(m)].get('territory',0)==0}
+  level=own.values.get(0,1)
+  self.selected={m for m in self.selected if str(m) in region['farms']
+                 and region['farms'][str(m)].get('territory',0)==0
+                 and region['farms'][str(m)]['level']<=level+MAX_HUNT_LEVEL_ABOVE}
   idle_trial=now-self.last_progress_at>=90 and now>=self.next_idle_probe
   signature=(own.values.get(0,1),own.values.get(4,0),tuple(sorted(own.equipment.items())),fallback,id(region))
   if hold and self.selected and self.signature==signature:return set(self.selected)
   self.region_reference=region # Keep the identity alive while its cache is used.
   if signature==self.signature and now<self.until and not idle_trial:return set(self.selected)
   if self.signature and signature[:3]!=self.signature[:3]:self.avoid.clear();self.danger_until.clear()
-  self.signature=signature;level=own.values.get(0,1);max_hp=max(1,own.values.get(31,1))
+  self.signature=signature;max_hp=max(1,own.values.get(31,1))
   floor=self.minimum_farm_level(region,own,now)
   best_rate=max((r.get('level_xp',0)/max(1,r.get('level_seconds',0)) for r in self.rows.values() if r.get('observed_level')==level),default=0)
   scored=[];alternatives=[];self.scores={};self.candidate_details={}
-  for model,record in self.farms_in_band(region,floor,level+8):
+  for model,record in self.farms_in_band(region,floor,level+MAX_HUNT_LEVEL_ABOVE):
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
    if record.get('territory',0)!=0 or not record['points'] or record.get('base_xp',1)<=0 or self.blocked(model,now) or self.dangerous(model,now):continue
    if level<=3 and model==75 and not self.rows:continue
-   primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
+   primary=(ml<=level+(MAX_HUNT_LEVEL_ABOVE if row.get('wins',0)>0 else self.profile[1])
             and not (level<=3 and model==71))
-   if not primary and ml>(level+max(3,self.profile[1])):continue
    if ml<floor:continue # Do not camp very weak mobs when a viable closer-level band exists.
    if not row.get('wins') and record['hp']>max_hp*self.profile[3]:continue
    base=max(.12,1-abs(ml-level)*.07)/(1+record['hp']/max_hp*.25)

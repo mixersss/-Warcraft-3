@@ -14,7 +14,7 @@ from progression import Progression
 from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 from coral_supplies import spent_basic
-from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, projected_combat, xp_level_divisor
+from farm_plan import MAX_HUNT_LEVEL_ABOVE, MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, projected_combat, xp_level_divisor
 
 MINE_ENTRIES=((22967,2878),(38675,12625),(11623,3330))
 
@@ -262,7 +262,17 @@ class Hunter:
             if feature:
                 desired=feature.desired_models()
                 if isinstance(desired,(set,list,tuple)):models.update(desired)
-        return models
+        return self.quest_targets_in_level_band(models)
+
+    def quest_targets_in_level_band(self,models):
+        ceiling=self.world.own.values.get(LV,1)+MAX_HUNT_LEVEL_ABOVE
+        farms=self.region['farms'] if self.region else {}
+        allowed=set()
+        for model in models:
+            record=farms.get(str(model)) or (self.mob_knowledge.get(model) if self.mob_knowledge else None)
+            if not record or record['level']<=ceiling:
+                allowed.add(model)
+        return allowed
 
     def approach(self,target,reach,now,shared=False):
         center=self.world.position(now,target.identity)
@@ -719,19 +729,22 @@ class Hunter:
         for feature in (self.career,self.story if self.wants_story() else None):
             if feature:
                 models=feature.desired_models()
-                if isinstance(models,(set,list,tuple)) and models:return set(models)
+                if isinstance(models,(set,list,tuple)):
+                    allowed=self.quest_targets_in_level_band(models)
+                    if allowed:return allowed
         # A tutorial object alone is not a farming objective. Only an active
         # kill/drop task may override the current earned level's farming tier.
         if self.adventure and self.adventure.farm():
             models=self.adventure.desired_models()
-            if isinstance(models,(set,list,tuple)) and models:
+            if isinstance(models,(set,list,tuple)):
+                models=self.quest_targets_in_level_band(models)
                 tutorial=self.adventure.active() in self.adventure.tutorial_ids
                 # Optional starter chores must not pin a growing character to
                 # level-three mobs for the whole pre-profession progression.
                 useful=not tutorial or not self.region or any(
                     self.region['farms'].get(str(m),{}).get('level',0)>=self.world.own.values.get(LV,1)-3
                     for m in models)
-                if useful:return set(models)
+                if useful and models:return models
         return set(self.farm_models())
 
     def farm_recovery(self,now):
@@ -781,6 +794,14 @@ class Hunter:
                 self.change('идёт к другому подходящему лагерю по готовому пути')
                 return self.move_to(point,now,use_portals=False)
             raise
+
+    def mine_has_level_camp(self,now):
+        region=self.local_hunting_region(funding=True)
+        if not region:return False
+        level=self.world.own.values.get(LV,1)
+        return any(record['points'] and record.get('territory',0)==0 and record.get('base_xp',1)>0
+                   for _,record in self.learning.farms_in_band(
+                       region,self.minimum_xp_mob_level(now),level+MAX_HUNT_LEVEL_ABOVE))
 
     def clear_mine_camp(self):
         if self.mine_goal and self.coordination:self.coordination.leave_zone(self.owner,mine=True)
@@ -1010,8 +1031,10 @@ class Hunter:
         return None
 
     def hunting_level_allowed(self,entity,now):
-        return (entity.values.get(LV,0)>=self.minimum_xp_mob_level(now)
-                or self.weak_target_exception(entity,now) is not None)
+        level=entity.values.get(LV,0)
+        ceiling=self.world.own.values.get(LV,1)+MAX_HUNT_LEVEL_ABOVE
+        return (0<level<=ceiling and (level>=self.minimum_xp_mob_level(now)
+                                     or self.weak_target_exception(entity,now) is not None))
 
     def visible_ground_opportunities(self,now,origin):
         if (not self.camp_scouting or not self.mob_knowledge or not self.region
@@ -1073,7 +1096,7 @@ class Hunter:
         floor=self.minimum_xp_mob_level(self.clock)
         return {'identity':target.identity,'model':target.model,'level':ml,
                 'character_level':level,'level_gap':level-ml if ml is not None else None,
-                'minimum_xp_mob_level':floor,
+                'minimum_xp_mob_level':floor,'maximum_xp_mob_level':level+MAX_HUNT_LEVEL_ABOVE,
                 'level_xp_divisor':xp_level_divisor(level,ml) if ml else None,
                 'weak_target_exception':self.weak_target_exception(target,self.clock) if ml and ml<floor else None,
                 'quest_required':target.model in self.quest_models(),

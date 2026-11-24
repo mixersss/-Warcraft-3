@@ -4,7 +4,7 @@ import math
 import struct
 from adventure import talk_request
 from classic_wire import Reader,ProtocolError
-from farm_plan import PREFERRED_LEVEL_GAP,projected_combat
+from farm_plan import MAX_HUNT_LEVEL_ABOVE,PREFERRED_LEVEL_GAP,projected_combat
 from town import function_request
 
 def npc_near(world,point):
@@ -109,7 +109,7 @@ class HuntTravel:
   return tuple(merged.items())
  def rate(self,model,policy,now):
   w=self.world;own=w.own;mob=self.knowledge.get(model);level=own.values.get(0,1)
-  if (not mob or mob.get('territory',0)!=0 or not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+3
+  if (not mob or mob.get('territory',0)!=0 or not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+MAX_HUNT_LEVEL_ABOVE
       or mob['hp']>own.values.get(31,1)*4
       or policy.learning.blocked(model,now) or policy.learning.dangerous(model,now)):return 0
   estimate=projected_combat(own,mob)
@@ -328,6 +328,12 @@ class HuntTravel:
   entry=self.regions.mine_exit_step(w.map,w.own.position,self.escaping_mine)
   self.escaping_mine=bool(entry)
   if entry:return self.exit_mine(now,policy,entry)
+  if w.map=='eastgoaf' and self.regions.mine_exit_steps:
+   entry=self.regions.mine_exit_steps.get((w.map,self.regions.nav(w.map).land_component(w.own.position)))
+   if entry and policy.mine_has_level_camp(now) is False:
+    return self.exit_mine(now,policy,entry)
+   if self.plan and self.plan.get('mine_exit'):
+    self.plan=None
   if w.own.values.get(0,0)<20:return False
   if any(i[0] in (1000,4915,684,860,861,862,863,864,865,866,1012) and math.dist(policy.position(now),i[2])<=2000 and now-i[5]<5 for i in w.items.values()):return False
   returning=self.needs_town(policy,now)
