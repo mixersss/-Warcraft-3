@@ -16,7 +16,7 @@ class HuntTravel:
   self.data=regions.hunting_travel_data;self.knowledge=regions.mob_knowledge
   self.context=None;self.pending=None;self.plan=None;self.blocked={}
   self.next_check=0;self.site_until=0;self.level=None;self.preferred_model=None
-  self.site_arrival=None;self.escaping_mine=False;self.outbound_resume=None;self.island_scout=None;self.scout_return=False
+  self.site_arrival=None;self.site_camp=None;self.escaping_mine=False;self.outbound_resume=None
   self.deep_mine_cohort=hashlib.sha256((name+':silver-floor').encode()).digest()[0]%4==0
   self.next_deep_check=0
   self.hunt_options=[]
@@ -109,7 +109,8 @@ class HuntTravel:
   return tuple(merged.items())
  def rate(self,model,policy,now):
   w=self.world;own=w.own;mob=self.knowledge.get(model);level=own.values.get(0,1)
-  if (not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+3 or mob['hp']>own.values.get(31,1)*4
+  if (not mob or mob.get('territory',0)!=0 or not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+3
+      or mob['hp']>own.values.get(31,1)*4
       or policy.learning.blocked(model,now) or policy.learning.dangerous(model,now)):return 0
   estimate=projected_combat(own,mob)
   if estimate is None:return 0
@@ -122,38 +123,8 @@ class HuntTravel:
   map_name,arrived=self.site_arrival
   progress=policy.learning.last_progress_at
   return self.world.map==map_name and now-arrived<180 and (progress is None or progress<=arrived)
- def scout_goal(self,now):
-  if not self.island_scout:return None
-  name,point,arrived,level,xp=self.island_scout
-  own=self.world.own
-  if (name!=self.world.map or own.values.get(0,0)>level or own.values.get(15,0)>xp):
-   self.island_scout=None;return None
-  if now-arrived>=180:
-   self.island_scout=None;self.scout_return=True;return None
-  return point
- def choose_island_scout(self,now,policy,routes):
-  last=policy.learning.last_progress_at
-  if last is None or now-last<300 or not self.count(4602):return None
-  actor=self.world.own
-  if actor.values.get(1,0)<actor.values.get(31,1)*.85:return None
-  rows=[]
-  for route in routes:
-   if (not route.get('island') or route.get('label')=='Go to Argent City!'
-       or math.dist(actor.position,route['position'])>15000):continue
-   sites=self.regions.island_scout_sites(route['to_map'],tuple(route['arrival_cm']))
-   for model,(distance,point) in sites.items():
-    if self.knowledge.get(model)['level']>actor.values.get(0,1):continue
-    rate=self.rate(model,policy,now)
-    if rate:rows.append((rate/(1+distance/15000),route,model,point))
-  for _,route,model,point in sorted(rows,key=lambda row:row[0],reverse=True):
-   if self.regions.reserve_island_scout(route['to_map'],tuple(route['arrival_cm']),now):
-    self.preferred_model=model
-    return dict(route,model=model,scout_point=point,returning=False)
-  return None
  def needs_town(self,policy,now):
   w=self.world
-  self.scout_goal(now)
-  if self.scout_return:return True
   services=getattr(policy,'owner_services',None)
   if services and services.need():return True
   settling=self.settling_site(now,policy) or policy.hunt_before_errands(now)
@@ -184,12 +155,12 @@ class HuntTravel:
   if not entry or not self.same_land(policy,entry['position']):return None
   plan=dict(entry,kind='event',event_model=entry['model'],fare=0,returning=False,deep_mine=True)
   if self.blocked.get(self.route_key(plan),0)>now:return None
-  sites=self.regions.hunting_arrival_sites(w.map,tuple(plan['arrival_cm']))
-  score,model=max(((self.rate(model,policy,now)/(1+dist/12000),model)
-                   for model,dist in sites.items()),default=(0,None))
-  return dict(plan,model=model) if score>0 else None
+  sites=self.regions.hunting_arrival_camps(w.map,tuple(plan['arrival_cm']))
+  score,model=max(((self.rate(model,policy,now)/(1+points[0][0]/12000),model)
+                   for model,points in sites.items()),default=(0,None))
+  return dict(plan,model=model,landing_camps=[(plan['arrival_cm'],[point for _,point in sites[model]])]) if score>0 else None
  def choose(self,now,policy,returning=False,alternative_to=None,resume=None):
-  w=self.world;rows=[];scout_routes=[]
+  w=self.world;rows=[];landings={}
   if not returning:self.hunt_options=[]
   level=w.own.values.get(0,1)
   origin=policy.position(now);rates={}
@@ -199,7 +170,6 @@ class HuntTravel:
   for route in self.routes(now,policy,returning):
    if (route['to_map']==w.map and math.dist(w.own.position,route['arrival_cm'])<5000
        and self.same_land(policy,route['arrival_cm'])):continue
-   if route.get('island'):scout_routes.append(route)
    if alternative_to:
     ready_ticket=(route['kind']=='ticket' and self.count(route['item_id'])
                   and all(w.own.values.get(a,0)>=w.own.values.get(b,1) for a,b in ((1,31),(2,32))))
@@ -217,17 +187,17 @@ class HuntTravel:
    # departure below still requires an owned return ticket and native use.
    approach=(math.dist(origin,route.get('position',origin))
              +route.get('shopping_distance',0))/250
-   for model,distance in self.nearby(route['to_map'],route['arrival_cm']):
+   key=route['to_map'],tuple(route['arrival_cm'])
+   if key not in landings:landings[key]=self.regions.hunting_arrival_camps(*key)
+   for model,points in landings[key].items():
     score=rate(model)
     if not score:continue
-    score*=600/(600+approach+distance/250+route['fare']/400)
+    score*=600/(600+approach+points[0][0]/250+route['fare']/400)
     jitter=int.from_bytes(hashlib.sha256(f'{self.name}:{model}:{int(now//900)}'.encode()).digest()[:2],'big')/65535
     if (resume and model==resume['model'] and route['to_map']==resume['to_map']
         and math.dist(route['arrival_cm'],resume['arrival_cm'])<10000):
      score*=2
     rows.append((score*(.8+.4*jitter),route,model))
-  if not rows:
-   return self.choose_island_scout(now,policy,scout_routes) if scout_routes and not (returning or alternative_to) else None
   choices=[]
   for score,route,model in sorted(rows,key=lambda row:row[0],reverse=True):
    if returning:
@@ -241,22 +211,28 @@ class HuntTravel:
           and any(math.dist(point,previous)<2500 for point in arrivals
                   for previous in other.get('arrival_options',[other['arrival_cm']]))
           for _,other,_ in choices):continue
-   sites=[self.regions.hunting_arrival_sites(route['to_map'],tuple(point)) for point in arrivals]
+   sites=[]
+   for point in arrivals:
+    key=route['to_map'],tuple(point)
+    if key not in landings:landings[key]=self.regions.hunting_arrival_camps(*key)
+    sites.append(landings[key])
    if not all(model in site for site in sites):continue
    if alternative_to:
     speed=max(100,w.own.values.get(44,480))
     approach=math.dist(w.own.position,route.get('position',w.own.position))
-    via=(approach+max(site[model] for site in sites))*1.5/speed+20
+    via=(approach+max(site[model][0][0] for site in sites))*1.5/speed+20
     if via+30>=math.dist(w.own.position,alternative_to)/speed:continue
-   choices.append((score,route,model))
+   landing_camps=[(arrival,[point for _,point in site[model]]) for arrival,site in zip(arrivals,sites)]
+   choices.append((score,dict(route,landing_camps=landing_camps),model))
    if len(choices)==3:break
   if not choices:
-   return self.choose_island_scout(now,policy,scout_routes) if scout_routes and not (returning or alternative_to) else None
+   return None
   current=max((rate(m) for m,d in self.nearby(w.map,w.own.position) if d<5000),default=0)
   last=getattr(policy.learning,'last_progress_at',None)
   if last is not None and now-last<180:choices=[row for row in choices if row[0]>=current*1.2]
   if not choices:return None
-  self.hunt_options=[{'map':r['to_map'],'arrival_cm':r['arrival_cm'],'via':r['name'],'model':m} for _,r,m in choices]
+  self.hunt_options=[{'map':r['to_map'],'arrival_cm':r['arrival_cm'],'via':r['name'],'model':m,
+                      'landing_camps':r['landing_camps']} for _,r,m in choices]
   selected=int.from_bytes(hashlib.sha256(f'{self.name}:{level}:{w.map}:camp'.encode()).digest()[:2],'big')
   _,route,model=choices[selected%len(choices)]
   self.preferred_model=model
@@ -336,9 +312,10 @@ class HuntTravel:
     if plan.get('mine_exit'):
      self.reason='Сервер подтвердил переход на пути выхода из шахты';return False
     self.site_arrival=(w.map,now) if plan.get('model') else None
-    if plan.get('scout_point'):
-     self.island_scout=(w.map,plan['scout_point'],now,w.own.values.get(0,0),w.own.values.get(15,0))
-    if plan.get('returning'):self.scout_return=False
+    self.site_camp=None
+    if plan.get('landing_camps'):
+     _,points=min(plan['landing_camps'],key=lambda row:math.dist(w.own.position,row[0]))
+     self.site_camp=(w.map,plan['model'],tuple(map(tuple,points)))
     self.site_until=now+600;self.next_check=now+(600 if plan.get('model') else 60);self.reason='Прибытие к новой точке подтверждено сервером';return False
    if now>=self.pending['deadline']:self.timeouts+=1;self.abort(now,'Переход не подтверждён')
    return self.busy
@@ -370,7 +347,6 @@ class HuntTravel:
    if self.plan.get('model'):self.outbound_resume=(self.plan,now+900)
    self.plan=None;self.preferred_model=None
   if returning and near_argent:
-   self.scout_return=False
    self.plan=None;self.preferred_model=None
    return False
   if self.outbound_resume and now>=self.outbound_resume[1]:self.outbound_resume=None
@@ -441,4 +417,4 @@ class HuntTravel:
    if not npc:self.abort(now,'Нет видимой портальщицы');return False
    self.send(301,talk_request(npc.identity));self.context={'npc':npc.identity,'stage':'menu','deadline':now+8};return True
   return self.use_visible_event(now,policy,plan)
- def summary(self):return {'state':self.reason,'plan':self.plan,'camp_options':self.hunt_options,'preferred_model':self.preferred_model,'requests':self.requests,'confirmed_arrivals':self.confirmed,'timeouts':self.timeouts,'mine_door_requests':self.mine_requests,'confirmed_mine_arrivals':self.mine_arrivals,'last_arrival':self.last_arrival,'known_island_portals':len(self.data['island_nodes']),'known_tickets':len(self.data['tickets']),'known_entrances':len(self.data['entrances']),'spawn_regions_are_not_live_mob_positions':True}
+ def summary(self):return {'state':self.reason,'plan':self.plan,'camp_options':self.hunt_options,'site_camp':self.site_camp,'preferred_model':self.preferred_model,'requests':self.requests,'confirmed_arrivals':self.confirmed,'timeouts':self.timeouts,'mine_door_requests':self.mine_requests,'confirmed_mine_arrivals':self.mine_arrivals,'last_arrival':self.last_arrival,'known_island_portals':len(self.data['island_nodes']),'known_tickets':len(self.data['tickets']),'known_entrances':len(self.data['entrances']),'spawn_regions_are_not_live_mob_positions':True}

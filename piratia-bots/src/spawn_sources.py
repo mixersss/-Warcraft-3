@@ -107,6 +107,9 @@ def refresh_local_spawns(assets, data, resource=None):
     if resource is None:
         return {'mode': 'bundled'}
     try:
+        resource=Path(resource)
+        if (resource/'resource'/'script').is_dir() and not (resource/'script').is_dir():
+            resource=resource/'resource'
         compiled = compile_spawns(resource, assets)
         if compiled['maps'] and write_snapshot(data/'server-spawns.json', compiled):
             return {'mode': 'server', 'maps': len(compiled['maps']),

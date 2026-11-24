@@ -1859,17 +1859,24 @@ class Hunter:
             return
         if self.region and self.world.map!='garner' and own.values.get(LV,1)<=3:
             self.change('ожидание перехода в Аргент: старт на Forest Spirit');self.next_action=now+1;return
-        self.change('поиск свободного места фарма')
-        scout_goal=self.hunt_travel.scout_goal(now) if hasattr(self.hunt_travel,'scout_goal') else None
-        if scout_goal and distance(self.position(now),scout_goal)>=300:
-            if self.move_to(scout_goal,now):
-                self.change('проверяет место появления мобов на острове')
-                return
+        self.change('выбирает известный лагерь' if self.fast_progression else 'поиск свободного места фарма')
         if self.region:
-            raw_goals=[pt for model in self.planned_models() if str(model) in self.region['farms']
-                       for pt in self.region['farms'][str(model)]['points']]
+            models=self.planned_models()
+            farms=self.local_hunting_region()['farms']
+            raw_goals=[pt for model in models if str(model) in farms
+                       for pt in farms[str(model)]['points']]
+            site=getattr(self.hunt_travel,'site_camp',None)
+            if site and self.travel_farm_preference(now) in models and self.world.map==site[0] and site[1] in models:
+                landing_goals=self.reachable_camp_goals(site[2],now)
+                if landing_goals:raw_goals=landing_goals
+                else:
+                    self.hunt_travel.site_camp=None
+                    self.hunt_travel.preferred_model=None
+                    self.hunt_travel.next_check=min(self.hunt_travel.next_check,now+15)
         elif self.adventure:
             raw_goals=self.adventure.farm_goals()
+        elif self.fast_progression:
+            raw_goals=[]
         else:
             raw_goals=[self.nav.waypoints[i] for i in self.route]
         goals=[]
@@ -1902,7 +1909,7 @@ class Hunter:
             self.camp_choices=[]
             goals=self.reachable_camp_goals(raw_goals,now)
         if not goals:
-            if self.camp_scouting and self.region and not self.local_hunting_region()['farms']:
+            if self.camp_scouting and (not self.region or not any(f['points'] for f in self.local_hunting_region()['farms'].values())):
                 if self.stuck_return.tick(now,self):
                     self.change(self.stuck_return.reason)
                     return

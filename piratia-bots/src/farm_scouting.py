@@ -1,8 +1,8 @@
-"""Dry scouting points INSIDE verified source spawn rectangles, never new spawns."""
+"""Dry camp points from exact server placements and source spawn rectangles."""
 import math
 
 def scout_points(nav,locations,fallback,limit=96):
-    points=list(dict.fromkeys(tuple(p) for p in fallback));extra=[]
+    points=list(dict.fromkeys(tuple(p) for p in fallback));extra=[];fixed=[]
     allowed=getattr(nav,'combat_allowed',lambda p:True)
     for area in locations:
         if area.get('conditions_not_evaluated'):continue
@@ -10,7 +10,7 @@ def scout_points(nav,locations,fallback,limit=96):
         if lo == hi:
             point=tuple(lo)
             if allowed(point) and (nav.land_component(point) if hasattr(nav,'land_component') else nav.nearest(point,0)):
-                extra.append(point)
+                fixed.append(point)
             continue
         width,height=hi[0]-lo[0],hi[1]-lo[1]
         if width<0 or height<0:continue
@@ -27,4 +27,4 @@ def scout_points(nav,locations,fallback,limit=96):
     extra=list(dict.fromkeys(extra))
     if len(extra)>limit:
         extra=[extra[int(i*len(extra)/limit)] for i in range(limit)]
-    return list(dict.fromkeys(points+extra))
+    return list(dict.fromkeys(fixed+points+extra))

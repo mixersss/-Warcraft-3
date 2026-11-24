@@ -71,7 +71,11 @@ def ensure_shop_knowledge(assets,candidates=None,minimum_revision=48):
         if not (path/'owner-city-shops-v2.json').is_file():continue
         try:
             result=restore(path,assets)
-            return dict(result,ready=result['catalog_revision']>=minimum_revision,problem='' if result['catalog_revision']>=minimum_revision else 'Нужно обновить серверные магазины через INSTALL-SERVER-SHOPS.cmd')
+            ready=result['catalog_revision']>=minimum_revision
+            if ready:
+                from diagnostic_io import write_snapshot
+                write_snapshot(saved,{'resource':str(path.resolve())})
+            return dict(result,ready=ready,problem='' if ready else 'Нужно обновить серверные магазины через INSTALL-SERVER-SHOPS.cmd')
         except (OSError,ValueError,KeyError) as error:problems.append(str(error))
     return {'ready':False,'restored':False,'problem':problems[-1] if problems else 'Справочник магазинов отсутствует; RESTORE-BOT-SHOPS.cmd с серверной resource'}
 

@@ -53,7 +53,7 @@ class HuntCatalogueTests(unittest.TestCase):
         travel.routes=lambda *args:routes
         travel.rate=lambda *args:100
         travel.nearby=lambda name,point:[(243,0)] if name=='eastgoaf' else []
-        travel.regions.hunting_arrival_sites=lambda name,p:{} if p[0]==11500 else {243:0}
+        travel.regions.hunting_arrival_camps=lambda name,p:{} if p[0]==11500 else {243:((0,p),)}
         chosen=set()
         for index in range(12):
             travel.name=f'bot-{index}'

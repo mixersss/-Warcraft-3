@@ -5,8 +5,8 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-86'
-NAME = 'Piratia-Auto-Bots-Alpha86'
+OUT = ROOT.parent / 'releases' / 'piratia' / 'auto-bots-87'
+NAME = 'Piratia-Auto-Bots-Alpha87'
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     sources += [ROOT/'knowledge/ALPHA59.md',ROOT/'knowledge/ALPHA59-INSTALL.md',ROOT/'knowledge/fleet-alpha58-audit.json']
     sources += [ROOT/'knowledge/ALPHA60.md',ROOT/'knowledge/ALPHA60-INSTALL.md',ROOT/'knowledge/fleet-alpha59-audit.json']
     sources += [ROOT/'knowledge/ALPHA61.md',ROOT/'knowledge/ALPHA61-INSTALL.md',ROOT/'knowledge/fleet-alpha60-audit.json']
-    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md',ROOT / 'knowledge/ALPHA73.md',ROOT / 'knowledge/ALPHA73-MAP-AUDIT.md',ROOT / 'knowledge/ALPHA74.md',ROOT / 'knowledge/ALPHA75.md',ROOT / 'knowledge/ALPHA76.md',ROOT / 'knowledge/ALPHA77.md',ROOT / 'knowledge/ALPHA78.md',ROOT / 'knowledge/ALPHA79.md',ROOT / 'knowledge/ALPHA80.md',ROOT / 'knowledge/ALPHA81.md',ROOT / 'knowledge/ALPHA82.md',ROOT / 'knowledge/ALPHA83.md',ROOT / 'knowledge/ALPHA84.md',ROOT / 'knowledge/ALPHA85.md',ROOT / 'knowledge/ALPHA86.md']
+    sources += [ROOT / 'knowledge/ALPHA62.md',ROOT / 'knowledge/ALPHA63.md',ROOT / 'knowledge/ALPHA64.md',ROOT / 'knowledge/ALPHA65.md',ROOT / 'knowledge/ALPHA66.md',ROOT / 'knowledge/ALPHA67.md',ROOT / 'knowledge/ALPHA68.md',ROOT / 'knowledge/ALPHA69.md',ROOT / 'knowledge/ALPHA70.md',ROOT / 'knowledge/ALPHA71.md',ROOT / 'knowledge/ALPHA72.md',ROOT / 'knowledge/ALPHA73.md',ROOT / 'knowledge/ALPHA73-MAP-AUDIT.md',ROOT / 'knowledge/ALPHA74.md',ROOT / 'knowledge/ALPHA75.md',ROOT / 'knowledge/ALPHA76.md',ROOT / 'knowledge/ALPHA77.md',ROOT / 'knowledge/ALPHA78.md',ROOT / 'knowledge/ALPHA79.md',ROOT / 'knowledge/ALPHA80.md',ROOT / 'knowledge/ALPHA81.md',ROOT / 'knowledge/ALPHA82.md',ROOT / 'knowledge/ALPHA83.md',ROOT / 'knowledge/ALPHA84.md',ROOT / 'knowledge/ALPHA85.md',ROOT / 'knowledge/ALPHA86.md',ROOT / 'knowledge/ALPHA87.md']
     sources += sorted((ROOT / 'src').glob('*.py'))
     sources += sorted((ROOT / 'src').glob('*.ps1'))
     sources += sorted((ROOT / 'tests').glob('test_*.py'))
@@ -448,8 +448,10 @@ def main():
                     status='Alpha85 indexes known mobs by level and distributes bots across distinct camp and transport choices.')
     manifest.update(alpha86={'minimum_server_revision':60,'live_windows_verified':False},
                     status='Alpha86 recovers exhausted farm paths, excludes Abandoned Mine 1, and buys nearby Strive amplifiers.')
+    manifest.update(alpha87={'minimum_server_revision':60,'live_windows_verified':False},
+                    status='Alpha87 follows precomputed land camps after confirmed travel landings and imports static server placements.')
     (OUT / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-    (OUT / 'README.md').write_bytes((ROOT / 'README.md').read_bytes())
+    (OUT / 'README.md').write_bytes((ROOT / 'knowledge/ALPHA87.md').read_bytes())
     print(artifact)
     print(manifest['sha256'])
 

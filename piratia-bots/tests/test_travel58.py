@@ -20,7 +20,7 @@ class Travel58Tests(unittest.TestCase):
   w=source.actor();w.own.values.update({0:35,1:1200,2:100,31:1200,32:100});w.map='garner';w.items={}
   w.bag={0:source.item(4602)}
   data={'birthplaces':{'Argent City':{'points':[[223100,278800]]}},'island_nodes':[],'tickets':[],'entrances':[]}
-  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_sites=lambda *a:{295:0},mine_exit_step=lambda *a:None)
+  regions=SimpleNamespace(hunting_travel_data=data,mob_knowledge=source.MOBS,map_catalog={'garner':{},'eastgoaf':{}},hunting_arrival_camps=lambda name,p:{295:((0,p),)},mine_exit_step=lambda *a:None)
   c=HuntTravel(w,regions,source.LIFE,SimpleNamespace(phase=lambda *a:'progression'),Mock(),'Bot58')
   p=SimpleNamespace(sequence=3,emit=Mock(),position=lambda now:w.own.position,nav=SimpleNamespace(nearest=lambda point,radius:point),move_to=Mock(return_value=True),learning=SimpleNamespace(last_progress_at=None),camp_route_active=lambda now:False,hunt_before_errands=lambda now:False)
   c.needs_town=lambda *a:False
@@ -156,7 +156,7 @@ class Travel58Tests(unittest.TestCase):
   self.assertIn(99,regions.hunting_arrival_sites('eastgoaf',good['arrival_cm']))
   c.routes=lambda *a:[bad,good]
   c.nearby=lambda map_name,point:[(225,0)] if map_name=='garner' else [(99,10521)]
-  c.rate=lambda *a:1
+  c.rate=lambda model,*a:1 if model==99 else 0
   self.assertEqual(c.choose(100,p)['model'],99)
   c.routes=lambda *a:[dict(good,arrival_options=[good['arrival_cm'],(0,0)])]
   self.assertIsNone(c.choose(100,p))
@@ -224,6 +224,9 @@ class Travel58Tests(unittest.TestCase):
   w.own.x,w.own.y=options[1];w.bag.pop(4)
   c.tick(101,p,True)
   self.assertEqual(c.confirmed,1)
+  self.assertTrue(c.site_camp[2])
+  site_points=c.regions.hunting_arrival_camps('garner',tuple(options[1]))[c.site_camp[1]]
+  self.assertEqual(c.site_camp[2],tuple(point for _,point in site_points))
 
  def test_near_silver_mine_door_can_replace_long_walk_for_level40(self):
   from regions import Regions

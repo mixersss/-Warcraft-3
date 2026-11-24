@@ -100,32 +100,19 @@ class SpawnAndCombat74Tests(unittest.TestCase):
         self.assertFalse(travel.tick(250,policy,True))
         travel.choose.assert_called_with(250,policy,resume=saved)
 
-    def test_conditional_zephyr_is_scouted_once_with_owned_return(self):
+    def test_conditional_zephyr_is_not_a_farming_trip_without_known_unconditional_spawns(self):
         fixture=test_travel58.Travel58Tests()
         w,travel,policy=fixture.make()
-        regions=Regions(ROOT/'assets',400)
-        travel.regions=regions
-        travel.knowledge=regions.mob_knowledge
+        travel.regions=Regions(ROOT/'assets',400)
+        travel.knowledge=travel.regions.mob_knowledge
         w.own.values[0]=52
         policy.learning.last_progress_at=10
         route=dict(fixture.plan(w,'portal'),island=True)
+        travel.routes=Mock(return_value=[route])
         travel.rate=Mock(return_value=25)
-        self.assertFalse(regions.hunting_arrival_sites('garner',(326000,328000)))
-        self.assertIsNone(travel.choose_island_scout(300,policy,[route]))
-        chosen=travel.choose_island_scout(350,policy,[route])
-        nav=regions.nav('garner')
-        self.assertEqual(nav.land_component(chosen['scout_point']),nav.land_component((326000,328000)))
-        self.assertEqual(travel.knowledge.get(chosen['model'])['level'],51)
-        self.assertIsNone(travel.choose_island_scout(351,policy,[route]))
-        travel.island_scout=('garner',chosen['scout_point'],360,52,0)
-        self.assertEqual(travel.scout_goal(500),chosen['scout_point'])
-        w.own.values[15]=15
-        self.assertIsNone(travel.scout_goal(501))
-        self.assertFalse(travel.scout_return)
-        travel.island_scout=('garner',chosen['scout_point'],360,52,15)
-        self.assertEqual(travel.scout_goal(500),chosen['scout_point'])
-        self.assertIsNone(travel.scout_goal(540))
-        self.assertTrue(travel.scout_return)
+        self.assertFalse(travel.regions.hunting_arrival_camps('garner',(326000,328000)))
+        self.assertIsNone(travel.choose(350,policy))
+        self.assertFalse(travel.hunt_options)
 
     def test_confirmed_death_releases_previous_attack_delay(self):
         fixture=test_coordination.CohortCombatTests()
