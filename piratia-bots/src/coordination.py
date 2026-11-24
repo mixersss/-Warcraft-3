@@ -113,6 +113,12 @@ class Coordination:
         if mine:owner=(owner,'mine')
         with self.lock:self.zones.pop(owner,None)
 
+    def renew_zone(self,owner,map_name,position,now):
+        with self.lock:
+            row=self.zones.get(owner)
+            if row and row[1]>now and row[0][0]==map_name and math.dist(row[0][1],position)<=2500:
+                self.zones[owner]=(row[0],now+45)
+
 
 def tactic_for(index,mode='mixed'):
     if mode=='mixed':return 'farm' if index%5 in (0,1) else 'hybrid'

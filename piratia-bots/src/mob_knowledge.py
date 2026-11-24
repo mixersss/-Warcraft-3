@@ -17,9 +17,18 @@ class MobKnowledge:
             if overlay is not None:
                 self.add_spawns(overlay, known)
         self.by_map={}
+        by_level={}
         for model,record in self.monsters.items():
+            if record.get('territory')==0:
+                by_level.setdefault(record['level'],[]).append(model)
             for location in record['locations']:
                 self.by_map.setdefault(location['map'],{}).setdefault(model,[]).append(location)
+        self.ground_by_level={level:tuple(models) for level,models in by_level.items()}
+
+    @lru_cache(maxsize=128)
+    def ground_models_in_band(self,low,high):
+        return tuple(model for level in range(max(1,low),high+1)
+                     for model in self.ground_by_level.get(level,()))
 
     def add_spawns(self, path, known):
         try:

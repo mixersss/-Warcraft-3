@@ -128,6 +128,7 @@ class Hunter:
         self.search_started=0
         self.search_deadline=0
         self.next_camp_route_check=0;self.camp_route_switches=0
+        self.camp_choices=[];self.next_zone_renew=0
         self.camp_arrival_until=0
         self.goal_blacklist={}
         self.tactic='quests'
@@ -198,8 +199,9 @@ class Hunter:
         self.approach_probe=False
         self.approach_attack_tried=False
 
-    def clear_zone(self):
-        if self.coordination:self.coordination.leave_zone(self.owner)
+    def clear_zone(self,keep_reservation=False):
+        if self.coordination and not keep_reservation:self.coordination.leave_zone(self.owner)
+        if not keep_reservation:self.camp_choices=[]
         self.search_goal=None
         self.search_recovery=False
         self.camp_arrival_until=0
@@ -648,12 +650,12 @@ class Hunter:
     def opportunity_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return self.farm_models()
-        return self.learning.choose(self.local_hunting_region(),self.world.own,self.clock,fallback=True,hold=bool(self.target),position=self.position(self.clock))
+        return self.learning.choose(self.local_hunting_region(funding=self.fast_progression),self.world.own,self.clock,fallback=True,hold=bool(self.target),position=self.position(self.clock))
 
     def farm_models(self):
         if self.starter_models():return self.starter_models()
         if not self.region:return (71,75)
-        return self.learning.choose(self.local_hunting_region(),self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
+        return self.learning.choose(self.local_hunting_region(funding=self.fast_progression),self.world.own,self.clock,hold=bool(self.target),position=self.position(self.clock))
 
     def local_hunting_region(self,funding=False):
         if not self.region or not (funding or self.activity.hunting(self.clock)) or not hasattr(self.nav,'land_component'):return self.region
@@ -745,6 +747,16 @@ class Hunter:
         goals=dict.fromkeys(self.nav.nearest(p) for p in raw_goals)
         return [p for p in goals if p and self.goal_blacklist.get(p,0)<=now
                 and (not component or self.nav.land_component(p)==component)]
+
+    def spread_camp_goals(self,goals,origin):
+        choices=[self.search_goal] if self.search_goal in goals else []
+        maximum=min(distance(origin,point) for point in goals)+18000
+        for point in goals:
+            if (distance(origin,point)<=maximum
+                    and all(distance(point,chosen)>=2500 for chosen in choices)):
+                choices.append(point)
+                if len(choices)==3:break
+        return choices
 
     def move_to_camp(self,goal,goals,now,origin):
         try:
@@ -1787,11 +1799,14 @@ class Hunter:
                     self.last_damage_at=now
                     self.combat_since=None
                     self.approach_probe=False
-                    self.clear_zone()
+                    self.clear_zone(keep_reservation=True)
                     break
                 if target:break
             if target is None and waiting_route:raise RoutePending()
         if target:
+            if self.coordination and now>=self.next_zone_renew:
+                self.coordination.renew_zone(self.owner,self.world.map,self.position(now),now)
+                self.next_zone_renew=now+12
             spell=(self.combat_skills.select(now) or self.combat_skills.control(now)) if self.combat_skills and not funding_attack else None
             ranged=self.combat_skills.select(now,ignore_cooldown=True) if self.combat_skills else None
             # Finish a current one-shot cast; a ready spell may replace repeating melee.
@@ -1869,7 +1884,8 @@ class Hunter:
                 closest=min(distance(origin,p) for p in goals)
                 # Spread bots across nearby sites without sending one far away
                 # merely because the nearest good patch is shared.
-                goals=[p for p in goals if distance(origin,p)<=closest+3000]
+                gap=6500 if self.fast_progression else 3000
+                goals=[p for p in goals if distance(origin,p)<=closest+gap]
         using_recovery=bool(goals)
         if self.paused_camp and not (self.supply_funding_goal or self.raising_travel_funds):
             map_name,point,expires=self.paused_camp
@@ -1882,6 +1898,7 @@ class Hunter:
                     using_recovery=False
                 self.paused_camp=None
         if not goals:
+            self.camp_choices=[]
             goals=self.reachable_camp_goals(raw_goals,now)
         if not goals:
             if self.camp_scouting and self.region and not self.local_hunting_region()['farms']:
@@ -1903,6 +1920,10 @@ class Hunter:
         # in a hash-random order. Reservation ties remain different per bot.
         goals.sort(key=lambda pt:(int(distance(origin,pt)//1500),
                     (pt[0]*73856093 ^ pt[1]*19349663 ^ int(self.approach_angle*100000)) & 0xffffffff))
+        if (self.fast_progression and self.camp_scouting and not self.supply_funding_models
+                and not self.raising_travel_funds and not self.quest_models() and not self.mandatory_work()):
+            goals=self.spread_camp_goals(goals,origin)
+            self.camp_choices=goals
         goal=(self.coordination.choose_zone(self.owner,self.world.map,goals,now,origin)
               if self.coordination else goals[self.waypoint%len(goals)])
         self.search_recovery=using_recovery
@@ -1916,7 +1937,7 @@ class Hunter:
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             arrival_window=self.camp_arrival_until
-            self.clear_zone()
+            self.clear_zone(keep_reservation=arrived and self.fast_progression)
             if arrived and self.region:self.camp_arrival_until=arrival_window or now+45
             self.waypoint+=1
             self.next_action=now+.5
@@ -1939,7 +1960,8 @@ class Hunter:
                     'map':self.world.map,'points_cm':[list(p) for p in points],
                     'coordinates':[[round(p[0]/100,2),round(p[1]/100,2)] for p in points]})
         paused=self.paused_camp
-        return {'sites':sites,'current_goal_cm':self.search_goal,'switches_to_ready_route':self.camp_route_switches,
+        return {'sites':sites,'current_goal_cm':self.search_goal,'camp_choices_cm':self.camp_choices,
+                'switches_to_ready_route':self.camp_route_switches,
                 'mine_sector_cm':self.mine_goal,'mine_sector_arrived':self.mine_arrived is not None,
                 'paused_camp':{'map':paused[0],'goal_cm':paused[1]} if paused and paused[2]>self.clock else None,'nearby_recovery':self.search_recovery,'camp_route_priority':self.camp_route_active(self.clock),
                 'hunt_before_errands':self.hunt_before_errands(self.clock),
@@ -1999,6 +2021,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     policy.tactic_schedule=TacticSchedule(tactic,bot_name)
     policy.coordination=getattr(navigation,'coordination',None)
     policy.mob_knowledge=getattr(navigation,'mob_knowledge',None)
+    policy.learning.catalog=policy.mob_knowledge
     observations=getattr(navigation,'hunt_observations',None)
     if observations and bot_index and policy.mob_knowledge:policy.learning.location_observer=navigation.record_hunting_observation
     region_for=getattr(navigation,'hunting_region',getattr(navigation,'get',lambda name:None))

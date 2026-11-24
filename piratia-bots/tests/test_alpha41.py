@@ -162,10 +162,10 @@ class LevelingTests(unittest.TestCase):
         mobs=json.loads((ROOT/'assets/world-mobs.json').read_text())['monsters']
         self.assertEqual(mobs['103']['base_xp'],7);self.assertEqual(mobs['258']['base_xp'],80)
         self.assertEqual(len(mobs),608);self.assertEqual(sum(bool(v['locations']) for v in mobs.values()),426)
-    def test_soft_rewarding_target_scores_above_armoured_dry_target(self):
+    def test_soft_rewarding_target_scores_above_armoured_low_xp_target(self):
         w,l,t=self.make();w.own.values.update({33:30,34:40})
         r={'farms':{'1':{'level':10,'hp':100,'base_xp':55,'defence':5,'points':[[100,0]],'drops':[]},
-                    '2':{'level':10,'hp':100,'base_xp':0,'defence':100,'points':[[100,0]],'drops':[]}}}
+                    '2':{'level':10,'hp':100,'base_xp':1,'defence':100,'points':[[100,0]],'drops':[]}}}
         l.choose(r,w.own,100,position=(0,0));self.assertGreater(l.scores[1],l.scores[2])
     def test300_independent_learners_and_fleet_records(self):
         with tempfile.TemporaryDirectory() as d:

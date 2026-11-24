@@ -43,6 +43,7 @@ class HuntLearning:
   self.events=[];self.location_observer=None
   self.async_rewards=False;self.pending_rewards=[];self.reward_xp_floor=None
   self.server_xp_rate=None;self.session_combat_rates={}
+  self.catalog=None
   self.inefficient_models=set();self.candidate_details={}
   self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
   self.session_start=None;self.session_xp=None;self.session_last_xp=None;self.session_gain=0;self.session_loss=0
@@ -155,10 +156,16 @@ class HuntLearning:
  def waiting_reward(self,now):
   if self.async_rewards:return len(self.pending_rewards)>=32
   return bool(self.active and 'death_seen' in self.active and now-self.active['death_seen']<2)
+ def farms_in_band(self,region,low,high):
+  farms=region['farms']
+  if self.catalog is None:
+   return ((key,record) for key,record in farms.items() if low<=record['level']<=high)
+  keys=map(str,self.catalog.ground_models_in_band(low,high))
+  return ((key,farms[key]) for key in keys if key in farms and low<=farms[key]['level']<=high)
  def minimum_farm_level(self,region,own,now):
   level=own.values.get(0,1);hp=max(1,own.values.get(31,1))
-  for model,r in region['farms'].items():
-   if (r.get('territory',0)==0 and r['points'] and level-PREFERRED_LEVEL_GAP<=r['level']<=level+max(3,self.profile[1])
+  for model,r in self.farms_in_band(region,max(1,level-PREFERRED_LEVEL_GAP),level+max(3,self.profile[1])):
+   if (r.get('territory',0)==0 and r['points'] and r.get('base_xp',1)>0
        and not self.blocked(int(model),now) and not self.dangerous(int(model),now)
        and r['hp']<=hp*self.profile[3]):
     return max(1,level-PREFERRED_LEVEL_GAP)
@@ -167,9 +174,9 @@ class HuntLearning:
   """Safe observed opportunities, even if the current shortlist is elsewhere."""
   level=own.values.get(0,1);maximum=max(1,own.values.get(31,1));result=set()
   floor=self.minimum_farm_level(region,own,now)
-  for model,record in region['farms'].items():
+  for model,record in self.farms_in_band(region,floor,level if recovery else level+8):
    model=int(model);row=self.rows.get(str(model),{})
-   if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
+   if record.get('territory',0)!=0 or not record['points'] or record.get('base_xp',1)<=0 or self.blocked(model,now) or self.dangerous(model,now):continue
    ceiling=level if recovery else level+(8 if row.get('wins',0) else max(3,self.profile[1]))
    if not floor<=record['level']<=ceiling:continue
    if not row.get('wins') and record['hp']>maximum*self.profile[3]:continue
@@ -214,9 +221,9 @@ class HuntLearning:
   floor=self.minimum_farm_level(region,own,now)
   best_rate=max((r.get('level_xp',0)/max(1,r.get('level_seconds',0)) for r in self.rows.values() if r.get('observed_level')==level),default=0)
   scored=[];alternatives=[];self.scores={};self.candidate_details={}
-  for model,record in region['farms'].items():
+  for model,record in self.farms_in_band(region,floor,level+8):
    model=int(model);ml=record['level'];row=self.rows.get(str(model),{})
-   if record.get('territory',0)!=0 or not record['points'] or self.blocked(model,now) or self.dangerous(model,now):continue
+   if record.get('territory',0)!=0 or not record['points'] or record.get('base_xp',1)<=0 or self.blocked(model,now) or self.dangerous(model,now):continue
    if level<=3 and model==75 and not self.rows:continue
    primary=(ml<=(level+(8 if row.get('wins',0)>0 else self.profile[1]))
             and not (level<=3 and model==71))
@@ -296,7 +303,7 @@ class HuntLearning:
     self.selected={probe};self.probe_attempts[probe]=now;self.probing=True;self.until=now+75
     return set(self.selected)
   scored.sort(reverse=True)
-  count=4 if fallback else 3
+  count=3
   # Different persistent preferences, plus a bounded probe of a still viable alternative.
   chosen=scored[:count]
   if len(scored)>count and self.rng.random()<.18:chosen[-1]=self.rng.choice(scored[count:min(len(scored),count+5)])
