@@ -1,0 +1,138 @@
+import hashlib
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+import test_native
+import personal_forge as forge
+
+
+class PersonalForgeInstallerTests(unittest.TestCase):
+    def test_append_preserves_server_shop_hook_and_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as directory:
+            resource, _ = test_native.fixture(Path(directory))
+            sdk = resource / forge.SDK
+            sdk.write_bytes(sdk.read_bytes().replace(
+                forge.city.ANCHOR, test_native.native.OPEN_HOOK + forge.city.ANCHOR))
+            (resource / "script/calculate/forge.lua").write_text("\n".join(
+                f"function {name}() end" for name in
+                ("SetJinglian_Lv", "GetStone_TypeID", "Get_StoneLv", "TansferNum", "check_item_final_data")))
+            (resource / "script/calculate/functions.lua").write_text(
+                "function GetNum_Part1() end\nfunction SetNum_Part1() end")
+            paths = (forge.SCRIPT, forge.SDK, forge.TEXT, forge.BINARY, Path("ItemInfo.txt"), Path("ItemInfo.bin"))
+            hashes = {path.as_posix(): hashlib.sha256((resource / path).read_bytes()).hexdigest() for path in paths}
+            (resource / forge.MARKER).write_text(json.dumps({"installed_sha256": hashes}))
+            before, after, identity = forge.plan(resource, "Капитан")
+            receipt = json.loads(after[forge.MARKER])["installed_sha256"]
+            for path in paths[:4]:
+                self.assertEqual(receipt[path.as_posix()], hashlib.sha256(after[path]).hexdigest())
+            self.assertTrue(after[forge.BINARY].startswith(before[forge.BINARY]))
+            self.assertIn(test_native.native.OPEN_HOOK + forge.city.ANCHOR, after[forge.SDK])
+            self.assertNotIn("Капитан".encode("cp1251"), after[forge.SCRIPT])
+            rows, _ = forge.city.validate_npcs(after[forge.TEXT], after[forge.BINARY])
+            self.assertEqual(rows[identity][5], b"225750,277050")
+            for path, content in after.items():
+                (resource / path).write_bytes(content)
+            original, repeated, repeated_id = forge.plan(resource, "Капитан")
+            self.assertEqual(original, repeated)
+            self.assertEqual(identity, repeated_id)
+
+
+class PersonalForgeLuaTests(unittest.TestCase):
+    def test_owner_only_bulk_payment_rollback_rank_limit_and_three_sockets(self):
+        private = (forge.ROOT / "personal_forge.lua").read_text(encoding="utf-8")
+        test_native.NativeLuaTests().runlua(private.replace("__OWNER_BYTES__", "Captain") + """
+ITEMATTR_VAL_FUSIONID=1
+ITEMATTR_VAL_LEVEL=2
+ITEMATTR_MAXURE=3
+ITEMATTR_URE=4
+function IsPlayer(role) return 1 end
+function GetChaDefaultName(role) return role.name end
+function GetChaPos(role) return 225750,277050 end
+function GetChaMapName(role) return "garner" end
+function GetChaItem(role,bag,slot) return role.items[slot] end
+function GetItemID(item) return item.id end
+function GetItemType(item) return item.kind end
+function GetItemName(id) return tostring(id) end
+function GetItemAttr(item,key) return item.attrs[key] or 0 end
+function Get_StoneLv(item) return item.rank end
+function GetStone_TypeID(item) return item.stone or -1 end
+function TansferNum(value) return value % 4294967296 end
+local ids={10000000,10000,10}
+local ranks={1000000,1000,1}
+function GetNum_Part1(value) return math.floor(value/1000000000) end
+function GetNum_Part2(value) return math.floor(value/ids[1])%100 end
+function GetNum_Part4(value) return math.floor(value/ids[2])%100 end
+function GetNum_Part6(value) return math.floor(value/ids[3])%100 end
+function GetNum_Part3(value) return math.floor(value/ranks[1])%10 end
+function GetNum_Part5(value) return math.floor(value/ranks[2])%10 end
+function GetNum_Part7(value) return math.floor(value/ranks[3])%10 end
+function SetJinglian_Lv(stone,rank,value)
+    for i=1,3 do if math.floor(value/ids[i])%100==stone.stone then return value+ranks[i] end end
+    for i=1,3 do if math.floor(value/ids[i])%100==0 then return value+stone.stone*ids[i]+ranks[i] end end
+    return value
+end
+function check_item_final_data(item) item.refreshed=true end
+function SetChaKitbagChange(role, flag) end
+function CheckBagItem(role,id)
+    local count=0
+    for _,item in pairs(role.items) do if item.id==id then count=count+1 end end
+    return count
+end
+function RemoveChaItem(role,id,count,bag,slot)
+    if role.fail or role.items[slot].id~=id then return 0 end
+    role.items[slot]=nil
+    return 1
+end
+function DelBagItem(role,id,count)
+    for slot=1,47 do
+        if role.items[slot] and role.items[slot].id==id and count>0 then
+            role.items[slot]=nil; count=count-1
+        end
+    end
+    return count==0 and 1 or 0
+end
+function SystemNotice(role,text) role.last=text end
+function CheckFusionItem(a,b) return 1 end
+function FusionItem(a,b) a.attrs[7]=b.attrs[7]; return 1 end
+local function stone(type_id,rank) return {id=680+type_id,kind=49,rank=rank,stone=type_id,forge=0,attrs={}} end
+local app={id=5100,kind=1,forge=0,attrs={}}
+local base={id=123,kind=1,forge=0,attrs={[7]=89}}
+local c={name="Other",items={[0]=app,[1]=base}}
+local action=OwnerPersonalForgeAction
+assert(action(c,nil,1)==0 and c.items[1]==base)
+c.name="Captain"
+assert(action(c,nil,1)==1 and app.attrs[2]==nil)
+assert(action(c,nil,4)==1 and app.attrs[2]==15 and app.attrs[1]==123 and app.attrs[7]==89)
+assert(c.items[1]==nil and action(c,nil,4)==0)
+c.items[1]=stone(1,1)
+assert(action(c,nil,2)==1)
+c.fail=true
+assert(action(c,nil,4)==0 and app.forge==0 and c.items[1])
+c.fail=false
+for rank=1,3 do
+    c.items[1]=stone(1,1)
+    if rank==3 then c.items[2]=stone(1,1) end
+    assert(action(c,nil,2)==1 and action(c,nil,4)==1)
+    assert(GetNum_Part3(TansferNum(app.forge))==rank and c.items[1]==nil)
+end
+assert(c.items[2]==nil)
+for kind=2,3 do
+    c.items[1]=stone(kind,1)
+    assert(action(c,nil,2)==1 and action(c,nil,4)==1)
+end
+assert(GetNum_Part1(TansferNum(app.forge))==3)
+c.items[1]=stone(4,1)
+assert(action(c,nil,2)==0 and c.items[1])
+c.items[1]=stone(1,3)
+assert(action(c,nil,2)==1)
+c.items[1]=stone(1,2)
+assert(action(c,nil,4)==0 and c.items[1])
+app.forge=GetNum_Part1(TansferNum(app.forge))*1000000000+18000000
+c.items[1]=stone(1,8)
+assert(action(c,nil,2)==1 and action(c,nil,4)==1)
+assert(GetNum_Part3(TansferNum(app.forge))==9 and c.items[1]==nil)
+c.items[1]=stone(1,9)
+assert(action(c,nil,2)==0 and c.items[1])
+""")
