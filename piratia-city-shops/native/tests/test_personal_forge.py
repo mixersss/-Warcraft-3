@@ -38,6 +38,30 @@ class PersonalForgeInstallerTests(unittest.TestCase):
             self.assertEqual(original, repeated)
             self.assertEqual(identity, repeated_id)
 
+            # Simulate an older installed menu and a compiled table whose
+            # bytes changed without changing the NPC definitions.
+            script = after[forge.SCRIPT].replace(
+                forge.END, b"-- Older menu\n" + forge.END)
+            (resource / forge.SCRIPT).write_bytes(script)
+            receipt[forge.SCRIPT.as_posix()] = hashlib.sha256(script).hexdigest()
+            (resource / forge.MARKER).write_text(json.dumps({"installed_sha256": receipt}))
+            binary = bytearray(after[forge.BINARY])
+            binary[-1] ^= 1
+            (resource / forge.BINARY).write_bytes(binary)
+            original, updated, updated_id = forge.plan(resource)
+            self.assertEqual(updated_id, identity)
+            self.assertEqual({path for path in original if updated[path] != original[path]},
+                             {forge.SCRIPT, forge.MARKER})
+            self.assertEqual(updated[forge.BINARY], binary)
+            self.assertEqual(json.loads(updated[forge.MARKER])["installed_sha256"],
+                             json.loads(after[forge.MARKER])["installed_sha256"])
+            # A real difference between the compiled and text coordinates
+            # still fails structural validation.
+            binary[-428 + 244] ^= 1
+            (resource / forge.BINARY).write_bytes(binary)
+            with self.assertRaisesRegex(ValueError, "Не совпадает структура НПС"):
+                forge.plan(resource)
+
 
 class PersonalForgeLuaTests(unittest.TestCase):
     def test_public_dialog_bulk_payment_rollback_rank_limit_and_three_sockets(self):

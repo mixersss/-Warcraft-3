@@ -27,7 +27,7 @@ DISPATCH = (b"elseif item.func == OwnerPersonalForgeAction then\n"
             b"\t\t\treturn OwnerPersonalForgeAction(character,npc,item.p1)\n\t\t")
 
 
-def refresh_shop_receipt(resource, original, result):
+def refresh_shop_receipt(resource, original, result, *, menu_update=False):
     path = resource / MARKER
     if not path.is_file():
         return
@@ -41,9 +41,14 @@ def refresh_shop_receipt(resource, original, result):
         file = Path(name)
         before = original[file] if file in original else (resource / file).read_bytes()
         if hashlib.sha256(before).hexdigest() != expected_hash:
+            # A menu update can leave a structurally valid compiled table in place.
+            # Keep its recorded hash so this installer never certifies unrelated edits.
+            if menu_update and file == BINARY and result[BINARY] == original[BINARY]:
+                continue
             raise ValueError("Сначала нужно сверить серверные магазины. Отличается " + name)
     for file, after in result.items():
-        hashes[file.as_posix()] = hashlib.sha256(after).hexdigest()
+        if after != original[file]:
+            hashes[file.as_posix()] = hashlib.sha256(after).hexdigest()
     original[MARKER] = raw
     result[MARKER] = (json.dumps(receipt, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
@@ -73,10 +78,14 @@ def plan(resource, encoding="cp1251"):
         return b"\r\n" if b"\r\n" in value else b"\n"
     patch = patch.replace(b"\n", newline(script))
     if matches:
+        row = rows[matches[0]]
+        position = f"{POINT[0]*100+50},{POINT[1]*100+50}".encode()
+        if row[1].strip() != LABEL or row[5] != position or row[6] != position:
+            raise ValueError("Установленная кузница отличается от записи на карте Аргента.")
         result[SCRIPT] = block.sub(lambda _: patch, script)
         if len(block.findall(result[SCRIPT])) != 1:
             raise ValueError("Не найден цельный блок кузницы.")
-        refresh_shop_receipt(resource, original, result)
+        refresh_shop_receipt(resource, original, result, menu_update=True)
         return original, result, matches[0]
     anchor = city.ANCHOR
     previous = re.search(rb"elseif item\.func == OwnerOpenTrade then\s+return OwnerOpenTrade[^\r\n]*\s+" +
