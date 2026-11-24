@@ -1696,6 +1696,11 @@ class Hunter:
                 if self.owner_services:
                     from owner_services import LOOT
                     needed=set(LOOT)
+                    if getattr(self.loot,'world_expansion',False):
+                        from world_drops import NPC_TROPHY_PRICES, STACK_GEM_PRICES
+                        needed.update(NPC_TROPHY_PRICES)
+                        needed.update(STACK_GEM_PRICES)
+                        if self.market:needed.update(self.market.loot_needs())
                 if self.vendor and self.vendor.sell_patchouli:
                     needed.add(1000);self.loot.value_priority[1000]=0
                 for identity in self.loot.ground_gems:
@@ -2278,6 +2283,13 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
         if policy.loot:
             policy.loot.collect_all=False;policy.loot.allowed_items=set(LOOT)
             policy.loot.ground_gems=set(life.owner_shops['owner_progression']['gem_ids'])
+            if life.owner_shops.get('world_expansion'):
+                from world_drops import NPC_TROPHY_PRICES, STACK_GEM_PRICES
+                stackable=(set(STACK_GEM_PRICES) | set(NPC_TROPHY_PRICES)) - {684}
+                policy.loot.world_expansion=True
+                policy.loot.ground_gems.update(stackable)
+                policy.loot.stackable_ground.update(stackable)
+                policy.loot.allowed_items=None
         if policy.economy:policy.economy.focused=True
         if policy.market:policy.market.focused=True
         if life.owner_shops.get('catalog_revision',0)>=57:

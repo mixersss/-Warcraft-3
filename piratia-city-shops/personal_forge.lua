@@ -76,9 +76,10 @@ local function can_pay_raw(role, identity, count)
     return seen >= count and CheckBagItem(role, identity) == seen
 end
 
-local function request(role, mode)
+local function request(role, mode, material_slot)
+    material_slot = material_slot or 1
     local target = GetChaItem(role, 2, 0)
-    local material = GetChaItem(role, 2, 1)
+    local material = GetChaItem(role, 2, material_slot)
     local first, second = identify(target), identify(material)
     if first == 0 or (mode ~= 3 and second == 0) then
         return nil, "Положи нужные предметы в первые ячейки рюкзака."
@@ -108,13 +109,22 @@ local function request(role, mode)
     if not equipment(kind) or (first >= 5000 and first < 6000 and fusion == 0) then
         return nil, "В ячейку 1 положи экипировку или слитую аппарель."
     end
-    if GetItemType(material) ~= 49 or GetStone_TypeID(material) < 1 then
-        return nil, "В ячейке 2 нужен самоцвет, который поддерживает сервер."
+    local base = ForgeGroundStacks and ForgeGroundStacks[second]
+    local stone
+    if base then
+        for id=1,StoneTpye_ID_Num do
+            if StoneTpye_ID[id]==base then stone=id; break end
+        end
+    elseif GetItemType(material) == 49 then
+        stone = GetStone_TypeID(material)
+    end
+    if not stone or stone < 1 then
+        return nil, "В выбранной ячейке нужен самоцвет, который поддерживает сервер."
     end
     local num = packed(target)
     local types = {GetNum_Part2(num), GetNum_Part4(num), GetNum_Part6(num)}
     local ranks = {GetNum_Part3(num), GetNum_Part5(num), GetNum_Part7(num)}
-    local stone, rank, used = GetStone_TypeID(material), 1, 0
+    local rank, used = 1, 0
     local slot, first_free
     for i = 1, 3 do
         if types[i] ~= 0 then
@@ -128,19 +138,44 @@ local function request(role, mode)
     if not slot and not first_free then return nil, "Все гнёзда заняты другими самоцветами." end
     local required = math.max(1, rank - 1)
     local cost = math.floor(2^(required-1))
-    local raw = Get_StoneLv(material) == 1 and required > 1 and can_pay_raw(role, second, cost)
+    local raw
+    if base then
+        local capacity = GetKbCap(role)
+        if type(capacity) ~= "number" or capacity < 4 then
+            return nil, "Не удалось проверить ячейки рюкзака."
+        end
+        for i=0,capacity-1 do
+            if i~=2 and i~=3 and identify(GetChaItem(role,2,i))==second then
+                return nil, "Оставь стопки этого вида только в ячейках 3 и 4."
+            end
+        end
+        if CheckBagItem(role, second) < cost then
+            return nil, "Для этого шага нужно "..cost.." гемов в ячейках 3 и 4."
+        end
+        raw = true
+    else
+        raw = Get_StoneLv(material) == 1 and required > 1 and can_pay_raw(role, second, cost)
+    end
     if not raw and Get_StoneLv(material) ~= required then
         return nil, "До ранга "..rank.." нужен один гем ранга "..required.." или "..cost.." одинаковых гемов первого ранга."
     end
     local sockets = GetNum_Part1(num)
     if not slot and used >= sockets then num = SetNum_Part1(num, used + 1) end
-    local result = SetJinglian_Lv(material, rank, num)
+    local result
+    if base then
+        local socket = slot or first_free
+        local put_stone = ({SetNum_Part2, SetNum_Part4, SetNum_Part6})[socket]
+        local put_rank = ({SetNum_Part3, SetNum_Part5, SetNum_Part7})[socket]
+        result = put_rank(put_stone(num, stone), rank)
+    else
+        result = SetJinglian_Lv(material, rank, num)
+    end
     if result == num then return nil, "Сервер не смог рассчитать ковку." end
     local payment = raw and (cost.." гемов первого ранга") or ("1 гем ранга "..required)
     local bonus = fusion ~= 0 and " Эффективность: 110%." or " Обычная вещь: только ковка."
     local change = slot and ("ранг "..(rank-1).." -> "..rank) or "вставка ранга 1"
     return {target=target, material=material, id=second, forge=result, raw=raw,
-            count=raw and cost or 1, strengthen=fusion ~= 0},
+            count=raw and cost or 1, strengthen=fusion ~= 0, material_slot=material_slot},
         GetItemName(first)..": "..GetItemName(second)..". Гнездо "..(slot or first_free)..": "..change..". Цена: "..payment.."."..bonus
 end
 
@@ -171,7 +206,7 @@ local function handle_action(role, npc, action)
     if action == 5 then
         return notice(role, npc, "Для ковки до рангов 1-9, в гемах первого ранга: 1, 1, 2, 4, 8, 16, 32, 64, 128. Принеси один гем соответствующего ранга.")
     end
-    if action < 1 or action > 4 then return LUA_FALSE end
+    if action < 1 or (action > 4 and action ~= 6) then return LUA_FALSE end
     local actor = GetCharID(role)
     if type(actor) ~= "number" or actor == 0 then
         return notice(role, npc, "Сервер не распознал персонажа. Открой кузницу заново.")
@@ -180,11 +215,14 @@ local function handle_action(role, npc, action)
     for id, quote in pairs(pending) do
         if quote.expires < now then pending[id] = nil end
     end
-    if action <= 3 then
+    if action <= 3 or action == 6 then
         pending[actor] = nil
-        local plan, message = request(role, action)
+        local mode = action == 6 and 2 or action
+        local material_slot = 1
+        if mode == 2 and ForgeGroundStacks then material_slot = action == 6 and 3 or 2 end
+        local plan, message = request(role, mode, material_slot)
         if not plan then return notice(role, npc, message) end
-        pending[actor] = {mode=action, first=snapshot(plan.target), second=plan.material and snapshot(plan.material),
+        pending[actor] = {mode=mode, material_slot=material_slot, first=snapshot(plan.target), second=plan.material and snapshot(plan.material),
                           count=plan.count, raw=plan.raw, expires=now+60}
         return notice(role, npc, message, true)
     end
@@ -195,7 +233,7 @@ local function handle_action(role, npc, action)
         return notice(role, npc, "На сервере недоступны функции обновления рюкзака.")
     end
     if not quote then return notice(role, npc, "Сначала снова проверь операцию.") end
-    local plan = request(role, quote.mode)
+    local plan = request(role, quote.mode, quote.material_slot)
     if not plan or quote.count ~= plan.count or quote.raw ~= plan.raw
             or not unchanged(plan.target, quote.first)
             or (quote.second and not unchanged(plan.material, quote.second)) then
@@ -209,7 +247,7 @@ local function handle_action(role, npc, action)
             if plan.raw then
                 paid = DelBagItem(role, plan.id, plan.count) == 1
             else
-                paid = not plan.id or RemoveChaItem(role, plan.id, 1, 2, 1, 2, 1, 0) == 1
+                paid = not plan.id or RemoveChaItem(role, plan.id, 1, 2, plan.material_slot or 1, 2, 1, 0) == 1
             end
         end
         if paid then
@@ -239,9 +277,18 @@ function OwnerPersonalForgeAction(role, npc, action)
 end
 
 function OwnForgePrivate()
-    Talk(1, "Для слияния: аппарель в ячейку 1, оружие или броню во 2. Для ковки: вещь в 1, гем во 2.")
+    if ForgeGroundStacks then
+        Talk(1, "Слияние: аппарель в 1, основа во 2. Ковка: вещь в 1, гемы в 3 и 4.")
+    else
+        Talk(1, "Для слияния: аппарель в ячейку 1, оружие или броню во 2. Для ковки: вещь в 1, гем во 2.")
+    end
     Text(1, "Слияние с аппарелью 110%", OwnerPersonalForgeAction, 1)
-    Text(1, "Проверить ковку", OwnerPersonalForgeAction, 2)
+    if ForgeGroundStacks then
+        Text(1, "Ковка гемом из ячейки 3", OwnerPersonalForgeAction, 2)
+        Text(1, "Ковка гемом из ячейки 4", OwnerPersonalForgeAction, 6)
+    else
+        Text(1, "Проверить ковку", OwnerPersonalForgeAction, 2)
+    end
     Text(1, "Усиление аппарели 110%", OwnerPersonalForgeAction, 3)
     Text(1, "Сколько гемов нужно", OwnerPersonalForgeAction, 5)
     Text(1, "Закрыть", CloseTalk)

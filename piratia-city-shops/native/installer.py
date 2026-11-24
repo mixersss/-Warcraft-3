@@ -89,7 +89,8 @@ def make_overlay(cat,report):
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
    'menu_pages':mapping,**({'menu_labels':{str(n):section['label'] for n,section in enumerate(shop['sections'],1)}} if shop.get('sections') else {}),'live_server_seen':False})
  return {'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'owner_progression':cat.get('owner_progression'),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
-         'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes())}
+         'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes()),
+         **({'world_expansion':True} if report.get('world_expansion') is True else {})}
 
 def locate_client(selected):
  p=Path(selected).expanduser()

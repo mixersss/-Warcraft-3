@@ -21,7 +21,7 @@ from classic_wire import ProtocolError
 from headless import Client, Report, ServerError
 
 ROOT = Path(__file__).resolve().parents[1]
-BOT_VERSION = 'AutoAccountsAlpha89'
+BOT_VERSION = 'AutoAccountsAlpha90'
 
 
 def prepare_accounts(count,existing_count=0):

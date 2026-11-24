@@ -5,6 +5,7 @@ from town import Town,trade_page
 from adventure import talk_request
 from owner_shops import npc_near
 from coral_supplies import spent_basic
+from world_drops import NPC_TROPHY_PRICES
 
 def sell_request(npc,slot,count):
  if not 0<=slot<256 or not 1<=count<=99:raise ValueError('Invalid NPC sale')
@@ -14,6 +15,9 @@ class Vendor(Town):
  def __init__(self,world,life,gear,role,rng,home,assets):
   super().__init__(world,life,gear,role,rng,home)
   self.junk={int(k):v for k,v in json.loads((Path(assets)/'junk-items.json').read_text())['items'].items()}
+  expansion=(getattr(life,'owner_shops',None) or {}).get('world_expansion')
+  self.trophy_buyback=NPC_TROPHY_PRICES if expansion else {}
+  self.junk.update({identity:{} for identity in self.trophy_buyback})
   self.sell_patchouli=False
   self.batch_farming=False;self.stock_since=None
   self.patchouli_buyback=2000 if getattr(life,'owner_shops',None) and life.owner_shops.get('catalog_revision',0)>=56 else 1500
@@ -48,7 +52,7 @@ class Vendor(Town):
    if (item.identity not in self.junk and not novice and not spent and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
    safe_novice=novice and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((a==b==0) or (1<=a<=47 and 0<=b<=2000) for a,b in item.instance_attributes)
    if item.forge or (any(item.parameters) or any(a or b for a,b in item.instance_attributes)) and not safe_novice:continue
-   keep=0 if self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
+   keep=0 if item.identity in self.trophy_buyback or self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
    count=min(99,item.count-keep)
    if count>0:choices.append((slot,item.identity,count))
   if self.sell_patchouli:choices.sort(key=lambda row:row[1]!=1000)
@@ -81,6 +85,8 @@ class Vendor(Town):
     units=before-after;received=w.own.values.get(8,cash)-cash
     self.last_confirmed_sale={'item_id':identity,'units':units,'gold_received':received,'unit_price':received//units if received%units==0 else None}
     if identity==1000 and self.sell_patchouli and received!=units*self.patchouli_buyback:self.price_warning='Выкуп Пачкули не совпадает с'+str(self.patchouli_buyback)+'G: проверь установленный серверный патч'
+    if identity in self.trophy_buyback and received!=units*self.trophy_buyback[identity]:
+     self.price_warning='Цена выкупа трофея '+str(identity)+' не совпала с установленной.'
     self.confirmed_sales+=1;self.pending=None;self.batch+=1
     self.context=self.context[0],'ready',now+60
    elif now>=deadline:self.sale_timeouts+=1;self.finish_sale(now)
@@ -112,7 +118,7 @@ class Vendor(Town):
   if not shops:self.reason='нет торговца на доступной части карты';return False
   if self.batch_farming and not self.sale_target:
    if self.stock_since is None:self.stock_since=now
-   count=sum(n for _,identity,n in choices if identity in (1000,4915))
+   count=sum(n for _,identity,n in choices if identity in (1000,4915) or identity in self.trophy_buyback)
    nearby=any(math.dist(policy.position(now),s['position'])<=350 for s in shops)
    urgent=(w.bag_capacity or 0)-len(w.bag)<=4 or w.own.values.get(8,0)<500 or bool(getattr(policy,'supply_funding_goal',0))
    if not nearby and not urgent and count<30 and now-self.stock_since<300:

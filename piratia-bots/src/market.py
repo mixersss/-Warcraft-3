@@ -3,6 +3,7 @@ import hashlib,json,math,random,struct,threading
 from pathlib import Path
 from classic_wire import Reader,ProtocolError,string
 from inventory import BagItem
+from world_drops import STACK_GEM_PRICES
 
 START,VIEW,BUY,CLOSE=330,331,332,333
 INFO,DELGOODS,CLOSED,STARTED,NAME=854,856,857,858,859
@@ -64,6 +65,7 @@ class MarketCatalog:
                         value=int(facts['prices'].get(str(identity),0))
                         if value>0:self.npc_purchase_prices[identity]=value
         if owner:self.npc_purchase_prices.update({int(i):v for i,v in owner['prices'].items()})
+        self.world_expansion=bool(owner and owner.get('world_expansion'))
         self.focused=bool(owner and owner.get('catalog_revision',0)>=56)
         self.focused_prices={860:60000,861:60000,862:70000,863:80000,864:150000,865:150000,866:120000,1012:100000}
     def enable_broad_catalog(self):
@@ -75,6 +77,10 @@ class MarketCatalog:
             for identity,price in self.focused_prices.items():
                 self.items[identity]={'name':str(identity),'category':'gem','reference_price':price,'npc_buyback':0,'keep':0}
             self.items={i:r for i,r in self.items.items() if i in self.focused_prices or i==684}
+        if self.world_expansion:
+            self.items.pop(684,None)
+            for identity,price in STACK_GEM_PRICES.items():
+                self.items[identity]={'name':str(identity),'category':'gem','reference_price':price,'npc_buyback':0,'keep':0}
     def enable_forging_catalog(self,gear,life):
         for identity,g in gear.gear.items():
             if g['level']>=35 and g['kind'] in (1,2,3,4,7,9,11,20,22,23,24,27):
@@ -273,6 +279,8 @@ class Market:
         return result
     def ask_price(self,identity):
         if identity==1000:return 1500
+        if getattr(self.catalog,'world_expansion',False) and identity in STACK_GEM_PRICES:
+            return STACK_GEM_PRICES[identity]
         price=self.catalog.price(identity)
         if not self.catalog.prices:return price
         # Stable per-seller negotiation margins plus current surplus; no personality reset.
@@ -302,7 +310,9 @@ class Market:
                 wanted[identity]=1
         if self.focused_goods:
             wanted.pop(1000,None)
-            if 15<=w.own.values.get(0,0)<=40 and not self.count(684) and not self.count(682):wanted[684]=1
+            if (not getattr(self.catalog,'world_expansion',False)
+                    and 15<=w.own.values.get(0,0)<=40 and not self.count(684) and not self.count(682)):
+                wanted[684]=1
         if self.broad_goods and self.policy_reference:
             for feature in (self.policy_reference.career,self.policy_reference.story):
                 if feature and feature.active():

@@ -11,7 +11,7 @@ class QuestLoot:
         self.approach=None
         self.value_priority={}
         self.allowed_items=None;self.ground_gems=set()
-        self.fast_mode=False
+        self.fast_mode=False;self.stackable_ground={1000}
 
     def note_attack(self,target,now):
         if target not in self.attacked:
@@ -42,16 +42,17 @@ class QuestLoot:
             else:return False
         free=(w.bag_capacity or 0)-len(w.bag)
         full=w.bag_ready and w.bag_capacity is not None and free<=0
-        patchouli_stack=full and 1000 in self.ground_gems and any(
-            i.identity==1000 and i.valid and i.count<99 for i in w.bag.values())
-        if w.bag_disabled or (full and not patchouli_stack):return False
+        existing_stacks={i.identity for i in w.bag.values()
+                         if i.identity in self.stackable_ground and i.identity in self.ground_gems
+                         and i.valid and i.count<99} if full else set()
+        if w.bag_disabled or (full and not existing_stacks):return False
         if not needed and not self.collect_all:return False
         for source,(_,_,when) in list(self.attacked.items()):
             if now-when>120:self.attacked.pop(source,None)
         candidates=[]
         for identity,item in w.items.items():
             model,handle,position,kind,source,created=item;key=(identity,handle)
-            if (full and model!=1000) or (self.allowed_items is not None and model not in self.allowed_items):continue
+            if (full and model not in existing_stacks) or (self.allowed_items is not None and model not in self.allowed_items):continue
             earned_ground_gem=kind==1 and model in self.ground_gems and self.credited(source,now)
             if self.fast_mode and earned_ground_gem and now-created<1.25:continue
             if ((kind!=0 and not earned_ground_gem) or not handle or now-created>90 or (not self.credited(source,now) and model not in self.competitive)

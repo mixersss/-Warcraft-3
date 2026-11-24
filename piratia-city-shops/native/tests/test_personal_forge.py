@@ -194,4 +194,44 @@ assert(action(c,nil,2)==0 and c.items[1])
 GetChaPos=function() error("simulated native error") end
 assert(click(1,2)==0 and c.dialog.page==3)
 assert(c.dialog.message:find("журнал кузницы",1,true))
+
+GetChaPos=function() return 225750,277050 end
+GetKbCap=function() return 48 end
+ForgeGroundStacks={[6400]=860}
+StoneTpye_ID_Num=1
+StoneTpye_ID={860}
+local function put(value, divisor, digit, base)
+    return value+(digit-math.floor(value/divisor)%base)*divisor
+end
+function SetNum_Part1(v,n) return put(v,1000000000,n,10) end
+function SetNum_Part2(v,n) return put(v,10000000,n,100) end
+function SetNum_Part3(v,n) return put(v,1000000,n,10) end
+function CheckBagItem(role,id)
+    local count=0
+    for _,item in pairs(role.items) do
+        if item.id==id then count=count+(item.count or 1) end
+    end
+    return count
+end
+function DelBagItem(role,id,count)
+    for slot=2,3 do
+        local item=role.items[slot]
+        if item and item.id==id then
+            local take=math.min(item.count,count)
+            item.count=item.count-take;count=count-take
+            if item.count==0 then role.items[slot]=nil end
+        end
+    end
+    return count==0 and 1 or 0
+end
+app.forge=1018000000 -- one socket, type 1, rank 8
+c.items[2]={id=6400,kind=31,forge=0,attrs={},count=99}
+c.items[3]={id=6400,kind=31,forge=0,attrs={},count=40}
+c.items[5]={id=6400,kind=31,forge=0,attrs={},count=1}
+assert(action(c,nil,2)==0 and c.dialog.page==3)
+c.items[5]=nil
+assert(action(c,nil,2)==1 and c.dialog.message:find("128",1,true))
+assert(action(c,nil,4)==1)
+assert(c.items[2]==nil and c.items[3].count==11)
+assert(GetNum_Part3(TansferNum(app.forge))==9)
 """)
