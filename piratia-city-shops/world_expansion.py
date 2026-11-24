@@ -17,19 +17,11 @@ ROOT = Path(__file__).resolve().parent
 GEMS = dict(zip(range(5609, 5617), (860, 861, 862, 863, 864, 865, 866, 1012)))
 TROPHIES = {5618+level-1: (1591, level*1000) for level in range(1, 31)}
 LEGACY = dict(zip((*range(6400, 6408), *range(6410, 6440)), (*GEMS, *TROPHIES)))
-GEM_BONUSES = {
-    860: ("Rank 1: Agility +5.", "1-й уровень: ловкость +5."),
-    861: ("Rank 1: Accuracy stat +5.", "1-й уровень: меткость +5."),
-    862: ("Rank 1: Constitution +5.", "1-й уровень: здоровье (CON) +5."),
-    863: ("Rank 1: Strength +5.", "1-й уровень: сила +5."),
-    864: ("Rank 1: min/max attack +50.", "1-й уровень: мин./макс. атака +50."),
-    865: ("Rank 1: Physical resistance +3.", "1-й уровень: физическое сопротивление +3."),
-    866: ("Rank 1: Max HP +500.", "1-й уровень: максимум HP +500."),
-    1012: ("Rank 1: Spirit +5.", "1-й уровень: дух +5."),
+PRODUCTS = {
+    category: {int(i): price for i, price in prices.items()}
+    for category, prices in json.loads((ROOT / "supply_products.json").read_text()).items()
 }
-SUPPLIES = {1847: 10, 1848: 55, 1849: 180, 3094: 10_000,
-            **dict.fromkeys((*range(893, 898), *range(1854, 1860)), 180),
-            **dict.fromkeys(range(4602, 4605), 500)}
+SUPPLIES = {i: price for offers in PRODUCTS.values() for i, price in offers.items()}
 WEAPONS = {i: 1_800_000 for i in range(2331, 2345)}
 START = b"-- WORLD_EXPANSION_BEGIN"
 END = b"-- WORLD_EXPANSION_END"
@@ -109,8 +101,6 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
         for i, field in enumerate(row):
             if field == b"ItemUse_hexin":
                 row[i] = b"0"
-        if source in GEM_BONUSES and len(row) > 93:
-            row[93] = row[93]+b" "+GEM_BONUSES[source][0].encode("ascii")
         return b"\t".join(row)
 
     new_ids = TROPHIES.keys()
@@ -132,7 +122,7 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
         text += (b"" if text.endswith((b"\r", b"\n")) else nl) + nl.join(added) + nl
 
     results = []
-    for table, localized in zip(binaries, (False, True)):
+    for table in binaries:
         def binary_row(identity):
             source, kind, price, suffix = all_aliases[identity]
             record = bytearray(table[source])
@@ -153,11 +143,6 @@ def make_item_tables(text, server, client, installed, *, retire_legacy=False):
             offset = record.find(hook)
             if offset >= 0:
                 record[offset:offset+len(hook)] = b"0".ljust(len(hook), b"\0")
-            if source in GEM_BONUSES:
-                desc = record[600:856].split(b"\0", 1)[0]
-                bonus = GEM_BONUSES[source][int(localized)].encode("cp1251" if localized else "ascii")
-                desc = desc.rstrip(b"\0\xff") if len(desc)<256 else b""
-                record[600:856] = (desc[:240-len(bonus)]+b" "+bonus).strip().ljust(256,b"\0")
             return bytes(record)
         records = []
         for identity, record in table.items():
@@ -208,7 +193,25 @@ def add_vendor(text, binary):
     return text, binary
 
 
-def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=False):
+def world_script():
+    lines = []
+    number = 0
+    for heading, offers in (("Cooking", PRODUCTS["cooking"]), ("Manufacturing", PRODUCTS["manufacturing"])):
+        items = list(offers)
+        for start in range(0, len(items), 36):
+            number += 1
+            stock = ",".join(map(str, items[start:start+36]))
+            label = heading if len(items)<=36 else f"{heading} {start//36+1}"
+            lines.append((stock, label, number))
+    pages = ",\n".join(
+        '    supply_page({},{},{'+stock+'},"forge-supply")' for stock, _, _ in lines)
+    options = "\n".join(
+        f'    Text(1,"{label}",OwnerOpenTrade,"forge-supply",{number})' for _,label,number in lines)
+    return ((ROOT / "world_expansion.lua").read_text()
+            .replace("-- SUPPLY_STOCK", pages).replace("-- SUPPLY_OPTIONS", options)).encode("ascii")
+
+
+def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=False, trophy_report=None):
     sys.path.insert(0, str(ROOT / "native"))
     before, after, _ = forge.plan(resource, encoding)
     script = after[forge.SCRIPT]
@@ -218,7 +221,7 @@ def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=
                (b"function Owner57GroundDrop", b"function OwnerEquipment", b"OwnerNativeShops")):
         raise ValueError("Нужна установленная серверная ревизия 60 с торговцами и наземными гемами.")
     installed = START in script
-    block = (ROOT / "world_expansion.lua").read_bytes()
+    block = world_script()
     nl = b"\r\n" if b"\r\n" in script else b"\n"
     block = block.replace(b"\n", nl).rstrip(b"\r\n")
     if installed:
@@ -241,6 +244,29 @@ def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=
                 receipt["installed_sha256"][path.as_posix()] = hashlib.sha256(payload).hexdigest()
         after[forge.MARKER] = (json.dumps(receipt, ensure_ascii=False, indent=2)+"\n").encode()
     changes = {resource/p: payload for p, payload in after.items() if payload != before[p]}
+    from trophy_drops import patch as patch_trophies
+    character = resource/"CharacterInfo.txt"
+    compiled = next((p for p in resource.iterdir() if p.name.casefold()=="characterinfo.bin"),None)
+    original_characters = character.read_bytes()
+    original_compiled = compiled.read_bytes() if compiled else None
+    kinds = {int(fields[0]): int(fields[10])
+             for line in before[text].splitlines() for fields in (line.split(b"\t"),)
+             if len(fields)>10 and fields[0].strip().isdigit() and fields[10].strip().isdigit()}
+    try:
+        updated_characters, updated_compiled, managed, fallback = patch_trophies(
+            original_characters, original_compiled, kinds, TROPHIES)
+    except ValueError as error:
+        if trophy_report is None:
+            raise
+        trophy_report["warning"] = str(error)
+        updated_characters, updated_compiled = original_characters, original_compiled
+    else:
+        if trophy_report is not None:
+            trophy_report.update(managed=managed, fallback=fallback)
+    if updated_characters!=original_characters:
+        changes[character]=updated_characters
+    if compiled and updated_compiled!=original_compiled:
+        changes[compiled]=updated_compiled
     if client_after != client_before:
         changes[client] = client_after
     if bot_assets and (bot_assets / "world-npcs.json").is_file():
@@ -265,7 +291,15 @@ def main():
     try:
         resource = city.locate(args.server or input("Папка GameServer или resource: "))
         client = locate_client((args.client or input("Папка игрового клиента: ")).strip().strip('"'))
-        changes = plan(resource, client, bot_assets=ROOT.parent / "assets", retire_legacy=args.retire_legacy_ids)
+        trophy_report = {}
+        changes = plan(resource, client, bot_assets=ROOT.parent / "assets",
+                       retire_legacy=args.retire_legacy_ids, trophy_report=trophy_report)
+        if "warning" in trophy_report:
+            print("Таблицы трофеев оставлены без изменений: " + trophy_report["warning"])
+        else:
+            print(f"Трофей в штатной добыче: {trophy_report['managed']} видов мобов. "
+                  f"Сохранён прежний способ выдачи: {trophy_report['fallback']}.")
+
         from spawn_density import plan as plan_density
         spawn_changes, added, skipped = plan_density(resource)
         changes.update(spawn_changes)
@@ -273,7 +307,7 @@ def main():
         if not args.retire_legacy_ids and set(LEGACY) & item_text((resource/"ItemInfo.txt").read_bytes(), LEGACY).keys():
             print("Старые ID сохранены для уже добытых предметов. См. инструкцию по переносу.")
         if skipped:
-            print("Группы с отдельным двоичным спавном: " + ", ".join(skipped))
+            print("Пропущенные спавны: " + ", ".join(skipped))
         if args.apply and changes:
             backup = resource.parent / ("world-expansion-backup-" + datetime.now().strftime("%Y%m%d-%H%M%S-%f"))
             apply_files(changes, backup)

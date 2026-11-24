@@ -136,3 +136,68 @@ local function confirm_combination(role,npc,quote)
                     {"Назад"},1,nil,0)
     return LUA_TRUE
 end
+
+local function restore_gem_plan(role)
+    if not ForgeGroundStacks then return end
+    for slot=2,3 do
+        local old=identify(GetChaItem(role,2,slot))
+        local native=ForgeGroundStacks[old]
+        if native then
+            local count=math.min(CheckBagItem(role,old),GetChaFreeBagGridNum(role))
+            if count>0 then return {old=old,native=native,count=count} end
+            return nil,"Освободи место для отдельных гемов. На каждый нужен свободный слот."
+        end
+    end
+    return nil,"Положи старую стопку гемов в ячейку 3 или 4."
+end
+
+local function restore_gems(role,npc,quote)
+    local plan=restore_gem_plan(role)
+    if not plan or plan.old~=quote.old or plan.count~=quote.count then
+        return notice(role,npc,"Стопки или свободное место изменились. Проверь операцию заново.")
+    end
+    local capacity=GetKbCap(role)
+    if type(capacity)~="number" or capacity<1 or capacity>256 then
+        return notice(role,npc,"Не удалось проверить рюкзак.")
+    end
+    local moved=0
+    for i=1,plan.count do
+        local free={}
+        for slot=0,capacity-1 do
+            if identify(GetChaItem(role,2,slot))==0 then table.insert(free,slot) end
+        end
+        if table.getn(free)==0 then break end
+        local native_count=CheckBagItem(role,plan.native)
+        local previous=Owner56CreatingGroundGem
+        Owner56CreatingGroundGem=plan.native
+        pcall(GiveItem,role,0,plan.native,1,101)
+        Owner56CreatingGroundGem=previous
+        local slot,item
+        for _,candidate in ipairs(free) do
+            local created=GetChaItem(role,2,candidate)
+            if identify(created)==plan.native then slot,item=candidate,created; break end
+        end
+        if not item then break end
+        if Get_StoneLv(item)~=1 then pcall(Set_StoneLv,item,1) end
+        local old_count=CheckBagItem(role,plan.old)
+        if Get_StoneLv(item)==1 and CheckBagItem(role,plan.native)==native_count+1 then
+            pcall(DelBagItem,role,plan.old,1)
+        end
+        local debit=old_count-CheckBagItem(role,plan.old)
+        if debit~=1 then
+            if debit==0 then pcall(RemoveChaItem,role,plan.native,1,2,slot,2,1,0) end
+            if debit~=0 or CheckBagItem(role,plan.native)~=native_count then
+                unavailable=true
+                LG("OwnerPersonalForge","Gem restoration stopped, item "..plan.old)
+            end
+            break
+        end
+        moved=moved+1
+    end
+    sync(role)
+    if moved~=plan.count then
+        return notice(role,npc,"Перенос остановлен. Обычных гемов получено: "..moved..". Проверь рюкзак.")
+    end
+    SendMissionPage(role,npc,3,"Обычных гемов первого ранга получено: "..moved..".",{"Назад"},1,nil,0)
+    return LUA_TRUE
+end

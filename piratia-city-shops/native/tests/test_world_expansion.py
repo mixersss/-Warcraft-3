@@ -9,6 +9,7 @@ import test_native
 import personal_forge as forge
 import spawn_density
 import world_expansion as expansion
+import trophy_drops
 
 
 class ExpansionTests(unittest.TestCase):
@@ -75,30 +76,78 @@ class ExpansionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, r"ItemInfo.txt: 860"):
             expansion.make_item_tables(row * 2, b"", b"", False)
 
-    def test_density_rounds_per_model_and_ignores_non_mobs(self):
+    def test_density_rounds_per_spawn_and_ignores_non_mobs(self):
         def row(index, count):
             return f"{index}\t0,0\t100,100\t-1\t2,3\t{count},1\t100,100\t10,10\n".encode()
         out, count = spawn_density.table(row(1,3)+row(2,1), {2})
-        self.assertEqual(count,2)
-        self.assertIn(b"\t2,3\t4,1\t",out)
+        self.assertEqual(count,3)
+        self.assertIn(b"\t2,3\t5,1\t",out)
         self.assertIn(b"\t2,3\t2,1\t",out)
         self.assertEqual(spawn_density.table(out,{2}),(out,0))
         raw = b"CreateCha(2,100,100,0,10)\nCreateCha(2,100,100,0,10)\n"
-        self.assertEqual(spawn_density.startup(raw,{2})[1],1)
+        self.assertEqual(spawn_density.startup(raw,{2})[1],2)
+
+    def test_trophy_updates_only_ordinary_spawn_slots(self):
+        fields=[b"0"]*62
+        fields[0],fields[4],fields[46],fields[47],fields[51],fields[60]=(b"540",b"5",b"15,684",b"400,800",b"316",b"51")
+        raw=b"\t".join(fields)+b"\r\n"
+        row=bytearray(b"\xff"*968)
+        struct.pack_into("<I",row,4,540)
+        struct.pack_into("<4i",row,428,15,400,684,800)
+        compiled=struct.pack("<I",968)+row
+        updated,binary,count,fallback=trophy_drops.patch(raw,compiled,{15:1},expansion.TROPHIES)
+        self.assertEqual((count,fallback),(1,0))
+        self.assertEqual(updated.split(b"\t")[46:48],[b"15,684,5622",b"400,800,100"])
+        self.assertEqual(updated.split(b"\t")[51],b"316")
+        self.assertEqual(binary[:448],compiled[:448])
+        self.assertEqual(struct.unpack_from("<ii",binary,448),(5622,100))
+        self.assertEqual(binary[456:],compiled[456:])
+        self.assertEqual(trophy_drops.patch(updated,binary,{15:1},expansion.TROPHIES)[:2],(updated,binary))
+
+    def test_density_updates_bin_and_does_not_reapply_v1_increase(self):
+        raw=(b"1\t0,0\t100,100\t-1\t2\t4\t100\t12\n"
+             b"2\t0,0\t100,100\t-1\t2\t2\t100\t30\n"
+             b"// WORLD_EXPANSION_DENSITY_V1\n")
+        patched,count,records=spawn_density.table_plan(raw,{2})
+        self.assertEqual(count,1)
+        self.assertIn(b"\t2\t5\t100\t12",patched)
+        self.assertIn(b"\t2\t2\t100\t30",patched)
+        rows=[]
+        for identity,base,delay in ((1,3,12),(2,1,30)):
+            row=bytearray(b"\xff"*160)
+            struct.pack_into("<I",row,4,identity)
+            struct.pack_into("<4i",row,104,2,base,100,delay)
+            rows.append(row)
+        binary=struct.pack("<I",160)+b"".join(rows)
+        output=spawn_density.update_binary(binary,records)
+        self.assertEqual(struct.unpack_from("<i",output,112),(5,))
+        self.assertEqual(struct.unpack_from("<i",output,272),(2,))
+        self.assertEqual(spawn_density.table(patched,{2}),(patched,0))
+        spawn=b"CreateCha(2,100,100,0,10)\n"
+        old=spawn+spawn+spawn+b"-- WORLD_EXPANSION_DENSITY_V1\n"
+        new,count=spawn_density.startup(old,{2})
+        self.assertEqual(count,1)
+        self.assertEqual(new.count(spawn),4)
 
     def test_native_store_and_drop_hooks(self):
-        lua = (expansion.ROOT/"world_expansion.lua").read_text()
+        lua = expansion.world_script().decode()
         test_native.NativeLuaTests().runlua("""
 table.getn=function(t) return #t end
 local native_shop=OwnerNativeShops['equipment']
 local pages_before=#native_shop.pages
 unpack=table.unpack
 local expected
+local actual
+function SetItemFall(count,...)
+    actual={...}
+    assert(count==#actual)
+end
 function Owner56OriginalDropCheck()
     if not expected then assert(Owner56FallFilter==nil); return end
     assert(Owner56FallFilter[1] and Owner56FallFilter[3] and Owner56FallFilter[7])
     assert(not Owner56FallFilter[2] and not Owner56FallFilter[4] and not Owner56FallFilter[5])
     assert(not Owner56FallFilter[6] and not Owner56FallFilter[8] and not Owner56FallFilter[9])
+    SetItemFall(2,4,10)
 end
 function GetResPath(name) return name end
 local function row(id,fields,count)
@@ -113,8 +162,8 @@ local fixture={
         row(860,{[11]=49},11), row(5622,{[11]=41},11)
     },
     ["CharacterInfo.txt"]={row(42,{
-        [5]=5,[47]="1218,0,15,1573,4915,684,868,860,5622,9876",
-        [48]="101,0,102,103,104,105,106,107,108,109"},48)}
+        [5]=5,[47]="1218,0,15,1573,4915,684,868,860,555,9876,5622",
+        [48]="101,0,102,103,104,105,106,107,108,109,100",[61]=50},61)}
 }
 io.open=function(path)
     return {lines=function()
@@ -124,7 +173,8 @@ io.open=function(path)
 end
 """ + lua + """
 local more=OwnerNativeShops['forge-supply'].pages
-assert(more[1][3].item[1]==1847 and more[2][3].item[1]==4602 and more[1][3].itemtype==2)
+assert(more[1][3].item[1]==4019 and more[3][3].item[1]==1067 and more[1][3].itemtype==2)
+assert(more[1][3].count==36 and more[2][3].count==2 and more[5][3].count==23)
 assert(OwnerNativeShops['equipment'].pages[pages_before+1][1].count==14)
 local drops={}
 ATTR_HP=1; ATTR_LV=2
@@ -134,14 +184,17 @@ function GetChaTypeID(e) return 42 end
 function Owner57GroundDrop(e,id,stack) drops[id]=stack end
 Owner56MonsterModels={[42]=true}
 expected=true
-Check_Baoliao({player=1},{player=0,level=50},101,102,103,104,105,106,107,108,109)
+Check_Baoliao({player=1},{player=0,level=50},101,102,103,104,105,106,107,108,109,100)
+assert(#actual==2 and actual[1]==4 and actual[2]==10)
 expected=false
 Check_Baoliao({player=1},{player=0,level=50},101,102)
 Check_Baoliao({player=1},{player=1,level=50},101,102,103,104,105,106,107,108,109)
 assert(Owner56FallFilter==nil)
 math.random=function(a,b) return 1 end
 Owner56GroundGem({player=0,level=50},{player=1})
-assert(drops[1000]==99 and drops[860]==1 and not drops[5609] and drops[5622]==99)
+assert(drops[1000]==99 and drops[860]==1 and not drops[5609] and not drops[5622])
+GetChaTypeID=function() return 43 end
+Owner56MonsterModels[43]=true
 Owner56GroundGem({player=0,level=60},{player=1})
 assert(drops[5623]==99)
 """)

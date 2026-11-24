@@ -252,7 +252,7 @@ local function handle_action(role, npc, action)
     if action == 5 then
         return notice(role, npc, "Для ковки до рангов 1-9, в гемах первого ранга: 1, 1, 2, 4, 8, 16, 32, 64, 128. Принеси один гем соответствующего ранга.")
     end
-    if action < 1 or (action > 9 and (action < 20 or action > 25)) then return LUA_FALSE end
+    if action < 1 or (action > 10 and (action < 20 or action > 25)) then return LUA_FALSE end
     local actor = GetCharID(role)
     if type(actor) ~= "number" or actor == 0 then
         return notice(role, npc, "Сервер не распознал персонажа. Открой кузницу заново.")
@@ -272,6 +272,13 @@ local function handle_action(role, npc, action)
     if action >= 20 then
         pending[actor]=nil
         return combination_preview(role,npc,actor,action,now)
+    end
+    if action == 10 then
+        pending[actor]=nil
+        local plan,message=restore_gem_plan(role)
+        if not plan then return notice(role,npc,message) end
+        pending[actor]={restore_gems=true,old=plan.old,count=plan.count,expires=now+60}
+        return notice(role,npc,"Восстановить обычные гемы первого ранга: "..plan.count.." шт.?",true)
     end
     if action == 7 then
         pending[actor]=nil
@@ -301,6 +308,7 @@ local function handle_action(role, npc, action)
     if not quote then return notice(role, npc, "Сначала снова проверь операцию.") end
     if quote.migration then return migrate(role,npc,quote) end
     if quote.combination then return confirm_combination(role,npc,quote) end
+    if quote.restore_gems then return restore_gems(role,npc,quote) end
     local plan = request(role, quote.mode, quote.material_slot)
     if not plan or quote.count ~= plan.count or quote.raw ~= plan.raw
             or not unchanged(plan.target, quote.first)
@@ -355,6 +363,7 @@ function OwnForgePrivate()
         Text(1, "Ковка гемом из ячейки 3", OwnerPersonalForgeAction, 2)
         Text(1, "Ковка гемом из ячейки 4", OwnerPersonalForgeAction, 6)
         Text(1, "Перенести старые стопки", OwnerPersonalForgeAction, 7)
+        Text(1, "Вернуть обычные гемы", OwnerPersonalForgeAction, 10)
     else
         Text(1, "Проверить ковку", OwnerPersonalForgeAction, 2)
     end

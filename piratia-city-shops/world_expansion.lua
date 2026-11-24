@@ -18,15 +18,47 @@ local function supply_page(weapons, armour, goods, key)
 end
 
 OwnerNativeShops["forge-supply"] = {pages={
-    supply_page({},{},{1847,1848,1849,1854,1855,1856,1857,1858,1859,893,894,895,896,897,3094},"forge-supply"),
-    supply_page({},{},{4602,4603,4604},"forge-supply")
+-- SUPPLY_STOCK
 }}
 function ForgeSupply()
-    Talk(1,"Forge Supply")
+    Talk(1,"Cooking and Manufacturing")
     Trade=OwnerNativeShops["forge-supply"].pages[1]
-    Text(1,"Food, healing and boosts",OwnerOpenTrade,"forge-supply",1)
-    Text(1,"Teleport tickets",OwnerOpenTrade,"forge-supply",2)
+-- SUPPLY_OPTIONS
     Text(1,"Close",CloseTalk)
+end
+
+-- Native purchase initializes equipment produced by the manufacturing recipe.
+local craft_tools={[1067]=true,[1068]=true,[1069]=true,[1070]=true,[2236]=true}
+local prior_native_buy=OwnerNativeBuy
+local prior_create=Creat_Item
+local tool_purchase
+if type(prior_native_buy)=="function" and type(prior_create)=="function" then
+    function OwnerNativeBuy(character,npc,trade,itemtype,index1,index2,count)
+        local selected=OwnerNativeSelection[character]
+        local page=selected and OwnerNativeShops["forge-supply"].pages[selected.page]
+        local identity
+        if trade.owner_native_shop=="forge-supply" and itemtype==2 and type(index1)=="number" and page then
+            identity=page[3].item[index1+1]
+        end
+        if not craft_tools[identity] then return prior_native_buy(character,npc,trade,itemtype,index1,index2,count) end
+        local previous=tool_purchase
+        tool_purchase=identity
+        local ok,result=pcall(prior_native_buy,character,npc,trade,itemtype,index1,index2,count)
+        tool_purchase=previous
+        if not ok then error(result) end
+        return result
+    end
+    function Creat_Item(item,kind,level,event)
+        local attrs={prior_create(item,kind,level,event)}
+        if tool_purchase and event==NPC_SALE and GetItemID(item)==tool_purchase then
+            SetItemAttr(item,ITEMATTR_VAL_STR,tool_purchase==2236 and 20 or 1)
+            if tool_purchase~=2236 then
+                SetItemAttr(item,ITEMATTR_MAXENERGY,10000)
+                SetItemAttr(item,ITEMATTR_ENERGY,1)
+            end
+        end
+        return unpack(attrs)
+    end
 end
 
 local equipment = OwnerNativeShops["equipment"].pages
@@ -40,15 +72,21 @@ function OwnerEquipment()
     Text(1,"Abaddon weapons Lv75",OwnerOpenTrade,"equipment",weapon_page)
 end
 
--- Reuse the installed drop hook and the ordinary monster/owner guards.
+local masks={}
+local function level_trophy(level)
+    if level and level>=10 and level<=309 then return 5618+math.floor(level/10)-1 end
+end
+
+-- The older ground mechanism is a fallback for full monster tables.
 function Owner56GroundGem(dead, attacker)
     if IsPlayer(dead)~=0 or IsPlayer(attacker)~=1 or GetChaAttr(dead,ATTR_HP)>0 then return end
     if Owner56MonsterModels and not Owner56MonsterModels[GetChaTypeID(dead)] then return end
     Owner56GemStats.kills=Owner56GemStats.kills+1
     Owner57GroundDrop(dead,1000,99)
-    local level = GetChaAttr(dead,ATTR_LV)
-    if level >= 10 and level <= 309 then
-        Owner57GroundDrop(dead,5618+math.floor(level/10)-1,99)
+    local model=GetChaTypeID(dead)
+    local trophy=level_trophy(GetChaAttr(dead,ATTR_LV))
+    if trophy and not (masks[model] and masks[model].trophy) then
+        Owner57GroundDrop(dead,trophy,99)
     end
     if math.random(1,100)>3 then return end
     Owner56GemStats.rolls=Owner56GemStats.rolls+1
@@ -57,7 +95,6 @@ end
 
 -- Ordinary drops use indices into the compact positive ID/rate list.
 -- Mission drops are evaluated separately by the engine.
-local masks={}
 local replaced={[1000]=true}
 for _,id in ipairs(ground_stones) do replaced[id]=true end
 local iterate=string.gmatch or string.gfind
@@ -94,15 +131,18 @@ if type(GetResPath)=="function" then
             local model=tonumber(columns[1])
             if model and tonumber(columns[5])==5 and columns[47] and columns[48] then
                 local ids,rates=fields(columns[47],","),fields(columns[48],",")
-                local mask,expected={},{}
+                local entry={mask={},rates={}}
+                local trophy=level_trophy(tonumber(columns[61]))
                 for index,field in ipairs(ids) do
                     local id,rate=tonumber(field),tonumber(rates[index])
                     if id and id>0 and rate and rate>0 then
-                        table.insert(expected,rate)
-                        if not keep_drop(id,kinds[id]) then mask[table.getn(expected)]=true end
+                        table.insert(entry.rates,rate)
+                        local slot=table.getn(entry.rates)
+                        if id==trophy then entry.trophy=slot
+                        elseif not keep_drop(id,kinds[id]) then entry.mask[slot]=true end
                     end
                 end
-                if next(mask) then masks[model]={mask=mask,rates=expected} end
+                if next(entry.mask) or entry.trophy then masks[model]=entry end
             end
         end
     elseif type(LG)=="function" then
@@ -112,11 +152,27 @@ if type(GetResPath)=="function" then
     if characters then characters:close() end
 end
 
+local active
+local prior_fall=SetItemFall
+if type(prior_fall)=="function" then
+    function SetItemFall(count,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
+        local slots={a1,a2,a3,a4,a5,a6,a7,a8,a9,a10}
+        if not active then return prior_fall(count,unpack(slots)) end
+        local kept={}
+        for i=1,count do
+            if slots[i]~=active.slot then table.insert(kept,slots[i]) end
+        end
+        if active.award then table.insert(kept,active.slot) end
+        active.emitted=true
+        return prior_fall(table.getn(kept),unpack(kept))
+    end
+end
+
 if type(Owner56OriginalDropCheck)=="function" then
     local logged={}
     function Check_Baoliao(attacker,defender,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10)
-        local previous=Owner56FallFilter
-        Owner56FallFilter=nil
+        local previous,previous_active=Owner56FallFilter,active
+        Owner56FallFilter,active=nil,nil
         local args={a1,a2,a3,a4,a5,a6,a7,a8,a9,a10}
         if IsPlayer(defender)==0 then
             local model=GetChaTypeID(defender)
@@ -128,6 +184,9 @@ if type(Owner56OriginalDropCheck)=="function" then
                 end
                 if match then
                     Owner56FallFilter=entry.mask
+                    if entry.trophy and type(prior_fall)=="function" then
+                        active={slot=entry.trophy,award=IsPlayer(attacker)==1}
+                    end
                 elseif not logged[model] then
                     logged[model]=true
                     if type(LG)=="function" then LG("owner90_loot","Drop table mismatch for monster "..model) end
@@ -135,7 +194,10 @@ if type(Owner56OriginalDropCheck)=="function" then
             end
         end
         local status,message=pcall(Owner56OriginalDropCheck,attacker,defender,unpack(args))
-        Owner56FallFilter=previous
+        if status and active and active.award and not active.emitted then
+            status,message=pcall(SetItemFall,0)
+        end
+        Owner56FallFilter,active=previous,previous_active
         if not status then error(message) end
     end
 end

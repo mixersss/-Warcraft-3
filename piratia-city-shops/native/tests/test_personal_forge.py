@@ -279,5 +279,23 @@ c.items={[0]={id=885,kind=50,rank=8},[1]={id=885,kind=50,rank=8}}
 assert(action(c,nil,8)==1 and action(c,nil,20)==1)
 assert(action(c,nil,4)==1 and c.items[0].rank==9 and CheckBagItem(c,885)==1)
 assert(action(c,nil,8)==0 and c.dialog.page==3)
+c.items={[2]={id=5609,kind=31,count=3},[3]=stone(1,7)}
+ForgeGroundStacks[5609]=681
+GetChaFreeBagGridNum=function() return 2 end
+GiveItem=function(role,_,id,count)
+    assert(count==1 and Owner56CreatingGroundGem==id)
+    for slot=0,47 do
+        if not role.items[slot] then role.items[slot]=stone(id-680,0); return end
+    end
+end
+local take=DelBagItem
+DelBagItem=function(role,id,count) return take(role,id,count) end
+assert(action(c,nil,10)==1 and action(c,nil,4)==1)
+assert(c.items[0].rank==1 and c.items[1].rank==1 and c.items[3].rank==7)
+assert(c.items[2].count==1 and CheckBagItem(c,681)==3)
+DelBagItem=function() return 0 end
+assert(action(c,nil,10)==1 and action(c,nil,4)==0)
+assert(c.items[2].count==1 and c.items[3].rank==7 and CheckBagItem(c,681)==3)
+
 
 """)
