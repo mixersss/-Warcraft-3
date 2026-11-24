@@ -342,6 +342,7 @@ class Navigation:
     def camp_route_ready(self,start,goal):
         """Check already calculated paths without starting another A* job."""
         if not getattr(self,'incremental',False):return False
+        if self.cell(start)!=self.cell(goal) and self.line_clear(start,self.position(self.cell(goal))):return True
         blocked=tuple(sorted(getattr(self.local,'blocked_cells',())))
         key=(self.cell(start),self.cell(goal),25000,blocked,'foreground')
         with self.cache_lock:
@@ -385,6 +386,14 @@ class Navigation:
         a,b=(goal,start) if westbound_argent else (start,goal)
         return Search(a,b,heuristic_weight=4)
 
+    def _retry_search(self,search,start,goal,limit):
+        if search.retried_from_other_end or len(search.costs)<=limit:return None
+        component=self.land_component(self.position(start))
+        if not component or self.land_component(self.position(goal))!=component:return None
+        retry=Search(search.goal,goal if search.goal==start else start,heuristic_weight=search.weight)
+        retry.retried_from_other_end=True
+        return retry
+
     def _runtime_path(self,key):
         route_key=key[:4]
         with self.cache_lock:
@@ -421,6 +430,11 @@ class Navigation:
                 local.yields+=1;raise RoutePending()
             local.remaining-=1;local.expansions+=1;local.turn_expanded+=1
         result=search.advance(self,key[2],spend)
+        if not result:
+            retry=self._retry_search(search,*key[:3])
+            if retry is not None:
+                search=local.searches[key]=retry
+                result=search.advance(self,key[2],spend)
         if search.goal==key[0]:result=result[::-1]
         local.finished+=1;local.searches.pop(key,None)
         return self._remember(key,result)
@@ -482,4 +496,9 @@ class Navigation:
         if direct:return direct
         search=self._new_search(start_cell,goal)
         result=search.advance(self,limit,lambda:None)
+        if not result:
+            retry=self._retry_search(search,start_cell,goal,limit)
+            if retry is not None:
+                search=retry
+                result=search.advance(self,limit,lambda:None)
         return result[::-1] if search.goal==start_cell else result

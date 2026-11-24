@@ -97,6 +97,9 @@ class Regions:
                     if points:
                         region['farms'][str(identity)]={**{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max')},
                                                        'territory':0,'points':points,'source_region_scouting':True}
+        if self.abandoned_mine_one_component:
+            for farm in self.data['garner']['farms'].values():
+                farm['points']=[p for p in farm['points'] if not self.abandoned_mine_one('garner',p)]
 
     def get(self,name):
         if name not in self.data and getattr(self,'full_regions',False) and name in self.map_catalog and self.mob_knowledge:
@@ -124,7 +127,7 @@ class Regions:
 
     def record_hunting_observation(self,name,model,point,identity):
         mob=self.mob_knowledge.get(model)
-        if name not in self.map_catalog or not mob or mob['territory']!=0:
+        if name not in self.map_catalog or not mob or mob['territory']!=0 or self.abandoned_mine_one(name,point):
             return
         if model in self.mob_knowledge.by_map.get(name,{}) and any(
                 not location.get('conditions_not_evaluated')
@@ -150,7 +153,8 @@ class Regions:
                 mob=self.mob_knowledge.get(model)
                 if not mob or mob['territory']!=0:
                     continue
-                verified=[p for p in locations if nav.land_component(p) and nav.combat_allowed(p)]
+                verified=[p for p in locations if nav.land_component(p) and nav.combat_allowed(p)
+                          and not self.abandoned_mine_one(name,p)]
                 if verified:
                     key=str(model)
                     farm=farms.get(key,{k:mob[k] for k in ('level','hp','drops','base_xp','defence','attack_max','territory')})
@@ -188,6 +192,7 @@ class Regions:
             return True
 
     def hunting_arrival_sites(self,map_name,arrival):
+        if self.abandoned_mine_one(map_name,arrival):return {}
         sites=self._source_arrival_sites(map_name,arrival)
         observations=self.hunt_observations.points(map_name)
         if not observations:
@@ -235,6 +240,15 @@ class Regions:
                      if e['name']=='Abandoned Mine 1 - Abandoned Mine 2'),None)
 
     @cached_property
+    def abandoned_mine_one_component(self):
+        entry=self.mine_exit_entrance
+        return self.nav('garner').land_component(entry['position']) if entry and 'garner' in self.navigation else None
+
+    def abandoned_mine_one(self,map_name,point):
+        return bool(map_name=='garner' and self.abandoned_mine_one_component
+                    and self.nav('garner').land_component(point)==self.abandoned_mine_one_component)
+
+    @cached_property
     def mine_exit_steps(self):
         # Source-backed exits from the detached Abandoned Mine 1 to the
         # walkable Garner side of Silver Mine 1. Other mines retain normal travel.
@@ -259,8 +273,7 @@ class Regions:
         component=nav.land_component(position)
         if not component:return None
         if not continuing:
-            start=self.mine_exit_entrance
-            if not start or component!=nav.land_component(start['position']):return None
+            if component!=self.abandoned_mine_one_component:return None
         return self.mine_exit_steps.get((map_name,component))
 
     def nav(self,name):

@@ -860,17 +860,19 @@ class Hunter:
     def task(self,key,feature,callback,now):
         local_fruit=bool(key=='town' and feature and not self.target
                          and getattr(feature,'nearby_fairy_fruit',lambda *args:None)(self,now))
+        local_boost=bool(key=='town' and feature and not self.target
+                         and not self.mandatory_work() and getattr(feature,'nearby_xp_boost',lambda *args:None)(self,now))
         if self.group_hunt and self.group_hunt.active() and not self.mandatory_work():
             # A confirmed XP session finishes before optional city errands.
             # Full bags still use unlimited ordinary vendor sales; food can be
             # replenished, and owned gear/books are used earlier in the loop.
             if key in ('market','story','career','adventure'):return False
-            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not local_fruit and not (self.petcare and self.petcare.affordable_care()):return False
+            if key=='town' and sum(i.count for i in self.world.bag.values() if i.identity==1847)>=2 and not (local_fruit or local_boost) and not (self.petcare and self.petcare.affordable_care()):return False
         if self.quest_combat_ready and key in ('vendor','market','town','story','career','adventure'):return False
         if key=='market' and self.hunt_before_errands(now):return False
         if (key=='town' and feature and (self.hunt_before_errands(now)
                 or (self.hunt_travel and self.hunt_travel.settling_site(now,self)))
-                and not (feature.context or feature.pending or feature.combat_supply_required() or local_fruit
+                and not (feature.context or feature.pending or feature.combat_supply_required() or local_fruit or local_boost
                          or (self.petcare and self.petcare.urgent_hunger())
                          or (not self.camp_route_active(now) and self.hunt_travel and self.hunt_travel.plan
                              and not self.hunt_travel.plan.get('returning')
@@ -888,7 +890,7 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
-        essential_combat=local_fruit;travel_work=False
+        essential_combat=local_fruit or local_boost;travel_work=False
         if key=='town' and feature and hasattr(feature,'critical_items'):
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
@@ -1878,14 +1880,13 @@ class Hunter:
             models=self.learning.admissible(region,own,now,recovery=True)
             nearby=self.reachable_camp_goals((p for model in models for p in region['farms'][str(model)]['points']),now)
             goals=[p for p in nearby if self.combat_allowed(p)]
-            if self.search_recovery and self.search_goal in goals:
-                goals=[self.search_goal]
-            elif goals:
+            if goals:
                 closest=min(distance(origin,p) for p in goals)
                 # Spread bots across nearby sites without sending one far away
                 # merely because the nearest good patch is shared.
                 gap=6500 if self.fast_progression else 3000
-                goals=[p for p in goals if distance(origin,p)<=closest+gap]
+                goals=[p for p in goals if (self.search_recovery and p==self.search_goal)
+                       or distance(origin,p)<=closest+gap]
         using_recovery=bool(goals)
         if self.paused_camp and not (self.supply_funding_goal or self.raising_travel_funds):
             map_name,point,expires=self.paused_camp

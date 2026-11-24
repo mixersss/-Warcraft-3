@@ -2,11 +2,13 @@
 import struct
 
 BOOSTS=((3095,60,3,1800),(3094,0,1,1800),(3880,60,3,900),(3879,40,2,900),(3844,0,1,900))
+STRIVE_AMPLIFIERS={3094,3095}
 
 class XPBoosters:
  def __init__(self,world,life,economy):
   self.world,self.life,self.economy=world,life,economy
   self.pending=None;self.retry=0;self.requests=0;self.confirmed=0;self.timeouts=0;self.reason=''
+  self.confirmed_items={};self.purchased_items={}
  @property
  def busy(self):return self.pending is not None
  def purchase_goals(self):
@@ -21,7 +23,9 @@ class XPBoosters:
   if self.pending:
    identity,count,rank,deadline=self.pending
    if sum(i.count for i in w.bag.values() if i.identity==identity)<count and getattr(w,'own_states',{}).get(48,0)>=rank:
-    self.confirmed+=1;self.pending=None;self.reason='Усилитель опыта подтверждён сервером';return False
+    self.confirmed+=1;self.pending=None;self.reason='Усилитель опыта подтверждён сервером'
+    self.confirmed_items[identity]=self.confirmed_items.get(identity,0)+1
+    return False
    if now>=deadline:self.pending=None;self.timeouts+=1;self.retry=now+60
    return self.pending is not None
   if (not safe or dialogue_busy or now<self.retry or w.bag_disabled or not w.bag_ready
@@ -36,4 +40,4 @@ class XPBoosters:
    self.pending=(identity,count,rank,now+10);self.retry=now+60;self.requests+=1
    self.reason='Применяет купленный усилитель опыта; ждёт состояние48';return True
   return False
- def summary(self):return {'state':self.reason,'requests':self.requests,'confirmed':self.confirmed,'timeouts':self.timeouts,'native_state':getattr(self.world,'own_states',{}).get(48,0),'pending':bool(self.pending),'free_boosts_granted':False}
+ def summary(self):return {'state':self.reason,'requests':self.requests,'confirmed':self.confirmed,'confirmed_items':dict(self.confirmed_items),'purchased_items':dict(self.purchased_items),'timeouts':self.timeouts,'native_state':getattr(self.world,'own_states',{}).get(48,0),'pending':bool(self.pending),'free_boosts_granted':False}

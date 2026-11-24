@@ -12,6 +12,7 @@ class Search:
         self.previous={start:None}
         self.costs={start:0}
         self.done=False;self.result=()
+        self.retried_from_other_end=False
     def advance(self,nav,limit,spend):
         while self.queue and len(self.costs)<=limit:
             spend()

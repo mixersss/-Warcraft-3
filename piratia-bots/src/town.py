@@ -191,6 +191,7 @@ class Town:
             for identity,count,_ in self.hunt_travel.purchase_goals():
                 price=self.life.prices.get(identity,0)
                 if 0<price<=self.spend_limit(identity):return identity,min(count,self.spend_limit(identity)//price)
+        if getattr(self,'local_boost_item',None):return self.local_boost_item,1
         if getattr(self,'local_fruit_item',None):return self.local_fruit_item,1
         if self.progression_visit:return None
         if self.petcare:
@@ -310,12 +311,28 @@ class Town:
         if (not w.bag_ready or w.bag_disabled or (w.bag_capacity or 0)-len(w.bag)<2
                 or now<self.next_shop or not 0<self.life.prices.get(fruit,0)<=w.own.values.get(8,0)-100):
             return None
+        return fruit if self.nearby_supplier(policy,fruit,now) else None
+
+    def nearby_supplier(self,policy,identity,now):
         origin=policy.position(now)
         component=policy.nav.land_component(origin)
-        for shop in self.life.services['shops'].get(w.map,[]):
-            if (fruit in shop['offers'] and math.dist(origin,shop['position'])<=4500
+        for shop in self.life.services['shops'].get(self.world.map,[]):
+            if (identity in shop['offers'] and math.dist(origin,shop['position'])<=4500
                     and (not component or policy.nav.land_component(shop['position'])==component)):
-                return fruit
+                return True
+        return False
+
+    def nearby_xp_boost(self,policy,now):
+        from xp_boosters import STRIVE_AMPLIFIERS
+        w=self.world
+        if (not self.xp_boosters or now<self.next_shop or not w.bag_ready or w.bag_disabled
+                or (w.bag_capacity or 0)-len(w.bag)<2 or self.combat_supply_required()
+                or getattr(policy,'mandatory_work',lambda:False)() is True):
+            return None
+        for identity,_,_ in self.xp_boosters.purchase_goals():
+            if (identity in STRIVE_AMPLIFIERS and self.nearby_supplier(policy,identity,now)
+                    and self.life.prices[identity]<=self.spend_limit(identity)):
+                return identity
         return None
 
     def on_map(self,now,was_dead=False):
@@ -369,6 +386,10 @@ class Town:
         if self.pending:
             identity,before,cash,deadline=self.pending
             if self.count(identity)>before and w.own.values.get(8,cash)<cash:
+                from xp_boosters import STRIVE_AMPLIFIERS
+                purchases=getattr(self.xp_boosters,'purchased_items',None)
+                if purchases is not None and identity in STRIVE_AMPLIFIERS:
+                    purchases[identity]=purchases.get(identity,0)+self.count(identity)-before
                 essential=self.progression_visit or identity in getattr(self,'combat_items',()) or (self.petcare and identity==2312)
                 self.confirmed+=1;self.finish(now,2 if essential else 60)
             elif now>deadline:
@@ -384,6 +405,7 @@ class Town:
         activity=getattr(policy,'activity',None)
         self.progression_visit=bool(activity and activity.hunting(now) is True)
         self.local_fruit_item=self.nearby_fairy_fruit(policy,now) if not medical else None
+        self.local_boost_item=self.nearby_xp_boost(policy,now) if not medical else None
         food_needed=bool(self.petcare and not self.combat_supply_required() and self.petcare.needs_food_visit())
         trip_items={i for i,_,_ in self.hunt_travel.purchase_goals()} if self.hunt_travel else set()
         if self.progression_visit or self.trip_purchase:
@@ -393,6 +415,7 @@ class Town:
             required=self.combat_items|trip_items|{self.emergency_ticket,1847}
             if food_needed:required.add(2312)
             if self.local_fruit_item:required.add(self.local_fruit_item)
+            if self.local_boost_item:required.add(self.local_boost_item)
             planned=self.supply_plan['item'] if self.supply_plan else self.wanted[0] if self.wanted else None
             if planned is not None and planned not in required:self.finish(now,0)
         if food_needed and not self.food_visit_requested:
@@ -424,7 +447,7 @@ class Town:
             self.rest_until=now+180;return True
         if now<self.next_shop:return False
         if self.supply_plan and now-self.supply_plan['started']>300:self.finish(now,180);return False
-        if not self.supply_plan and not self.wanted and not medical and not self.local_fruit_item:
+        if not self.supply_plan and not self.wanted and not medical and not (self.local_fruit_item or self.local_boost_item):
             self.supply_plan=self.plan_supplies(now,policy)
         if self.supply_plan:
             plan=self.supply_plan
@@ -453,7 +476,7 @@ class Town:
             self.visit_key=key
             self.visit_started=now
             permitted=120
-            if self.wanted[0]==self.local_fruit_item:permitted=30
+            if self.wanted[0] in (self.local_fruit_item,self.local_boost_item):permitted=30
             if self.wanted[0] in getattr(self,'combat_items',()) and self.combat_supply_required():
                 speed=max(100,w.own.values.get(44,480))
                 permitted=max(120,min(420,30+2*math.dist(policy.position(now),point)/speed))
