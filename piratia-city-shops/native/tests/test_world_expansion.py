@@ -112,7 +112,18 @@ class ExpansionTests(unittest.TestCase):
             itemstxt.write_bytes(text+b'// rebuilt\n')
             overlay=assets/'owner-city-shops.json'
             overlay.unlink()
-            report=restore(server,assets)
+            # Reproduce the user's Windows code page independently of locale.
+            from unittest.mock import patch
+            catalog = test_native.native.CATALOG.read_bytes()
+            with self.assertRaises(UnicodeDecodeError):
+                catalog.decode('cp1251')
+            read_text = Path.read_text
+
+            def windows_read_text(path, encoding=None, errors=None):
+                return read_text(path, encoding=encoding or 'cp1251', errors=errors)
+
+            with patch.object(Path,'read_text',windows_read_text):
+                report=restore(server,assets)
             self.assertTrue(overlay.is_file())
             self.assertEqual(set(report['verified_changed_files']),
                              {forge.BINARY.as_posix(),'ItemInfo.txt'})

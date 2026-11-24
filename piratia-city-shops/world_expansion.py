@@ -19,7 +19,7 @@ TROPHIES = {5618+level-1: (1591, level*1000) for level in range(1, 31)}
 LEGACY = dict(zip((*range(6400, 6408), *range(6410, 6440)), (*GEMS, *TROPHIES)))
 PRODUCTS = {
     category: {int(i): price for i, price in prices.items()}
-    for category, prices in json.loads((ROOT / "supply_products.json").read_text()).items()
+    for category, prices in json.loads((ROOT / "supply_products.json").read_bytes()).items()
 }
 SUPPLIES = {i: price for offers in PRODUCTS.values() for i, price in offers.items()}
 WEAPONS = {i: 1_800_000 for i in range(2331, 2345)}
@@ -207,7 +207,7 @@ def world_script():
         '    supply_page({},{},{'+stock+'},"forge-supply")' for stock, _, _ in lines)
     options = "\n".join(
         f'    Text(1,"{label}",OwnerOpenTrade,"forge-supply",{number})' for _,label,number in lines)
-    return ((ROOT / "world_expansion.lua").read_text()
+    return ((ROOT / "world_expansion.lua").read_text(encoding="utf-8")
             .replace("-- SUPPLY_STOCK", pages).replace("-- SUPPLY_OPTIONS", options)).encode("ascii")
 
 

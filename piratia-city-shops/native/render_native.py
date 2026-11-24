@@ -38,10 +38,10 @@ def render(catalog,compat=False):
     lines.append('[%d]={itemtype=%d,count=%d,item={%s},price={}},'%(index,index-1,len(panel),','.join(map(str,panel))))
    lines.append('[4]={itemtype=3,count=0,item={},price={}}},')
   lines.append('}}')
- lines.append((ROOT/('native_trade-alpha47.lua' if compat else 'native_trade-alpha55.lua' if catalog.get('catalog_revision',0)<=55 else 'native_trade.lua')).read_text())
+ lines.append((ROOT/('native_trade-alpha47.lua' if compat else 'native_trade-alpha55.lua' if catalog.get('catalog_revision',0)<=55 else 'native_trade.lua')).read_text(encoding="utf-8"))
  if catalog.get('catalog_revision',0)>=56:
-  lines.append((ROOT/'owner_progression.lua').read_text())
-  lines.append((ROOT/'ground_gems.lua').read_text())
+  lines.append((ROOT/'owner_progression.lua').read_text(encoding="utf-8"))
+  lines.append((ROOT/'ground_gems.lua').read_text(encoding="utf-8"))
  for shop in catalog['shops']:
   key=json.dumps(shop['key']);lines.extend(['function '+shop['function']+'()',
    ' Talk(1,%s)'%json.dumps(shop['name']+' - gold shop. Choose Trade to open items.'),
@@ -63,9 +63,9 @@ def render(catalog,compat=False):
     lines.append(' Text(2,"Second profession: %s",OwnerOpenTrade,"owner-profession",%d)'%(label,job))
    lines.extend([' Text(2,"Back",JumpPage,1)',' Text(2,"Close",CloseTalk)'])
   lines.extend([' Text(1,"Close",CloseTalk)','end'])
- if catalog.get('catalog_revision',0)>=57:lines.append((ROOT/'possession.lua').read_text())
+ if catalog.get('catalog_revision',0)>=57:lines.append((ROOT/'possession.lua').read_text(encoding="utf-8"))
  if catalog.get('catalog_revision',0)>=60:
-  lines.append((ROOT/'continuous_experience.lua').read_text())
-  lines.append((ROOT/'experience_diagnostics.lua').read_text())
+  lines.append((ROOT/'continuous_experience.lua').read_text(encoding="utf-8"))
+  lines.append((ROOT/'experience_diagnostics.lua').read_text(encoding="utf-8"))
  lines.append('-- OWNER_CITY_SHOPS_V2_END')
  return ('\n'.join(lines)+'\n').encode('ascii')

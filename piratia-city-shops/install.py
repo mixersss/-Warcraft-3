@@ -54,7 +54,7 @@ def validate_npcs(text,raw):
 
 
 def placement(center,avoid=()):
-    data=json.loads((ROOT/'city-safety.json').read_text());mask=zlib.decompress(base64.b64decode(data['safe_zlib']))
+    data=json.loads((ROOT/'city-safety.json').read_bytes());mask=zlib.decompress(base64.b64decode(data['safe_zlib']))
     ox,oy=data['origin'];w,h=data['width'],data['height'];x,y=center
     candidates=[]
     for dy in range(-10,11):
@@ -71,7 +71,7 @@ def placement(center,avoid=()):
 
 
 def plan(root,center,catalog=None):
-    catalog=catalog or json.loads((ROOT/'catalog.json').read_text())
+    catalog=catalog or json.loads((ROOT/'catalog.json').read_bytes())
     expected={i['id']:i for shop in catalog['shops'] for i in shop['items']}
     found={}
     for line in (root/'ItemInfo.txt').read_bytes().splitlines():
@@ -90,7 +90,7 @@ def plan(root,center,catalog=None):
     textrows,records=validate_npcs(originals[table],originals[binary])
     existing=[tuple(int(v)/100 for v in row[5].split(b',')) for row in textrows.values()]
     if tuple(center)==DEFAULT_CENTER:
-        data=json.loads((ROOT/'city-safety.json').read_text());mask=zlib.decompress(base64.b64decode(data['safe_zlib']))
+        data=json.loads((ROOT/'city-safety.json').read_bytes());mask=zlib.decompress(base64.b64decode(data['safe_zlib']))
         ox,oy=data['origin'];width,height=data['width'],data['height'];points=list(DEFAULT_POINTS)
         for x,y in points:
             cx,cy=x-ox,y-oy
@@ -127,7 +127,7 @@ def plan(root,center,catalog=None):
 def install(selected,center,apply=False):
     root=locate(selected);marker=root/'owner-city-shops-v1.json'
     if marker.exists():
-        previous=json.loads(marker.read_text())
+        previous=json.loads(marker.read_bytes())
         if previous.get('catalog_sha256')!=hashlib.sha256((ROOT/'catalog.json').read_bytes()).hexdigest():
             raise ValueError('Каталог после установки изменился; нужна проверка обновления магазинов')
         if all(hashlib.sha256((root/p).read_bytes()).hexdigest()==h for p,h in previous['installed_sha256'].items()):

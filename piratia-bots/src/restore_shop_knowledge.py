@@ -103,10 +103,10 @@ def restore(resource,assets):
     import installer
     server=installer.legacy.locate(resource);marker=server/installer.MARKER
     if not marker.exists():raise ValueError('Не найдена установленная серверная часть. Запусти INSTALL-SERVER-SHOPS.cmd; аккаунты и data не меняются.')
-    previous=json.loads(marker.read_text());cat=None;catalog_sha=None
+    previous=json.loads(marker.read_bytes());cat=None;catalog_sha=None
     for path in (installer.CATALOG,native/'catalog-alpha55.json',native/'catalog-alpha50.json',native/'catalog-alpha48.json'):
         if not path.exists():continue
-        candidate=json.loads(path.read_text());sha=installer.digest(path.read_bytes())
+        candidate=json.loads(path.read_bytes());sha=installer.digest(path.read_bytes())
         if previous.get('catalog_sha256')==sha and previous.get('implementation_sha256')==installer.implementation_digest(candidate):cat=candidate;catalog_sha=sha;break
     if cat is None:
         raise ValueError('Серверный патч другой версии. Сначала обнови его через INSTALL-SERVER-SHOPS.cmd.')
@@ -147,7 +147,7 @@ def ensure_shop_knowledge(assets,candidates=None,minimum_revision=48):
     problems=[]
     saved=assets.parent/'data/server-source.json'
     try:
-        location=json.loads(saved.read_text()).get('resource')
+        location=json.loads(saved.read_bytes()).get('resource')
         if isinstance(location,str):candidates=[Path(location),*candidates]
     except (OSError,ValueError,TypeError,AttributeError):pass
     for path in dict.fromkeys(map(Path,candidates)):

@@ -16,8 +16,8 @@ BUY_ANCHOR=b'function Buy( character, npc, trade, itemtype, index1, index2, coun
 BUY_HOOK=b'\n\tif trade.owner_native_shop ~= nil then\n\t\treturn OwnerNativeBuy(character,npc,trade,itemtype,index1,index2,count)\n\tend'
 
 def catalog():
- data=json.loads(CATALOG.read_text())
- if any(data==json.loads((ROOT/name).read_text()) for name in ('catalog-alpha47.json','catalog-alpha48.json','catalog-alpha50.json')):return data
+ data=json.loads(CATALOG.read_bytes())
+ if any(data==json.loads((ROOT/name).read_bytes()) for name in ('catalog-alpha47.json','catalog-alpha48.json','catalog-alpha50.json')):return data
  expected={'apparel':'OwnerClothes','fairies':'OwnerFairies','forge':'OwnerForge','tickets':'OwnerTickets','boosts':'OwnerBoosts','equipment':'OwnerEquipment'}
  if data.get('catalog_revision',0)>=56:expected.update(jewellery='OwnerJewellery',progress='OwnerProgress')
  if data.get('version')!=2 or {s['key'] for s in data.get('shops',[])}!=set(expected):raise ValueError('Неизвестный каталог магазинов')
@@ -126,7 +126,7 @@ def configure_actors(outputs,report,cat):
  if cat.get('catalog_revision',0)<55:return outputs,report
  import base64,zlib
  text,binary=SERVER_FILES[2:4];rows,records=legacy.validate_npcs(outputs[text],outputs[binary])
- safety=json.loads((ROOT.parent/'city-safety.json').read_text());mask=zlib.decompress(base64.b64decode(safety['safe_zlib']))
+ safety=json.loads((ROOT.parent/'city-safety.json').read_bytes());mask=zlib.decompress(base64.b64decode(safety['safe_zlib']))
  ox,oy=safety['origin'];width,height=safety['width'],safety['height']
  ids=list(report['npc_ids']);own=set(ids);newlines=[];updated={};positions=[]
  for index,shop in enumerate(cat['shops']):
@@ -170,9 +170,9 @@ def plan_server(root,cat=None):
  if b'OWNER_CITY_SHOPS_V2_BEGIN' in originals[SERVER_FILES[0]]:
   marker=root/MARKER
   if not marker.exists():raise ValueError('Есть блок02 без контрольной записи; нужна проверка')
-  previous=json.loads(marker.read_text());match=None
+  previous=json.loads(marker.read_bytes());match=None
   for label,path,compat in [('Alpha47',ROOT/'catalog-alpha47.json',True),('Alpha48',ROOT/'catalog-alpha48.json',False),('Alpha50',ROOT/'catalog-alpha50.json',False),('Alpha55',ROOT/'catalog-alpha55.json',False),('Alpha56',ROOT/'catalog-alpha56.json',False),('Alpha57',ROOT/'catalog-alpha57.json',False),('Alpha58',ROOT/'catalog-alpha58.json',False),('Alpha59',ROOT/'catalog-alpha59.json',False)]:
-   oldcat=json.loads(path.read_text())
+   oldcat=json.loads(path.read_bytes())
    if previous.get('catalog_sha256')==digest(path.read_bytes()) and previous.get('implementation_sha256')==implementation_digest(oldcat,compat=compat):match=(label,oldcat,compat);break
   if match is None:
    raise ValueError('Неизвестная версия установленных магазинов02; нужна проверка обновления')
@@ -200,10 +200,10 @@ def plan_server(root,cat=None):
   outputs,report=configure_actors(outputs,report,cat)
   return originals,outputs,report
  if v1.exists():
-  previous=json.loads(v1.read_text())
+  previous=json.loads(v1.read_bytes())
   required={p.as_posix() for p in SERVER_FILES[:4]}
   if set(previous['installed_sha256'])!=required:raise ValueError('Неполная контрольная запись предыдущей установки')
-  oldcat=json.loads((ROOT.parent/'catalog.json').read_text())
+  oldcat=json.loads((ROOT.parent/'catalog.json').read_bytes())
   if previous.get('catalog_sha256')!=digest((ROOT.parent/'catalog.json').read_bytes()):
    raise ValueError('Неизвестный каталог предыдущего патча; нужна проверка обновления')
   script_raw=originals[SERVER_FILES[0]];a,b=legacy_block_span(script_raw)
@@ -272,15 +272,15 @@ def install(server,client,apply=False,bot_assets=None):
   from forge_success import plan as forge_plan
   craft_changes,craft_report=forge_plan(root)
  clientraw=clientfile.read_bytes();clientoutput=patch_binary(clientraw,items)
- if marker.exists() and json.loads(marker.read_text()).get('catalog_sha256')==digest(CATALOG.read_bytes()):
-  previous=json.loads(marker.read_text())
+ if marker.exists() and json.loads(marker.read_bytes()).get('catalog_sha256')==digest(CATALOG.read_bytes()):
+  previous=json.loads(marker.read_bytes())
   if previous.get('implementation_sha256')!=implementation_digest(cat):raise ValueError('Изменилась версия обработчиков магазинов; нужна проверка обновления')
   if not all(digest((root/p).read_bytes())==h for p,h in previous['installed_sha256'].items()):raise ValueError('После нового патча изменились серверные файлы; нужна проверка')
   if clientoutput==clientraw:
    assets=Path(bot_assets) if bot_assets else ROOT.parents[1]/'assets'
    overlay=assets/'owner-city-shops.json'
    matches=False
-   try:matches=overlay.exists() and json.loads(overlay.read_text())==make_overlay(cat,previous)
+   try:matches=overlay.exists() and json.loads(overlay.read_bytes())==make_overlay(cat,previous)
    except (OSError,ValueError):pass
    craft_matches=not craft_report or previous.get('forge_success',{}).get('installed_sha256')==craft_report['installed_sha256']
    if (not (assets/'world-npcs.json').exists() or matches) and not craft_changes and craft_matches:
