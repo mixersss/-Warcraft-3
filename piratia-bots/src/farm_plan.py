@@ -18,6 +18,22 @@ def xp_level_divisor(actor_level,monster_level):
  if gap<=-10:return min(4,1+abs(gap-10)*.1)
  return 1
 
+def projected_combat(own,mob,hp=None,level=None):
+ """Estimate native XP before server multipliers, time, and incoming damage."""
+ values=own.values
+ mage=values.get(4) in (4,5,13,14,16)
+ attack=(values.get(33,0)+values.get(34,0))/2
+ if mage:attack=max(attack,values.get(29,0)*4)
+ reward=mob.get('base_xp',0)
+ if attack<=0 or reward<=0:return None
+ effective=max(1,attack-(0 if mage else mob.get('defence',0)))
+ hits=max(1,math.ceil((hp if hp is not None else mob['hp'])/effective))
+ interval=max(.45,min(5,values.get(42,0)/1000 or 1.5))
+ if mage:interval=max(1.5,interval)
+ incoming=hits*max(1,mob.get('attack_max',1)-values.get(35,0))
+ if mage or values.get(4) in (2,12):incoming*=.65
+ return reward/xp_level_divisor(values.get(0,1),level or mob['level']),hits*interval,incoming
+
 class HuntLearning:
  def __init__(self,seed):
   digest=hashlib.sha256(str(seed).encode()).digest();self.seed=int.from_bytes(digest[:8],'big')
@@ -26,6 +42,7 @@ class HuntLearning:
   self.signature=None;self.selected=set();self.until=0;self.scores={};self.last_save=0
   self.events=[];self.location_observer=None
   self.async_rewards=False;self.pending_rewards=[];self.reward_xp_floor=None
+  self.server_xp_rate=None;self.session_combat_rates={}
   self.inefficient_models=set();self.candidate_details={}
   self.probe_attempts={};self.probing=False;self.last_probe_trial=-1
   self.session_start=None;self.session_xp=None;self.session_last_xp=None;self.session_gain=0;self.session_loss=0
@@ -49,11 +66,25 @@ class HuntLearning:
   except OSError:self.save_errors+=1;self.last_save=now
  def blocked(self,model,now):return self.avoid.get(model,0)>now
  def dangerous(self,model,now):return self.danger_until.get(model,0)>now
+ def note_server_xp_rate(self,rate):
+  if rate>0 and rate!=self.server_xp_rate:
+   self.server_xp_rate=rate;self.session_combat_rates.clear()
+ def base_combat_rate(self,model,level):
+  wins,xp,seconds=self.session_combat_rates.get((level,model),(0,0,0))
+  if self.server_xp_rate and wins>=2:return xp/seconds/self.server_xp_rate
+  return None
+ def release_target(self,identity):
+  active=self.active
+  if not active or active['id']!=identity:return
+  if self.async_rewards and 'death_seen' in active:
+   if len(self.pending_rewards)>=32:return
+   self.pending_rewards.append(active)
+  self.active=None
  def begin(self,world,target,now):
   if self.active and self.active['id']==target.identity and self.active['handle']==target.handle:return
   if self.async_rewards and self.active and 'death_seen' in self.active:
    if len(self.pending_rewards)>=32:return # Never lose a pending native reward record.
-   self.pending_rewards.append(self.active);self.active=None
+   self.release_target(self.active['id'])
   own=world.own
   self.active={'id':target.identity,'handle':target.handle,'model':target.model,'start':now,
                'hp':own.values.get(1,0),'low':own.values.get(1,0),'max_hp':max(1,own.values.get(31,1)),
@@ -65,7 +96,7 @@ class HuntLearning:
   if not a:return
   self.active=None;own=world.own
   row=self.rows.setdefault(str(a['model']),{k:0 for k in FIELDS})
-  duration=max(1,now-a['start']);cost=max(0,a['hp']-a['low'])/a['max_hp']
+  duration=max(1,(a.get('death_seen',now) if self.async_rewards else now)-a['start']);cost=max(0,a['hp']-a['low'])/a['max_hp']
   row['seconds']+=duration;row['hp_cost']+=cost
   if row.get('observed_level')!=a['level']:
    row.update(observed_level=a['level'],level_xp=0,level_seconds=0,level_wins=0)
@@ -78,6 +109,10 @@ class HuntLearning:
    if self.async_rewards and self.reward_xp_floor is not None:baseline=max(baseline,self.reward_xp_floor)
    earned=max(0,own.values.get(15,a['xp'])-baseline)
    if self.async_rewards:self.reward_xp_floor=own.values.get(15,a['xp'])
+   if earned and self.server_xp_rate:
+    key=(a['level'],a['model'])
+    wins,xp,seconds=self.session_combat_rates.get(key,(0,0,0))
+    self.session_combat_rates[key]=(wins+1,xp+earned,seconds+duration)
    if earned and self.location_observer and a.get('map')==world.map:
     hit=world.own_hits.get(a['id'])
     if hit and hit[1] and hit[0]>=a['start']:
@@ -194,11 +229,13 @@ class HuntLearning:
     base/=1+travel/12000
    # Audited native monster XP and defence; observed XP/time takes priority below.
    # Low-damage armoured targets must not look as comfortable as soft ones.
-   if record.get('base_xp') is not None:
-    attack=(own.values.get(33,0)+own.values.get(34,0))/2
-    physical=own.values.get(4) in (0,1,2,8,9,10,11,12)
-    effective=max(1,attack-record.get('defence',0)) if attack>0 and physical else 1
-    efficiency=record['base_xp']/xp_level_divisor(level,ml)*effective/max(1,record['hp'])
+   estimate=projected_combat(own,record)
+   if estimate:
+    reward,seconds,incoming=estimate
+    efficiency=reward/(seconds*(1+incoming/max_hp))
+    base*=max(.15,min(3,math.sqrt(efficiency)))
+   elif record.get('base_xp') is not None:
+    efficiency=record['base_xp']/xp_level_divisor(level,ml)/max(1,record['hp'])
     base*=max(.15,min(3,math.sqrt(efficiency)))
    if self.profile[0]=='искатель вызова':base*=1+max(0,ml-level)*.12
    if self.profile[0]=='собиратель':base*=1+min(10,len(record.get('drops',[])))*.035

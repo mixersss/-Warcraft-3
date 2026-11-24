@@ -4,7 +4,7 @@ import math
 import struct
 from adventure import talk_request
 from classic_wire import Reader,ProtocolError
-from farm_plan import PREFERRED_LEVEL_GAP,xp_level_divisor
+from farm_plan import PREFERRED_LEVEL_GAP,projected_combat
 from town import function_request
 
 def npc_near(world,point):
@@ -110,17 +110,12 @@ class HuntTravel:
   w=self.world;own=w.own;mob=self.knowledge.get(model);level=own.values.get(0,1)
   if (not max(1,level-PREFERRED_LEVEL_GAP)<=mob['level']<=level+3 or mob['hp']>own.values.get(31,1)*4
       or policy.learning.blocked(model,now) or policy.learning.dangerous(model,now)):return 0
-  attack=max(1,(own.values.get(33,1)+own.values.get(34,1))/2)
-  mage=own.values.get(4) in (4,5,13,14,16)
-  if mage:attack=max(attack,own.values.get(29,0)*4)
-  hits=mob['hp']/max(1,attack-(0 if mage else mob.get('defence',0)))
-  incoming=hits*max(1,mob.get('attack_max',1)-own.values.get(35,0))*(.65 if mage or own.values.get(4) in (2,12) else 1)
+  estimate=projected_combat(own,mob)
+  if estimate is None:return 0
+  reward,seconds,incoming=estimate
   if incoming>own.values.get(31,1)*.85:return 0
-  seconds=max(1,hits*max(.5,getattr(policy,'attack_interval',1.5)))
-  observed=policy.learning.rows.get(str(model),{})
-  if observed.get('observed_level')==level and observed.get('level_wins',0)>=2 and observed.get('level_seconds',0)>0:
-   return observed.get('level_xp',0)/observed['level_seconds']
-  return mob.get('base_xp',0)/xp_level_divisor(level,mob['level'])/seconds
+  observed=getattr(policy.learning,'base_combat_rate',lambda *args:None)(model,level)
+  return observed if observed is not None else reward/seconds
  def settling_site(self,now,policy):
   if not self.site_arrival:return False
   map_name,arrived=self.site_arrival
@@ -194,6 +189,10 @@ class HuntTravel:
   return dict(plan,model=model) if score>0 else None
  def choose(self,now,policy,returning=False,alternative_to=None,resume=None):
   w=self.world;rows=[];scout_routes=[]
+  origin=policy.position(now);rates={}
+  def rate(model):
+   if model not in rates:rates[model]=self.rate(model,policy,now)
+   return rates[model]
   for route in self.routes(now,policy,returning):
    if (route['to_map']==w.map and math.dist(w.own.position,route['arrival_cm'])<5000
        and self.same_land(policy,route['arrival_cm'])):continue
@@ -213,10 +212,10 @@ class HuntTravel:
     rows.append((score,route,None));continue
    # Planning a paid trip must be possible BEFORE buying its tickets. Actual
    # departure below still requires an owned return ticket and native use.
-   approach=(math.dist(policy.position(now),route.get('position',policy.position(now)))
+   approach=(math.dist(origin,route.get('position',origin))
              +route.get('shopping_distance',0))/250
    for model,distance in self.nearby(route['to_map'],route['arrival_cm']):
-    score=self.rate(model,policy,now)
+    score=rate(model)
     if not score:continue
     score*=600/(600+approach+distance/250+route['fare']/400)
     jitter=int.from_bytes(hashlib.sha256(f'{self.name}:{model}:{int(now//900)}'.encode()).digest()[:2],'big')/65535
@@ -242,7 +241,7 @@ class HuntTravel:
   else:
    return self.choose_island_scout(now,policy,scout_routes) if scout_routes and not (returning or alternative_to) else None
   if not returning:
-   current=max((self.rate(m,policy,now) for m,d in self.nearby(w.map,w.own.position) if d<5000),default=0)
+   current=max((rate(m) for m,d in self.nearby(w.map,w.own.position) if d<5000),default=0)
    last=getattr(policy.learning,'last_progress_at',None)
    if score<current*1.2 and last is not None and now-last<180:return None
   self.preferred_model=model
@@ -346,7 +345,9 @@ class HuntTravel:
     self.preferred_model=self.plan['model'];self.target_started=now
   deep_mine=bool(self.plan and self.plan.get('deep_mine'))
   local_combat=getattr(policy,'local_combat_ready',None)
-  if not returning and not deep_mine and local_combat and local_combat(now) is True:
+  last_xp=policy.learning.last_progress_at
+  productive=last_xp is None or now-last_xp<120
+  if not returning and not deep_mine and productive and local_combat and local_combat(now) is True:
    if self.plan:self.target_started=now
    return False
   near_argent=w.map=='garner' and any(math.dist(w.own.position,p)<16000 for p in self.data['birthplaces'].get('Argent City',{}).get('points',[]))

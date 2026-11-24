@@ -14,7 +14,7 @@ from progression import Progression
 from social import Social, ChatBudget
 from world import World, HP, MAX_HP, LV, ATTACK_DISTANCE
 from coral_supplies import spent_basic
-from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, xp_level_divisor
+from farm_plan import MAX_RECOVERY_LEVEL_GAP, PREFERRED_LEVEL_GAP, projected_combat, xp_level_divisor
 
 MINE_ENTRIES=((22967,2878),(38675,12625),(11623,3330))
 
@@ -183,7 +183,7 @@ class Hunter:
 
     def drop_target(self,now=None,avoid=False):
         had_target=self.target is not None or self.target_key is not None
-        if self.learning.active and self.learning.active['id']==self.target:self.learning.active=None
+        self.learning.release_target(self.target)
         if self.target and avoid and now is not None:
             self.blacklist[self.target]=now+45
             if len(self.blacklist)>256:self.blacklist.pop(next(iter(self.blacklist)))
@@ -288,6 +288,9 @@ class Hunter:
         if line_clear:
             direct=next((point for point in options if line_clear(origin,point)),None)
             if direct:return direct
+        if (options and self.fast_progression and self.search_goal and distance(origin,center)<=1500
+                and getattr(self.nav,'pending_farm_search',lambda goal:None)(self.search_goal)):
+            self.nav.cancel_pending(self.search_goal)
         for point in options:
             if self.nav.path(origin,point):return point
         return None
@@ -952,9 +955,17 @@ class Hunter:
         # Prefer reachable nearby fights, weakened targets and useful level-appropriate XP.
         own=self.world.own;maximum=max(1,entity.values.get(MAX_HP,entity.values.get(HP,1)))
         health=entity.values.get(HP,maximum)/maximum
+        approach=distance(self.position(now),self.world.position(now,entity.identity))
+        record=self.mob_knowledge.get(entity.model) if self.fast_progression and self.mob_knowledge else None
+        estimate=projected_combat(own,record,entity.values.get(HP,maximum),entity.values.get(LV)) if record else None
+        if estimate:
+            reward,seconds,incoming=estimate
+            travel=max(0,approach-self.attack_reach(entity))/max(100,own.values.get(44,480))
+            risk=1+incoming/max(1,own.values.get(HP,1))
+            return -reward*max(.15,health)/((seconds+travel)*risk)
         gap=max(0,own.values.get(LV,1)-entity.values.get(LV,1))
         preference=self.learning.scores.get(entity.model,0)
-        return distance(self.position(now),self.world.position(now,entity.identity))+health*200+gap*20-preference*300
+        return approach+health*200+gap*20-preference*300
 
     def visible_mobs(self,now):
         cached=getattr(self,'visible_mob_cache',None)
@@ -1124,6 +1135,15 @@ class Hunter:
         self.next_action=min(now,self.next_action)
         self.combat_wakes+=1
         return True
+
+    def decision_interval(self,bot_index,network_pump):
+        busy=self.transaction_busy()
+        if self.fast_progression and not busy:
+            if self.target is not None or self.pending_action:
+                return .15+(bot_index%5)*.015
+            return .30+(bot_index%5)*.025
+        if network_pump is None or self.pending_action or self.target:return .25
+        return 1.0 if busy else .65+(bot_index%5)*.03
 
     def send_in_range_attack(self,now,target,spell,funding_attack=False):
         own=self.world.own
@@ -1734,7 +1754,7 @@ class Hunter:
                 candidate is not defence if defence else False,
                 not (candidate.values.get(LV,0)>=preferred_floor or candidate.model in shared_models
                      or self.raising_travel_funds or self.supply_funding_models),
-                candidate.identity not in in_range))
+                candidate.identity not in in_range if not (self.fast_progression and self.mob_knowledge) else False))
             # Prefer unclaimed reachable mobs. If every viable target is busy,
             # join a real fight instead of waiting for another bot's lease.
             # Active quest mobs can be shared on the first pass.
@@ -2298,6 +2318,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
     def observe(command, payload):
         now=time.monotonic()
         if xp_diagnostics.observe(command,payload):
+            receipt=xp_diagnostics.rows[-1]
+            if receipt['native_call_ok']:policy.learning.note_server_xp_rate(receipt['rate'])
             report.result['xp_server']=xp_diagnostics.summary();return
         if policy.treasure:policy.treasure.observe(command,payload)
         if command==811 or command in range(812,820):
@@ -2491,7 +2513,7 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 combat_wake=policy.wake_for_combat(now)
             if combat_wake or now>=next_think:
                 think_started=now
-                next_think=now+(.15+(bot_index%5)*.015 if getattr(policy,'fast_progression',False) and not policy.transaction_busy() else .25 if network_pump is None or policy.pending_action or policy.target else 1.0 if policy.transaction_busy() else .65+(bot_index%5)*.03)
+                next_think=now+policy.decision_interval(bot_index,network_pump)
                 think_cpu_started=time.thread_time()
                 if hasattr(navigation,'directory'):
                     navigation.directory.update(bot_name,bot_index,world.map,world.position(),world.own.values.get(0,1),time.monotonic())
