@@ -57,6 +57,8 @@ class ExpansionTests(unittest.TestCase):
                 for name in ("SetJinglian_Lv","GetStone_TypeID","Get_StoneLv","Set_StoneLv","TansferNum","check_item_final_data"):
                     f.write(f"\nfunction {name}() end".encode())
             (script/"functions.lua").write_bytes(b"function GetNum_Part1() end\nfunction SetNum_Part1() end")
+            receipt["forge_success"]["installed_sha256"] = hashlib.sha256((script/"forge.lua").read_bytes()).hexdigest()
+            receipt_path.write_text(json.dumps(receipt))
             changes = expansion.plan(server, client)
             self.assertIn(client, changes)
             self.assertIn(duplicate_lines, changes[text])
@@ -71,6 +73,70 @@ class ExpansionTests(unittest.TestCase):
             for i, money in ((5622,5_000),(5623,6_000)):
                 self.assertEqual(struct.unpack_from("<i",rows[i],320)[0],2*money)
             self.assertTrue(json.loads(receipt_path.read_text())["world_expansion"])
+            import sys
+            package=expansion.ROOT.parent
+            bot_src=package/'piratia-bots/src'
+            sys.path.insert(0,str(bot_src if bot_src.exists() else package/'src'))
+            from restore_shop_knowledge import restore
+            assets=root/'assets'
+            assets.mkdir()
+            (assets/'world-npcs.json').write_bytes(b'{}')
+            npcscript=server/forge.SCRIPT
+            current=npcscript.read_bytes()
+            npcscript.write_bytes(current+b'\n-- unrelated local changes\n')
+            self.assertIn(forge.SCRIPT.as_posix(),restore(server,assets)['verified_changed_files'])
+            npcscript.write_bytes(current+b'\nfunction OwnerOpenTrade() end\n')
+            with self.assertRaisesRegex(ValueError,'переопределение торговцев'):
+                restore(server,assets)
+
+    def test_restore_bot_shops_after_binary_rebuild_validates_bindings_and_price(self):
+        import sys
+        package=expansion.ROOT.parent
+        bot_src=package/'piratia-bots/src'
+        sys.path.insert(0,str(bot_src if bot_src.exists() else package/'src'))
+        from restore_shop_knowledge import restore
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            server,client=test_native.fixture(root)
+            assets=root/'assets'
+            assets.mkdir()
+            (assets/'world-npcs.json').write_bytes(b'{}')
+            test_native.isolated_install(server,client,True,assets)
+            npcbin=server/forge.BINARY
+            old=npcbin.read_bytes()
+            compiled=bytearray(old)
+            compiled[4+64]^=1
+            npcbin.write_bytes(compiled)
+            itemstxt=server/'ItemInfo.txt'
+            text=itemstxt.read_bytes()
+            itemstxt.write_bytes(text+b'// rebuilt\n')
+            overlay=assets/'owner-city-shops.json'
+            overlay.unlink()
+            report=restore(server,assets)
+            self.assertTrue(overlay.is_file())
+            self.assertEqual(set(report['verified_changed_files']),
+                             {forge.BINARY.as_posix(),'ItemInfo.txt'})
+            self.assertEqual(npcbin.read_bytes(),compiled)
+            self.assertEqual(itemstxt.read_bytes(), text+b'// rebuilt\n')
+
+            record=json.loads((server/forge.MARKER).read_text())
+            owner_id=record['npc_ids'][0]
+            at=next(i for i in range(4,len(compiled),428)
+                    if struct.unpack_from('<I',compiled,i+4)[0]==owner_id)
+            compiled[at+244]^=1
+            npcbin.write_bytes(compiled)
+            with self.assertRaisesRegex(ValueError,'garnerNPC.bin'):
+                restore(server,assets)
+            npcbin.write_bytes(old)
+            lines=text.splitlines(keepends=True)
+            wanted=next(iter(test_native.ITEMS))
+            i=next(i for i,line in enumerate(lines) if line.split(b'\t')[0].strip()==str(wanted).encode())
+            fields=lines[i].split(b'\t')
+            fields[22]=b'101'
+            lines[i]=b'\t'.join(fields)
+            itemstxt.write_bytes(b''.join(lines))
+            with self.assertRaisesRegex(ValueError,'ItemInfo.txt'):
+                restore(server,assets)
 
     def test_duplicate_used_as_a_template_is_rejected(self):
         row = b"860\tGem" + b"\t0"*24 + b"\n"

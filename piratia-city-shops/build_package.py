@@ -2,13 +2,13 @@
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-90-fix7';NAME='Piratia-Alpha90-Complete-Fix7'
+OUT=REPO/'releases/piratia/complete-90-fix8';NAME='Piratia-Alpha90-Complete-Fix8'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
  with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-90-fix3/Piratia-Auto-Bots-Alpha90-Fix3.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
- for relative in ('README.md','AGENTS.md','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md','knowledge/ALPHA90.md'):
+ for relative in ('README.md','AGENTS.md','src/restore_shop_knowledge.py','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md','knowledge/ALPHA90.md'):
   files[NAME+'/'+relative]=(REPO/'piratia-bots'/relative).read_bytes()
  for source in sorted(ROOT.rglob('*')):
   if source.is_file() and '__pycache__' not in source.parts and source.suffix in ('.py','.lua','.json','.cmd','.md','.sqlite3','.csv','.html'):
@@ -63,7 +63,7 @@ def main():
  manifest.update(cumulative_bots='Alpha84 includes Alpha83 and previous releases',bot_checks=1053,alpha84={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha85 includes Alpha84 and previous releases',bot_checks=1057,alpha85={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha89 includes Alpha88 and previous releases',bot_checks=1070,alpha89={'server_patch_changed':False,'live_windows_verified':False})
- manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1078,native_patch_checks=65,alpha90={'world_expansion_installer':True,'installer_fix':7,'cooking_products':38,'manufacturing_products':95,'native_level_trophies':True,'restores_original_spawn_density':True,'native_gem_drops':True,'original_gem_drop_rates':True,'extra_native_gem_chance':0.03,'gem_combination_rank_cap':9,'curated_ordinary_loot':True,'live_windows_verified':False})
+ manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1078,native_patch_checks=66,alpha90={'world_expansion_installer':True,'installer_fix':8,'semantic_shop_knowledge_restore':True,'cooking_products':38,'manufacturing_products':95,'native_level_trophies':True,'restores_original_spawn_density':True,'native_gem_drops':True,'original_gem_drop_rates':True,'extra_native_gem_chance':0.03,'gem_combination_rank_cap':9,'curated_ordinary_loot':True,'live_windows_verified':False})
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()
