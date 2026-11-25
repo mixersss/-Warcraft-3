@@ -12,10 +12,13 @@ class Coordination:
         self.zones={}
         self.assistants={}
         self.next_sweep=0
+        self.empty_camps={}
 
     def _expire(self,now):
         if now<self.next_sweep:return
         self.next_sweep=now+1
+        for key,until in list(self.empty_camps.items()):
+            if until<=now:self.empty_camps.pop(key,None)
         for owner,(_,_,until) in list(self.visits.items()):
             if until<=now:self.visits.pop(owner,None)
         for key,(_,until) in list(self.targets.items()):
@@ -91,6 +94,17 @@ class Coordination:
                 selected=min(goals,key=cost)
             self.zones[owner]=((map_name,selected),now+(90 if mine else 45))
             return selected
+
+    def note_empty_camp(self,map_name,point,now):
+        with self.lock:
+            self._expire(now)
+            self.empty_camps[(map_name,point[0]//1500,point[1]//1500)]=now+30
+            while len(self.empty_camps)>2048:self.empty_camps.pop(next(iter(self.empty_camps)))
+
+    def available_camps(self,map_name,goals,now):
+        with self.lock:
+            self._expire(now)
+            return [p for p in goals if self.empty_camps.get((map_name,p[0]//1500,p[1]//1500),0)<=now]
 
     def visit(self,owner,map_name,point,now,mandatory=False):
         """Admission, not a queue: denied optional visitors continue hunting."""

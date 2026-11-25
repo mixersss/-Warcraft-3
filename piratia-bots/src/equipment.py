@@ -37,7 +37,13 @@ class ItemCatalog:
         gear=self.effective(identity,item);links=gear['links']
         if not links or any(link not in (0,2,3,4,5,6,7,8,9) for link in links):return None
         chosen=next((link for link in links if not own.equipment.get(link)),links[0])
-        if gear.get('kind')==26 and self.types.get(own.equipment.get(7))==29 and 8 in links:chosen=8
+        if gear.get('kind')==26 and own.values.get(4) in (4,16):
+            # Classic owner servers can ignore the fork-specific -2 ring
+            # destination. Only the ordinary automatic EMPTY second slot is
+            # safe while slot7 is reserved for the attack coral.
+            if self.types.get(own.equipment.get(7))!=29 or own.equipment.get(8):return None
+            chosen=8
+        elif gear.get('kind')==26 and self.types.get(own.equipment.get(7))==29 and 8 in links:chosen=8
         affected=set(gear.get('requires_links',gear.get('displaces',[chosen]))) or {chosen}
         affected.add(chosen)
         # Unfixing either occupied hand also unfixes its known two-hand partner.
@@ -278,7 +284,7 @@ class Equipment:
         score,slot,identity,links=max(options)
         from hunter import action_header
         # Native stNetUseItem: bag slot, automatic target=-1, exactly like double click.
-        destination=-2 if self.catalog.types.get(identity)==26 and links==[8] else -1
+        destination=-2 if self.catalog.types.get(identity)==26 and links==[8] and own.values.get(4) not in (4,16) else -1
         policy.emit(action_header(own.identity,policy.sequence,11)+struct.pack('>hh',slot,destination))
         self.requests+=1
         self.pending_bag=(slot,self.world.bag[slot]) if self.progression_first else None

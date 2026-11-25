@@ -7,9 +7,13 @@ def verify_shop_actors(installer, current, catalog, receipt):
     """Verify the actors the bots actually use in both resource formats."""
     text, binary = installer.SERVER_FILES[2:4]
     rows = installer.legacy.npc_rows(current[text])
-    ids = receipt.get('npc_ids', [])
-    positions = receipt.get('positions_m', installer.legacy.DEFAULT_POINTS)
-    shops = catalog['shops']
+    ids = list(receipt.get('npc_ids', []))
+    positions = list(receipt.get('positions_m', installer.legacy.DEFAULT_POINTS))
+    shops = list(catalog['shops'])
+    if receipt.get('world_expansion') and type(receipt.get('world_supply_npc_id')) is int:
+        from world_expansion import LOCATION
+        ids.append(receipt['world_supply_npc_id']);positions.append(LOCATION)
+        shops.append({'function':'ForgeSupply','name':'Forge Supply'})
     if len(ids)!=len(shops) or len(set(ids))!=len(shops) or len(positions)!=len(shops):
         raise ValueError('Неполный список НПС в журнале установки.')
     wanted = set(ids)
@@ -84,6 +88,10 @@ def verify_changed_resources(installer, current, changed, cat, receipt):
     if {text,binary}.intersection(changed):
         verify_shop_actors(installer,current,cat,receipt)
     expected = installer.offers(cat)
+    if receipt.get('world_expansion') and type(receipt.get('world_supply_npc_id')) is int:
+        from world_expansion import SUPPLIES, item_text
+        known=item_text(current[items_text],set(SUPPLIES))
+        expected.update({i:{'id':i,'kind':int(known[i][10]),'price':price} for i,price in SUPPLIES.items()})
     for path, verify in ((items_text,installer.patch_text),(items_bin,installer.patch_binary)):
         if path not in changed:
             continue

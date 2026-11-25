@@ -28,6 +28,36 @@ END = b"-- WORLD_EXPANSION_END"
 VENDOR = b"ForgeSupply"
 LOCATION = (2260, 2770)
 
+def supply_overlay(identity):
+    """The real additional shop, with the same pages as world_script()."""
+    import csv
+    with (ROOT/'native/item-database.csv').open(encoding='utf-8-sig') as stream:
+        names={r['id']:r['name_ru'] for r in csv.DictReader(stream)}
+    mapping={};labels={};number=0
+    for category,offers in PRODUCTS.items():
+        items=list(offers)
+        heading={'cooking':'Cooking','manufacturing':'Manufacturing'}[category]
+        for start in range(0,len(items),36):
+            number+=1
+            labels[str(number)]=heading if len(items)<=36 else f'{heading} {start//36+1}'
+            mapping.update({str(i):number for i in items[start:start+36]})
+    return {'key':'garner:owner-v2:'+str(identity),'source_id':identity,'map':'garner',
+            'name':'Forge Supply','model':17,'position':[v*100+50 for v in LOCATION],
+            'region':'Argent City','script_function':'ForgeSupply','script_found':True,
+            'services':['trade'],'mission_source_ids':[],'menu_handlers':['OwnerOpenTrade'],
+            'offers':list(SUPPLIES),'verified_shop_binding':True,'conditions_not_evaluated':True,
+            'source_kind':'owner-world-supplies','menu_pages':mapping,'menu_labels':labels,'live_server_seen':False},names
+
+
+def client_price_records(raw):
+    """Existing original client items only; no records or effects are invented."""
+    import csv
+    existing=table_bin(raw)
+    prices=SUPPLIES | WEAPONS | {684:200_000}
+    with (ROOT/'native/item-database.csv').open(encoding='utf-8-sig') as stream:
+        kinds={int(row['id']):int(row['kind']) for row in csv.DictReader(stream) if row['kind']}
+    return {i:{'kind':kinds[i],'price':price} for i,price in prices.items() if i in existing},sorted(set(prices)-existing.keys())
+
 
 def table_bin(raw):
     size = 868
@@ -241,6 +271,9 @@ def plan(resource, client, encoding="cp1251", bot_assets=None, *, retire_legacy=
     if forge.MARKER in after:
         receipt = json.loads(after[forge.MARKER])
         receipt["world_expansion"] = True
+        vendor_rows,_=city.validate_npcs(after[forge.TEXT],after[forge.BINARY])
+        receipt['world_supply_npc_id']=next(i for i,r in vendor_rows.items() if r[11]==VENDOR)
+        receipt['healing_food_prices']={str(i):PRODUCTS['cooking'][i] for i in (1849,1078,1079,1080,1082,1083,3122,3123,3124,3125,3126,3127,3128,1084,1085,1087,1088,1089,1090,3099,3134,3135,3136,3137,3138,3139,3140)}
         for path, payload in after.items():
             if path != forge.MARKER and payload != before[path]:
                 receipt["installed_sha256"][path.as_posix()] = hashlib.sha256(payload).hexdigest()

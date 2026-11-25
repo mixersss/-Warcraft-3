@@ -96,7 +96,7 @@ class PetCare:
   if w.own.values.get(0,0)>=15:
    for ticket in sorted({4602,{'garner':4602,'magicsea':4603,'darkblue':4604}.get(self.home_city,4602)}):
     if not self.count(ticket):goals.append((ticket,1,'покупает нужный городской билет'))
-  if (fairy and w.own.values.get(0,0)>=20 and now>=self.berry_retry and not self.count(3844)
+  if (fairy and not getattr(w,'own_states',{}).get(48) and w.own.values.get(0,0)>=20 and now>=self.berry_retry and not self.count(3844)
       and w.own.values.get(8,0)>=50000):goals.append((3844,1,'покупает НЯ для предстоящего кача'))
   if fairy and w.skills.get(280,{}).get('level',0)<3 and not self.count(609):
    goals.append((609,1,'покупает Expert Fairy Possession'))
@@ -113,7 +113,7 @@ class PetCare:
   from hunter import action_header
   item=self.world.bag[slot];fairy=self.any_fairy()
   self.pending={'kind':kind,'source':slot,'id':item.identity,'count':item.count,'target':target,
-   'source_total':self.count(item.identity),'before':fairy[1] if fairy else None,'deadline':now+12}
+   'source_total':self.count(item.identity),'before':fairy[1] if fairy else None,'deadline':now+24}
   policy.emit(action_header(self.world.own_id,policy.sequence,11)+struct.pack('>hh',slot,target))
   setattr(self,kind+'_requests',getattr(self,kind+'_requests')+1);self.next_action=now+2
   if kind=='pet_skill':self.pet_training_attempts+=1
@@ -150,14 +150,14 @@ class PetCare:
    elif now>=p['deadline']:
     self.timeouts+=1;self.pending=None;self.next_action=now+120
     if p['kind']=='berry':self.berry_retry=now+900
-   return self.pending is not None
+   return self.pending is not None and p['kind']=='move'
   if self.possession_pending:
    p=self.possession_pending
    if getattr(w,'own_states',{}).get(p['state'],0)>0:
     self.possession_confirmed+=1;self.possession_pending=None
    elif now>=p['deadline']:
     self.timeouts+=1;self.possession_pending=None;self.possession_retry=max(self.possession_retry,now+180)
-   return self.possession_pending is not None
+   return False # Native buff acknowledgement need not pause ordinary hunting.
   if now<self.next_action or not safe or dialogue_busy or not w.bag_ready or w.bag_disabled or not w.own.alive:return False
   self.align_build()
   fairy=self.any_fairy()
@@ -193,7 +193,8 @@ class PetCare:
    for identity,_,_ in self.pet_skill_goals(now):
     source=next((s for s,i in w.bag.items() if i.identity==identity and i.valid),None)
     if source is not None:self.reason='обучает фею боевому навыку';self.use(source,slot,now,policy,'pet_skill');return True
-  if now>=self.berry_retry and w.own.values.get(0,0)>=20 and not getattr(policy,'mandatory_work',lambda:False)():
+  boost_pending=getattr(getattr(policy,'xp_boosters',None),'pending',None)
+  if not boost_pending and now>=self.berry_retry and not getattr(w,'own_states',{}).get(48) and w.own.values.get(0,0)>=20 and not getattr(policy,'mandatory_work',lambda:False)():
    source=next((s for s,i in w.bag.items() if i.identity==3844 and i.valid),None)
    # After reconnect, wait a full possible native15-minute buff before reuse.
    if not self.berry_retry:self.berry_retry=now+900

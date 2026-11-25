@@ -372,7 +372,7 @@ class Booster58Tests(unittest.TestCase):
   w,c,p=self.make();w.bag={};w.own.values[8]=1999;self.assertEqual(c.purchase_goals(),[])
   w.own.values[8]=100000;w.own_states={48:1};self.assertEqual(c.purchase_goals(),[])
   self.assertFalse(c.tick(100,p,True));p.emit.assert_not_called()
- def test_sellers_are_exactly_thirty_percent_without_new_accounts(self):
-  self.assertEqual(sum(role_for(i)=='gem_seller' for i in range(1,401)),120)
+ def test_sellers_are_exactly_half_without_new_accounts(self):
+  self.assertEqual(sum(role_for(i)=='gem_seller' for i in range(1,401)),200)
 
 if __name__=='__main__':unittest.main()

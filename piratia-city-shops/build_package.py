@@ -1,12 +1,12 @@
-"""Package Alpha90 bots with the revision 60 server verification tools."""
+"""Package Alpha91 bots with the revision 60 server verification tools."""
 import hashlib,json,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent;REPO=ROOT.parent
-OUT=REPO/'releases/piratia/complete-90-fix9';NAME='Piratia-Alpha90-Complete-Fix9'
+OUT=REPO/'releases/piratia/complete-91';NAME='Piratia-Alpha91-Complete'
 
 def main():
  OUT.mkdir(parents=True,exist_ok=True);target=OUT/(NAME+'.zip');files={}
- with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-90-fix3/Piratia-Auto-Bots-Alpha90-Fix3.zip') as bots:
+ with zipfile.ZipFile(REPO/'releases/piratia/auto-bots-91/Piratia-Auto-Bots-Alpha91.zip') as bots:
   for name in bots.namelist():files[NAME+'/'+name.split('/',1)[1]]=bots.read(name)
  for relative in ('README.md','AGENTS.md','src/restore_shop_knowledge.py','RESTORE-BOT-SHOPS.cmd','knowledge/OWNER-EXECUTION.md','knowledge/SERVER-SHOPS-REQUEST.md','knowledge/ALPHA90.md'):
   raw=(REPO/'piratia-bots'/relative).read_bytes()
@@ -20,7 +20,7 @@ def main():
  for command,inner in [('INSTALL-SERVER-SHOPS','Install-City-Shops'),('UPDATE-CLIENT-PRICES','Update-Client-Prices'),('INSTALL-WORLD-EXPANSION','Install-World-Expansion'),('RESTORE-SPAWN-DENSITY','Restore-Spawn-Density'),('ENABLE-GEM-DROPS','Enable-Gem-Drops'),('RETIRE-ALPHA90-LEGACY','Retire-World-Legacy-IDs')]:
   files[NAME+'/'+command+'.cmd']=('@echo off\r\ncall "%~dp0server-shops\\'+inner+'.cmd"\r\n').encode()
  files[NAME+'/OPEN-ITEM-DATABASE.cmd']=b'@echo off\r\nstart "" "%~dp0server-shops\\native\\item-database.html"\r\n'
- files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes()
+ files[NAME+'/START-HERE.md']=(REPO/'piratia-bots/knowledge/ALPHA91.md').read_bytes()
  with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
   for name,raw in sorted(files.items()):
    info=zipfile.ZipInfo(name,date_time=(2026,11,15,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;archive.writestr(info,raw)
@@ -66,6 +66,7 @@ def main():
  manifest.update(cumulative_bots='Alpha85 includes Alpha84 and previous releases',bot_checks=1057,alpha85={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha89 includes Alpha88 and previous releases',bot_checks=1070,alpha89={'server_patch_changed':False,'live_windows_verified':False})
  manifest.update(cumulative_bots='Alpha90 includes Alpha89 and previous releases',bot_checks=1078,native_patch_checks=66,alpha90={'world_expansion_installer':True,'installer_fix':9,'shop_restore_reads_utf8':True,'semantic_shop_knowledge_restore':True,'cooking_products':38,'manufacturing_products':95,'native_level_trophies':True,'restores_original_spawn_density':True,'native_gem_drops':True,'original_gem_drop_rates':True,'extra_native_gem_chance':0.03,'gem_combination_rank_cap':9,'curated_ordinary_loot':True,'live_windows_verified':False})
- (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA90.md').read_bytes())
+ manifest.update(cumulative_bots='Alpha91 includes Alpha90 Fix9 and all previous releases',bot_checks=1095,native_patch_checks=67,legacy_installer_regressions=12,alpha91={'audit_reports':400,'native_shop_actors_known_to_bots':9,'gem_seller_roles':200,'gem_seller_shift_seconds':[600,900],'healing_price_scope':'HP and SP foods only; stat and XP buffs unchanged','cake1849_price':180,'client_only_includes_expansion_prices':True,'owned_argent_ticket_target_from_level20':2,'no_free_teleports':True,'live_windows_verified':False})
+ (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n');(OUT/'README.md').write_bytes((REPO/'piratia-bots/knowledge/ALPHA91.md').read_bytes())
  print(target);print(manifest['sha256'])
 if __name__=='__main__':main()

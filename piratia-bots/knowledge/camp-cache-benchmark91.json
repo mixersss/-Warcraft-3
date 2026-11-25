@@ -1,0 +1,9 @@
+{
+  "kind": "offline microbenchmark, not fleet/Windows timing",
+  "points": 100,
+  "repeats": 200,
+  "baseline_seconds": 0.024896,
+  "cached_seconds": 0.00197,
+  "cache_hits": 199,
+  "identical_goals": true
+}

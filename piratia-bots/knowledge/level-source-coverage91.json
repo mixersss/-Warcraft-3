@@ -1,0 +1,1208 @@
+{
+  "scope": "Static source spawn regions, not a claim that portals, map instances or living mobs are available. Normal band -5/+3; physical land connectivity, own equipment and native damage/XP still required.",
+  "levels": [
+    {
+      "character_level": 1,
+      "ground_species_in_normal_band": 16,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 2,
+      "ground_species_in_normal_band": 19,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 3,
+      "ground_species_in_normal_band": 22,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 4,
+      "ground_species_in_normal_band": 25,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 5,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 6,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 7,
+      "ground_species_in_normal_band": 27,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 8,
+      "ground_species_in_normal_band": 27,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 9,
+      "ground_species_in_normal_band": 25,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 10,
+      "ground_species_in_normal_band": 24,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 11,
+      "ground_species_in_normal_band": 24,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 12,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 13,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 14,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 15,
+      "ground_species_in_normal_band": 23,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 16,
+      "ground_species_in_normal_band": 21,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 17,
+      "ground_species_in_normal_band": 25,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 18,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 19,
+      "ground_species_in_normal_band": 29,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 20,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 21,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 22,
+      "ground_species_in_normal_band": 29,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 23,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 24,
+      "ground_species_in_normal_band": 34,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 25,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 26,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 27,
+      "ground_species_in_normal_band": 33,
+      "source_maps": [
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 28,
+      "ground_species_in_normal_band": 34,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 29,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 30,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 31,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 32,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 33,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "abandonedcity",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 34,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 35,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "darkblue",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 36,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "eastgoaf",
+        "garner"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 37,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 38,
+      "ground_species_in_normal_band": 36,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 39,
+      "ground_species_in_normal_band": 36,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 40,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 41,
+      "ground_species_in_normal_band": 33,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 42,
+      "ground_species_in_normal_band": 37,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 43,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 44,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 45,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "abandonedcity",
+        "abandonedcity2",
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 46,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 47,
+      "ground_species_in_normal_band": 29,
+      "source_maps": [
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 48,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 49,
+      "ground_species_in_normal_band": 33,
+      "source_maps": [
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 50,
+      "ground_species_in_normal_band": 33,
+      "source_maps": [
+        "abandonedcity3",
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 51,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "eastgoaf",
+        "garner",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 52,
+      "ground_species_in_normal_band": 34,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 53,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 54,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 55,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 56,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 57,
+      "ground_species_in_normal_band": 33,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 58,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 59,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 60,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "darkblue",
+        "darkswamp",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 61,
+      "ground_species_in_normal_band": 25,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 62,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea",
+        "puzzleworld",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 63,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "magicsea",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 64,
+      "ground_species_in_normal_band": 28,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 65,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 66,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 67,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 68,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "darkblue",
+        "garner",
+        "jialebi",
+        "magicsea",
+        "puzzleworld2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 69,
+      "ground_species_in_normal_band": 38,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "puzzleworld2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 70,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "puzzleworld2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 71,
+      "ground_species_in_normal_band": 29,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 72,
+      "ground_species_in_normal_band": 37,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 73,
+      "ground_species_in_normal_band": 35,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 74,
+      "ground_species_in_normal_band": 30,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 75,
+      "ground_species_in_normal_band": 32,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 76,
+      "ground_species_in_normal_band": 22,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 77,
+      "ground_species_in_normal_band": 31,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "garner",
+        "guildwar",
+        "guildwar2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "magicsea",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 78,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "guildwar",
+        "guildwar2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 79,
+      "ground_species_in_normal_band": 26,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "guildwar",
+        "guildwar2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 80,
+      "ground_species_in_normal_band": 29,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "guildwar",
+        "guildwar2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 81,
+      "ground_species_in_normal_band": 19,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 82,
+      "ground_species_in_normal_band": 23,
+      "source_maps": [
+        "binglang2",
+        "darkblue",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 83,
+      "ground_species_in_normal_band": 22,
+      "source_maps": [
+        "binglang2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 84,
+      "ground_species_in_normal_band": 19,
+      "source_maps": [
+        "binglang2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 85,
+      "ground_species_in_normal_band": 19,
+      "source_maps": [
+        "binglang2",
+        "hell",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 86,
+      "ground_species_in_normal_band": 8,
+      "source_maps": [
+        "binglang2",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 87,
+      "ground_species_in_normal_band": 8,
+      "source_maps": [
+        "binglang2",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 88,
+      "ground_species_in_normal_band": 8,
+      "source_maps": [
+        "binglang2",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 89,
+      "ground_species_in_normal_band": 5,
+      "source_maps": [
+        "binglang2",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 90,
+      "ground_species_in_normal_band": 5,
+      "source_maps": [
+        "binglang2",
+        "jialebi",
+        "leiting2",
+        "shalan2"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 91,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 92,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 93,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 94,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 95,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 96,
+      "ground_species_in_normal_band": 0,
+      "source_maps": [],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 97,
+      "ground_species_in_normal_band": 4,
+      "source_maps": [
+        "hell5"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 98,
+      "ground_species_in_normal_band": 4,
+      "source_maps": [
+        "hell5"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 99,
+      "ground_species_in_normal_band": 4,
+      "source_maps": [
+        "hell5"
+      ],
+      "verified_reachable_live_camp": false
+    },
+    {
+      "character_level": 100,
+      "ground_species_in_normal_band": 4,
+      "source_maps": [
+        "hell5"
+      ],
+      "verified_reachable_live_camp": false
+    }
+  ]
+}

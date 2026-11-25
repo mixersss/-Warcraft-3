@@ -22,11 +22,20 @@ class Vendor(Town):
   self.batch_farming=False;self.stock_since=None
   self.patchouli_buyback=2000 if getattr(life,'owner_shops',None) and life.owner_shops.get('catalog_revision',0)>=56 else 1500
   self.last_confirmed_sale=None;self.price_warning=''
+  self.sell_surplus_loot=False
+  source=json.loads((Path(assets)/'world-mobs.json').read_text(encoding='utf-8'))['monsters']
+  self.mob_loot={i for row in source.values() for i in row['drops']}
   self.next_sale=0;self.sales=self.confirmed_sales=self.sale_timeouts=0;self.batch=0;self.sale_target=None;self.sale_slot=None;self.sale_goals=[];self.failed_shops=set()
  def choices(self,policy):
   w=self.world
   if not w.bag_ready or w.bag_disabled:return []
   protected=policy.market.protected(policy) if policy.market else set()
+  if self.sell_surplus_loot:
+   from pet_care import PROTECTED
+   protected.update(PROTECTED)
+   from recovery import HP_FOOD,SP_FOOD
+   protected.update(set(HP_FOOD)|set(SP_FOOD)|{885,886,3094,3095,3844,3879,3880})
+   if policy.market:protected.update(policy.market.gem_ids())
   for feature in (policy.career,policy.story):
    if feature:
     protected.update(feature.needed_items())
@@ -46,11 +55,17 @@ class Vendor(Town):
   for slot,item in sorted(w.bag.items()):
    curated=bool(policy.market and getattr(policy.market.catalog,'curated_mode',False))
    spent=spent_basic(w,item)
-   if curated and item.identity in policy.market.catalog.items and item.identity!=4915 and not (self.sell_patchouli and item.identity==1000) and not spent:continue
+   if curated and not self.sell_surplus_loot and item.identity in policy.market.catalog.items and item.identity!=4915 and not (self.sell_patchouli and item.identity==1000) and not spent:continue
    gear=self.gear.gear.get(item.identity,{})
+   spare=(self.sell_surplus_loot and item.identity in self.mob_loot and str(item.identity) not in (getattr(self.life,'equipment_goals',None) or {}).get('items',{})
+          and item.identity not in w.own.equipment.values() and not 5000<=item.identity<6000
+          and (item.identity in self.junk or bool(gear and gear['kind'] in (1,2,3,4,7,9,11,20,22,23,24,27)
+              and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item)
+              and not (w.own.model in gear['bodies'] and gear['level']<=w.own.values.get(0,0)+5
+                       and (gear['jobs']==[-1] or w.own.values.get(4) in gear['jobs']) and gear['level']>w.own.values.get(0,0)))))
    novice=curated and bool(gear and 0<gear['level']<20 and not 5000<=item.identity<=5999 and item.identity not in w.own.equipment.values() and not self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item))
-   if (item.identity not in self.junk and not novice and not spent and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
-   safe_novice=novice and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((a==b==0) or (1<=a<=47 and 0<=b<=2000) for a,b in item.instance_attributes)
+   if (item.identity not in self.junk and not novice and not spare and not spent and not (self.sell_patchouli and item.identity==1000)) or item.identity in protected or not item.valid:continue
+   safe_novice=(novice or spare and bool(gear)) and item.parameters[0] in (0,1000000000,2000000000,3000000000) and item.parameters[1]==0 and all((a==b==0) or (1<=a<=47 and 0<=b<=2000) for a,b in item.instance_attributes)
    if item.forge or (any(item.parameters) or any(a or b for a,b in item.instance_attributes)) and not safe_novice:continue
    keep=0 if item.identity in self.trophy_buyback or self.sell_patchouli and item.identity==1000 else min(item.count,reserved.get(item.identity,0));reserved[item.identity]=max(0,reserved.get(item.identity,0)-keep)
    count=min(99,item.count-keep)

@@ -2,13 +2,14 @@
 import hashlib,json,math,random
 from pathlib import Path
 
-def role_for(index):return 'gem_seller' if index%10 in (1,4,7) else 'developer'
+def role_for(index):return 'gem_seller' if index%10 in (0,1,4,7,8) else 'developer'
 
 class Economy:
  def __init__(self,name,assets):
   seed=int.from_bytes(hashlib.sha256((name+':economy').encode()).digest()[:8],'big')
   self.seed=seed;self.cycle=None;self.stages=[];self.busy=False;self.current=None;self.group_hunting=False
   self.camp_hunting=False
+  self.trade_due=False
   self.offset=seed%1800;self.cohort=('farmer' if seed%100<15 else 'leveler' if seed%100<60 else 'fairy' if seed%100<75 else 'dungeon')
   self.data=json.loads((Path(assets)/'patchouli-farms.json').read_text());self.last_models=[];self.reason=''
   self.patchouli_to_npc=False
@@ -50,6 +51,7 @@ class Economy:
   return {model for _,model in sorted(choices or fallback)[:3]}
 
  def phase(self,world,now):
+  if self.trade_due:return 'trade'
   if now<self.emergency_until:return 'progression'
   if self.group_hunting or self.camp_hunting:return 'progression'
   if world.own.values.get(4,0)==0 or world.own.values.get(0,0)<10:return 'progression'

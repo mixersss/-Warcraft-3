@@ -216,6 +216,10 @@ class Hunter:
         return bool((self.search_goal and now<self.search_deadline) or now<self.camp_arrival_until)
 
     def hunt_before_errands(self,now):
+        if (self.fast_progression and self.world.bag_ready and self.world.bag_capacity is not None
+                and self.world.bag_capacity-len(self.world.bag)<=4):return False
+        if (not self.supply_funding_goal and self.market and
+                getattr(self.market,'sale_due',lambda *args:False)(self,now) is True):return False
         last=self.learning.last_progress_at
         mine_approach=getattr(self.hunt_travel,'mine_approach',lambda:False)
         return bool(self.supply_funding_goal) or self.camp_route_active(now) or mine_approach() or bool(
@@ -768,9 +772,21 @@ class Hunter:
 
     def reachable_camp_goals(self,raw_goals,now):
         component=self.nav.land_component(self.position(now)) if hasattr(self.nav,'land_component') else None
-        goals=dict.fromkeys(self.nav.nearest(p) for p in raw_goals)
-        return [p for p in goals if p and self.goal_blacklist.get(p,0)<=now
-                and (not component or self.nav.land_component(p)==component)]
+        points=tuple(tuple(p) for p in raw_goals)
+        obstacles=tuple(sorted(getattr(getattr(self.nav,'local',None),'blocked_cells',())))
+        key=(id(self.nav),component,points,obstacles)
+        cache=getattr(self,'camp_goals_cache',None)
+        if cache is None:cache=self.camp_goals_cache={}
+        if key not in cache:
+            goals=dict.fromkeys(self.nav.nearest(p) for p in points)
+            cache[key]=tuple(p for p in goals if p and (not component or self.nav.land_component(p)==component))
+            while len(cache)>4:cache.pop(next(iter(cache)))
+        else:self.camp_cache_hits=getattr(self,'camp_cache_hits',0)+1
+        goals=[p for p in cache[key] if self.goal_blacklist.get(p,0)<=now]
+        if self.fast_progression and self.coordination and hasattr(self.coordination,'available_camps'):
+            filtered=self.coordination.available_camps(self.world.map,goals,now)
+            if isinstance(filtered,list):goals=filtered
+        return goals
 
     def spread_camp_goals(self,goals,origin):
         choices=[self.search_goal] if self.search_goal in goals else []
@@ -890,6 +906,8 @@ class Hunter:
         return not self.coordination or self.coordination.visit(self.owner,self.world.map,point,now,mandatory)
 
     def task(self,key,feature,callback,now):
+        local_maintenance=(getattr(feature,'nearby_maintenance',lambda *args:None)(self,now) if key=='town' and feature and not self.target else None)
+        local_maintenance=isinstance(local_maintenance,tuple)
         local_fruit=bool(key=='town' and feature and not self.target
                          and getattr(feature,'nearby_fairy_fruit',lambda *args:None)(self,now))
         local_boost=bool(key=='town' and feature and not self.target
@@ -904,7 +922,7 @@ class Hunter:
         if key=='market' and self.hunt_before_errands(now):return False
         if (key=='town' and feature and (self.hunt_before_errands(now)
                 or (self.hunt_travel and self.hunt_travel.settling_site(now,self)))
-                and not (feature.context or feature.pending or feature.combat_supply_required() or local_fruit or local_boost
+                and not (feature.context or feature.pending or feature.combat_supply_required() or local_fruit or local_boost or local_maintenance
                          or (self.petcare and self.petcare.urgent_hunger())
                          or (not self.camp_route_active(now) and self.hunt_travel and self.hunt_travel.plan
                              and not self.hunt_travel.plan.get('returning')
@@ -922,7 +940,7 @@ class Hunter:
             point=feature.npcs.get(destination)
             if isinstance(point,(tuple,list)) and len(point)==2 and distance(self.position(now),point)>1500:return False
         business=bool(self.economy and self.economy.business(self.world,now) and not self.mandatory_work())
-        essential_combat=local_fruit or local_boost;travel_work=False
+        essential_combat=local_fruit or local_boost or local_maintenance;travel_work=False
         if key=='town' and feature and hasattr(feature,'critical_items'):
             critical=feature.critical_items()
             if isinstance(critical,(list,tuple,set)):
@@ -938,6 +956,10 @@ class Hunter:
                          and self.world.own.values.get(0,0)>=feature.minimum_level and self.world.skills.get(241,{}).get('level') and feature.offers(self) and not self.mandatory_work())
         if key=='town' and self.petcare and self.petcare.needs_food_visit():essential_combat=True
         if key=='town' and self.petcare and self.petcare.affordable_care():essential_combat=True
+        if key=='town' and feature:
+            healing=getattr(feature,'healing_supply_goal',lambda:None)()
+            if isinstance(healing,tuple) and (self.world.own.values.get(HP,0)<self.world.own.values.get(MAX_HP,1)*.85
+                    or getattr(feature,'nearby_supplier',lambda *args:False)(self,healing[0],now) is True):essential_combat=True
         if key=='repair' and feature and feature.candidates():essential_combat=True
         if (key in ('town','market','story') and not essential_combat and not ready_stall and not self.mandatory_work()
                 and self.local_combat_ready(now)):
@@ -1407,6 +1429,7 @@ class Hunter:
             self.learning.until=0
         self.update_tactic(now)
         if self.economy:
+            self.economy.trade_due=bool(self.market and getattr(self.market,'sale_due',lambda *args:False)(self,now) is True)
             self.economy.camp_hunting=self.hunt_before_errands(now)
             self.economy.group_hunting=bool(self.group_hunt and self.group_hunt.active())
             target=self.world.entities.get(self.target)
@@ -1647,6 +1670,9 @@ class Hunter:
                     and distance(self.position(now),self.world.position(now,e.identity))<=2000
                     for e in self.world.entities.values()))
         business=bool(self.economy and self.economy.business(self.world,now) and not mandatory)
+        if (not mandatory and self.market and getattr(self.market,'sale_due',lambda *args:False)(self,now) is True
+                and self.task('market',self.market,lambda:self.market.tick(now,self,safe,market_dialogue),now)):
+            self.drop_target();self.pause_camp(now);self.change(self.market.reason);return
         if not mandatory and not self.quest_combat_ready and self.group_hunt and self.group_hunt.work(now,self,safe):return
         if business and not self.quest_combat_ready:
             if self.wants_story() and (self.economy.phase(self.world,now)=='history' or (self.market and self.market.needs_life_study()) or (self.professions and self.professions.needs_points())) and self.task('story',self.story,lambda:self.story.tick(now,self,safe,market_dialogue),now):
@@ -1696,6 +1722,9 @@ class Hunter:
                 if self.owner_services:
                     from owner_services import LOOT
                     needed=set(LOOT)
+                    if self.vendor and getattr(self.vendor,'sell_surplus_loot',False):
+                        needed.update(self.vendor.junk)
+                        needed.update(i for i in self.vendor.mob_loot if i in self.vendor.gear.gear and not 5000<=i<6000)
                     if getattr(self.loot,'world_expansion',False):
                         from world_drops import NPC_TROPHY_PRICES, STACK_GEM_PRICES
                         needed.update(NPC_TROPHY_PRICES)
@@ -1994,6 +2023,11 @@ class Hunter:
         if arrived or now>=self.search_deadline:
             if getattr(self.nav,'incremental',False) is True:self.nav.cancel_pending(goal)
             self.goal_blacklist[goal]=now+(90 if self.camp_scouting else 20)
+            if arrived and self.fast_progression and self.coordination and hasattr(self.coordination,'note_empty_camp'):
+                # Target selection and actual nearby opportunities were checked
+                # above. Don't send the other399 clients to this same empty tile.
+                self.coordination.note_empty_camp(self.world.map,goal,now)
+                self.empty_camp_observations=getattr(self,'empty_camp_observations',0)+1
             if len(self.goal_blacklist)>128:self.goal_blacklist.pop(next(iter(self.goal_blacklist)))
             arrival_window=self.camp_arrival_until
             self.clear_zone(keep_reservation=arrived and self.fast_progression)
@@ -2048,7 +2082,7 @@ class Hunter:
 
     def summary(self):
         return {'escape_plan':self.escape_plan.summary() if self.escape_plan else {},'economy':self.economy.summary(self.world,self.clock) if self.economy else {},'farm_reason':self.farm_reason(),'npc_knowledge':self.npc_knowledge.summary(self.world.map,self.world.own.position) if self.npc_knowledge else {},'combat_skills':self.combat_skills.summary() if self.combat_skills else {},'combat_safety':{'zone_revision':getattr(self.nav,'combat_zone_revision','unknown'),'protected_fights_stopped':self.protected_fights_stopped,'protected_target_checks':self.protected_target_checks,'last_protected_target':self.last_protected_target,'immune_fights_released':self.immune_fights_released,'own_position_allows_combat':self.combat_allowed(self.world.own.position) if self.world.own else None},'portal_shortcut':self.shortcut.summary() if self.shortcut else {},'offmesh_recovery':{'reason':self.offmesh_reason,'route':list(self.offmesh_route),'retry_in_seconds':max(0,self.offmesh_next-self.clock),'rejected_steps':len(self.offmesh_blocked)},'mob_knowledge':self.mob_knowledge.summary(self.world.map,self.world.own.position,self.world.own.values.get(LV,1)) if self.mob_knowledge else {},'tactic':self.tactic,'activity':self.activity.summary(),'stuck_return':self.stuck_return.summary(),'offmesh_recovery_requests':self.offmesh_requests,'schedule':self.tactic_schedule.summary() if self.tactic_schedule else None,'state': self.mode,'state_seconds':max(0,self.clock-self.mode_since),
-                'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'retreat':{'active':self.resting,'goal_cm':self.retreat_goal,'replans_after_stop':self.retreat_replans},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
+                'camp_selection_cache_hits':getattr(self,'camp_cache_hits',0),'empty_camps_shared':getattr(self,'empty_camp_observations',0),'background_planning_task':self.background_task,'quest_combat_priority':self.quest_combat_ready,'movement_obstacles':{'unexpected_stops':self.blocked_move_stops,'last_step':self.last_blocked_step},'retreat':{'active':self.resting,'goal_cm':self.retreat_goal,'replans_after_stop':self.retreat_replans},'inventory_blocker':self.inventory_blocker,'farm_plan':{'target':self.target_explanation(),'character_level':self.world.own.values.get(LV),'models':sorted(self.planned_models()),'replans':self.farm_plan_changes},
                 'hunting_learning':self.learning.summary(),'hunting_coordinates':self.hunting_coordinates(),
                 'action_wait':{'pending':bool(self.pending_action),'kind':self.pending_action[0][8] if self.pending_action else None,
                                'seconds':round(max(0,self.clock-self.pending_action[1]+.15),2) if self.pending_action else 0,
@@ -2317,6 +2351,8 @@ def hunt(client, seconds, stop, report, navigation, tell=print, bot_name='', cha
                 policy.town.hunt_travel=policy.hunt_travel
             if policy.market:
                 policy.market.forging_economy=True;policy.market.gem_seller=policy.economy.economic_role=='gem_seller'
+                policy.market.gem_only=True
+                policy.vendor.sell_surplus_loot=True
                 policy.market.crafting=policy.crafting
         if life.owner_shops.get('catalog_revision',0)>=60:policy.camp_scouting=True
     if policy.bank:policy.bank.patchouli_audit=True

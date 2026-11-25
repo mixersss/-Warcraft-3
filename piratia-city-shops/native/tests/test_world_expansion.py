@@ -14,6 +14,29 @@ import native_gems
 
 
 class ExpansionTests(unittest.TestCase):
+    def test_other_pc_client_update_includes_healing_prices_without_server_writes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            server,client=test_native.fixture(Path(directory))
+            table=test_native.native.locate_client(client)
+            raw=table.read_bytes();existing=expansion.table_bin(raw)
+            for identity in (1849,3140,4019):
+                if identity not in existing:
+                    row=bytearray(868)
+                    for offset in (4,108):struct.pack_into('<I',row,offset,identity)
+                    struct.pack_into('<h',row,308,31)
+                    struct.pack_into('<i',row,320,10000)
+                    raw+=row
+            table.write_bytes(raw)
+            before=(server/'ItemInfo.bin').read_bytes()
+            result=test_native.native.install_client(client,True)
+            self.assertTrue(result['applied'])
+            rows=expansion.table_bin(table.read_bytes())
+            self.assertEqual(struct.unpack_from('<i',rows[1849],320)[0],180)
+            self.assertEqual(struct.unpack_from('<i',rows[3140],320)[0],100)
+            self.assertEqual(struct.unpack_from('<i',rows[4019],320)[0],10000)
+            self.assertEqual((server/'ItemInfo.bin').read_bytes(),before)
+            self.assertTrue(test_native.native.install_client(client,True)['already_installed'])
+
     def test_full_install_preserves_original_gem_records_and_is_idempotent(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -70,6 +93,15 @@ class ExpansionTests(unittest.TestCase):
                 self.assertEqual(rows[identity], original[identity])
                 self.assertNotIn(alias, rows)
             self.assertEqual(struct.unpack_from("<i",rows[684],320)[0],200_000)
+            # Selected price bytes only; identity/effects/limits remain exact.
+            for identity,price in expansion.SUPPLIES.items():
+                self.assertEqual(struct.unpack_from('<i',rows[identity],320)[0],price)
+                self.assertEqual(rows[identity][:320],original[identity][:320])
+                self.assertEqual(rows[identity][324:],original[identity][324:])
+            self.assertEqual(struct.unpack_from('<i',rows[1849],320)[0],180)
+            self.assertEqual(struct.unpack_from('<i',rows[3140],320)[0],100)
+            self.assertEqual(struct.unpack_from('<i',rows[4019],320)[0],10000)
+
             for i, money in ((5622,5_000),(5623,6_000)):
                 self.assertEqual(struct.unpack_from("<i",rows[i],320)[0],2*money)
             self.assertTrue(json.loads(receipt_path.read_text())["world_expansion"])
@@ -85,6 +117,21 @@ class ExpansionTests(unittest.TestCase):
             current=npcscript.read_bytes()
             npcscript.write_bytes(current+b'\n-- unrelated local changes\n')
             self.assertIn(forge.SCRIPT.as_posix(),restore(server,assets)['verified_changed_files'])
+            overlay=json.loads((assets/'owner-city-shops.json').read_bytes())
+            supplier=next(n for n in overlay['npcs'] if n['script_function']=='ForgeSupply')
+            self.assertEqual(supplier['position'],[226050,277050])
+            self.assertIn(1849,supplier['offers']);self.assertIn(3140,supplier['offers'])
+            self.assertEqual(overlay['prices']['1849'],180)
+            self.assertEqual(overlay['prices']['3140'],100)
+            from owner_shops import read_overlay
+            self.assertEqual(len(read_overlay(assets)['npcs']),9)
+            npc_text=server/forge.TEXT
+            actual=npc_text.read_bytes()
+            npc_text.write_bytes(actual.replace(b'ForgeSupply',b'WrongSupply'))
+            with self.assertRaisesRegex(ValueError,'привязка'):
+                restore(server,assets)
+            npc_text.write_bytes(actual)
+
             npcscript.write_bytes(current+b'\nfunction OwnerOpenTrade() end\n')
             with self.assertRaisesRegex(ValueError,'переопределение торговцев'):
                 restore(server,assets)

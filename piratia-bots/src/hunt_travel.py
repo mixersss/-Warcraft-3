@@ -129,6 +129,11 @@ class HuntTravel:
   if services and services.need():return True
   settling=self.settling_site(now,policy) or policy.hunt_before_errands(now)
   free=(w.bag_capacity or 0)-len(w.bag)
+  market=getattr(policy,'market',None)
+  if (market and getattr(market,'gem_only',False) and free<=4
+      and any(market.count(i)>market.reserve_count(i) for i in market.gem_ids())):
+   centre=self.life.services.get('city_centres',{}).get('garner')
+   if centre and (w.map!='garner' or math.dist(policy.position(now),centre)>15000):return True
   patchouli=sum(i.count for i in w.bag.values() if i.identity==1000 and i.valid)
   needs_sale=bool(getattr(policy,'supply_funding_goal',0) and patchouli)
   if needs_sale or free<=0 or (not settling and (free<=4 or patchouli>=30)):

@@ -65,7 +65,7 @@ class FairyTests(unittest.TestCase):
   c.tick(2,p);self.assertEqual(c.confirmed,0);w.skills[280]={'level':3};c.tick(3,p);self.assertEqual(c.confirmed,1)
  def test_missing_ack_never_fakes_care_or_repeats_immediately(self):
   w,c,p=self.make();w.bag={1:item(232,endurance=1000),2:item(2312,3)};before=dict(w.bag)
-  c.tick(1,p);c.tick(14,p);c.tick(15,p)
+  c.tick(1,p);c.tick(26,p);c.tick(27,p)
   self.assertEqual(c.timeouts,1);self.assertEqual(c.confirmed,0);self.assertEqual(p.emit.call_count,1);self.assertEqual(w.bag,before)
  def test_missing_bag_snapshot_or_book_reorder_is_not_consumption(self):
   w,c,p=self.make();w.bag={1:item(232,energy=0),2:item(2312,3),4:item(609)};c.tick(1,p)

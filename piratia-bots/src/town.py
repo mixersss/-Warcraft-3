@@ -41,6 +41,7 @@ class Town:
         self.last_purchase_failure=None
         self.visit_started=None;self.visit_deadline=0;self.visit_key=None;self.approach_timeouts=0
         self.progression_visit=False
+        self.local_maintenance=None;self.next_maintenance=0
         self.trip_purchase=False
     def urgent_coral(self):
         return self.world.own.values.get(4) in (4,16) and not damage_ready(self.world,self.gear)
@@ -88,6 +89,22 @@ class Town:
     def equipment_savings(self):
         goal=self.equipment_goal()
         return self.life.prices.get(goal,0) if goal else 0
+    def healing_supply_goal(self):
+        from recovery import HP_FOOD,SP_FOOD
+        w=self.world
+        if not w.own or w.own.values.get(0,0)<20:return None
+        offered={i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers']}
+        for attribute,foods in ((31,HP_FOOD),(32,SP_FOOD)):
+            maximum=w.own.values.get(attribute,1)
+            stock=sum(foods.get(i.identity,0)*i.count for i in w.bag.values() if i.valid)
+            if stock>=max(100,maximum):continue
+            affordable=[i for i in foods if i in offered and 0<self.life.prices.get(i,0)<=max(0,w.own.values.get(8,0)-100)]
+            if not affordable:continue
+            identity=max(affordable,key=lambda i:(min(foods[i],maximum*.4),-self.life.prices[i]/foods[i]))
+            count=min(20,max(2,(maximum*2-stock+foods[identity]-1)//foods[identity]))
+            count=min(count,max(0,(w.own.values.get(8,0)-100)//self.life.prices[identity]))
+            if count:return identity,int(count)
+        return None
     def critical_items(self,map_name=None):
         w=self.world;job=w.own.values.get(4);result=[];shop_map=map_name or w.map
         w.own.required_coral_links=required_links(w)
@@ -118,8 +135,13 @@ class Town:
             if (skill==99 and job in (5,13,14) or skill==214 and job in (4,16)) and not w.skills.get(skill,{}).get('level'):
                 self.combat_items.add(identity)
         result.extend(books)
-        ticket={'garner':4602,'magicsea':4603,'darkblue':4604}.get(w.map)
-        self.emergency_ticket=ticket if ticket and job and w.own.values.get(0,0)>=10 and not any(i.identity in (4602,4603,4604) and i.valid for i in w.bag.values()) else None
+        heal=self.healing_supply_goal()
+        if heal:result.append(heal[0])
+        level=w.own.values.get(0,0)
+        ticket=4602 if level>=20 else {'garner':4602,'magicsea':4603,'darkblue':4604}.get(w.map)
+        target=2 if level>=20 else 1
+        self.emergency_ticket_quantity=max(0,target-self.count(ticket)) if ticket else 0
+        self.emergency_ticket=ticket if ticket and job and level>=10 and self.emergency_ticket_quantity else None
         if self.emergency_ticket:result.append(self.emergency_ticket)
         if (job and not w.skills.get(241,{}).get('level',0) and w.own.values.get(13,0)>0
                 and not any(i.identity==3296 for i in w.bag.values())):
@@ -128,7 +150,10 @@ class Town:
         if self.professions:result.extend(identity for identity,_,_ in self.professions.purchase_goals())
         if self.treasure:result.extend(identity for identity,_,_ in self.treasure.purchase_goals())
         if self.crafting:result.extend(identity for identity,_,_ in self.crafting.purchase_goals())
-        if self.xp_boosters:result.extend(identity for identity,_,_ in self.xp_boosters.purchase_goals())
+        if self.xp_boosters:
+            result.extend(identity for identity,_,_ in self.xp_boosters.purchase_goals())
+            offered={i for shop in self.life.services['shops'].get(shop_map,[]) for i in shop['offers']}
+            result.extend(identity for identity,_,_ in self.xp_boosters.purchase_goals(offers=offered))
         if self.hunt_travel:result.extend(identity for identity,_,_ in self.hunt_travel.purchase_goals())
         goal=self.equipment_goal()
         if goal:result.append(goal)
@@ -144,7 +169,8 @@ class Town:
         if self.petcare and identity in PET_IDS:reserve+=max(0,2-self.petcare.count(2312))*self.life.prices.get(2312,0)
         critical=self.critical_items()
         if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity:critical.append(identity)
-        essential=identity in self.combat_items or identity in PET_IDS|{1847,2312,227,4602,4603,4604}
+        from recovery import HP_FOOD,SP_FOOD
+        essential=identity in self.combat_items or identity in PET_IDS|set(HP_FOOD)|set(SP_FOOD)|{2312,227,4602,4603,4604}
         if self.hunt_travel and self.hunt_travel.plan and identity in {i for i,n,r in self.hunt_travel.purchase_goals()}:essential=True
         if self.supply_plan and self.supply_plan.get('critical') and self.supply_plan['item']==identity and self.gear.types.get(identity) in (3,4,9,29):essential=True
         if self.petcare and not essential:reserve+=min(max(0,cash-reserve),self.petcare.savings())
@@ -181,18 +207,27 @@ class Town:
         if self.urgent_coral() and (food>=2 or any(self.life.prices.get(i)==1 for i in critical)) and w.own.values.get(1,0)>w.own.values.get(31,1)*.55:
             for identity in critical:
                 if self.gear.types.get(identity)==29 and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
-        if food<5 and 0<self.life.prices.get(1847,0)<=self.spend_limit(1847):return 1847,min(10,15-food)
+        healing=self.healing_supply_goal()
+        if healing:return healing
+        from recovery import HP_FOOD
+        if food<5 and not any(i.identity in HP_FOOD and i.identity!=1847 and i.valid for i in w.bag.values()) and 0<self.life.prices.get(1847,0)<=self.spend_limit(1847):return 1847,min(10,15-food)
         if cash<120:return None
         for identity in critical:
             if identity in self.combat_items and 0<self.life.prices.get(identity,0)<=self.spend_limit(identity):return identity,1
         ticket=getattr(self,'emergency_ticket',None)
-        if ticket and 0<self.life.prices.get(ticket,0)<=self.spend_limit(ticket):return ticket,1
+        if ticket and not self.count(ticket) and 0<self.life.prices.get(ticket,0)<=self.spend_limit(ticket):return ticket,1
         if self.hunt_travel and self.hunt_travel.plan:
             for identity,count,_ in self.hunt_travel.purchase_goals():
                 price=self.life.prices.get(identity,0)
                 if 0<price<=self.spend_limit(identity):return identity,min(count,self.spend_limit(identity)//price)
         if getattr(self,'local_boost_item',None):return self.local_boost_item,1
         if getattr(self,'local_fruit_item',None):return self.local_fruit_item,1
+        if self.local_maintenance:return self.local_maintenance
+        offered={i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers']}
+        # A second return ticket must not replace the planned camp ticket or a
+        # nearby development purchase. Stock it only where it is actually sold.
+        if (ticket in offered and self.count(ticket) and 0<self.life.prices.get(ticket,0)<=self.spend_limit(ticket)):
+            return ticket,min(self.emergency_ticket_quantity,self.spend_limit(ticket)//self.life.prices[ticket])
         if self.progression_visit:return None
         if self.petcare:
             for identity,count,_ in self.petcare.purchase_goals():
@@ -272,6 +307,7 @@ class Town:
                     if self.petcare and identity not in PET_IDS|{1847,227,2312,4602,4603,4604}|trip_items and identity not in self.combat_items and price>max(0,cash-reserve-self.petcare.savings()):continue
                     critical=identity in essentials
                     urgent=(identity in combat_items or identity==self.emergency_ticket or identity in trip_items
+                            or self.local_maintenance and identity==self.local_maintenance[0]
                             or identity==2312 and self.petcare and self.petcare.needs_food_visit())
                     if self.progression_visit and not urgent:continue
                     if not critical and price>cash//4:continue
@@ -313,6 +349,22 @@ class Town:
             return None
         return fruit if self.nearby_supplier(policy,fruit,now) else None
 
+    def nearby_maintenance(self,policy,now):
+        """One paid development purchase per city interval, never an idle trip."""
+        w=self.world
+        if (now<self.next_maintenance or now<self.next_shop or not w.bag_ready or w.bag_disabled
+                or (w.bag_capacity or 0)-len(w.bag)<2 or not w.own.values.get(4)
+                or self.combat_supply_required()):return None
+        from skill_plan import SkillPlan
+        books=SkillPlan(w,self.role,self.life).missing_books() if self.role else []
+        if w.own.values.get(7,0)>0:
+            for identity in books:
+                if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity) and self.nearby_supplier(policy,identity,now):return identity,1
+        if self.petcare and not self.petcare.fairy():
+            identity=self.petcare.purchase_identity()
+            if 0<self.life.prices.get(identity,0)<=self.spend_limit(identity) and self.nearby_supplier(policy,identity,now):return identity,1
+        return None
+
     def nearby_supplier(self,policy,identity,now):
         origin=policy.position(now)
         component=policy.nav.land_component(origin)
@@ -329,7 +381,7 @@ class Town:
                 or (w.bag_capacity or 0)-len(w.bag)<2 or self.combat_supply_required()
                 or getattr(policy,'mandatory_work',lambda:False)() is True):
             return None
-        for identity,_,_ in self.xp_boosters.purchase_goals():
+        for identity,_,_ in self.xp_boosters.purchase_goals(offers={i for shop in self.life.services['shops'].get(w.map,[]) for i in shop['offers']}):
             if (identity in STRIVE_AMPLIFIERS and self.nearby_supplier(policy,identity,now)
                     and self.life.prices[identity]<=self.spend_limit(identity)):
                 return identity
@@ -386,6 +438,7 @@ class Town:
         if self.pending:
             identity,before,cash,deadline=self.pending
             if self.count(identity)>before and w.own.values.get(8,cash)<cash:
+                if self.local_maintenance and identity==self.local_maintenance[0]:self.next_maintenance=now+120
                 from xp_boosters import STRIVE_AMPLIFIERS
                 purchases=getattr(self.xp_boosters,'purchased_items',None)
                 if purchases is not None and identity in STRIVE_AMPLIFIERS:
@@ -404,6 +457,7 @@ class Town:
         if not safe or dialogue_busy:return False
         activity=getattr(policy,'activity',None)
         self.progression_visit=bool(activity and activity.hunting(now) is True)
+        self.local_maintenance=self.nearby_maintenance(policy,now) if not medical else None
         self.local_fruit_item=self.nearby_fairy_fruit(policy,now) if not medical else None
         self.local_boost_item=self.nearby_xp_boost(policy,now) if not medical else None
         food_needed=bool(self.petcare and not self.combat_supply_required() and self.petcare.needs_food_visit())
@@ -413,6 +467,9 @@ class Town:
             # payments in flight have already been handled above.
             self.critical_items()
             required=self.combat_items|trip_items|{self.emergency_ticket,1847}
+            if self.local_maintenance:required.add(self.local_maintenance[0])
+            healing=self.healing_supply_goal()
+            if healing:required.add(healing[0])
             if food_needed:required.add(2312)
             if self.local_fruit_item:required.add(self.local_fruit_item)
             if self.local_boost_item:required.add(self.local_boost_item)

@@ -90,12 +90,12 @@ class Loot57Tests(unittest.TestCase):
   self.assertEqual(seller.choices(p)[0],(1,1000,1))
   self.assertTrue(seller.tick(100,p,True))
 
- def test_waits_for_native_protection_then_picks_blueprint_with_short_ack_deadline(self):
+ def test_waits_for_native_protection_then_picks_blueprint_with_bounded_ack_deadline(self):
   w,p=magic.MagicTests().make();w.bag_ready=True;w.bag_capacity=24;w.bag={}
   w.own_hits={123:(9,True)};w.items={10:(1000,10,w.own.position,1,123,9)}
   loot=QuestLoot(w);loot.fast_mode=True;loot.ground_gems={1000};p.emit=Mock()
   self.assertFalse(loot.tick(10,p,{1000}));self.assertTrue(loot.tick(10.3,p,{1000}))
-  self.assertAlmostEqual(p.next_action,10.45);self.assertAlmostEqual(loot.pending[-1],12.8)
+  self.assertAlmostEqual(p.next_action,10.45);self.assertAlmostEqual(loot.pending[-1],22.3)
   w.items={};w.bag={0:BagItem(1000,1,0,0,0,0,0,True)};loot.tick(10.4,p,{1000})
   self.assertEqual(loot.confirmed,1)
  def test_small_stock_does_not_send_solvent_bot_back_from_farm(self):

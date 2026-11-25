@@ -108,13 +108,13 @@ class OwnerServicesTests(unittest.TestCase):
 
 
 class SmallBudgetTests(unittest.TestCase):
-    def test_voyager_ring_uses_native_right_flag_and_keeps_thunder_coral(self):
+    def test_voyager_ring_uses_empty_second_slot_and_keeps_thunder_coral(self):
         w,t,p=corals.CoralSupplyTests().make();w.own.values[0]=35
-        w.own.equipment[8]=872;w.bag={0:BagItem(285,1,100,100,0,0,0,True)}
+        w.own.equipment.pop(8,None);w.bag={0:BagItem(285,1,100,100,0,0,0,True)}
         p.sequence=1;p.emit=Mock()
         e=Equipment(w,corals.GEAR,Mock())
         self.assertTrue(e.tick(100,p))
-        self.assertEqual(e.pending[1],[8]);self.assertEqual(p.emit.call_args.args[0][-2:],struct.pack('>h',-2))
+        self.assertEqual(e.pending[1],[8]);self.assertEqual(p.emit.call_args.args[0][-2:],struct.pack('>h',-1))
         self.assertEqual(w.own.equipment[7],867);self.assertEqual(e.confirmed,0)
     def test_earned_ground_gem_collects_but_player_throw_and_junk_do_not(self):
         w=base.scene();w.bag_ready=True;w.bag_capacity=48;w.own_hits={123:(9,True)}

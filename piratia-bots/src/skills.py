@@ -28,8 +28,12 @@ class Skills:
                 or own.values.get(4) not in (self.role['first_job'],self.role['target_job'])):return False
         if self.plan:
             steps=self.plan.next_steps(now,self.paused)
-            if self.plan.guides and steps and steps[0]['blocker'] in ('нужна книга','нужны очки навыков'):
-                return False # Reserve earned points for the next guide objective, keep playing/shopping.
+            if self.plan.guides and steps and steps[0]['blocker']=='нужны очки навыков':return False
+            if self.plan.guides and steps and steps[0]['blocker']=='нужна книга':
+                # Preserve the next book's earned point budget without freezing
+                # every already-owned, prerequisite-checked combat upgrade.
+                reserve=steps[0]['cost']
+                steps=[s for s in steps if not s['blocker'] and s['cost']+reserve<=own.values.get(7,0)]
             step=next((s for s in steps if not s['blocker']),None)
             if not step:return False
             skill,slot,target,points=step['skill'],step['bag_slot'],step['target_level'],own.values.get(7,0)

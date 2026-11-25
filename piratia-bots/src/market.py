@@ -225,7 +225,14 @@ class Market:
         return {i:1 for i in ids if i in self.catalog.items}
     def reserve_count(self,identity):
         if self.forging_economy and identity in self.catalog.focused_prices:
-            return self.count(identity) if self.crafting and identity in self.crafting.stone_needs() else (1 if identity in self.gem_goals() else 0)
+            key=(id(self.crafting),getattr(self.world,'updates',0),
+                 tuple(self.world.own.equipment.items()),tuple(self.world.bag.items()))
+            if getattr(self,'reserve_signature',None)!=key:
+                self.reserve_signature=key
+                needs=self.crafting.stone_needs() if self.crafting else {}
+                self.reserve_needs=needs if isinstance(needs,dict) else {}
+            needs=self.reserve_needs
+            return min(self.count(identity),max(1,min(2,needs[identity]))) if identity in needs else (1 if identity in self.gem_goals() else 0)
         if self.catalog.focused and identity in self.catalog.focused_prices:return 0
         if self.broad_goods:
             if identity==2312:return 6
@@ -261,6 +268,7 @@ class Market:
         priority={'kal':0,'refining':0,'gem':0,'rune':0,'scroll':0,'blueprint':0,'sealed':1,'gear':2}
         for slot,item in sorted(w.bag.items(),key=lambda pair:(priority.get(self.catalog.items.get(pair[1].identity,{}).get('category'),9),pair[0])):
             meta=self.catalog.items.get(item.identity)
+            if getattr(self,'gem_only',False) and item.identity not in self.gem_ids():continue
             if self.focused_goods and not self.broad_goods and item.identity!=684 and (not meta or meta['category']!='gear'):continue
             useful=bool(self.gear.upgrade(w.own,item.identity,max(0,(w.bag_capacity or 0)-len(w.bag)),item)) if self.forging_economy and item.identity in self.gear.gear else self.useful_gear(item.identity)
             if not meta or item.identity==1000 and self.focused_goods or not item.valid or item.identity in protected or useful:continue
@@ -396,6 +404,7 @@ class Market:
                 self.next_scan=now+120;break
     def opened(self,now):
         self.state='selling';self.trade_until=now+(120 if getattr(self,'focused',False) else 3600);self.confirmed_opens+=1;self.active_confirmed=True
+        if getattr(self,'gem_only',False):self.trade_until=now+self.rng.uniform(600,900) if self.gem_seller else now+300
         self.reason='торгует в городском ларьке'
     def finish(self,now):
         self.directory.release(self.name);self.state='idle';self.stock=[];self.pitch=None
@@ -514,13 +523,29 @@ class Market:
             self.directory.release(self.name);self.next_shift=now+120;return False
         self.pitch=goal;self.state='travelling';self.deadline=now+300;self.reason='готовит городской ларёк';return True
     def shift_allowed(self,policy,now):
+        if getattr(self,'gem_only',False):return self.sale_due(policy,now)
         if self.forging_economy:
             return now-policy.started>=120 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
         # Hour-long shifts start after productive play, never immediately at login.
         return now-policy.started>=900 and bool(getattr(policy,'economy',None) and policy.economy.phase(self.world,now)=='trade')
-    def loot_needs(self):return set(self.catalog.items)
+    def gem_ids(self):return set(self.catalog.focused_prices)|set(STACK_GEM_PRICES)|{885}
+    def sale_due(self,policy,now):
+        """A finite stock-backed city errand, independent of the XP watchdog."""
+        if not getattr(self,'gem_only',False):return False
+        w=self.world
+        if (self.disabled or not w.own or not w.bag_ready or w.bag_disabled
+                or w.map!='garner' or w.own.values.get(0,0)<self.minimum_level
+                or not w.skills.get(241,{}).get('level',0) or now-policy.started<120):return False
+        if self.next_shift is None:self.next_shift=policy.started+self.rng.uniform(120,240)
+        if now<self.next_shift:return False
+        center=self.life.services.get('city_centres',{}).get(w.map,policy.home)
+        if math.dist(policy.position(now),center)>15000:return False
+        free=(w.bag_capacity or 0)-len(w.bag)
+        surplus=sum(max(0,self.count(i)-self.reserve_count(i)) for i in self.gem_ids())
+        return bool((self.gem_seller and surplus>=3 or free<=4 and surplus>0) and self.offers(policy))
+    def loot_needs(self):return self.gem_ids() if getattr(self,'gem_only',False) else set(self.catalog.items)
     def summary(self):
-        return {'state_confirmed_closes':self.state_confirmed_closes,'closure_resyncs':self.close_resyncs,'economic_role':'gem_seller' if self.forging_economy and self.gem_seller else 'developer' if self.forging_economy else None,'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
+        return {'gem_only':getattr(self,'gem_only',False),'gem_surplus_units':sum(max(0,self.count(i)-self.reserve_count(i)) for i in self.gem_ids()),'seller_shift_seconds':[600,900] if self.gem_seller and getattr(self,'gem_only',False) else [300,300] if getattr(self,'gem_only',False) else None,'state_confirmed_closes':self.state_confirmed_closes,'closure_resyncs':self.close_resyncs,'economic_role':'gem_seller' if self.forging_economy and self.gem_seller else 'developer' if self.forging_economy else None,'broad_useful_goods':self.broad_goods,'saleable_catalog_items':len(self.catalog.items),'minimum_level':self.minimum_level,'level_eligible':self.world.own.values.get(0,0)>=self.minimum_level,'owned_stall_books':self.count(3296),'unspent_life_points':self.world.own.values.get(13,0),'next_shift':self.next_shift,'state':self.state,'open_requests':self.open_requests,'confirmed_opens':self.confirmed_opens,
                 'close_requests':self.close_requests,'purchase_requests':self.buy_requests,'confirmed_purchases':self.confirmed_buys,
                 'sold_units_server_notices':self.sold_units,'timeouts':self.timeouts,'stall_skill_learned':bool(self.world.skills.get(241,{}).get('level',0)),
                 'confirmed_book_learns':self.confirmed_learns,'goals':self.needed(),'rune_exchange_goal':self.rune_goal(),'black_market_barter_implemented':False}

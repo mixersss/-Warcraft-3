@@ -78,7 +78,10 @@ class QuestLoot:
             policy.emit(action_header(w.own.identity,policy.sequence,8)+struct.pack('>II',identity,handle))
             policy.next_action=now+(.15 if self.fast_mode else 1)
             self.attempted[key]=now+60;self.retries[key]=self.retries.get(key,0)+1
-            self.pending=identity,handle,model,self.count(model),now+(2.5 if self.fast_mode else 10)
+            # Four hundred clients may receive native bag echoes several
+            # seconds after the ground removal. Keep fighting meanwhile;
+            # don't retry a legitimate pickup before that echo can arrive.
+            self.pending=identity,handle,model,self.count(model),now+(12 if self.fast_mode else 10)
             for rows in (self.attempted,self.retries):
                 while len(rows)>256:rows.pop(next(iter(rows)))
             self.requests+=1;return True

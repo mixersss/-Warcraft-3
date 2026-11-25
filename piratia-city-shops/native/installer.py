@@ -88,9 +88,16 @@ def make_overlay(cat,report):
    'mission_source_ids':[],'menu_handlers':handlers,'offers':[i['id'] for i in shop['items']],
    'verified_shop_binding':True,'conditions_not_evaluated':True,'source_kind':'owner-native-shops-v2',
    'menu_pages':mapping,**({'menu_labels':{str(n):section['label'] for n,section in enumerate(shop['sections'],1)}} if shop.get('sections') else {}),'live_server_seen':False})
- return {'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'owner_progression':cat.get('owner_progression'),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
+ result={'version':2,'catalog_revision':cat.get('catalog_revision',50 if cat.get('price_overrides') else 48),'owner_progression':cat.get('owner_progression'),'fresh_fairies':True,'npcs':rows,'prices':{str(i):v['price'] for i,v in offers(cat).items()},
          'names':{str(i['id']):i['name_ru'] for s in cat['shops'] for i in s['items']},'catalog_sha256':digest(CATALOG.read_bytes()),
          **({'world_expansion':True} if report.get('world_expansion') is True else {})}
+ if report.get('world_expansion') and type(report.get('world_supply_npc_id')) is int:
+  from world_expansion import supply_overlay,SUPPLIES
+  npc,names=supply_overlay(report['world_supply_npc_id']);rows.append(npc)
+  result['prices'].update({str(i):p for i,p in SUPPLIES.items()})
+  result['names'].update({str(i):names.get(str(i),str(i)) for i in SUPPLIES})
+ if report.get('healing_food_prices'):result['healing_food_prices']=report['healing_food_prices']
+ return result
 
 def locate_client(selected):
  p=Path(selected).expanduser()
@@ -328,11 +335,14 @@ def install(server,client,apply=False,bot_assets=None):
  return report
 
 def install_client(selected,apply=False):
- p=locate_client(selected);raw=p.read_bytes();output=patch_binary(raw,offers(catalog()))
- if output==raw:return {'already_installed':True,'path':str(p)}
+ p=locate_client(selected);raw=p.read_bytes();prices=offers(catalog())
+ from world_expansion import client_price_records
+ extra,missing=client_price_records(raw);prices.update(extra)
+ output=patch_binary(raw,prices)
+ if output==raw:return {'already_installed':True,'path':str(p),'missing_expansion_item_ids':missing}
  if apply:
   stamp=datetime.now().strftime('%Y%m%d-%H%M%S-%f');apply_files({p:output},p.parent/('owner-shop-prices-backup-'+stamp))
- return {'applied':apply,'path':str(p),'sha256':digest(output)}
+ return {'applied':apply,'path':str(p),'sha256':digest(output),'expansion_price_records':len(extra),'missing_expansion_item_ids':missing}
 
 def main():
  if hasattr(sys.stdout,'reconfigure'):sys.stdout.reconfigure(encoding='utf-8',errors='replace')
